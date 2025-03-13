@@ -1,6 +1,6 @@
 # Devlog Aziz
 
--   [ ] Write protected fields, images, see [Media/IDEA.md](../Media/IDEA.md)
+-   [ ] Write protected fields, images, see [Media/IDEA.md](../packages/media/docs/IDEA.md)
 -   [ ] Hierarchy (Collection?)
 -   [ ] Media localization
 -   [ ] Media uploaded by user
