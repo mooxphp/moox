@@ -1,0 +1,3 @@
+# Clipboard
+
+extract from core
