@@ -213,3 +213,25 @@ See [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) for details.
 Moox Pro packages and themes are licensed under the `Pay to Open License`, our Open Source friendly commercial license.
 
 See [Pay to Open](https://moox.org/pay-to-open) for details.
+
+## Marketing
+
+1. [ ] Create all new Banner images
+2. [ ] Let our GitHub Org lool awesome
+3. [ ] Create two videos, install + build
+4. [ ] Finish the website and packages
+5. [ ] Create plugins on Filament Marketplace
+6. [ ] Activate our X Account
+7. [ ] Filament Discord & Forum
+8. [ ] Laravel News, how?
+9. [ ] Made with Laravel etc.
+10. [ ] We need a blog, how?
+11. [ ] LinkedIn, wait for Pro
+12. [ ] Product Hunt not yet, wait for Pro
+
+## Keywords
+
+“Laravel Modular System”
+“Filament CMS alternative”
+“Headless Laravel CMS with Filament”
+“WordPress alternative with Laravel and Filament”

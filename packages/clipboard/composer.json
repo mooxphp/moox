@@ -1,6 +1,6 @@
 {
     "name": "moox/clipboard",
-    "description": "This is my package clipboard",
+    "description": "Filament fields with copy to clipboard action",
     "keywords": [
         "Moox",
         "Laravel",

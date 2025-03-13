@@ -1,3 +1,3 @@
 # Devlog Kim
 
--   [ ] Translation fine-tuning
+-   [ ] [Localization Package](../packages/localization/docs/IDEA.md)
