@@ -8,6 +8,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction;
@@ -16,6 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Media\Forms\Components\ImageDisplay;
@@ -175,9 +177,33 @@ class MediaResource extends Resource
                             ->modalSubmitActionLabel('Ja, löschen')
                             ->modalCancelActionLabel('Abbrechen')
                             ->action(function ($record) {
-                                Media::where('id', $record->id)->delete();
+                                try {
+                                    $fileName = $record->file_name;
+                                    $record->deletePreservingMedia();
+                                    $record->delete();
 
-                                return redirect(static::getUrl('index'));
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Medium erfolgreich gelöscht')
+                                        ->body('Die Datei "'.$fileName.'" wurde erfolgreich gelöscht.')
+                                        ->send();
+
+                                    return redirect(static::getUrl('index'));
+                                } catch (\Exception $e) {
+                                    Log::error('Media deletion failed: '.$e->getMessage(), [
+                                        'media_id' => $record->id,
+                                        'file_name' => $record->file_name,
+                                    ]);
+
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Fehler beim Löschen')
+                                        ->body('Die Datei "'.$record->file_name.'" konnte nicht gelöscht werden.')
+                                        ->persistent()
+                                        ->send();
+
+                                    return null;
+                                }
                             }),
                     ]),
             ])
