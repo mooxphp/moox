@@ -1,3 +1,3 @@
 # Integration
 
-In this section, we will cover the integration of Moox Skeleton into your project.
+In this section, we will cover the integration of Moox Clipboard into your project.

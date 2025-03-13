@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We maintain the current version of `Moox Skeleton` actively.
+We maintain the current version of `Moox Clipboard` actively.
 
 Do not expect security fixes for older versions.
 

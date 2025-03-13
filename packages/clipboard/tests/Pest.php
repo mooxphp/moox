@@ -1,6 +1,6 @@
 <?php
 
-use Moox\Skeleton\Tests\TestCase;
+use Moox\Clipboard\Tests\TestCase;
 use Workbench\App\Models\User;
 
 /*

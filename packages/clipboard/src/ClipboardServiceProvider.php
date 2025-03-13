@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Moox\Skeleton;
+namespace Moox\Clipboard;
 
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
-class SkeletonServiceProvider extends MooxServiceProvider
+class ClipboardServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
         $package
-            ->name('skeleton')
+            ->name('clipboard')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
@@ -20,7 +20,7 @@ class SkeletonServiceProvider extends MooxServiceProvider
             ->hasCommands();
 
         $this->getMooxPackage()
-            ->title('Moox Skeleton')
+            ->title('Moox Clipboard')
             ->released(true)
             ->stability('stable')
             ->category('development')
@@ -31,12 +31,12 @@ class SkeletonServiceProvider extends MooxServiceProvider
                 'moox/builder', // optional alternative package (e.g. moox/post)
             ])
             ->templateFor([
-                'creating simple Laravel packages',
+                'we do not know yet',
             ])
             ->templateReplace([
-                'Skeleton' => '%%PackageName%%',
-                'skeleton' => '%%PackageSlug%%',
-                'This template is used for generating Laravel packages, all Moox packages are built with this template.' => '%%Description%%',
+                'Clipboard' => '%%PackageName%%',
+                'clipboard' => '%%PackageSlug%%',
+                'This is my package clipboard' => '%%Description%%',
                 'building new Moox packages, not used as installed package' => '%%UsedFor%%',
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
@@ -44,8 +44,8 @@ class SkeletonServiceProvider extends MooxServiceProvider
                 'moox/builder' => '',
             ])
             ->templateRename([
-                'Skeleton' => '%%PackageName%%',
-                'skeleton' => '%%PackageSlug%%',
+                'Clipboard' => '%%PackageName%%',
+                'clipboard' => '%%PackageSlug%%',
             ])
             ->templateSectionReplace([
                 "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',

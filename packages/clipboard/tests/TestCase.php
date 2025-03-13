@@ -1,9 +1,9 @@
 <?php
 
-namespace Moox\Skeleton\Tests;
+namespace Moox\Clipboard\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Moox\Skeleton\SkeletonServiceProvider;
+use Moox\Clipboard\ClipboardServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName): string => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName): string => 'VendorName\\Clipboard\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            SkeletonServiceProvider::class,
+            ClipboardServiceProvider::class,
         ];
     }
 
@@ -29,7 +29,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_clipboard_table.php.stub';
         $migration->up();
         */
     }

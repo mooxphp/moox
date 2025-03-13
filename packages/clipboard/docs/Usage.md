@@ -2,7 +2,7 @@
 
 Use the template to create your own package.
 
-1. Go to https://github.com/mooxphp/skeleton
+1. Go to https://github.com/mooxphp/clipboard
 2. Press the `Use this template` button
 3. Create a new repository based on the template
 4. Clone the repository locally
