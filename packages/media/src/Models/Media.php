@@ -3,11 +3,11 @@
 namespace Moox\Media\Models;
 
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\DB;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
-use Illuminate\Support\Facades\DB;
 
 class Media extends BaseMedia implements HasMedia
 {
@@ -76,19 +76,20 @@ class Media extends BaseMedia implements HasMedia
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (!$model) {
+                if (! $model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (!is_array($jsonData)) {
+                    if (! is_array($jsonData)) {
                         continue;
                     }
 
                     if (isset($jsonData['file_name']) && $jsonData['file_name'] === $media->file_name) {
                         $model->{$field} = null;
+
                         continue;
                     }
 
