@@ -23,6 +23,7 @@ jobs:
           - build
           - cart
           - category
+          - clipboard
           - components
           - core
           - customer
