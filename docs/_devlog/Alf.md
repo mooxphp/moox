@@ -4,7 +4,8 @@
 
 -   [ ] https://moox.test/components
     -   [ ] Auto-rendering of all components
-    -   [ ] Theme switcher
+    -   [ ] Theme switcher implementation
+    -   [ ] Responsive concept and implementation
     -   [ ] Where do I get the contents?
     -   [ ] Playground link, see Pines UI
 -   [ ] Write protected fields, images
@@ -18,7 +19,7 @@
 
 ## Todo
 
--   [ ] Write protected fields, items
+-   [ ] Write protected items - config?
 -   [ ] remove boilerplate code taxonomy
 -   [ ] finish core implementation docs
 -   [ ] Publish and Unpublish docs

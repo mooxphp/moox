@@ -24,6 +24,10 @@ class ListDrafts extends BaseListDrafts
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()];
+        if (DraftResource::enableCreate()) {
+            return [CreateAction::make()];
+        }
+
+        return [];
     }
 }

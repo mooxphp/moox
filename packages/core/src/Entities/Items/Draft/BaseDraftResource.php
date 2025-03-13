@@ -28,6 +28,10 @@ class BaseDraftResource extends BaseResource
 
     public static function enableDelete(): bool
     {
+        if (config('draft.single')) {
+            return false;
+        }
+
         return true;
     }
 
