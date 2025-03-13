@@ -27,6 +27,7 @@
         "moox/backup-server": "*",
         "moox/build": "*",
         "moox/category": "*",
+        "moox/components": "*",
         "moox/devops": "*",
         "moox/draft": "*",
         "moox/expiry": "*",

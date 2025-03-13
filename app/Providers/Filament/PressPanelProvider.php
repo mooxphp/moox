@@ -30,9 +30,13 @@ class PressPanelProvider extends PanelProvider
             ->authGuard('press')
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->login(Login::class)
-            ->authPasswordBroker('wpusers')
+            ->brandLogo(asset('img/logo.png'))
+            ->brandLogoHeight('1.6rem')
+            ->font('Exo 2')
+            ->favicon(asset('img/moox-icon.png'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Violet,
+                'secondary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Press/Resources'), for: 'App\\Filament\\Press\\Resources')
             ->discoverPages(in: app_path('Filament/Press/Pages'), for: 'App\\Filament\\Press\\Pages')
@@ -109,7 +113,7 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
-                // Musste kurz raus, sorry ;-)
+                // Wiki plugins
                 \Moox\PressWiki\WpWikiPlugin::make(),
                 \Moox\PressWiki\WpWikiTopicPlugin::make(),
                 \Moox\PressWiki\WpWikiLetterTopicPlugin::make(),

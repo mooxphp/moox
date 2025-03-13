@@ -2,14 +2,19 @@
 
 ## Team
 
--   [x] https://moox.heco.si/ - deployed version
+-   [ ] https://moox.test/components
+    -   [ ] Auto-rendering of all components
+    -   [ ] Theme switcher
+    -   [ ] Where do I get the contents?
+    -   [ ] Playground link, see Pines UI
 -   [ ] Write protected fields, images
 -   [ ] Hierarchy (Collection?)
 -   [ ] Media localization
 -   [ ] Media uploaded by user
--   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
+-   [ ] storage/app/livewire-tmp/... check if empty
+-   [ ] but has nothing to do with the 404 media issue
 -   [ ] Restore and Expiry are not phpstan'ed
--   [ ] Theoretically Laravel 12, but [Translatable](https://github.com/Astrotomic/laravel-translatable) and [Backup-Server](https://github.com/spatie/laravel-backup-server) are not ready
+-   [ ] Theoretically Laravel 12, but [Translatable](https://github.com/adrolli/laravel-translatable), [Eloquent-Mutators](https://github.com/adrolli/eloquent-mutators) and [Backup-Server](https://github.com/spatie/laravel-backup-server) are not ready
 
 ## Todo
 
@@ -123,8 +128,8 @@
     -   [ ] moox:scaffold - change fields of an entity by a config or JSON
     -   [ ] moox:release or UI - auto release, see notes
         -   [ ] We need to see if we use moox.json, DB or both.
-    -   [ ] Website: add https://creativecommons.org/licenses/by-sa/4.0/ for our graphics, assets, docs, website and themes.
     -   [ ] Cache Clear, see [this](https://github.com/cms-multi/filament-clear-cache) or Full (paoc), Frontend (views), Static Cache (html)
+    -   [ ] Dashboards, Restore is in platform
 
 ## Relations
 

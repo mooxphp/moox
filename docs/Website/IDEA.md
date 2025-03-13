@@ -91,7 +91,9 @@ A temporary list of packages to fill in the docs (75 packages):
 68. [Website](https://moox.org/docs/website) - [READ-ONLY] Just things we need for moox.org
 69. [Wishlist](https://moox.org/docs/wishlist) - [READ-ONLY] Wishlist for Laravel and Filament
 
-## Footer Links
+## Links
+
+-   https://moox.heco.si/ - Dev stage
 
 -   https://moox.org - Website
 -   https://github.com/mooxphp - GitHub

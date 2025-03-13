@@ -11,6 +11,14 @@ Route::get('/packages', function () {
     return view('packages');
 })->name('packages');
 
+Route::get('/components', function () {
+    return view('components');
+})->name('components');
+
+Route::get('/themes', function () {
+    return view('themes');
+})->name('themes');
+
 Route::get('/license', function () {
     return view('license');
 })->name('license');

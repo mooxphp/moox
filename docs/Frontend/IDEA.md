@@ -4,11 +4,30 @@ Moox Frontend is a modular system designed to provide a frontend for existing Mo
 
 ## Tooling
 
--   Laravel 11 - [https://laravel.com/docs/11.x](https://laravel.com/docs/11.x)
--   Alpine JS - [https://alpinejs.dev/](https://alpinejs.dev/)
--   Alpine Ajax - [https://alpine-ajax.js.org/](https://alpine-ajax.js.org/)
--   TailwindCSS 4 - [https://tailwindcss.com/](https://tailwindcss.com/)
--   PenguinUI - [https://www.penguinui.com/](https://www.penguinui.com/) - as inspiration
+-   [Laravel 11](https://laravel.com/docs/11.x)
+-   [Alpine JS](https://alpinejs.dev/)
+-   [Alpine Ajax](https://alpine-ajax.js.org/)
+-   [TailwindCSS 4](https://tailwindcss.com/)
+
+## Inspiration for components
+
+-   [Blade UI Kit](https://blade-ui-kit.com/)
+-   [PenguinUI](https://www.penguinui.com/)
+-   [Pines UI](https://www.pinesui.com/)
+-   [Tailwind Plus](https://tailwindui.com/)
+-   [Pines UI](https://devdojo.com/pines)
+-   [Tailkit](https://tailkit.com/)
+-   [Flowbite](https://flowbite.com/)
+-   [Shadcn UI](https://ui.shadcn.com/)
+-   [MUI](https://mui.com/)
+-   [AlpineJS Components](https://alpinejs.dev/components)
+-   [Alpine Toolbox](https://www.alpinetoolbox.com/)
+-   [Daisy UI](https://daisyui.com/)
+
+## Inspiration for themes
+
+-   [Envato Elements](https://elements.envato.com/web-templates/tailwind+css)
+-   [Cruip](https://cruip.com/)
 
 ## Moox Components
 

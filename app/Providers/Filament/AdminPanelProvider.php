@@ -64,8 +64,10 @@ class AdminPanelProvider extends PanelProvider
             // ->authGuard('admin')
             ->brandLogo(asset('img/logo.png'))
             ->brandLogoHeight('1.6rem')
+            ->font('Exo 2')
+            ->favicon(asset('img/moox-icon.png'))
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::Violet,
                 'secondary' => Color::Neutral,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

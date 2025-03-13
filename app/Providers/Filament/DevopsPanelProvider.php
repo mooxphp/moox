@@ -51,9 +51,11 @@ class DevopsPanelProvider extends PanelProvider
             ->login(Login::class)
             ->brandLogo(asset('img/logo.png'))
             ->brandLogoHeight('1.6rem')
+            ->font('Exo 2')
+            ->favicon(asset('img/moox-icon.png'))
             ->colors([
-                'primary' => Color::Indigo,
-                'secondary' => Color::Neutral,
+                'primary' => Color::Violet,
+                'secondary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

@@ -1007,7 +1007,7 @@ return [
     |
     */
 
-    'press_navigation_sort' => 2000,
+    'press_navigation_sort' => 200,
     'system_navigation_sort' => 7000,
     'meta_navigation_sort' => 8000,
     'user_navigation_sort' => 6015,

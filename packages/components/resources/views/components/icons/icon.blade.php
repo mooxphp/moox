@@ -1,4 +1,3 @@
-<!-- resources/views/components/icons/icon.blade.php -->
 @props([
     'name',
     'prefix' => 'google_symbols_',

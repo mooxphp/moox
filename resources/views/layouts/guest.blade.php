@@ -13,6 +13,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
+        <link rel="icon" href="{{ asset('img/moox-icon.png') }}" type="image/png">
+
         @vite(['resources/css/app.css'])
         @livewireStyles
         @stack('styles')
