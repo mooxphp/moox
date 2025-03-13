@@ -1,8 +1,8 @@
-![Moox Clipboard](https://github.com/mooxphp/moox/raw/main/art/banner/made-with-moox.jpg)
+![Moox clipboard](https://github.com/mooxphp/moox/raw/main/art/banner/clipboard.jpg)
 
-# Moox Clipboard
+# Moox clipboard
 
-This is my package clipboard
+Filament fields with copy to clipboard action
 
 ## Features
 
@@ -29,7 +29,7 @@ Curious what the install command does? See [Installation](https://github.com/moo
 
 ## Screenshot
 
-![Moox Clipboard](https://github.com/mooxphp/moox/raw/main/art/screenshots/made-with-moox.jpg)
+![Moox clipboard](https://github.com/mooxphp/moox/raw/main/art/screenshots/clipboard.jpg)
 
 ## Get Started
 

@@ -52,6 +52,7 @@
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes
 -   [ ] Build ...
+    -   [ ] Creates lowercase classnames, compare with php build
     -   [ ] Ask category, must be an enum in core, I guess
     -   [ ] Ask parent-theme, must use package service, only for themes
     -   [ ] Do not copy composer.lock, vendor or build.php
