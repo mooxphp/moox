@@ -33,7 +33,10 @@ jobs:
           - expiry
           - featherlight
           - file-icons
-          - flags
+          - flag-icons-circle
+          - flag-icons-origin
+          - flag-icons-rect
+          - flag-icons-square
           - forge
           - frontend
           - github
