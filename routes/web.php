@@ -32,7 +32,7 @@ Route::get('/docs', function () {
 })->name('docs');
 
 Route::get('/docsingle', function () {
-    return view('doc_single');
+    return view('doc-single');
 })->name('docsingle');
 
 Route::get('/support', function () {
