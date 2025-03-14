@@ -70,8 +70,8 @@ class Tag extends Model implements HasMedia, TranslatableContract
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
-            ->nonQueued();
+            ->nonQueued()
+            ->fit(Fit::Contain, 300, 300);
     }
 
     public function mediaThroughUsables()

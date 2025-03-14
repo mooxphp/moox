@@ -36,8 +36,8 @@ class Media extends BaseMedia implements HasMedia
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
-            ->nonQueued();
+            ->nonQueued()
+            ->fit(Fit::Contain, 300, 300);
     }
 
     public function model(): MorphTo
@@ -76,14 +76,14 @@ class Media extends BaseMedia implements HasMedia
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (! $model) {
+                if (!$model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (! is_array($jsonData)) {
+                    if (!is_array($jsonData)) {
                         continue;
                     }
 

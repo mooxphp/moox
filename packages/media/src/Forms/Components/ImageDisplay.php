@@ -3,6 +3,7 @@
 namespace Moox\Media\Forms\Components;
 
 use Filament\Forms\Components\Field;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 
 class ImageDisplay extends Field
 {
@@ -15,16 +16,21 @@ class ImageDisplay extends Field
         $this->dehydrated(false);
     }
 
+
+
     public function getState(): ?string
     {
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
-        $collection = $record->collection_name ?? 'default';
+        if (!$record instanceof SpatieMedia) {
+            return null;
+        }
 
-        return $record->getFirstMediaUrl($collection);
+        return $record->getUrl();
     }
+
 }
