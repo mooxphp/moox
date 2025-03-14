@@ -16,21 +16,18 @@ class ImageDisplay extends Field
         $this->dehydrated(false);
     }
 
-
-
     public function getState(): ?string
     {
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return null;
         }
 
-        if (!$record instanceof SpatieMedia) {
+        if (! $record instanceof SpatieMedia) {
             return null;
         }
 
         return $record->getUrl();
     }
-
 }
