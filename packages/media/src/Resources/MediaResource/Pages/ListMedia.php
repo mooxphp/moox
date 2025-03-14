@@ -74,6 +74,8 @@ class ListMedia extends ListRecords
 
                                 $media->title = $title;
                                 $media->alt = $title;
+                                $media->uploader_type = get_class(auth()->user());
+                                $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
                                 $media->original_model_id = $media->id;
                                 $media->model_id = $media->id;

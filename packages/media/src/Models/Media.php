@@ -31,6 +31,8 @@ class Media extends BaseMedia implements HasMedia
         'original_model_id',
         'original_model_type',
         'write_protected',
+        'uploader_id',
+        'uploader_type',
     ];
 
     public function registerMediaConversions(?BaseMedia $media = null): void
@@ -64,6 +66,11 @@ class Media extends BaseMedia implements HasMedia
         ];
 
         return $mimeMap[$this->mime_type] ?? strtoupper(str_replace('application/', '', $this->mime_type));
+    }
+
+    public function uploader(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     protected static function booted()

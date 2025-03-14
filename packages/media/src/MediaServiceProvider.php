@@ -33,7 +33,6 @@ class MediaServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        // Register the Media policy
         Gate::policy(Media::class, MediaPolicy::class);
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');

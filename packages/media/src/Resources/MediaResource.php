@@ -89,6 +89,15 @@ class MediaResource extends Resource
                         ->label('Zuletzt bearbeitet')
                         ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
 
+                    Placeholder::make('uploaded_by')
+                        ->label('Hochgeladen von')
+                        ->content(function ($record) {
+                            if (!$record->uploader) {
+                                return '-';
+                            }
+                            return $record->uploader->name;
+                        }),
+
                     Placeholder::make('usage')
                         ->label('Verwendet in')
                         ->content(function ($record) {
@@ -398,6 +407,63 @@ class MediaResource extends Resource
 
                         return $query;
                     }),
+
+                SelectFilter::make('uploader')
+                    ->label('Hochgeladen von')
+                    ->options(function () {
+                        $uploaderTypes = Media::query()
+                            ->distinct()
+                            ->whereNotNull('uploader_type')
+                            ->pluck('uploader_type')
+                            ->toArray();
+
+                        $options = [];
+
+                        foreach ($uploaderTypes as $type) {
+                            $uploaders = Media::query()
+                                ->where('uploader_type', $type)
+                                ->whereNotNull('uploader_id')
+                                ->with('uploader')
+                                ->get()
+                                ->map(function ($media) {
+                                    if ($media->uploader) {
+                                        return [
+                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
+                                            'name' => $media->uploader->name
+                                        ];
+                                    }
+                                    return null;
+                                })
+                                ->filter()
+                                ->unique('id')
+                                ->pluck('name', 'id')
+                                ->toArray();
+
+                            if (!empty($uploaders)) {
+                                $typeName = class_basename($type);
+                                $options[$typeName] = $uploaders;
+                            }
+                        }
+
+                        return $options;
+                    })
+                    ->query(function (Builder $query, array $data) {
+                        if (!$data['value']) {
+                            return $query;
+                        }
+
+                        $parts = explode('::', $data['value']);
+                        if (count($parts) !== 2) {
+                            return $query;
+                        }
+
+                        return $query
+                            ->where('uploader_type', $parts[0])
+                            ->where('uploader_id', $parts[1]);
+                    })
+                    ->searchable()
+                    ->preload(),
+
                 SelectFilter::make('date')
                     ->label('Hochgeladen')
                     ->options([

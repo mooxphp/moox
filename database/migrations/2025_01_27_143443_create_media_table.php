@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->nullableMorphs('model');
+            $table->nullableMorphs('uploader');
 
             $table->uuid()->nullable()->unique();
             $table->nullableMorphs('original_model');
