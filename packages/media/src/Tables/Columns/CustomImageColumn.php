@@ -14,7 +14,7 @@ class CustomImageColumn extends ImageColumn
         /** @var Model|Media|null $record */
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return null;
         }
 
@@ -39,7 +39,7 @@ class CustomImageColumn extends ImageColumn
         /** @var Model|Media|null $record */
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return null;
         }
 
@@ -88,13 +88,13 @@ class CustomImageColumn extends ImageColumn
             ->where('media.uuid', $state)
             ->value('media.id');
 
-        if (!$mediaId) {
+        if (! $mediaId) {
             return null;
         }
 
         $media = Media::find($mediaId);
 
-        if (!$media) {
+        if (! $media) {
             return null;
         }
 
