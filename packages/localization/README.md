@@ -60,7 +60,6 @@ or just use the livewire component in your blade view:
 
 The LanguageMiddleware is used to set a session cookie for the language.
 
-
 #### Tabs and Translation
 
 Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
@@ -170,6 +169,10 @@ php artisan migrate
 // Publish the config file with:
 php artisan vendor:publish --tag="localization-config"
 ```
+## use it 
+
+We are requiring astrotomic/laravel-translatable
+to use it see doc: https://docs.astrotomic.info/laravel-translatable
 
 ## Changelog
 
