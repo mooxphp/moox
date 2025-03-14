@@ -92,9 +92,10 @@ class MediaResource extends Resource
                     Placeholder::make('uploaded_by')
                         ->label('Hochgeladen von')
                         ->content(function ($record) {
-                            if (!$record->uploader) {
+                            if (! $record->uploader) {
                                 return '-';
                             }
+
                             return $record->uploader->name;
                         }),
 
@@ -428,10 +429,11 @@ class MediaResource extends Resource
                                 ->map(function ($media) {
                                     if ($media->uploader) {
                                         return [
-                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
-                                            'name' => $media->uploader->name
+                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                                            'name' => $media->uploader->name,
                                         ];
                                     }
+
                                     return null;
                                 })
                                 ->filter()
@@ -439,7 +441,7 @@ class MediaResource extends Resource
                                 ->pluck('name', 'id')
                                 ->toArray();
 
-                            if (!empty($uploaders)) {
+                            if (! empty($uploaders)) {
                                 $typeName = class_basename($type);
                                 $options[$typeName] = $uploaders;
                             }
@@ -448,7 +450,7 @@ class MediaResource extends Resource
                         return $options;
                     })
                     ->query(function (Builder $query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
