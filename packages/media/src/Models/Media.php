@@ -30,7 +30,10 @@ class Media extends BaseMedia implements HasMedia
         'internal_note',
         'original_model_id',
         'original_model_type',
+        'write_protected',
     ];
+
+
 
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
@@ -67,6 +70,21 @@ class Media extends BaseMedia implements HasMedia
 
     protected static function booted()
     {
+        parent::boot();
+
+        static::saving(function ($media) {
+            if ($media->exists && $media->getOriginal('write_protected')) {
+                throw new \Exception("This media item is write-protected.");
+            }
+        });
+
+        static::deleting(function ($media) {
+            if ($media->getOriginal('write_protected')) {
+                throw new \Exception("Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.");
+            }
+        });
+
+
         static::deleting(function (Media $media) {
             $usables = DB::table('media_usables')
                 ->where('media_id', $media->id)
@@ -76,14 +94,14 @@ class Media extends BaseMedia implements HasMedia
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (! $model) {
+                if (!$model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (! is_array($jsonData)) {
+                    if (!is_array($jsonData)) {
                         continue;
                     }
 

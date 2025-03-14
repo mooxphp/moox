@@ -12,6 +12,9 @@ use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Http\Livewire\MediaUploader;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Media\Models\Media;
+use Moox\Media\Policies\MediaPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class MediaServiceProvider extends PackageServiceProvider
 {
@@ -30,7 +33,10 @@ class MediaServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
+        // Register the Media policy
+        Gate::policy(Media::class, MediaPolicy::class);
+
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
         Livewire::component('media-uploader', MediaUploader::class);
 
