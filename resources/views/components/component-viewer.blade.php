@@ -1,3 +1,5 @@
+@props(['code'])
+
 <div x-data="{
     activeTab: 'view',
     theme: 'dark',
@@ -23,7 +25,7 @@
                 <span x-show="theme === 'dark'" class="material-symbols-rounded">light_mode</span>
                 <span x-show="theme === 'light'" class="material-symbols-rounded">dark_mode</span>
             </button>
-            <button x-show="activeTab === 'code'" @click="navigator.clipboard.writeText(document.querySelector('.code-content').textContent)" class="text-gray-400 hover:text-gray-200">
+            <button x-show="activeTab === 'code'" @click="navigator.clipboard.writeText(componentCode)" class="text-gray-400 hover:text-gray-200">
                 <span class="material-symbols-rounded">content_copy</span>
             </button>
         </div>
@@ -37,26 +39,91 @@
         </div>
 
         <div x-show="activeTab === 'code'" class="code-content" :class="{ 'text-gray-200': theme === 'dark', 'text-gray-800': theme === 'light' }">
-            <textarea id="blade-code" class="h-32">{{ $code }}</textarea>
+            <pre class="line-numbers"><code class="language-markup-templating language-php line-numbers" x-init="
+                setTimeout(() => {
+                    $el.textContent = componentCode;
+                    Prism.highlightElement($el);
+                }, 50);
+            "></code></pre>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let editor = CodeMirror.fromTextArea(document.getElementById("blade-code"), {
-            mode: "application/x-httpd-php",
-            theme: "ayu-dark",
-            lineNumbers: true,
-            matchBrackets: true,
-            autoCloseBrackets: true,
-            tabSize: 4,
-            indentUnit: 4,
-            indentWithTabs: true,
-            viewportMargin: 10,
-            height: "100px"
-        });
+    document.addEventListener('DOMContentLoaded', () => {
 
-        editor.setSize(null, "200px");
+        const style = document.createElement('style');
+        style.textContent = `
+            .code-content pre {
+                background: #0f172a !important;
+                border-radius: 0.375rem;
+                margin: 0;
+            }
+            .code-content .line-numbers .line-numbers-rows {
+                border-right-color: rgba(236, 72, 153, 0.2) !important;
+            }
+            .code-content .token.comment,
+            .code-content .token.prolog,
+            .code-content .token.doctype,
+            .code-content .token.cdata {
+                color: #6b7280;
+            }
+            .code-content .token.punctuation {
+                color: #e2e8f0;
+            }
+            .code-content .token.namespace {
+                opacity: .7;
+            }
+            .code-content .token.property,
+            .code-content .token.tag,
+            .code-content .token.boolean,
+            .code-content .token.number,
+            .code-content .token.constant,
+            .code-content .token.symbol,
+            .code-content .token.deleted {
+                color: #ec4899;
+            }
+            .code-content .token.selector,
+            .code-content .token.attr-name,
+            .code-content .token.string,
+            .code-content .token.char,
+            .code-content .token.builtin,
+            .code-content .token.inserted {
+                color: #a5b4fc;
+            }
+            .code-content .token.operator,
+            .code-content .token.entity,
+            .code-content .token.url,
+            .code-content .language-css .token.string,
+            .code-content .style .token.string {
+                color: #d1d5db;
+            }
+            .code-content .token.atrule,
+            .code-content .token.attr-value,
+            .code-content .token.keyword {
+                color: #8b5cf6;
+            }
+            .code-content .token.function,
+            .code-content .token.class-name {
+                color: #f472b6;
+            }
+            .code-content .token.regex,
+            .code-content .token.important,
+            .code-content .token.variable {
+                color: #f59e0b;
+            }
+        `;
+        document.head.appendChild(style);
+    });
+
+    document.addEventListener('alpine:initialized', () => {
+        Alpine.effect(() => {
+            const activeTab = Alpine.$data(document.querySelector('[x-data]')).activeTab;
+            if (activeTab === 'code') {
+                setTimeout(() => {
+                    Prism.highlightAll();
+                }, 50);
+            }
+        });
     });
 </script>
