@@ -135,13 +135,18 @@
                     </p>
 
                     @php
-                        $buttonCode = '<x-moox-button>
-    Click Me
+                        $buttonCode =
+'<x-moox-button icon="arrow_forward">
+Click Me
 </x-moox-button>';
                     @endphp
 
                     <x-component-viewer :code="$buttonCode" />
 
+
+                    <x-moox-button icon="arrow_forward">
+                        Click Me
+                    </x-moox-button>
                 </div>
             </div>
         </div>

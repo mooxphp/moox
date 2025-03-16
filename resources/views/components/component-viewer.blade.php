@@ -34,26 +34,28 @@
     <div class="p-6" :class="{ 'bg-slate-950': theme === 'dark', 'bg-white': theme === 'light' }">
         <div x-show="activeTab === 'view'" :class="{ 'text-gray-200': theme === 'dark', 'text-gray-800': theme === 'light' }">
             <div class="flex justify-center items-center p-4">
-                <div x-html="componentCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')"></div>
+                <div x-html="componentCode"></div>
             </div>
         </div>
 
         <div x-show="activeTab === 'code'" class="code-content" :class="{ 'text-gray-200': theme === 'dark', 'text-gray-800': theme === 'light' }">
-            <pre class="line-numbers"><code class="language-markup-templating language-php line-numbers" x-init="
-                setTimeout(() => {
-                    $el.textContent = componentCode;
-                    Prism.highlightElement($el);
-                }, 50);
-            "></code></pre>
+            <pre class="line-numbers language-markup"><code x-ref="codeBlock"></code></pre>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-
         const style = document.createElement('style');
         style.textContent = `
+            pre[class*=language-] {
+                border-radius: .5em;
+                border: .3em solid #0f172a;
+                box-shadow: 1px 1px .5em #0f172a inset;
+                margin: .5em 0;
+                overflow: auto;
+                padding: 1em;
+            }
             .code-content pre {
                 background: #0f172a !important;
                 border-radius: 0.375rem;
@@ -117,13 +119,41 @@
     });
 
     document.addEventListener('alpine:initialized', () => {
-        Alpine.effect(() => {
-            const activeTab = Alpine.$data(document.querySelector('[x-data]')).activeTab;
-            if (activeTab === 'code') {
-                setTimeout(() => {
-                    Prism.highlightAll();
-                }, 50);
+        Alpine.data('componentViewer', (code) => ({
+            activeTab: 'view',
+            theme: 'dark',
+            componentCode: code,
+
+            init() {
+                this.$watch('activeTab', (value) => {
+                    if (value === 'code') {
+                        this.$nextTick(() => {
+                            const codeElement = this.$refs.codeBlock;
+                            if (codeElement) {
+                                codeElement.textContent = this.componentCode;
+                                Prism.highlightElement(codeElement);
+                            }
+                        });
+                    }
+                });
             }
+        }));
+
+        // Force highlighting when tab changes
+        Alpine.effect(() => {
+            const components = document.querySelectorAll('[x-data]');
+            components.forEach(component => {
+                const data = Alpine.$data(component);
+                if (data && data.activeTab === 'code') {
+                    const codeBlocks = component.querySelectorAll('pre code');
+                    codeBlocks.forEach(block => {
+                        if (block.textContent.trim() === '') {
+                            block.textContent = data.componentCode || '';
+                        }
+                        Prism.highlightElement(block);
+                    });
+                }
+            });
         });
     });
 </script>

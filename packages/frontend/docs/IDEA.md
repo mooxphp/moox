@@ -4,16 +4,16 @@ Moox Frontend is a modular system designed to provide a frontend for existing Mo
 
 ## Tooling
 
--   [Laravel 11](https://laravel.com/docs/11.x)
+-   [Laravel 12](https://laravel.com/docs/11.x)
 -   [Alpine JS](https://alpinejs.dev/)
 -   [Alpine Ajax](https://alpine-ajax.js.org/)
 -   [TailwindCSS 4](https://tailwindcss.com/)
+-   [Daisy UI](https://daisyui.com/)
 
 ## Inspiration for components
 
 -   [Blade UI Kit](https://blade-ui-kit.com/)
 -   [PenguinUI](https://www.penguinui.com/)
--   [Pines UI](https://www.pinesui.com/)
 -   [Tailwind Plus](https://tailwindui.com/)
 -   [Pines UI](https://devdojo.com/pines)
 -   [Tailkit](https://tailkit.com/)
@@ -22,7 +22,6 @@ Moox Frontend is a modular system designed to provide a frontend for existing Mo
 -   [MUI](https://mui.com/)
 -   [AlpineJS Components](https://alpinejs.dev/components)
 -   [Alpine Toolbox](https://www.alpinetoolbox.com/)
--   [Daisy UI](https://daisyui.com/)
 
 ## Inspiration for themes
 
@@ -31,11 +30,98 @@ Moox Frontend is a modular system designed to provide a frontend for existing Mo
 
 ## Moox Components
 
-Renderless Blade and AlpineJS components, providing structure and logic without enforcing styles. Moox Components must implement content width definitions for entities:
+Moox ships with a robust Blade + AlpineJS + Alpine Ajax + TailwindCSS component system, allowing developers to quickly build UI elements with powerful interactivity. The components are:
 
-```blade
-<div class="{{ config('moox.theme.content_width', 'max-w-full') }}">
-    {{ $slot }}
+-   Fully customizable via TailwindCSS.
+-   Interactive and lightweight with AlpineJS.
+-   Ajax-driven using Alpine Ajax.
+-   Optimized for maintainability and theme inheritance.
+
+### Button Component
+
+A fully featured Blade component that supports multiple styles, loading states, and dynamic behaviors.
+
+**Usage:**
+
+```php
+<x-moox-button variant="solid" size="lg" icon="arrow_forward" x-data="{ loading: false }" @click="loading = true">
+    Click Me
+</x-moox-button>
+```
+
+**Implementation:**
+
+```php
+<button
+    {{ $attributes->merge(['class' => moox_button_classes($variant, $size, $disabled)]) }}
+    x-data="{ loading: false }"
+    @click="loading = true"
+>
+    <span x-show="!loading">
+        @if($icon) <x-moox-icon :name="$icon" /> @endif
+        {{ $slot }}
+    </span>
+    <span x-show="loading" class="hidden">Loading...</span>
+</button>
+```
+
+**Dynamic Styling via TailwindCSS:**
+
+Moox buttons automatically inherit styles based on the active theme:
+
+```php
+function moox_button_classes($variant, $size, $disabled) {
+    return collect([
+        'base' => 'inline-flex items-center justify-center rounded-md transition focus:outline-none focus:ring-2',
+        'sizes' => [
+            'sm' => 'px-3 py-1 text-sm',
+            'md' => 'px-4 py-2 text-base',
+            'lg' => 'px-6 py-3 text-lg',
+        ],
+        'variants' => [
+            'solid' => 'bg-primary text-white hover:bg-primary-dark',
+            'outline' => 'border border-gray-500 text-gray-500 hover:bg-gray-100',
+            'gradient' => 'bg-gradient-to-r from-primary to-secondary text-white',
+        ],
+        'disabled' => $disabled ? 'opacity-50 cursor-not-allowed' : ''
+    ])
+    ->mapWithKeys(fn($value, $key) => [$key => $value[$$key] ?? ''])
+    ->implode(' ');
+}
+```
+
+### Ajax Components
+
+Since Moox integrates Alpine Ajax, components can perform server interactions without page reloads.
+
+-   Handles AJAX form submission without a full page reload.
+-   Alpine Ajax automatically manages loading states.
+-   Supports validation errors seamlessly.
+
+**Example: Moox Ajax Form**
+
+```php
+<form x-data="{ submitting: false }" @submit.prevent="AlpineAjax.post('/submit', $refs.form, { loading: true })">
+    <input type="text" name="name" placeholder="Your Name" class="moox-input" />
+    <x-moox-button type="submit">Submit</x-moox-button>
+</form>
+```
+
+### Modal Component
+
+A fully interactive modal with AlpineJS state management.
+
+```php
+<x-moox-modal title="Delete Item" x-data="{ open: false }">
+    <p>Are you sure you want to delete this item?</p>
+    <x-moox-button variant="danger" @click="open = false">Cancel</x-moox-button>
+</x-moox-modal>
+
+<div x-show="open" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold">{{ $title }}</h2>
+        <div class="mt-4">{{ $slot }}</div>
+    </div>
 </div>
 ```
 
