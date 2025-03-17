@@ -1,16 +1,15 @@
 # Moox Frontend Concept
 
-Moox Frontend is a modular system designed to provide a frontend for existing Moox packages like Media, Localization, Post, Page, and Taxonomy. It enables seamless content management by extending entities and integrating configurable themes. Moox Core remains backend-focused, while the frontend is handled separately through the following packages:
-
-## Tooling
+Moox Frontend is a modular system designed to provide a frontend for Moox, using:
 
 -   [Laravel 12](https://laravel.com/docs/11.x)
 -   [Alpine JS](https://alpinejs.dev/)
 -   [Alpine Ajax](https://alpine-ajax.js.org/)
 -   [TailwindCSS 4](https://tailwindcss.com/)
 -   [Daisy UI](https://daisyui.com/)
+-   [Motion One](https://motion.dev/) (or GSAP, optional)
 
-## Inspiration for components
+with inspiration from:
 
 -   [Blade UI Kit](https://blade-ui-kit.com/)
 -   [PenguinUI](https://www.penguinui.com/)
@@ -22,174 +21,526 @@ Moox Frontend is a modular system designed to provide a frontend for existing Mo
 -   [MUI](https://mui.com/)
 -   [AlpineJS Components](https://alpinejs.dev/components)
 -   [Alpine Toolbox](https://www.alpinetoolbox.com/)
-
-## Inspiration for themes
-
 -   [Envato Elements](https://elements.envato.com/web-templates/tailwind+css)
 -   [Cruip](https://cruip.com/)
 
-## Moox Components
+The content is managed through [Moox Entities](#moox-entities) (Items, Taxonomies, Modules) that define their own rendering in the Frontend.php class, for example:
 
-Moox ships with a robust Blade + AlpineJS + Alpine Ajax + TailwindCSS component system, allowing developers to quickly build UI elements with powerful interactivity. The components are:
+-   [Moox Page](https://github.com/mooxphp/page)
+-   [Moox Post](https://github.com/mooxphp/post)
+-   [Moox Taxonomy](https://github.com/mooxphp/taxonomy)
+-   [Moox SEO Module](https://github.com/mooxphp/seo)
 
--   Fully customizable via TailwindCSS.
--   Interactive and lightweight with AlpineJS.
--   Ajax-driven using Alpine Ajax.
--   Optimized for maintainability and theme inheritance.
+[Navigation](#moox-navigation) is provided through:
 
-### Button Component
+-   [Moox Navigation](https://github.com/mooxphp/navigation)
 
-A fully featured Blade component that supports multiple styles, loading states, and dynamic behaviors.
+[Media](#moox-media) is provided through:
 
-**Usage:**
+-   [Moox Media](https://github.com/mooxphp/media)
 
-```php
-<x-moox-button variant="solid" size="lg" icon="arrow_forward" x-data="{ loading: false }" @click="loading = true">
-    Click Me
-</x-moox-button>
-```
+[Localization](#moox-localization) for all Entities, Media and Navigation is provided through:
 
-**Implementation:**
+-   [Moox Localization](https://github.com/mooxphp/localization)
 
-```php
-<button
-    {{ $attributes->merge(['class' => moox_button_classes($variant, $size, $disabled)]) }}
-    x-data="{ loading: false }"
-    @click="loading = true"
->
-    <span x-show="!loading">
-        @if($icon) <x-moox-icon :name="$icon" /> @endif
-        {{ $slot }}
-    </span>
-    <span x-show="loading" class="hidden">Loading...</span>
-</button>
-```
+The [Frontend](#moox-frontend) is provided through:
 
-**Dynamic Styling via TailwindCSS:**
+-   [Moox Components](https://github.com/mooxphp/components)
+-   [Moox Themes](https://github.com/mooxphp/theme-base)
+-   [Moox Search](https://github.com/mooxphp/search)
+-   [Moox Frontend](https://github.com/mooxphp/frontend)
 
-Moox buttons automatically inherit styles based on the active theme:
+## Moox Entities
+
+Moox Entities are a core concept of Moox. Items (like Pages, Posts, Products), Taxonomies (like Categories, Tags), and Modules (like Forms, Comments) are all entities.
+
+To render an entity in frontend, it only needs to have a Frontend.php class. Additional components added in the package also need to be defined in this class.
 
 ```php
-function moox_button_classes($variant, $size, $disabled) {
-    return collect([
-        'base' => 'inline-flex items-center justify-center rounded-md transition focus:outline-none focus:ring-2',
-        'sizes' => [
-            'sm' => 'px-3 py-1 text-sm',
-            'md' => 'px-4 py-2 text-base',
-            'lg' => 'px-6 py-3 text-lg',
-        ],
-        'variants' => [
-            'solid' => 'bg-primary text-white hover:bg-primary-dark',
-            'outline' => 'border border-gray-500 text-gray-500 hover:bg-gray-100',
-            'gradient' => 'bg-gradient-to-r from-primary to-secondary text-white',
-        ],
-        'disabled' => $disabled ? 'opacity-50 cursor-not-allowed' : ''
-    ])
-    ->mapWithKeys(fn($value, $key) => [$key => $value[$$key] ?? ''])
-    ->implode(' ');
+class Frontend extends MooxFrontend
+{
+    protected string $layout = 'default';
+    protected array $data = [];
+
+    public function render()
+    {
+        return view('moox::frontend.entity', [
+            'layout' => $this->layout,
+            'data' => array_merge($this->data, [
+                'meta' => $this->getMeta(),
+                'content' => $this->getContent(),
+                'related' => $this->getRelated()
+            ])
+        ]);
+    }
+
+    protected function getMeta(): array
+    {
+        return [
+            'title' => $this->entity->title,
+            'description' => $this->entity->description,
+            'slug' => $this->entity->slug
+        ];
+    }
+
+    protected function getContent(): array
+    {
+        return $this->entity->toArray();
+    }
+
+    protected function getRelated(): array
+    {
+        return [];
+    }
 }
 ```
 
-### Ajax Components
+There are some special packages that provide content:
 
-Since Moox integrates Alpine Ajax, components can perform server interactions without page reloads.
+### Moox SEO
 
--   Handles AJAX form submission without a full page reload.
--   Alpine Ajax automatically manages loading states.
--   Supports validation errors seamlessly.
+Moox SEO is a module that extends page, post, product etc. But instead of just being a simple module, this package also adds other SEO features, like sitemap-generation, canonical URLs, OpenGraph, and Schema.org JSON-LD.
 
-**Example: Moox Ajax Form**
+Example:
 
 ```php
-<form x-data="{ submitting: false }" @submit.prevent="AlpineAjax.post('/submit', $refs.form, { loading: true })">
-    <input type="text" name="name" placeholder="Your Name" class="moox-input" />
-    <x-moox-button type="submit">Submit</x-moox-button>
-</form>
+class SeoFrontend extends Frontend
+{
+    protected function getMeta(): array
+    {
+        $meta = parent::getMeta();
+
+        return array_merge($meta, [
+            'canonical' => $this->getCanonicalUrl(),
+            'openGraph' => $this->getOpenGraph(),
+            'jsonLd' => $this->getJsonLd(),
+            'meta' => $this->getMetaTags()
+        ]);
+    }
+
+    protected function getCanonicalUrl(): string
+    {
+        return url($this->entity->slug);
+    }
+
+    protected function getOpenGraph(): array
+    {
+        return [
+            'title' => $this->entity->seo_title ?? $this->entity->title,
+            'description' => $this->entity->seo_description,
+            'image' => $this->entity->featured_image?->getUrl()
+        ];
+    }
+
+    protected function getJsonLd(): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $this->entity->title,
+            'description' => $this->entity->description
+        ];
+    }
+}
 ```
 
-### Modal Component
+### Moox Navigation
 
-A fully interactive modal with AlpineJS state management.
-
-```php
-<x-moox-modal title="Delete Item" x-data="{ open: false }">
-    <p>Are you sure you want to delete this item?</p>
-    <x-moox-button variant="danger" @click="open = false">Cancel</x-moox-button>
-</x-moox-modal>
-
-<div x-show="open" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h2 class="text-lg font-semibold">{{ $title }}</h2>
-        <div class="mt-4">{{ $slot }}</div>
-    </div>
-</div>
-```
-
-## Moox Base Theme
-
-A lightweight TailwindCSS and AlpineJS-based theme that includes only functional styles, such as basic colors and borders, ensuring flexibility for child themes. Themes can define content width settings via configuration or their ServiceProvider:
-
-```php
-return [
-    'content_width' => 'max-w-3xl', // Tailwind max-width
-];
-```
-
-## Moox Featherlight
-
-A customizable child theme using Tailwind, Alpine, and Alpine-Ajax. It is designed to be simple and fast while offering a fully styled user experience.
-
-## Moox Slug
-
-Permalink Management and automatic slug generation implemented in all Moox Items and Taxonomies.
-
-## Moox Navigation
-
-Navigation Management, allowing themes to define and structure navigations. Moox Navigation provides Blade/Alpine components:
+Moox Navigation is a package that provides a navigation system for Moox. It allows you to define and structure navigations, and provides Blade/Alpine components to render them.
 
 ```blade
 <x-moox-navigation name="header" />
 ```
 
-## Moox Entities
+Moox Navigation should ship with a localized entity:
 
-Content is structured through configurable entities:
+```sql
+navigations
+--------------
+id
+name
+theme_id FK     # limit to theme (nullable)
+frontend_id FK  # limit to frontend (nullable)
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
 
--   **Moox Items**: Includes Page, Post, and Products.
--   **Moox Taxonomy**: Includes Category (high-performance nested set) and Tag.
--   **Moox Module**: Extends entities with features like SEO.
+navigations_items
+--------------
+id
+navigation_id
+entity_id
+entity_type
+localization
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+```
 
-Entities must provide a `Frontend.php` class to define rendering behavior, including content width:
+### Moox Media
+
+Moox Media is a package that provides a media library for Moox based on Spatie Media Library. It allows you to manage images, documents, and media files.
+
+Like so?
 
 ```php
-class Frontend extends MooxFrontend
+
+'featured' => $this->entity->getFirstMedia('featured'),
+'gallery' => $this->entity->getMedia('gallery'),
+'documents' => $this->entity->getMedia('documents')
+'media' => $this->getMedia()
+
+```
+
+### Moox Localization
+
+Moox Localization is a package that provides localization for Moox, based on Astrotomic Translatable. It allows you to manage translations for Moox entities.
+
+Like so?
+
+```php
+class LocalizedFrontend extends Frontend
 {
-    public function getTemplate(): string
+    protected string $locale;
+
+    public function __construct()
     {
-        return 'moox::page.default'; // Blade template to render
+        $this->locale = app()->getLocale();
     }
 
-    public function getSEO(): array
+    protected function getContent(): array
     {
-        return [
-            'title' => $this->title,
-            'description' => $this->excerpt,
-        ];
-    }
-
-    public function getMetaTags(): string
-    {
-        return "<meta name='description' content='{$this->excerpt}' />";
-    }
-
-    public function getContentWidth(): string
-    {
-        return config('moox.theme.content_width', 'max-w-full'); // Default content width
+        return $this->entity->translateOrDefault($this->locale)->toArray();
     }
 }
 ```
 
-## Moox Theme Inheritance
+## Moox Components
+
+Moox ships with a robust **Blade + AlpineJS + Alpine Ajax + TailwindCSS + DaisyUI** component system, allowing developers to quickly build UI elements with powerful interactivity. The components are:
+
+-   Fully customizable via TailwindCSS and DaisyUI.
+-   Interactive and lightweight with AlpineJS.
+-   Ajax-driven using Alpine Ajax.
+-   Optimized for maintainability and theme inheritance.
+-   Extendable by themes without modifying the core components.
+-   Compatible with animations and scroll effects, configurable per theme.
+
+### **Button Component**
+
+A fully featured Blade component that supports multiple styles, loading states, and dynamic behaviors.
+
+**Implementation:**
+
+```php
+namespace Moox\Components\Components\Buttons;
+
+use Illuminate\View\Component;
+
+class Button extends Component
+{
+    public string $type;
+    public ?string $icon;
+    public string $size;
+    public bool $disabled;
+    public bool $loading;
+    public string $variant;
+    public string $style;
+    public ?string $animation;
+
+    public function __construct(
+        string $type = 'button',
+        ?string $icon = null,
+        string $size = 'md',
+        bool $disabled = false,
+        bool $loading = false,
+        string $variant = 'primary',
+        string $style = 'filled',
+        ?string $animation = null
+    ) {
+        $this->type = $type;
+        $this->icon = $icon;
+        $this->size = $size;
+        $this->disabled = $disabled;
+        $this->loading = $loading;
+        $this->variant = $variant;
+        $this->style = $style;
+        $this->animation = $animation;
+    }
+
+    public function render()
+    {
+        return view('components::components.buttons.button');
+    }
+}
+```
+
+```php
+@php
+    $classes = "btn inline-flex items-center justify-center font-medium transition-all duration-200";
+
+    if ($style === 'filled') {
+        $classes .= " btn-{$variant}";
+    } elseif ($style === 'outline') {
+        $classes .= " btn-outline btn-{$variant}";
+    } elseif ($style === 'link') {
+        $classes .= " btn-link text-{$variant}";
+    }
+
+    $sizes = [
+        'sm' => 'btn-sm',
+        'md' => 'btn-md',
+        'lg' => 'btn-lg',
+    ];
+    $classes .= " {$sizes[$size] ?? 'btn-md'}";
+
+    if ($disabled || $loading) {
+        $classes .= " opacity-50 pointer-events-none";
+    }
+
+    $motionAttr = "";
+    if ($animation) {
+        $motionAttr = "data-animation='{$animation}'";
+    }
+
+@endphp
+
+<button
+    {{ $attributes->merge(['class' => $classes]) }}
+    type="{{ $type }}"
+    @if($disabled || $loading) disabled aria-disabled="true" @endif
+    @if($loading) aria-busy="true" @endif
+    aria-label="{{ $slot }}"
+    {{ $motionAttr }}
+>
+    @if($loading)
+        <span class="flex items-center gap-2">
+            <span class="loading loading-spinner loading-xs"></span>
+            Loading...
+        </span>
+    @else
+        <span class="flex items-center gap-2">
+            @if($icon) <x-moox-icon :name="$icon" /> @endif
+            {{ $slot }}
+        </span>
+    @endif
+</button>
+```
+
+**Usage:**
+
+```php
+// Default Button (Primary filled MD)
+<x-moox-button>Click Me</x-moox-button>
+
+// Primary outlined XL button with loading state
+<x-moox-button style="outline" size="xl" loading>Click Me</x-moox-button>
+
+// Secondary filled SM button with icon
+<x-moox-button variant="secondary" size="sm" icon="arrow_forward">Click Me</x-moox-button>
+
+// Link button with animation
+<x-moox-button style="link" animation="fade">Click Me</x-moox-button>
+
+// Disabled button
+<x-moox-button disabled>Click Me</x-moox-button>
+
+// Scroll animation
+<div class="scroll-animation" data-animation="fade">Click Me</div>
+
+// Motion One animation
+<div class="motion-one-animation" data-animation="fade">Click Me</div>
+
+// GSAP animation
+<div class="gsap-animation" data-animation="fade">Click Me</div>
+
+
+```
+
+### Animation, Scroll Animation & Motion
+
+Animations in Moox are optional and theme-controlled, allowing themes to integrate different animation libraries like AlpineJS Transitions, Motion One or GSAP.
+
+This allows you to use the default animations without extra dependencies or to use the Moox Animation API to standarize animations across your project.
+
+#### Default Animations
+
+In Moox Components you can use AlpineJS x-transition without extra dependencies. This works out of the box:
+
+```php
+<div x-data="{ effect: 'bounce' }" :data-animation="effect">
+    I animate dynamically!
+</div>
+```
+
+or like this:
+
+```php
+<div x-data x-transition:enter="transition-opacity ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+    Animated Content
+</div>
+```
+
+#### AlpineJS Scroll Plugin (x-intersect)
+
+The AlpineJS Scroll Plugin (x-intersect) is a plugin that allows you to detect when an element is visible in the viewport, you can use it to trigger animations on scroll.
+
+```php
+<div x-data x-intersect="console.log('Element visible!')" class="p-10">
+    Scroll to see me!
+</div>
+```
+
+AlpineJS offers basic animation support without extra dependencies. An extremely lightweight solution, suitable for most use cases.
+
+For advanced animations, themes can use the Animation API with 3rd party libraries like Motion One or GSAP.
+
+#### Animation API
+
+Moox Components offer a simple animation API:
+
+| Attribute               | Purpose                         | Example                           |
+| ----------------------- | ------------------------------- | --------------------------------- |
+| animation               | on render (Ajax, Click, Scroll) | wobble-3 (3x), wobble (infinite)  |
+| animation-in            | when element is added           | fade-in-600 (600 ms duration)     |
+| animation-out           | when element is removed         | fade-out-500 (500 ms duration)    |
+| scroll-animation-before | sets scroll trigger offset      | start end -10rem                  |
+| motion                  | physics based animations        | spring-bounce, path-curve, custom |
+
+#### with AlpineJS
+
+With `animation`, `animation-in` and `animation-out` you can use AlpineJS animations like so:
+
+Fade in for 600ms, fade out for 500ms, wobble forever:
+
+```php
+<x-moox-button animation-in="fade-in" animation-out="fade-out" animation="wobble">
+    Animated Button
+</x-moox-button>
+```
+
+Fade in for 400ms, fade out for 300ms, wobble once:
+
+```php
+<x-moox-button animation-in="fade-in-400" animation-out="fade-out-300" animation="wobble-1">
+    Animated Button
+</x-moox-button>
+```
+
+And scroll before the element is visible:
+
+```php
+<x-moox-button scroll-animation-before="start end -10rem" animation-in="fade-in-left-300">
+    Animated Button
+</x-moox-button>
+```
+
+#### Motion One
+
+While Motion One uses the same API, it also supports physics based animations like path-curve and complex custom animations:
+
+```php
+<x-moox-button motion="spring-bounce">
+    Animated Button
+</x-moox-button>
+```
+
+That needs to be added to your theme's `motion.js` file:
+
+```js
+const animations = {
+    "spring-bounce": {
+        y: [-50, 0],
+        opacity: [0, 1],
+        transition: {
+            type: "spring",
+            stiffness: 400,
+            damping: 10,
+            mass: 1,
+        },
+    },
+    // ...
+};
+```
+
+Simplified example:
+
+```php
+@props([
+'variant' => 'primary',
+'size' => 'md',
+'animation' => null, // Optional animation prop
+])
+
+<button
+{{ $attributes->merge([
+        'class' => "btn btn-$variant btn-$size",
+        'data-animation' => $animation
+    ]) }}
+x-data="{ loading: false }"
+@click="loading = true"
+
+>
+
+    <span x-show="!loading">{{ $slot }}</span>
+    <span x-show="loading" class="hidden">Loading...</span>
+
+</button>
+```
+
+## Moox Themes
+
+Moox themes define the styling of components and layouts, using **DaisyUI** and **TailwindCSS** as the foundation. Each theme can:
+
+-   Override default styles for Moox Components.
+-   Define custom Tailwind configurations (`tailwind.config.js`).
+-   Support animations using **AlpineJS, Motion One, or GSAP**.
+
+### Theme Configuration
+
+Themes can be configured in tailwind.config.js:
+
+```js
+export default {
+    theme: {
+        extend: {},
+    },
+    plugins: [require("daisyui")],
+    daisyui: {
+        themes: ["light", "dark", "cupcake"], // Themes Moox supports
+    },
+};
+```
+
+#### Fully Dynamic Theme Switching
+
+Themes can be dynamically switched without changing components:
+
+```php
+<link rel="stylesheet" href="{{ asset('themes/' . config('moox.theme') . '/theme.css') }}">
+```
+
+#### Overriding Components in a Theme
+
+If a theme wants to add features to components, it can override the component like this:
+
+Theme Override: themes/my-theme/components/moox-button.blade.php
+
+```
+@props(['variant' => 'primary', 'size' => 'md'])
+
+<button {{ $attributes->merge(['class' => "rounded-lg shadow px-6 py-3 text-lg bg-gradient-to-r from-blue-500 to-purple-600"]) }}>
+    {{ $slot }}
+</button>
+```
+
+### **Theme Inheritance**
 
 Themes can extend a base theme by defining a parent in their configuration:
 
@@ -198,50 +549,6 @@ return [
     'name' => 'Moox Featherlight',
     'extends' => 'moox-base-theme',
 ];
-```
-
-### **View Resolution Order**
-
-When rendering a view, Moox will first check the child theme, then fall back to the parent theme:
-
-```php
-function getThemeViewPath($view)
-{
-    $theme = config('moox.theme.active', 'moox-base-theme');
-    $parent = config("moox.themes.$theme.extends");
-
-    if (view()->exists("themes.$theme.$view")) {
-        return "themes.$theme.$view";
-    }
-
-    if ($parent && view()->exists("themes.$parent.$view")) {
-        return "themes.$parent.$view";
-    }
-
-    return "themes.moox-base-theme.$view"; // Default fallback
-}
-```
-
-### **Asset Inheritance**
-
-Assets will load from the child theme if available, otherwise fallback to the parent theme:
-
-```php
-function mooxThemeAsset($path)
-{
-    $theme = config('moox.theme.active', 'moox-base-theme');
-    $parent = config("moox.themes.$theme.extends");
-
-    if (file_exists(public_path("themes/$theme/$path"))) {
-        return "themes/$theme/$path";
-    }
-
-    if ($parent && file_exists(public_path("themes/$parent/$path"))) {
-        return "themes/$parent/$path";
-    }
-
-    return "themes/moox-base-theme/$path"; // Default fallback
-}
 ```
 
 ### **Component & Layout Inheritance**
@@ -263,28 +570,133 @@ or override only specific sections:
 @endsection
 ```
 
+### Theme Assets
+
+Theme assets are design-related files that are integral to the theme's UI and are not meant to be managed through the CMS:
+
+```
+themes/
+  ├── theme-name/
+  │   ├── src/                  # Source files for compilation
+  │   │   ├── js/
+  │   │   │   └── app.js
+  │   │   └── css/
+  │   │       └── app.css
+  │   ├── dist/                 # Compiled assets with cache busting
+  │   │   ├── js/
+  │   │   │   └── app.[hash].js
+  │   │   └── css/
+  │   │       └── app.[hash].css
+  │   └── public/              # Static theme assets
+  │       └── images/
+  │           ├── demo/        # Demo content, overridden by Media
+  │           │   ├── logo.svg
+  │           │   ├── favicon.svg
+  │           │   └── hero.jpg
+  │           ├── ui/          # UI design elements
+  │           │   ├── pattern-bg.svg
+  │           │   ├── divider-wave.svg
+  │           │   └── loading-spinner.gif
+  │           └── icons/       # Theme-specific icons
+  │               └── custom-icons.svg
+```
+
+Theme assets can be managed through the database. Every Moox Themes provides an Entity that allows to assign Moox Media, text and colors to all available slots of a theme. We need to add localization to this entity, so we can have different assets for different locales.
+
+```sql
+themes
+--------------
+id
+name
+description
+created_at
+updated_at
+```
+
+Themes must register itself to the themes table and seed their settings to the theme_settings table, without a value.
+
+```sql
+theme_settings
+--------------
+id
+theme_id      # Limit to Moox Theme (nullable)
+slot_name     # Default slots are 'Logo', 'Favicon', 'Hero Image', 'Brand Name', 'Slogan', 'Primary Color'
+type          # Defines the setting type: image, text, color
+description   # Describes the expected file format, dimensions, hex, etc.
+media_id      # Foreign key to Moox Media (nullable)
+media_height  # Height of the image (nullable)
+media_width   # Width of the image (nullable)
+value         # Text, Alt, Title (nullable)
+frontend_id   # limit to frontend (nullable)
+localization  # limit to localization (nullable)
+created_at
+created_by
+updated_at
+updated_by
+deleted_at
+deleted_by
+```
+
+All content tables like pages, posts, products ship with their own seeders and factories.
+
+Packages like Moox SEO, Moox Shop etc. should be able to add theme-settings, too.
+
+## Moox Slug
+
+Permalink Management and automatic slug generation implemented in all Moox Items and Taxonomies.
+
+Like so?
+
+```php
+class SlugFrontend extends Frontend
+{
+    protected function generateSlug(): string
+    {
+        return str($this->entity->title)
+            ->slug()
+            ->append('-' . $this->entity->id)
+            ->toString();
+    }
+
+    protected function getPermalink(): string
+    {
+        return url($this->entity->type . '/' . $this->entity->slug);
+    }
+
+    protected function validateSlug(string $slug): bool
+    {
+        return !$this->entity::where('slug', $slug)
+            ->where('id', '!=', $this->entity->id)
+            ->exists();
+    }
+}
+```
+
+## Moox Search
+
+Implements Laravel Scout. Offers faceted search and filtering. Offers a search form and a search results page as well as a live search component powered by AlpineJS and Alpine Ajax.
+
 ## Moox Frontend
 
-The core of the frontend system, integrating entities, themes, and routes.
+The core of the frontend system, integrating entities, themes, and routes. Ships with a Entity to manage frontends:
 
-### Localization
+```sql
+frontends
+--------------
+id
+name
+description
+base_url       # Base URL for the frontend, e.g. https://example.com/frontend
+static_cache   # Enable static cache (boolean)
+created_at
+updated_at
+updated_by
+deleted_at
+deleted_by
+```
 
-Localization is a core feature of Moox. It is implemented in the `Localization` package. To help implement automatic routing, we might use https://github.com/mcamara/laravel-localization.
-
-### Performance Optimization
+By default, Moox Frontend will run without a frontend entry. Moox Navigation and Theme Settings will use the default frontend. When creating frontends, you can define different base URLs, using different navigations and theme settings.
 
 Initially, Moox Frontend will use standard Laravel routes. Future optimizations may include cached permalinks (`Cache::put('moox_slugs', $array)`) for high-speed lookups, JSON-based caching for ultra-fast retrieval, or static route file generation for extreme performance.
 
 Another potential solution is **static HTML generation**, allowing requests to be served entirely by the webserver or CDN, bypassing Laravel and eliminating database queries.
-
-### Develop feature
-
-Lastly, Moox Frontend should ship a development smart login (just a simple passphrase, set in config) to hide the frontend while developing the hottest shit. That should also switch to an unfriendly robots.txt etc.
-
-## Moox Search
-
-Implements Laravel Scout. Offers faaceted search and filtering.
-
-## Moox SEO
-
-Instead of just being a Module, this package also adds other SEO features, like sitemap-generation, canonical URLs, OpenGraph and Schema.org JSON-LD.
