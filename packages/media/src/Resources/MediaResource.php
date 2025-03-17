@@ -59,40 +59,40 @@ class MediaResource extends Resource
                 ->schema([
                     Placeholder::make('mime_type')
                         ->label('Dateityp')
-                        ->content(fn ($record) => $record->getReadableMimeType()),
+                        ->content(fn($record) => $record->getReadableMimeType()),
 
                     Placeholder::make('size')
                         ->label('Dateigröße')
-                        ->content(fn ($record) => number_format($record->size / 1024, 2).' KB'),
+                        ->content(fn($record) => number_format($record->size / 1024, 2) . ' KB'),
 
                     Placeholder::make('file_name')
                         ->label('Originaldateiname')
-                        ->content(fn ($record) => $record->file_name),
+                        ->content(fn($record) => $record->file_name),
 
                     Placeholder::make('dimensions')
                         ->label('Abmessungen')
                         ->content(function ($record) {
                             $dimensions = $record->getCustomProperty('dimensions');
-                            if (! $dimensions) {
+                            if (!$dimensions) {
                                 return '-';
                             }
 
                             return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                         })
-                        ->visible(fn ($record) => str_starts_with($record->mime_type, 'image/')),
+                        ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
 
                     Placeholder::make('created_at')
                         ->label('Hochgeladen am')
-                        ->content(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
+                        ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('updated_at')
                         ->label('Zuletzt bearbeitet')
-                        ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
+                        ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('uploaded_by')
                         ->label('Hochgeladen von')
                         ->content(function ($record) {
-                            if (! $record->uploader) {
+                            if (!$record->uploader) {
                                 return '-';
                             }
 
@@ -112,7 +112,7 @@ class MediaResource extends Resource
 
                             $links = $usages->map(function ($usage) {
                                 $type = Str::plural(strtolower(class_basename($usage->media_usable_type)));
-                                $url = Filament::getCurrentPanel()->getUrl().'/'.$type.'/'.$usage->media_usable_id;
+                                $url = Filament::getCurrentPanel()->getUrl() . '/' . $type . '/' . $usage->media_usable_id;
 
                                 return Blade::render('<a href="{{ $url }}" target="_blank" class="text-primary underline">{{ $url }}</a>', [
                                     'url' => $url,
@@ -129,20 +129,24 @@ class MediaResource extends Resource
                     TextInput::make('name')
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord),
+                        ->afterStateUpdated($saveRecord)
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord),
+                        ->afterStateUpdated($saveRecord)
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
                         ->label('Alt Text')
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord),
+                        ->afterStateUpdated($saveRecord)
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord),
+                        ->afterStateUpdated($saveRecord)
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columns(2)
                 ->collapsed(),
@@ -151,7 +155,8 @@ class MediaResource extends Resource
                 ->schema([
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord),
+                        ->afterStateUpdated($saveRecord)
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->collapsed(),
         ]);
@@ -167,30 +172,30 @@ class MediaResource extends Resource
                             $baseStyle = 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;';
 
                             if ($livewire->isSelecting) {
-                                $style = $baseStyle.'opacity: 0.5;';
+                                $style = $baseStyle . 'opacity: 0.5;';
 
                                 if (in_array($record->id, $livewire->selected)) {
-                                    $style = $baseStyle.'outline: 4px solid rgb(59 130 246); opacity: 1;';
+                                    $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
                                 }
 
                                 return [
                                     'class' => 'rounded-lg cursor-pointer',
                                     'style' => $style,
-                                    'wire:click.stop' => "\$set('selected', ".
+                                    'wire:click.stop' => "\$set('selected', " .
                                         (in_array($record->id, $livewire->selected)
                                             ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
                                             : json_encode(array_merge($livewire->selected, [$record->id]))
-                                        ).')',
+                                        ) . ')',
                                 ];
                             }
 
                             return [
                                 'class' => 'rounded-lg cursor-pointer',
                                 'style' => $baseStyle,
-                                'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
+                                'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
                             ];
                         })
-                        ->tooltip(fn ($record) => $record->title ?? 'Kein Titel')
+                        ->tooltip(fn($record) => $record->title ?? 'Kein Titel')
                         ->searchable(['name', 'title', 'description', 'alt', 'internal_note']),
 
                 ]),
@@ -203,16 +208,16 @@ class MediaResource extends Resource
                             $count = count($livewire->selected);
 
                             return $count > 0
-                                ? "{$count} ".trans_choice('Datei|Dateien', $count).' ausgewählt'
+                                ? "{$count} " . trans_choice('Datei|Dateien', $count) . ' ausgewählt'
                                 : 'Auswahl beenden';
                         }
 
                         return 'Mehrere auswählen';
                     })
-                    ->icon(fn ($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
-                    ->color(fn ($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
+                    ->icon(fn($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
+                    ->color(fn($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
                     ->action(function ($livewire) {
-                        $livewire->isSelecting = ! $livewire->isSelecting;
+                        $livewire->isSelecting = !$livewire->isSelecting;
                         $livewire->selected = [];
                     }),
 
@@ -225,7 +230,7 @@ class MediaResource extends Resource
                     ->modalDescription('Sind Sie sicher, dass Sie die ausgewählten Medien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
                     ->modalSubmitActionLabel('Ja, löschen')
                     ->modalCancelActionLabel('Abbrechen')
-                    ->visible(fn ($livewire) => $livewire->isSelecting && ! empty($livewire->selected))
+                    ->visible(fn($livewire) => $livewire->isSelecting && !empty($livewire->selected))
                     ->action(function ($livewire) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -234,11 +239,11 @@ class MediaResource extends Resource
                         foreach ($livewire->selected as $id) {
                             try {
                                 $media = Media::find($id);
-                                if (! $media) {
+                                if (!$media) {
                                     continue;
                                 }
 
-                                if (! auth()->user()->can('delete', $media)) {
+                                if (!auth()->user()->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -254,7 +259,7 @@ class MediaResource extends Resource
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
-                                Log::error('Media deletion failed: '.$e->getMessage(), [
+                                Log::error('Media deletion failed: ' . $e->getMessage(), [
                                     'media_id' => $id,
                                 ]);
                                 $errorCount++;
@@ -264,7 +269,7 @@ class MediaResource extends Resource
                         if ($successCount > 0) {
                             Notification::make()
                                 ->success()
-                                ->title($successCount.' '.trans_choice('Datei|Dateien', $successCount).' gelöscht')
+                                ->title($successCount . ' ' . trans_choice('Datei|Dateien', $successCount) . ' gelöscht')
                                 ->send();
                         }
 
@@ -272,7 +277,7 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->warning()
                                 ->title('Geschützte Dateien übersprungen')
-                                ->body($protectedCount.' '.trans_choice('geschützte Datei wurde|geschützte Dateien wurden', $protectedCount).' übersprungen.')
+                                ->body($protectedCount . ' ' . trans_choice('geschützte Datei wurde|geschützte Dateien wurden', $protectedCount) . ' übersprungen.')
                                 ->persistent()
                                 ->send();
                         }
@@ -281,7 +286,7 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->danger()
                                 ->title('Fehler beim Löschen')
-                                ->body($errorCount.' '.trans_choice('Datei konnte|Dateien konnten', $errorCount).' nicht gelöscht werden.')
+                                ->body($errorCount . ' ' . trans_choice('Datei konnte|Dateien konnten', $errorCount) . ' nicht gelöscht werden.')
                                 ->persistent()
                                 ->send();
                         }
@@ -297,18 +302,18 @@ class MediaResource extends Resource
                     ->slideOver()
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen')
-                    ->hidden(fn (Media $record) => ! auth()->user()->can('update', $record))
+                    ->authorize('view')
                     ->extraModalFooterActions([
                         TablesDeleteAction::make()
                             ->label('Löschen')
                             ->color('danger')
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
-                            ->modalHeading(fn ($record) => 'Bild "'.($record->title ?: $record->name).'" löschen')
+                            ->modalHeading(fn($record) => 'Bild "' . ($record->title ?: $record->name) . '" löschen')
                             ->modalDescription('Sind Sie sicher, dass Sie dieses Bild löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
                             ->modalSubmitActionLabel('Ja, löschen')
                             ->modalCancelActionLabel('Abbrechen')
-                            ->hidden(fn (Media $record) => ! auth()->user()->can('delete', $record))
+                            ->hidden(fn(Media $record) => !auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
                             ->before(function ($record) {
                                 try {
                                     if ($record->getOriginal('write_protected')) {
@@ -341,12 +346,12 @@ class MediaResource extends Resource
                                     Notification::make()
                                         ->success()
                                         ->title('Datei erfolgreich gelöscht')
-                                        ->body('Die Datei "'.$fileName.'" wurde erfolgreich gelöscht.')
+                                        ->body('Die Datei "' . $fileName . '" wurde erfolgreich gelöscht.')
                                         ->send();
 
                                     return redirect(static::getUrl('index'));
                                 } catch (\Exception $e) {
-                                    Log::error('Media deletion failed: '.$e->getMessage(), [
+                                    Log::error('Media deletion failed: ' . $e->getMessage(), [
                                         'media_id' => $record->id,
                                         'file_name' => $record->file_name,
                                     ]);
@@ -354,7 +359,7 @@ class MediaResource extends Resource
                                     Notification::make()
                                         ->danger()
                                         ->title('Fehler beim Löschen')
-                                        ->body('Die Datei "'.$record->file_name.'" konnte nicht gelöscht werden.')
+                                        ->body('Die Datei "' . $record->file_name . '" konnte nicht gelöscht werden.')
                                         ->send();
 
                                     return null;
@@ -372,7 +377,7 @@ class MediaResource extends Resource
                         'documents' => 'Dokumente',
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
@@ -434,13 +439,13 @@ class MediaResource extends Resource
                                     $uploader = $media->uploader;
                                     if ($uploader && method_exists($uploader, 'getName')) {
                                         return [
-                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                                             'name' => $uploader->getName(),
                                         ];
                                     }
                                     if ($uploader && isset($uploader->name)) {
                                         return [
-                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                                             'name' => $uploader->name,
                                         ];
                                     }
@@ -448,11 +453,11 @@ class MediaResource extends Resource
                                     return null;
                                 })
                                 ->filter()
-                                ->unique(fn (array $item): string => $item['id'])
+                                ->unique(fn(array $item): string => $item['id'])
                                 ->pluck('name', 'id')
                                 ->toArray();
 
-                            if (! empty($uploaders)) {
+                            if (!empty($uploaders)) {
                                 $typeName = class_basename($type);
                                 $options[$typeName] = $uploaders;
                             }
@@ -461,7 +466,7 @@ class MediaResource extends Resource
                         return $options;
                     })
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
@@ -486,7 +491,7 @@ class MediaResource extends Resource
                         'year' => 'Dieses Jahr',
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
