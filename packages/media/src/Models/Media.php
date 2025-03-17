@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 
-class Media extends BaseMedia implements HasMedia
+class Media extends SpatieMedia implements HasMedia
 {
     use InteractsWithMedia;
 
@@ -35,43 +35,36 @@ class Media extends BaseMedia implements HasMedia
         'uploader_type',
     ];
 
-    public function registerMediaConversions(?BaseMedia $media = null): void
-    {
-        $this
-            ->addMediaConversion('preview')
-            ->nonQueued()
-            ->fit(Fit::Contain, 300, 300);
-    }
-
     public function model(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function getReadableMimeType(): string
-    {
-        $mimeMap = [
-            'application/pdf' => 'PDF',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'DOCX',
-            'application/msword' => 'DOC',
-            'application/vnd.ms-excel' => 'XLS',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'XLSX',
-            'video/mp4' => 'MP4',
-            'audio/mpeg' => 'MP3',
-            'image/jpeg' => 'JPEG',
-            'image/png' => 'PNG',
-            'image/gif' => 'GIF',
-            'image/webp' => 'WEBP',
-            'image/svg+xml' => 'SVG',
-        ];
-
-        return $mimeMap[$this->mime_type] ?? strtoupper(str_replace('application/', '', $this->mime_type));
     }
 
     public function uploader(): MorphTo
     {
         return $this->morphTo();
     }
+
+    public function registerMediaConversions(?SpatieMedia $media = null): void
+    {
+        $this->addMediaConversion('preview')
+            ->nonQueued()
+            ->fit(Fit::Contain, 300, 300);
+
+        $this->addMediaConversion('thumb')
+            ->nonQueued()
+            ->fit(Fit::Contain, 150, 150);
+
+        $this->addMediaConversion('medium')
+            ->nonQueued()
+            ->fit(Fit::Contain, 800, 600);
+
+        $this->addMediaConversion('large')
+            ->nonQueued()
+            ->fit(Fit::Contain, 1200, 900)
+            ->quality(80);
+    }
+
 
     protected static function booted()
     {
@@ -98,14 +91,14 @@ class Media extends BaseMedia implements HasMedia
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (! $model) {
+                if (!$model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (! is_array($jsonData)) {
+                    if (!is_array($jsonData)) {
                         continue;
                     }
 
@@ -132,5 +125,25 @@ class Media extends BaseMedia implements HasMedia
                 $model->save();
             }
         });
+    }
+
+    public function getReadableMimeType(): string
+    {
+        $mimeMap = [
+            'application/pdf' => 'PDF',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'DOCX',
+            'application/msword' => 'DOC',
+            'application/vnd.ms-excel' => 'XLS',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'XLSX',
+            'video/mp4' => 'MP4',
+            'audio/mpeg' => 'MP3',
+            'image/jpeg' => 'JPEG',
+            'image/png' => 'PNG',
+            'image/gif' => 'GIF',
+            'image/webp' => 'WEBP',
+            'image/svg+xml' => 'SVG',
+        ];
+
+        return $mimeMap[$this->mime_type] ?? strtoupper(str_replace('application/', '', $this->mime_type));
     }
 }
