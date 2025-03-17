@@ -31,7 +31,7 @@
         "moox/devops": "*",
         "moox/draft": "*",
         "moox/expiry": "*",
-        "moox/flags": "*",
+        "moox/flag-icons-circle": "*",
         "moox/frontend": "*",
         "moox/item": "*",
         "moox/jobs": "*",

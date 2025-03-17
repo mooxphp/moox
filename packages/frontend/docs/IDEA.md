@@ -158,7 +158,7 @@ Moox Navigation should ship with a localized entity:
 navigations
 --------------
 id
-name
+slot
 theme_id FK     # limit to theme (nullable)
 frontend_id FK  # limit to frontend (nullable)
 created_at
@@ -175,6 +175,12 @@ navigation_id
 entity_id
 entity_type
 localization
+target (link, route, item, taxonomy, file)
+link
+route
+item
+taxonomy
+file
 created_at
 created_by
 updated_at
@@ -504,7 +510,7 @@ Moox themes define the styling of components and layouts, using **DaisyUI** and 
 
 ### Theme Configuration
 
-Themes can be configured in tailwind.config.js:
+Themes can be configured in tailwind.config.js, soon CSS:
 
 ```js
 export default {
