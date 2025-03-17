@@ -84,8 +84,8 @@
 
                                                     <div wire:click="toggleMediaSelection({{ $item['id'] }})"
                                                         class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                                                                                        {{ in_array($item['id'], $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                                                                    {{ $selectedMediaMeta['id'] == $item['id'] ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                        {{ in_array($item['id'], $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                                                                                                                                                                                                                                                                                                                                                                    {{ $selectedMediaMeta['id'] == $item['id'] ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
                                                         @if ($fileData)
                                                             <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
                                                                 <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16 text-gray-600" />
@@ -127,8 +127,8 @@
                             Title
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title"
-                                placeholder="Titel eingeben"
+                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="Title"
+                                :disabled="(bool) $selectedMediaMeta['write_protected']"
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
@@ -137,7 +137,7 @@
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
-                                placeholder="Beschreibung eingeben"
+                                placeholder="Description" :disabled="$selectedMediaMeta['write_protected'] === true"
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
@@ -146,7 +146,7 @@
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
-                                placeholder="Interne Notiz eingeben"
+                                placeholder="Internal note" :disabled="$selectedMediaMeta['write_protected'] === true"
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
@@ -154,8 +154,8 @@
                             Alt
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt"
-                                placeholder="Alt-Text eingeben"
+                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="Alt text"
+                                :disabled="$selectedMediaMeta['write_protected'] === true"
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
