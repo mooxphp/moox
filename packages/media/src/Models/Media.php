@@ -65,7 +65,6 @@ class Media extends SpatieMedia implements HasMedia
             ->quality(80);
     }
 
-
     protected static function booted()
     {
         parent::boot();
@@ -91,14 +90,14 @@ class Media extends SpatieMedia implements HasMedia
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (!$model) {
+                if (! $model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (!is_array($jsonData)) {
+                    if (! is_array($jsonData)) {
                         continue;
                     }
 
