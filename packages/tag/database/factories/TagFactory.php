@@ -5,6 +5,7 @@ namespace Moox\Tag\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Moox\Tag\Models\Tag;
+use Moox\Tag\Models\TagTranslation;
 use Faker\Factory as FakerFactory;
 
 class TagFactory extends Factory
@@ -68,9 +69,11 @@ class TagFactory extends Factory
         return $this->afterCreating(function (Tag $tag) {
             // Always create English translation by default
             $title = $this->generateLocalizedTitle('en');
+            $slug = TagTranslation::generateUniqueSlug($title, 'en');
+            
             $tag->translateOrNew('en')->fill([
                 'title' => $title,
-                'slug' => Str::slug($title),
+                'slug' => $slug,
                 'content' => $this->generateLocalizedContent('en'),
             ])->save();
         });
@@ -117,12 +120,13 @@ class TagFactory extends Factory
             throw new \InvalidArgumentException("Locale {$locale} is not supported");
         }
 
-        return $this->afterCreating(function ($tag) use ($locale) {
+        return $this->afterCreating(function (Tag $tag) use ($locale) {
             $title = $this->generateLocalizedTitle($locale);
+            $slug = TagTranslation::generateUniqueSlug($title, $locale);
             
             $tag->translateOrNew($locale)->fill([
                 'title' => $title,
-                'slug' => Str::slug($title),
+                'slug' => $slug,
                 'content' => $this->generateLocalizedContent($locale),
             ])->save();
         });
@@ -173,15 +177,16 @@ class TagFactory extends Factory
      */
     public function withAllTranslations(): self
     {
-        return $this->afterCreating(function ($tag) {
+        return $this->afterCreating(function (Tag $tag) {
             foreach ($this->availableLocales as $locale => $config) {
                 if ($locale === 'en') continue; // Skip English as it's already created
                 
                 $title = $this->generateLocalizedTitle($locale);
+                $slug = TagTranslation::generateUniqueSlug($title, $locale);
                 
                 $tag->translateOrNew($locale)->fill([
                     'title' => $title,
-                    'slug' => Str::slug($title),
+                    'slug' => $slug,
                     'content' => $this->generateLocalizedContent($locale),
                 ])->save();
             }
@@ -193,7 +198,7 @@ class TagFactory extends Factory
      */
     public function withRandomTranslations(int $count = 2): self
     {
-        return $this->afterCreating(function ($tag) use ($count) {
+        return $this->afterCreating(function (Tag $tag) use ($count) {
             $locales = array_keys($this->availableLocales);
             unset($locales[array_search('en', $locales)]); // Remove English
             $selectedLocales = array_rand(array_flip($locales), min($count, count($locales)));

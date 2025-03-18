@@ -46,15 +46,33 @@ class Tag extends Model implements HasMedia, TranslatableContract
     {
         foreach ($translations as $locale => $data) {
             if (!empty($data['title'])) {
+                $slug = $data['slug'] ?? Str::slug($data['title']);
+                
+                // Ensure slug uniqueness per locale
+                $slug = $this->generateUniqueSlug($slug, $locale);
+    
                 $this->translateOrNew($locale)->fill([
                     'title' => $data['title'],
-                    'slug' => $data['slug'] ?? Str::slug($data['title']),
+                    'slug' => $slug,
                     'content' => $data['content'] ?? null,
                 ]);
             }
         }
         
         return $this;
+    }
+    
+    private function generateUniqueSlug(string $slug, string $locale): string
+    {
+        $originalSlug = $slug;
+        $count = 1;
+    
+        while (TagTranslation::where('slug', $slug)->where('locale', $locale)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+    
+        return $slug;
     }
 
     /**
@@ -146,4 +164,5 @@ class Tag extends Model implements HasMedia, TranslatableContract
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
+
 }

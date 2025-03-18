@@ -23,7 +23,8 @@
     "autoload": {
         "psr-4": {
             "Moox\\Tag\\": "src",
-            "Moox\\Tag\\Database\\Factories\\": "database/factories"
+            "Moox\\Tag\\Database\\Factories\\": "database/factories",
+            "Moox\\Tag\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {
@@ -46,6 +47,7 @@
         "psr-4": {
             "Moox\\Tag\\Tests\\": "tests",
             "Moox\\Tag\\Database\\Factories\\": "database/factories",
+            "Moox\\Tag\\Database\\Seeders\\": "database/seeders",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"

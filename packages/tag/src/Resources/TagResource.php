@@ -74,7 +74,7 @@ class TagResource extends Resource
                                         ->label(__('core::core.featured_image_url'))
                                         ->multiple(),
                                     Tabs::make('Translations')
-                                        ->tabs(self::generateTranslationTabs()), // ✅ Dynamically generate tabs
+                                        ->tabs(self::generateTranslationTabs()),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -357,10 +357,10 @@ protected static function generateTranslationTabs(): array
 {
     $tabs = [];
 
-    foreach (Localization::pluck('title') as $locale) { // ✅ Get all translation locales
-        $tabs[] = Tab::make(strtoupper($locale)) // Show language as tab
+    foreach (Localization::pluck('title') as $locale) { 
+        $tabs[] = Tab::make(strtoupper($locale)) 
             ->schema([
-                TextInput::make("translations.{$locale}.title") // ✅ Use "translations.[locale].field"
+                TextInput::make("translations.{$locale}.title") 
                     ->live(onBlur: true)
                     ->label(__('core::core.title'))
                     ->afterStateUpdated(
@@ -372,7 +372,7 @@ protected static function generateTranslationTabs(): array
                     ->unique(
                         modifyRuleUsing: function (Unique $rule) use ($locale) {
                             return $rule
-                                ->where('locale', $locale) // ✅ Unique per locale
+                                ->where('locale', $locale) 
                                 ->whereNull('tag_translations.tag_id');
                         },
                         table: 'tag_translations',
