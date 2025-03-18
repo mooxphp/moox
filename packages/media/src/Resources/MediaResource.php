@@ -202,7 +202,7 @@ class MediaResource extends Resource
                 ->columns(2)
                 ->collapsed(),
 
-            Section::make(__('media::fields.internal_notes'))
+            Section::make(__('media::fields.internal_note'))
                 ->schema([
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
@@ -255,15 +255,9 @@ class MediaResource extends Resource
             ->headerActions([
                 \Filament\Tables\Actions\Action::make('toggleSelect')
                     ->label(function ($livewire) {
-                        if ($livewire->isSelecting) {
-                            $count = count($livewire->selected);
-
-                            return $count > 0
-                                ? "{$count} ".trans_choice('media::fields.file|files', $count).' '.__('media::fields.end_selection')
-                                : __('media::fields.end_selection');
-                        }
-
-                        return __('media::fields.select_multiple');
+                        return $livewire->isSelecting
+                            ? __('media::fields.end_selection')
+                            : __('media::fields.select_multiple');
                     })
                     ->icon(fn ($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
                     ->color(fn ($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
@@ -273,11 +267,21 @@ class MediaResource extends Resource
                     }),
 
                 \Filament\Tables\Actions\Action::make('deleteSelected')
-                    ->label(__('media::fields.delete_selected'))
+                    ->label(function ($livewire) {
+                        $count = count($livewire->selected);
+
+                        return $count > 0
+                            ? __('media::fields.delete_selected')." ({$count} ".trans_choice('media::fields.file|files', $count).')'
+                            : __('media::fields.delete_selected');
+                    })
                     ->icon('heroicon-m-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading(__('media::fields.delete_selected'))
+                    ->modalHeading(function ($livewire) {
+                        $count = count($livewire->selected);
+
+                        return __('media::fields.delete_selected')." ({$count} ".trans_choice('media::fields.file|files', $count).')';
+                    })
                     ->modalDescription(__('media::fields.delete_confirmation'))
                     ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))

@@ -9,6 +9,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Moox\Media\Http\Livewire\MediaPickerModal;
@@ -51,6 +52,7 @@ class MediaServiceProvider extends PackageServiceProvider
             Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
             // Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
         ]);
+
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
             fn (): string => Blade::render('@include("localization::lang-selector")'),
