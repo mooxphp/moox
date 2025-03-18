@@ -54,7 +54,6 @@ return [
     'title' => 'Titel',
     'description' => 'Beschreibung',
 
-
     // Date Filters
     'today' => 'Heute',
     'week' => 'Diese Woche',
