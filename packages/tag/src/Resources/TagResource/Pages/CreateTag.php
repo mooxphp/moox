@@ -27,24 +27,11 @@ class CreateTag extends CreateRecord
     {
         $model = static::getModel();
 
-        $record = new $model;
+        // Separate translatable and non-translatable data
+        $translations = $data['translations'] ?? [];
+        unset($data['translations']);
 
-        $translatableAttributes = ['title', 'slug', 'content'];
-        $translationData = array_intersect_key($data, array_flip($translatableAttributes));
-        $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
-
-        $record->fill($nonTranslatableData);
-        $record->save();
-
-        if ($this->selectedLang) {
-            $record->translateOrNew($this->selectedLang)->fill($translationData);
-        } else {
-            $record->translateOrNew(app()->getLocale())->fill($translationData);
-        }
-
-        $record->save();
-
-        return $record;
+        return $model::createWithTranslations($data, $translations);
     }
 
     #[Override]

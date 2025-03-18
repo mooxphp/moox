@@ -44,7 +44,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         return $this->morphTo();
     }
 
-    public function registerMediaConversions(?SpatieMedia $media = null): void
+    public function registerMediaConversions(?BaseMedia $media = null): void
     {
         $this->addMediaConversion('preview')
             ->nonQueued()
