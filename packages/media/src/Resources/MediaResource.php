@@ -2,30 +2,31 @@
 
 namespace Moox\Media\Resources;
 
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Support\RawJs;
+use Illuminate\Support\Str;
+use Filament\Actions\Action;
+use Moox\Media\Models\Media;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Placeholder;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
-use Filament\Support\RawJs;
-use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\HeaderActionsPosition;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Forms\Components\Placeholder;
 use Moox\Media\Forms\Components\ImageDisplay;
-use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
 use Moox\Media\Tables\Columns\CustomImageColumn;
+use Filament\Tables\Actions\HeaderActionsPosition;
+use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
 
 class MediaResource extends Resource
 {
@@ -37,9 +38,16 @@ class MediaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $modelLabel = 'Medien';
+    public static function getModelLabel(): string
+    {
+        return config('media.model_label');
+    }
 
-    protected static ?string $pluralModelLabel = 'Medien';
+    public static function getPluralModelLabel(): string
+    {
+        return config('media.plural_model_label');
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -58,11 +66,11 @@ class MediaResource extends Resource
             Section::make()
                 ->schema([
                     Placeholder::make('mime_type')
-                        ->label('Dateityp')
-                        ->content(fn ($record) => $record->getReadableMimeType()),
+                        ->label(__('media::fields.mime_type'))
+                        ->content(fn($record) => $record->getReadableMimeType()),
 
                     Placeholder::make('size')
-                        ->label('Dateigröße')
+                        ->label(__('media::fields.size'))
                         ->content(function ($record) {
                             $bytes = $record->size;
                             $units = ['B', 'KB', 'MB', 'GB'];
@@ -73,37 +81,37 @@ class MediaResource extends Resource
                                 $i++;
                             }
 
-                            return number_format($bytes, 2).' '.$units[$i];
+                            return number_format($bytes, 2) . ' ' . $units[$i];
                         }),
 
                     Placeholder::make('file_name')
-                        ->label('Originaldateiname')
-                        ->content(fn ($record) => $record->file_name),
+                        ->label(__('media::fields.file_name'))
+                        ->content(fn($record) => $record->file_name),
 
                     Placeholder::make('dimensions')
-                        ->label('Abmessungen')
+                        ->label(__('media::fields.dimensions'))
                         ->content(function ($record) {
                             $dimensions = $record->getCustomProperty('dimensions');
-                            if (! $dimensions) {
+                            if (!$dimensions) {
                                 return '-';
                             }
 
                             return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                         })
-                        ->visible(fn ($record) => str_starts_with($record->mime_type, 'image/')),
+                        ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
 
                     Placeholder::make('created_at')
-                        ->label('Hochgeladen am')
-                        ->content(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
+                        ->label(__('media::fields.created_at'))
+                        ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('updated_at')
-                        ->label('Zuletzt bearbeitet')
-                        ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
+                        ->label(__('media::fields.updated_at'))
+                        ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('uploaded_by')
-                        ->label('Hochgeladen von')
+                        ->label(__('media::fields.uploaded_by'))
                         ->content(function ($record) {
-                            if (! $record->uploader) {
+                            if (!$record->uploader) {
                                 return '-';
                             }
 
@@ -111,63 +119,98 @@ class MediaResource extends Resource
                         }),
 
                     Placeholder::make('usage')
-                        ->label('Verwendet in')
+                        ->label(__('media::fields.usage'))
                         ->content(function ($record) {
                             $usages = \DB::table('media_usables')
                                 ->where('media_id', $record->id)
                                 ->get();
 
                             if ($usages->isEmpty()) {
-                                return 'Nicht verwendet';
+                                return __('media::fields.not_used');
                             }
 
-                            $links = $usages->map(function ($usage) {
-                                $type = Str::plural(strtolower(class_basename($usage->media_usable_type)));
-                                $url = Filament::getCurrentPanel()->getUrl().'/'.$type.'/'.$usage->media_usable_id;
+                            $groupedUsages = $usages->groupBy('media_usable_type')
+                                ->map(function ($items, $type) {
+                                    $typeName = class_basename($type);
+                                    $baseUrl = Filament::getCurrentPanel()->getUrl();
 
-                                return Blade::render('<a href="{{ $url }}" target="_blank" class="text-primary underline">{{ $url }}</a>', [
-                                    'url' => $url,
-                                ]);
-                            })->join('<br>');
+                                    $links = $items->map(function ($item) use ($typeName, $baseUrl) {
+                                        $type = Str::plural(strtolower($typeName));
+                                        $url = $baseUrl . '/' . $type . '/' . $item->media_usable_id;
 
-                            return RawJs::make($links);
+                                        return "
+                                            <div>
+                                                <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 hover:underline\">
+                                                    #{$item->media_usable_id}
+                                                </a>
+                                            </div>
+                                        ";
+                                    })->join("\n");
+
+                                    return "
+                                        <div class=\"mb-4\">
+                                            <h3 class=\"text-lg font-medium mb-2\">{$typeName} ({$items->count()})</h3>
+                                            <div class=\"pl-4 space-y-1\">
+                                                {$links}
+                                            </div>
+                                        </div>
+                                    ";
+                                })->join("\n");
+
+                            return Action::make('viewUsages')
+                                ->label($usages->count() . ' ' . trans_choice('media::fields.link|links', $usages->count()))
+                                ->color('primary')
+                                ->icon('heroicon-m-link')
+                                ->modal()
+                                ->modalHeading(__('media::fields.usage'))
+                                ->modalContent(new \Illuminate\Support\HtmlString("
+                                    <div class=\"space-y-4\">
+                                        {$groupedUsages}
+                                    </div>
+                                "))
+                                ->modalWidth('md')
+                                ->button();
                         }),
+
                 ])
                 ->columns(4),
 
-            Section::make('Metadaten')
+            Section::make(__('media::fields.metadata'))
                 ->schema([
                     TextInput::make('name')
+                        ->label(__('media::fields.name'))
                         ->required()
                         ->live(onBlur: true)
                         ->afterStateUpdated($saveRecord)
-                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
+                        ->label(__('media::fields.title'))
                         ->live(onBlur: true)
                         ->afterStateUpdated($saveRecord)
-                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
-                        ->label('Alt Text')
+                        ->label(__('media::fields.alt_text'))
                         ->live(onBlur: true)
                         ->afterStateUpdated($saveRecord)
-                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
+                        ->label(__('media::fields.description'))
                         ->live(onBlur: true)
                         ->afterStateUpdated($saveRecord)
-                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columns(2)
                 ->collapsed(),
 
-            Section::make('Interne Notizen')
+            Section::make(__('media::fields.internal_notes'))
                 ->schema([
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
                         ->afterStateUpdated($saveRecord)
-                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->collapsed(),
         ]);
@@ -183,30 +226,30 @@ class MediaResource extends Resource
                             $baseStyle = 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;';
 
                             if ($livewire->isSelecting) {
-                                $style = $baseStyle.'opacity: 0.5;';
+                                $style = $baseStyle . 'opacity: 0.5;';
 
                                 if (in_array($record->id, $livewire->selected)) {
-                                    $style = $baseStyle.'outline: 4px solid rgb(59 130 246); opacity: 1;';
+                                    $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
                                 }
 
                                 return [
                                     'class' => 'rounded-lg cursor-pointer',
                                     'style' => $style,
-                                    'wire:click.stop' => "\$set('selected', ".
+                                    'wire:click.stop' => "\$set('selected', " .
                                         (in_array($record->id, $livewire->selected)
                                             ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
                                             : json_encode(array_merge($livewire->selected, [$record->id]))
-                                        ).')',
+                                        ) . ')',
                                 ];
                             }
 
                             return [
                                 'class' => 'rounded-lg cursor-pointer',
                                 'style' => $baseStyle,
-                                'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
+                                'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
                             ];
                         })
-                        ->tooltip(fn ($record) => $record->title ?? 'Kein Titel')
+                        ->tooltip(fn($record) => $record->title ?? __('media::fields.no_title'))
                         ->searchable(['name', 'title', 'description', 'alt', 'internal_note']),
 
                 ]),
@@ -219,29 +262,29 @@ class MediaResource extends Resource
                             $count = count($livewire->selected);
 
                             return $count > 0
-                                ? "{$count} ".trans_choice('Datei|Dateien', $count).' ausgewählt'
-                                : 'Auswahl beenden';
+                                ? "{$count} " . trans_choice('media::fields.file|files', $count) . ' ' . __('media::fields.end_selection')
+                                : __('media::fields.end_selection');
                         }
 
-                        return 'Mehrere auswählen';
+                        return __('media::fields.select_multiple');
                     })
-                    ->icon(fn ($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
-                    ->color(fn ($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
+                    ->icon(fn($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
+                    ->color(fn($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
                     ->action(function ($livewire) {
-                        $livewire->isSelecting = ! $livewire->isSelecting;
+                        $livewire->isSelecting = !$livewire->isSelecting;
                         $livewire->selected = [];
                     }),
 
                 \Filament\Tables\Actions\Action::make('deleteSelected')
-                    ->label('Ausgewählte löschen')
+                    ->label(__('media::fields.delete_selected'))
                     ->icon('heroicon-m-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading('Ausgewählte Medien löschen')
-                    ->modalDescription('Sind Sie sicher, dass Sie die ausgewählten Medien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
-                    ->modalSubmitActionLabel('Ja, löschen')
-                    ->modalCancelActionLabel('Abbrechen')
-                    ->visible(fn ($livewire) => $livewire->isSelecting && ! empty($livewire->selected))
+                    ->modalHeading(__('media::fields.delete_selected'))
+                    ->modalDescription(__('media::fields.delete_confirmation'))
+                    ->modalSubmitActionLabel(__('media::fields.yes_delete'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn($livewire) => $livewire->isSelecting && !empty($livewire->selected))
                     ->action(function ($livewire) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -250,19 +293,17 @@ class MediaResource extends Resource
                         foreach ($livewire->selected as $id) {
                             try {
                                 $media = Media::find($id);
-                                if (! $media) {
+                                if (!$media) {
                                     continue;
                                 }
 
-                                if (! auth()->user()->can('delete', $media)) {
+                                if (!auth()->user()->can('delete', $media)) {
                                     $protectedCount++;
-
                                     continue;
                                 }
 
                                 if ($media->getOriginal('write_protected')) {
                                     $protectedCount++;
-
                                     continue;
                                 }
 
@@ -270,7 +311,7 @@ class MediaResource extends Resource
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
-                                Log::error('Media deletion failed: '.$e->getMessage(), [
+                                Log::error('Media deletion failed: ' . $e->getMessage(), [
                                     'media_id' => $id,
                                 ]);
                                 $errorCount++;
@@ -280,15 +321,15 @@ class MediaResource extends Resource
                         if ($successCount > 0) {
                             Notification::make()
                                 ->success()
-                                ->title($successCount.' '.trans_choice('Datei|Dateien', $successCount).' gelöscht')
+                                ->title($successCount . ' ' . trans_choice('media::fields.file_deleted|files_deleted', $successCount))
                                 ->send();
                         }
 
                         if ($protectedCount > 0) {
                             Notification::make()
                                 ->warning()
-                                ->title('Geschützte Dateien übersprungen')
-                                ->body($protectedCount.' '.trans_choice('geschützte Datei wurde|geschützte Dateien wurden', $protectedCount).' übersprungen.')
+                                ->title(__('media::fields.protected_skipped'))
+                                ->body($protectedCount . ' ' . trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
                                 ->persistent()
                                 ->send();
                         }
@@ -296,8 +337,8 @@ class MediaResource extends Resource
                         if ($errorCount > 0) {
                             Notification::make()
                                 ->danger()
-                                ->title('Fehler beim Löschen')
-                                ->body($errorCount.' '.trans_choice('Datei konnte|Dateien konnten', $errorCount).' nicht gelöscht werden.')
+                                ->title(__('media::fields.delete_error'))
+                                ->body($errorCount . ' ' . trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
                                 ->persistent()
                                 ->send();
                         }
@@ -312,26 +353,26 @@ class MediaResource extends Resource
                     ->label('')
                     ->slideOver()
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen')
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->authorize('view')
                     ->extraModalFooterActions([
                         TablesDeleteAction::make()
-                            ->label('Löschen')
+                            ->label(__('media::fields.delete_image'))
                             ->color('danger')
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
-                            ->modalHeading(fn ($record) => 'Bild "'.($record->title ?: $record->name).'" löschen')
-                            ->modalDescription('Sind Sie sicher, dass Sie dieses Bild löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
-                            ->modalSubmitActionLabel('Ja, löschen')
-                            ->modalCancelActionLabel('Abbrechen')
-                            ->hidden(fn (Media $record) => ! auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
+                            ->modalHeading(fn($record) => __('media::fields.delete_image_heading', ['title' => $record->title ?: $record->name]))
+                            ->modalDescription(__('media::fields.delete_image_description'))
+                            ->modalSubmitActionLabel(__('media::fields.yes_delete'))
+                            ->modalCancelActionLabel(__('media::fields.cancel'))
+                            ->hidden(fn(Media $record) => !auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
                             ->before(function ($record) {
                                 try {
                                     if ($record->getOriginal('write_protected')) {
                                         Notification::make()
                                             ->danger()
-                                            ->title('Fehler beim Löschen')
-                                            ->body('Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.')
+                                            ->title(__('media::fields.delete_error'))
+                                            ->body(__('media::fields.protected_file_error'))
                                             ->persistent()
                                             ->send();
 
@@ -340,7 +381,7 @@ class MediaResource extends Resource
                                 } catch (\Exception $e) {
                                     Notification::make()
                                         ->danger()
-                                        ->title('Fehler beim Löschen')
+                                        ->title(__('media::fields.delete_error'))
                                         ->body($e->getMessage())
                                         ->persistent()
                                         ->send();
@@ -356,21 +397,20 @@ class MediaResource extends Resource
 
                                     Notification::make()
                                         ->success()
-                                        ->title('Datei erfolgreich gelöscht')
-                                        ->body('Die Datei "'.$fileName.'" wurde erfolgreich gelöscht.')
+                                        ->title(__('media::fields.delete_file_success', ['fileName' => $fileName]))
                                         ->send();
 
                                     return redirect(static::getUrl('index'));
                                 } catch (\Exception $e) {
-                                    Log::error('Media deletion failed: '.$e->getMessage(), [
+                                    Log::error('Media deletion failed: ' . $e->getMessage(), [
                                         'media_id' => $record->id,
                                         'file_name' => $record->file_name,
                                     ]);
 
                                     Notification::make()
                                         ->danger()
-                                        ->title('Fehler beim Löschen')
-                                        ->body('Die Datei "'.$record->file_name.'" konnte nicht gelöscht werden.')
+                                        ->title(__('media::fields.delete_error'))
+                                        ->body(__('media::fields.delete_file_error', ['fileName' => $record->file_name]))
                                         ->send();
 
                                     return null;
@@ -380,15 +420,15 @@ class MediaResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('mime_type')
-                    ->label('Dateityp')
+                    ->label(__('media::fields.mime_type'))
                     ->options([
-                        'images' => 'Bilder',
-                        'videos' => 'Videos',
-                        'audios' => 'Audios',
-                        'documents' => 'Dokumente',
+                        'images' => __('media::fields.images'),
+                        'videos' => __('media::fields.videos'),
+                        'audios' => __('media::fields.audios'),
+                        'documents' => __('media::fields.documents'),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
@@ -426,7 +466,7 @@ class MediaResource extends Resource
                     }),
 
                 SelectFilter::make('uploader')
-                    ->label('Hochgeladen von')
+                    ->label(__('media::fields.uploaded_by'))
                     ->options(function () {
                         $uploaderTypes = Media::query()
                             ->distinct()
@@ -450,13 +490,13 @@ class MediaResource extends Resource
                                     $uploader = $media->uploader;
                                     if ($uploader && method_exists($uploader, 'getName')) {
                                         return [
-                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                                             'name' => $uploader->getName(),
                                         ];
                                     }
                                     if ($uploader && isset($uploader->name)) {
                                         return [
-                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                                             'name' => $uploader->name,
                                         ];
                                     }
@@ -464,11 +504,11 @@ class MediaResource extends Resource
                                     return null;
                                 })
                                 ->filter()
-                                ->unique(fn (array $item): string => $item['id'])
+                                ->unique(fn(array $item): string => $item['id'])
                                 ->pluck('name', 'id')
                                 ->toArray();
 
-                            if (! empty($uploaders)) {
+                            if (!empty($uploaders)) {
                                 $typeName = class_basename($type);
                                 $options[$typeName] = $uploaders;
                             }
@@ -477,7 +517,7 @@ class MediaResource extends Resource
                         return $options;
                     })
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
@@ -494,15 +534,15 @@ class MediaResource extends Resource
                     ->preload(),
 
                 SelectFilter::make('date')
-                    ->label('Hochgeladen')
+                    ->label(__('media::fields.uploaded'))
                     ->options([
-                        'today' => 'Heute',
-                        'week' => 'Diese Woche',
-                        'month' => 'Diesen Monat',
-                        'year' => 'Dieses Jahr',
+                        'today' => __('media::fields.today'),
+                        'week' => __('media::fields.week'),
+                        'month' => __('media::fields.month'),
+                        'year' => __('media::fields.year'),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 

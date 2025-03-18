@@ -16,6 +16,9 @@
 */
 
 return [
+    'model_label' => 'trans//media::media.media',
+    'plural_model_label' => 'trans//media::media.medias',
+
     'upload' => [
         'resource' => [
             'disk' => config('filament.default_filesystem_disk', 'public'),
