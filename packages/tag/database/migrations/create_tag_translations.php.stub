@@ -20,10 +20,10 @@ return new class extends Migration
             $table->text('content')->nullable();
 
             // Ensure slug is unique per locale
-            $table->unique(['slug', 'locale'], 'unique_slug_per_locale');
+            $table->unique(['slug', 'locale']);
             
             // Ensure one translation per locale per tag
-            $table->unique(['tag_id', 'locale'], 'unique_translation_per_locale');
+            $table->unique(['tag_id', 'locale']);
             
             // Foreign key constraint
             $table->foreign('tag_id')

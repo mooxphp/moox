@@ -22,9 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Tag\\": "src",
-            "Moox\\Tag\\Database\\Factories\\": "database/factories",
-            "Moox\\Tag\\Database\\Seeders\\": "database/seeders"
+            "Moox\\Tag\\": "src/"
         }
     },
     "extra": {
