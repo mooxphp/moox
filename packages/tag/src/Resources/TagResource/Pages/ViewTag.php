@@ -24,19 +24,12 @@ class ViewTag extends ViewRecord
         parent::mount($record);
     }
 
+    #[Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        if ($this->selectedLang && $this->record->hasTranslation($this->selectedLang)) {
-            $translation = $this->record->translate($this->selectedLang);
-
-            return array_merge($data, [
-                'title' => $translation->title,
-                'slug' => $translation->slug,
-                'content' => $translation->content,
-            ]);
-        }
-
-        return $data;
+        return array_merge($data, [
+            'translations' => $this->record->getTranslationsArray(),
+        ]);
     }
 
     #[Override]

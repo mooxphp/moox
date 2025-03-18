@@ -4,37 +4,41 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Unique;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Media\Forms\Components\MediaPicker;
-use Moox\Media\Tables\Columns\CustomImageColumn;
-use Moox\Tag\Models\Tag;
-use Moox\Tag\Resources\TagResource\Pages\CreateTag;
-use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
-use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 use Override;
+use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Moox\Tag\Models\Tag;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Tabs\Tab;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ColorColumn;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\ColorPicker;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Forms\Components\MediaPicker;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Moox\Media\Tables\Columns\CustomImageColumn;
+use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 
 class TagResource extends Resource
 {
@@ -69,32 +73,8 @@ class TagResource extends Resource
                                     MediaPicker::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url'))
                                         ->multiple(),
-                                    TextInput::make('title')
-                                        ->live(onBlur: true)
-                                        ->label(__('core::core.title'))
-                                        ->required()
-                                        ->afterStateUpdated(
-                                            fn (Set $set, ?string $state) => $set('slug', Str::slug($state))
-                                        ),
-                                    TextInput::make('slug')
-                                        ->label(__('core::core.slug'))
-                                        ->required()
-                                        ->unique(
-                                            modifyRuleUsing: function (Unique $rule) {
-                                                return $rule
-                                                    ->where('locale', request()->query('lang', app()->getLocale()))
-                                                    ->whereNull('tag_translations.tag_id');
-                                            },
-                                            table: 'tag_translations',
-                                            column: 'slug',
-                                            ignoreRecord: true,
-                                            ignorable: fn ($record) => $record?->translations()
-                                                ->where('locale', request()->query('lang', app()->getLocale()))
-                                                ->first()
-                                        ),
-                                    MarkdownEditor::make('content')
-                                        ->label(__('core::core.content'))
-                                        ->required(),
+                                    Tabs::make('Translations')
+                                        ->tabs(self::generateTranslationTabs()),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -192,7 +172,7 @@ class TagResource extends Resource
                     ->label(__('core::core.image'))
                     ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
                     ->alignment('center'),
-                TextColumn::make('translations.locale'),
+                TranslationColumn::make('translations.locale'),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->limit(30)
@@ -369,4 +349,45 @@ class TagResource extends Resource
     {
         static::$currentTab = $tab;
     }
+
+    /**
+ * Generate tabs for all available locales
+ */
+protected static function generateTranslationTabs(): array
+{
+    $tabs = [];
+
+    foreach (Localization::pluck('title') as $locale) { 
+        $tabs[] = Tab::make(strtoupper($locale)) 
+            ->schema([
+                TextInput::make("translations.{$locale}.title") 
+                    ->live(onBlur: true)
+                    ->label(__('core::core.title'))
+                    ->afterStateUpdated(
+                        fn (Set $set, ?string $state) => $set("translations.{$locale}.slug", Str::slug($state))
+                    ),
+
+                TextInput::make("translations.{$locale}.slug")
+                    ->label(__('core::core.slug'))
+                    ->unique(
+                        modifyRuleUsing: function (Unique $rule) use ($locale) {
+                            return $rule
+                                ->where('locale', $locale) 
+                                ->whereNull('tag_translations.tag_id');
+                        },
+                        table: 'tag_translations',
+                        column: 'slug',
+                        ignoreRecord: true,
+                        ignorable: fn ($record) => $record?->translations()
+                            ->where('locale', $locale)
+                            ->first()
+                    ),
+
+                MarkdownEditor::make("translations.{$locale}.content")
+                    ->label(__('core::core.content')),
+            ]);
+    }
+
+    return $tabs;
+}
 }

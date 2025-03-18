@@ -17,6 +17,7 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Str;
 
 class Tag extends Model implements HasMedia, TranslatableContract
 {
@@ -37,6 +38,86 @@ class Tag extends Model implements HasMedia, TranslatableContract
         'weight' => 'integer',
         'count' => 'integer',
     ];
+
+    /**
+     * Handle filling translations from form data
+     */
+    public function fillTranslations(array $translations): self
+    {
+        foreach ($translations as $locale => $data) {
+            if (!empty($data['title'])) {
+                $slug = $data['slug'] ?? Str::slug($data['title']);
+                
+                // Ensure slug uniqueness per locale
+                $slug = $this->generateUniqueSlug($slug, $locale);
+    
+                $this->translateOrNew($locale)->fill([
+                    'title' => $data['title'],
+                    'slug' => $slug,
+                    'content' => $data['content'] ?? null,
+                ]);
+            }
+        }
+        
+        return $this;
+    }
+    
+    private function generateUniqueSlug(string $slug, string $locale): string
+    {
+        $originalSlug = $slug;
+        $count = 1;
+    
+        while (TagTranslation::where('slug', $slug)->where('locale', $locale)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+    
+        return $slug;
+    }
+
+    /**
+     * Get all translations as a formatted array
+     */
+    public function getTranslationsArray(): array
+    {
+        $translations = [];
+        
+        foreach ($this->translations as $translation) {
+            $translations[$translation->locale] = [
+                'title' => $translation->title,
+                'slug' => $translation->slug,
+                'content' => $translation->content,
+            ];
+        }
+        
+        return $translations;
+    }
+
+    /**
+     * Create a new tag with translations
+     */
+    public static function createWithTranslations(array $attributes, array $translations): self
+    {
+        $tag = new static();
+        $tag->fill($attributes);
+        $tag->save();
+        
+        $tag->fillTranslations($translations)->save();
+        
+        return $tag;
+    }
+
+    /**
+     * Update tag with translations
+     */
+    public function updateWithTranslations(array $attributes, array $translations): self
+    {
+        $this->fill($attributes);
+        $this->fillTranslations($translations);
+        $this->save();
+        
+        return $this;
+    }
 
     protected static function newFactory(): TagFactory
     {
@@ -83,4 +164,5 @@ class Tag extends Model implements HasMedia, TranslatableContract
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
+
 }

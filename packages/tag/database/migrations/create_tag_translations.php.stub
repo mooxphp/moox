@@ -16,11 +16,23 @@ return new class extends Migration
             $table->unsignedBigInteger('tag_id');
             $table->string('locale')->index();
             $table->string('title');
-            $table->string('slug')->unique();
-            $table->text('content');
+            $table->string('slug');
+            $table->text('content')->nullable();
 
-            $table->unique(['tag_id', 'locale']);
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+            // Ensure slug is unique per locale
+            $table->unique(['slug', 'locale'], 'unique_slug_per_locale');
+            
+            // Ensure one translation per locale per tag
+            $table->unique(['tag_id', 'locale'], 'unique_translation_per_locale');
+            
+            // Foreign key constraint
+            $table->foreign('tag_id')
+                ->references('id')
+                ->on('tags')
+                ->onDelete('cascade');
+                
+            // Add index for faster slug lookups
+            $table->index(['slug'], 'tag_translations_slug_index');
         });
     }
 
@@ -28,7 +40,6 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-
     {
         Schema::dropIfExists('tag_translations');
     }
