@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Builder\Resources;
 
 use App\Builder\Resources\SoftDeleteItemResource\Pages;
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -22,6 +21,7 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class SoftDeleteItemResource extends Resource
 {

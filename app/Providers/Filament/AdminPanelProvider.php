@@ -133,6 +133,8 @@ class AdminPanelProvider extends PanelProvider
                 StaticLanguagePlugin::make(),
                 StaticTimezonePlugin::make(),
                 StaticCurrencyPlugin::make(),
+
+                // SoftDeleteItemPlugin::make(),
             ]);
     }
 }

@@ -122,9 +122,7 @@ class StaticLanguageResource extends Resource
                 IconColumn::make('alpha2')
                     ->label('')
                     ->icon(fn (string $state): ?string => @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$state}.svg")) ? "flag-{$state}" : null),
-                // TextColumn::make('alpha2')
-                //    ->label('Alpha-2'),
-                TextColumn::make('alpha2_test')
+                TextColumn::make('alpha2_')
                     ->label('Alpha-2')
                     ->getStateUsing(fn ($record) => $record->alpha2),
                 TextColumn::make('alpha3_b')

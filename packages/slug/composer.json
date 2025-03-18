@@ -21,8 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Slug\\": "src",
-            "Moox\\Slug\\Database\\Factories\\": "database/factories"
+            "Moox\\Slug\\": "src"
         }
     },
     "extra": {
@@ -43,11 +42,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\Slug\\Tests\\": "tests",
-            "Moox\\Slug\\Database\\Factories\\": "database/factories",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+            "Moox\\Slug\\Tests\\": "tests"
         }
     },
     "scripts": {
