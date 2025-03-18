@@ -1,12 +1,16 @@
 {
-    "name": "blade-organization/blade-heroicons",
-    "description": "A package to easily make use of Heroicons in your Laravel Blade views.",
-    "keywords": ["Blade", "Heroicons", "Laravel"],
-    "homepage": "https://github.com/blade-organization/blade-heroicons",
+    "name": "moox/file-icons",
+    "description": "A package to easily make use of File Icons in your Laravel Blade views.",
+    "keywords": [
+        "Blade",
+        "File Icons",
+        "Laravel"
+    ],
+    "homepage": "https://github.com/mooxphp/file-icons",
     "license": "MIT",
     "authors": [
         {
-            "name": "Blade Developer"
+            "name": "Moox Devs"
         }
     ],
     "require": {
@@ -20,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BladeUI\\Heroicons\\": "src"
+            "Moox\\FileIcons\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +35,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BladeUI\\Heroicons\\BladeHeroiconsServiceProvider"
+                "Moox\\FileIcons\\FileIconsServiceProvider"
             ]
         }
     },

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 46.5 45.9">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Unbenannter_Verlauf);
+      }
+
+      .cls-2 {
+        fill: url(#Unbenannter_Verlauf_2);
+      }
+
+      .cls-3 {
+        fill: url(#Unbenannter_Verlauf_4);
+      }
+
+      .cls-4 {
+        fill: url(#Unbenannter_Verlauf_3);
+      }
+
+      .cls-5 {
+        fill: url(#Unbenannter_Verlauf_5);
+      }
+
+      .cls-6 {
+        fill: #fff;
+      }
+
+      .cls-7 {
+        fill: url(#Unbenannter_Verlauf_2-2);
+      }
+
+      .cls-8 {
+        isolation: isolate;
+        opacity: 0;
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf" data-name="Unbenannter Verlauf" x1="27.9" y1="1041.4" x2="27.9" y2="1030.5" gradientTransform="translate(0 -1030)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#42a3f2"/>
+      <stop offset="1" stop-color="#42a4eb"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf_2" data-name="Unbenannter Verlauf 2" x1="27.75" y1="1075.9" x2="27.75" y2="1064.5" gradientTransform="translate(0 -1030)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#11408a"/>
+      <stop offset="1" stop-color="#103f8f"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf_2-2" data-name="Unbenannter Verlauf 2" y1="1074.9" y2="1063.5" xlink:href="#Unbenannter_Verlauf_2"/>
+    <linearGradient id="Unbenannter_Verlauf_3" data-name="Unbenannter Verlauf 3" x1="27.8" y1="1002.6" x2="27.8" y2="1002.5" gradientTransform="translate(0 -1030)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3079d6"/>
+      <stop offset="1" stop-color="#297cd2"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf_4" data-name="Unbenannter Verlauf 4" x1="9.2" y1="1058.65" x2="46.4" y2="1058.65" gradientTransform="translate(0 -1030)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1d59b3"/>
+      <stop offset="1" stop-color="#195bbc"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf_5" data-name="Unbenannter Verlauf 5" x1=".83" y1="1042.07" x2="22.63" y2="1063.77" gradientTransform="translate(0 -1030)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#256ac2"/>
+      <stop offset="1" stop-color="#1247ad"/>
+    </linearGradient>
+  </defs>
+  <path class="cls-1" d="M44.1,0H11.6c-1.3,0-2.3,1.1-2.3,2.5v8.9h37.2V2.5c0-1.4-1-2.5-2.3-2.5h-.1Z"/>
+  <path class="cls-2" d="M9.2,34.5v8.9c0,1.4,1,2.5,2.3,2.5h32.5c1.3,0,2.3-1.1,2.3-2.5v-8.9s-37.1,0-37.1,0Z"/>
+  <path class="cls-7" d="M9.2,33.5v8.9c0,1.4,1,2.5,2.3,2.5h32.5c1.3,0,2.3-1.1,2.3-2.5v-8.9s-37.1,0-37.1,0Z"/>
+  <path class="cls-2" d="M9.2,34.5v8.9c0,1.4,1,2.5,2.3,2.5h32.5c1.3,0,2.3-1.1,2.3-2.5v-8.9s-37.1,0-37.1,0Z"/>
+  <path class="cls-4" d="M9.2,11.4h37.2v11.5H9.2v-11.5Z"/>
+  <path class="cls-3" d="M9.2,22.9h37.2v11.5H9.2s0-11.5,0-11.5Z"/>
+  <path class="cls-8" d="M21.2,10.1h-12v27.9h12c2.4,0,4.3-1.9,4.3-4.3V14.3c0-2.4-1.9-4.3-4.3-4.3v.1Z"/>
+  <path class="cls-8" d="M21.1,36.8h-11.9V10.4h11.9c2,0,3.6,1.6,3.6,3.6v19.1c0,2-1.6,3.6-3.6,3.6v.1Z"/>
+  <path class="cls-8" d="M21,35.6h-11.7V10.8h11.7c1.6,0,3,1.3,3,3v18.8c0,1.6-1.3,3-3,3Z"/>
+  <path class="cls-5" d="M20.8,34.4H2.3c-1.3,0-2.3-1-2.3-2.3V13.5c0-1.3,1-2.3,2.3-2.3h18.6c1.3,0,2.3,1,2.3,2.3v18.6c0,1.3-1,2.3-2.3,2.3h-.1Z"/>
+  <path class="cls-6" d="M16.7,17l-1.8,8.4-2-8.4h-2.5l-2.1,8.7-1.8-8.7h-2.3l2.7,11.6h2.7l2-8.9,2,8.9h2.6l2.7-11.6h-2.3.1Z"/>
+</svg>

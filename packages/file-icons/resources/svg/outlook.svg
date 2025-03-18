@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="uuid-07d98701-80c6-459a-8b6c-76262d92a8bf" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 46.91 41.18">
+  <defs>
+    <linearGradient id="uuid-3b5435ba-1c4b-4944-97f6-c7863be5512b" data-name="Unbenannter Verlauf" x1="41.1" y1="22.25" x2="33.5" y2="9.13" gradientTransform="translate(0 43.48) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#31abec"/>
+      <stop offset="1" stop-color="#1582d5"/>
+    </linearGradient>
+    <linearGradient id="uuid-0b0d810f-f9c5-4a72-bfde-9e1e949c620d" data-name="Unbenannter Verlauf 2" x1="12.2" y1="42.34" x2="43.8" y2="39.96" gradientTransform="translate(0 43.48) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".04" stop-color="#076db4"/>
+      <stop offset=".85" stop-color="#0461af"/>
+    </linearGradient>
+    <linearGradient id="uuid-2044d2a1-b79e-4817-a6fa-dea7bc391b81" data-name="Unbenannter Verlauf 3" x1="28.77" y1="12.34" x2="23.61" y2="3.33" gradientTransform="translate(0 43.48) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#33acee"/>
+      <stop offset="1" stop-color="#1b8edf"/>
+    </linearGradient>
+    <linearGradient id="uuid-f547e973-1a87-4827-8c5a-b8b3bd61060e" data-name="Unbenannter Verlauf 4" x1=".61" y1="33.72" x2="22.2" y2="12.12" gradientTransform="translate(0 43.48) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1784d8"/>
+      <stop offset="1" stop-color="#0864c5"/>
+    </linearGradient>
+  </defs>
+  <path d="M46.05,20.07l-7.79-4.54v13.26h8.64v-7.24c0-.61-.32-1.17-.85-1.48Z" fill="#103262"/>
+  <path d="M11.44,4.58h11.44v10.3h-11.44V4.58Z" fill="#0084d7"/>
+  <path d="M22.88,4.58h11.44v10.3h-11.44V4.58Z" fill="#33afec"/>
+  <path d="M34.32,4.58h11.44v10.3h-11.44V4.58Z" fill="#54daff"/>
+  <path d="M22.88,14.87h11.44v10.3h-11.44v-10.3Z" fill="#027ad4"/>
+  <path d="M22.88,25.17h11.44v10.3h-11.44v-10.3Z" fill="#0553a4"/>
+  <path d="M34.32,14.87h11.44v10.3h-11.44v-10.3Z" fill="#25a2e5"/>
+  <path d="M34.32,25.17h11.44v10.3h-11.44v-10.3Z" fill="#0262b8"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 20.86 29.73 30.01 11.44 20.86 11.44 35.46" isolation="isolate" opacity=".02"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 21.14 29.73 30.29 11.44 21.14 11.44 35.46" isolation="isolate" opacity=".04"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 21.41 29.73 30.56 11.44 21.41 11.44 35.46" isolation="isolate" opacity=".06"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 21.68 29.73 30.83 11.44 21.68 11.44 35.46" isolation="isolate" opacity=".08"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 21.95 29.73 31.1 11.44 21.95 11.44 35.46" isolation="isolate" opacity=".09"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 22.23 29.73 31.38 11.44 22.23 11.44 35.46" isolation="isolate" opacity=".11"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 22.5 29.73 31.65 11.44 22.5 11.44 35.46" isolation="isolate" opacity=".13"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 22.77 29.73 31.92 11.44 22.77 11.44 35.46" isolation="isolate" opacity=".15"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 23.04 29.73 32.19 11.44 23.04 11.44 35.46" isolation="isolate" opacity=".17"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 23.31 29.73 32.47 11.44 23.31 11.44 35.46" isolation="isolate" opacity=".19"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 23.59 29.73 32.74 11.44 23.59 11.44 35.46" isolation="isolate" opacity=".21"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 23.86 29.73 33.01 11.44 23.86 11.44 35.46" isolation="isolate" opacity=".23"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 24.13 29.73 33.28 11.44 24.13 11.44 35.46" isolation="isolate" opacity=".25"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 24.4 29.73 33.55 11.44 24.4 11.44 35.46" isolation="isolate" opacity=".27"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 24.68 29.73 33.83 11.44 24.68 11.44 35.46" isolation="isolate" opacity=".29"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 24.95 29.73 34.1 11.44 24.95 11.44 35.46" isolation="isolate" opacity=".31"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 25.22 29.73 34.37 11.44 25.22 11.44 35.46" isolation="isolate" opacity=".32"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 25.49 29.73 34.64 11.44 25.49 11.44 35.46" isolation="isolate" opacity=".34"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 25.77 29.73 34.92 11.44 25.77 11.44 35.46" isolation="isolate" opacity=".36"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 26.04 29.73 35.19 11.44 26.04 11.44 35.46" isolation="isolate" opacity=".38"/>
+  <polygon points="11.44 35.46 45.76 35.46 45.76 26.31 29.73 35.46 11.44 26.31 11.44 35.46" isolation="isolate" opacity=".4"/>
+  <path d="M14.23,41.18h30.39c1.26,0,2.29-1.02,2.29-2.28,0-5.17,0-17.35,0-17.35,0,0,0,.25-2,1.39s-31.46,17.74-31.46,17.74c0,0,.27.5.8.5Z" fill="url(#uuid-3b5435ba-1c4b-4944-97f6-c7863be5512b)"/>
+  <path d="M45.76,4.58H11.44v-2.29c0-1.26,1.02-2.29,2.29-2.29h29.74c1.26,0,2.29,1.02,2.29,2.29v2.29Z" fill="url(#uuid-0b0d810f-f9c5-4a72-bfde-9e1e949c620d)"/>
+  <path d="M11.44,21.73v17.16c0,1.26,1.02,2.29,2.29,2.29h30.89c.53,0,1.01-.19,1.4-.49L11.44,21.73Z" fill="url(#uuid-2044d2a1-b79e-4817-a6fa-dea7bc391b81)"/>
+  <path d="M20.96,8.01h-9.52v27.45h9.52c2.33,0,4.21-1.89,4.21-4.21V12.22c0-2.33-1.89-4.21-4.21-4.21Z" isolation="isolate" opacity=".05"/>
+  <path d="M20.83,34.32h-9.4V8.39h9.4c1.97,0,3.57,1.6,3.57,3.57v18.79c0,1.97-1.6,3.57-3.57,3.57Z" isolation="isolate" opacity=".07"/>
+  <path d="M20.71,33.17h-9.27V8.77h9.27c1.62,0,2.93,1.31,2.93,2.93v18.55c0,1.62-1.31,2.93-2.93,2.93Z" isolation="isolate" opacity=".09"/>
+  <path d="M20.59,32.03H2.29c-1.26,0-2.29-1.02-2.29-2.29V11.44c0-1.26,1.02-2.29,2.29-2.29h18.3c1.26,0,2.29,1.02,2.29,2.29v18.3c0,1.26-1.02,2.29-2.29,2.29Z" fill="url(#uuid-f547e973-1a87-4827-8c5a-b8b3bd61060e)"/>
+  <path d="M11.44,14.52c-3.56,0-5.7,2.72-5.7,6.07s2.14,6.07,5.7,6.07,5.7-2.72,5.7-6.07-2.14-6.07-5.7-6.07ZM11.44,24.61c-2.02,0-3.23-1.8-3.23-4.02s1.21-4.02,3.23-4.02,3.23,1.8,3.23,4.02-1.21,4.02-3.23,4.02Z" fill="#fff"/>
+</svg>

@@ -148,9 +148,90 @@ Click Me
                         Click Me
                     </x-moox-button>
 
+                    <br>
+                    <br>
 
-                    <x-flag-icons-circle-de />
+                    <h2 class="text-slate-300 text-xl font-bold mb-5">Flags Circle</h2>
 
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-flag-de class="w-6 h-6" />
+                        <x-flag-gb class="w-6 h-6" />
+                        <x-flag-pl class="w-6 h-6" />
+                        <x-flag-cz class="w-6 h-6" />
+                    </div>
+
+                    <h2 class="text-slate-300 text-xl font-bold mb-5">Flags Square (rounded-sm)</h2>
+
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-flags-de class="w-6 h-auto rounded-sm" />
+                        <x-flags-gb class="w-6 h-auto rounded-sm" />
+                        <x-flags-pl class="w-6 h-auto rounded-sm" />
+                        <x-flags-cz class="w-6 h-auto rounded-sm" />
+                    </div>
+
+
+                    <h2 class="text-slate-300 text-xl font-bold mb-5">Flags Rect (rounded-md)</h2>
+
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-flagr-de class="w-6 h-6 rounded-md" />
+                        <x-flagr-gb class="w-6 h-6 rounded-md" />
+                        <x-flagr-pl class="w-6 h-6 rounded-md" />
+                        <x-flagr-cz class="w-6 h-6 rounded-md" />
+                    </div>
+
+                    <h2 class="text-slate-300 text-xl font-bold mb-5">Flags Origin</h2>
+
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-flago-de class="w-auto h-6" />
+                        <x-flago-gb class="w-auto h-6" />
+                        <x-flago-pl class="w-auto h-6" />
+                        <x-flago-cz class="w-auto h-6" />
+                    </div>
+
+
+                    <h2 class="text-slate-300 text-xl font-bold mb-5">Laravel Icons</h2>
+
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-laraicon-breeze class="w-6 h-6" />
+                        <x-laraicon-cashier class="w-auto h-6" />
+                        <x-laraicon-dusk class="w-auto h-6" />
+                        <x-laraicon-echo class="w-auto h-6" />
+                        <x-laraicon-envoyer class="w-auto h-6" />
+                        <x-laraicon-forge class="w-auto h-6" />
+                        <x-laraicon-horizon class="w-auto h-6" />
+                        <x-laraicon-jetstream class="w-auto h-6" />
+                        <x-laraicon-laravel class="w-auto h-6" />
+                        <x-laraicon-nova class="w-auto h-6" />
+                        <x-laraicon-octane class="w-auto h-6" />
+                        <x-laraicon-pint class="w-auto h-6" />
+                        <x-laraicon-sail class="w-auto h-6" />
+                        <x-laraicon-sanctum class="w-auto h-6" />
+                        <x-laraicon-scout class="w-auto h-6" />
+                        <x-laraicon-socialite class="w-auto h-6" />
+                        <x-laraicon-spark class="w-auto h-6" />
+                        <x-laraicon-telescope class="w-auto h-6" />
+                        <x-laraicon-valet class="w-auto h-6" />
+                        <x-laraicon-vapor class="w-auto h-6" />
+                    </div>
+
+                        <h2 class="text-slate-300 text-xl font-bold mb-5">File Icons</h2>
+
+                    <div class="flex flex-row gap-3 mb-5">
+                        <x-fileicon-acrobat class="w-6 h-6" />
+                        <x-fileicon-cad class="w-6 h-6" />
+                        <x-fileicon-excel class="w-6 h-6" />
+                        <x-fileicon-folder class="w-6 h-6" />
+                        <x-fileicon-illustrator class="w-6 h-6" />
+                        <x-fileicon-indesign class="w-6 h-6" />
+                        <x-fileicon-onedrive class="w-6 h-6" />
+                        <x-fileicon-outlook class="w-6 h-6" />
+                        <x-fileicon-photoshop class="w-6 h-6" />
+                        <x-fileicon-powerpoint class="w-6 h-6" />
+                        <x-fileicon-video class="w-6 h-6" />
+                        <x-fileicon-word class="w-6 h-6" />
+                        <x-fileicon-zip class="w-6 h-6" />
+                        <x-fileicon-zip2 class="w-6 h-6" />
+                    </div>
                 </div>
             </div>
         </div>

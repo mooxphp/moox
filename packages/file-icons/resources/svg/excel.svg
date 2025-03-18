@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="uuid-97e0222a-7355-4a11-a7d0-05607e811243" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 46.13 46.31">
+  <defs>
+    <linearGradient id="uuid-86dfeb93-d452-484e-936f-dc1c3fc6c82d" data-name="Unbenannter Verlauf" x1=".84" y1="36.05" x2="21.97" y2="14.91" gradientTransform="translate(0 48.22) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#18884f"/>
+      <stop offset="1" stop-color="#0b6731"/>
+    </linearGradient>
+  </defs>
+  <rect x="27.68" y="11.58" width="18.45" height="11.58" fill="#21a366"/>
+  <path d="M46.13,23.15H9.23v20.58c0,1.42,1.03,2.57,2.31,2.57h32.29c1.27,0,2.31-1.15,2.31-2.57v-20.58Z" fill="#185c37"/>
+  <rect x="27.68" y="23.15" width="18.45" height="11.58" fill="#107c42"/>
+  <rect x="9.23" y="11.58" width="18.45" height="11.58" fill="#3fa071"/>
+  <path d="M43.82,0h-16.14v11.58h18.45V2.57c0-1.42-1.03-2.57-2.31-2.57Z" fill="#33c481"/>
+  <path d="M11.53,0h16.14v11.58H9.23V2.57c0-1.42,1.03-2.57,2.31-2.57Z" fill="#21a366"/>
+  <path d="M21.13,10.18h-11.9v27.68h11.9c2.34,0,4.24-1.9,4.24-4.24V14.43c0-2.34-1.9-4.24-4.24-4.24Z" isolation="isolate" opacity=".05"/>
+  <path d="M21,36.7h-11.78V10.56h11.78c1.99,0,3.6,1.61,3.6,3.6v18.94c0,1.99-1.61,3.6-3.6,3.6Z" isolation="isolate" opacity=".07"/>
+  <path d="M20.88,35.55h-11.65V10.95h11.65c1.63,0,2.95,1.32,2.95,2.95v18.7c0,1.63-1.32,2.95-2.95,2.95Z" isolation="isolate" opacity=".09"/>
+  <path d="M20.76,34.4H2.31c-1.27,0-2.31-1.03-2.31-2.31V13.64c0-1.27,1.03-2.31,2.31-2.31h18.45c1.27,0,2.31,1.03,2.31,2.31v18.45c0,1.27-1.03,2.31-2.31,2.31Z" fill="url(#uuid-86dfeb93-d452-484e-936f-dc1c3fc6c82d)"/>
+  <path d="M6.7,17.1h2.75l2.23,4.33,2.36-4.33h2.57l-3.54,5.77,3.62,5.77h-2.71l-2.43-4.53-2.42,4.53h-2.75l3.68-5.79-3.36-5.75Z" fill="#fff"/>
+</svg>

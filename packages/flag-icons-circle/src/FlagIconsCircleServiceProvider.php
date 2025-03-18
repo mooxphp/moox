@@ -17,11 +17,7 @@ final class FlagIconsCircleServiceProvider extends ServiceProvider
         $this->callAfterResolving(Factory::class, function (Factory $factory, Container $container) {
             $config = $container->make('config')->get('flag-icons-circle', []);
 
-            $factory->add('flag-icons-circle', array_merge([
-                'path' => __DIR__.'/../resources/svg',
-                'prefix' => 'flag-icons-circle',
-                'class' => 'w-6 h-6',
-            ], $config));
+            $factory->add('flag-icons-circle', array_merge(['path' => __DIR__.'/../resources/svg'], $config));
         });
     }
 
