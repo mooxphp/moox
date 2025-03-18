@@ -12,4 +12,4 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
         ]);
     }
-} 
+}

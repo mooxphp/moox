@@ -29,7 +29,7 @@ class TagTranslation extends Model
 
         static::saving(function (self $translation) {
             // Generate slug from title if not provided
-            if (empty($translation->slug) && !empty($translation->title)) {
+            if (empty($translation->slug) && ! empty($translation->title)) {
                 $translation->slug = Str::slug($translation->title);
             }
 
@@ -60,9 +60,9 @@ class TagTranslation extends Model
 
         while (static::where('locale', $locale)
             ->where('slug', $slug)
-            ->when($excludeId, fn($query) => $query->where('id', '!=', $excludeId))
+            ->when($excludeId, fn ($query) => $query->where('id', '!=', $excludeId))
             ->exists()) {
-            $slug = $originalSlug . '-' . $counter++;
+            $slug = $originalSlug.'-'.$counter++;
         }
 
         return $slug;

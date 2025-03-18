@@ -17,4 +17,4 @@ class TranslationColumn extends TextColumn
             ->toggleable()
             ->searchable();
     }
-} 
+}

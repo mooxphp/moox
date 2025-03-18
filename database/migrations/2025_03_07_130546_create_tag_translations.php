@@ -21,16 +21,16 @@ return new class extends Migration
 
             // Ensure slug is unique per locale
             $table->unique(['slug', 'locale'], 'unique_slug_per_locale');
-            
+
             // Ensure one translation per locale per tag
             $table->unique(['tag_id', 'locale'], 'unique_translation_per_locale');
-            
+
             // Foreign key constraint
             $table->foreign('tag_id')
                 ->references('id')
                 ->on('tags')
                 ->onDelete('cascade');
-                
+
             // Add index for faster slug lookups
             $table->index(['slug'], 'tag_translations_slug_index');
         });

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('media', 'name')) {
+        if (! Schema::hasColumn('media', 'name')) {
             Schema::table('media', function (Blueprint $table) {
                 $table->string('name')->nullable();
                 $table->string('title')->nullable();

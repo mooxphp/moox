@@ -7,17 +7,17 @@ namespace Moox\Media;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Http\Livewire\MediaUploader;
 use Moox\Media\Models\Media;
 use Moox\Media\Policies\MediaPolicy;
-use Spatie\LaravelPackageTools\Package;
-use Filament\Support\Facades\FilamentView;
-use Filament\Tables\View\TablesRenderHook;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class MediaServiceProvider extends PackageServiceProvider
 {
@@ -56,6 +56,5 @@ class MediaServiceProvider extends PackageServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
         );
-
     }
 }

@@ -2,11 +2,10 @@
 
 namespace Moox\Tag\Database\Factories;
 
+use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
-use Faker\Factory as FakerFactory;
 
 class TagFactory extends Factory
 {
@@ -70,7 +69,7 @@ class TagFactory extends Factory
             // Always create English translation by default
             $title = $this->generateLocalizedTitle('en');
             $slug = TagTranslation::generateUniqueSlug($title, 'en');
-            
+
             $tag->translateOrNew('en')->fill([
                 'title' => $title,
                 'slug' => $slug,
@@ -86,7 +85,7 @@ class TagFactory extends Factory
     {
         $faker = FakerFactory::create($this->availableLocales[$locale]['faker_locale']);
         $sampleWords = $this->availableLocales[$locale]['sample_words'];
-        
+
         // Mix faker words with sample words for more realistic content
         if ($this->faker->boolean(30)) {
             return $this->faker->randomElement($sampleWords);
@@ -116,14 +115,14 @@ class TagFactory extends Factory
      */
     public function withTranslation(string $locale): self
     {
-        if (!isset($this->availableLocales[$locale])) {
+        if (! isset($this->availableLocales[$locale])) {
             throw new \InvalidArgumentException("Locale {$locale} is not supported");
         }
 
         return $this->afterCreating(function (Tag $tag) use ($locale) {
             $title = $this->generateLocalizedTitle($locale);
             $slug = TagTranslation::generateUniqueSlug($title, $locale);
-            
+
             $tag->translateOrNew($locale)->fill([
                 'title' => $title,
                 'slug' => $slug,
@@ -179,11 +178,13 @@ class TagFactory extends Factory
     {
         return $this->afterCreating(function (Tag $tag) {
             foreach ($this->availableLocales as $locale => $config) {
-                if ($locale === 'en') continue; // Skip English as it's already created
-                
+                if ($locale === 'en') {
+                    continue;
+                } // Skip English as it's already created
+
                 $title = $this->generateLocalizedTitle($locale);
                 $slug = TagTranslation::generateUniqueSlug($title, $locale);
-                
+
                 $tag->translateOrNew($locale)->fill([
                     'title' => $title,
                     'slug' => $slug,
@@ -202,8 +203,8 @@ class TagFactory extends Factory
             $locales = array_keys($this->availableLocales);
             unset($locales[array_search('en', $locales)]); // Remove English
             $selectedLocales = array_rand(array_flip($locales), min($count, count($locales)));
-            
-            foreach ((array)$selectedLocales as $locale) {
+
+            foreach ((array) $selectedLocales as $locale) {
                 $this->withTranslation($locale)->configure()->afterCreating->first()($tag);
             }
         });

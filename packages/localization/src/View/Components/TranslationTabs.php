@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Localization\View\Components;
 
-use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Component;
+use Filament\Forms\Components\Component as FilamentComponent;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Set;
-use Filament\Forms\Components\Component as FilamentComponent;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\Component;
 
 class TranslationTabs extends Component
 {
@@ -24,15 +23,13 @@ class TranslationTabs extends Component
         public ?string $model = null,
         public ?string $table = null,
         public ?string $column = null,
-    ) {
-    }
+    ) {}
 
     public function getTabs(): array
     {
-        return collect($this->getActiveLocales())->map(fn (string $locale) => 
-            Tab::make($locale)
-                ->label(strtoupper($locale))
-                ->schema($this->getTabSchema($locale))
+        return collect($this->getActiveLocales())->map(fn (string $locale) => Tab::make($locale)
+            ->label(strtoupper($locale))
+            ->schema($this->getTabSchema($locale))
         )->toArray();
     }
 
@@ -63,7 +60,7 @@ class TranslationTabs extends Component
     {
         $fieldName = $field['name'];
         $fieldType = $field['type'] ?? 'text';
-        $fieldLabel = $field['label'] ?? __('core::core.' . $fieldName);
+        $fieldLabel = $field['label'] ?? __('core::core.'.$fieldName);
         $fieldRequired = $field['required'] ?? true;
         $fieldUnique = $field['unique'] ?? false;
         $fieldComponent = $field['component'] ?? null;
@@ -100,7 +97,7 @@ class TranslationTabs extends Component
                 $translation = $component->getRecord()?->translations
                     ->where('locale', $locale)
                     ->first();
-                
+
                 if ($translation) {
                     $component->state($translation->{$fieldName});
                 }
@@ -139,4 +136,4 @@ class TranslationTabs extends Component
 
         return $component;
     }
-} 
+}

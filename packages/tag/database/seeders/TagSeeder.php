@@ -43,4 +43,4 @@ class TagSeeder extends Seeder
             ->withDutchTranslation()
             ->create();
     }
-} 
+}

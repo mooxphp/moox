@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Support\Str;
 
 class Tag extends Model implements HasMedia, TranslatableContract
 {
@@ -45,12 +45,12 @@ class Tag extends Model implements HasMedia, TranslatableContract
     public function fillTranslations(array $translations): self
     {
         foreach ($translations as $locale => $data) {
-            if (!empty($data['title'])) {
+            if (! empty($data['title'])) {
                 $slug = $data['slug'] ?? Str::slug($data['title']);
-                
+
                 // Ensure slug uniqueness per locale
                 $slug = $this->generateUniqueSlug($slug, $locale);
-    
+
                 $this->translateOrNew($locale)->fill([
                     'title' => $data['title'],
                     'slug' => $slug,
@@ -58,20 +58,20 @@ class Tag extends Model implements HasMedia, TranslatableContract
                 ]);
             }
         }
-        
+
         return $this;
     }
-    
+
     private function generateUniqueSlug(string $slug, string $locale): string
     {
         $originalSlug = $slug;
         $count = 1;
-    
+
         while (TagTranslation::where('slug', $slug)->where('locale', $locale)->exists()) {
-            $slug = $originalSlug . '-' . $count;
+            $slug = $originalSlug.'-'.$count;
             $count++;
         }
-    
+
         return $slug;
     }
 
@@ -81,7 +81,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
     public function getTranslationsArray(): array
     {
         $translations = [];
-        
+
         foreach ($this->translations as $translation) {
             $translations[$translation->locale] = [
                 'title' => $translation->title,
@@ -89,7 +89,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
                 'content' => $translation->content,
             ];
         }
-        
+
         return $translations;
     }
 
@@ -98,12 +98,12 @@ class Tag extends Model implements HasMedia, TranslatableContract
      */
     public static function createWithTranslations(array $attributes, array $translations): self
     {
-        $tag = new static();
+        $tag = new static;
         $tag->fill($attributes);
         $tag->save();
-        
+
         $tag->fillTranslations($translations)->save();
-        
+
         return $tag;
     }
 
@@ -115,7 +115,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
         $this->fill($attributes);
         $this->fillTranslations($translations);
         $this->save();
-        
+
         return $this;
     }
 
@@ -164,5 +164,4 @@ class Tag extends Model implements HasMedia, TranslatableContract
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
-
 }
