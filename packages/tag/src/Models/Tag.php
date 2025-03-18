@@ -45,47 +45,48 @@ class Tag extends Model implements HasMedia, TranslatableContract
     public function fillTranslations(array $translations): self
     {
         foreach ($translations as $locale => $data) {
-            if (!empty($data['title'])) {
+            if (! empty($data['title'])) {
                 // Get the translation for this locale (or create a new one)
                 $translation = $this->translateOrNew($locale);
-    
+
                 // Check if title has changed
                 if ($translation->title !== $data['title']) {
                     $translation->title = $data['title'];
                 }
-    
+
                 // Handle the slug only if it has changed
                 $slug = $data['slug'] ?? Str::slug($data['title']);
                 if ($translation->slug !== $slug) {
                     $slug = $this->generateUniqueSlug($slug, $locale);
                     $translation->slug = $slug;
                 }
-    
+
                 // Handle content only if it has changed
                 if ($translation->content !== ($data['content'] ?? null)) {
                     $translation->content = $data['content'] ?? null;
                 }
-                
+
                 $translation->save();
             }
         }
-    
+
         return $this;
     }
+
     public function generateUniqueSlug(string $slug, string $locale, int $counter = 0): string
     {
         // Append counter if needed
         $uniqueSlug = $counter > 0 ? "{$slug}-{$counter}" : $slug;
-    
+
         // Check if the slug exists for this locale
         $exists = static::whereHas('translations', function ($query) use ($uniqueSlug, $locale) {
             $query->where('slug', $uniqueSlug)->where('locale', $locale);
         })->exists();
-    
+
         // If exists, try again with an incremented counter
         return $exists ? $this->generateUniqueSlug($slug, $locale, $counter + 1) : $uniqueSlug;
     }
-    
+
     /**
      * Get all translations as a formatted array
      */
