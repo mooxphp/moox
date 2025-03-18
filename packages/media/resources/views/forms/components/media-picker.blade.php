@@ -41,13 +41,13 @@
         @if ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord)
             <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
                 x-on:click="
-                                                                                                $dispatch('set-media-picker-model', {
-                                                                                                    modelId: {{ $getRecord()?->id ?? 0 }},
-                                                                                                    modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
-                                                                                                });
-                                                                                                $dispatch('open-modal', { id: 'mediaPickerModal' });
-                                                                                            ">
-                <span>Bild auswählen</span>
+                        $dispatch('set-media-picker-model', {
+                        modelId: {{ $getRecord()?->id ?? 0 }},
+                     modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
+                        });
+                        $dispatch('open-modal', { id: 'mediaPickerModal' });
+                        ">
+                <span>{{ __('media::fields.select_media') }}</span>
             </x-filament::button>
         @endif
 
@@ -79,7 +79,7 @@
 
         <div x-show="selectedMedia.length === 0"
             class="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 flex items-center justify-center text-sm text-gray-500">
-            Kein Bild ausgewählt.
+            {{ __('media::fields.no_media_selected') }}
         </div>
 
         <livewire:media-picker-modal id="media-picker-modal" :multiple="$field->isMultiple()"

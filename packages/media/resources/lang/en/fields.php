@@ -49,7 +49,7 @@ return [
     // Metadata
     'metadata' => 'Metadata',
     'alt_text' => 'Alt Text',
-    'internal_notes' => 'Internal Notes',
+    'internal_note' => 'Internal Notes',
     'name' => 'Name',
     'title' => 'Title',
     'description' => 'Description',
@@ -60,10 +60,26 @@ return [
     'month' => 'This Month',
     'year' => 'This Year',
 
-    // Additional keys
+    // Media Types
     'uploaded' => 'Uploaded',
     'images' => 'Images',
     'videos' => 'Videos',
     'audios' => 'Audios',
     'documents' => 'Documents',
+
+    // Errors
+    'class_not_found' => 'The class ":class" does not exist.',
+
+    // Media Picker
+    'upload_and_select_media' => 'Upload & Select Media',
+    'no_media_selected' => 'No media selected.',
+    'select_media' => 'Select Media',
+    'search' => 'Search for media...',
+    'all_types' => 'All Types',
+    'all_periods' => 'All Periods',
+    'edit_metadata' => 'Edit Metadata',
+    'file_type' => 'File Type',
+    'apply_selection' => 'Apply Selection',
+    'close' => 'Close',
+
 ];
