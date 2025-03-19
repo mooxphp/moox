@@ -1,16 +1,21 @@
 ![Moox Featherlight](https://github.com/mooxphp/moox/raw/main/art/banner/made-with-moox.jpg)
 
-# Moox Featherlight
+# Moox Featherlight Theme
 
-This is my package featherlight
+This is our base theme Moox Featherlight. It is built upon:
+
+-   [TailwindCSS 4.0](https://tailwindcss.com)
+-   [DaisyUI 5](https://daisyui.com/)
+-   [AlpineJS 3](https://alpinejs.dev)
+-   [Alpine-Ajax](https://alpine-ajax.js.org/)
 
 ## Features
 
 <!--features-->
 
--   Feature 1
--   Feature 2
--   Feature 3
+-   Fast
+-   Faster
+-   Featherligth
 
 <!--/features-->
 
