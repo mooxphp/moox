@@ -89,7 +89,8 @@ class MediaPickerModal extends Component implements HasForms
 
     public function form(Form $form): Form
     {
-        $upload = FileUpload::make(__('media::fields.upload'))
+        $upload = FileUpload::make(__('files'))
+            ->label(__('media::fields.upload'))
             ->afterStateUpdated(function ($state) {
                 if (! $state) {
                     return;
