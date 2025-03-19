@@ -11,6 +11,7 @@ use Moox\Core\Traits\Simple\SingleSimpleInModel;
 /**
  * @property-read \Moox\Data\Models\StaticLanguage|null $language
  * @property-read \Moox\Data\Models\StaticCountry|null $country
+ * @property string $flag_country_code
  */
 class StaticLocale extends Model
 {
@@ -41,6 +42,10 @@ class StaticLocale extends Model
 
     public function getLanguageFlagIconAttribute(): ?string
     {
+        if (! $this->flag_country_code) {
+            return null;
+        }
+
         return match ($this->language?->alpha2) {
             'ar' => 'flag-ar_arab',
             default => 'flag-'.strtolower($this->flag_country_code),
@@ -49,6 +54,10 @@ class StaticLocale extends Model
 
     public function getCountryFlagIconAttribute(): ?string
     {
-        return 'flag-'.strtolower($this->country?->alpha2);
+        if (! $this->country?->alpha2) {
+            return null;
+        }
+
+        return 'flag-'.strtolower($this->country->alpha2);
     }
 }
