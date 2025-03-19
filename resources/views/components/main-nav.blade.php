@@ -11,6 +11,9 @@
     <x-nav-link href="{{ route('components') }}" :active="request()->routeIs('components')">
         Components
     </x-nav-link>
+    <x-nav-link href="{{ route('icons') }}" :active="request()->routeIs('icons')">
+        Icons
+    </x-nav-link>
     <x-nav-link href="{{ route('docs') }}" :active="request()->routeIs('docs')">
         Docs
     </x-nav-link>

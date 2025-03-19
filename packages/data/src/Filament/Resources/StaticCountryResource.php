@@ -11,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -167,7 +168,12 @@ class StaticCountryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('alpha2')->label(__('data::fields.alpha2')),
+                IconColumn::make('alpha2')
+                    ->label('')
+                    ->icon(fn (string $state): ?string => @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$state}.svg")) ? "flag-{$state}" : null),
+                TextColumn::make('alpha2_')
+                    ->label('Alpha-2')
+                    ->getStateUsing(fn ($record) => $record->alpha2),
                 TextColumn::make('alpha3_b')->label(__('data::fields.alpha3_b')),
                 TextColumn::make('alpha3_t')->label(__('data::fields.alpha3_t')),
                 TextColumn::make('common_name')->label(__('data::fields.common_name')),

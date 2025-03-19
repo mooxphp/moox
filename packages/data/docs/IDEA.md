@@ -979,32 +979,7 @@ https://github.com/nevadskiy/laravel-geonames
 
 -   Timezones - https://timezonedb.com/download
 
--   beide in Moox packen und verdrahten
--   icons folder
-    -   languages
-        -   circle
-        -   ...
-    -   countries
-        -   circle
-        -   ...
--   Iterationen ...
-
-moox/locate
-
 https://github.com/tomatophp/filament-locations/
-
--   Area (Continent, Subcontinent, Economic Area)
--   Country
--   Region (Federal states etc.)
--   Config:
-    -   countries
-        -   use_flag_style = circle
-    -   languages
-        -   use_flag_style = square
-    -   areas
-        -   use_flag_style = ...
-
-moox/flags
 
 -   https://de.wikipedia.org/wiki/Liste_der_ISO-639-Sprachcodes vs https://en.wikipedia.org/wiki/IETF_language_tag
 -
@@ -1020,14 +995,6 @@ moox/flags
 
 -   Blade Flags https://github.com/MohmmedAshraf/blade-flags News https://laravel-news.com/laravel-blade-country-language-icons und Video https://www.youtube.com/watch?v=XTnKU-VCOB8
 -   https://github.com/stijnvanouplines/blade-country-flags other one
-
-Versions:
-
--   Circle - https://github.com/HatScripts/circle-flags/
--   Rounded
--   Square
--   Rectangled
--   Original - https://github.com/hampusborgos/country-flags
 
 https://github.com/propaganistas/laravel-phone, see https://laravel-phone.herokuapp.com/
 https://filamentphp.com/plugins/ysfkaya-phone-input

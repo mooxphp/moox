@@ -11,7 +11,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -119,12 +118,8 @@ class StaticLanguageResource extends Resource
     {
         return $table
             ->columns([
-                IconColumn::make('alpha2')
-                    ->label('')
-                    ->icon(fn (string $state): ?string => @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$state}.svg")) ? "flag-{$state}" : null),
-                TextColumn::make('alpha2_')
-                    ->label('Alpha-2')
-                    ->getStateUsing(fn ($record) => $record->alpha2),
+                TextColumn::make('alpha2')
+                    ->label(__('data::fields.alpha2')),
                 TextColumn::make('alpha3_b')
                     ->label(__('data::fields.alpha3_b')),
                 TextColumn::make('alpha3_t')

@@ -19,6 +19,10 @@ Route::get('/themes', function () {
     return view('themes');
 })->name('themes');
 
+Route::get('/icons', function () {
+    return view('icons');
+})->name('icons');
+
 Route::get('/license', function () {
     return view('license');
 })->name('license');
