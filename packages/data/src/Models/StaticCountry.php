@@ -71,6 +71,6 @@ class StaticCountry extends Model
 
     public function getFlagIconAttribute(): ?string
     {
-        return "flag-{$this->alpha2}";
+        return 'flag-'.strtolower($this->alpha2);
     }
 }

@@ -43,12 +43,12 @@ class StaticLocale extends Model
     {
         return match ($this->language?->alpha2) {
             'ar' => 'flag-ar_arab',
-            default => "flag-{$this->language?->alpha2}",
+            default => 'flag-'.strtolower($this->language?->alpha2),
         };
     }
 
     public function getCountryFlagIconAttribute(): ?string
     {
-        return "flag-{$this->country?->alpha2}";
+        return 'flag-'.strtolower($this->country?->alpha2);
     }
 }
