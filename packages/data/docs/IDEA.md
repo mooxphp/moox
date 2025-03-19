@@ -157,11 +157,11 @@ CREATE TABLE static_countries (
     native_names JSON DEFAULT NULL
 	other_names JSON DEFAULT NULL
     exonyms JSON DEFAULT NULL,
-    region ENUM('Africa', 'Americas', 'Asia', 'Europe', 'Oceania', 'Antarctica') DEFAULT NULL,
+    region ENUM('Africa', 'Americas', 'Asia', 'Europe', 'Oceania', 'Antarctic') DEFAULT NULL,
     subregion ENUM(
         'Northern Africa', 'Sub-Saharan Africa', 'Eastern Africa', 'Middle Africa',
         'Southern Africa', 'Western Africa', 'Latin America and the Caribbean',
-        'Northern America', 'Caribbean', 'Central America', 'South America',
+        'North America', 'Caribbean', 'Central America', 'South America',
         'Central Asia', 'Eastern Asia', 'South-Eastern Asia', 'Southern Asia',
         'Western Asia', 'Eastern Europe', 'Northern Europe', 'Southern Europe',
         'Western Europe', 'Australia and New Zealand', 'Melanesia', 'Micronesia',
@@ -193,6 +193,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
+
+enum('Northern Africa','Sub-Saharan Africa','Eastern Africa','Middle Africa','Southern Africa','Western Africa','Latin America and the Caribbean','North America','Caribbean','Central America','South America','Central Asia','Eastern Asia','South-Eastern Asia','Southern Asia','Western Asia','Eastern Europe','Northern Europe','Southern Europe','Western Europe','Australia and New Zealand','Melanesia','Micronesia','Polynesia','Central Europe')
+
+enum('Northern Africa','Sub-Saharan Africa','Eastern Africa','Middle Africa','Southern Africa','Western Africa','Latin America and the Caribbean','North America','Caribbean','Central America','South America','Central Asia','Eastern Asia','South-Eastern Asia','Southern Asia','Western Asia','Eastern Europe','Northern Europe','Southern Europe','Western Europe','Australia and New Zealand','Melanesia','Micronesia','Polynesia','Central Europe')
+
 class CreateStaticCountriesTable extends Migration
 {
     public function up()
@@ -206,13 +212,13 @@ class CreateStaticCountriesTable extends Migration
             $table->json('native_names')->nullable();
             $table->json('other_names')->nullable();
             $table->json('exonyms')->nullable();
-            $table->enum('region', ['Africa', 'Americas', 'Asia', 'Europe', 'Oceania', 'Antarctica'])->nullable();
+            $table->enum('region', ['Africa', 'Americas', 'Asia', 'Europe', 'Oceania', 'Antarctic'])->nullable();
             $table->enum('subregion', [
                 'Northern Africa', 'Sub-Saharan Africa', 'Eastern Africa', 'Middle Africa',
                 'Southern Africa', 'Western Africa', 'Latin America and the Caribbean',
-                'Northern America', 'Caribbean', 'Central America', 'South America',
+                'North America', 'Caribbean', 'Central America', 'South America',
                 'Central Asia', 'Eastern Asia', 'South-Eastern Asia', 'Southern Asia',
-                'Western Asia', 'Eastern Europe', 'Northern Europe', 'Southern Europe',
+                'Western Asia', 'Central Europe', 'Eastern Europe', 'Northern Europe', 'Southern Europe',
                 'Western Europe', 'Australia and New Zealand', 'Melanesia', 'Micronesia',
                 'Polynesia'
             ])->nullable();
@@ -638,7 +644,7 @@ class CreateStaticLocalesTable extends Migration
             $table->id();
             $table->foreignId('language_id')->constrained('static_languages')->onDelete('cascade');
             $table->foreignId('country_id')->constrained('static_countries')->onDelete('cascade');
-            $table->string('locale', 5);
+            $table->string('locale', 10);
             $table->string('name');
             $table->boolean('is_official_language')->default(false);
             $table->timestamps();

@@ -21,7 +21,7 @@ class StaticCountrySeeder extends Seeder
                 'native_name' => 'United States',
                 'exonyms' => ['USA', 'America', 'Estados Unidos'],
                 'region' => 'Americas',
-                'subregion' => 'Northern America',
+                'subregion' => 'North America',
                 'calling_code' => '+1',
                 'capital' => 'Washington, D.C.',
                 'population' => 331000000,

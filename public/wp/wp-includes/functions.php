@@ -6725,7 +6725,7 @@ function wp_timezone_choice($selected_zone, $locale = null)
 {
     static $mo_loaded = false, $locale_loaded = null;
 
-    $continents = ['Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific'];
+    $continents = ['Africa', 'America', 'Antarctic', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific'];
 
     // Load translations for continents and cities.
     if (! $mo_loaded || $locale !== $locale_loaded) {

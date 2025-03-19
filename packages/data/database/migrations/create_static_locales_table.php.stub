@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('language_id')->constrained('static_languages')->onDelete('cascade');
             $table->foreignId('country_id')->constrained('static_countries')->onDelete('cascade');
-            $table->string('locale', 5);
+            $table->string('locale', 10);
             $table->string('name');
             $table->boolean('is_official_language')->default(false);
             $table->timestamps();

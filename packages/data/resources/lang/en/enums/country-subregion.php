@@ -9,7 +9,7 @@ return [
     'caribbean' => 'Caribbean',
     'central_america' => 'Central America',
     'south_america' => 'South America',
-    'northern_america' => 'Northern America',
+    'northern_america' => 'North America',
     'central_asia' => 'Central Asia',
     'eastern_asia' => 'Eastern Asia',
     'southern_asia' => 'Southern Asia',
