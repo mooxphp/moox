@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
+use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -45,7 +46,7 @@ class DataServiceProvider extends PackageServiceProvider
             ->hasConfigFile(['data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone'])
             ->hasViews()
             ->hasTranslations()
-            ->hasCommands()
+            ->hasCommand(ImportStaticDataCommand::class)
             ->hasMigrations([
                 'create_static_countries_table',
                 'create_static_languages_table',
