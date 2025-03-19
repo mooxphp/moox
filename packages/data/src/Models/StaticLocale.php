@@ -40,13 +40,17 @@ class StaticLocale extends Model
 
     protected $casts = [];
 
+    protected array $languageToFlagMap = [
+        'mi' => 'nz',  // Māori -> New Zealand
+        'ar' => 'ar_arab',
+    ];
+
     public function getLanguageFlagIconAttribute(): ?string
     {
         if ($this->language?->alpha2) {
-            return match ($this->language->alpha2) {
-                'ar' => 'flag-ar_arab',
-                default => 'flag-'.strtolower($this->language->alpha2),
-            };
+            $flagCode = $this->languageToFlagMap[$this->language->alpha2] ?? strtolower($this->language->alpha2);
+
+            return 'flag-'.$flagCode;
         }
 
         if (! $this->country?->alpha2) {
