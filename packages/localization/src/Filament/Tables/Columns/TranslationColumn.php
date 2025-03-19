@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\TextColumn;
+use Moox\Data\Models\StaticLocale;
 
 class TranslationColumn extends TextColumn
 {
@@ -18,6 +19,13 @@ class TranslationColumn extends TextColumn
             ->sortable()
             ->toggleable()
             ->alignCenter()
-            ->searchable();
+            ->searchable()
+            ->state(function ($record) {
+                return $record->translations->map(function ($translation) {
+                    $locale = StaticLocale::where('locale', $translation->locale)->first();
+
+                    return $locale?->language_flag_icon ?? 'flag-'.$translation->locale;
+                })->toArray();
+            });
     }
 }
