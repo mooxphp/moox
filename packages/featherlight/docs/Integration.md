@@ -1,3 +1,8 @@
 # Integration
 
-In this section, we will cover the integration of Moox Featherlight into your project.
+Themes should always be prebuilt, as the will not automatically built on deployment:
+
+```bash
+cd packages/featherlight
+npm run build
+```
