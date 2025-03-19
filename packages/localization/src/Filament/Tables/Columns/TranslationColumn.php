@@ -22,9 +22,16 @@ class TranslationColumn extends TextColumn
             ->searchable()
             ->state(function ($record) {
                 return $record->translations->map(function ($translation) {
-                    $locale = StaticLocale::where('locale', $translation->locale)->first();
+                    $languageCode = explode('_', $translation->locale)[0];
+                    $locale = StaticLocale::whereHas('language', function ($query) use ($languageCode) {
+                        $query->where('alpha2', $languageCode);
+                    })->first();
 
-                    return $locale->language_flag_icon ?? 'flag-'.$translation->locale;
+                    if ($locale) {
+                        return $locale->language_flag_icon;
+                    }
+
+                    return 'flag-'.strtolower($languageCode);
                 })->toArray();
             });
     }
