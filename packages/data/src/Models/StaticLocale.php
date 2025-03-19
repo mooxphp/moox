@@ -43,9 +43,9 @@ class StaticLocale extends Model
     {
         return match ($this->language?->alpha2) {
             'ar' => 'flag-ar_arab',
-            default => @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$this->language?->alpha2}.svg"))
+            default => @file_exists(__DIR__.'/../../../../flag-icons-circle/resources/svg/'.$this->language?->alpha2.'.svg')
                 ? "flag-{$this->language?->alpha2}"
-                : (@file_exists(base_path("packages/flag-icons-circle/resources/svg/{$this->country?->alpha2}.svg"))
+                : (@file_exists(__DIR__.'/../../../../flag-icons-circle/resources/svg/'.$this->country?->alpha2.'.svg')
                     ? "flag-{$this->country?->alpha2}"
                     : null),
         };
@@ -53,7 +53,7 @@ class StaticLocale extends Model
 
     public function getCountryFlagIconAttribute(): ?string
     {
-        return @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$this->country?->alpha2}.svg"))
+        return @file_exists(__DIR__.'/../../../../flag-icons-circle/resources/svg/'.$this->country?->alpha2.'.svg')
             ? "flag-{$this->country?->alpha2}"
             : null;
     }
