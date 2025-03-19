@@ -16,8 +16,40 @@
 */
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Title
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title of the Resource in singular and plural.
+    |
+    */
+
     'model_label' => 'trans//media::media.media',
     'plural_model_label' => 'trans//media::media.medias',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation Group
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title of the navigation group in the
+    | Filament Admin Panel. Instead of a translatable
+    | string, you may also use a simple string.
+    |
+    */
+
+    'navigation_group' => 'trans//core::core.cms',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upload
+    |--------------------------------------------------------------------------
+    |
+    | The configuration for the upload feature.
+    |
+    */
 
     'upload' => [
         'resource' => [

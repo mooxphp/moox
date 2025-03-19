@@ -46,6 +46,11 @@ class MediaResource extends Resource
         return config('media.plural_model_label');
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return config('media.navigation_group');
+    }
+
     public static function form(Form $form): Form
     {
         $saveRecord = function ($state, $old, $component) use ($form) {

@@ -200,34 +200,55 @@
 
                     <div class="flex flex-row gap-5 mb-5">
                         <x-laraicon-laravel />
-                        <x-laraicon-breeze />
-                        <x-laraicon-cashier />
-                        <x-laraicon-cloud />
-                        <x-laraicon-dusk />
-                        <x-laraicon-echo />
-                        <x-laraicon-envoyer />
-                        <x-laraicon-valet />
+                        <x-laraicon-breeze class="text-gray-600" />
+                        <x-laraicon-cashier class="text-gray-600" />
+                        <x-laraicon-cloud class="text-gray-600" />
+                        <x-laraicon-dusk class="text-gray-600" />
+                        <x-laraicon-echo class="text-gray-600" />
+                        <x-laraicon-envoyer class="text-orange-600" />
+                        <x-laraicon-vscode />
                     </div>
 
                     <div class="flex flex-row gap-5 mb-5">
                         <x-laraicon-filament class="text-amber-600" />
                         <x-laraicon-forge class="text-teal-600" />
-                        <x-laraicon-horizon />
-                        <x-laraicon-jetstream />
-                        <x-laraicon-livewire />
-                        <x-laraicon-nova />
-                        <x-laraicon-octane />
-                        <x-laraicon-vapor />
+                        <x-laraicon-horizon class="text-gray-600" />
+                        <x-laraicon-jetstream class="text-indigo-600" />
+                        <x-laraicon-livewire class="text-gray-600" />
+                        <x-laraicon-nova class="text-gray-600" />
+                        <x-laraicon-octane class="text-gray-600" />
+                        <x-laraicon-react />
                     </div>
 
                     <div class="flex flex-row gap-5 mb-5">
-                        <x-laraicon-pint/>
-                        <x-laraicon-sail/>
-                        <x-laraicon-sanctum/>
-                        <x-laraicon-scout/>
-                        <x-laraicon-socialite/>
-                        <x-laraicon-spark/>
-                        <x-laraicon-telescope/>
+                        <x-laraicon-pint class="text-gray-600" />
+                        <x-laraicon-sail class="text-gray-600" />
+                        <x-laraicon-sanctum class="text-gray-600" />
+                        <x-laraicon-scout class="text-red-400" />
+                        <x-laraicon-socialite class="text-gray-600" />
+                        <x-laraicon-spark class="text-gray-600" />
+                        <x-laraicon-telescope class="text-gray-600" />
+                        <x-laraicon-svelte  />
+                    </div>
+
+                    <div class="flex flex-row gap-5 mb-5">
+                        <x-laraicon-alpine />
+                        <x-laraicon-moox class="text-violet-700" />
+                        <x-laraicon-tailwind />
+                        <x-laraicon-vite />
+                        <x-laraicon-vue />
+                        <x-laraicon-composer />
+                        <x-laraicon-github />
+                        <x-laraicon-lumen />
+                    </div>
+
+                    <div class="flex flex-row gap-5 mb-5">
+                        <x-laraicon-git />
+                        <x-laraicon-vapor class="text-gray-600" />
+                        <x-laraicon-valet class="text-gray-600" />
+                        <x-laraicon-php />
+                        <x-laraicon-mysql />
+                        <x-laraicon-postgresql />
                     </div>
 
                     <h2 class="text-slate-300 text-xl font-bold mb-5">File Icons</h2>

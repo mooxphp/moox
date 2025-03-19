@@ -37,7 +37,7 @@ return [
     |
     */
 
-    'class' => 'w-20 h-20 text-gray-700 bg-white rounded-md p-5',
+    'class' => 'w-20 h-20 bg-white rounded-md p-5',
 
     /*
     |-----------------------------------------------------------------

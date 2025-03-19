@@ -15,8 +15,26 @@
 |
 */
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Title
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title of the Resource in singular and plural.
+    |
+    */
     'single' => 'trans//localization::localization.localization',
     'plural' => 'trans//localization::localization.localizations',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tabs
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title, icon and query of the Tabs.
+    |
+    */
     'tabs' => [
         'all' => [
             'label' => 'trans//core::core.all',
@@ -46,9 +64,17 @@ return [
             ],
         ],
     ],
-    'relations' => [],
-    'taxonomies' => [],
-    'navigation_group' => 'Localization',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group and sort of the Resource,
+    | and if the panel is enabled.
+    |
+    */
+    'navigation_group' => 'trans//core::core.system',
     'navigation_sort' => 100,
     'enable-panel' => true,
 
