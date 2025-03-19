@@ -41,30 +41,26 @@ class StaticLocale extends Model
     protected $casts = [];
 
     protected array $languageToFlagMap = [
-        'mi' => 'nz',  // Māori -> New Zealand
-        'ar' => 'ar_arab',  // Arabic
-        'nzs' => 'nz',  // New Zealand Sign Language -> New Zealand
-        'he' => 'il',  // Hebrew -> Israel
-        'en' => 'gb',  // English -> United Kingdom
-        'sh' => 'rs',  // Serbian -> Serbia
-        'sr' => 'rs',  // Serbian (alternative code) -> Serbia
-        'ln' => 'cd',  // Lingala -> Democratic Republic of Congo
-        'zib' => 'zw',  // Zimbabwe Sign Language -> Zimbabwe
+        'ar' => 'ar_arab',
+        'en' => 'gb',
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
     {
-        if ($this->language?->alpha2) {
-            $flagCode = $this->languageToFlagMap[$this->language->alpha2] ?? strtolower($this->country?->alpha2);
-
-            return 'flag-'.$flagCode;
+        if (! $this->language?->alpha2) {
+            return $this->getCountryFlagIconAttribute();
         }
 
-        if (! $this->country?->alpha2) {
-            return null;
+        if (isset($this->languageToFlagMap[$this->language->alpha2])) {
+            return 'flag-'.$this->languageToFlagMap[$this->language->alpha2];
         }
 
-        return 'flag-'.strtolower($this->country->alpha2);
+        $languageFlagCode = strtolower($this->language->alpha2);
+        if (file_exists(resource_path('vendor/flag-icons-circle/flags/flag-'.$languageFlagCode.'.svg'))) {
+            return 'flag-'.$languageFlagCode;
+        }
+
+        return $this->getCountryFlagIconAttribute();
     }
 
     public function getCountryFlagIconAttribute(): ?string
