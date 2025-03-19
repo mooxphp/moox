@@ -62,6 +62,16 @@ return [
             'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
-
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group and sort of the Resource,
+    | and if the panel is enabled.
+    |
+    */
+    'navigation_group' => 'DEV',
 ];

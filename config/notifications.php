@@ -99,7 +99,7 @@ return [
     |
     */
 
-    'navigation_sort' => 1800,
+    'navigation_sort' => 80,
 
     'api' => true,
 ];

@@ -97,21 +97,30 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->plugins([
 
+                // DEVELOPMENT
+                // SoftDeleteItemPlugin::make(),
+
+                // Main
+                ExpiryPlugin::make(),
+                NotificationPlugin::make(),
+
+                // Items
                 DraftPlugin::make(),
                 ItemPlugin::make(),
-                AuditPlugin::make(),
 
+                // CMS
                 PagePlugin::make(),
+                MediaPlugin::make(),
                 CategoryPlugin::make(),
                 TagPlugin::make(),
 
-                NotificationPlugin::make(),
-
+                // Jobs
                 JobsPlugin::make(),
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
 
+                // User
                 UserPlugin::make(),
                 UserDevicePlugin::make(),
                 LoginLinkPlugin::make(),
@@ -119,22 +128,22 @@ class AdminPanelProvider extends PanelProvider
                 PasskeyPlugin::make(),
                 ResetPasswordPlugin::make(),
 
-                ExpiryPlugin::make(),
-                MediaPlugin::make(),
+                // System
+                LocalizationPlugin::make(),
+                AuditPlugin::make(),
 
+                // Training
                 TrainingPlugin::make(),
                 TrainingInvitationPlugin::make(),
                 TrainingDatePlugin::make(),
                 TrainingTypePlugin::make(),
 
-                LocalizationPlugin::make(),
+                // Data
                 StaticLocalePlugin::make(),
                 StaticCountryPlugin::make(),
                 StaticLanguagePlugin::make(),
                 StaticTimezonePlugin::make(),
                 StaticCurrencyPlugin::make(),
-
-                // SoftDeleteItemPlugin::make(),
             ]);
     }
 }
