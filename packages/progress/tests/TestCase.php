@@ -1,9 +1,9 @@
 <?php
 
-namespace Moox\Skeleton\Tests;
+namespace Moox\Progress\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Moox\Skeleton\SkeletonServiceProvider;
+use Moox\Progress\ProgressServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName): string => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName): string => 'VendorName\\Progress\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            SkeletonServiceProvider::class,
+            ProgressServiceProvider::class,
         ];
     }
 
@@ -29,7 +29,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_progress_table.php.stub';
         $migration->up();
         */
     }

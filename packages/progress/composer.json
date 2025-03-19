@@ -1,6 +1,6 @@
 {
-    "name": "moox/skeleton",
-    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "name": "moox/progress",
+    "description": "This is my package progress",
     "keywords": [
         "Moox",
         "Laravel",
@@ -8,7 +8,7 @@
         "Moox package",
         "Laravel package"
     ],
-    "homepage": "https://moox.org/docs/skeleton",
+    "homepage": "https://moox.org/docs/progress",
     "license": "MIT",
     "authors": [
         {
@@ -22,14 +22,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Skeleton\\": "src",
-            "Moox\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Moox\\Progress\\": "src",
+            "Moox\\Progress\\Database\\Factories\\": "database/factories"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Skeleton\\SkeletonServiceProvider"
+                "Moox\\Progress\\ProgressServiceProvider"
             ]
         }
     },
@@ -44,8 +44,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\Skeleton\\Tests\\": "tests",
-            "Moox\\Skeleton\\Database\\Factories\\": "database/factories",
+            "Moox\\Progress\\Tests\\": "tests",
+            "Moox\\Progress\\Database\\Factories\\": "database/factories",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -56,7 +56,7 @@
             "@clear",
             "@prepare"
         ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "clear": "@php vendor/bin/testbench package:purge-progress --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": "@php vendor/bin/testbench workbench:build --ansi",
         "serve": [
