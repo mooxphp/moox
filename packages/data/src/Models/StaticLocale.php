@@ -104,6 +104,8 @@ class StaticLocale extends Model
         'sm' => 'ws',  // Samoan -> Samoa
         'mn' => 'mn',  // Mongolian -> Mongolia
         'sh' => 'rs',  // Serbian -> Serbia
+        'um' => 'se',  // Ume Sami -> Sweden
+        'sr' => 'rs',  // Serbian (alternative code) -> Serbia
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
@@ -112,10 +114,15 @@ class StaticLocale extends Model
             $flagCode = $this->languageToFlagMap[$this->language->alpha2] ?? null;
 
             if (! $flagCode) {
+                \Illuminate\Support\Facades\Log::warning("No flag mapping found for language: {$this->language->alpha2}");
+
                 return null;
             }
 
-            return 'flag-'.$flagCode;
+            $flagIcon = 'flag-'.$flagCode;
+            \Illuminate\Support\Facades\Log::info("Using flag icon: {$flagIcon} for language: {$this->language->alpha2}");
+
+            return $flagIcon;
         }
 
         if (! $this->country?->alpha2) {
