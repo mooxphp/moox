@@ -42,6 +42,13 @@ class StaticLocale extends Model
 
     public function getLanguageFlagIconAttribute(): ?string
     {
+        if ($this->language?->alpha2) {
+            return match ($this->language->alpha2) {
+                'ar' => 'flag-ar_arab',
+                default => 'flag-'.strtolower($this->language->alpha2),
+            };
+        }
+
         if (! $this->country?->alpha2) {
             return null;
         }
