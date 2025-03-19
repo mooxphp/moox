@@ -994,24 +994,6 @@ return [
     'system_navigation_group' => 'trans//core::core.system',
     'meta_navigation_group' => 'trans//core::core.meta',
     'user_navigation_group' => 'trans//core::user.users',
-    'temp_navigation_group' => 'Press Temp',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Navigation Sort
-    |--------------------------------------------------------------------------
-    |
-    | This values are the sort order of the navigation items in the
-    | Filament Admin Panel. If you use a bunch of Moox
-    | plugins, everything should be in order.
-    |
-    */
-
-    'press_navigation_sort' => 2000,
-    'system_navigation_sort' => 7000,
-    'meta_navigation_sort' => 8000,
-    'user_navigation_sort' => 6015,
-    'temp_navigation_sort' => 999,
 
     /*
     |--------------------------------------------------------------------------

@@ -67,12 +67,6 @@ class FullItemResource extends Resource
     }
 
     #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('previews.navigation_sort') + 1;
-    }
-
-    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([

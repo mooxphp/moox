@@ -173,10 +173,4 @@ class TrainingInvitationResource extends Resource
             'prepare' => PrepareTrainingInvitation::route('/{record}/prepare'),
         ];
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('trainings.navigation_sort') + 1;
-    }
 }

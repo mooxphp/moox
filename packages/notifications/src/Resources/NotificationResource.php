@@ -105,25 +105,25 @@ class NotificationResource extends Resource
     #[Override]
     public static function getModelLabel(): string
     {
-        return config('notifications.resources.notifications.single');
+        return config('notifications.notifications.single');
     }
 
     #[Override]
     public static function getPluralModelLabel(): string
     {
-        return config('notifications.resources.notifications.plural');
+        return config('notifications.notifications.plural');
     }
 
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('notifications.resources.notifications.plural');
+        return config('notifications.notifications.plural');
     }
 
     #[Override]
     public static function getBreadcrumb(): string
     {
-        return config('notifications.resources.notifications.single');
+        return config('notifications.notifications.single');
     }
 
     #[Override]
@@ -141,11 +141,5 @@ class NotificationResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return config('notifications.navigation_group');
-    }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('notifications.navigation_sort') + 2;
     }
 }

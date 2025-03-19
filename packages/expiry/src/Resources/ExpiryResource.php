@@ -211,10 +211,4 @@ class ExpiryResource extends Resource
     {
         return config('expiry.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('expiry.navigation_sort') + 1;
-    }
 }

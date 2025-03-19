@@ -128,10 +128,4 @@ class PermissionResource extends Resource
     {
         return __('permission::translations.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('permission.navigation_sort');
-    }
 }

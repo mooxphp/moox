@@ -218,9 +218,4 @@ class MooxProjectResource extends Resource
     {
         return __('devops::translations.navigation_group');
     }
-
-    public static function getNavigationSort(): ?int
-    {
-        return config('devops.navigation_sort');
-    }
 }

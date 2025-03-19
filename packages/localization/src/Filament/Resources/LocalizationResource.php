@@ -48,11 +48,6 @@ class LocalizationResource extends Resource
         return config('localization.navigation_group');
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return config('localization.navigation_sort') + 1;
-    }
-
     public static function form(Form $form): Form
     {
         return $form

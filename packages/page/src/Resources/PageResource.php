@@ -117,10 +117,4 @@ class PageResource extends Resource
     {
         return __('page::translations.breadcrumb');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('page.navigation_sort');
-    }
 }

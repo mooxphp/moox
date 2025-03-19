@@ -62,11 +62,6 @@ class ItemResource extends BaseItemResource
         return config('item.navigation_group');
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return config('item.navigation_sort') + 1;
-    }
-
     public static function form(Form $form): Form
     {
         $taxonomyFields = static::getTaxonomyFields();

@@ -226,10 +226,4 @@ class AuditResource extends Resource
     {
         return config('audit.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('audit.navigation_sort') + 1;
-    }
 }

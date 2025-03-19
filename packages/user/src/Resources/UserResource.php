@@ -350,10 +350,4 @@ class UserResource extends Resource
     {
         return config('user.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('user.navigation_sort') + 1;
-    }
 }

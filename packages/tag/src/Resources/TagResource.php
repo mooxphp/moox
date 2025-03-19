@@ -299,12 +299,6 @@ class TagResource extends Resource
         return config('tag.navigation_group');
     }
 
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('tag.navigation_sort') + 3;
-    }
-
     protected static function initUserModel(): void
     {
         if (static::$authorModel === null) {

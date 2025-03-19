@@ -111,10 +111,4 @@ class ResetPasswordResource extends Resource
     {
         return config('security.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('security.navigation_sort') + 5;
-    }
 }

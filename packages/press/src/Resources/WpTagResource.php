@@ -155,10 +155,4 @@ class WpTagResource extends Resource
     {
         return config('press.press_navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('press.press_navigation_sort') + 5;
-    }
 }

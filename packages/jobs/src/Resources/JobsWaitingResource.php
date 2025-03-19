@@ -167,10 +167,4 @@ class JobsWaitingResource extends Resource
     {
         return __('jobs::translations.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('jobs.navigation_sort') + 1;
-    }
 }

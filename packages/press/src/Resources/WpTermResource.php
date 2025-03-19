@@ -192,10 +192,4 @@ class WpTermResource extends Resource
     {
         return config('press.meta_navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('press.meta_navigation_sort') + 5;
-    }
 }

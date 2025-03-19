@@ -55,11 +55,6 @@ class StaticCountriesStaticCurrenciesResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return config('data.navigation-sort') + 1;
-    }
-
     public static function form(Form $form): Form
     {
         return $form->schema([

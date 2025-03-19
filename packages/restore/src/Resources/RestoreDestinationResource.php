@@ -205,9 +205,4 @@ class RestoreDestinationResource extends Resource
     {
         return config('restore.navigation_group');
     }
-
-    public static function getNavigationSort(): ?int
-    {
-        return config('restore.navigation_sort') + 3;
-    }
 }

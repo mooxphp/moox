@@ -185,10 +185,4 @@ class UserDeviceResource extends Resource
     {
         return config('user-device.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('user-device.navigation_sort') + 2;
-    }
 }

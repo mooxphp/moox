@@ -464,10 +464,4 @@ class WpUserResource extends Resource
     {
         return config('press.user_navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('press.user_navigation_sort') + 1;
-    }
 }

@@ -388,12 +388,6 @@ class CategoryResource extends Resource
         return config('category.navigation_group');
     }
 
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('category.navigation_sort') + 3;
-    }
-
     public static function getTableQuery(?string $currentTab = null): Builder
     {
         $query = parent::getEloquentQuery()->withoutGlobalScopes();

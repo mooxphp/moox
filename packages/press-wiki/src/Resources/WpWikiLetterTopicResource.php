@@ -141,12 +141,6 @@ class WpWikiLetterTopicResource extends Resource
     #[Override]
     public static function getNavigationGroup(): ?string
     {
-        return config('press-wiki.temp_navigation_group');
-    }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('press-wiki.temp_navigation_sort') + 3;
+        return config('press-wiki.navigation_group');
     }
 }

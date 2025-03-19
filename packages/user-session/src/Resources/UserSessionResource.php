@@ -183,10 +183,4 @@ class UserSessionResource extends Resource
     {
         return config('user-session.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('user-session.navigation_sort') + 3;
-    }
 }

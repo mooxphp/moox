@@ -70,12 +70,11 @@ return [
     | Navigation
     |--------------------------------------------------------------------------
     |
-    | The navigation group and sort of the Resource,
+    | The navigation group of the Resource,
     | and if the panel is enabled.
     |
     */
     'navigation_group' => 'trans//core::core.system',
-    'navigation_sort' => 100,
     'enable-panel' => true,
 
 ];

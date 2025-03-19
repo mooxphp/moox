@@ -176,10 +176,4 @@ class PasskeyResource extends Resource
     {
         return config('passkey.navigation_group');
     }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return config('passkey.navigation_sort') + 6;
-    }
 }

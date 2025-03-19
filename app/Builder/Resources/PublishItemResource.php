@@ -53,11 +53,6 @@ class PublishItemResource extends Resource
         return config('previews.navigation_group');
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return config('previews.navigation_sort') + 1;
-    }
-
     public static function form(Form $form): Form
     {
         return $form->schema([
