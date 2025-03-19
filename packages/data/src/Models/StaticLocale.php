@@ -43,7 +43,7 @@ class StaticLocale extends Model
     {
         return match ($this->language?->alpha2) {
             'ar' => 'flag-ar_arab',
-            default => 'flag-'.strtolower($this->language?->alpha2),
+            default => 'flag-'.strtolower($this->country?->alpha2),
         };
     }
 
