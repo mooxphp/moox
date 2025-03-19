@@ -40,13 +40,10 @@ class MediaServiceProvider extends PackageServiceProvider
 
         Gate::policy(Media::class, MediaPolicy::class);
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
         Livewire::component('media-uploader', MediaUploader::class);
 
-        $this->publishes([
-            __DIR__.'/../resources/dist/icons' => public_path('vendor/media/icons'),
-        ], 'media-icons');
 
         FilamentAsset::register([
             Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
@@ -55,7 +52,7 @@ class MediaServiceProvider extends PackageServiceProvider
 
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
-            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            fn(): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
         );
     }

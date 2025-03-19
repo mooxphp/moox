@@ -6,6 +6,7 @@ return [
     'file|files' => 'File|Files',
     'link|links' => 'Link|Links',
     'no_title' => 'No Title',
+    'upload' => 'Upload File',
 
     // File Information
     'mime_type' => 'File Type',

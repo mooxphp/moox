@@ -6,6 +6,7 @@ return [
     'file|files' => 'Datei|Dateien',
     'link|links' => 'Verknüpfung|Verknüpfungen',
     'no_title' => 'Kein Titel',
+    'upload' => 'Datei hochladen',
 
     // File Information
     'mime_type' => 'Dateityp',

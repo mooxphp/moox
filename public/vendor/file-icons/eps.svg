@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="uuid-cf59968e-2a42-4cfd-a451-b7ffe8679d27" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40">
+  <defs>
+    <clipPath id="uuid-9ef385d4-5a7c-46bd-a50c-b9ef63153df0">
+      <rect width="40" height="40" fill="none"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#uuid-9ef385d4-5a7c-46bd-a50c-b9ef63153df0)">
+    <g>
+      <path d="M39,7.96v28.04c0,2.21-1.79,4-4,4H13c-2.21,0-4-1.79-4-4V4C9,1.79,10.79,0,13,0h17.34l8.66,7.96Z" fill="#dadce0"/>
+      <path d="M39,7.96h-7.66c-.55,0-1-.45-1-1V0l8.66,7.96Z" fill="#939393"/>
+      <path d="M22.64,23.86H2.98c-1.39,0-2.52,1.13-2.52,2.52v5.86c0,1.39,1.13,2.52,2.52,2.52h19.65c1.39,0,2.52-1.13,2.52-2.52v-5.86c0-1.39-1.13-2.52-2.52-2.52Z" fill="#289300"/>
+      <text transform="translate(3.14 32.34)" fill="#e5d4ff" font-family="Arial-Black, &apos;Arial Black&apos;" font-size="9" font-weight="800"><tspan x="0" y="0">EPS</tspan></text>
+    </g>
+  </g>
+</svg>

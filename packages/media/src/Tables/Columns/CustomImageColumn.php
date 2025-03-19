@@ -9,12 +9,60 @@ use Moox\Media\Models\MediaUsable;
 
 class CustomImageColumn extends ImageColumn
 {
+    private array $iconMap = [
+        'application/pdf' => '/vendor/file-icons/pdf.svg',
+        'application/msword' => '/vendor/file-icons/doc.svg',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => '/vendor/file-icons/doc.svg',
+        'application/vnd.ms-excel' => '/vendor/file-icons/xls.svg',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => '/vendor/file-icons/xls.svg',
+        'application/vnd.ms-powerpoint' => '/vendor/file-icons/ppt.svg',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => '/vendor/file-icons/ppt.svg',
+        'video/mp4' => '/vendor/file-icons/mp4.svg',
+        'video/webm' => '/vendor/file-icons/mp4.svg',
+        'video/quicktime' => '/vendor/file-icons/mp4.svg',
+        'audio/mpeg' => '/vendor/file-icons/mp3.svg',
+        'audio/wav' => '/vendor/file-icons/mp3.svg',
+        'audio/ogg' => '/vendor/file-icons/mp3.svg',
+        'image/svg+xml' => '/vendor/file-icons/svg.svg',
+        'image/jpeg' => '/vendor/file-icons/jpg.svg',
+        'image/png' => '/vendor/file-icons/png.svg',
+        'image/vnd.adobe.photoshop' => '/vendor/file-icons/psd.svg',
+        'application/illustrator' => '/vendor/file-icons/ai.svg',
+        'application/eps' => '/vendor/file-icons/eps.svg',
+        'application/acad' => '/vendor/file-icons/cad.svg',
+        'application/dwg' => '/vendor/file-icons/cad.svg',
+        'application/dxf' => '/vendor/file-icons/cad.svg',
+        'message/rfc822' => '/vendor/file-icons/eml.svg',
+        'application/vnd.ms-outlook' => '/vendor/file-icons/oft.svg',
+        'application/onenote' => '/vendor/file-icons/one.svg',
+        'application/zip' => '/vendor/file-icons/zip.svg',
+        'application/x-zip-compressed' => '/vendor/file-icons/zip.svg',
+        'application/x-rar-compressed' => '/vendor/file-icons/zip.svg',
+        'application/x-acrobat' => '/vendor/file-icons/acrobat.svg',
+        'application/after-effects' => '/vendor/file-icons/ae.svg',
+        'video/x-msvideo' => '/vendor/file-icons/avi.svg',
+        'text/css' => '/vendor/file-icons/css.svg',
+        'text/csv' => '/vendor/file-icons/csv.svg',
+        'application/x-dwg' => '/vendor/file-icons/dwg.svg',
+        'application/postscript' => '/vendor/file-icons/eps.svg',
+        'application/x-folder' => '/vendor/file-icons/folder.svg',
+        'text/html' => '/vendor/file-icons/html.svg',
+        'application/x-indesign' => '/vendor/file-icons/indd.svg',
+        'application/javascript' => '/vendor/file-icons/js.svg',
+        'audio/mp3' => '/vendor/file-icons/mp3.svg',
+        'application/x-onedrive' => '/vendor/file-icons/onedrive.svg',
+        'application/x-outlook' => '/vendor/file-icons/outlook.svg',
+        'application/x-ppj' => '/vendor/file-icons/ppj.svg',
+        'text/plain' => '/vendor/file-icons/txt.svg',
+        'application/xml' => '/vendor/file-icons/xml.svg',
+    ];
+
     public function getState(): mixed
     {
         /** @var Model|Media|null $record */
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
@@ -39,7 +87,7 @@ class CustomImageColumn extends ImageColumn
         /** @var Model|Media|null $record */
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
@@ -47,39 +95,7 @@ class CustomImageColumn extends ImageColumn
             if (str_starts_with($record->mime_type, 'image/')) {
                 return $record->getUrl();
             }
-
-            $iconMap = [
-                'application/pdf' => '/vendor/media/icons/pdf.svg',
-                'application/msword' => '/vendor/media/icons/doc.svg',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => '/vendor/media/icons/doc.svg',
-                'application/vnd.ms-excel' => '/vendor/media/icons/xls.svg',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => '/vendor/media/icons/xls.svg',
-                'application/vnd.ms-powerpoint' => '/vendor/media/icons/ppt.svg',
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation' => '/vendor/media/icons/ppt.svg',
-                'video/mp4' => '/vendor/media/icons/vid.svg',
-                'video/webm' => '/vendor/media/icons/vid.svg',
-                'video/quicktime' => '/vendor/media/icons/vid.svg',
-                'audio/mpeg' => '/vendor/media/icons/vid.svg',
-                'audio/wav' => '/vendor/media/icons/vid.svg',
-                'audio/ogg' => '/vendor/media/icons/vid.svg',
-                'image/svg+xml' => '/vendor/media/icons/svg.svg',
-                'image/jpeg' => '/vendor/media/icons/jpg.svg',
-                'image/png' => '/vendor/media/icons/png.svg',
-                'image/vnd.adobe.photoshop' => '/vendor/media/icons/psd.svg',
-                'application/illustrator' => '/vendor/media/icons/ai.svg',
-                'application/eps' => '/vendor/media/icons/eps.svg',
-                'application/acad' => '/vendor/media/icons/cad.svg',
-                'application/dwg' => '/vendor/media/icons/cad.svg',
-                'application/dxf' => '/vendor/media/icons/cad.svg',
-                'message/rfc822' => '/vendor/media/icons/eml.svg',
-                'application/vnd.ms-outlook' => '/vendor/media/icons/oft.svg',
-                'application/onenote' => '/vendor/media/icons/one.svg',
-                'application/zip' => '/vendor/media/icons/zip.svg',
-                'application/x-zip-compressed' => '/vendor/media/icons/zip.svg',
-                'application/x-rar-compressed' => '/vendor/media/icons/zip.svg',
-            ];
-
-            return $iconMap[$record->mime_type] ?? '/vendor/media/icons/fck.svg';
+            return $this->iconMap[$record->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
         }
 
         $mediaId = MediaUsable::where('media_usable_id', $record->getKey())
@@ -88,13 +104,13 @@ class CustomImageColumn extends ImageColumn
             ->where('media.uuid', $state)
             ->value('media.id');
 
-        if (! $mediaId) {
+        if (!$mediaId) {
             return null;
         }
 
         $media = Media::find($mediaId);
 
-        if (! $media) {
+        if (!$media) {
             return null;
         }
 
@@ -102,37 +118,6 @@ class CustomImageColumn extends ImageColumn
             return $media->getUrl();
         }
 
-        $iconMap = [
-            'application/pdf' => '/vendor/media/icons/pdf.svg',
-            'application/msword' => '/vendor/media/icons/doc.svg',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => '/vendor/media/icons/doc.svg',
-            'application/vnd.ms-excel' => '/vendor/media/icons/xls.svg',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => '/vendor/media/icons/xls.svg',
-            'application/vnd.ms-powerpoint' => '/vendor/media/icons/ppt.svg',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation' => '/vendor/media/icons/ppt.svg',
-            'video/mp4' => '/vendor/media/icons/vid.svg',
-            'video/webm' => '/vendor/media/icons/vid.svg',
-            'video/quicktime' => '/vendor/media/icons/vid.svg',
-            'audio/mpeg' => '/vendor/media/icons/vid.svg',
-            'audio/wav' => '/vendor/media/icons/vid.svg',
-            'audio/ogg' => '/vendor/media/icons/vid.svg',
-            'image/svg+xml' => '/vendor/media/icons/svg.svg',
-            'image/jpeg' => '/vendor/media/icons/jpg.svg',
-            'image/png' => '/vendor/media/icons/png.svg',
-            'image/vnd.adobe.photoshop' => '/vendor/media/icons/psd.svg',
-            'application/illustrator' => '/vendor/media/icons/ai.svg',
-            'application/eps' => '/vendor/media/icons/eps.svg',
-            'application/acad' => '/vendor/media/icons/cad.svg',
-            'application/dwg' => '/vendor/media/icons/cad.svg',
-            'application/dxf' => '/vendor/media/icons/cad.svg',
-            'message/rfc822' => '/vendor/media/icons/eml.svg',
-            'application/vnd.ms-outlook' => '/vendor/media/icons/oft.svg',
-            'application/onenote' => '/vendor/media/icons/one.svg',
-            'application/zip' => '/vendor/media/icons/zip.svg',
-            'application/x-zip-compressed' => '/vendor/media/icons/zip.svg',
-            'application/x-rar-compressed' => '/vendor/media/icons/zip.svg',
-        ];
-
-        return $iconMap[$media->mime_type] ?? '/vendor/media/icons/fck.svg';
+        return $this->iconMap[$media->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
     }
 }
