@@ -14,7 +14,7 @@
 
         @if($remainingFlags > 0)
             <div class="relative" style="margin-left: -4px">
-                <div class="w-6 h-6 flex items-center justify-center text-sm font-bold text-black rounded-full">
+                <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full">
                     +{{ $remainingFlags }}
                 </div>
             </div>

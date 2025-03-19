@@ -24,7 +24,7 @@ class TranslationColumn extends TextColumn
                 return $record->translations->map(function ($translation) {
                     $locale = StaticLocale::where('locale', $translation->locale)->first();
 
-                    return $locale?->language_flag_icon ?? 'flag-'.$translation->locale;
+                    return $locale->language_flag_icon ?? 'flag-'.$translation->locale;
                 })->toArray();
             });
     }
