@@ -34,7 +34,7 @@ class ImportStaticDataJob implements ShouldQueue
             'nld' => 'nl',
             'ara' => 'ar',
             'heb' => 'he',
-            'mri' => 'mi',
+            'mri' => 'nz',
             'nzs' => 'nzs',
             'kon' => 'kg',
             'lin' => 'ln',
