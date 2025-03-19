@@ -68,4 +68,11 @@ class StaticCountry extends Model
         return $this->belongsToMany(StaticTimezone::class, 'static_countries_static_timezones', 'country_id', 'timezone_id')
             ->withTimestamps();
     }
+
+    public function getFlagIconAttribute(): ?string
+    {
+        return @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$this->alpha2}.svg"))
+            ? "flag-{$this->alpha2}"
+            : null;
+    }
 }

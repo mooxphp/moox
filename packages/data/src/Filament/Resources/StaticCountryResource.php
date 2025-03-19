@@ -163,16 +163,17 @@ class StaticCountryResource extends Resource
     {
         return $table
             ->columns([
-                IconColumn::make('alpha2')
+                IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn (string $state): ?string => @file_exists(base_path("packages/flag-icons-circle/resources/svg/{$state}.svg")) ? "flag-{$state}" : null),
-                TextColumn::make('alpha2_')
+                    ->icon(fn (string $state): string => $state),
+                TextColumn::make('alpha2')
                     ->label('Alpha-2')
-                    ->getStateUsing(fn ($record) => $record->alpha2),
-                TextColumn::make('alpha3_b')->label(__('data::fields.alpha3_b')),
-                TextColumn::make('alpha3_t')->label(__('data::fields.alpha3_t')),
-                TextColumn::make('common_name')->label(__('data::fields.common_name')),
-                TextColumn::make('native_name')->label(__('data::fields.native_name')),
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('alpha3_b')->label(__('data::fields.alpha3_b'))->searchable()->sortable(),
+                TextColumn::make('alpha3_t')->label(__('data::fields.alpha3_t'))->searchable()->sortable(),
+                TextColumn::make('common_name')->label(__('data::fields.common_name'))->searchable()->sortable(),
+                TextColumn::make('native_name')->label(__('data::fields.native_name'))->searchable()->sortable(),
                 TextColumn::make('region')->sortable()->searchable()->toggleable()->label(__('data::fields.region')),
                 TextColumn::make('subregion')->sortable()->searchable()->toggleable()->label(__('data::fields.subregion')),
                 TextColumn::make('capital')->label(__('data::fields.capital')),

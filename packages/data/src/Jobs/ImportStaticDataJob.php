@@ -40,6 +40,7 @@ class ImportStaticDataJob implements ShouldQueue
             'lin' => 'ln',
             'smo' => 'sm',
             'mon' => 'mn',
+            'ita' => 'it',
         ];
 
         try {

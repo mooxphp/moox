@@ -104,7 +104,14 @@ class StaticLocaleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('locale')->label(__('data::fields.locale')),
+                IconColumn::make('language_flag_icon')
+                    ->label('L')
+                    ->icon(fn (string $state): string => $state),
+                IconColumn::make('country_flag_icon')
+                    ->label('C')
+                    ->icon(fn (string $state): string => $state),
+                TextColumn::make('locale')
+                    ->label(__('data::fields.locale')),
                 TextColumn::make('name')->label(__('data::fields.name'))->sortable()->searchable()->toggleable(),
                 IconColumn::make('is_official_language')
                     ->label(__('data::fields.is_official_language'))
