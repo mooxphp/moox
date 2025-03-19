@@ -71,8 +71,6 @@ class StaticCountry extends Model
 
     public function getFlagIconAttribute(): ?string
     {
-        return @file_exists(base_path('packages/flag-icons-circle/resources/svg/'.$this->alpha2.'.svg'))
-            ? "flag-{$this->alpha2}"
-            : null;
+        return "flag-{$this->alpha2}";
     }
 }
