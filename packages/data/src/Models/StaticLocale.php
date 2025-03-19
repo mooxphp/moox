@@ -103,6 +103,7 @@ class StaticLocale extends Model
         'kg' => 'cd',  // Kongo -> Democratic Republic of Congo
         'sm' => 'ws',  // Samoan -> Samoa
         'mn' => 'mn',  // Mongolian -> Mongolia
+        'sh' => 'rs',  // Serbian -> Serbia
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
