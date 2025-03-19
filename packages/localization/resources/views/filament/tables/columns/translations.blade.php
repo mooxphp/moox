@@ -7,15 +7,9 @@
 
     <div class="flex">
         @foreach($visibleFlags as $index => $flag)
-            @if($flag == 'en')
-                <div class="relative" style="margin-left: -{{ $index * 4 }}px">
-                    <x-dynamic-component :component="'flag-gb'" class="w-6 h-6 rounded-full" />
-                </div>
-            @else
-                <div class="relative" style="margin-left: -{{ $index * 4 }}px">
-                    <x-dynamic-component :component="'flag-' . $flag" class="w-6 h-6 rounded-full" />
-                </div>
-            @endif
+            <div class="relative" style="margin-left: -{{ $index * 4 }}px">
+                <x-dynamic-component :component="$flag" class="w-6 h-6 rounded-full" />
+            </div>
         @endforeach
 
         @if($remainingFlags > 0)
