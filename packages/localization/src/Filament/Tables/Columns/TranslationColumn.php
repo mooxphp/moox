@@ -13,7 +13,7 @@ class TranslationColumn extends TextColumn
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->label(__('localization::fields.language'))
             ->sortable()
             ->toggleable()
