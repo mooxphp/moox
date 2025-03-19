@@ -99,12 +99,20 @@ class StaticLocale extends Model
         'as' => 'in',  // Assamese -> India
         'or' => 'in',  // Odia -> India
         'sa' => 'in',  // Sanskrit -> India
+        'ln' => 'cd',  // Lingala -> Democratic Republic of Congo
+        'kg' => 'cd',  // Kongo -> Democratic Republic of Congo
+        'sm' => 'ws',  // Samoan -> Samoa
+        'mn' => 'mn',  // Mongolian -> Mongolia
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
     {
         if ($this->language?->alpha2) {
-            $flagCode = $this->languageToFlagMap[$this->language->alpha2] ?? strtolower($this->language->alpha2);
+            $flagCode = $this->languageToFlagMap[$this->language->alpha2] ?? null;
+
+            if (! $flagCode) {
+                return null;
+            }
 
             return 'flag-'.$flagCode;
         }
