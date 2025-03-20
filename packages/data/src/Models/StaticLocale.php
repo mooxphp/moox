@@ -56,11 +56,13 @@ class StaticLocale extends Model
         }
 
         $localeLanguage = strtolower(explode('_', $this->locale)[0]);
-        $vendorPath = resource_path('vendor/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
-        $localPath = base_path('packages/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
 
-        \Log::info('Checking vendor path: '.$vendorPath);
-        \Log::info('Checking local path: '.$localPath);
+        if (strlen($localeLanguage) !== 2) {
+            return $this->getCountryFlagIconAttribute();
+        }
+
+        $vendorPath = public_path('vendor/flag-icons-circle/'.$localeLanguage.'.svg');
+        $localPath = base_path('packages/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
 
         if (file_exists($vendorPath)) {
             return 'flag-'.$localeLanguage;
