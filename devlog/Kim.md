@@ -27,7 +27,6 @@
     -   Author
     -   Consumer API
 -   [ ] [Record Package](../packages/record/docs/README.md)
-    -   Moox Slug
     -   Translatable
     -   Soft Delete
     -   Consumer API
@@ -43,42 +42,43 @@
 
 ### Fields
 
--   Title (publishable resource)
--   Slug (publishable resource)
--   Created at
--   Created by id
--   Created by type
--   Updated at
--   Updated by id
--   Updated by type
--   To delete at (soft delete only)
--   Deleted at (soft delete only)
--   Deleted by id (soft delete only)
--   Deleted by type (soft delete only)
--   To publish at (publishable resource)
--   Published at (publishable resource)
--   Published by id (publishable resource)
--   Published by type (publishable resource)
--   To unpublish at (publishable resource)
--   Unpublished at (publishable resource)
--   Unpublished by id (publishable resource)
--   Unpublished by type (publishable resource)
--   write_protected
+-   Item
+    -   Created at
+    -   Created by id
+    -   Created by type
+    -   Updated at
+    -   Updated by id
+    -   Updated by type
+    -   write_protected
+-   Record adds
+    -   To delete at
+    -   Deleted at
+    -   Deleted by id
+    -   Deleted by type
+    -   Restored at
+    -   Restored by id
+    -   Restored by type
+    -   Localization
+-   Draft adds
+    -   Title
+    -   Slug
+    -   To publish at
+    -   Published at
+    -   Published by id
+    -   Published by type
+    -   To unpublish at
+    -   Unpublished at
+    -   Unpublished by id
+    -   Unpublished by type
 
 ### Config (Entity)
 
--   write_protected (bool)
--   write_protected_fields (array)
-
--   read_api (bool)
--   write_api (bool)
--   read_api_fields (array)
--   write_api_fields (array)
-
--   read_frontend (bool)
--   write_frontend (bool)
--   read_frontend_fields (array)
--   write_frontend_fields (array)
+-   readable_fields_from_backend
+-   writable_fields_from_backend
+-   readable_fields_from_backend
+-   writable_fields_from_backend
+-   readable_fields_from_backend
+-   writable_fields_from_backend
 
 -   auditable (bool)
 -   taxonomies (array, only items)
