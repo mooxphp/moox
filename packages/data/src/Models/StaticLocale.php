@@ -41,8 +41,26 @@ class StaticLocale extends Model
     protected $casts = [];
 
     protected array $languageToFlagMap = [
-        'ar' => 'ar_arab',
-        'en' => 'gb',
+        'ar' => 'sa', // Arabic -> Saudi Arabia
+        'en' => 'gb', // English -> United Kingdom
+        'es' => 'es', // Spanish -> Spain
+        'fr' => 'fr', // French -> France
+        'pt' => 'pt', // Portuguese -> Portugal
+        'ru' => 'ru', // Russian -> Russia
+        'zh' => 'cn', // Chinese -> China
+        'de' => 'de', // German -> Germany
+        'hi' => 'in', // Hindi -> India
+        'ja' => 'jp', // Japanese -> Japan
+        'ko' => 'kr', // Korean -> South Korea
+        'fa' => 'ir', // Persian -> Iran
+        'tr' => 'tr', // Turkish -> Turkey
+        'it' => 'it', // Italian -> Italy
+        'pl' => 'pl', // Polish -> Poland
+        'uk' => 'ua', // Ukrainian -> Ukraine
+        'vi' => 'vn', // Vietnamese -> Vietnam
+        'th' => 'th', // Thai -> Thailand
+        'nl' => 'nl', // Dutch -> Netherlands
+        'el' => 'gr', // Greek -> Greece
     ];
 
     protected array $territoryToCountryMap = [
@@ -57,30 +75,8 @@ class StaticLocale extends Model
             return $this->getCountryFlagIconAttribute();
         }
 
-        if (isset($this->languageToFlagMap[$this->language->alpha2])) {
+        if (! $this->is_official_language && isset($this->languageToFlagMap[$this->language->alpha2])) {
             return 'flag-'.$this->languageToFlagMap[$this->language->alpha2];
-        }
-
-        $localeLanguage = strtolower(explode('_', $this->locale)[0]);
-
-        \Log::info('Locale: '.$this->locale);
-        \Log::info('Extracted language code: '.$localeLanguage);
-
-        if (! preg_match('/^[a-z]{2}$/', $localeLanguage)) {
-            \Log::warning('Invalid language code: '.$localeLanguage);
-
-            return $this->getCountryFlagIconAttribute();
-        }
-
-        $vendorPath = public_path('vendor/flag-icons-circle/'.$localeLanguage.'.svg');
-        $localPath = base_path('packages/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
-
-        if (file_exists($vendorPath)) {
-            return 'flag-'.$localeLanguage;
-        }
-
-        if (file_exists($localPath)) {
-            return 'flag-'.$localeLanguage;
         }
 
         return $this->getCountryFlagIconAttribute();
