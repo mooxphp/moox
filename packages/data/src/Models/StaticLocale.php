@@ -55,9 +55,19 @@ class StaticLocale extends Model
             return 'flag-'.$this->languageToFlagMap[$this->language->alpha2];
         }
 
-        $languageFlagCode = strtolower($this->language->alpha2);
-        if (file_exists(resource_path('vendor/flag-icons-circle/flags/flag-'.$languageFlagCode.'.svg'))) {
-            return 'flag-'.$languageFlagCode;
+        $localeLanguage = strtolower(explode('_', $this->locale)[0]);
+        $vendorPath = resource_path('vendor/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
+        $localPath = base_path('packages/flag-icons-circle/resources/svg/'.$localeLanguage.'.svg');
+
+        \Log::info('Checking vendor path: '.$vendorPath);
+        \Log::info('Checking local path: '.$localPath);
+
+        if (file_exists($vendorPath)) {
+            return 'flag-'.$localeLanguage;
+        }
+
+        if (file_exists($localPath)) {
+            return 'flag-'.$localeLanguage;
         }
 
         return $this->getCountryFlagIconAttribute();
