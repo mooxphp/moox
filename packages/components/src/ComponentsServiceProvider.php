@@ -22,7 +22,7 @@ class ComponentsServiceProvider extends MooxServiceProvider
 
     public function bootingPackage(): void
     {
-        $componentPath = __DIR__ . DIRECTORY_SEPARATOR . 'Components';
+        $componentPath = __DIR__.DIRECTORY_SEPARATOR.'Components';
         $namespace = 'Moox\\Components\\Components';
 
         $components = [];
@@ -30,7 +30,7 @@ class ComponentsServiceProvider extends MooxServiceProvider
         foreach ($this->scanDirectory($componentPath) as $file) {
             $relativePath = $this->getRelativePath($file, $componentPath);
             $className = $this->convertPathToClassName($relativePath);
-            $fullClassName = $namespace . '\\' . $className;
+            $fullClassName = $namespace.'\\'.$className;
 
             if (class_exists($fullClassName)) {
                 $components[] = $fullClassName;
@@ -48,7 +48,7 @@ class ComponentsServiceProvider extends MooxServiceProvider
 
         // Remove the component path prefix and .php extension
         $relativePath = str_replace([$componentPath, '.php'], '', $file);
-        
+
         // Remove leading/trailing slashes
         return trim($relativePath, '/');
     }
