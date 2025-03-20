@@ -53,6 +53,7 @@ return [
 
     'upload' => [
         'resource' => [
+            'icon' => 'heroicon-m-arrow-up-tray',
             'disk' => config('filament.default_filesystem_disk', 'public'),
             'directory' => 'media',
             'visibility' => 'public',

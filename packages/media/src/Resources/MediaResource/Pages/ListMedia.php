@@ -24,6 +24,7 @@ class ListMedia extends ListRecords
         return [
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
+                ->icon(config('media.upload.resource.icon'))
                 ->form([
                     FileUpload::make('file')
                         ->label(__('media::fields.select_file'))
@@ -53,7 +54,7 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
