@@ -45,6 +45,11 @@ class StaticLocale extends Model
         'en' => 'gb',
     ];
 
+    protected array $territoryToCountryMap = [
+        'sh' => 'gb',
+        'um' => 'us',
+    ];
+
     public function getLanguageFlagIconAttribute(): ?string
     {
         if (! $this->language?->alpha2) {
@@ -57,7 +62,12 @@ class StaticLocale extends Model
 
         $localeLanguage = strtolower(explode('_', $this->locale)[0]);
 
-        if (strlen($localeLanguage) !== 2) {
+        \Log::info('Locale: '.$this->locale);
+        \Log::info('Extracted language code: '.$localeLanguage);
+
+        if (! preg_match('/^[a-z]{2}$/', $localeLanguage)) {
+            \Log::warning('Invalid language code: '.$localeLanguage);
+
             return $this->getCountryFlagIconAttribute();
         }
 
@@ -81,6 +91,12 @@ class StaticLocale extends Model
             return null;
         }
 
-        return 'flag-'.strtolower($this->country->alpha2);
+        $countryCode = strtolower($this->country->alpha2);
+
+        if (isset($this->territoryToCountryMap[$countryCode])) {
+            return 'flag-'.$this->territoryToCountryMap[$countryCode];
+        }
+
+        return 'flag-'.$countryCode;
     }
 }
