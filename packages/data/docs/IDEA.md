@@ -1,5 +1,7 @@
 # Idea
 
+https://www.metadapi.com/API-Products/Languages-API
+
 https://github.com/xalaida/laravel-geonames
 https://github.com/michaeldrennen/Geonames
 
@@ -1066,3 +1068,136 @@ Salutation config
 if ($salutation == 'none') {
 $greeting = 'Dear ' . $firstname . " " . $lastname;
 }
+
+## Review of Missing Data & Sources
+
+### **Identified Missing Data**
+
+#### **Languages**
+
+-   `native_name` -> `native_names` (explain need for multiple native names per language)
+-   `other_names` added (explain why alternative names are important, e.g., historical names, dialects)
+
+#### **Countries**
+
+-   `native_name` -> `native_names` (some countries have multiple native names, depending on regions/languages)
+-   `other_names` added (for historical names, informal names, or aliases)
+-   `driving_side` added (important for navigation applications)
+-   `tax_information` (missing standardized tax rates, VAT, sales tax per country)
+-   `business_hours` (general working hours per country, useful for international commerce)
+
+#### **Currencies**
+
+-   `native_names` added (many currencies have distinct native names)
+-   `other_names` added (historical names or informal names used in the past)
+-   `subunit_name` (e.g., cents for USD, fils for AED)
+-   `subunit_to_unit` (e.g., 100 cents = 1 USD, 100 fils = 1 AED)
+-   `is_active_subunit` (if subunit is in current use or phased out)
+-   `subunit_native_names` (same as `native_names`, but for subunits)
+-   `subunit_exonyms` (foreign names for subunits)
+-   `is_virtual` (are there digital-only currencies linked to a country?)
+-   `subunit_decimal_places` AND `subunit_to_unit` (verify sources for consistency)
+
+#### **TODO Items**
+
+-   Tax Information
+-   Business Hours
+-   Address Formats (extend for PO Boxes, Poste Restante, geographic coordinate-based addressing)
+
+---
+
+### **Sources for Missing Data**
+
+#### **Languages**
+
+1. **ISO 639-1/2/3 Language Codes**
+
+    - [ISO 639 Wikipedia](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
+    - [GitHub ISO 639-1](https://github.com/haliaeetus/iso-639/blob/master/data/iso_639-1.csv)
+    - [GitHub ISO 639-2](https://github.com/haliaeetus/iso-639/blob/master/data/iso_639-2.csv)
+    - [IETF Language Tags](https://en.wikipedia.org/wiki/IETF_language_tag)
+
+2. **REST APIs for Languages**
+    - [Metadapi Languages API](https://www.metadapi.com/API-Products/Languages-API)
+    - [Gist JSON List of Languages with Native Names](https://gist.github.com/jkokh/199f5aadda814222797d70cf440559fe)
+
+#### **Countries**
+
+-   [REST Countries API](https://restcountries.com/v3.1/all?fields=name)
+-   [Geonames](https://www.geonames.org/)
+-   [World Bank Data](https://data.worldbank.org/)
+-   [CIA World Factbook](https://www.cia.gov/the-world-factbook/)
+-   [UN M49 Standard for Regions & Subregions](https://unstats.un.org/unsd/methodology/m49/)
+-   [Geonames Laravel Packages](https://github.com/xalaida/laravel-geonames) & [Michael Drennen's Geonames](https://github.com/michaeldrennen/Geonames)
+
+#### **Currencies**
+
+-   [Open Exchange Rates API](https://openexchangerates.org/)
+-   [ISO 4217 Currency List](https://www.iso.org/iso-4217-currency-codes.html)
+-   [Currency Layer API](https://apilayer.com/marketplace/currency_data-api)
+
+#### **Timezones**
+
+-   [IANA Time Zone Database](https://www.iana.org/time-zones)
+-   [TimeZoneDB](https://timezonedb.com/download) (check licensing restrictions)
+-   [Laravel Geonames Timezones](https://github.com/nevadskiy/laravel-geonames)
+
+#### **Calling Codes & Memberships**
+
+-   [ITU (International Telecommunication Union)](https://www.itu.int/)
+-   [Wikipedia Country Calling Codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
+-   [Membership Data from Wikipedia](https://en.wikipedia.org/wiki/Category:International_organizations_by_country)
+
+#### **Flags & Icons**
+
+-   [GitHub Country Flags](https://github.com/hampusborgos/country-flags)
+-   [FlagPack](https://flagpack.xyz/)
+-   [Blade Flags](https://github.com/MohmmedAshraf/blade-flags)
+-   [Filament Country Flags Plugin](https://filamentphp.com/plugins/parfaitementweb-country-field)
+
+#### **Sanctions Data**
+
+-   [Sanctions.io](https://www.sanctions.io/)
+-   [UN Security Council Consolidated List](https://www.un.org/securitycouncil/content/un-sc-consolidated-list)
+-   [EU Sanctions Map](https://www.sanctionsmap.eu/#/main)
+
+---
+
+### **Database Schema Adjustments**
+
+#### **Languages Table (`static_languages`)**
+
+-   Change `native_name` to `native_names` (JSON) to support multiple names
+-   Add `other_names` (JSON) for historical names or dialects
+
+#### **Countries Table (`static_countries`)**
+
+-   Change `native_name` to `native_names` (JSON) for multiple native names
+-   Add `other_names` (JSON)
+-   Add `driving_side` (ENUM: left, right)
+-   Add `tax_information` (JSON, country-specific VAT/sales tax)
+-   Add `business_hours` (JSON, standard working hours per country)
+
+#### **Currencies Table (`static_currencies`)**
+
+-   Change `native_name` to `native_names` (JSON)
+-   Add `other_names` (JSON)
+-   Add `subunit_name` (VARCHAR, e.g., cents, fils)
+-   Add `subunit_to_unit` (INT, e.g., 100 for cents in USD)
+-   Add `is_active_subunit` (BOOLEAN)
+-   Add `subunit_native_names` (JSON)
+-   Add `subunit_exonyms` (JSON)
+-   Add `is_virtual` (BOOLEAN)
+-   Add `subunit_decimal_places` (INT)
+
+---
+
+### **Next Steps**
+
+1. **Integrate missing data sources** into the import job.
+2. **Adjust database schema** based on findings.
+3. **Implement country-specific tax/business hour data.**
+4. **Verify consistency of phone number formats.**
+5. **Check for missing address formatting rules per country.**
+
+This document serves as an action plan for filling in missing static data and maintaining consistency across countries, languages, and currencies.
