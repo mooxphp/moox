@@ -48,6 +48,7 @@ class StaticLocale extends Model
     protected array $territoryToCountryMap = [
         'sh' => 'gb',
         'um' => 'us',
+        'bq' => 'nl',
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
