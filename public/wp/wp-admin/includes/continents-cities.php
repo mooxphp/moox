@@ -229,7 +229,7 @@ __('Winnipeg', 'continents-cities');
 __('Yakutat', 'continents-cities');
 __('Yellowknife', 'continents-cities');
 
-__('Antarctica', 'continents-cities');
+__('Antarctic', 'continents-cities');
 __('Casey', 'continents-cities');
 __('Davis', 'continents-cities');
 __('DumontDUrville', 'continents-cities');

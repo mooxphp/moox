@@ -47,27 +47,75 @@
                     $mimeTypeLabels = [
                         'application/pdf' => [
                             'label' => 'PDF',
-                            'icon' => 'heroicon-o-document-text'
-                        ],
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => [
-                            'label' => 'DOCX',
-                            'icon' => 'heroicon-o-document-text'
+                            'icon' => '/vendor/file-icons/pdf.svg'
                         ],
                         'application/msword' => [
                             'label' => 'DOC',
-                            'icon' => 'heroicon-o-document-text'
+                            'icon' => '/vendor/file-icons/doc.svg'
+                        ],
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => [
+                            'label' => 'DOCX',
+                            'icon' => '/vendor/file-icons/doc.svg'
                         ],
                         'application/vnd.ms-excel' => [
                             'label' => 'XLS',
-                            'icon' => 'heroicon-o-document-text'
+                            'icon' => '/vendor/file-icons/xls.svg'
                         ],
                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => [
                             'label' => 'XLSX',
-                            'icon' => 'heroicon-o-document-text'
+                            'icon' => '/vendor/file-icons/xls.svg'
+                        ],
+                        'application/vnd.ms-powerpoint' => [
+                            'label' => 'PPT',
+                            'icon' => '/vendor/file-icons/ppt.svg'
+                        ],
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => [
+                            'label' => 'PPTX',
+                            'icon' => '/vendor/file-icons/ppt.svg'
                         ],
                         'video/mp4' => [
                             'label' => 'MP4',
-                            'icon' => 'heroicon-o-video-camera'
+                            'icon' => '/vendor/file-icons/mp4.svg'
+                        ],
+                        'video/webm' => [
+                            'label' => 'WEBM',
+                            'icon' => '/vendor/file-icons/mp4.svg'
+                        ],
+                        'video/quicktime' => [
+                            'label' => 'MOV',
+                            'icon' => '/vendor/file-icons/mp4.svg'
+                        ],
+                        'audio/mpeg' => [
+                            'label' => 'MP3',
+                            'icon' => '/vendor/file-icons/mp3.svg'
+                        ],
+                        'audio/wav' => [
+                            'label' => 'WAV',
+                            'icon' => '/vendor/file-icons/mp3.svg'
+                        ],
+                        'audio/ogg' => [
+                            'label' => 'OGG',
+                            'icon' => '/vendor/file-icons/mp3.svg'
+                        ],
+                        'image/svg+xml' => [
+                            'label' => 'SVG',
+                            'icon' => '/vendor/file-icons/svg.svg'
+                        ],
+                        'application/zip' => [
+                            'label' => 'ZIP',
+                            'icon' => '/vendor/file-icons/zip.svg'
+                        ],
+                        'application/x-zip-compressed' => [
+                            'label' => 'ZIP',
+                            'icon' => '/vendor/file-icons/zip.svg'
+                        ],
+                        'text/plain' => [
+                            'label' => 'TXT',
+                            'icon' => '/vendor/file-icons/txt.svg'
+                        ],
+                        'text/csv' => [
+                            'label' => 'CSV',
+                            'icon' => '/vendor/file-icons/csv.svg'
                         ],
                     ];
                 @endphp
@@ -85,8 +133,8 @@
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         {{ in_array($item['id'], $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     {{ $selectedMediaMeta['id'] == $item['id'] ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
                                                         @if ($fileData)
-                                                            <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
-                                                                <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16 text-gray-600" />
+                                                            <div class="flex flex-col justify-between items-center w-full h-32 mt-3">
+                                                                <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16" />
                                                                 <div
                                                                     class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
                                                                     {{ $item['file_name'] }}

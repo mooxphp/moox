@@ -225,7 +225,9 @@ class MediaResource extends Resource
                 Stack::make([
                     CustomImageColumn::make('')
                         ->extraImgAttributes(function ($record, $livewire) {
-                            $baseStyle = 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;';
+                            $baseStyle = str_starts_with($record->mime_type, 'image/')
+                                ? 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;'
+                                : 'position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px;';
 
                             if ($livewire->isSelecting) {
                                 $style = $baseStyle.'opacity: 0.5;';
