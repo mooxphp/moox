@@ -12,75 +12,75 @@ class ImageDisplay extends Field
     protected array $mimeTypeIcons = [
         'application/pdf' => [
             'label' => 'PDF',
-            'icon' => '/vendor/file-icons/pdf.svg'
+            'icon' => '/vendor/file-icons/pdf.svg',
         ],
         'application/msword' => [
             'label' => 'DOC',
-            'icon' => '/vendor/file-icons/doc.svg'
+            'icon' => '/vendor/file-icons/doc.svg',
         ],
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => [
             'label' => 'DOCX',
-            'icon' => '/vendor/file-icons/doc.svg'
+            'icon' => '/vendor/file-icons/doc.svg',
         ],
         'application/vnd.ms-excel' => [
             'label' => 'XLS',
-            'icon' => '/vendor/file-icons/xls.svg'
+            'icon' => '/vendor/file-icons/xls.svg',
         ],
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => [
             'label' => 'XLSX',
-            'icon' => '/vendor/file-icons/xls.svg'
+            'icon' => '/vendor/file-icons/xls.svg',
         ],
         'application/vnd.ms-powerpoint' => [
             'label' => 'PPT',
-            'icon' => '/vendor/file-icons/ppt.svg'
+            'icon' => '/vendor/file-icons/ppt.svg',
         ],
         'application/vnd.openxmlformats-officedocument.presentationml.presentation' => [
             'label' => 'PPTX',
-            'icon' => '/vendor/file-icons/ppt.svg'
+            'icon' => '/vendor/file-icons/ppt.svg',
         ],
         'video/mp4' => [
             'label' => 'MP4',
-            'icon' => '/vendor/file-icons/mp4.svg'
+            'icon' => '/vendor/file-icons/mp4.svg',
         ],
         'video/webm' => [
             'label' => 'WEBM',
-            'icon' => '/vendor/file-icons/mp4.svg'
+            'icon' => '/vendor/file-icons/mp4.svg',
         ],
         'video/quicktime' => [
             'label' => 'MOV',
-            'icon' => '/vendor/file-icons/mp4.svg'
+            'icon' => '/vendor/file-icons/mp4.svg',
         ],
         'audio/mpeg' => [
             'label' => 'MP3',
-            'icon' => '/vendor/file-icons/mp3.svg'
+            'icon' => '/vendor/file-icons/mp3.svg',
         ],
         'audio/wav' => [
             'label' => 'WAV',
-            'icon' => '/vendor/file-icons/mp3.svg'
+            'icon' => '/vendor/file-icons/mp3.svg',
         ],
         'audio/ogg' => [
             'label' => 'OGG',
-            'icon' => '/vendor/file-icons/mp3.svg'
+            'icon' => '/vendor/file-icons/mp3.svg',
         ],
         'image/svg+xml' => [
             'label' => 'SVG',
-            'icon' => '/vendor/file-icons/svg.svg'
+            'icon' => '/vendor/file-icons/svg.svg',
         ],
         'application/zip' => [
             'label' => 'ZIP',
-            'icon' => '/vendor/file-icons/zip.svg'
+            'icon' => '/vendor/file-icons/zip.svg',
         ],
         'application/x-zip-compressed' => [
             'label' => 'ZIP',
-            'icon' => '/vendor/file-icons/zip.svg'
+            'icon' => '/vendor/file-icons/zip.svg',
         ],
         'text/plain' => [
             'label' => 'TXT',
-            'icon' => '/vendor/file-icons/txt.svg'
+            'icon' => '/vendor/file-icons/txt.svg',
         ],
         'text/csv' => [
             'label' => 'CSV',
-            'icon' => '/vendor/file-icons/csv.svg'
+            'icon' => '/vendor/file-icons/csv.svg',
         ],
     ];
 
@@ -95,11 +95,11 @@ class ImageDisplay extends Field
     {
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return null;
         }
 
-        if (!$record instanceof SpatieMedia) {
+        if (! $record instanceof SpatieMedia) {
             return null;
         }
 
@@ -110,7 +110,7 @@ class ImageDisplay extends Field
     {
         $record = $this->getRecord();
 
-        if (!$record || !$record instanceof SpatieMedia) {
+        if (! $record || ! $record instanceof SpatieMedia) {
             return null;
         }
 
