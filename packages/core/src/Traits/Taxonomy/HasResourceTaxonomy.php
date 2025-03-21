@@ -50,14 +50,23 @@ trait HasResourceTaxonomy
             'createOptionForm' => $createFormClass::getSchema(),
             'createOptionUsing' => function (array $data) use ($modelClass) {
                 $validator = validator($data, [
-                    'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
+                    'title' => ['required', 'string', 'max:255'],
+                    'slug' => ['required', 'string', 'max:255'],
                 ]);
 
                 if ($validator->fails()) {
-                    return $validator->errors()->first('slug');
+                    return $validator->errors()->first();
                 }
 
-                $newTaxonomy = app($modelClass)::create($data);
+                $locale = app()->getLocale();
+                $translations = [
+                    $locale => [
+                        'title' => $data['title'],
+                        'slug' => $data['slug'],
+                    ]
+                ];
+
+                $newTaxonomy = app($modelClass)::createWithTranslations([], $translations);
 
                 return $newTaxonomy->id;
             },
@@ -79,11 +88,28 @@ trait HasResourceTaxonomy
 
         return Select::make($taxonomy)
             ->multiple()
-            ->options(fn () => app($modelClass)::pluck('title', 'id')->toArray())
+            ->options(fn () => app($modelClass)::with('translations')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    $locale = request()->query('lang', app()->getLocale());
+                    $translation = $item->translate($locale) ?? $item->translate(app()->getLocale());
+                    return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+                })
+                ->toArray()
+            )
             ->getSearchResultsUsing(
-                fn (string $search) => app($modelClass)::where('title', 'like', sprintf('%%%s%%', $search))
+                fn (string $search) => app($modelClass)::with('translations')
+                    ->whereHas('translations', function ($query) use ($search) {
+                        $query->where('title', 'like', sprintf('%%%s%%', $search))
+                            ->where('locale', app()->getLocale());
+                    })
                     ->limit(50)
-                    ->pluck('title', 'id')
+                    ->get()
+                    ->mapWithKeys(function ($item) {
+                        $locale = app()->getLocale();
+                        $translation = $item->translate($locale);
+                        return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+                    })
                     ->toArray()
             )
             ->createOptionForm($commonConfig['createOptionForm'])
