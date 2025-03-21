@@ -18,7 +18,7 @@
                 <div class="flex flex-row gap-4 mb-4">
                     <x-filament::input.wrapper class="w-1/2">
                         <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
-                            placeholder="Suche nach Medien..."
+                            placeholder="{{ __('media::fields.search') }}"
                             class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                     </x-filament::input.wrapper>
 

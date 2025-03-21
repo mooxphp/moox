@@ -68,13 +68,13 @@ class MediaPickerModal extends Component implements HasForms
         $this->modelClass = $modelClass;
         $this->modelId = $modelId;
 
-        if (! $this->modelClass) {
+        if (!$this->modelClass) {
             $this->modelClass = Media::class;
         }
 
         $this->modelClass = str_replace('\\\\', '\\', $this->modelClass);
 
-        if (! class_exists($this->modelClass)) {
+        if (!class_exists($this->modelClass)) {
             throw new \Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
@@ -82,7 +82,7 @@ class MediaPickerModal extends Component implements HasForms
             $this->model = app($this->modelClass)::find($this->modelId);
         }
 
-        if (! $this->modelId || ! $this->model) {
+        if (!$this->modelId || !$this->model) {
             $this->modelId = 0;
         }
     }
@@ -92,13 +92,13 @@ class MediaPickerModal extends Component implements HasForms
         $upload = FileUpload::make(__('files'))
             ->label(__('media::fields.upload'))
             ->afterStateUpdated(function ($state) {
-                if (! $state) {
+                if (!$state) {
                     return;
                 }
 
                 $processedFiles = session('processed_files', []);
 
-                if (! is_array($state)) {
+                if (!is_array($state)) {
                     $model = new Media;
                     $model->exists = true;
 
@@ -242,7 +242,7 @@ class MediaPickerModal extends Component implements HasForms
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
@@ -281,18 +281,22 @@ class MediaPickerModal extends Component implements HasForms
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
+                    'mime_type' => $media->mime_type,
+                    'name' => $media->name
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
+                    'mime_type' => $media->mime_type,
+                    'name' => $media->name
                 ])->toArray();
 
                 $this->dispatch('mediaSelected', $selectedMediaData);
@@ -340,10 +344,10 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {

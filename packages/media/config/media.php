@@ -62,7 +62,7 @@ return [
             'min_file_size' => null,
             'max_files' => null,
             'min_files' => null,
-            'accepted_file_types' => ['image/*', 'video/*', 'application/pdf'],
+            'accepted_file_types' => ['image/*', 'video/*', 'application/pdf', 'audio/*', 'text/*', 'application/*',],
             'image_resize_mode' => 'cover',
             'image_crop_aspect_ratio' => null,
             'image_resize_target_width' => null,
