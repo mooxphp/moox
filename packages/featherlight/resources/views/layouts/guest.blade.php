@@ -17,12 +17,12 @@
     <body class="font-sans antialiased bg-base-100 text-base-content">
         <div class="flex flex-col min-h-screen">
             <header class="h-[var(--header-height)] border-b border-base-200">
-                <div class="container flex items-center justify-between h-full">
+                <div class="container flex items-center justify-between h-full px-4">
                     <div class="flex items-center gap-x-4">
                         <a href="{{ route(Route::has('featherlight.welcome') ? 'featherlight.welcome' : 'welcome') }}" class="text-2xl font-bold">
                             {{ config('app.name', 'Laravel') }}
                         </a>
-                        <nav class="items-center hidden md:flex gap-x-4">
+                        <nav class="items-center hidden md:flex gap-x-4 ml-6">
                             <a href="#" class="transition-colors hover:text-primary">Features</a>
                             <a href="#" class="transition-colors hover:text-primary">Pricing</a>
                             <a href="#" class="transition-colors hover:text-primary">About</a>
@@ -30,28 +30,28 @@
                     </div>
                     <div class="flex items-center gap-x-4">
                         <button x-on:click="darkMode = !darkMode" class="btn btn-ghost">
-                            <span x-show="!darkMode" class="i-heroicons-moon-20-solid"></span>
-                            <span x-show="darkMode" class="i-heroicons-sun-20-solid"></span>
+                            <span x-show="!darkMode" class="material-icons">dark_mode</span>
+                            <span x-show="darkMode" class="material-icons">light_mode</span>
                         </button>
                     </div>
                 </div>
             </header>
 
-            <main class="flex-1">
+            <main class="flex-1 p-4">
                 @yield('content')
             </main>
 
             <footer class="h-[var(--footer-height)] border-t border-base-200">
-                <div class="container flex items-center justify-between h-full">
+                <div class="container flex items-center justify-between h-full px-4">
                     <div class="text-sm text-neutral">
                         © {{ date('Y') }} {{ config('app.name', 'Laravel') }}. All rights reserved.
                     </div>
                     <div class="flex items-center gap-x-4">
                         <a href="#" class="transition-colors text-neutral hover:text-primary">
-                            <span class="i-heroicons-github-20-solid"></span>
+                            <span class="material-icons">github</span>
                         </a>
                         <a href="#" class="transition-colors text-neutral hover:text-primary">
-                            <span class="i-heroicons-twitter-20-solid"></span>
+                            <span class="material-icons">flutter_dash</span>
                         </a>
                     </div>
                 </div>

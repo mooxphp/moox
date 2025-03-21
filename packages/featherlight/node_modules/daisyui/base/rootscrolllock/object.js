@@ -1,1 +1,0 @@
-export default {":root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not([class*=\"drawer-open\"]) > .drawer-toggle:checked )":{"overflow":"hidden"}};
