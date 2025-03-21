@@ -59,7 +59,7 @@ trait HasResourceTaxonomy
                 }
 
                 $model = app($modelClass);
-                
+
                 // Check if model is translatable
                 if (method_exists($model, 'createWithTranslations')) {
                     $locale = app()->getLocale();
@@ -67,7 +67,7 @@ trait HasResourceTaxonomy
                         $locale => [
                             'title' => $data['title'],
                             'slug' => $data['slug'],
-                        ]
+                        ],
                     ];
                     $newTaxonomy = $model::createWithTranslations([], $translations);
                 } else {
@@ -105,8 +105,10 @@ trait HasResourceTaxonomy
                     if (method_exists($item, 'translate')) {
                         $locale = request()->query('lang', app()->getLocale());
                         $translation = $item->translate($locale) ?? $item->translate(app()->getLocale());
-                        return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+
+                        return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
                     }
+
                     return [$item->id => $item->title];
                 })
                 ->toArray()
@@ -128,8 +130,10 @@ trait HasResourceTaxonomy
                         if (method_exists($item, 'translate')) {
                             $locale = app()->getLocale();
                             $translation = $item->translate($locale);
-                            return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+
+                            return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
                         }
+
                         return [$item->id => $item->title];
                     })
                     ->toArray()
@@ -164,8 +168,10 @@ trait HasResourceTaxonomy
                         if (method_exists($item, 'translate')) {
                             $locale = app()->getLocale();
                             $translation = $item->translate($locale);
-                            return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+
+                            return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
                         }
+
                         return [$item->id => $item->title];
                     })
                     ->toArray()
@@ -226,7 +232,7 @@ trait HasResourceTaxonomy
         foreach (array_keys($taxonomyService->getTaxonomies()) as $taxonomy) {
             if (isset($data[$taxonomy])) {
                 $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
-                
+
                 // Use the relationship name from the taxonomy service
                 if (method_exists($record, $relationshipName)) {
                     $record->$relationshipName()->sync($data[$taxonomy]);
