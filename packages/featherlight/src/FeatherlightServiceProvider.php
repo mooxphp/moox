@@ -54,4 +54,23 @@ class FeatherlightServiceProvider extends MooxServiceProvider
                 'build.php',
             ]);
     }
+
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__.'/../config/featherlight.php', 'featherlight');
+    }
+
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'featherlight');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/featherlight.php' => config_path('featherlight.php'),
+                __DIR__.'/../resources/views' => resource_path('views/vendor/featherlight'),
+                __DIR__.'/../resources/assets' => public_path('vendor/featherlight'),
+            ], 'featherlight');
+        }
+    }
 }

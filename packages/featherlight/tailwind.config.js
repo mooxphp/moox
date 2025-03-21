@@ -1,12 +1,22 @@
+import daisyui from "daisyui";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: [
-        "./resources/views/**/*.blade.php",
-        "../../packages/components/resources/views/**/*.blade.php",
-        "../../app/**/*.blade.php",
-    ],
+export default {
+    darkMode: "class",
+    content: ["./resources/**/*.blade.php", "./resources/**/*.js"],
     theme: {
-        extend: {},
+        container: {
+            center: true,
+            padding: "1rem",
+        },
+        extend: {
+            fontFamily: {
+                sans: ["sans", "ui-sans-serif", "system-ui", "sans-serif"],
+            },
+        },
     },
     plugins: [require("daisyui")],
+    daisyui: {
+        themes: ["light", "dark"],
+    },
 };
