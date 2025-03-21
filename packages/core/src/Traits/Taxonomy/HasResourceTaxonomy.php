@@ -63,7 +63,7 @@ trait HasResourceTaxonomy
                     $locale => [
                         'title' => $data['title'],
                         'slug' => $data['slug'],
-                    ]
+                    ],
                 ];
 
                 $newTaxonomy = app($modelClass)::createWithTranslations([], $translations);
@@ -93,7 +93,8 @@ trait HasResourceTaxonomy
                 ->mapWithKeys(function ($item) {
                     $locale = request()->query('lang', app()->getLocale());
                     $translation = $item->translate($locale) ?? $item->translate(app()->getLocale());
-                    return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+
+                    return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
                 })
                 ->toArray()
             )
@@ -108,7 +109,8 @@ trait HasResourceTaxonomy
                     ->mapWithKeys(function ($item) {
                         $locale = app()->getLocale();
                         $translation = $item->translate($locale);
-                        return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+
+                        return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
                     })
                     ->toArray()
             )
