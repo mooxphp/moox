@@ -14,6 +14,7 @@
     -   Soft Delete
     -   Publishable
     -   Consumer API
+    -   Factory
     -   Frontend
 -   [ ] [Category Package](../packages/category/docs/README.md)
     -   Nested
@@ -22,13 +23,16 @@
     -   Soft Delete
     -   Publishable
     -   Consumer API
+    -   Factory
     -   Frontend
 -   [ ] [Item Package](../packages/item/docs/README.md)
     -   Author
+    -   Factory
     -   Consumer API
 -   [ ] [Record Package](../packages/record/docs/README.md)
     -   Translatable
     -   Soft Delete
+    -   Factory
     -   Consumer API
 -   [ ] [Draft Package](../packages/draft/docs/README.md)
     -   Moox Slug
@@ -36,6 +40,7 @@
     -   Soft Delete
     -   Publish / Unpublish
     -   Frontend
+    -   Factory
     -   Consumer API
 
 ## Common API for Entities
@@ -71,17 +76,24 @@
     -   Unpublished by id
     -   Unpublished by type
 
-### Config (Entity)
+### Config (per Entity)
 
--   readable_fields_from_backend
--   writable_fields_from_backend
--   readable_fields_from_backend
--   writable_fields_from_backend
--   readable_fields_from_backend
--   writable_fields_from_backend
-
--   auditable (bool)
--   taxonomies (array, only items)
--   relations (array, only items)
--   modules (array, items and taxonomies)
--   authors (array, items and taxonomies)
+```php
+return [
+'navigation_group' => '',
+'single' => 'trans//',
+'plural' => 'trans//',
+'tabs' => [],
+'backend_readable_fields' => [],
+'backend_writable_fields' => [],
+'frontend_readable_fields' => [],
+'frontend_writable_fields' => [],
+'api_readable_fields' => [],
+'api_writable_fields' => [],
+'taxonomies' => [/* only items */],
+'relations' => [/* only items */],
+'modules' => [/* items and taxonomies */],
+'authors' => [/* items and taxonomies */],
+'auditable' => false,
+],
+```
