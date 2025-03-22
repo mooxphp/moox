@@ -1,0 +1,13 @@
+{
+  "resources/src/app.css": {
+    "file": "assets/app-CT56CKdB.css",
+    "src": "resources/src/app.css",
+    "isEntry": true
+  },
+  "resources/src/app.js": {
+    "file": "assets/app-Bmz1-QfM.js",
+    "name": "app",
+    "src": "resources/src/app.js",
+    "isEntry": true
+  }
+}
