@@ -18,7 +18,6 @@
         </style>
 
         @vite(['resources/src/app.css', 'resources/src/app.js'], 'build/featherlight')
-
         @stack('styles')
     </head>
     <body class="font-sans antialiased text-gray-900 bg-gray-50">

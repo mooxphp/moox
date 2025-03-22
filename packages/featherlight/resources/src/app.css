@@ -1,2 +1,5 @@
 @import "tailwindcss";
-@tailwind utilities;
+
+.test-output {
+    @apply p-10 text-red-500 bg-blue-200;
+}

@@ -1,10 +1,12 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import { resolve } from "path";
-import tailwindcssPostcss from "@tailwindcss/postcss";
+import tailwindcss from "@tailwindcss/postcss";
 import autoprefixer from "autoprefixer";
 
 export default defineConfig({
+    root: resolve(__dirname),
+    base: "./",
     plugins: [
         laravel({
             input: [
@@ -12,17 +14,17 @@ export default defineConfig({
                 resolve(__dirname, "resources/src/app.js"),
             ],
             refresh: true,
+            publicDirectory: "../../public",
+            buildDirectory: "build/featherlight",
         }),
     ],
-    root: resolve(__dirname),
-    base: "./",
     css: {
         postcss: {
             plugins: [
-                tailwindcssPostcss({
+                tailwindcss({
                     config: resolve(__dirname, "tailwind.config.cjs"),
                 }),
-                autoprefixer,
+                autoprefixer(),
             ],
         },
     },
