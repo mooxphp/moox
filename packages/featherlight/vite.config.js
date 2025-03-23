@@ -7,6 +7,10 @@ import autoprefixer from "autoprefixer";
 export default defineConfig({
     root: resolve(__dirname),
     base: "./",
+    build: {
+        outDir: resolve(__dirname, "resources/dist"),
+        manifest: true,
+    },
     plugins: [
         laravel({
             input: [
@@ -14,8 +18,6 @@ export default defineConfig({
                 resolve(__dirname, "resources/src/app.js"),
             ],
             refresh: true,
-            publicDirectory: "../../public",
-            buildDirectory: "build/featherlight",
         }),
     ],
     css: {

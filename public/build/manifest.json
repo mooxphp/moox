@@ -1,21 +1,23 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-B49qZCRQ.css",
+    "file": "assets/app-BTc8_mH3.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/prism.css": {
-    "file": "assets/prism-C04wSBXN.css",
+    "file": "assets/prism-C7CSDqkH.css",
     "src": "resources/css/prism.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-DPHEZ6DJ.js",
+    "file": "assets/app-4Z2a4J-v.js",
+    "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/js/prism.js": {
-    "file": "assets/prism-B5S2PE56.js",
+    "file": "assets/prism-BSJh88sr.js",
+    "name": "prism",
     "src": "resources/js/prism.js",
     "isEntry": true
   }

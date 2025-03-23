@@ -8,12 +8,7 @@ module.exports = {
         path.resolve(__dirname, "../../resources/**/*.blade.php"),
         path.resolve(__dirname, "../../packages/**/*.blade.php"),
     ],
-    safelist: [
-        "text-4xl",
-        "bg-indigo-600",
-        "text-white",
-        "test-output", // etc
-    ],
+    safelist: ["text-white"],
     theme: {
         extend: {},
     },
