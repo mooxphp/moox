@@ -26,6 +26,7 @@ return [
     'delete_file' => 'Datei löschen',
     'yes_delete' => 'Ja, löschen',
     'cancel' => 'Abbrechen',
+    'download_file' => 'Datei herunterladen',
 
     // Notifications
     'delete_error' => 'Fehler beim Löschen',
