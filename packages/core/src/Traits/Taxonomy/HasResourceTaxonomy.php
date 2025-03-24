@@ -98,21 +98,7 @@ trait HasResourceTaxonomy
 
         return Select::make($taxonomy)
             ->multiple()
-            ->options(fn () => app($modelClass)::query()
-                ->when(method_exists($modelClass, 'with'), fn ($query) => $query->with('translations'))
-                ->get()
-                ->mapWithKeys(function ($item) {
-                    if (method_exists($item, 'translate')) {
-                        $locale = request()->query('lang', app()->getLocale());
-                        $translation = $item->translate($locale) ?? $item->translate(app()->getLocale());
-
-                        return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
-                    }
-
-                    return [$item->id => $item->title];
-                })
-                ->toArray()
-            )
+            ->options(fn () => app($modelClass)::get()->mapWithKeys(fn ($item) => [$item->id => $item->title])->toArray())
             ->getSearchResultsUsing(
                 fn (string $search) => app($modelClass)::query()
                     ->when(method_exists($modelClass, 'with'), fn ($query) => $query->with('translations'))
