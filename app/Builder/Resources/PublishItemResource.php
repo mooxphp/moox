@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Builder\Resources;
 
 use App\Builder\Resources\PublishItemResource\Pages;
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
@@ -19,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class PublishItemResource extends Resource
 {

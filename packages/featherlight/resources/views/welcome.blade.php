@@ -4,10 +4,15 @@
     <div class="text-center">
         <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
             <span class="block">Welcome to</span>
-            <span class="block text-indigo-600">Featherlight Laravel</span>
+            <span class="block text-indigo-600">Moox Featherlight</span>
         </h1>
         <p class="max-w-md mx-auto mt-3 text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            A lightweight, elegant package for Laravel that provides a solid foundation for your next project.
+            A lightweight, elegant Theme, delivered as a package for Laravel.
+            <br><br>
+            Featherlight is the base theme for Moox. This theme is used as a template and fallback for
+            all other themes. You can trust this theme to be up-to-date and fully compatible
+            with all Moox packages. We will ever update this theme before all others, and we
+            will never do anything that could break compatibility with Moox packages in this theme.
         </p>
         <div class="max-w-md mx-auto mt-5 sm:flex sm:justify-center md:mt-8">
             <div class="rounded-md shadow">

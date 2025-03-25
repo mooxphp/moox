@@ -31,7 +31,10 @@ class CreateTag extends CreateRecord
         $translations = $data['translations'] ?? [];
         unset($data['translations']);
 
-        return $model::createWithTranslations($data, $translations);
+        /** @var \Moox\Tag\Models\Tag $model */
+        $tag = $model::createWithTranslations($data, $translations);
+
+        return $tag;
     }
 
     #[Override]
