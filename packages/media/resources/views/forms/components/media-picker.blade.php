@@ -119,12 +119,12 @@
         @if ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord)
             <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
                 x-on:click="
-                                                            $dispatch('set-media-picker-model', {
-                                                            modelId: {{ $getRecord()?->id ?? 0 }},
-                                                         modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
-                                                            });
-                                                            $dispatch('open-modal', { id: 'mediaPickerModal' });
-                                                            ">
+                                                                    $dispatch('set-media-picker-model', {
+                                                                    modelId: {{ $getRecord()?->id ?? 0 }},
+                                                                 modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
+                                                                    });
+                                                                    $dispatch('open-modal', { id: 'mediaPickerModal' });
+                                                                    ">
                 <span>{{ __('media::fields.select_media') }}</span>
             </x-filament::button>
         @endif
@@ -141,11 +141,13 @@
                         <div>
                             <template x-if="media.mime_type && media.mime_type.startsWith('image/')">
                                 <img :src="media . url" :alt="media . name"
-                                    class="w-full h-32 object-cover rounded-t-lg" />
+                                    class="w-full h-32 object-cover rounded-t-lg cursor-pointer"
+                                    x-on:click="window.open(media.url, '_blank')" />
                             </template>
 
                             <template x-if="media.mime_type && !media.mime_type.startsWith('image/')">
-                                <div class="flex flex-col justify-between items-center w-full h-32 mt-3">
+                                <div class="flex flex-col justify-between items-center w-full h-32 mt-3 cursor-pointer"
+                                    x-on:click="window.open(media.url, '_blank')">
                                     <img :src="$el . dataset . baseUrl + getIconForMimeType(media . mime_type)"
                                         data-base-url="{{ asset('') }}" class="w-16 h-16" />
                                     <div class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2"
