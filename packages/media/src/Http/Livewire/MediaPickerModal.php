@@ -70,7 +70,7 @@ class MediaPickerModal extends Component implements HasForms
 
         $this->modelClass = $this->modelClass ? str_replace('\\\\', '\\', $this->modelClass) : null;
 
-        if ($this->modelClass && !class_exists($this->modelClass)) {
+        if ($this->modelClass && ! class_exists($this->modelClass)) {
             throw new \Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
@@ -78,7 +78,7 @@ class MediaPickerModal extends Component implements HasForms
             $this->model = app($this->modelClass)::find($this->modelId);
         }
 
-        if (!$this->modelId || !$this->model) {
+        if (! $this->modelId || ! $this->model) {
             $this->modelId = 0;
         }
     }
@@ -88,13 +88,13 @@ class MediaPickerModal extends Component implements HasForms
         $upload = FileUpload::make(__('files'))
             ->label(__('media::fields.upload'))
             ->afterStateUpdated(function ($state) {
-                if (!$state) {
+                if (! $state) {
                     return;
                 }
 
                 $processedFiles = session('processed_files', []);
 
-                if (!is_array($state)) {
+                if (! is_array($state)) {
                     $model = new Media;
                     $model->exists = true;
 
@@ -238,7 +238,7 @@ class MediaPickerModal extends Component implements HasForms
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
@@ -277,7 +277,7 @@ class MediaPickerModal extends Component implements HasForms
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (!$this->multiple) {
+            if (! $this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -287,7 +287,7 @@ class MediaPickerModal extends Component implements HasForms
                     'name' => $media->getAttribute('name'),
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                $selectedMediaData = $selectedMedia->map(fn ($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -340,10 +340,10 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.title")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.description")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.alt")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%']);
+                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.title")) LIKE ?', ['%'.strtolower($this->searchQuery).'%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.description")) LIKE ?', ['%'.strtolower($this->searchQuery).'%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.alt")) LIKE ?', ['%'.strtolower($this->searchQuery).'%']);
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
