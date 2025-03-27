@@ -68,21 +68,17 @@ class MediaPickerModal extends Component implements HasForms
         $this->modelClass = $modelClass;
         $this->modelId = $modelId;
 
-        if (! $this->modelClass) {
-            $this->modelClass = Media::class;
-        }
+        $this->modelClass = $this->modelClass ? str_replace('\\\\', '\\', $this->modelClass) : null;
 
-        $this->modelClass = str_replace('\\\\', '\\', $this->modelClass);
-
-        if (! class_exists($this->modelClass)) {
+        if ($this->modelClass && !class_exists($this->modelClass)) {
             throw new \Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
-        if ($this->modelId) {
+        if ($this->modelId && $this->modelClass) {
             $this->model = app($this->modelClass)::find($this->modelId);
         }
 
-        if (! $this->modelId || ! $this->model) {
+        if (!$this->modelId || !$this->model) {
             $this->modelId = 0;
         }
     }
@@ -92,13 +88,13 @@ class MediaPickerModal extends Component implements HasForms
         $upload = FileUpload::make(__('files'))
             ->label(__('media::fields.upload'))
             ->afterStateUpdated(function ($state) {
-                if (! $state) {
+                if (!$state) {
                     return;
                 }
 
                 $processedFiles = session('processed_files', []);
 
-                if (! is_array($state)) {
+                if (!is_array($state)) {
                     $model = new Media;
                     $model->exists = true;
 
@@ -108,9 +104,9 @@ class MediaPickerModal extends Component implements HasForms
                     $title = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
 
                     $user = auth()->user();
-                    $media->title = $title;
-                    $media->alt = $title;
-                    $media->original_model_type = $this->modelClass;
+                    $media->setAttribute('title', $title);
+                    $media->setAttribute('alt', $title);
+                    $media->original_model_type = $this->modelClass ?: Media::class;
                     $media->original_model_id = $this->modelId ?: null;
                     $media->model_id = $media->id;
                     $media->model_type = Media::class;
@@ -141,9 +137,9 @@ class MediaPickerModal extends Component implements HasForms
                         $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
                         $user = auth()->user();
-                        $media->title = $title;
-                        $media->alt = $title;
-                        $media->original_model_type = $this->modelClass;
+                        $media->setAttribute('title', $title);
+                        $media->setAttribute('alt', $title);
+                        $media->original_model_type = $this->modelClass ?: Media::class;
                         $media->original_model_id = $this->modelId ?: null;
                         $media->model_id = $media->id;
                         $media->model_type = Media::class;
@@ -242,23 +238,23 @@ class MediaPickerModal extends Component implements HasForms
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
             }
         }
 
-        $media = Media::find($mediaId);
+        $media = Media::where('id', $mediaId)->first();
 
         if ($media) {
             $this->selectedMediaMeta = [
                 'id' => $media->id,
                 'file_name' => $media->file_name,
-                'title' => $media->title ?? '',
-                'description' => $media->description ?? '',
-                'internal_note' => $media->internal_note ?? '',
-                'alt' => $media->alt ?? '',
+                'title' => $media->getAttribute('title') ?? '',
+                'description' => $media->getAttribute('description') ?? '',
+                'internal_note' => $media->getAttribute('internal_note') ?? '',
+                'alt' => $media->getAttribute('alt') ?? '',
                 'mime_type' => $media->mime_type ?? '',
                 'write_protected' => (bool) $media->getOriginal('write_protected'),
             ];
@@ -281,22 +277,22 @@ class MediaPickerModal extends Component implements HasForms
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
                     'mime_type' => $media->mime_type,
-                    'name' => $media->name,
+                    'name' => $media->getAttribute('name'),
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
                     'mime_type' => $media->mime_type,
-                    'name' => $media->name,
+                    'name' => $media->getAttribute('name'),
                 ])->toArray();
 
                 $this->dispatch('mediaSelected', $selectedMediaData);
@@ -311,14 +307,14 @@ class MediaPickerModal extends Component implements HasForms
     public function updatedSelectedMediaMeta($value, $field)
     {
         if ($this->selectedMediaMeta['id']) {
-            $media = Media::find($this->selectedMediaMeta['id']);
+            $media = Media::where('id', $this->selectedMediaMeta['id'])->first();
 
             if (in_array($field, ['title', 'description', 'internal_note', 'alt'])) {
                 if ($media->getOriginal('write_protected')) {
                     return;
                 }
 
-                $media->$field = $value;
+                $media->setAttribute($field, $value);
                 $media->save();
             }
         }
@@ -344,10 +340,10 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.title")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.description")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.alt")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%']);
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {

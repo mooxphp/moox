@@ -54,7 +54,7 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
@@ -73,8 +73,8 @@ class ListMedia extends ListRecords
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->title = $title;
-                                $media->alt = $title;
+                                $media->setAttribute('title', $title);
+                                $media->setAttribute('alt', $title);
                                 $media->uploader_type = get_class(auth()->user());
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
