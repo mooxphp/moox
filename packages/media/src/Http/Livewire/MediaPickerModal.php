@@ -256,7 +256,7 @@ class MediaPickerModal extends Component implements HasForms
                 if (isset($media->uploader->name)) {
                     $uploaderName = $media->uploader->name;
                 } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
-                    $uploaderName = $media->uploader->first_name . ' ' . $media->uploader->last_name;
+                    $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
                 }
             }
 
