@@ -16,7 +16,7 @@
         <div class="flex-1">
             <x-filament::section>
                 <div class="flex flex-row gap-4 mb-4">
-                    <x-filament::input.wrapper class="w-1/2">
+                    <x-filament::input.wrapper class="">
                         <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
                             placeholder="{{ __('media::fields.search') }}"
                             class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
@@ -39,6 +39,19 @@
                             <option value="week">{{ __('media::fields.week') }}</option>
                             <option value="month">{{ __('media::fields.month') }}</option>
                             <option value="year">{{ __('media::fields.year') }}</option>
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
+
+                    <x-filament::input.wrapper class="w-1/6">
+                        <x-filament::input.select wire:model.live="uploaderFilter">
+                            <option value="">{{ __('media::fields.uploaded_by') }}</option>
+                            @foreach($uploaderOptions as $type => $uploaders)
+                                <optgroup label="{{ $type }}">
+                                    @foreach($uploaders as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
                 </div>
