@@ -41,6 +41,7 @@ class MediaPickerModal extends Component implements HasForms
     public array $selectedMediaMeta = [
         'id' => null,
         'file_name' => '',
+        'name' => '',
         'title' => '',
         'description' => '',
         'internal_note' => '',
@@ -250,26 +251,47 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::where('id', $mediaId)->first();
 
         if ($media) {
+            $uploaderName = '-';
+            if ($media->uploader) {
+                if (isset($media->uploader->name)) {
+                    $uploaderName = $media->uploader->name;
+                } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
+                    $uploaderName = $media->uploader->first_name . ' ' . $media->uploader->last_name;
+                }
+            }
+
             $this->selectedMediaMeta = [
                 'id' => $media->id,
                 'file_name' => $media->file_name,
+                'name' => $media->getAttribute('name') ?? '',
                 'title' => $media->getAttribute('title') ?? '',
                 'description' => $media->getAttribute('description') ?? '',
                 'internal_note' => $media->getAttribute('internal_note') ?? '',
                 'alt' => $media->getAttribute('alt') ?? '',
                 'mime_type' => $media->mime_type ?? '',
                 'write_protected' => (bool) $media->getOriginal('write_protected'),
+                'size' => $media->size,
+                'dimensions' => $media->getCustomProperty('dimensions', []),
+                'created_at' => $media->created_at,
+                'updated_at' => $media->updated_at,
+                'uploader_name' => $uploaderName,
             ];
         } else {
             $this->selectedMediaMeta = [
                 'id' => null,
                 'file_name' => '',
+                'name' => '',
                 'title' => '',
                 'description' => '',
                 'internal_note' => '',
                 'alt' => '',
                 'mime_type' => '',
                 'write_protected' => false,
+                'size' => 0,
+                'dimensions' => [],
+                'created_at' => null,
+                'updated_at' => null,
+                'uploader_name' => '-',
             ];
         }
     }
@@ -311,7 +333,7 @@ class MediaPickerModal extends Component implements HasForms
         if ($this->selectedMediaMeta['id']) {
             $media = Media::where('id', $this->selectedMediaMeta['id'])->first();
 
-            if (in_array($field, ['title', 'description', 'internal_note', 'alt'])) {
+            if (in_array($field, ['title', 'description', 'internal_note', 'alt', 'name'])) {
                 if ($media->getOriginal('write_protected')) {
                     return;
                 }

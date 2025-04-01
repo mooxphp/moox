@@ -176,69 +176,117 @@
             </x-filament::section>
         </div>
 
-        <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4">
-            <x-filament::section>
-                <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.edit_metadata') }}</h3>
+        <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4 flex flex-col h-full">
+            @if(!empty($selectedMediaMeta['id']))
+                <div class="flex-1">
+                    <x-filament::section>
+                        <div class="space-y-4">
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.file_name') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['file_name'] }}</p>
+                            </div>
 
-                @if(!empty($selectedMediaMeta['id']))
-                    <form wire:submit.prevent="saveMetadata">
-                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                            {{ __('media::fields.title') }}
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="{{ __('media::fields.title') }}"
-                                :disabled="(bool) $selectedMediaMeta['write_protected']"
-                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </x-filament::input.wrapper>
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.file_type') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['mime_type'] }}</p>
+                            </div>
 
-                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                            {{ __('media::fields.description') }}
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
-                                placeholder="{{ __('media::fields.description') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
-                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </x-filament::input.wrapper>
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.size') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ number_format($selectedMediaMeta['size'] / 1024, 2) }} KB</p>
+                            </div>
 
-                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                            {{ __('media::fields.internal_note') }}
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
-                                placeholder="{{ __('media::fields.internal_note') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
-                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </x-filament::input.wrapper>
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.dimensions') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['dimensions']['width'] ?? '-' }} x {{ $selectedMediaMeta['dimensions']['height'] ?? '-' }}</p>
+                            </div>
 
-                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                            {{ __('media::fields.alt_text') }}
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="{{ __('media::fields.alt_text') }}"
-                                :disabled="$selectedMediaMeta['write_protected'] === true"
-                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </x-filament::input.wrapper>
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.created_at') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['created_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['created_at'])->format('d.m.Y H:i') : '-' }}</p>
+                            </div>
 
-                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                            {{ __('media::fields.file_type') }}
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper class="mb-4">
-                            <x-filament::input type="text" disabled wire:model.lazy="selectedMediaMeta.mime_type"
-                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </x-filament::input.wrapper>
-                    </form>
-                @else
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.updated_at') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['updated_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['updated_at'])->format('d.m.Y H:i') : '-' }}</p>
+                            </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.uploaded_by') }}</span>
+                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['uploader_name'] ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </x-filament::section>
+
+                    <x-filament::section class="mt-2">
+                        <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.metadata') }}</h3>
+                        <form wire:submit.prevent="saveMetadata">
+                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('media::fields.name') }}
+                            </x-filament-forms::field-wrapper.label>
+                            <x-filament::input.wrapper class="mb-4">
+                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.name" placeholder="{{ __('media::fields.name') }}"
+                                    :disabled="(bool) $selectedMediaMeta['write_protected']"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            </x-filament::input.wrapper>
+
+                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('media::fields.title') }}
+                            </x-filament-forms::field-wrapper.label>
+                            <x-filament::input.wrapper class="mb-4">
+                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="{{ __('media::fields.title') }}"
+                                    :disabled="(bool) $selectedMediaMeta['write_protected']"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            </x-filament::input.wrapper>
+
+                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('media::fields.description') }}
+                            </x-filament-forms::field-wrapper.label>
+                            <x-filament::input.wrapper class="mb-4">
+                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
+                                    placeholder="{{ __('media::fields.description') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            </x-filament::input.wrapper>
+
+                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ __('media::fields.alt_text') }}
+                            </x-filament-forms::field-wrapper.label>
+                            <x-filament::input.wrapper class="mb-4">
+                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="{{ __('media::fields.alt_text') }}"
+                                    :disabled="$selectedMediaMeta['write_protected'] === true"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            </x-filament::input.wrapper>
+                        </form>
+                    </x-filament::section>
+
+                    <x-filament::section class="mt-2">
+                        <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.internal_note') }}</h3>
+                        <form wire:submit.prevent="saveMetadata">
+                            <x-filament::input.wrapper class="mb-4">
+                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
+                                    placeholder="{{ __('media::fields.internal_note') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
+                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            </x-filament::input.wrapper>
+                        </form>
+                    </x-filament::section>
+                </div>
+
+                <div class="mt-2 flex gap-2 justify-end">
+                    <x-filament::button wire:click="applySelection" color="primary">
+                        {{ __('media::fields.apply_selection') }}
+                    </x-filament::button>
+                    <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
+                        {{ __('media::fields.close') }}
+                    </x-filament::button>
+                </div>
+            @else
+                <x-filament::section>
                     <p class="text-gray-500">{{ __('media::fields.no_media_selected') }}</p>
-                @endif
-            </x-filament::section>
+                </x-filament::section>
+            @endif
         </div>
     </div>
 
     <x-slot name="footer">
-        <x-filament::button wire:click="applySelection" color="primary" class="mb-4">
-            {{ __('media::fields.apply_selection') }}
-        </x-filament::button>
-        <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
-            {{ __('media::fields.close') }}
-        </x-filament::button>
     </x-slot>
 </x-filament::modal>
