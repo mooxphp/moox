@@ -13,7 +13,7 @@ class Tooltip extends Component
      */
     public function __construct(
         public ?string $message = null
-    ){
+    ) {
         //
     }
 

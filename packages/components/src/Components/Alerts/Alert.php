@@ -15,8 +15,8 @@ class Alert extends Component
         public ?string $message = null,
         public ?string $content = null,
         public ?string $buttons = null
-    ){
-       //
+    ) {
+        //
     }
 
     /**

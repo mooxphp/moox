@@ -96,13 +96,13 @@ class FeatherlightServiceProvider extends MooxServiceProvider
 
         Blade::directive('featherlightAssets', function () {
             return '<?php echo app(\\Moox\\Featherlight\\ThemeAssets::class)->tags(); ?>';
-});
+        });
 
-if ($this->app->runningInConsole()) {
-$this->publishes([
-__DIR__.'/../config/featherlight.php' => config_path('featherlight.php'),
-__DIR__.'/../resources/views' => resource_path('views/vendor/featherlight'),
-], 'featherlight');
-}
-}
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/featherlight.php' => config_path('featherlight.php'),
+                __DIR__.'/../resources/views' => resource_path('views/vendor/featherlight'),
+            ], 'featherlight');
+        }
+    }
 }

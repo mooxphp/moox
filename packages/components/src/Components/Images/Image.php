@@ -15,7 +15,7 @@ class Image extends Component
         public string $path,
         public ?string $alt = null,
         public ?string $title = null
-    ){
+    ) {
         //
     }
 
