@@ -24,6 +24,7 @@ class ListMedia extends ListRecords
         return [
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
+                ->icon(config('media.upload.resource.icon'))
                 ->form([
                     FileUpload::make('file')
                         ->label(__('media::fields.select_file'))
@@ -72,8 +73,8 @@ class ListMedia extends ListRecords
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->title = $title;
-                                $media->alt = $title;
+                                $media->setAttribute('title', $title);
+                                $media->setAttribute('alt', $title);
                                 $media->uploader_type = get_class(auth()->user());
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;

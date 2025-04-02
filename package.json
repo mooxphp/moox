@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "build:featherlight": "cd packages/featherlight && vite build"
     },
     "type": "module",
     "devDependencies": {

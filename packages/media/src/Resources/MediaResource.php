@@ -67,6 +67,10 @@ class MediaResource extends Resource
 
             Section::make()
                 ->schema([
+                    Placeholder::make('file_name')
+                        ->label(__('media::fields.file_name'))
+                        ->content(fn ($record) => $record->file_name),
+
                     Placeholder::make('mime_type')
                         ->label(__('media::fields.mime_type'))
                         ->content(fn ($record) => $record->getReadableMimeType()),
@@ -85,10 +89,6 @@ class MediaResource extends Resource
 
                             return number_format($bytes, 2).' '.$units[$i];
                         }),
-
-                    Placeholder::make('file_name')
-                        ->label(__('media::fields.file_name'))
-                        ->content(fn ($record) => $record->file_name),
 
                     Placeholder::make('dimensions')
                         ->label(__('media::fields.dimensions'))
@@ -224,10 +224,11 @@ class MediaResource extends Resource
             ->columns([
                 Stack::make([
                     CustomImageColumn::make('')
+                        ->alignment('center')
                         ->extraImgAttributes(function ($record, $livewire) {
                             $baseStyle = str_starts_with($record->mime_type, 'image/')
                                 ? 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;'
-                                : 'position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px;';
+                                : 'width: 60px; height: auto; margin-top: 20px;';
 
                             if ($livewire->isSelecting) {
                                 $style = $baseStyle.'opacity: 0.5;';
@@ -254,8 +255,49 @@ class MediaResource extends Resource
                             ];
                         })
                         ->tooltip(fn ($record) => $record->title ?? __('media::fields.no_title'))
-                        ->searchable(['name', 'title', 'description', 'alt', 'internal_note']),
+                        ->searchable(true, function (Builder $query, string $search) {
+                            $query->whereHas('translations', function (Builder $query) use ($search) {
+                                $query->where('locale', app()->getLocale())
+                                    ->where(function (Builder $query) use ($search) {
+                                        $query->where('name', 'like', "%{$search}%")
+                                            ->orWhere('title', 'like', "%{$search}%")
+                                            ->orWhere('description', 'like', "%{$search}%")
+                                            ->orWhere('alt', 'like', "%{$search}%")
+                                            ->orWhere('internal_note', 'like', "%{$search}%");
+                                    });
+                            });
+                        }),
+                    \Filament\Tables\Columns\TextColumn::make('file_name')
+                        ->label('')
+                        ->alignment('center')
+                        ->wrap()
+                        ->limit(50)
+                        ->searchable()
+                        ->sortable()
+                        ->visible(fn ($record) => $record && ! str_starts_with($record->mime_type ?? '', 'image/'))
+                        ->extraAttributes(function ($record, $livewire) {
+                            $baseStyle = 'margin-top: 10px; word-break: break-all;';
 
+                            // For selection mode
+                            if ($livewire->isSelecting) {
+                                return [
+                                    'style' => $baseStyle,
+                                    'class' => 'cursor-pointer',
+                                    'wire:click.stop' => "\$set('selected', ".
+                                        (in_array($record->id, $livewire->selected)
+                                            ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
+                                            : json_encode(array_merge($livewire->selected, [$record->id]))
+                                        ).')',
+                                ];
+                            }
+
+                            // For edit mode (when not selecting)
+                            return [
+                                'style' => $baseStyle,
+                                'class' => 'cursor-pointer',
+                                'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
+                            ];
+                        }),
                 ]),
             ])
             ->headerActionsPosition(HeaderActionsPosition::Bottom)
@@ -426,6 +468,16 @@ class MediaResource extends Resource
                                     return null;
                                 }
                             }),
+                        \Filament\Tables\Actions\Action::make('download')
+                            ->label(__('media::fields.download_file'))
+                            ->icon('heroicon-m-arrow-down-tray')
+                            ->action(function (Media $record) {
+                                return response()->download(
+                                    $record->getPath(),
+                                    $record->file_name,
+                                    ['Content-Type' => $record->mime_type]
+                                );
+                            }),
                     ]),
             ])
             ->filters([
@@ -454,9 +506,29 @@ class MediaResource extends Resource
                                 'image/ico',
                                 'image/heic',
                                 'image/heif',
+                                'image/x-icon',
+                                'image/vnd.microsoft.icon',
                             ],
-                            'videos' => ['video/mp4', 'video/webm'],
-                            'audios' => ['audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/webm'],
+                            'videos' => [
+                                'video/mp4',
+                                'video/webm',
+                                'video/quicktime',
+                                'video/x-msvideo',
+                                'video/x-matroska',
+                                'video/3gpp',
+                                'video/x-flv',
+                            ],
+                            'audios' => [
+                                'audio/mpeg',
+                                'audio/ogg',
+                                'audio/wav',
+                                'audio/webm',
+                                'audio/aac',
+                                'audio/midi',
+                                'audio/x-midi',
+                                'audio/mp4',
+                                'audio/flac',
+                            ],
                             'documents' => [
                                 'application/pdf',
                                 'application/msword',
@@ -465,6 +537,19 @@ class MediaResource extends Resource
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                 'application/vnd.ms-powerpoint',
                                 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                                'application/rtf',
+                                'text/plain',
+                                'text/csv',
+                                'text/html',
+                                'text/xml',
+                                'application/json',
+                                'application/x-yaml',
+                                'application/zip',
+                                'application/x-zip-compressed',
+                                'application/x-rar-compressed',
+                                'application/x-7z-compressed',
+                                'application/gzip',
+                                'application/x-tar',
                             ],
                         ];
 

@@ -26,6 +26,7 @@ return [
     'delete_file' => 'Delete File',
     'yes_delete' => 'Yes, Delete',
     'cancel' => 'Cancel',
+    'download_file' => 'Download File',
 
     // Notifications
     'delete_error' => 'Error Deleting',

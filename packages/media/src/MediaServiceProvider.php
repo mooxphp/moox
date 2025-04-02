@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Moox\Media\Http\Livewire\MediaPickerModal;
-use Moox\Media\Http\Livewire\MediaUploader;
 use Moox\Media\Models\Media;
 use Moox\Media\Policies\MediaPolicy;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
@@ -42,7 +41,10 @@ class MediaServiceProvider extends PackageServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
-        Livewire::component('media-uploader', MediaUploader::class);
+
+        $this->publishes([
+            __DIR__.'/../resources/dist/icons' => public_path('vendor/media/icons'),
+        ], 'media-icons');
 
         FilamentAsset::register([
             Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),

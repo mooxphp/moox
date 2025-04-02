@@ -1,5 +1,6 @@
 <?php
 
+use App\Builder\BuilderPanelProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\Filament\AdminPanelProvider;
@@ -222,6 +223,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         EventServiceProvider::class,
         AdminPanelProvider::class,
+        BuilderPanelProvider::class,
         PressPanelProvider::class,
         DevopsPanelProvider::class,
         RouteServiceProvider::class,

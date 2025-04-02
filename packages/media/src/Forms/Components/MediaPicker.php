@@ -36,7 +36,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $index = 1;
 
             foreach ($mediaIds as $mediaId) {
-                $media = Media::find($mediaId);
+                $media = Media::where('id', $mediaId)->first();
 
                 if (! $media) {
                     continue;
@@ -50,10 +50,10 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 $attachments[$index] = [
                     'file_name' => $media->file_name,
-                    'title' => $media->title,
-                    'description' => $media->description,
-                    'internal_note' => $media->internal_note,
-                    'alt' => $media->alt,
+                    'title' => $this->getMediaAttribute($media, 'title'),
+                    'description' => $this->getMediaAttribute($media, 'description'),
+                    'internal_note' => $this->getMediaAttribute($media, 'internal_note'),
+                    'alt' => $this->getMediaAttribute($media, 'alt'),
                 ];
 
                 $index++;
@@ -189,5 +189,22 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     public function getUploadConfig(): array
     {
         return $this->uploadConfig;
+    }
+
+    /**
+     * Safely get an attribute from the Media model
+     */
+    protected function getMediaAttribute(Media $media, string $attribute): ?string
+    {
+        if (isset($media->{$attribute})) {
+            return $media->{$attribute};
+        }
+
+        $value = $media->getAttribute($attribute);
+        if ($value !== null) {
+            return $value;
+        }
+
+        return null;
     }
 }

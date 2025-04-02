@@ -22,14 +22,14 @@
         @livewireStyles
         @stack('styles')
     </head>
-    <body class="text-gray-100 p-6 bg-gray-900"
+    <body class="p-6 text-gray-100 bg-gray-900"
     style="
     background: radial-gradient(at right center, rgba(10, 16, 173, 0.5), rgba(0, 5, 27, 0.75)), url('{{ asset('web/space.jpg') }}');
     background-position: center;
     min-height: 100vh;
     ">
         <header class="max-w-6xl mx-auto mt-10 mb-20">
-            <div class="flex justify-between items-center">
+            <div class="flex items-center justify-between">
                 <x-logo/>
                 <x-main-nav/>
             </div>

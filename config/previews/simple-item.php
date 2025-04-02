@@ -45,7 +45,6 @@ return [
             'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
-
         'tag' => [
             'label' => 'Tags',
             'model' => \Moox\Tag\Models\Tag::class,
@@ -56,6 +55,5 @@ return [
             'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
             'hierarchical' => false,
         ],
-
     ],
 ];
