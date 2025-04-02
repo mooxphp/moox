@@ -9,10 +9,12 @@ use Illuminate\View\Component;
 class CardTitle extends Component
 {
     public string $tag = 'h2';
+
     /**
      * Create a new component instance.
      */
-    public function __construct(string $tag = 'h2'){
+    public function __construct(string $tag = 'h2')
+    {
         $this->tag = $tag;
     }
 
