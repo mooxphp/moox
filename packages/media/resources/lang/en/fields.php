@@ -41,6 +41,9 @@ return [
     'protected_file_skipped|protected_files_skipped' => 'Protected file skipped|Protected files skipped',
     'file_deleted|files_deleted' => 'File deleted|Files deleted',
     'file_could_not_be_deleted|files_could_not_be_deleted' => 'File could not be deleted|Files could not be deleted',
+    'replace_file_success' => 'The file ":oldFileName" was successfully replaced with ":newFileName".',
+    'replace_file_error' => 'The file ":fileName" could not be replaced.',
+    'replace_error' => 'Error Replacing File',
 
     // Upload
     'upload_file' => 'Upload File',

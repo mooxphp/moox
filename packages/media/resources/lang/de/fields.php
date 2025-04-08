@@ -41,6 +41,9 @@ return [
     'protected_file_skipped|protected_files_skipped' => 'Geschützte Datei übersprungen|Geschützte Dateien übersprungen',
     'file_deleted|files_deleted' => 'Datei gelöscht|Dateien gelöscht',
     'file_could_not_be_deleted|files_could_not_be_deleted' => 'Datei konnte nicht gelöscht werden|Dateien konnten nicht gelöscht werden',
+    'replace_file_success' => 'Die Datei ":oldFileName" wurde erfolgreich durch ":newFileName" ersetzt.',
+    'replace_file_error' => 'Die Datei ":fileName" konnte nicht ersetzt werden.',
+    'replace_error' => 'Fehler beim Ersetzen der Datei',
 
     // Upload
     'upload_file' => 'Datei hochladen',
