@@ -45,6 +45,12 @@ return [
     'replace_file_error' => 'The file ":fileName" could not be replaced.',
     'replace_error' => 'Error Replacing File',
 
+    // Linked Files
+    'file_has_links' => 'This file is used in :count :links.',
+    'warning_file_has_links' => 'This file is used in :count :links.',
+    'delete_linked_warning' => 'If you delete this file, the links to this file will also be deleted.',
+    'delete_linked_file_heading' => 'Delete File ":title"',
+
     // Upload
     'upload_file' => 'Upload File',
     'select_file' => 'Select File',

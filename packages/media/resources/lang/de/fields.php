@@ -45,6 +45,12 @@ return [
     'replace_file_error' => 'Die Datei ":fileName" konnte nicht ersetzt werden.',
     'replace_error' => 'Fehler beim Ersetzen der Datei',
 
+    // Linked Files
+    'file_has_links' => 'Diese Datei wird in :count :links verwendet.',
+    'delete_linked_file_heading' => 'Datei ":title" löschen',
+    'warning_file_has_links' => 'Diese Datei wird in :count :links verwendet.',
+    'delete_linked_warning' => 'Wenn Sie diese Datei löschen, werden die Verknüpfungen zu dieser Datei ebenfalls gelöscht.',
+
     // Upload
     'upload_file' => 'Datei hochladen',
     'select_file' => 'Datei auswählen',
