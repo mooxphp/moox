@@ -89,4 +89,10 @@ return [
             'append_files' => true,
         ],
     ],
+
+    'modal' => [
+        'resource' => [
+            'show_download_button' => false,
+        ],
+    ],
 ];

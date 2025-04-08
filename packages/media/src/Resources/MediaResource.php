@@ -567,6 +567,7 @@ class MediaResource extends Resource
                         \Filament\Tables\Actions\Action::make('download')
                             ->label(__('media::fields.download_file'))
                             ->icon('heroicon-m-arrow-down-tray')
+                            ->visible(fn() => config('media.modal.resource.show_download_button', true))
                             ->action(function (Media $record) {
                                 return response()->download(
                                     $record->getPath(),
