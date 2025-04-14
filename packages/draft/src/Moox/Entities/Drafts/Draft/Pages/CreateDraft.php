@@ -33,10 +33,10 @@ class CreateDraft extends BaseCreateDraft
         // Fill and save the main record with non-translatable data
         $record->fill($nonTranslatableData);
         $record->save();
-        
+
         // Create the translation
         $translation = $record->translations()->firstOrNew([
-            'locale' => $this->lang
+            'locale' => $this->lang,
         ]);
 
         // Set translation data
@@ -48,7 +48,7 @@ class CreateDraft extends BaseCreateDraft
 
         // Set author ID for the translation
         $translation->author_id = auth()->id();
-        
+
         // Save the translation
         $record->translations()->save($translation);
 

@@ -2,8 +2,6 @@
 
 namespace Moox\Draft\Traits;
 
-use Moox\Draft\Traits\HasTranslatedFormState;
-
 class DraftResource extends BaseDraftResource
 {
     use HasResourceTaxonomy, HasTranslatedFormState;
@@ -55,9 +53,9 @@ class DraftResource extends BaseDraftResource
                                         ->label('Data (JSON)'),
                                 ]),
                             // ... rest of your form schema
-                        ])
+                        ]),
                     // ... rest of your grid schema
-                ])
+                ]),
             // ... rest of your schema
         ];
 
@@ -69,14 +67,14 @@ class DraftResource extends BaseDraftResource
     {
         if (isset($data['_current_locale'])) {
             $translation = $record->translateOrNew($data['_current_locale']);
-            
+
             // Get all translatable fields from the model
             foreach ($record->translatedAttributes as $field) {
                 if (isset($data[$field])) {
                     $translation->$field = $data[$field];
                 }
             }
-            
+
             $record->translations()->save($translation);
         }
     }
@@ -86,13 +84,13 @@ class DraftResource extends BaseDraftResource
     {
         if (isset($data['_current_locale'])) {
             $translation = $record->translateOrNew($data['_current_locale']);
-            
+
             foreach ($record->translatedAttributes as $field) {
                 if (isset($data[$field])) {
                     $translation->$field = $data[$field];
                 }
             }
-            
+
             $translation->author_id = auth()->id();
             $record->translations()->save($translation);
         }

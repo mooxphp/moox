@@ -2,37 +2,34 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft;
 
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Draft\Models\Draft;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Filters\TernaryFilter;
-use Moox\Media\Forms\Components\MediaPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Draft\Models\Draft;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Illuminate\Support\Facades\Livewire;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class DraftResource extends BaseDraftResource
 {
@@ -83,7 +80,6 @@ class DraftResource extends BaseDraftResource
     {
         $taxonomyFields = static::getTaxonomyFields();
 
-
         $schema = [
             Grid::make(2)
                 ->schema([
@@ -110,26 +106,20 @@ class DraftResource extends BaseDraftResource
                                                 } else {
                                                     $rule->where('locale', $locale);
                                                 }
-                                                
+
                                                 return $rule;
                                             },
                                             'table' => 'draft_translations',
                                             'column' => 'slug',
                                         ]
-                                    )
-                                    
-                                    ,
-                                    
+                                    ),
+
                                     Toggle::make('is_active')
                                         ->label('Active'),
                                     RichEditor::make('description')
-                                        ->label('Description')
-                                   
-                                        ,
+                                        ->label('Description'),
                                     MarkdownEditor::make('content')
-                                        ->label('Content')
-                                  
-                                        ,
+                                        ->label('Content'),
                                     KeyValue::make('data')
                                         ->label('Data (JSON)'),
                                 ]),
@@ -163,7 +153,7 @@ class DraftResource extends BaseDraftResource
                                     DateTimePicker::make('to_unpublish_at')
                                         ->label('To unpublish at')
                                         ->placeholder(__('core::core.to_unpublish_at'))
-                                        ->hidden(fn ($get) => !in_array($get('status'), ['scheduled', 'published']))
+                                        ->hidden(fn ($get) => ! in_array($get('status'), ['scheduled', 'published']))
                                         ->dehydrateStateUsing(fn ($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
                                 ]),
                             Section::make('')
@@ -205,15 +195,15 @@ class DraftResource extends BaseDraftResource
                                                 ->label('Published')
                                                 ->content(fn ($record): string => $record->published_at ?
                                                     $record->published_at.' - '.$record->published_at->diffForHumans().
-                                                    ($record->published_by_id ? ' by ' .$record->published_by_id : '') : '')
+                                                    ($record->published_by_id ? ' by '.$record->published_by_id : '') : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => !$record->published_at),
+                                                ->hidden(fn ($record) => ! $record->published_at),
                                             Placeholder::make('to_unpublish_at')
                                                 ->label('To Unpublish')
                                                 ->content(fn ($record): string => $record->to_unpublish_at ?
                                                     $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => !$record->to_unpublish_at),
+                                                ->hidden(fn ($record) => ! $record->to_unpublish_at),
                                         ]),
                                 ])
                                 ->hidden(fn ($record) => $record === null),
@@ -353,7 +343,4 @@ class DraftResource extends BaseDraftResource
             'view' => Pages\ViewDraft::route('/{record}'),
         ];
     }
-  
-
-   
 }

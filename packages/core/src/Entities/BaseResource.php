@@ -127,6 +127,7 @@ abstract class BaseResource extends Resource
             })
             ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
+
     public static function getPublishAction(): Action
     {
         return Action::make('publish')
@@ -137,7 +138,7 @@ abstract class BaseResource extends Resource
                 // $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
             });
-            // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
+        // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
 
     public static function getSaveAndCreateAnotherAction(): Action

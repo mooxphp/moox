@@ -2,10 +2,8 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DraftTranslation extends Model
 {
@@ -28,13 +26,13 @@ class DraftTranslation extends Model
         'published_at',
         'to_unpublish_at',
         'unpublished_at',
-        
+
         // Actor fields
         'published_by_id',
         'published_by_type',
         'unpublished_by_id',
         'unpublished_by_type',
-        
+
         // Soft delete and restoration fields
         'deleted_at',
         'deleted_by_id',
@@ -53,7 +51,4 @@ class DraftTranslation extends Model
         'deleted_at' => 'datetime',
         'restored_at' => 'datetime',
     ];
-
-
-    
 }
