@@ -67,7 +67,7 @@
 -   Draft adds
     -   Title
     -   Slug
-    -   To publish at
+    -   To publish at 
     -   Published at
     -   Published by id
     -   Published by type

@@ -8,36 +8,49 @@ use Override;
 
 class CreateDraft extends BaseCreateDraft
 {
-    public ?string $selectedLang = null;
+    public ?string $lang = null;
 
     #[Override]
     public function mount(): void
     {
-        $this->selectedLang = request()->query('lang');
+        $this->lang = request()->query('lang', app()->getLocale());
         parent::mount();
     }
 
-    #[Override]
     protected function handleRecordCreation(array $data): Model
     {
         $model = static::getModel();
-
         $record = new $model;
 
-        $translatableAttributes = ['title', 'slug', 'description', 'content'];
+        // Set the default locale before saving
+        $record->setDefaultLocale($this->lang);
+
+        // Get translatable and non-translatable attributes
+        $translatableAttributes = $record->translatedAttributes;
         $translationData = array_intersect_key($data, array_flip($translatableAttributes));
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
 
+        // Fill and save the main record with non-translatable data
         $record->fill($nonTranslatableData);
         $record->save();
+        
+        // Create the translation
+        $translation = $record->translations()->firstOrNew([
+            'locale' => $this->lang
+        ]);
 
-        if ($this->selectedLang) {
-            $record->translateOrNew($this->selectedLang)->fill($translationData);
-        } else {
-            $record->translateOrNew(app()->getLocale())->fill($translationData);
+        // Set translation data
+        foreach ($translatableAttributes as $attr) {
+            if (isset($translationData[$attr])) {
+                $translation->setAttribute($attr, $translationData[$attr]);
+            }
         }
 
-        $record->save();
+        // Set author ID for the translation
+        $translation->author_id = auth()->id();
+        
+        // Save the translation
+        $record->translations()->save($translation);
 
         return $record;
     }
@@ -45,6 +58,6 @@ class CreateDraft extends BaseCreateDraft
     #[Override]
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index', ['lang' => $this->selectedLang]);
+        return $this->getResource()::getUrl('index', ['lang' => $this->lang]);
     }
 }

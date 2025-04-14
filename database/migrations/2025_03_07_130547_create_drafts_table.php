@@ -16,7 +16,6 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->json('data')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('type')->nullable();
             $table->dateTime('due_at')->nullable();
             $table->string('color')->nullable();

@@ -91,6 +91,7 @@ class BaseDraftResource extends BaseResource
     {
         $actions = [
             static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
+            static::getPublishAction()->extraAttributes(attributes: ['class' => 'w-full']),
             static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
         ];
 

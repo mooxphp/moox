@@ -22,28 +22,28 @@ class EditTag extends EditRecord
         parent::mount($record);
     }
 
-    #[Override]
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        return array_merge($data, [
-            'translations' => $this->record->getTranslationsArray(),
-        ]);
-    }
+    // #[Override]
+    // protected function mutateFormDataBeforeFill(array $data): array
+    // {
+    //     return array_merge($data, [
+    //         'translations' => $this->record->getTranslationsArray(),
+    //     ]);
+    // }
 
-    #[Override]
-    protected function handleRecordUpdate(Model $record, array $data): Model
-    {
-        // Separate translatable and non-translatable data
-        $translations = $data['translations'] ?? [];
-        unset($data['translations']);
+    // #[Override]
+    // protected function handleRecordUpdate(Model $record, array $data): Model
+    // {
+    //     // Separate translatable and non-translatable data
+    //     $translations = $data['translations'] ?? [];
+    //     unset($data['translations']);
 
-        return $record->updateWithTranslations($data, $translations);
-    }
+    //     return $record->updateWithTranslations($data, $translations);
+    // }
 
     #[Override]
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
+        return $this->getResource()::getUrl('index', ['lang' => $this->selectedLang]);
     }
 
     protected function getHeaderActions(): array

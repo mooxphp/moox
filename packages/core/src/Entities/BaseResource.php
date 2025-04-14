@@ -88,7 +88,7 @@ abstract class BaseResource extends Resource
     {
         return EditAction::make('edit')
             ->color('primary')
-            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]));
+            ->url(fn ($record) => static::getUrl('edit', ['record' => $record, 'lang' => request()->query('lang')]));
     }
 
     public static function getViewTableAction(): ViewAction
@@ -122,9 +122,22 @@ abstract class BaseResource extends Resource
             ->keyBindings(['command+s', 'ctrl+s'])
             ->color('success')
             ->action(function ($livewire): void {
+                // static::handleTranslationBeforeSave($livewire);
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
             })
             ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
+    }
+    public static function getPublishAction(): Action
+    {
+        return Action::make('publish')
+            ->label(__('core::core.publish'))
+            ->keyBindings(['command+p', 'ctrl+p'])
+            ->color('secondary')
+            ->action(function ($livewire): void {
+                // $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
+                $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
+            });
+            // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
 
     public static function getSaveAndCreateAnotherAction(): Action
@@ -188,4 +201,34 @@ abstract class BaseResource extends Resource
             ->action(fn ($record) => $record->restore())
             ->visible(fn ($livewire, $record): bool => $record && $record->trashed());
     }
+
+    // protected static function handleTranslationBeforeSave($livewire): void
+    // {
+    //     $locale = $livewire->lang;
+    //     if (!$locale || !$livewire->record) {
+    //         return;
+    //     }
+
+    //     // Get or create translation
+    //     $translation = $livewire->record->translateOrNew($locale);
+    //     // Copy all translatable attributes to translation
+    //     foreach ($livewire->record->translatedAttributes as $attr) {
+    //         if (isset($livewire->data[$attr])) {
+    //             $translation->$attr = $livewire->data[$attr];
+    //         }
+    //     }
+
+    //     // Set author if it's a new translation
+    //     if (!$translation->exists) {
+    //         $translation->author_id = auth()->id();
+    //     }
+
+    //     // Save the translation
+    //     $livewire->record->translations()->save($translation);
+
+    //     // Handle status changes if needed
+    //     if ($livewire->record->isDirty('status')) {
+    //         $livewire->record->handleSchedulingDates();
+    //     }
+    // }
 }

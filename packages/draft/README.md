@@ -69,3 +69,76 @@ Thanks to so many [people for their contributions](https://github.com/mooxphp/mo
 ## License
 
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+
+
+## The Draft Model 
+The Draft model comes with several powerful features and capabilities:
+
+### Attributes
+
+#### Base Fields
+- `is_active` (boolean) - Activation status
+- `data` (json) - Flexible JSON data storage
+- `type` - Content type (Post/Page)
+- `status` - Publication status (draft/waiting/private/scheduled/published)
+- `color` - Custom color coding
+- `due_at` (datetime) - Due date
+- `uuid` - Universally Unique Identifier
+- `ulid` - Universally Unique Lexicographically Sortable Identifier
+
+#### Translated Fields
+- `title` - Content title
+- `slug` - URL-friendly identifier
+- `description` - Brief description
+- `content` - Main content
+- `author_id` - Content author reference
+- `to_publish_at` - Scheduled publish date
+- `published_at` - Actual publish date
+- `to_unpublish_at` - Scheduled unpublish date
+- `unpublished_at` - Actual unpublish date
+
+### Media Handling
+- Supports media attachments via Spatie Media Library
+- Automatic image conversions for previews
+- Media relationship through usables
+
+### Publishing Workflow
+- Scheduled publishing support
+- Publication status tracking
+- Unpublishing capability
+- Audit trail for publishing actions
+
+### Methods
+
+#### Publishing Related
+- `isScheduledForPublishing()` - Check if content is scheduled
+- `isPublished()` - Check publication status
+- `isScheduledForUnpublishing()` - Check unpublishing schedule
+- `isUnpublished()` - Check if unpublished
+- `handleSchedulingDates()` - Manage scheduling dates
+- `handlePublishingDates()` - Handle publication dates
+
+#### Query Scopes
+- `scopeScheduledForPublishing()`
+- `scopePublished()`
+- `scopeScheduledForUnpublishing()`
+- `scopeUnpublished()`
+- `scopeRestored()`
+
+#### Relationships
+- `author()` - Author relationship
+- `publishedBy()` - Publishing actor
+- `updatedBy()` - Update actor
+- `createdBy()` - Creation actor
+- `unpublishedBy()` - Unpublishing actor
+- `deletedBy()` - Deletion actor
+- `restoredBy()` - Restoration actor
+
+### Features
+- Soft deletes support
+- Multi-language support
+- Taxonomy integration
+- Automatic UUID/ULID generation
+- Media library integration
+- Publishing workflow management
+- Audit trail for all major actions

@@ -2,34 +2,37 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft;
 
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Forms\Set;
-use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Moox\Draft\Models\Draft;
+use Filament\Forms\Components\Grid;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\KeyValue;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Filters\TernaryFilter;
+use Moox\Media\Forms\Components\MediaPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
 use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Draft\Models\Draft;
-use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Illuminate\Support\Facades\Livewire;
 
 class DraftResource extends BaseDraftResource
 {
@@ -64,9 +67,22 @@ class DraftResource extends BaseDraftResource
         return config('draft.navigation_group');
     }
 
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     $query = parent::getEloquentQuery();
+    //     if ($locale = request()->query('lang')) {
+    //         $query->with(['translations' => function ($query) use ($locale) {
+    //             $query->where('locale', $locale);
+    //         }]);
+    //     }
+
+    //     return $query;
+    // }
+
     public static function form(Form $form): Form
     {
         $taxonomyFields = static::getTaxonomyFields();
+
 
         $schema = [
             Grid::make(2)
@@ -75,39 +91,47 @@ class DraftResource extends BaseDraftResource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    TextInput::make('title')
-                                        ->live(onBlur: true)
-                                        ->label(__('core::core.title'))
-                                        ->required()
-                                        ->afterStateUpdated(
-                                            fn (Set $set, ?string $state) => $set('slug', Str::slug($state))
-                                        ),
-                                    TextInput::make('slug')
-                                        ->label(__('core::core.slug'))
-                                        ->required()
-                                        ->unique(
-                                            modifyRuleUsing: function (Unique $rule) {
-                                                return $rule
-                                                    ->where('locale', request()->query('lang', app()->getLocale()))
-                                                    ->whereNull('draft_translations.draft_id');
+                                    MediaPicker::make('image')
+                                        ->label(__('core::core.image')),
+                                    TitleWithSlugInput::make(
+                                        fieldTitle: 'title',
+                                        fieldSlug: 'slug',
+                                        slugRuleUniqueParameters: [
+                                            'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                                                $locale = $livewire->lang;
+                                                if ($record) {
+                                                    $rule->where('locale', $locale);
+                                                    $existingTranslation = $record->translations()
+                                                        ->where('locale', $locale)
+                                                        ->first();
+                                                    if ($existingTranslation) {
+                                                        $rule->ignore($existingTranslation->id);
+                                                    }
+                                                } else {
+                                                    $rule->where('locale', $locale);
+                                                }
+                                                
+                                                return $rule;
                                             },
-                                            table: 'draft_translations',
-                                            column: 'slug',
-                                            ignoreRecord: true,
-                                            ignorable: fn ($record) => $record?->translations()
-                                                ->where('locale', request()->query('lang', app()->getLocale()))
-                                                ->first()
-                                        ),
+                                            'table' => 'draft_translations',
+                                            'column' => 'slug',
+                                        ]
+                                    )
+                                    
+                                    ,
+                                    
                                     Toggle::make('is_active')
                                         ->label('Active'),
                                     RichEditor::make('description')
-                                        ->label('Description'),
+                                        ->label('Description')
+                                   
+                                        ,
                                     MarkdownEditor::make('content')
-                                        ->label('Content'),
+                                        ->label('Content')
+                                  
+                                        ,
                                     KeyValue::make('data')
                                         ->label('Data (JSON)'),
-                                    MediaPicker::make('image')
-                                        ->label(__('core::core.image')),
                                 ]),
                             Grid::make(2)
                                 ->schema([
@@ -126,11 +150,21 @@ class DraftResource extends BaseDraftResource
                                     Select::make('type')
                                         ->label('Type')
                                         ->options(['Post' => 'Post', 'Page' => 'Page']),
-
                                     Select::make('status')
                                         ->label('Status')
                                         ->placeholder(__('core::core.status'))
-                                        ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
+                                        ->reactive()
+                                        ->options(['draft' => 'Draft', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published']),
+                                    DateTimePicker::make('to_publish_at')
+                                        ->label('To publish at')
+                                        ->placeholder(__('core::core.to_publish_at'))
+                                        ->hidden(fn ($get) => $get('status') !== 'scheduled')
+                                        ->dehydrateStateUsing(fn ($state, $get) => $get('status') === 'scheduled' ? $state : null),
+                                    DateTimePicker::make('to_unpublish_at')
+                                        ->label('To unpublish at')
+                                        ->placeholder(__('core::core.to_unpublish_at'))
+                                        ->hidden(fn ($get) => !in_array($get('status'), ['scheduled', 'published']))
+                                        ->dehydrateStateUsing(fn ($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -138,7 +172,7 @@ class DraftResource extends BaseDraftResource
                                 ->schema([
                                     Select::make('author_id')
                                         ->label('Author')
-                                        ->relationship('author', 'name'),
+                                        ->options(\Moox\User\Models\User::all()->pluck('name', 'id')),
                                     DateTimePicker::make('due_at')
                                         ->label('Due'),
                                     ColorPicker::make('color')
@@ -155,7 +189,6 @@ class DraftResource extends BaseDraftResource
                                     CopyableField::make('ulid')
                                         ->label('ULID')
                                         ->defaultValue(fn ($record): string => $record->ulid ?? ''),
-
                                     Section::make('')
                                         ->schema([
                                             Placeholder::make('created_at')
@@ -168,6 +201,19 @@ class DraftResource extends BaseDraftResource
                                                 ->content(fn ($record): string => $record->updated_at ?
                                                     $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
+                                            Placeholder::make('published_at')
+                                                ->label('Published')
+                                                ->content(fn ($record): string => $record->published_at ?
+                                                    $record->published_at.' - '.$record->published_at->diffForHumans().
+                                                    ($record->published_by_id ? ' by ' .$record->published_by_id : '') : '')
+                                                ->extraAttributes(['class' => 'font-mono'])
+                                                ->hidden(fn ($record) => !$record->published_at),
+                                            Placeholder::make('to_unpublish_at')
+                                                ->label('To Unpublish')
+                                                ->content(fn ($record): string => $record->to_unpublish_at ?
+                                                    $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
+                                                ->extraAttributes(['class' => 'font-mono'])
+                                                ->hidden(fn ($record) => !$record->to_unpublish_at),
                                         ]),
                                 ])
                                 ->hidden(fn ($record) => $record === null),
@@ -195,6 +241,7 @@ class DraftResource extends BaseDraftResource
 
                         return $record->title;
                     }),
+                TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
@@ -258,8 +305,6 @@ class DraftResource extends BaseDraftResource
                     ->searchable()
                     ->toggleable(),
             ])
-            // TODO: add default sort for localized fields
-            // ->defaultSort('title', 'desc')
             ->actions([...static::getTableActions()])
             ->bulkActions([...static::getBulkActions()])
             ->filters([
@@ -308,4 +353,7 @@ class DraftResource extends BaseDraftResource
             'view' => Pages\ViewDraft::route('/{record}'),
         ];
     }
+  
+
+   
 }
