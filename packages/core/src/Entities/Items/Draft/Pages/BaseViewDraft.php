@@ -4,11 +4,11 @@ namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\CanResolveResourceClass;
-use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseViewDraft extends ViewRecord
 {
     use CanResolveResourceClass;
+
     public ?string $lang = null;
 
     public function getFormActions(): array
@@ -16,10 +16,8 @@ abstract class BaseViewDraft extends ViewRecord
         return [];
     }
 
-
     public function mount($record): void
     {
-        
         $this->lang = request()->query('lang', app()->getLocale());
         parent::mount($record);
     }
@@ -27,11 +25,11 @@ abstract class BaseViewDraft extends ViewRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        
-        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
+
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
             return $data;
         }
-        
+
         $translatable = $record->translatedAttributes;
         $values = [];
         foreach ($translatable as $attr) {

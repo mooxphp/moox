@@ -2,17 +2,18 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Override;
 
 abstract class BaseCreateDraft extends CreateRecord
 {
     use CanResolveResourceClass;
+
     public ?string $lang = null;
 
     public function mount(): void
@@ -31,8 +32,8 @@ abstract class BaseCreateDraft extends CreateRecord
         $record->setDefaultLocale($this->lang);
 
         // Get translatable and non-translatable attributes
-        $translatableAttributes = property_exists($record, 'translatedAttributes') 
-            ? $record->translatedAttributes 
+        $translatableAttributes = property_exists($record, 'translatedAttributes')
+            ? $record->translatedAttributes
             : [];
         $translationData = array_intersect_key($data, array_flip($translatableAttributes));
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
@@ -70,6 +71,7 @@ abstract class BaseCreateDraft extends CreateRecord
     {
         return $this->getResource()::getUrl('index', ['lang' => $this->lang]);
     }
+
     protected function resolveRecord($key): Model
     {
         $model = static::getModel();
@@ -82,6 +84,4 @@ abstract class BaseCreateDraft extends CreateRecord
 
         return $query->find($key) ?? $model::make();
     }
-
-    
 }

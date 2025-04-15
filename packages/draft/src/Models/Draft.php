@@ -20,17 +20,17 @@ class Draft extends BaseDraftModel implements HasMedia
      * Attributes that should be translated
      */
     public $translatedAttributes = [
-        'title', 
-        'slug', 
-        'description', 
-        'content', 
+        'title',
+        'slug',
+        'description',
+        'content',
         'status',
-        'author_id', 
-        'to_publish_at', 
-        'published_at', 
-        'to_unpublish_at', 
-        'unpublished_at', 
-        'published_by_id', 
+        'author_id',
+        'to_publish_at',
+        'published_at',
+        'to_unpublish_at',
+        'unpublished_at',
+        'published_by_id',
         'unpublished_by_id',
         'deleted_at',
         'deleted_by_id',
@@ -78,11 +78,8 @@ class Draft extends BaseDraftModel implements HasMedia
             \Illuminate\Support\Facades\Log::info('Draft Deleted', ['model' => $model]);
         });
 
-        
-
-
         static::retrieved(function ($model) {
-             $model->handleSchedulingDates();
+            $model->handleSchedulingDates();
         });
 
         static::saving(function ($model) {
@@ -96,10 +93,6 @@ class Draft extends BaseDraftModel implements HasMedia
         static::deleting(function ($model) {
             \Illuminate\Support\Facades\Log::info('Draft Deleting', ['model' => $model]);
         });
-
-        
-     
-        
     }
 
     public function getUlidAttribute(): string
@@ -139,21 +132,20 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function handleSchedulingDates(): void
     {
-        
         $locale = request()->query('lang') ?? app()->getLocale();
         /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
-        
-        \Illuminate\Support\Facades\Log::info('Status: ' . $locale);
-        \Illuminate\Support\Facades\Log::info('Status: ' . $translation);
-        \Illuminate\Support\Facades\Log::info('Status: ' . $translation->status);
-        if (!$translation) {
+
+        \Illuminate\Support\Facades\Log::info('Status: '.$locale);
+        \Illuminate\Support\Facades\Log::info('Status: '.$translation);
+        \Illuminate\Support\Facades\Log::info('Status: '.$translation->status);
+        if (! $translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (!$translation->to_publish_at) {
+                if (! $translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;
@@ -177,8 +169,6 @@ class Draft extends BaseDraftModel implements HasMedia
         }
 
         $translation->save();
-
-
     }
 
     public function author(): BelongsTo

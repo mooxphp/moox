@@ -2,21 +2,21 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Illuminate\Database\Eloquent\Model;
-use Filament\Resources\Pages\EditRecord;
-use Moox\Core\Traits\CanResolveResourceClass;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseEditDraft extends EditRecord
 {
     use CanResolveResourceClass;
+
     public ?string $lang = null;
 
     protected function getFormActions(): array
     {
         return [];
     }
-
 
     public function mount($record): void
     {
@@ -39,11 +39,11 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (!$this->lang || !($record instanceof TranslatableContract)) {
+        if (! $this->lang || ! ($record instanceof TranslatableContract)) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (!property_exists($record, 'translatedAttributes')) {
+        if (! property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -67,8 +67,8 @@ abstract class BaseEditDraft extends EditRecord
     {
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
-        
-        if (!($model instanceof TranslatableContract) || !property_exists($model, 'translatedAttributes')) {
+
+        if (! ($model instanceof TranslatableContract) || ! property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
