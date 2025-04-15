@@ -20,7 +20,7 @@ class StaticLanguage extends Model
      */
     protected $fillable = [
         'alpha2',
-        'alpha3_b', 
+        'alpha3_b',
         'alpha3_t',
         'common_name',
         'native_name',
