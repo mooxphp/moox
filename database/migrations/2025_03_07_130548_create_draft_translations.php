@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('draft_id');
             $table->string('locale')->index();
             $table->string('title');
+            $table->string('status')->default('draft');
             $table->string('slug');
             $table->text('description')->nullable();
             $table->text('content')->nullable();

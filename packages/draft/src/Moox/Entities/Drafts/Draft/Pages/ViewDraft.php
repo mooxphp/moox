@@ -6,5 +6,5 @@ use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
 
 class ViewDraft extends BaseViewDraft
 {
-    // nothing for now
+    
 }

@@ -17,6 +17,7 @@ class DraftTranslation extends Model
         'draft_id',
         'title',
         'slug',
+        'status',
         'description',
         'content',
         'author_id',

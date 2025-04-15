@@ -20,16 +20,17 @@ class Draft extends BaseDraftModel implements HasMedia
      * Attributes that should be translated
      */
     public $translatedAttributes = [
-        'title',
-        'slug',
-        'description',
-        'content',
-        'author_id',
-        'to_publish_at',
-        'published_at',
-        'to_unpublish_at',
-        'unpublished_at',
-        'published_by_id',
+        'title', 
+        'slug', 
+        'description', 
+        'content', 
+        'status',
+        'author_id', 
+        'to_publish_at', 
+        'published_at', 
+        'to_unpublish_at', 
+        'unpublished_at', 
+        'published_by_id', 
         'unpublished_by_id',
         'deleted_at',
         'deleted_by_id',
@@ -46,7 +47,6 @@ class Draft extends BaseDraftModel implements HasMedia
         'due_at',
         'uuid',
         'ulid',
-        'status',
     ];
 
     protected $casts = [
@@ -66,9 +66,40 @@ class Draft extends BaseDraftModel implements HasMedia
             $model->uuid = (string) \Illuminate\Support\Str::uuid();
             $model->ulid = (string) \Illuminate\Support\Str::ulid();
         });
-        static::retrieved(function ($model) {
-            $model->handleSchedulingDates();
+        static::created(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Created', ['model' => $model]);
         });
+
+        static::updated(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Updated', ['model' => $model]);
+        });
+
+        static::deleted(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Deleted', ['model' => $model]);
+        });
+
+        
+
+
+        static::retrieved(function ($model) {
+             $model->handleSchedulingDates();
+        });
+
+        static::saving(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Saving', ['model' => $model]);
+        });
+
+        static::saved(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Saved', ['model' => $model]);
+        });
+
+        static::deleting(function ($model) {
+            \Illuminate\Support\Facades\Log::info('Draft Deleting', ['model' => $model]);
+        });
+
+        
+     
+        
     }
 
     public function getUlidAttribute(): string
@@ -108,41 +139,46 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function handleSchedulingDates(): void
     {
-        if (! $this->isDirty('status')) {
+        
+        $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        $translation = $this->translate($locale);
+        
+        \Illuminate\Support\Facades\Log::info('Status: ' . $locale);
+        \Illuminate\Support\Facades\Log::info('Status: ' . $translation);
+        \Illuminate\Support\Facades\Log::info('Status: ' . $translation->status);
+        if (!$translation) {
             return;
         }
 
-        $locale = request()->query('lang');
-        if (! $locale) {
-            return;
-        }
+        switch ($translation->status) {
+            case 'scheduled':
+                if (!$translation->to_publish_at) {
+                    $translation->to_publish_at = now();
+                }
+                $translation->published_at = null;
+                $translation->unpublished_at = null;
+                break;
 
-        // $translation = $this->translateOrNew($locale);
-
-        switch ($this->status) {
             case 'published':
                 $translation->published_at = now();
-                $translation->published_by_id = auth()->id();
-                $translation->published_by_type = get_class(auth()->user());
+                $translation->to_publish_at = null;
+                $translation->unpublished_at = null;
+                $translation->to_unpublish_at = null;
                 break;
 
-            case 'scheduled':
-                $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
-                break;
-
+            case 'draft':
             default:
                 $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
                 $translation->to_publish_at = null;
-                $translation->to_unpublish_at = null;
                 $translation->unpublished_at = null;
-                $translation->unpublished_by_id = null;
-                $translation->unpublished_by_type = null;
+                $translation->to_unpublish_at = null;
                 break;
         }
+
+        $translation->save();
+
+
     }
 
     public function author(): BelongsTo
@@ -188,6 +224,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isScheduledForPublishing(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
@@ -196,14 +233,16 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isPublished(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        return $translation && $translation->published_at !== null;
+        return $translation?->published_at !== null;
     }
 
     public function isScheduledForUnpublishing(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
@@ -212,6 +251,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isUnpublished(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->unpublished_at !== null;
@@ -269,6 +309,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isRestored(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->restored_at !== null;
