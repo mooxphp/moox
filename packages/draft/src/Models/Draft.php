@@ -135,8 +135,8 @@ class Draft extends BaseDraftModel implements HasMedia
         $locale = request()->query('lang') ?? app()->getLocale();
         /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
         $translation = $this->translate($locale);
-        
-        if (!$translation) {
+
+        if (! $translation) {
             return;
         }
 

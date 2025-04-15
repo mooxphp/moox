@@ -6,12 +6,10 @@ use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
 
 class ViewDraft extends BaseViewDraft
 {
-    
     public ?string $lang = null;
 
     public function mount($record): void
     {
-        
         $this->lang = request()->query('lang', app()->getLocale());
         parent::mount($record);
     }
@@ -19,11 +17,11 @@ class ViewDraft extends BaseViewDraft
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        
-        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
+
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
             return $data;
         }
-        
+
         $translatable = $record->translatedAttributes;
         $values = [];
         foreach ($translatable as $attr) {

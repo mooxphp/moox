@@ -2,13 +2,12 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft\Pages;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 class CreateDraft extends BaseCreateDraft
 {
-   
     public ?string $lang = null;
 
     public function mount(): void
@@ -27,8 +26,8 @@ class CreateDraft extends BaseCreateDraft
         $record->setDefaultLocale($this->lang);
 
         // Get translatable and non-translatable attributes
-        $translatableAttributes = property_exists($record, 'translatedAttributes') 
-            ? $record->translatedAttributes 
+        $translatableAttributes = property_exists($record, 'translatedAttributes')
+            ? $record->translatedAttributes
             : [];
         $translationData = array_intersect_key($data, array_flip($translatableAttributes));
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
@@ -66,5 +65,4 @@ class CreateDraft extends BaseCreateDraft
     {
         return $this->getResource()::getUrl('index', ['lang' => $this->lang]);
     }
-
 }
