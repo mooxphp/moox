@@ -64,7 +64,6 @@ class DraftResource extends BaseDraftResource
         return config('draft.navigation_group');
     }
 
-
     public static function form(Form $form): Form
     {
         $taxonomyFields = static::getTaxonomyFields();
