@@ -122,7 +122,6 @@ abstract class BaseResource extends Resource
             ->keyBindings(['command+s', 'ctrl+s'])
             ->color('success')
             ->action(function ($livewire): void {
-                // static::handleTranslationBeforeSave($livewire);
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
             })
             ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
@@ -203,33 +202,4 @@ abstract class BaseResource extends Resource
             ->visible(fn ($livewire, $record): bool => $record && $record->trashed());
     }
 
-    // protected static function handleTranslationBeforeSave($livewire): void
-    // {
-    //     $locale = $livewire->lang;
-    //     if (!$locale || !$livewire->record) {
-    //         return;
-    //     }
-
-    //     // Get or create translation
-    //     $translation = $livewire->record->translateOrNew($locale);
-    //     // Copy all translatable attributes to translation
-    //     foreach ($livewire->record->translatedAttributes as $attr) {
-    //         if (isset($livewire->data[$attr])) {
-    //             $translation->$attr = $livewire->data[$attr];
-    //         }
-    //     }
-
-    //     // Set author if it's a new translation
-    //     if (!$translation->exists) {
-    //         $translation->author_id = auth()->id();
-    //     }
-
-    //     // Save the translation
-    //     $livewire->record->translations()->save($translation);
-
-    //     // Handle status changes if needed
-    //     if ($livewire->record->isDirty('status')) {
-    //         $livewire->record->handleSchedulingDates();
-    //     }
-    // }
 }

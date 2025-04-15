@@ -64,17 +64,6 @@ class DraftResource extends BaseDraftResource
         return config('draft.navigation_group');
     }
 
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     $query = parent::getEloquentQuery();
-    //     if ($locale = request()->query('lang')) {
-    //         $query->with(['translations' => function ($query) use ($locale) {
-    //             $query->where('locale', $locale);
-    //         }]);
-    //     }
-
-    //     return $query;
-    // }
 
     public static function form(Form $form): Form
     {
@@ -144,7 +133,8 @@ class DraftResource extends BaseDraftResource
                                         ->label('Status')
                                         ->placeholder(__('core::core.status'))
                                         ->reactive()
-                                        ->options(['draft' => 'Draft', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published']),
+                                        ->options(['draft' => 'Draft', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published'])
+                                        ->default('draft'),
                                     DateTimePicker::make('to_publish_at')
                                         ->label('To publish at')
                                         ->placeholder(__('core::core.to_publish_at'))
