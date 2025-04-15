@@ -2,13 +2,12 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft\Pages;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 class EditDraft extends BaseEditDraft
 {
-   
     public ?string $lang = null;
 
     public function mount($record): void
@@ -21,11 +20,11 @@ class EditDraft extends BaseEditDraft
     {
         /** @var Model&TranslatableContract $record */
         $record = $this->getRecord();
-        
-        if (!property_exists($record, 'translatedAttributes')) {
+
+        if (! property_exists($record, 'translatedAttributes')) {
             return $data;
         }
-        
+
         $translatable = $record->translatedAttributes;
         $values = [];
         foreach ($translatable as $attr) {
@@ -37,12 +36,12 @@ class EditDraft extends BaseEditDraft
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (!$this->lang) {
+        if (! $this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
         /** @var Model&TranslatableContract $record */
-        if (!property_exists($record, 'translatedAttributes')) {
+        if (! property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -66,8 +65,8 @@ class EditDraft extends BaseEditDraft
     {
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
-        
-        if (!property_exists($model, 'translatedAttributes')) {
+
+        if (! property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
