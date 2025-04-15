@@ -201,5 +201,4 @@ abstract class BaseResource extends Resource
             ->action(fn ($record) => $record->restore())
             ->visible(fn ($livewire, $record): bool => $record && $record->trashed());
     }
-
 }
