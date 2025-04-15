@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\TextColumn;
+use Moox\Data\Models\StaticLanguage;
 use Moox\Data\Models\StaticLocale;
 
 class TranslationColumn extends TextColumn
@@ -21,18 +22,16 @@ class TranslationColumn extends TextColumn
             ->alignCenter()
             ->searchable()
             ->state(function ($record) {
-                return $record->translations->map(function ($translation) {
+                $flags =$record->translations->map(function ($translation) {
                     $languageCode = explode('_', $translation->locale)[0];
-                    $locale = StaticLocale::whereHas('language', function ($query) use ($languageCode) {
-                        $query->where('alpha2', $languageCode);
-                    })->first();
+                \Illuminate\Support\Facades\Log::info($languageCode);
 
-                    if ($locale) {
-                        return $locale->language_flag_icon;
-                    }
+                    $locale = StaticLanguage::where('alpha2', $languageCode)->first();
 
-                    return 'flag-'.strtolower($languageCode);
+                    return 'flag-'.strtolower($locale->alpha2);
                 })->toArray();
+                \Illuminate\Support\Facades\Log::info($flags);
+                return $flags;
             });
     }
 }

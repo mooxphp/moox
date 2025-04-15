@@ -84,4 +84,28 @@ abstract class BaseCreateDraft extends CreateRecord
 
         return $query->find($key) ?? $model::make();
     }
+
+    public function getHeaderActions():array
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<\Moox\Localization\Models\Localization> $languages */
+        $languages = \Moox\Localization\Models\Localization::with('language')->get();
+      
+        return [
+            \Filament\Actions\ActionGroup::make(
+                $languages->map(fn ($localization) => 
+                        \Filament\Actions\Action::make('language_' . $localization->language->alpha2)
+                            ->icon('flag-' . $localization->language->alpha2)
+                            ->label('')
+                            ->color('transparent')
+                            ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
+                            ->url(fn () => $this->getResource()::getUrl('create', ['lang' => $localization->language->alpha2]))
+                    )
+                    ->toArray()
+            )
+            ->color('transparent')
+            ->label('Language')
+            ->icon('flag-' . $this->lang)
+            ->extraAttributes(['class' => '']),
+        ];
+    }
 }
