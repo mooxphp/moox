@@ -3,15 +3,14 @@
 namespace Moox\Draft\Models;
 
 use App\Models\User;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\HasScheduledPublish;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Moox\Core\Traits\HasScheduledPublish;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
