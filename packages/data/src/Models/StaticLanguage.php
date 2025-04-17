@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Data\Models;
 
-use Moox\Core\Traits\Base\BaseInModel;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Localization\Models\Localization;
-use Moox\Core\Traits\Simple\SingleSimpleInModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Moox\Core\Traits\Base\BaseInModel;
+use Moox\Core\Traits\Simple\SingleSimpleInModel;
+use Moox\Localization\Models\Localization;
 
 /**
  * @property int $id

@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Override;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Category\Models\Category;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
-use Filament\Forms\Components\ColorPicker;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Tables\Actions\RestoreBulkAction;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Moox\Category\Moox\Entities\Categories\Category\Pages;
+use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Override;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
@@ -80,16 +79,16 @@ class CategoryResource extends BaseDraftResource
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
-                           
+
                         Grid::make()
                             ->schema([
                                 Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
                                 Section::make()
                                     ->schema([
-                                        
+
                                         ColorPicker::make('color'),
                                         TextInput::make('weight'),
                                         TextInput::make('count')

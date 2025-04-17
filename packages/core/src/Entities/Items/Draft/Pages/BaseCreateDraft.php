@@ -91,7 +91,7 @@ abstract class BaseCreateDraft extends CreateRecord
 
         return [
             \Filament\Actions\ActionGroup::make(
-        $languages->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
+                $languages->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
                     ->icon('flag-'.$localization->language->alpha2)
                     ->label('')
                     ->color('transparent')
