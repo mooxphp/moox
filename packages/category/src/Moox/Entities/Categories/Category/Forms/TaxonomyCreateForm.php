@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Category\Forms;
+namespace Moox\Category\Moox\Entities\Categories\Category\Forms;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use CodeWithDennis\FilamentSelectTree\SelectTree;

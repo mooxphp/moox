@@ -59,7 +59,7 @@ return [
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
     ],

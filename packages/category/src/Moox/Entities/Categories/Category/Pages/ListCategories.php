@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Category\Models\Category;
-use Moox\Category\Resources\CategoryResource;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Override;
 

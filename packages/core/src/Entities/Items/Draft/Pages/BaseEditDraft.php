@@ -27,6 +27,9 @@ abstract class BaseEditDraft extends EditRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
+        if (! $record instanceof TranslatableContract) {
+            return $data;
+        }
         $translatable = $record->translatedAttributes;
         $values = [];
         foreach ($translatable as $attr) {
