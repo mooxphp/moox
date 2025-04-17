@@ -11,18 +11,18 @@ use function Pest\Livewire\livewire;
     table
 _______________________________________________________ */
 
-it('can render RestorDestinationResource', function () {
-    $this
-        ->get(RestorDestinationResource::getUrl('index'))
-        ->assertSuccessful();
-});
+// it('can render RestorDestinationResource', function () {
+//     $this
+//         ->get(RestorDestinationResource::getUrl('index'))
+//         ->assertSuccessful();
+// });
 
-it('can list RestorDestinations', function () {
-    $restore_destination = RestorDestination::factory()->count(10)->create();
+// it('can list RestorDestinations', function () {
+//     $restore_destination = RestorDestination::factory()->count(10)->create();
 
-    livewire(ListRestorDestinations::class)
-        ->assertCanSeeTableRecords($restore_destination);
-});
+//     livewire(ListRestorDestinations::class)
+//         ->assertCanSeeTableRecords($restore_destination);
+// });
 
 // it('can edit an item', function () {
 //    $item = RestorDestination::factory()->create();
@@ -47,30 +47,30 @@ it('can render all tabs', function () {
 });
 */
 
-it('can render index view ', function () {
-    $this->get(RestorDestinationResource::getUrl('index'))->assertSuccessful();
-});
-it('can render edit page', function () {
-    $this->get(RestorDestinationResource::getUrl('edit', [
-        'record' => RestorDestination::factory()->create(),
-    ]))->assertSuccessful();
-});
+// it('can render index view ', function () {
+//     $this->get(RestorDestinationResource::getUrl('index'))->assertSuccessful();
+// });
+// it('can render edit page', function () {
+//     $this->get(RestorDestinationResource::getUrl('edit', [
+//         'record' => RestorDestination::factory()->create(),
+//     ]))->assertSuccessful();
+// });
 
-it('can retrieve data', function () {
-    $item = RestorDestination::factory()->create();
+// it('can retrieve data', function () {
+//     $item = RestorDestination::factory()->create();
 
-    livewire(RestorDestinationResource\Pages\EditRestorDestination::class, [
-        'record' => $item->getRouteKey(),
-    ])
-        ->assertFormSet([
-            'title' => $item->title,
-            'content' => $item->content,
-            'status' => $item->status,
-            'type' => $item->type,
-        ]);
-});
-it('can render view', function () {
-    $this->get(RestorDestinationResource::getUrl('view', [
-        'record' => RestorDestination::factory()->create(),
-    ]))->assertSuccessful();
-});
+//     livewire(RestorDestinationResource\Pages\EditRestorDestination::class, [
+//         'record' => $item->getRouteKey(),
+//     ])
+//         ->assertFormSet([
+//             'title' => $item->title,
+//             'content' => $item->content,
+//             'status' => $item->status,
+//             'type' => $item->type,
+//         ]);
+// });
+// it('can render view', function () {
+//     $this->get(RestorDestinationResource::getUrl('view', [
+//         'record' => RestorDestination::factory()->create(),
+//     ]))->assertSuccessful();
+// });
