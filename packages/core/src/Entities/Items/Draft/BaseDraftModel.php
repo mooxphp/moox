@@ -10,7 +10,7 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
 {
     use Translatable;
 
-    public static function getResourceName(): string
+    public static function getResourceName(): string 
     {
         $className = class_basename(static::class);
 

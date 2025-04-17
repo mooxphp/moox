@@ -7,6 +7,10 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
 
+/**
+ * @phpstan-type TranslatableModel = Model&TranslatableContract
+ * @phpstan-property-read array<string> $translatedAttributes
+ */
 abstract class BaseEditDraft extends EditRecord
 {
     use CanResolveResourceClass;
@@ -27,26 +31,27 @@ abstract class BaseEditDraft extends EditRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if (! $record instanceof TranslatableContract) {
-            return $data;
+        if ( $record instanceof TranslatableContract) {
+            /** @var TranslatableContract&Model $record */
+            $translatable = $record->translatedAttributes;
+            $values = [];
+            foreach ($translatable as $attr) {
+                $values[$attr] = $record->$attr;
+            }
+            
+            return $values;
         }
-        $translatable = $record->translatedAttributes;
-        $values = [];
-        foreach ($translatable as $attr) {
-            $values[$attr] = $record->$attr;
-        }
-
-        return $values;
+        return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang || ! ($record instanceof TranslatableContract)) {
+        if (!$this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (! property_exists($record, 'translatedAttributes')) {
+        if (!property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -71,7 +76,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! ($model instanceof TranslatableContract) || ! property_exists($model, 'translatedAttributes')) {
+        if (!property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -95,7 +100,6 @@ abstract class BaseEditDraft extends EditRecord
 
     public function getHeaderActions(): array
     {
-        /** @var \Illuminate\Database\Eloquent\Collection<\Moox\Localization\Models\Localization> $languages */
         $languages = \Moox\Localization\Models\Localization::with('language')->get();
         $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
 

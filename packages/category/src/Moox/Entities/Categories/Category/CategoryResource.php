@@ -7,10 +7,8 @@ namespace Moox\Category\Moox\Entities\Categories\Category;
 use Override;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Moox\Category\Models\Category;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -24,17 +22,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Filament\Forms\Components\ColorPicker;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Tables\Actions\RestoreBulkAction;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Moox\Category\Moox\Entities\Categories\Category\Pages;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
@@ -46,14 +44,6 @@ class CategoryResource extends BaseDraftResource
     protected static ?string $model = Category::class;
 
     protected static ?string $currentTab = null;
-
-    // #[Override]
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     return parent::getEloquentQuery()
-    //         ->withoutGlobalScopes()
-    //         ->orderBy('_lft');
-    // }
 
     protected static ?string $navigationIcon = 'gmdi-category';
 

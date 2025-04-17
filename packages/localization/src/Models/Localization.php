@@ -8,6 +8,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Data\Models\StaticLanguage;
 
+/**
+ * @property int $id
+ * @property int $language_id
+ * @property string $title
+ * @property string $slug
+ * @property int|null $fallback_language_id
+ * @property bool $is_active_admin
+ * @property bool $is_active_frontend
+ * @property bool $is_default
+ * @property string $fallback_behaviour
+ * @property string $language_routing
+ * @property string $routing_path
+ * @property string $routing_subdomain
+ * @property string $routing_domain
+ * @property int $translation_status
+ * @property array $language_settings
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Moox\Data\Models\StaticLanguage $language
+ * @property-read self|null $fallbackLanguage
+ */
 class Localization extends Model
 {
     protected $fillable = [
