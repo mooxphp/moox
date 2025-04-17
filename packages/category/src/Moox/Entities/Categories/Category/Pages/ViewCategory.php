@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Category\Resources\CategoryResource;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Override;
 
 class ViewCategory extends ViewRecord

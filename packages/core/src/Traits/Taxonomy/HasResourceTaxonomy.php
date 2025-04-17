@@ -9,7 +9,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Moox\Core\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
 
 trait HasResourceTaxonomy

@@ -2,44 +2,43 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources;
+namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Override;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Category\Models\Category;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Category\Models\Category;
-use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
-use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
-use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
-use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Forms\Components\ColorPicker;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Override;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Moox\Category\Moox\Entities\Categories\Category\Pages;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
-class CategoryResource extends Resource
+class CategoryResource extends BaseDraftResource
 {
     use BaseInResource;
     use HasResourceTabs;
@@ -48,13 +47,13 @@ class CategoryResource extends Resource
 
     protected static ?string $currentTab = null;
 
-    #[Override]
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes()
-            ->orderBy('_lft');
-    }
+    // #[Override]
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()
+    //         ->withoutGlobalScopes()
+    //         ->orderBy('_lft');
+    // }
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
@@ -91,65 +90,16 @@ class CategoryResource extends Resource
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
+                           
                         Grid::make()
                             ->schema([
                                 Section::make()
+                                ->schema([
+                                    static::getFormActions(),
+                                ]),
+                                Section::make()
                                     ->schema([
-                                        Actions::make([
-                                            Action::make('restore')
-                                                ->label(__('core::core.restore'))
-                                                ->color('success')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
-                                            Action::make('save')
-                                                ->label(__('core::core.save'))
-                                                ->color('primary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire): void {
-                                                    $livewire instanceof CreateCategory ? $livewire->create() : $livewire->save();
-                                                })
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory || $livewire instanceof EditCategory),
-                                            Action::make('saveAndCreateAnother')
-                                                ->label(__('core::core.save_and_create_another'))
-                                                ->color('secondary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire): void {
-                                                    $livewire->saveAndCreateAnother();
-                                                })
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
-                                            Action::make('cancel')
-                                                ->label(__('core::core.cancel'))
-                                                ->color('secondary')
-                                                ->outlined()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn (): string => static::getUrl('index'))
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
-                                            Action::make('edit')
-                                                ->label(__('core::core.edit'))
-                                                ->color('primary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
-                                                ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewCategory && ! $record->trashed()),
-                                            Action::make('restore')
-                                                ->label(__('core::core.restore'))
-                                                ->color('success')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditCategory),
-                                            Action::make('delete')
-                                                ->label(__('core::core.delete'))
-                                                ->color('danger')
-                                                ->link()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->delete())
-                                                ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditCategory),
-                                        ]),
+                                        
                                         ColorPicker::make('color'),
                                         TextInput::make('weight'),
                                         TextInput::make('count')
@@ -338,10 +288,10 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListCategories::route('/'),
-            'edit' => EditCategory::route('/{record}/edit'),
-            'create' => CreateCategory::route('/create'),
-            'view' => ViewCategory::route('/{record}'),
+            'index' => Pages\ListCategories::route('/'),
+            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'create' => Pages\CreateCategory::route('/create'),
+            'view' => Pages\ViewCategory::route('/{record}'),
         ];
     }
 
