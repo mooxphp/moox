@@ -4,20 +4,33 @@ declare(strict_types=1);
 
 namespace Moox\Data\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\Base\BaseInModel;
-use Moox\Core\Traits\Simple\SingleSimpleInModel;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Localization\Models\Localization;
+use Moox\Core\Traits\Simple\SingleSimpleInModel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $alpha2
+ * @property string $alpha3_b
+ * @property string $alpha3_t
+ * @property string $common_name
+ * @property string $native_name
+ * @property string|null $script
+ * @property string|null $direction
+ * @property array $exonyms
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Data\Models\StaticLocale> $locales
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Localization\Models\Localization> $localizations
+ */
 class StaticLanguage extends Model
 {
     use BaseInModel, SingleSimpleInModel;
 
     protected $table = 'static_languages';
 
-    /**
-     * @var array<string>
-     */
     protected $fillable = [
         'alpha2',
         'alpha3_b',
@@ -38,18 +51,12 @@ class StaticLanguage extends Model
         'exonyms' => 'array',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Moox\Data\Models\StaticLocale>
-     */
-    public function locales()
+    public function locales(): HasMany
     {
         return $this->hasMany(StaticLocale::class, 'language_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Moox\Localization\Models\Localization>
-     */
-    public function localizations()
+    public function localizations(): HasMany
     {
         return $this->hasMany(Localization::class);
     }
