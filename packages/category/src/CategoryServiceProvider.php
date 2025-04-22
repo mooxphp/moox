@@ -17,7 +17,7 @@ class CategoryServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_categories_table', 'create_categorizables_table'])
+            ->hasMigrations(['create_categories_table', 'create_categorizables_table', 'create_category_translations_table'])
             ->hasCommand(InstallCommand::class);
     }
 }
