@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\CanResolveResourceClass;
 
@@ -59,6 +60,10 @@ abstract class BaseViewDraft extends ViewRecord
                 ->label('Language')
                 ->icon('flag-'.$this->lang)
                 ->extraAttributes(['class' => '']),
+              
+            RestoreAction::make(),
+                    
+                
         ];
     }
 }
