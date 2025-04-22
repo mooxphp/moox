@@ -101,33 +101,7 @@ class Draft extends BaseDraftModel implements HasMedia
             $model->uuid = (string) \Illuminate\Support\Str::uuid();
             $model->ulid = (string) \Illuminate\Support\Str::ulid();
         });
-        static::created(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Created', ['model' => $model]);
-        });
 
-        static::updated(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Updated', ['model' => $model]);
-        });
-
-        static::deleted(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Deleted', ['model' => $model]);
-        });
-
-        static::retrieved(function ($model) {
-            $model->handleSchedulingDates();
-        });
-
-        static::saving(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Saving', ['model' => $model]);
-        });
-
-        static::saved(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Saved', ['model' => $model]);
-        });
-
-        static::deleting(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Deleting', ['model' => $model]);
-        });
     }
 
     public function getUlidAttribute(): string
