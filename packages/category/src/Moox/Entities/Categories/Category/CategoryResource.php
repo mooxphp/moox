@@ -4,40 +4,39 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Override;
 use Filament\Forms\Form;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Moox\Category\Models\Category;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Forms\Components\ColorPicker;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Category\Models\Category;
+use Filament\Tables\Actions\RestoreBulkAction;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Override;
 
-// use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class CategoryResource extends BaseDraftResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = Category::class;
@@ -60,6 +59,26 @@ class CategoryResource extends BaseDraftResource
                                         TitleWithSlugInput::make(
                                             fieldTitle: 'title',
                                             fieldSlug: 'slug',
+                                            slugRuleUniqueParameters: [
+                                                'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                                                    $locale = $livewire->lang;
+                                                    if ($record) {
+                                                        $rule->where('locale', $locale);
+                                                        $existingTranslation = $record->translations()
+                                                            ->where('locale', $locale)
+                                                            ->first();
+                                                        if ($existingTranslation) {
+                                                            $rule->ignore($existingTranslation->id);
+                                                        }
+                                                    } else {
+                                                        $rule->where('locale', $locale);
+                                                    }
+    
+                                                    return $rule;
+                                                },
+                                                'table' => 'category_translations',
+                                                'column' => 'slug',
+                                            ]
                                         ),
                                         FileUpload::make('featured_image_url')
                                             ->label(__('core::core.featured_image_url')),
@@ -90,7 +109,7 @@ class CategoryResource extends BaseDraftResource
                                     ->schema([
 
                                         ColorPicker::make('color'),
-                                        TextInput::make('weight'),
+                                        TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
                                             ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
@@ -119,6 +138,7 @@ class CategoryResource extends BaseDraftResource
         return $table
             ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
+            
             ->columns([
                 ImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
@@ -173,10 +193,10 @@ class CategoryResource extends BaseDraftResource
                     ->sortable()
                     ->toggleable(),
             ])
-            ->defaultSort('slug', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted']))
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
@@ -218,7 +238,7 @@ class CategoryResource extends BaseDraftResource
                         });
                     })),
             ])
-            ->defaultSort('slug', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->actions([
                 ViewAction::make(),
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),

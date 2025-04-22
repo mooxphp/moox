@@ -4,30 +4,35 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
-use Kalnoy\Nestedset\NodeTrait;
-use Moox\Category\Database\Factories\CategoryFactory;
 use Override;
+use Kalnoy\Nestedset\NodeTrait;
+use Illuminate\Support\Facades\DB;
+use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Category\Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
-class Category extends Model
+class Category extends BaseDraftModel
 {
     use HasFactory;
     use NodeTrait;
     use SoftDeletes;
 
-    protected $table = 'categories';
+
+    public $translatedAttributes = [
+        'title',
+        'status',
+        'slug',
+        'content'
+    ];
 
     protected $fillable = [
-        'title',
-        'slug',
-        'content',
         'color',
-        'weight',
+        'weight', 
         'count',
         'featured_image_url',
         'parent_id',
