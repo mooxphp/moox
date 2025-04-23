@@ -19,8 +19,6 @@ class LocalizationServiceProvider extends PackageServiceProvider
 
         $this->mergeConfigFiles();
 
-        $this->addMiddlewareToGroup($this->app->make(Router::class));
-
         $this->registerLivewireComponents();
 
         $this->registerFilamentPanel();
@@ -49,10 +47,6 @@ class LocalizationServiceProvider extends PackageServiceProvider
             ->hasMigration('create_localizations_table');
     }
 
-    public function addMiddlewareToGroup(Router $router)
-    {
-        $router->pushMiddlewareToGroup('web', LanguageMiddleware::class);
-    }
 
     public function registerLivewireComponents()
     {
