@@ -32,18 +32,19 @@ abstract class BaseEditDraft extends EditRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        if ($record instanceof TranslatableContract) {
-            /** @var TranslatableContract&Model $record */
-            $translatable = $record->translatedAttributes;
-            $values = [];
-            foreach ($translatable as $attr) {
-                $values[$attr] = $record->$attr;
-            }
-
-            return $values;
+    
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+            return $data;
         }
-
-        return $data;
+    
+        $translatable = $record->translatedAttributes;
+        $values = [];
+        foreach ($translatable as $attr) {
+            $translation = $record->getTranslation($this->lang, false);
+            $values[$attr] = $translation ? $translation->$attr : $record->$attr;
+        }
+    
+        return $values;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model

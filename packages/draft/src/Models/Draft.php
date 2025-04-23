@@ -59,7 +59,6 @@ class Draft extends BaseDraftModel implements HasMedia
         'slug',
         'description',
         'content',
-        'status',
         'author_id',
         'to_publish_at',
         'published_at',
