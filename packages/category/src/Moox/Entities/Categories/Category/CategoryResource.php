@@ -31,6 +31,7 @@ use Filament\Tables\Actions\RestoreBulkAction;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
 
@@ -94,7 +95,8 @@ class CategoryResource extends BaseDraftResource
                                             ->label('Parent Category')
                                             ->searchable()
                                             ->disabledOptions(fn ($get): array => [$get('id')])
-                                            ->enableBranchNode(),
+                                            ->enableBranchNode()
+                                            ->visible(fn () => Category::count() > 0),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
@@ -138,7 +140,6 @@ class CategoryResource extends BaseDraftResource
         return $table
             ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
-            
             ->columns([
                 ImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
@@ -146,20 +147,37 @@ class CategoryResource extends BaseDraftResource
                     ->alignment('center')
                     ->square()
                     ->toggleable(),
+                TranslationColumn::make('translations.locale'),
+                    
                 TextColumn::make('modified_title')
                     ->label('Title')
                     ->getStateUsing(function (Category $record): string {
+                        $lang = request()->get('lang');
+                        
                         $depth = $record->ancestors->count();
                         $prefix = str_repeat('--', $depth);
+                        
+                        $title = $lang && $record->hasTranslation($lang) 
+                            ? $record->translate($lang)->title 
+                            : $record->title;
 
-                        return sprintf('%s %s', $prefix, $record->title);
+                        return sprintf('%s %s', $prefix, $title);
                     })
                     ->searchable(),
+                   
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->sortable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->slug;
+                        }
+
+                        return $record->slug;
+                    }),
                 TextColumn::make('level')
                     ->label('Level')
                     ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
@@ -179,7 +197,15 @@ class CategoryResource extends BaseDraftResource
                     ->sortable()
                     ->limit(30)
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->content;
+                        }
+
+                        return $record->content;
+                    }),
                 TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->sortable()
