@@ -17,7 +17,12 @@ class CategoryTranslation extends BaseDraftTranslationModel
         'published_at', 
         'to_unpublish_at',
         'unpublished_at',
-        'author_id'
+        'author_id',
+        'data'
+    ];
+
+    protected $casts = [
+        'data' => 'array',
     ];
 
 }

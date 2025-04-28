@@ -19,11 +19,14 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string $status
  * @property string $slug 
  * @property string $content
+ * @property int $_lft
+ * @property int $_rgt
  * @property string|null $color
  * @property int|null $weight
  * @property int|null $count
  * @property string|null $featured_image_url
  * @property int|null $parent_id
+ * @property array|null $data
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -44,7 +47,8 @@ class Category extends BaseDraftModel
         'title',
         'status',
         'slug',
-        'content'
+        'content',
+        'data'
     ];
 
     protected $fillable = [

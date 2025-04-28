@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('status')->default('draft');
             $table->string('slug');
             $table->text('content')->nullable();
-
+            $table->json('data')->nullable();
 
             // Schedule fields
             $table->timestamp(column: 'to_publish_at')->nullable();

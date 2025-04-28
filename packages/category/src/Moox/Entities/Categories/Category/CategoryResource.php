@@ -20,7 +20,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
 use Filament\Forms\Components\ColorPicker;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Filament\Forms\Components\DateTimePicker;
@@ -150,7 +149,7 @@ class CategoryResource extends BaseDraftResource
                 TranslationColumn::make('translations.locale'),
                     
                 TextColumn::make('modified_title')
-                    ->label('Title')
+                    ->label(__('category::fields.modified_title'))
                     ->getStateUsing(function (Category $record): string {
                         $lang = request()->get('lang');
                         
@@ -179,17 +178,17 @@ class CategoryResource extends BaseDraftResource
                         return $record->slug;
                     }),
                 TextColumn::make('level')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->counts('children')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('parent.title')
-                    ->label('Parent')
+                    ->label(__('category::fields.parent'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
@@ -211,11 +210,11 @@ class CategoryResource extends BaseDraftResource
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('weight')
-                    ->label(__('tag::translations.weight'))
+                    ->label(__('category::fields.weight'))
                     ->sortable()
                     ->toggleable(),
                 ColorColumn::make('color')
-                    ->label(__('tag::translations.color'))
+                    ->label(__('category::fields.color'))
                     ->sortable()
                     ->toggleable(),
             ])
@@ -230,11 +229,11 @@ class CategoryResource extends BaseDraftResource
             ])
             ->filters([
                 SelectFilter::make('parent_id')
-                    ->label('Parent Category')
+                    ->label(__('category::fields.parent'))
                     ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->options([
                         '0' => '0',
                         '1-5' => '1-5',
@@ -254,7 +253,7 @@ class CategoryResource extends BaseDraftResource
                         }
                     })),
                 SelectFilter::make('depth')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
                     ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
@@ -275,11 +274,11 @@ class CategoryResource extends BaseDraftResource
             ])
             ->filters([
                 SelectFilter::make('parent_id')
-                    ->label('Parent Category')
+                    ->label(__('category::fields.parent'))
                     ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->options([
                         '0' => '0',
                         '1-5' => '1-5',
@@ -299,7 +298,7 @@ class CategoryResource extends BaseDraftResource
                         }
                     })),
                 SelectFilter::make('depth')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
                     ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
