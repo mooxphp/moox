@@ -23,13 +23,10 @@ class TranslationColumn extends TextColumn
             ->state(function ($record) {
                 $flags = $record->translations->map(function ($translation) {
                     $languageCode = explode('_', $translation->locale)[0];
-                    \Illuminate\Support\Facades\Log::info($languageCode);
-
                     $locale = StaticLanguage::where('alpha2', $languageCode)->first();
 
                     return 'flag-'.strtolower($locale->alpha2);
                 })->toArray();
-                \Illuminate\Support\Facades\Log::info($flags);
 
                 return $flags;
             });
