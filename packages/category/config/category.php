@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//category::translations.category',
-            'plural' => 'trans//category::translations.categories',
+            'single' => 'trans//category::category.category',
+            'plural' => 'trans//category::category.categories',
 
             /*
             |--------------------------------------------------------------------------
