@@ -50,12 +50,14 @@ return [
     'delete_linked_file_heading' => 'Datei ":title" löschen',
     'warning_file_has_links' => 'Diese Datei wird in :count :links verwendet.',
     'delete_linked_warning' => 'Wenn Sie diese Datei löschen, werden die Verknüpfungen zu dieser Datei ebenfalls gelöscht.',
+    'replace_file' => 'Datei ersetzen',
 
     // Upload
     'upload_file' => 'Datei hochladen',
     'select_file' => 'Datei auswählen',
     'file_uploaded_success' => 'Datei erfolgreich hochgeladen',
     'file_upload_error' => 'Fehler beim Hochladen der Datei',
+    'edit_file_success' => 'Die Datei ":fileName" wurde erfolgreich aktualisiert.',
 
     // Metadata
     'metadata' => 'Metadaten',

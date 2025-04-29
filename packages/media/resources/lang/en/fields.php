@@ -50,12 +50,14 @@ return [
     'warning_file_has_links' => 'This file is used in :count :links.',
     'delete_linked_warning' => 'If you delete this file, the links to this file will also be deleted.',
     'delete_linked_file_heading' => 'Delete File ":title"',
+    'replace_file' => 'Replace File',
 
     // Upload
     'upload_file' => 'Upload File',
     'select_file' => 'Select File',
     'file_uploaded_success' => 'File uploaded successfully',
     'file_upload_error' => 'Error uploading file',
+    'edit_file_success' => 'The file ":fileName" was successfully updated.',
 
     // Metadata
     'metadata' => 'Metadata',
