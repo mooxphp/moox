@@ -58,6 +58,8 @@ return [
     'file_uploaded_success' => 'Datei erfolgreich hochgeladen',
     'file_upload_error' => 'Fehler beim Hochladen der Datei',
     'edit_file_success' => 'Die Datei ":fileName" wurde erfolgreich aktualisiert.',
+    'operation_error' => 'Fehler beim Vorgang',
+    'file_operation_error' => 'Die Datei ":fileName" konnte nicht verarbeitet werden.',
 
     // Metadata
     'metadata' => 'Metadaten',
