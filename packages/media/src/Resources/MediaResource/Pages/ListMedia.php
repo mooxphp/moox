@@ -54,7 +54,7 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
@@ -62,6 +62,27 @@ class ListMedia extends ListRecords
 
                             foreach ($state as $key => $tempFile) {
                                 if (in_array($key, $processedFiles)) {
+                                    continue;
+                                }
+
+                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
+                                $fileName = $tempFile->getClientOriginalName();
+
+                                $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                                    $query->where('name', $fileName);
+                                })->orWhere(function ($query) use ($fileHash) {
+                                    $query->where('custom_properties->file_hash', $fileHash);
+                                })->first();
+
+                                if ($existingMedia) {
+                                    \Filament\Notifications\Notification::make()
+                                        ->warning()
+                                        ->title(__('media::fields.duplicate_file'))
+                                        ->body(__('media::fields.duplicate_file_message', [
+                                            'fileName' => $fileName,
+                                        ]))
+                                        ->persistent()
+                                        ->send();
                                     continue;
                                 }
 
@@ -81,6 +102,8 @@ class ListMedia extends ListRecords
                                 $media->original_model_id = $media->id;
                                 $media->model_id = $media->id;
                                 $media->model_type = Media::class;
+
+                                $media->setCustomProperty('file_hash', $fileHash);
 
                                 if (str_starts_with($media->mime_type, 'image/')) {
                                     [$width, $height] = getimagesize($media->getPath());

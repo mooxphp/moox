@@ -95,4 +95,8 @@ return [
     'file_type' => 'Dateityp',
     'apply_selection' => 'Auswahl übernehmen',
     'close' => 'Schließen',
+
+    // Duplicate Files
+    'duplicate_file' => 'Doppelte Datei',
+    'duplicate_file_message' => 'Die Datei ":fileName" existiert bereits in der Mediathek.',
 ];

@@ -61,6 +61,10 @@ return [
     'operation_error' => 'Operation Error',
     'file_operation_error' => 'The file ":fileName" could not be operated on.',
 
+    // Duplicate Files
+    'duplicate_file' => 'Duplicate File',
+    'duplicate_file_message' => 'The file ":fileName" already exists in the media library.',
+
     // Metadata
     'metadata' => 'Metadata',
     'alt_text' => 'Alt Text',

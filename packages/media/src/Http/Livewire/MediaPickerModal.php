@@ -73,7 +73,7 @@ class MediaPickerModal extends Component implements HasForms
 
         $this->modelClass = $this->modelClass ? str_replace('\\\\', '\\', $this->modelClass) : null;
 
-        if ($this->modelClass && ! class_exists($this->modelClass)) {
+        if ($this->modelClass && !class_exists($this->modelClass)) {
             throw new \Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
@@ -81,7 +81,7 @@ class MediaPickerModal extends Component implements HasForms
             $this->model = app($this->modelClass)::find($this->modelId);
         }
 
-        if (! $this->modelId || ! $this->model) {
+        if (!$this->modelId || !$this->model) {
             $this->modelId = 0;
         }
     }
@@ -91,13 +91,34 @@ class MediaPickerModal extends Component implements HasForms
         $upload = FileUpload::make(__('files'))
             ->label(__('media::fields.upload'))
             ->afterStateUpdated(function ($state) {
-                if (! $state) {
+                if (!$state) {
                     return;
                 }
 
                 $processedFiles = session('processed_files', []);
 
-                if (! is_array($state)) {
+                if (!is_array($state)) {
+                    $fileHash = hash_file('sha256', $state->getRealPath());
+                    $fileName = $state->getClientOriginalName();
+
+                    $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                        $query->where('name', $fileName);
+                    })->orWhere(function ($query) use ($fileHash) {
+                        $query->where('custom_properties->file_hash', $fileHash);
+                    })->first();
+
+                    if ($existingMedia) {
+                        \Filament\Notifications\Notification::make()
+                            ->warning()
+                            ->title(__('media::fields.duplicate_file'))
+                            ->body(__('media::fields.duplicate_file_message', [
+                                'fileName' => $fileName,
+                            ]))
+                            ->persistent()
+                            ->send();
+                        return;
+                    }
+
                     $model = new Media;
                     $model->exists = true;
 
@@ -116,6 +137,8 @@ class MediaPickerModal extends Component implements HasForms
                     $media->uploader_type = $user ? get_class($user) : null;
                     $media->uploader_id = $user?->id;
 
+                    $media->setCustomProperty('file_hash', $fileHash);
+
                     if (str_starts_with($media->mime_type, 'image/')) {
                         [$width, $height] = getimagesize($media->getPath());
                         $media->setCustomProperty('dimensions', [
@@ -128,6 +151,27 @@ class MediaPickerModal extends Component implements HasForms
                 } else {
                     foreach ($state as $key => $tempFile) {
                         if (in_array($key, $processedFiles)) {
+                            continue;
+                        }
+
+                        $fileHash = hash_file('sha256', $tempFile->getRealPath());
+                        $fileName = $tempFile->getClientOriginalName();
+
+                        $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                            $query->where('name', $fileName);
+                        })->orWhere(function ($query) use ($fileHash) {
+                            $query->where('custom_properties->file_hash', $fileHash);
+                        })->first();
+
+                        if ($existingMedia) {
+                            \Filament\Notifications\Notification::make()
+                                ->warning()
+                                ->title(__('media::fields.duplicate_file'))
+                                ->body(__('media::fields.duplicate_file_message', [
+                                    'fileName' => $fileName,
+                                ]))
+                                ->persistent()
+                                ->send();
                             continue;
                         }
 
@@ -148,6 +192,8 @@ class MediaPickerModal extends Component implements HasForms
                         $media->model_type = Media::class;
                         $media->uploader_type = $user ? get_class($user) : null;
                         $media->uploader_id = $user?->id;
+
+                        $media->setCustomProperty('file_hash', $fileHash);
 
                         if (str_starts_with($media->mime_type, 'image/')) {
                             [$width, $height] = getimagesize($media->getPath());
@@ -241,7 +287,7 @@ class MediaPickerModal extends Component implements HasForms
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
@@ -256,7 +302,7 @@ class MediaPickerModal extends Component implements HasForms
                 if (isset($media->uploader->name)) {
                     $uploaderName = $media->uploader->name;
                 } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
-                    $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
+                    $uploaderName = $media->uploader->first_name . ' ' . $media->uploader->last_name;
                 }
             }
 
@@ -301,7 +347,7 @@ class MediaPickerModal extends Component implements HasForms
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -311,7 +357,7 @@ class MediaPickerModal extends Component implements HasForms
                     'name' => $media->getAttribute('name'),
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -364,10 +410,10 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.title")) LIKE ?', ['%'.strtolower($this->searchQuery).'%'])
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.description")) LIKE ?', ['%'.strtolower($this->searchQuery).'%'])
-                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.alt")) LIKE ?', ['%'.strtolower($this->searchQuery).'%']);
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.title")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.description")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%'])
+                        ->orWhereRaw('LOWER(JSON_EXTRACT(translations, "$.*.alt")) LIKE ?', ['%' . strtolower($this->searchQuery) . '%']);
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
@@ -446,13 +492,13 @@ class MediaPickerModal extends Component implements HasForms
                     $uploader = $media->uploader;
                     if ($uploader && method_exists($uploader, 'getName')) {
                         return [
-                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                             'name' => $uploader->getName(),
                         ];
                     }
                     if ($uploader && isset($uploader->name)) {
                         return [
-                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                             'name' => $uploader->name,
                         ];
                     }
@@ -460,11 +506,11 @@ class MediaPickerModal extends Component implements HasForms
                     return null;
                 })
                 ->filter()
-                ->unique(fn (array $item): string => $item['id'])
+                ->unique(fn(array $item): string => $item['id'])
                 ->pluck('name', 'id')
                 ->toArray();
 
-            if (! empty($uploaders)) {
+            if (!empty($uploaders)) {
                 $typeName = class_basename($type);
                 $uploaderOptions[$typeName] = $uploaders;
             }
