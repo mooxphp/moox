@@ -54,7 +54,7 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
@@ -83,6 +83,7 @@ class ListMedia extends ListRecords
                                         ]))
                                         ->persistent()
                                         ->send();
+
                                     continue;
                                 }
 
