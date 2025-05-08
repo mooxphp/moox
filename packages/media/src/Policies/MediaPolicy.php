@@ -3,29 +3,29 @@
 namespace Moox\Media\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Moox\Media\Models\Media;
-use Moox\User\Models\User;
 
 class MediaPolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(?User $user): bool
+    public function viewAny(?Authenticatable $user): bool
     {
         return true;
     }
 
-    public function view(?User $user, Media $media): bool
+    public function view(?Authenticatable $user, Media $media): bool
     {
         return true;
     }
 
-    public function create(User $user): bool
+    public function create(Authenticatable $user): bool
     {
         return true;
     }
 
-    public function update(User $user, Media $media): bool
+    public function update(Authenticatable $user, Media $media): bool
     {
         if ($media->getOriginal('write_protected')) {
             return false;
@@ -34,7 +34,7 @@ class MediaPolicy
         return true;
     }
 
-    public function delete(User $user, Media $media): bool
+    public function delete(Authenticatable $user, Media $media): bool
     {
         if ($media->getOriginal('write_protected')) {
             return false;
