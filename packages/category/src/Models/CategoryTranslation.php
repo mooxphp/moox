@@ -22,7 +22,7 @@ class CategoryTranslation extends BaseDraftTranslationModel
     ];
 
     protected $casts = [
-        'data' => 'array',
+        'data' => 'json',
     ];
 
 }

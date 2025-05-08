@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
+use Filament\Forms\Components\KeyValue;
 use Override;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -96,6 +97,11 @@ class CategoryResource extends BaseDraftResource
                                             ->disabledOptions(fn ($get): array => [$get('id')])
                                             ->enableBranchNode()
                                             ->visible(fn () => Category::count() > 0),
+                                            KeyValue::make('basedata'),
+                                            KeyValue::make('data'),
+                                            KeyValue::make('data.ArticleGroup'),
+
+
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),

@@ -42,6 +42,8 @@ class Category extends BaseDraftModel
     use NodeTrait;
     use SoftDeletes;
 
+    public $incrementing = false;
+    protected $keyType = 'int';
 
     public $translatedAttributes = [
         'title',
@@ -57,11 +59,13 @@ class Category extends BaseDraftModel
         'count',
         'featured_image_url',
         'parent_id',
+        'basedata',
     ];
 
     protected $casts = [
         'weight' => 'integer',
         'count' => 'integer',
+        'basedata' => 'json',
     ];
 
     public function getStatusAttribute(): string
