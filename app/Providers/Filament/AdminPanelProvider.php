@@ -19,7 +19,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Audit\AuditPlugin;
-use Moox\Category\CategoryPlugin;
+use Moox\Category\Moox\Entities\Categories\Plugins\CategoryPlugin;
 use Moox\Data\Filament\Plugins\StaticCountryPlugin;
 use Moox\Data\Filament\Plugins\StaticCurrencyPlugin;
 use Moox\Data\Filament\Plugins\StaticLanguagePlugin;

@@ -2,59 +2,47 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources;
+namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\KeyValue;
+use Override;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Moox\Category\Models\Category;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Validation\Rules\Unique;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Category\Models\Category;
-use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
-use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
-use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
-use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
-use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Forms\Components\ColorPicker;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Override;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
 
-// use Moox\Core\Forms\Components\TitleWithSlugInput;
 
-class CategoryResource extends Resource
+class CategoryResource extends BaseDraftResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = Category::class;
 
     protected static ?string $currentTab = null;
-
-    #[Override]
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes()
-            ->orderBy('_lft');
-    }
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
@@ -72,6 +60,26 @@ class CategoryResource extends Resource
                                         TitleWithSlugInput::make(
                                             fieldTitle: 'title',
                                             fieldSlug: 'slug',
+                                            slugRuleUniqueParameters: [
+                                                'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                                                    $locale = $livewire->lang;
+                                                    if ($record) {
+                                                        $rule->where('locale', $locale);
+                                                        $existingTranslation = $record->translations()
+                                                            ->where('locale', $locale)
+                                                            ->first();
+                                                        if ($existingTranslation) {
+                                                            $rule->ignore($existingTranslation->id);
+                                                        }
+                                                    } else {
+                                                        $rule->where('locale', $locale);
+                                                    }
+    
+                                                    return $rule;
+                                                },
+                                                'table' => 'category_translations',
+                                                'column' => 'slug',
+                                            ]
                                         ),
                                         FileUpload::make('featured_image_url')
                                             ->label(__('core::core.featured_image_url')),
@@ -87,71 +95,28 @@ class CategoryResource extends Resource
                                             ->label('Parent Category')
                                             ->searchable()
                                             ->disabledOptions(fn ($get): array => [$get('id')])
-                                            ->enableBranchNode(),
+                                            ->enableBranchNode()
+                                            ->visible(fn () => Category::count() > 0),
+                                            KeyValue::make('basedata'),
+                                            KeyValue::make('data'),
+                                            KeyValue::make('data.ArticleGroup'),
+
+
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
+
                         Grid::make()
                             ->schema([
                                 Section::make()
                                     ->schema([
-                                        Actions::make([
-                                            Action::make('restore')
-                                                ->label(__('core::core.restore'))
-                                                ->color('success')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
-                                            Action::make('save')
-                                                ->label(__('core::core.save'))
-                                                ->color('primary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire): void {
-                                                    $livewire instanceof CreateCategory ? $livewire->create() : $livewire->save();
-                                                })
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory || $livewire instanceof EditCategory),
-                                            Action::make('saveAndCreateAnother')
-                                                ->label(__('core::core.save_and_create_another'))
-                                                ->color('secondary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire): void {
-                                                    $livewire->saveAndCreateAnother();
-                                                })
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
-                                            Action::make('cancel')
-                                                ->label(__('core::core.cancel'))
-                                                ->color('secondary')
-                                                ->outlined()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn (): string => static::getUrl('index'))
-                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
-                                            Action::make('edit')
-                                                ->label(__('core::core.edit'))
-                                                ->color('primary')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
-                                                ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewCategory && ! $record->trashed()),
-                                            Action::make('restore')
-                                                ->label(__('core::core.restore'))
-                                                ->color('success')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditCategory),
-                                            Action::make('delete')
-                                                ->label(__('core::core.delete'))
-                                                ->color('danger')
-                                                ->link()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(fn ($record) => $record->delete())
-                                                ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditCategory),
-                                        ]),
+                                        static::getFormActions(),
+                                    ]),
+                                Section::make()
+                                    ->schema([
+
                                         ColorPicker::make('color'),
-                                        TextInput::make('weight'),
+                                        TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
                                             ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
@@ -187,32 +152,49 @@ class CategoryResource extends Resource
                     ->alignment('center')
                     ->square()
                     ->toggleable(),
+                TranslationColumn::make('translations.locale'),
+                    
                 TextColumn::make('modified_title')
-                    ->label('Title')
+                    ->label(__('category::fields.modified_title'))
                     ->getStateUsing(function (Category $record): string {
+                        $lang = request()->get('lang');
+                        
                         $depth = $record->ancestors->count();
                         $prefix = str_repeat('--', $depth);
+                        
+                        $title = $lang && $record->hasTranslation($lang) 
+                            ? $record->translate($lang)->title 
+                            : $record->title;
 
-                        return sprintf('%s %s', $prefix, $record->title);
+                        return sprintf('%s %s', $prefix, $title);
                     })
                     ->searchable(),
+                   
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->sortable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->slug;
+                        }
+
+                        return $record->slug;
+                    }),
                 TextColumn::make('level')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->counts('children')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('parent.title')
-                    ->label('Parent')
+                    ->label(__('category::fields.parent'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
@@ -220,24 +202,32 @@ class CategoryResource extends Resource
                     ->sortable()
                     ->limit(30)
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->content;
+                        }
+
+                        return $record->content;
+                    }),
                 TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('weight')
-                    ->label(__('tag::translations.weight'))
+                    ->label(__('category::fields.weight'))
                     ->sortable()
                     ->toggleable(),
                 ColorColumn::make('color')
-                    ->label(__('tag::translations.color'))
+                    ->label(__('category::fields.color'))
                     ->sortable()
                     ->toggleable(),
             ])
-            ->defaultSort('slug', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted']))
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
@@ -245,11 +235,11 @@ class CategoryResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('parent_id')
-                    ->label('Parent Category')
+                    ->label(__('category::fields.parent'))
                     ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->options([
                         '0' => '0',
                         '1-5' => '1-5',
@@ -269,7 +259,7 @@ class CategoryResource extends Resource
                         }
                     })),
                 SelectFilter::make('depth')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
                     ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
@@ -279,7 +269,7 @@ class CategoryResource extends Resource
                         });
                     })),
             ])
-            ->defaultSort('slug', 'desc')
+            ->defaultSort('updated_at', 'desc')
             ->actions([
                 ViewAction::make(),
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
@@ -290,11 +280,11 @@ class CategoryResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('parent_id')
-                    ->label('Parent Category')
+                    ->label(__('category::fields.parent'))
                     ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
-                    ->label('Subs')
+                    ->label(__('category::fields.children_count'))
                     ->options([
                         '0' => '0',
                         '1-5' => '1-5',
@@ -314,7 +304,7 @@ class CategoryResource extends Resource
                         }
                     })),
                 SelectFilter::make('depth')
-                    ->label('Level')
+                    ->label(__('category::fields.level'))
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
                     ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
@@ -338,10 +328,10 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListCategories::route('/'),
-            'edit' => EditCategory::route('/{record}/edit'),
-            'create' => CreateCategory::route('/create'),
-            'view' => ViewCategory::route('/{record}'),
+            'index' => Pages\ListCategories::route('/'),
+            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'create' => Pages\CreateCategory::route('/create'),
+            'view' => Pages\ViewCategory::route('/{record}'),
         ];
     }
 

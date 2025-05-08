@@ -4,38 +4,68 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
-use Kalnoy\Nestedset\NodeTrait;
-use Moox\Category\Database\Factories\CategoryFactory;
 use Override;
+use Kalnoy\Nestedset\NodeTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Category\Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class Category extends Model
+/**
+ * @property string $title
+ * @property string $status
+ * @property string $slug 
+ * @property string $content
+ * @property int $_lft
+ * @property int $_rgt
+ * @property string|null $color
+ * @property int|null $weight
+ * @property int|null $count
+ * @property string|null $featured_image_url
+ * @property int|null $parent_id
+ * @property array|null $data
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Category\Models\Category> $children
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Category\Models\Category> $ancestors
+ * @property-read \Moox\Category\Models\Category|null $parent
+ * @method static \Moox\Category\Database\Factories\CategoryFactory factory($count = null, $state = [])
+ */
+
+class Category extends BaseDraftModel
 {
     use HasFactory;
     use NodeTrait;
     use SoftDeletes;
 
-    protected $table = 'categories';
+    public $incrementing = false;
+    protected $keyType = 'int';
 
-    protected $fillable = [
+    public $translatedAttributes = [
         'title',
+        'status',
         'slug',
         'content',
+        'data'
+    ];
+
+    protected $fillable = [
         'color',
-        'weight',
+        'weight', 
         'count',
         'featured_image_url',
         'parent_id',
+        'basedata',
     ];
 
     protected $casts = [
         'weight' => 'integer',
         'count' => 'integer',
+        'basedata' => 'json',
     ];
 
     public function getStatusAttribute(): string

@@ -1,7 +1,7 @@
 <?php
 
-use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
 
 return [

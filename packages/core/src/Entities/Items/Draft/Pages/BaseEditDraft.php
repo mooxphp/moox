@@ -7,6 +7,11 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
 
+/**
+ * @phpstan-type TranslatableModel = Model&TranslatableContract
+ *
+ * @phpstan-property-read array<string> $translatedAttributes
+ */
 abstract class BaseEditDraft extends EditRecord
 {
     use CanResolveResourceClass;
@@ -27,19 +32,25 @@ abstract class BaseEditDraft extends EditRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
+    
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+            return $data;
+        }
+    
         $translatable = $record->translatedAttributes;
         $values = [];
         foreach ($translatable as $attr) {
-            $values[$attr] = $record->$attr;
+            $translation = $record->getTranslation($this->lang, false);
+            $values[$attr] = $translation ? $translation->$attr : $record->$attr;
         }
-
+    
         return $values;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang || ! ($record instanceof TranslatableContract)) {
+        if (! $this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -68,7 +79,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! ($model instanceof TranslatableContract) || ! property_exists($model, 'translatedAttributes')) {
+        if (! property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -88,5 +99,28 @@ abstract class BaseEditDraft extends EditRecord
         }
 
         return $data;
+    }
+
+    public function getHeaderActions(): array
+    {
+        $languages = \Moox\Localization\Models\Localization::with('language')->get();
+        $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
+
+        return [
+            \Filament\Actions\ActionGroup::make(
+                $languages->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
+                    ->icon('flag-'.$localization->language->alpha2)
+                    ->label('')
+                    ->color('transparent')
+                    ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
+                    ->url(fn () => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                )
+                    ->toArray()
+            )
+                ->color('transparent')
+                ->label('Language')
+                ->icon('flag-'.$this->lang)
+                ->extraAttributes(['class' => '']),
+        ];
     }
 }

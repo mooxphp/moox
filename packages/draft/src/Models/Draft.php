@@ -4,6 +4,7 @@ namespace Moox\Draft\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
@@ -12,6 +13,40 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property bool $is_active
+ * @property array $data
+ * @property array $image
+ * @property string $type
+ * @property string[] $translatedAttributes
+ * @property \Carbon\Carbon|null $due_at
+ * @property string $uuid
+ * @property string $ulid
+ * @property-read string $title
+ * @property-read string $slug
+ * @property-read string $description
+ * @property-read string $content
+ * @property-read string $status
+ * @property-read int $author_id
+ * @property-read \Carbon\Carbon|null $to_publish_at
+ * @property-read \Carbon\Carbon|null $published_at
+ * @property-read \Carbon\Carbon|null $to_unpublish_at
+ * @property-read \Carbon\Carbon|null $unpublished_at
+ * @property-read int|null $published_by_id
+ * @property-read int|null $unpublished_by_id
+ * @property-read \Carbon\Carbon|null $deleted_at
+ * @property-read int|null $deleted_by_id
+ * @property-read \Carbon\Carbon|null $restored_at
+ * @property-read int|null $restored_by_id
+ * @property-read \App\Models\User|null $author
+ * @property-read \Illuminate\Database\Eloquent\Model|null $publishedBy
+ * @property-read \Illuminate\Database\Eloquent\Model|null $updatedBy
+ * @property-read \Illuminate\Database\Eloquent\Model|null $createdBy
+ * @property-read \Illuminate\Database\Eloquent\Model|null $unpublishedBy
+ * @property-read \Illuminate\Database\Eloquent\Model|null $deletedBy
+ * @property-read \Illuminate\Database\Eloquent\Model|null $restoredBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ */
 class Draft extends BaseDraftModel implements HasMedia
 {
     use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia;
@@ -24,7 +59,6 @@ class Draft extends BaseDraftModel implements HasMedia
         'slug',
         'description',
         'content',
-        'status',
         'author_id',
         'to_publish_at',
         'published_at',
@@ -58,7 +92,7 @@ class Draft extends BaseDraftModel implements HasMedia
         'ulid' => 'string',
     ];
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -66,33 +100,7 @@ class Draft extends BaseDraftModel implements HasMedia
             $model->uuid = (string) \Illuminate\Support\Str::uuid();
             $model->ulid = (string) \Illuminate\Support\Str::ulid();
         });
-        static::created(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Created', ['model' => $model]);
-        });
 
-        static::updated(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Updated', ['model' => $model]);
-        });
-
-        static::deleted(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Deleted', ['model' => $model]);
-        });
-
-        static::retrieved(function ($model) {
-            $model->handleSchedulingDates();
-        });
-
-        static::saving(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Saving', ['model' => $model]);
-        });
-
-        static::saved(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Saved', ['model' => $model]);
-        });
-
-        static::deleting(function ($model) {
-            \Illuminate\Support\Facades\Log::info('Draft Deleting', ['model' => $model]);
-        });
     }
 
     public function getUlidAttribute(): string
@@ -174,32 +182,32 @@ class Draft extends BaseDraftModel implements HasMedia
     }
 
     // Relationships for actors
-    public function publishedBy()
+    public function publishedBy(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function updatedBy()
+    public function updatedBy(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function createdBy()
+    public function createdBy(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function unpublishedBy()
+    public function unpublishedBy(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function deletedBy()
+    public function deletedBy(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function restoredBy()
+    public function restoredBy(): MorphTo
     {
         return $this->morphTo();
     }

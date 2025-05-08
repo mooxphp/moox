@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "*",
+        "filament/spatie-laravel-media-library-plugin": "^3.2"
     },
     "autoload": {
         "psr-4": {
@@ -55,7 +56,6 @@
             "@clear",
             "@prepare"
         ],
-        "clear": "@php vendor/bin/testbench package:purge-media --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": "@php vendor/bin/testbench workbench:build --ansi",
         "serve": [

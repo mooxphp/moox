@@ -28,7 +28,7 @@ class MediaServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews('media-picker')
             ->hasTranslations()
-            ->hasMigrations()
+            ->discoversMigrations()
             ->hasCommands()
             ->hasAssets();
     }
