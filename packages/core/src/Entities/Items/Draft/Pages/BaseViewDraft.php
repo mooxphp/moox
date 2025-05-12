@@ -26,16 +26,14 @@ abstract class BaseViewDraft extends ViewRecord
     public function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
+        $values = $data;
 
-        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
-            return $data;
-        }
-
-        $translatable = $record->translatedAttributes;
-        $values = [];
-        foreach ($translatable as $attr) {
-            $translation = $record->getTranslation($this->lang, false);
-            $values[$attr] = $translation ? $translation->$attr : $record->$attr;
+        if (method_exists($record, 'getTranslation') && property_exists($record, 'translatedAttributes')) {
+            $translatable = $record->translatedAttributes;
+            foreach ($translatable as $attr) {
+                $translation = $record->getTranslation($this->lang, false);
+                $values[$attr] = $translation ? $translation->$attr : $record->$attr;
+            }
         }
 
         return $values;

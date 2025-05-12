@@ -6,12 +6,15 @@ namespace Moox\Category\Models;
 
 use Override;
 use Kalnoy\Nestedset\NodeTrait;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Category\Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -36,12 +39,12 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @method static \Moox\Category\Database\Factories\CategoryFactory factory($count = null, $state = [])
  */
 
-class Category extends BaseDraftModel
+class Category extends BaseDraftModel implements HasMedia
 {
     use HasFactory;
     use NodeTrait;
     use SoftDeletes;
-
+    use InteractsWithMedia;
     public $incrementing = false;
     protected $keyType = 'int';
 
@@ -100,4 +103,22 @@ class Category extends BaseDraftModel
             $category->detachAllCategorizables();
         });
     }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300);
+    }
+
+    public function mediaThroughUsables()
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'media_usables',
+            'media_usable_id',
+            'media_id'
+        )->where('media_usables.media_usable_type', '=', static::class);
+    }
+
 }
