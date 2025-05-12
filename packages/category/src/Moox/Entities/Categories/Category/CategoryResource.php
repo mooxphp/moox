@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Filament\Forms\Components\KeyValue;
 use Override;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Moox\Category\Models\Category;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\KeyValue;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -23,14 +23,17 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Tables\Actions\RestoreBulkAction;
+use Moox\Media\Tables\Columns\CustomImageColumn;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
@@ -81,7 +84,7 @@ class CategoryResource extends BaseDraftResource
                                                 'column' => 'slug',
                                             ]
                                         ),
-                                        FileUpload::make('featured_image_url')
+                                      MediaPicker::make('featured_image_url')
                                             ->label(__('core::core.featured_image_url')),
                                         MarkdownEditor::make('content')
                                             ->label(__('core::core.content')),
@@ -146,14 +149,9 @@ class CategoryResource extends BaseDraftResource
             ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
             ->columns([
-                ImageColumn::make('featured_image_url')
-                    ->label(__('core::core.image'))
-                    ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
-                    ->alignment('center')
-                    ->square()
-                    ->toggleable(),
+                TextColumn::make('id')->sortable(),
+                CustomImageColumn::make('featured_image_url'),
                 TranslationColumn::make('translations.locale'),
-                    
                 TextColumn::make('modified_title')
                     ->label(__('category::fields.modified_title'))
                     ->getStateUsing(function (Category $record): string {
