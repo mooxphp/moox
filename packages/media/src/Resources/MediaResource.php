@@ -315,7 +315,7 @@ class MediaResource extends Resource
                                 <button
                                     type=\"button\"
                                     x-on:click=\"\$dispatch('open-modal', { id: 'usage-modal-{$record->id}' })\"
-                                    class=\"filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2rem] px-3 text-primary-600 bg-primary-50 border-primary-200 hover:bg-primary-100 focus:ring-primary-600 focus:text-primary-600 focus:bg-primary-50 focus:border-primary-600\"
+                                    class=\"filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2rem] px-3 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 border-primary-200 dark:border-primary-500/20 hover:bg-primary-100 dark:hover:bg-primary-500/20 focus:ring-primary-600 dark:focus:ring-primary-400 focus:text-primary-600 dark:focus:text-primary-400 focus:bg-primary-50 dark:focus:bg-primary-500/10 focus:border-primary-600 dark:focus:border-primary-400\"
                                 >
                                     <span class=\"flex items-center gap-1\">
                                         <svg class=\"w-4 h-4\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\">
