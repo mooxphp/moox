@@ -4,6 +4,7 @@ namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource;
@@ -26,6 +27,18 @@ class ListMedia extends ListRecords
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
                 ->form([
+                    Select::make('collection_name')
+                        ->label(__('media::fields.collection'))
+                        ->options(function () {
+                            return Media::query()
+                                ->distinct()
+                                ->pluck('collection_name', 'collection_name')
+                                ->toArray();
+                        })
+                        ->searchable()
+                        ->default('default')
+                        ->required()
+                        ->live(),
                     FileUpload::make('file')
                         ->label(__('media::fields.select_file'))
                         ->multiple(config('media.upload.resource.multiple'))
@@ -53,12 +66,13 @@ class ListMedia extends ListRecords
                         ->previewable(config('media.upload.resource.show_preview'))
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
-                        ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                        ->afterStateUpdated(function ($state, $get) {
+                            if (!$state) {
                                 return;
                             }
 
                             $processedFiles = session('processed_files', []);
+                            $collection = $get('collection_name') ?? 'default';
 
                             foreach ($state as $key => $tempFile) {
                                 if (in_array($key, $processedFiles)) {
@@ -91,7 +105,7 @@ class ListMedia extends ListRecords
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
-                                $media = $fileAdder->preservingOriginal()->toMediaCollection('default');
+                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -120,7 +134,8 @@ class ListMedia extends ListRecords
 
                             session(['processed_files' => $processedFiles]);
                         }),
-                ])->modalSubmitAction(false),
+                ])
+                ->modalSubmitAction(false),
         ];
     }
 }
