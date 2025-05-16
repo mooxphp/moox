@@ -784,7 +784,7 @@ class MediaResource extends Resource
                     ->preload(),
 
                 SelectFilter::make('date')
-                    ->label(__('media::fields.uploaded'))
+                    ->label(__('media::fields.uploaded_at'))
                     ->options([
                         'today' => __('media::fields.today'),
                         'week' => __('media::fields.week'),
