@@ -676,80 +676,26 @@ class MediaResource extends Resource
                 SelectFilter::make('mime_type')
                     ->label(__('media::fields.mime_type'))
                     ->options([
-                        'images' => __('media::fields.images'),
-                        'videos' => __('media::fields.videos'),
-                        'audios' => __('media::fields.audios'),
-                        'documents' => __('media::fields.documents'),
+                        'image' => __('media::fields.images'),
+                        'video' => __('media::fields.videos'),
+                        'audio' => __('media::fields.audios'),
+                        'document' => __('media::fields.documents'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if (!$data['value']) {
                             return $query;
                         }
 
-                        $mimeTypes = [
-                            'images' => [
-                                'image/jpeg',
-                                'image/png',
-                                'image/webp',
-                                'image/svg+xml',
-                                'image/gif',
-                                'image/bmp',
-                                'image/tiff',
-                                'image/ico',
-                                'image/heic',
-                                'image/heif',
-                                'image/x-icon',
-                                'image/vnd.microsoft.icon',
-                            ],
-                            'videos' => [
-                                'video/mp4',
-                                'video/webm',
-                                'video/quicktime',
-                                'video/x-msvideo',
-                                'video/x-matroska',
-                                'video/3gpp',
-                                'video/x-flv',
-                            ],
-                            'audios' => [
-                                'audio/mpeg',
-                                'audio/ogg',
-                                'audio/wav',
-                                'audio/webm',
-                                'audio/aac',
-                                'audio/midi',
-                                'audio/x-midi',
-                                'audio/mp4',
-                                'audio/flac',
-                            ],
-                            'documents' => [
-                                'application/pdf',
-                                'application/msword',
-                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                                'application/vnd.ms-excel',
-                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                'application/vnd.ms-powerpoint',
-                                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                                'application/rtf',
-                                'text/plain',
-                                'text/csv',
-                                'text/html',
-                                'text/xml',
-                                'application/json',
-                                'application/x-yaml',
-                                'application/zip',
-                                'application/x-zip-compressed',
-                                'application/x-rar-compressed',
-                                'application/x-7z-compressed',
-                                'application/gzip',
-                                'application/x-tar',
-                            ],
-                        ];
-
-                        if (isset($mimeTypes[$data['value']])) {
-                            $query->whereIn('mime_type', $mimeTypes[$data['value']]);
-                        }
-
-                        return $query;
+                        return match ($data['value']) {
+                            'image' => $query->where('mime_type', 'like', 'image/%'),
+                            'video' => $query->where('mime_type', 'like', 'video/%'),
+                            'audio' => $query->where('mime_type', 'like', 'audio/%'),
+                            'document' => $query->where(function ($query) {
+                                    $query->where('mime_type', 'like', 'application/%')
+                                    ->orWhere('mime_type', 'like', 'text/%');
+                                }),
+                            default => $query,
+                        };
                     }),
 
                 SelectFilter::make('uploader')
@@ -849,6 +795,22 @@ class MediaResource extends Resource
                         }
 
                         return $query;
+                    }),
+                SelectFilter::make('collection')
+                    ->label(__('media::fields.collection'))
+                    ->options(function () {
+                        return Media::query()
+                            ->distinct()
+                            ->pluck('collection_name', 'collection_name')
+                            ->filter()
+                            ->toArray();
+                    })
+                    ->query(function (Builder $query, array $data) {
+                        if (!$data['value']) {
+                            return $query;
+                        }
+
+                        return $query->where('collection_name', $data['value']);
                     }),
             ])
             ->defaultSort('created_at', 'desc')

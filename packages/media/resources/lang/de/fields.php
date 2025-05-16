@@ -18,6 +18,8 @@ return [
     'uploaded_by' => 'Hochgeladen von',
     'usage' => 'Verwendet in',
     'not_used' => 'Nicht verwendet',
+    'uploaded' => 'Hochgeladen am',
+    'collection' => 'Sammlung',
 
     // Actions
     'select_multiple' => 'Mehrere auswählen',

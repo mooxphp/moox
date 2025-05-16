@@ -18,6 +18,8 @@ return [
     'uploaded_by' => 'Uploaded By',
     'usage' => 'Used In',
     'not_used' => 'Not Used',
+    'uploaded' => 'Uploaded At',
+    'collection' => 'Collection',
 
     // Actions
     'select_multiple' => 'Select Multiple',
