@@ -36,7 +36,7 @@ class ListMedia extends ListRecords
                                 ->toArray();
                         })
                         ->searchable()
-                        ->default('default')
+                        ->default(__('media::fields.default_collection'))
                         ->required()
                         ->live(),
                     FileUpload::make('file')
@@ -72,7 +72,7 @@ class ListMedia extends ListRecords
                             }
 
                             $processedFiles = session('processed_files', []);
-                            $collection = $get('collection_name') ?? 'default';
+                            $collection = $get('collection_name') ?? __('media::fields.default_collection');
 
                             foreach ($state as $key => $tempFile) {
                                 if (in_array($key, $processedFiles)) {

@@ -20,6 +20,7 @@ return [
     'not_used' => 'Nicht verwendet',
     'uploaded_at' => 'Hochgeladen am',
     'collection' => 'Sammlung',
+    'default_collection' => 'Allgemein',
 
     // Actions
     'select_multiple' => 'Mehrere auswählen',

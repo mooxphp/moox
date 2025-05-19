@@ -20,6 +20,7 @@ return [
     'not_used' => 'Not Used',
     'uploaded_at' => 'Uploaded At',
     'collection' => 'Collection',
+    'default_collection' => 'Default',
 
     // Actions
     'select_multiple' => 'Select Multiple',
