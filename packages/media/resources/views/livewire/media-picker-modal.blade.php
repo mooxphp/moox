@@ -188,7 +188,7 @@
         <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4 flex flex-col h-full">
             @if(!empty($selectedMediaMeta['id']))
                 <div class="flex-1">
-                    <x-filament::section>
+                    <x-filament::section columns="2">
                         <div class="space-y-4">
                             <div>
                                 <span class="text-sm font-medium text-gray-500">{{ __('media::fields.file_name') }}</span>
@@ -224,11 +224,29 @@
                                 <span class="text-sm font-medium text-gray-500">{{ __('media::fields.uploaded_by') }}</span>
                                 <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['uploader_name'] ?? '-' }}</p>
                             </div>
+
+                            <div>
+                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.collection') }}</span>
+                                <div class="mt-1">
+                                    <x-filament::input.wrapper>
+                                    <x-filament::input.select 
+                                        wire:model.live="selectedMediaMeta.collection_name"
+                                        :disabled="$selectedMediaMeta['write_protected']"
+                                    >
+                                        @foreach($collectionOptions as $name)
+                                            <option value="{{ $name }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
+                                            @endforeach
+                                        </x-filament::input.select>
+                                    </x-filament::input.wrapper>
+                                </div>
+                            </div>
                         </div>
                     </x-filament::section>
 
-                    <x-filament::section class="mt-2">
-                        <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.metadata') }}</h3>
+                    <x-filament::section class="mt-2" collapsible collapsed>
+                        <x-slot name="heading">
+                            <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.metadata') }}</h3>
+                        </x-slot>
                         <form wire:submit.prevent="saveMetadata">
                             <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
                                 {{ __('media::fields.name') }}
@@ -268,8 +286,10 @@
                         </form>
                     </x-filament::section>
 
-                    <x-filament::section class="mt-2">
-                        <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.internal_note') }}</h3>
+                    <x-filament::section class="mt-2" collapsible collapsed>
+                        <x-slot name="heading">
+                            <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.internal_note') }}</h3>
+                        </x-slot>
                         <form wire:submit.prevent="saveMetadata">
                             <x-filament::input.wrapper class="mb-4">
                                 <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"

@@ -332,10 +332,18 @@ class MediaResource extends Resource
                         ->label(__('media::fields.collection'))
                         ->disabled(fn($record) => $record?->getOriginal('write_protected'))
                         ->options(function () {
-                            return Media::query()
+                            $collections = Media::query()
                                 ->distinct()
-                                ->pluck('collection_name', 'collection_name')
+                                ->pluck('collection_name')
+                                ->filter()
                                 ->toArray();
+
+                            $options = [];
+                            foreach ($collections as $name) {
+                                $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
+                            }
+
+                            return $options;
                         })
                         ->default(fn($record) => $record->collection_name)
                         ->afterStateUpdated(function ($state, $record) {
@@ -816,11 +824,18 @@ class MediaResource extends Resource
                 SelectFilter::make('collection_name')
                     ->label(__('media::fields.collection'))
                     ->options(function () {
-                        return Media::query()
+                        $collections = Media::query()
                             ->distinct()
-                            ->pluck('collection_name', 'collection_name')
+                            ->pluck('collection_name')
                             ->filter()
                             ->toArray();
+
+                        $options = [];
+                        foreach ($collections as $name) {
+                            $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
+                        }
+
+                        return $options;
                     })
                     ->query(function (Builder $query, array $data) {
                         if (!$data['value']) {

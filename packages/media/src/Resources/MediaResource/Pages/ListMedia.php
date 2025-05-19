@@ -30,13 +30,20 @@ class ListMedia extends ListRecords
                     Select::make('collection_name')
                         ->label(__('media::fields.collection'))
                         ->options(function () {
-                            return Media::query()
+                            $collections = Media::query()
                                 ->distinct()
-                                ->pluck('collection_name', 'collection_name')
+                                ->pluck('collection_name')
                                 ->toArray();
+
+                            $options = [];
+                            foreach ($collections as $name) {
+                                $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
+                            }
+
+                            return $options;
                         })
                         ->searchable()
-                        ->default(__('media::fields.default_collection'))
+                        ->default('default')
                         ->required()
                         ->live(),
                     FileUpload::make('file')
@@ -72,7 +79,7 @@ class ListMedia extends ListRecords
                             }
 
                             $processedFiles = session('processed_files', []);
-                            $collection = $get('collection_name') ?? __('media::fields.default_collection');
+                            $collection = $get('collection_name') ?? 'default';
 
                             foreach ($state as $key => $tempFile) {
                                 if (in_array($key, $processedFiles)) {

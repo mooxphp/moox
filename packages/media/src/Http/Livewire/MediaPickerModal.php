@@ -96,10 +96,17 @@ class MediaPickerModal extends Component implements HasForms
         $collection = Select::make('collection_name')
             ->label(__('media::fields.collection'))
             ->options(function () {
-                return Media::query()
+                $collections = Media::query()
                     ->distinct()
-                    ->pluck('collection_name', 'collection_name')
+                    ->pluck('collection_name')
                     ->toArray();
+
+                $options = [];
+                foreach ($collections as $name) {
+                    $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
+                }
+
+                return $options;
             })
             ->searchable()
             ->required()
@@ -335,13 +342,14 @@ class MediaPickerModal extends Component implements HasForms
                 'description' => $media->getAttribute('description') ?? '',
                 'internal_note' => $media->getAttribute('internal_note') ?? '',
                 'alt' => $media->getAttribute('alt') ?? '',
-                'mime_type' => $media->mime_type ?? '',
+                'mime_type' => $media->getReadableMimeType(),
                 'write_protected' => (bool) $media->getOriginal('write_protected'),
                 'size' => $media->size,
                 'dimensions' => $media->getCustomProperty('dimensions', []),
                 'created_at' => $media->created_at,
                 'updated_at' => $media->updated_at,
                 'uploader_name' => $uploaderName,
+                'collection_name' => $media->collection_name,
             ];
         } else {
             $this->selectedMediaMeta = [
@@ -359,6 +367,7 @@ class MediaPickerModal extends Component implements HasForms
                 'created_at' => null,
                 'updated_at' => null,
                 'uploader_name' => '-',
+                'collection_name' => '',
             ];
         }
     }
@@ -400,7 +409,7 @@ class MediaPickerModal extends Component implements HasForms
         if ($this->selectedMediaMeta['id']) {
             $media = Media::where('id', $this->selectedMediaMeta['id'])->first();
 
-            if (in_array($field, ['title', 'description', 'internal_note', 'alt', 'name'])) {
+            if (in_array($field, ['title', 'description', 'internal_note', 'alt', 'name', 'collection_name'])) {
                 if ($media->getOriginal('write_protected')) {
                     return;
                 }
