@@ -96,5 +96,20 @@ return [
         ],
     ],
 
-
+    /*
+    |--------------------------------------------------------------------------
+    | Collections
+    |--------------------------------------------------------------------------
+    |
+    | The configuration for the collections feature.
+    |
+    */
+    'collections' => [
+        'resource' => [
+            'icon' => 'heroicon-m-folder',
+            'navigation_group' => 'trans//core::core.cms',
+            'model_label' => 'trans//media::media.collection',
+            'plural_model_label' => 'trans//media::media.collections',
+        ],
+    ],
 ];

@@ -10,6 +10,7 @@ use Filament\Forms\Components\View;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Moox\Media\Models\MediaCollection;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
@@ -27,6 +28,7 @@ use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
+use Filament\Tables\Columns\TextColumn;
 
 class MediaResource extends Resource
 {
@@ -332,18 +334,9 @@ class MediaResource extends Resource
                         ->label(__('media::fields.collection'))
                         ->disabled(fn($record) => $record?->getOriginal('write_protected'))
                         ->options(function () {
-                            $collections = Media::query()
-                                ->distinct()
-                                ->pluck('collection_name')
-                                ->filter()
+                            return MediaCollection::query()
+                                ->pluck('name', 'name')
                                 ->toArray();
-
-                            $options = [];
-                            foreach ($collections as $name) {
-                                $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
-                            }
-
-                            return $options;
                         })
                         ->default(fn($record) => $record->collection_name)
                         ->afterStateUpdated(function ($state, $record) {
@@ -824,18 +817,11 @@ class MediaResource extends Resource
                 SelectFilter::make('collection_name')
                     ->label(__('media::fields.collection'))
                     ->options(function () {
-                        $collections = Media::query()
+                        return Media::query()
                             ->distinct()
-                            ->pluck('collection_name')
+                            ->pluck('collection_name', 'collection_name')
                             ->filter()
                             ->toArray();
-
-                        $options = [];
-                        foreach ($collections as $name) {
-                            $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
-                        }
-
-                        return $options;
                     })
                     ->query(function (Builder $query, array $data) {
                         if (!$data['value']) {
@@ -865,5 +851,10 @@ class MediaResource extends Resource
         return [
             'index' => Pages\ListMedia::route('/'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

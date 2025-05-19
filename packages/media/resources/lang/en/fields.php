@@ -84,6 +84,16 @@ return [
 
     // Collection Filters
     'all_collections' => 'All Collections',
+    'collection_name' => 'Collection Name',
+    'collection_description' => 'Collection Description',
+    'media_count' => 'Media Count',
+    'delete_collection' => 'Delete Collection',
+    'delete_collection_heading' => 'Delete Collection ":name"',
+    'delete_collection_with_media_heading' => 'Collection ":name" with :count files',
+    'delete_collection_warning' => 'Are you sure you want to delete this collection?',
+    'delete_collection_with_media_warning' => 'This collection contains :count :files. These files will be moved to the collection ":uncategorized".',
+    'uncategorized' => 'Uncategorized',
+    'uncategorized_description' => 'Uncategorized Media',
 
     // Media Types
     'uploaded' => 'Uploaded',

@@ -3,11 +3,12 @@
 namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Resources\Pages\ListRecords;
 use Moox\Media\Models\Media;
+use Filament\Forms\Components\Select;
+use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
+use Filament\Forms\Components\FileUpload;
+use Filament\Resources\Pages\ListRecords;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends ListRecords
@@ -30,20 +31,18 @@ class ListMedia extends ListRecords
                     Select::make('collection_name')
                         ->label(__('media::fields.collection'))
                         ->options(function () {
-                            $collections = Media::query()
-                                ->distinct()
-                                ->pluck('collection_name')
+                            return MediaCollection::query()
+                                ->pluck('name', 'id')
                                 ->toArray();
-
-                            $options = [];
-                            foreach ($collections as $name) {
-                                $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
-                            }
-
-                            return $options;
                         })
                         ->searchable()
-                        ->default('default')
+                        ->default(function () {
+                            $collection = MediaCollection::firstOrCreate(
+                                ['name' => __('media::fields.uncategorized')],
+                                ['description' => __('media::fields.uncategorized_description')]
+                            );
+                            return $collection->id;
+                        })
                         ->required()
                         ->live(),
                     FileUpload::make('file')

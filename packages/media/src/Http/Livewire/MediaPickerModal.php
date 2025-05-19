@@ -12,6 +12,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property \Filament\Forms\Form $form */
@@ -59,7 +60,7 @@ class MediaPickerModal extends Component implements HasForms
 
     public string $uploaderFilter = '';
 
-    public ?string $collection_name = 'default';
+    public ?string $collection_name = '';
 
     public ?string $collectionFilter = '';
 
@@ -89,6 +90,15 @@ class MediaPickerModal extends Component implements HasForms
         if (!$this->modelId || !$this->model) {
             $this->modelId = 0;
         }
+
+        $firstCollection = MediaCollection::first();
+        if (!$firstCollection) {
+            $firstCollection = MediaCollection::create([
+                'name' => __('media::fields.uncategorized'),
+                'description' => __('media::fields.uncategorized_description')
+            ]);
+        }
+        $this->collection_name = $firstCollection->id;
     }
 
     public function form(Form $form): Form
@@ -96,18 +106,11 @@ class MediaPickerModal extends Component implements HasForms
         $collection = Select::make('collection_name')
             ->label(__('media::fields.collection'))
             ->options(function () {
-                $collections = Media::query()
-                    ->distinct()
-                    ->pluck('collection_name')
+                return MediaCollection::query()
+                    ->pluck('name', 'id')
                     ->toArray();
-
-                $options = [];
-                foreach ($collections as $name) {
-                    $options[$name] = $name === 'default' ? __('media::fields.default_collection') : $name;
-                }
-
-                return $options;
             })
+            ->default($this->collection_name)
             ->searchable()
             ->required()
             ->live();
@@ -121,7 +124,7 @@ class MediaPickerModal extends Component implements HasForms
                 }
 
                 $processedFiles = session('processed_files', []);
-                $collection = $this->collection_name;
+                $collection = MediaCollection::find($this->collection_name)?->name ?? __('media::fields.uncategorized');
 
                 if (!is_array($state)) {
                     $fileHash = hash_file('sha256', $state->getRealPath());

@@ -1,17 +1,22 @@
 <?php
 
-namespace Moox\Media\Resources\MediaResource\Pages;
+namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Moox\Media\Resources\MediaResource;
+use Moox\Media\Resources\MediaCollectionResource;
+use Moox\Media\Models\Media;
 
-class EditMedia extends EditRecord
+class EditMediaCollection extends EditRecord
 {
-    protected static string $resource = MediaResource::class;
+    protected static string $resource = MediaCollectionResource::class;
 
-    protected function getHeaderActions(): array
+    protected function mutateFormDataBeforeSave(array $data): array
     {
-        return [DeleteAction::make()];
+        $oldName = $this->record->name;
+
+        Media::where('collection_name', $oldName)
+            ->update(['collection_name' => $data['name']]);
+
+        return $data;
     }
 }

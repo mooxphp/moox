@@ -80,6 +80,16 @@ return [
 
     // Collection Filters
     'all_collections' => 'Alle Sammlungen',
+    'collection_name' => 'Sammlungsname',
+    'collection_description' => 'Sammlungsbeschreibung',
+    'media_count' => 'Medienanzahl',
+    'delete_collection' => 'Sammlung löschen',
+    'delete_collection_heading' => 'Sammlung ":name" löschen',
+    'delete_collection_with_media_heading' => 'Sammlung ":name" mit :count Dateien löschen',
+    'delete_collection_warning' => 'Möchten Sie diese Sammlung wirklich löschen?',
+    'delete_collection_with_media_warning' => 'Diese Sammlung enthält :count :files. Diese Dateien werden automatisch in die Sammlung ":uncategorized" verschoben.',
+    'uncategorized' => 'Unkategorisiert',
+    'uncategorized_description' => 'Nicht kategorisierte Medien',
 
     // Media Types
     'images' => 'Bilder',

@@ -2,14 +2,16 @@
 
 namespace Moox\Media\Models;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\DB;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Facades\DB;
+use Moox\Media\Models\MediaCollection;
+use Astrotomic\Translatable\Translatable;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
@@ -42,6 +44,11 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
     public function uploader(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function collection()
+    {
+        return $this->belongsTo(MediaCollection::class, 'collection_name', 'name');
     }
 
     public function registerMediaConversions(?BaseMedia $media = null): void
@@ -89,14 +96,14 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (! $model) {
+                if (!$model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (! is_array($jsonData)) {
+                    if (!is_array($jsonData)) {
                         continue;
                     }
 
