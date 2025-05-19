@@ -54,6 +54,15 @@
                             @endforeach
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
+
+                    <x-filament::input.wrapper class="w-1/6">
+                        <x-filament::input.select wire:model.live="collectionFilter">
+                            <option value="">{{ __('media::fields.all_collections') }}</option>
+                            @foreach($collectionOptions as $name)
+                                <option value="{{ $name }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 @php

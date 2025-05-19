@@ -82,6 +82,9 @@ return [
     'month' => 'This Month',
     'year' => 'This Year',
 
+    // Collection Filters
+    'all_collections' => 'All Collections',
+
     // Media Types
     'uploaded' => 'Uploaded',
     'images' => 'Images',

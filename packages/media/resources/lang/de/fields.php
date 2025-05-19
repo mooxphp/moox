@@ -78,6 +78,9 @@ return [
     'month' => 'Diesen Monat',
     'year' => 'Dieses Jahr',
 
+    // Collection Filters
+    'all_collections' => 'Alle Sammlungen',
+
     // Media Types
     'images' => 'Bilder',
     'videos' => 'Videos',
