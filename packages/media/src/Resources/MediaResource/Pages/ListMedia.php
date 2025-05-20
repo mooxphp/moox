@@ -32,7 +32,7 @@ class ListMedia extends ListRecords
                         ->label(__('media::fields.collection'))
                         ->options(function () {
                             return MediaCollection::query()
-                                ->pluck('name', 'id')
+                                ->pluck('name', 'name')
                                 ->toArray();
                         })
                         ->searchable()
@@ -41,7 +41,7 @@ class ListMedia extends ListRecords
                                 ['name' => __('media::fields.uncategorized')],
                                 ['description' => __('media::fields.uncategorized_description')]
                             );
-                            return $collection->id;
+                            return $collection->name;
                         })
                         ->required()
                         ->live(),
@@ -78,7 +78,7 @@ class ListMedia extends ListRecords
                             }
 
                             $processedFiles = session('processed_files', []);
-                            $collection = $get('collection_name') ?? 'default';
+                            $collectionName = $get('collection_name') ?? __('media::fields.uncategorized');
 
                             foreach ($state as $key => $tempFile) {
                                 if (in_array($key, $processedFiles)) {
@@ -111,7 +111,7 @@ class ListMedia extends ListRecords
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
-                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
+                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 

@@ -88,7 +88,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('media')) {
-                warning('The media table already exists. The migrations will not be published.');
+                warning('The media tables already exists. The migrations will not be published.');
 
                 return;
             }
