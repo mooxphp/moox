@@ -41,7 +41,6 @@ trait HasResourceTaxonomy
         $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
         $taxonomyService->validateTaxonomy($taxonomy);
         $isHierarchical = $settings['hierarchical'] ?? false;
-
         $createFormClass = $settings['createForm'] ?? CoreTaxonomyCreateForm::class;
 
         $commonConfig = [
@@ -55,6 +54,7 @@ trait HasResourceTaxonomy
                 ]);
 
                 if ($validator->fails()) {
+
                     return $validator->errors()->first();
                 }
 
@@ -62,21 +62,24 @@ trait HasResourceTaxonomy
 
                 // Check if model is translatable
                 if (method_exists($model, 'createWithTranslations')) {
-                    $locale = app()->getLocale();
+                    $locale = request()->get('lang') ?? app()->getLocale();
                     $translations = [
                         $locale => [
                             'title' => $data['title'],
                             'slug' => $data['slug'],
                         ],
                     ];
+                    \Illuminate\Support\Facades\Log::info('translations', $translations);
                     $newTaxonomy = $model::createWithTranslations([], $translations);
                 } else {
-                    // Handle non-translatable models
                     $newTaxonomy = $model::create([
                         'title' => $data['title'],
                         'slug' => $data['slug'],
                     ]);
+                    \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
+
                 }
+                \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
 
                 return $newTaxonomy->id;
             },
@@ -89,6 +92,7 @@ trait HasResourceTaxonomy
                     titleAttribute: 'title',
                     parentAttribute: 'parent_id'
                 )
+               
                 ->enableBranchNode()
                 ->searchable()
                 ->createOptionForm($commonConfig['createOptionForm'])
@@ -105,7 +109,7 @@ trait HasResourceTaxonomy
                     ->when(method_exists($modelClass, 'whereHas'), function ($query) use ($search) {
                         $query->whereHas('translations', function ($q) use ($search) {
                             $q->where('title', 'like', sprintf('%%%s%%', $search))
-                                ->where('locale', app()->getLocale());
+                                ->where('locale', request()->get('lang') ?? app()->getLocale());
                         });
                     }, function ($query) use ($search) {
                         $query->where('title', 'like', sprintf('%%%s%%', $search));
@@ -135,6 +139,7 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
         $resourceModel = static::getModel();
+
         $resourceTable = app($resourceModel)->getTable();
 
         return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService, $resourceTable): SelectFilter {
@@ -181,6 +186,7 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
+
         return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
             ->label($settings['label'] ?? ucfirst((string) $taxonomy))
             ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
@@ -200,7 +206,8 @@ trait HasResourceTaxonomy
                         return $query->join('translations', function ($join) use ($modelTable, $modelClass) {
                             $join->on('translations.translatable_id', '=', $modelTable.'.id')
                                 ->where('translations.translatable_type', '=', $modelClass)
-                                ->where('translations.locale', '=', app()->getLocale());
+                                ->where('translations.locale', '=', request()->get('lang') ?? app()->getLocale());
+
                         })->pluck('translations.title');
                     }, function ($query) use ($modelTable) {
                         return $query->pluck($modelTable.'.title');
