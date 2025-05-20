@@ -92,8 +92,8 @@ return [
     'delete_collection_with_media_heading' => 'Collection ":name" with :count files',
     'delete_collection_warning' => 'Are you sure you want to delete this collection?',
     'delete_collection_with_media_warning' => 'This collection contains :count :files. These files will be moved to the collection ":uncategorized".',
-    'uncategorized' => 'Uncategorized',
-    'uncategorized_description' => 'Uncategorized Media',
+    'uncategorized' => 'Not Assigned',
+    'uncategorized_description' => 'Not Assigned Media',
 
     // Media Types
     'uploaded' => 'Uploaded',

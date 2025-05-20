@@ -88,8 +88,8 @@ return [
     'delete_collection_with_media_heading' => 'Sammlung ":name" mit :count Dateien löschen',
     'delete_collection_warning' => 'Möchten Sie diese Sammlung wirklich löschen?',
     'delete_collection_with_media_warning' => 'Diese Sammlung enthält :count :files. Diese Dateien werden automatisch in die Sammlung ":uncategorized" verschoben.',
-    'uncategorized' => 'Unkategorisiert',
-    'uncategorized_description' => 'Nicht kategorisierte Medien',
+    'uncategorized' => 'Nicht zugeordnet',
+    'uncategorized_description' => 'Nicht zugeordnete Medien',
 
     // Media Types
     'images' => 'Bilder',
