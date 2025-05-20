@@ -1,11 +1,17 @@
 @php
     $flags = $getState(); // Example: More than 4 flags
+    $visibleFlags = [];
+    $remainingFlags = 0;
+
     try {
-        $visibleFlags = array_slice($flags, 0, 3); // Show only the first 3
+        if (is_array($flags)) {
+            $visibleFlags = array_slice($flags, 0, 3); // Show only the first 3
+            $remainingFlags = max(0, count($flags) - 3); // Count remaining flags
+        }
     } catch (\Exception $e) {
         $visibleFlags = [];
+        $remainingFlags = 0;
     }
-    $remainingFlags = count($flags) - 4; // Count remaining flags
 @endphp
 <x-filament-forms::field-wrapper>
 
