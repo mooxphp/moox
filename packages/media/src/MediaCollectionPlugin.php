@@ -4,23 +4,22 @@ namespace Moox\Media;
 
 use Filament\Panel;
 use Filament\Contracts\Plugin;
-use Moox\Media\Resources\MediaResource;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Media\Resources\MediaCollectionResource;
 
-class MediaPlugin implements Plugin
+class MediaCollectionPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'media';
+        return 'media-collection';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            MediaResource::class,
+            MediaCollectionResource::class,
         ]);
     }
 
