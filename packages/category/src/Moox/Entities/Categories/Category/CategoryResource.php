@@ -78,7 +78,6 @@ class CategoryResource extends BaseDraftResource
                                                         $rule->where('locale', $locale);
                                                     }
     
-                                                    return $rule;
                                                 },
                                                 'table' => 'category_translations',
                                                 'column' => 'slug',
@@ -267,7 +266,7 @@ class CategoryResource extends BaseDraftResource
                         });
                     })),
             ])
-            ->defaultSort('updated_at', 'desc')
+            ->defaultSort('id', 'asc')
             ->actions([
                 ViewAction::make(),
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
