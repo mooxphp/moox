@@ -100,13 +100,13 @@ class BaseDraftResource extends BaseResource
         }
 
         if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
+           $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
 
         if (static::enableEdit()) {
             $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         return Actions::make($actions);
     }
 
