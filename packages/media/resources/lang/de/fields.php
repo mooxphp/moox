@@ -115,4 +115,8 @@ return [
     // Duplicate Files
     'duplicate_file' => 'Doppelte Datei',
     'duplicate_file_message' => 'Die Datei ":fileName" existiert bereits in der Mediathek.',
+
+    // View
+    'grid_view' => 'Gitteransicht',
+    'table_view' => 'Listenansicht',
 ];

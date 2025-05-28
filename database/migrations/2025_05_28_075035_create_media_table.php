@@ -31,18 +31,10 @@ return new class extends Migration
 
             $table->nullableTimestamps();
         });
-
-        Schema::create('media_usables', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('media_id')->constrained('media')->cascadeOnDelete();
-            $table->morphs('media_usable');
-            $table->timestamps();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('media_usables');
         Schema::dropIfExists('media');
     }
 };

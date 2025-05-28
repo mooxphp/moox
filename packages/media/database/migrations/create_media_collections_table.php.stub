@@ -14,9 +14,7 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::table('media', function (Blueprint $table) {
-            $table->foreignId('collection_id')->nullable()->constrained('media_collections')->nullOnDelete();
-        });
+        
     }
 
     public function down(): void

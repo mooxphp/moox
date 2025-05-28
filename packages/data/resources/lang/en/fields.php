@@ -61,4 +61,8 @@ return [
     'dst_end' => 'DST End',
     'language_id' => 'Language ID',
     'country_id' => 'Country ID',
+
+    // View
+    'grid_view' => 'Grid View',
+    'table_view' => 'List View',
 ];

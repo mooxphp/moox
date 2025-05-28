@@ -29,6 +29,7 @@ use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Collection;
 
 class MediaResource extends Resource
 {
@@ -393,84 +394,152 @@ class MediaResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Stack::make([
-                    CustomImageColumn::make('')
-                        ->alignment('center')
-                        ->extraImgAttributes(function ($record, $livewire) {
-                            $baseStyle = str_starts_with($record->mime_type, 'image/')
-                                ? 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;'
-                                : 'width: 60px; height: auto; margin-top: 20px;';
+        $columns = [];
 
-                            if ($livewire->isSelecting) {
-                                $style = $baseStyle . 'opacity: 0.5;';
+        if ($table->getLivewire()->isGridView) {
+            $columns[] = Stack::make([
+                CustomImageColumn::make('')
+                    ->alignment('center')
+                    ->extraImgAttributes(function ($record, $livewire) {
+                        $baseStyle = str_starts_with($record->mime_type, 'image/')
+                            ? 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;'
+                            : 'width: 60px; height: auto; margin-top: 20px;';
 
-                                if (in_array($record->id, $livewire->selected)) {
-                                    $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
-                                }
-
-                                return [
-                                    'class' => 'rounded-lg cursor-pointer',
-                                    'style' => $style,
-                                    'wire:click.stop' => "\$set('selected', " .
-                                        (in_array($record->id, $livewire->selected)
-                                            ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
-                                            : json_encode(array_merge($livewire->selected, [$record->id]))
-                                        ) . ')',
-                                ];
+                        if ($livewire->isSelecting) {
+                            $style = $baseStyle . 'opacity: 0.5;';
+                            if (in_array($record->id, $livewire->selected)) {
+                                $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
                             }
-
                             return [
                                 'class' => 'rounded-lg cursor-pointer',
-                                'style' => $baseStyle,
-                                'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                                'style' => $style,
+                                'wire:click.stop' => "\$set('selected', " .
+                                    (in_array($record->id, $livewire->selected)
+                                        ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
+                                        : json_encode(array_merge($livewire->selected, [$record->id]))
+                                    ) . ')',
                             ];
-                        })
-                        ->tooltip(fn($record) => $record->title ?? __('media::fields.no_title'))
-                        ->searchable(true, function (Builder $query, string $search) {
-                            $query->whereHas('translations', function (Builder $query) use ($search) {
-                                $query->where('locale', app()->getLocale())
-                                    ->where(function (Builder $query) use ($search) {
-                                        $query->where('name', 'like', "%{$search}%")
-                                            ->orWhere('title', 'like', "%{$search}%")
-                                            ->orWhere('description', 'like', "%{$search}%")
-                                            ->orWhere('alt', 'like', "%{$search}%")
-                                            ->orWhere('internal_note', 'like', "%{$search}%");
-                                    });
-                            });
-                        }),
-                    \Filament\Tables\Columns\TextColumn::make('file_name')
-                        ->label('')
-                        ->alignment('center')
-                        ->wrap()
-                        ->limit(50)
-                        ->searchable()
-                        ->sortable()
-                        ->visible(fn($record) => $record && !str_starts_with($record->mime_type ?? '', 'image/'))
-                        ->extraAttributes(function ($record, $livewire) {
-                            $baseStyle = 'margin-top: 10px; word-break: break-all;';
-
-                            if ($livewire->isSelecting) {
-                                return [
-                                    'style' => $baseStyle,
-                                    'class' => 'cursor-pointer',
-                                    'wire:click.stop' => "\$set('selected', " .
-                                        (in_array($record->id, $livewire->selected)
-                                            ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
-                                            : json_encode(array_merge($livewire->selected, [$record->id]))
-                                        ) . ')',
-                                ];
-                            }
-
+                        }
+                        return [
+                            'class' => 'rounded-lg cursor-pointer',
+                            'style' => $baseStyle,
+                            'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                        ];
+                    })
+                    ->tooltip(fn($record) => $record->title ?? __('media::fields.no_title'))
+                    ->searchable(true, function (Builder $query, string $search) {
+                        $query->whereHas('translations', function (Builder $query) use ($search) {
+                            $query->where('locale', app()->getLocale())
+                                ->where(function (Builder $query) use ($search) {
+                                    $query->where('name', 'like', "%{$search}%")
+                                        ->orWhere('title', 'like', "%{$search}%")
+                                        ->orWhere('description', 'like', "%{$search}%")
+                                        ->orWhere('alt', 'like', "%{$search}%")
+                                        ->orWhere('internal_note', 'like', "%{$search}%");
+                                });
+                        });
+                    }),
+                TextColumn::make('file_name')
+                    ->label('')
+                    ->alignment('center')
+                    ->wrap()
+                    ->limit(50)
+                    ->searchable()
+                    ->visible(fn($record) => $record && !str_starts_with($record->mime_type ?? '', 'image/'))
+                    ->extraAttributes(function ($record, $livewire) {
+                        $baseStyle = 'margin-top: 10px; word-break: break-all;';
+                        if ($livewire->isSelecting) {
                             return [
                                 'style' => $baseStyle,
                                 'class' => 'cursor-pointer',
-                                'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                                'wire:click.stop' => "\$set('selected', " .
+                                    (in_array($record->id, $livewire->selected)
+                                        ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
+                                        : json_encode(array_merge($livewire->selected, [$record->id]))
+                                    ) . ')',
                             ];
-                        }),
-                ]),
-            ])
+                        }
+                        return [
+                            'style' => $baseStyle,
+                            'class' => 'cursor-pointer',
+                            'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                        ];
+                    }),
+            ]);
+        } else {
+            $columns[] = CustomImageColumn::make('')
+                ->alignment('center')
+                ->extraImgAttributes(function ($record) {
+                    $baseStyle = str_starts_with($record->mime_type, 'image/')
+                        ? 'width: 80px; height: 80px; object-fit: cover;'
+                        : 'width: 50px; height: 50px; margin-top: 10px;';
+
+                    return [
+                        'class' => 'rounded-lg cursor-pointer',
+                        'style' => $baseStyle,
+                        'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                    ];
+                })
+                ->tooltip(fn($record) => $record->title ?? __('media::fields.no_title'))
+                ->searchable(true, function (Builder $query, string $search) {
+                    $query->whereHas('translations', function (Builder $query) use ($search) {
+                        $query->where('locale', app()->getLocale())
+                            ->where(function (Builder $query) use ($search) {
+                                $query->where('name', 'like', "%{$search}%")
+                                    ->orWhere('title', 'like', "%{$search}%")
+                                    ->orWhere('description', 'like', "%{$search}%")
+                                    ->orWhere('alt', 'like', "%{$search}%")
+                                    ->orWhere('internal_note', 'like', "%{$search}%");
+                            });
+                    });
+                });
+
+            $columns[] = TextColumn::make('file_name')
+                ->label(__('media::fields.file_name'))
+                ->searchable();
+
+            $columns[] = TextColumn::make('name')
+                ->label(__('media::fields.name'))
+                ->searchable();
+
+            $columns[] = TextColumn::make('collection_name')
+                ->label(__('media::fields.collection'))
+                ->searchable();
+
+            $columns[] = TextColumn::make('mime_type')
+                ->label(__('media::fields.mime_type'))
+                ->searchable()
+                ->formatStateUsing(fn($record) => $record->getReadableMimeType());
+
+            $columns[] = TextColumn::make('uploader_type')
+                ->label(__('media::fields.uploaded_by'))
+                ->formatStateUsing(fn($record) => $record->uploader?->name);
+
+            $columns[] = TextColumn::make('created_at')
+                ->label(__('media::fields.created_at'))
+                ->date();
+
+            $columns[] = TextColumn::make('usages')
+                ->label(__('media::fields.usage'))
+                ->getStateUsing(function ($record) {
+                    $count = \DB::table('media_usables')
+                        ->where('media_id', $record->id)
+                        ->count();
+
+                    return $count === 0
+                        ? __('media::fields.not_used')
+                        : $count . ' ' . trans_choice('media::fields.link|links', $count);
+                });
+        }
+
+        return $table
+            ->columns($columns)
+            ->contentGrid(fn($livewire) => $livewire->isGridView ? [
+                'md' => 2,
+                'lg' => 3,
+                'xl' => 4,
+                '2xl' => 5,
+            ] : null)
             ->headerActionsPosition(HeaderActionsPosition::Bottom)
             ->headerActions([
                 \Filament\Tables\Actions\Action::make('toggleSelect')
@@ -479,8 +548,9 @@ class MediaResource extends Resource
                             ? __('media::fields.end_selection')
                             : __('media::fields.select_multiple');
                     })
-                    ->icon(fn($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-squares-2x2')
+                    ->icon(fn($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-square-2-stack')
                     ->color(fn($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
+                    ->visible(fn($livewire) => $livewire->isGridView)
                     ->action(function ($livewire) {
                         $livewire->isSelecting = !$livewire->isSelecting;
                         $livewire->selected = [];
@@ -505,7 +575,7 @@ class MediaResource extends Resource
                     ->modalDescription(__('media::fields.delete_confirmation'))
                     ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))
-                    ->visible(fn($livewire) => $livewire->isSelecting && !empty($livewire->selected))
+                    ->visible(fn($livewire) => $livewire->isGridView && $livewire->isSelecting && !empty($livewire->selected))
                     ->action(function ($livewire) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -520,13 +590,11 @@ class MediaResource extends Resource
 
                                 if (!auth()->user()->can('delete', $media)) {
                                     $protectedCount++;
-
                                     continue;
                                 }
 
                                 if ($media->getOriginal('write_protected')) {
                                     $protectedCount++;
-
                                     continue;
                                 }
 
@@ -570,6 +638,74 @@ class MediaResource extends Resource
                         $livewire->selected = [];
                     }),
             ])
+            ->bulkActions([
+                \Filament\Tables\Actions\BulkAction::make('delete')
+                    ->label(__('media::fields.delete_selected'))
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading(function (Collection $records) {
+                        return __('media::fields.delete_selected') . ' (' . $records->count() . ' ' . trans_choice('media::fields.file|files', $records->count()) . ')';
+                    })
+                    ->modalDescription(__('media::fields.delete_confirmation'))
+                    ->modalSubmitActionLabel(__('media::fields.yes_delete'))
+                    ->modalCancelActionLabel(__('media::fields.cancel'))
+                    ->visible(fn($livewire) => !$livewire->isGridView)
+                    ->action(function (Collection $records) {
+                        $successCount = 0;
+                        $errorCount = 0;
+                        $protectedCount = 0;
+
+                        foreach ($records as $media) {
+                            try {
+                                if (!auth()->user()->can('delete', $media)) {
+                                    $protectedCount++;
+                                    continue;
+                                }
+
+                                if ($media->getOriginal('write_protected')) {
+                                    $protectedCount++;
+                                    continue;
+                                }
+
+                                $media->deletePreservingMedia();
+                                $media->delete();
+                                $successCount++;
+                            } catch (\Exception $e) {
+                                Log::error('Media deletion failed: ' . $e->getMessage(), [
+                                    'media_id' => $media->id,
+                                ]);
+                                $errorCount++;
+                            }
+                        }
+
+                        if ($successCount > 0) {
+                            Notification::make()
+                                ->success()
+                                ->title($successCount . ' ' . trans_choice('media::fields.file_deleted|files_deleted', $successCount))
+                                ->send();
+                        }
+
+                        if ($protectedCount > 0) {
+                            Notification::make()
+                                ->warning()
+                                ->title(__('media::fields.protected_skipped'))
+                                ->body($protectedCount . ' ' . trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
+                                ->persistent()
+                                ->send();
+                        }
+
+                        if ($errorCount > 0) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('media::fields.delete_error'))
+                                ->body($errorCount . ' ' . trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
+                                ->persistent()
+                                ->send();
+                        }
+                    })
+            ])
+            ->checkIfRecordIsSelectableUsing(fn($record) => !$record->getOriginal('write_protected'))
             ->actions([
                 EditAction::make()
                     ->icon('')

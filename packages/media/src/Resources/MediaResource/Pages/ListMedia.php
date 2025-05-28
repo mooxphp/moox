@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Moox\Media\Models\Media;
 use Filament\Forms\Components\Select;
 use Moox\Media\Models\MediaCollection;
+use Filament\Tables\Columns\TextColumn;
 use Moox\Media\Resources\MediaResource;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
@@ -21,9 +22,30 @@ class ListMedia extends ListRecords
 
     public array $selected = [];
 
+    public bool $isGridView = true;
+
+    public function mount(): void
+    {
+        parent::mount();
+        $this->isGridView = session('media_grid_view', true);
+    }
+
+    public function toggleView(): void
+    {
+        $this->isGridView = !$this->isGridView;
+        session(['media_grid_view' => $this->isGridView]);
+
+        $this->resetTable();
+    }
+
     public function getHeaderActions(): array
     {
         return [
+            Action::make('toggleView')
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
+                ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
@@ -144,4 +166,5 @@ class ListMedia extends ListRecords
                 ->modalSubmitAction(false),
         ];
     }
+
 }

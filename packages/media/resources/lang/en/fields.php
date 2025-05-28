@@ -117,4 +117,7 @@ return [
     'apply_selection' => 'Apply Selection',
     'close' => 'Close',
 
+    // View
+    'grid_view' => 'Grid View',
+    'table_view' => 'List View',
 ];
