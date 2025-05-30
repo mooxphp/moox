@@ -18,7 +18,9 @@
     ],
     "require": {
         "moox/core": "*",
-        "filament/spatie-laravel-media-library-plugin": "^3.2"
+        "filament/spatie-laravel-media-library-plugin": "^3.2",
+        "moox/localization": "*",
+        "moox/data": "*"
     },
     "autoload": {
         "psr-4": {
