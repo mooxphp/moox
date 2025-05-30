@@ -28,9 +28,13 @@ composer require moox/media
 # Run the installation command
 php artisan media:install
 
-# Install Dependencies
-php artisan localization:install
-php artisan data:install
+# Important: The following dependencies are required for the package to function properly.
+# Their installers are not yet available and need to be installed manually:
+# - localization:install (Required for translations)
+# - data:install (Required for data management)
+# 
+# Without these dependencies, the package will not work correctly.
+# For now, you need to manually publish and run the migrations for these dependencies.
 ```
 
 The installation command will:
