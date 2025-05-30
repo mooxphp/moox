@@ -38,6 +38,7 @@ class InstallCommand extends Command
         $this->art();
         $this->welcome();
         $this->publishConfiguration();
+        $this->publishSpatieConfiguration();
         $this->publishMigrations();
         $this->runMigrations();
         $this->registerPluginInPanelProvider();
@@ -82,6 +83,35 @@ class InstallCommand extends Command
 
             warning('The Media config already exists. The config will not be published.');
         }
+    }
+
+    public function publishSpatieConfiguration(): void
+    {
+        info('Publishing Spatie Media Library Configuration...');
+        $this->callSilent('vendor:publish', [
+            '--provider' => 'Spatie\MediaLibrary\MediaLibraryServiceProvider',
+            '--tag' => 'medialibrary-config',
+            '--force' => true
+        ]);
+
+        $configPath = config_path('media-library.php');
+        $configContent = file_get_contents($configPath);
+
+        $configContent = str_replace(
+            "'media_model' => Spatie\\MediaLibrary\\MediaCollections\\Models\\Media::class",
+            "'media_model' => Moox\\Media\\Models\\Media::class",
+            $configContent
+        );
+
+        $configContent = str_replace(
+            "'path_generator' => Spatie\\MediaLibrary\\Support\\PathGenerator\\DefaultPathGenerator::class",
+            "'path_generator' => Moox\\Media\\Support\\CustomPathGenerator::class",
+            $configContent
+        );
+
+        file_put_contents($configPath, $configContent);
+
+        info('Updated Spatie Media Library configuration with custom classes.');
     }
 
     public function publishMigrations(): void
