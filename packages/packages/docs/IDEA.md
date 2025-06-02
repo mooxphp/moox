@@ -176,11 +176,11 @@ Configuration Includes:
 
 ## Plan
 
--   Create a common package api in config
--   Create the package management, read-only
--   Create the other, entities, panels, themes, jobs, mails read-only
--   Implement installation
--   Implement updates
+-   Create Package Entity in Packages
+-   Create Package API in Packages Package
+-   Create Installer using the API
+-   Move migration and API to Core
+-   Update all packages with new Installer (and Updater)
 -   Create the package registry from package manager
 -   Add GitHub and release management on moox.org
 -   Allow to create packages, entites and panels ... fields, tabs, wire
