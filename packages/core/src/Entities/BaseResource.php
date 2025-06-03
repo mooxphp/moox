@@ -88,7 +88,7 @@ abstract class BaseResource extends Resource
     {
         return EditAction::make('edit')
             ->color('primary')
-            ->url(fn ($record) => static::getUrl('edit', ['record' => $record, 'lang' => request()->query('lang')]));
+            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]));
     }
 
     public static function getViewTableAction(): ViewAction
@@ -137,7 +137,7 @@ abstract class BaseResource extends Resource
                 $livewire->data['status'] = 'published';
                 $livewire->data['published_at'] = now();
                 $livewire->save();
-                $livewire->redirect(static::getUrl('view', ['record' => $livewire->record, 'lang' => $livewire->lang]));
+                $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
             })
             ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
@@ -150,7 +150,7 @@ abstract class BaseResource extends Resource
             ->button()
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
-                $livewire->redirect(static::getUrl('create', ['lang' => $livewire->lang]));
+                $livewire->redirect(static::getUrl('create'));
             })
             ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
@@ -162,7 +162,7 @@ abstract class BaseResource extends Resource
             ->keyBindings(['escape'])
             ->color('secondary')
             ->outlined()
-            ->url(fn () => static::getUrl('index', ['lang' => request()->query('lang')]));
+            ->url(fn () => static::getUrl('index', ));
         // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
@@ -175,7 +175,7 @@ abstract class BaseResource extends Resource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->action(function ($livewire): void {
                 $livewire->record->delete();
-                $livewire->redirect(static::getUrl('index', ['lang' => request()->query('lang')]));
+                $livewire->redirect(static::getUrl('index', ));
             })
             ->keyBindings(['delete'])
             ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)
@@ -189,7 +189,7 @@ abstract class BaseResource extends Resource
             ->color('primary')
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+e', 'ctrl+e'])
-            ->url(fn ($record, $livewire) => static::getUrl('edit', ['record' => $record, 'lang' => $livewire->lang]))
+            ->url(fn ($record, $livewire) => static::getUrl('edit', ['record' => $record]))
             ->visible(fn ($livewire): bool => $livewire instanceof ViewRecord);
     }
 

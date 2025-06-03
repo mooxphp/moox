@@ -40,6 +40,14 @@ class BaseDraftResource extends BaseResource
 
         return true;
     }
+    public static function enablePublish(): bool
+    {
+        if (static::getReadonlyConfig()) {
+            return false;
+        }
+
+        return true;
+    }
 
     public static function enableView(): bool
     {
@@ -91,20 +99,22 @@ class BaseDraftResource extends BaseResource
     {
         $actions = [
             static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
-            static::getPublishAction()->extraAttributes(attributes: ['class' => 'w-full']),
             static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
         ];
-
+        
         if (static::enableCreate()) {
             $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         if (static::enableDelete()) {
-           $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         if (static::enableEdit()) {
             $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
+        }
+        if(static::enablePublish()) {
+            $actions[] = static::getPublishAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
         
         return Actions::make($actions);
