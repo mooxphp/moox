@@ -99,9 +99,6 @@ class CategoryResource extends BaseDraftResource
                                             ->disabledOptions(fn ($get): array => [$get('id')])
                                             ->enableBranchNode()
                                             ->visible(fn () => Category::count() > 0),
-                                            KeyValue::make('basedata'),
-                                            KeyValue::make('data'),
-                                            KeyValue::make('data.ArticleGroup'),
 
 
                                     ]),

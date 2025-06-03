@@ -41,7 +41,6 @@ abstract class BaseCreateDraft extends CreateRecord
         // Fill and save the main record with non-translatable data
         $record->fill($nonTranslatableData);
         $record->save();
-
         // Create the translation if the model supports translations
         /** @var Model $translation */
         $translation = $record->translations()->firstOrNew([

@@ -45,7 +45,7 @@ class Category extends BaseDraftModel implements HasMedia
     use NodeTrait;
     use SoftDeletes;
     use InteractsWithMedia;
-    public $incrementing = false;
+    public $incrementing = true;
     protected $keyType = 'int';
 
     public $translatedAttributes = [
