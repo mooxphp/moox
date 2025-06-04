@@ -9,25 +9,7 @@
             <p class="mb-3 text-2xl text-white">Button</p>
             <div class="p-5 bg-white rounded-lg">
 
-                <x-daisy-ui.button class="btn-xs btn-active btn-secondary">
-                    Button
-                </x-daisy-ui.button>
 
-                <x-daisy-ui.button class="btn-sm btn-info">
-                    Button
-                </x-daisy-ui.button>
-
-                <x-daisy-ui.button>
-                    Button
-                </x-daisy-ui.button>
-
-                <x-daisy-ui.button class="btn-lg btn-primary">
-                    Button Primary
-                </x-daisy-ui.button>
-
-                <x-daisy-ui.button class="btn-xl btn-accent">
-                    Button
-                </x-daisy-ui.button>
             </div>
         </div>
 
@@ -39,9 +21,7 @@
 
                 <div>
                     <x-moox-tooltip message="lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.">
-                        <x-daisy-ui.button class=" btn-active btn-secondary">
-                            hover me
-                        </x-daisy-ui.button>
+
                     </x-moox-tooltip>
                 </div>
 
@@ -177,13 +157,6 @@
                         </x-moox-modal-box>
                     </x-moox-modal-checkbox>
 
-
-
-
-
-                    <x-daisy-ui.button onclick="my_modal_2.showModal()" class="btn-active btn-primary">
-                        Open Dialog Modal
-                    </x-daisy-ui.button>
 
                     <x-moox-modal-dialog id="my_modal_2" class="modal-bottom sm:modal-middle">
                         <x-moox-modal-box>
@@ -454,17 +427,17 @@
         </div>
 
 
-        {{-- 
+        {{--
         <div>
             <p class="mb-3 text-2xl text-white">example</p>
             <div class="grid grid-cols-1 gap-5 p-5 bg-white rounded-lg">
 
                 <div class="grid grid-cols-1 gap-5">
 
-                   
+
                 </div>
             </div>
-        </div> 
+        </div>
         --}}
 
 
