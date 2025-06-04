@@ -63,3 +63,7 @@ if (is_array($custom_parts)) {
         }
     }
 }
+
+
+Route::view('/test', 'test');
+Route::view('/heco', 'heco');
