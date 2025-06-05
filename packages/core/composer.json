@@ -34,6 +34,43 @@
             "providers": [
                 "Moox\\Core\\CoreServiceProvider"
             ]
+        },
+        "moox": {
+            "require": {
+                "spatie/laravel-medialibrary": {
+                    "auto_publish": "spatie-media-config"
+                },
+                "filament/spatie-media-library-plugin": {}
+            },
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/MediaSeeder.php",
+                "auto_publish": "moox-media-config",
+                "auto_entities": {
+                    "Some Resource": true,
+                    "Another Resource": null
+                },
+                "auto_class": {
+                    "Some Class": "Moox\\Core\\SomeClass",
+                    "Another Class": "Moox\\Core\\AnotherClass"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-media-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-media-config"
+            }
         }
     },
     "minimum-stability": "stable",

@@ -33,14 +33,14 @@ Tracks whether a package is up-to-date or not.
 
 Which kind of package are we dealing with.
 
-| Type               | Meaning                                                    |
-| ------------------ | ---------------------------------------------------------- |
-| `moox_package`     | The package is officially made by Moox.                    |
-| `moox_compatible`  | The package is compatible with Moox package API.           |
-| `moox_dependency`  | The package is directly required by Moox.                  |
-| `filament_plugin`  | The package is a Filament plugin.                          |
-| `laravel_package`  | The package has a Laravel Service Provider.                |
-| `php_package`      | The package is a PHP package.                              |
+| Type              | Meaning                                          |
+| ----------------- | ------------------------------------------------ |
+| `moox_package`    | The package is officially made by Moox.          |
+| `moox_compatible` | The package is compatible with Moox package API. |
+| `moox_dependency` | The package is directly required by Moox.        |
+| `filament_plugin` | The package is a Filament plugin.                |
+| `laravel_package` | The package has a Laravel Service Provider.      |
+| `php_package`     | The package is a PHP package.                    |
 
 ---
 
@@ -89,7 +89,7 @@ Which kind of package are we dealing with.
 
 -   `belongsTo` **Category**
 -   `belongsToMany` **Tags**
-**later**
+    **later**
 -   `hasMany` **Entities**, **Panels**, **Jobs**, **Mails**
 -   `hasMany` **Relations**
 -   `hasMany` **Taxonomies**
@@ -185,3 +185,19 @@ Configuration Includes:
 -   Add GitHub and release management on moox.org
 -   Allow to create packages, entites and panels ... fields, tabs, wire
 -   Allow updating without compromising code, allow publishing
+
+## Composer.json
+
+In Moox Core there is an extra example.
+
+## Bundles
+
+There could be bundles like CMS, Shop, DevOps, Commerce, Blog, Press (included in Press package).
+
+Bundles combine requirements and a Panel blueprint.
+
+## Installer
+
+moox:install will do the rest. Compare DB and Composer status. Care for installation, activation, de-install and update.
+
+When asking for the Panel, it could suggest to create one from a Bundle.
