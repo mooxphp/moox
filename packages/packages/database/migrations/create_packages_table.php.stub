@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+      Schema::create('packages', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('title');
+            $table->string('name');
+            $table->string('vendor')->nullable();
+            $table->string('version_installed')->nullable();
+            $table->id('installed_by_id')->nullable();
+            $table->string('installed_by_type')->nullable();
+            $table->id('updated_by_id')->nullable();
+            $table->enum('install_status', ['available', 'installed', 'active'])->nullable();
+            $table->enum('update_status', ['up-to-date', 'update-available', 'update-scheduled', 'update-failed'])->nullable();
+            $table->boolean('auto_update')->default(false);
+            $table->boolean('is_theme')->default(false);
+            $table->enum('package_type', ['moox_package', 'core_package', 'feature_package', 'theme_package', 'module_package', 'integration_package'])->nullable();
+            $table->json('activation_steps')->nullable();
+             $table->string('icon')->nullable();
+            $table->timestamp('installed_at')->nullable();
+            $table->timestamp('update_scheduled_at')->nullable();
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('packages');
+    }
+};

@@ -1,26 +1,27 @@
 <?php
 
-namespace Moox\Media;
+namespace Moox\Packages\Moox\Plugins;
 
 use Filament\Panel;
 use Filament\Contracts\Plugin;
-use Moox\Media\Resources\MediaResource;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Packages\Moox\Entities\Packages\Package\PackagesResource;
 
-class MediaPlugin implements Plugin
+class PackagesPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'media';
+        return 'packages';
     }
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            MediaResource::class,
-        ]);
+        $panel
+            ->resources([
+                PackagesResource::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

@@ -33,6 +33,7 @@ use Moox\Draft\Moox\Plugins\DraftPlugin;
 use Moox\Notification\NotificationPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Moox\Training\TrainingInvitationPlugin;
+use Moox\Packages\Moox\Plugins\PackagesPlugin;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Moox\Security\Services\RequestPasswordReset;
@@ -146,6 +147,9 @@ class AdminPanelProvider extends PanelProvider
                 StaticLanguagePlugin::make(),
                 StaticTimezonePlugin::make(),
                 StaticCurrencyPlugin::make(),
+
+                // Packages
+                PackagesPlugin::make(),
             ]);
     }
 }

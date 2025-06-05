@@ -41,6 +41,7 @@
         "moox/flag-icons-square": "*",
         "moox/frontend": "*",
         "moox/item": "*",
+        "moox/packages": "*",
         "moox/jobs": "*",
         "moox/laravel-icons": "*",
         "moox/login-link": "*",

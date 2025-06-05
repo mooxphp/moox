@@ -72,11 +72,11 @@ Which kind of package are we dealing with.
 | `vendor`              | String    | Vendor name (e.g., `moox`)           |
 | `version_installed`   | String    | Installed version                    |
 | `installed_at`        | Timestamp | When the package was first installed |
-| `installed_by_id`     | UUID      | User who installed it                |
+| `installed_by_id`     | ID        | User who installed it                |
 | `installed_by_type`   | String    | Model type (`User`, `System`)        |
 | `updated_at`          | Timestamp | When last updated                    |
 | `update_scheduled_at` | Timestamp | When will it update                  |
-| `updated_by_id`       | UUID      | User who updated it                  |
+| `updated_by_id`       | ID        | User who updated it                  |
 | `updated_by_type`     | String    | Model type (`User`, `System`)        |
 | `install_status`      | Enum      | `available`, `installed`, `active`   |
 | `update_status`       | Enum      | `up-to-date`, ... (see above)        |
