@@ -1,7 +1,13 @@
 # Devlog Alf
 
--   [ ] [Progress Column package](../packages/progress/docs/IDEA.md)
--   [ ] [Clipboard package](../packages/clipboard/docs/IDEA.md)
+-   [ ] Progress Column package - from progress Core field
+-   [ ] Clipboard package - from copyable Core field
+-   [ ] Impersonate package - fork, namespace lassen
+-   [ ] Select Tree package - fork, namespace lassen
+-   [ ] Title Slug - from adrolli
+-   [ ] News - from Draft ...
+-   [ ] Translations, Weblate
+-   [ ] Packages Service, Installer in Core - SIEHE Core composer.json!
 
 -   [ ] remove boilerplate code taxonomy
 -   [ ] Write protected items - docs, item

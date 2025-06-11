@@ -36,30 +36,51 @@
             ]
         },
         "moox": {
+            "title": "Moox Core",
             "require": {
+                "moox/data": {},
+                "moox/localization": {},
                 "spatie/laravel-medialibrary": {
-                    "auto_publish": "spatie-media-config"
+                    "auto_publish": "spatie-media-config",
+                    "replace_model": {
+                        "from": "Spatie\\MediaLibrary\\MediaCollections\\Models\\Media",
+                        "to": "Moox\\Core\\Media"
+                    },
+                    "replace_pathgenerator": {
+                        "info": "Replace the path generator with the Moox one.",
+                        "from": "Spatie\\MediaLibrary\\MediaCollections\\Models\\Media",
+                        "to": "Moox\\Core\\Media",
+                        "success": "Path generator replaced."
+                    }
                 },
                 "filament/spatie-media-library-plugin": {}
             },
             "install": {
-                "auto_migrate": "database/migrations",
-                "seed": "database/seeders/MediaSeeder.php",
-                "auto_publish": "moox-media-config",
-                "auto_entities": {
-                    "Some Resource": true,
-                    "Another Resource": null
+                "migrate": {
+                    "path": "database/migrations"
                 },
-                "auto_class": {
+                "seed_demodata": {
+                    "ask": "Do you want to seed demo data?",
+                    "default": false,
+                    "file": "database/seeders/MediaDemoSeeder.php"
+                },
+                "publish": {
+                    "tag": "moox-media-config"
+                },
+                "entities": {
+                    "Job Manager": true,
+                    "Failed Jobs": false
+                },
+                "classes": {
                     "Some Class": "Moox\\Core\\SomeClass",
                     "Another Class": "Moox\\Core\\AnotherClass"
                 },
-                "auto_run": {
+                "run": {
                     "Run this": "php artisan run:this",
                     "Build the frontend": "npm run build",
                     "Clear the cache": "php artisan cache:clear"
                 },
-                "auto_runhere": {
+                "runhere": {
                     "Build the frontend": "npm run build"
                 }
             },
