@@ -2,6 +2,9 @@
 
 namespace Moox\Data\Filament\Providers;
 
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,11 +39,11 @@ class DataPanelProvider extends PanelProvider
             ->discoverPages(in: __DIR__.'/../Pages', for: 'Moox\\Data\\Filament\\Pages')
             ->discoverWidgets(in: __DIR__.'/../Widgets', for: 'Moox\\Data\\Filament\\Widgets')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

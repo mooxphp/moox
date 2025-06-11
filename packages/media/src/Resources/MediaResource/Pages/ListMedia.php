@@ -2,6 +2,7 @@
 
 namespace Moox\Media\Resources\MediaResource\Pages;
 
+use Filament\Notifications\Notification;
 use Filament\Actions\Action;
 use Moox\Media\Models\Media;
 use Filament\Forms\Components\Select;
@@ -49,7 +50,7 @@ class ListMedia extends ListRecords
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
-                ->form([
+                ->schema([
                     Select::make('collection_name')
                         ->label(__('media::fields.collection'))
                         ->options(function () {
@@ -117,7 +118,7 @@ class ListMedia extends ListRecords
                                 })->first();
 
                                 if ($existingMedia) {
-                                    \Filament\Notifications\Notification::make()
+                                    Notification::make()
                                         ->warning()
                                         ->title(__('media::fields.duplicate_file'))
                                         ->body(__('media::fields.duplicate_file_message', [

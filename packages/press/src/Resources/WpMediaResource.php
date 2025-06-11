@@ -2,12 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -33,14 +33,14 @@ class WpMediaResource extends Resource
 
     protected static ?string $model = WpMedia::class;
 
-    protected static ?string $navigationIcon = 'gmdi-image';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-image';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_author')

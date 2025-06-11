@@ -2,16 +2,16 @@
 
 namespace Moox\User\Services;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Component;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
@@ -28,7 +28,7 @@ use Moox\UserSession\Services\SessionRelationService;
 use Override;
 
 /**
- * @property Form $form
+ * @property \Filament\Schemas\Schema $form
  */
 class Login extends SimplePage
 {
@@ -42,7 +42,7 @@ class Login extends SimplePage
     /**
      * @var view-string
      */
-    protected static string $view = 'filament-panels::pages.auth.login';
+    protected string $view = 'filament-panels::pages.auth.login';
 
     /**
      * @var array<string, mixed> | null
@@ -69,10 +69,10 @@ class Login extends SimplePage
         $this->form->fill();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 $this->getLoginFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),

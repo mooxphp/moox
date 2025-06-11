@@ -2,7 +2,7 @@
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Forms;
 
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Components\Grid;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;

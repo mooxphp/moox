@@ -13,7 +13,7 @@ class DateRangeFilter extends Filter
     public static function make(?string $name = null): static
     {
         return parent::make($name)
-            ->form([
+            ->schema([
                 DatePicker::make($name.'_from'),
                 DatePicker::make($name.'_until'),
             ])

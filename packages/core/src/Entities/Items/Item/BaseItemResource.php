@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Entities\Items\Item;
 
-use Filament\Forms\Components\Actions;
+use Filament\Schemas\Components\Actions;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\SimpleItemResource\Pages;
 
+use App\Builder\Resources\SimpleItemResource;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Core\Traits\Base\BaseInCreatePage;
 use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
@@ -13,5 +14,5 @@ class CreateSimpleItem extends CreateRecord
 {
     use BaseInCreatePage, HasPagesTaxonomy, SingleSimpleInCreatePage;
 
-    protected static string $resource = \App\Builder\Resources\SimpleItemResource::class;
+    protected static string $resource = SimpleItemResource::class;
 }

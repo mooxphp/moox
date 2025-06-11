@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use App\Builder\Models\PublishItem;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use App\Builder\Resources\PublishItemResource\Pages\ListPublishItems;
+use App\Builder\Resources\PublishItemResource\Pages\CreatePublishItem;
+use App\Builder\Resources\PublishItemResource\Pages\EditPublishItem;
+use App\Builder\Resources\PublishItemResource\Pages\ViewPublishItem;
 use App\Builder\Resources\PublishItemResource\Pages;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -24,9 +29,9 @@ class PublishItemResource extends Resource
 {
     use BaseInResource, HasResourceTabs, SinglePublishInResource;
 
-    protected static ?string $model = \App\Builder\Models\PublishItem::class;
+    protected static ?string $model = PublishItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -53,9 +58,9 @@ class PublishItemResource extends Resource
         return config('previews.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -109,11 +114,11 @@ class PublishItemResource extends Resource
                     ->markdown(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([])
-            ->bulkActions([])
+            ->recordActions([])
+            ->toolbarActions([])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.filter').' Title'),
@@ -132,7 +137,7 @@ class PublishItemResource extends Resource
                         return 'Title: '.$data['title'];
                     }),
                 Filter::make('slug')
-                    ->form([
+                    ->schema([
                         TextInput::make('slug')
                             ->label(__('core::core.slug'))
                             ->placeholder(__('core::core.filter').' Title'),
@@ -156,10 +161,10 @@ class PublishItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPublishItems::route('/'),
-            'create' => Pages\CreatePublishItem::route('/create'),
-            'edit' => Pages\EditPublishItem::route('/{record}/edit'),
-            'view' => Pages\ViewPublishItem::route('/{record}'),
+            'index' => ListPublishItems::route('/'),
+            'create' => CreatePublishItem::route('/create'),
+            'edit' => EditPublishItem::route('/{record}/edit'),
+            'view' => ViewPublishItem::route('/{record}'),
         ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Data\Models\StaticLanguage;
@@ -24,9 +25,9 @@ use Moox\Data\Models\StaticLanguage;
  * @property string $routing_domain
  * @property int $translation_status
  * @property array $language_settings
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \Moox\Data\Models\StaticLanguage $language
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read StaticLanguage $language
  * @property-read self|null $fallbackLanguage
  */
 class Localization extends Model

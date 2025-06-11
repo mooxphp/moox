@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\Simple;
 
-use Filament\Forms\Components\Actions;
+use Filament\Schemas\Components\Actions;
 
 trait SingleSimpleInResource
 {

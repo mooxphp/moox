@@ -77,7 +77,7 @@ class MoveFilesToRestoreDestinationJob implements ShouldQueue
 
             $filesystem = new Filesystem;
             $filesystem->mirror($sourcePath, $destinationPath);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (config('restore.debug_mode')) {
                 Log::error('MoveFilesToRestoreDestinationJob failed for backup ID: '.$this->restoreBackup->id.' with error: '.$e->getMessage());
             }

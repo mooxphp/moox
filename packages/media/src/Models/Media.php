@@ -2,6 +2,7 @@
 
 namespace Moox\Media\Models;
 
+use Exception;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Support\Facades\DB;
@@ -77,13 +78,13 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
         static::saving(function ($media) {
             if ($media->exists && $media->getOriginal('write_protected')) {
-                throw new \Exception('This media item is write-protected.');
+                throw new Exception('This media item is write-protected.');
             }
         });
 
         static::deleting(function ($media) {
             if ($media->getOriginal('write_protected')) {
-                throw new \Exception('Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.');
+                throw new Exception('Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.');
             }
         });
 

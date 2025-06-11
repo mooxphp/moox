@@ -2,6 +2,7 @@
 
 namespace Moox\Item\Models;
 
+use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
@@ -48,19 +49,19 @@ class Item extends BaseItemModel
         parent::boot();
 
         static::creating(function ($model) {
-            $model->uuid = (string) \Illuminate\Support\Str::uuid();
-            $model->ulid = (string) \Illuminate\Support\Str::ulid();
+            $model->uuid = (string) Str::uuid();
+            $model->ulid = (string) Str::ulid();
         });
     }
 
     public function getUlidAttribute(): string
     {
-        return $this->ulid ?? (string) \Illuminate\Support\Str::ulid();
+        return $this->ulid ?? (string) Str::ulid();
     }
 
     public function getUuidAttribute(): string
     {
-        return $this->uuid ?? (string) \Illuminate\Support\Str::uuid();
+        return $this->uuid ?? (string) Str::uuid();
     }
 
     public static function getResourceName(): string

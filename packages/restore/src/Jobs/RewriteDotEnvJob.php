@@ -84,7 +84,7 @@ class RewriteDotEnvJob implements ShouldQueue
             $updatedContents = implode("\n", $lines);
 
             File::put($envPath, $updatedContents);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             RestoreFailedEvent::dispatch($this->restoreBackup->id, $e);
             throw new Exception($e->getMessage());
         }

@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
+use Moox\Data\Models\StaticLocale;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ListStaticLocales;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\CreateStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\EditStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ViewStaticLocale;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -26,9 +31,9 @@ class StaticLocaleResource extends Resource
 {
     use BaseInResource, HasResourceTabs, SingleSimpleInResource;
 
-    protected static ?string $model = \Moox\Data\Models\StaticLocale::class;
+    protected static ?string $model = StaticLocale::class;
 
-    protected static ?string $navigationIcon = 'gmdi-fmd-good-s';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-fmd-good-s';
 
     public static function getModelLabel(): string
     {
@@ -55,9 +60,9 @@ class StaticLocaleResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -124,11 +129,11 @@ class StaticLocaleResource extends Resource
                     ->boolean(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('id')
-                    ->form([
+                    ->schema([
                         TextInput::make('id')
                             ->label(__('data::fields.id'))
                             ->placeholder(__('core::core.search')),
@@ -147,7 +152,7 @@ class StaticLocaleResource extends Resource
                         return 'ID: '.$data['id'];
                     }),
                 Filter::make('language_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('language_id')
                             ->label(__('data::fields.language_id'))
                             ->placeholder(__('core::core.search')),
@@ -166,7 +171,7 @@ class StaticLocaleResource extends Resource
                         return 'Language ID: '.$data['language_id'];
                     }),
                 Filter::make('country_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('country_id')
                             ->label(__('data::fields.country_id'))
                             ->placeholder(__('core::core.search')),
@@ -185,7 +190,7 @@ class StaticLocaleResource extends Resource
                         return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('locale')
-                    ->form([
+                    ->schema([
                         TextInput::make('locale')
                             ->label(__('data::fields.locale'))
                             ->placeholder(__('core::core.search')),
@@ -204,7 +209,7 @@ class StaticLocaleResource extends Resource
                         return 'Locale: '.$data['locale'];
                     }),
                 Filter::make('name')
-                    ->form([
+                    ->schema([
                         TextInput::make('name')
                             ->label(__('data::fields.name'))
                             ->placeholder(__('core::core.search')),
@@ -234,10 +239,10 @@ class StaticLocaleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticLocales::route('/'),
-            'create' => Pages\CreateStaticLocale::route('/create'),
-            'edit' => Pages\EditStaticLocale::route('/{record}/edit'),
-            'view' => Pages\ViewStaticLocale::route('/{record}'),
+            'index' => ListStaticLocales::route('/'),
+            'create' => CreateStaticLocale::route('/create'),
+            'edit' => EditStaticLocale::route('/{record}/edit'),
+            'view' => ViewStaticLocale::route('/{record}'),
         ];
     }
 }

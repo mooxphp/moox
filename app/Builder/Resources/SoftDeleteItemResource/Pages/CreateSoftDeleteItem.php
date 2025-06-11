@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\SoftDeleteItemResource\Pages;
 
+use App\Builder\Resources\SoftDeleteItemResource;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Core\Traits\Base\BaseInCreatePage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage;
@@ -13,5 +14,5 @@ class CreateSoftDeleteItem extends CreateRecord
 {
     use BaseInCreatePage, HasPagesTaxonomy, SingleSoftDeleteInCreatePage;
 
-    protected static string $resource = \App\Builder\Resources\SoftDeleteItemResource::class;
+    protected static string $resource = SoftDeleteItemResource::class;
 }

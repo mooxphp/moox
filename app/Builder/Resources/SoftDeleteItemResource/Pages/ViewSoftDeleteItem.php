@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\SoftDeleteItemResource\Pages;
 
+use App\Builder\Resources\SoftDeleteItemResource;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage;
@@ -13,5 +14,5 @@ class ViewSoftDeleteItem extends ViewRecord
 {
     use BaseInViewPage, HasPagesTaxonomy, SingleSoftDeleteInViewPage;
 
-    protected static string $resource = \App\Builder\Resources\SoftDeleteItemResource::class;
+    protected static string $resource = SoftDeleteItemResource::class;
 }

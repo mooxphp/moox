@@ -2,8 +2,18 @@
 
 namespace Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -12,22 +22,22 @@ class StaticTimezoneRealtionManager extends RelationManager
 {
     protected static string $relationship = 'timezones';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('data::fields.name'))
                     ->maxLength(255)
                     ->required(),
-                Forms\Components\TextInput::make('offset_standard')
+                TextInput::make('offset_standard')
                     ->label(__('data::fields.offset_standard'))
                     ->maxLength(6)->required(),
-                Forms\Components\Toggle::make('dst')
+                Toggle::make('dst')
                     ->label(__('data::fields.dst'))->required(),
-                Forms\Components\DateTimePicker::make('dst_start')
+                DateTimePicker::make('dst_start')
                     ->label(__('data::fields.dst_start')),
-                Forms\Components\DateTimePicker::make('dst_end')
+                DateTimePicker::make('dst_end')
                     ->label(__('data::fields.dst_end')),
             ]);
     }
@@ -37,17 +47,17 @@ class StaticTimezoneRealtionManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('data::fields.name')),
-                Tables\Columns\TextColumn::make('offset_standard')
+                TextColumn::make('offset_standard')
                     ->label(__('data::fields.offset_standard')),
-                Tables\Columns\IconColumn::make('dst')
+                IconColumn::make('dst')
                     ->label(__('data::fields.dst'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('dst_start')
+                TextColumn::make('dst_start')
                     ->label(__('data::fields.dst_start'))
                     ->datetime(),
-                Tables\Columns\TextColumn::make('dst_end')
+                TextColumn::make('dst_end')
                     ->label(__('data::fields.dst_end'))
                     ->datetime(),
             ])
@@ -55,15 +65,15 @@ class StaticTimezoneRealtionManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

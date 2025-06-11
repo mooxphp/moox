@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Traits\Taxonomy;
 
+use Illuminate\Support\Facades\Log;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TagsColumn;
@@ -69,17 +70,17 @@ trait HasResourceTaxonomy
                             'slug' => $data['slug'],
                         ],
                     ];
-                    \Illuminate\Support\Facades\Log::info('translations', $translations);
+                    Log::info('translations', $translations);
                     $newTaxonomy = $model::createWithTranslations([], $translations);
                 } else {
                     $newTaxonomy = $model::create([
                         'title' => $data['title'],
                         'slug' => $data['slug'],
                     ]);
-                    \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
+                    Log::info('newTaxonomy', $newTaxonomy);
 
                 }
-                \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
+                Log::info('newTaxonomy', $newTaxonomy);
 
                 return $newTaxonomy->id;
             },

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\Simple;
 
-use Filament\Pages\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 
 trait SingleSimpleInListPage
 {

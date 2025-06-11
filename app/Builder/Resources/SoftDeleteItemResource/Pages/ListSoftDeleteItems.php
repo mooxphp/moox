@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\SoftDeleteItemResource\Pages;
 
+use App\Builder\Resources\SoftDeleteItemResource;
+use App\Builder\Models\SoftDeleteItem;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
@@ -13,7 +15,7 @@ class ListSoftDeleteItems extends ListRecords
 {
     use BaseInListPage, HasListPageTabs, SingleSoftDeleteInListPage;
 
-    protected static string $resource = \App\Builder\Resources\SoftDeleteItemResource::class;
+    protected static string $resource = SoftDeleteItemResource::class;
 
     public function mount(): void
     {
@@ -23,6 +25,6 @@ class ListSoftDeleteItems extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('previews.soft-delete-item.tabs', \App\Builder\Models\SoftDeleteItem::class);
+        return $this->getDynamicTabs('previews.soft-delete-item.tabs', SoftDeleteItem::class);
     }
 }

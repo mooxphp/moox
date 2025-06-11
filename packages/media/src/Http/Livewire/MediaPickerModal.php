@@ -2,11 +2,13 @@
 
 namespace Moox\Media\Http\Livewire;
 
+use Exception;
+use Filament\Schemas\Schema;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -15,7 +17,7 @@ use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-/** @property \Filament\Forms\Form $form */
+/** @property \Filament\Schemas\Schema $form */
 class MediaPickerModal extends Component implements HasForms
 {
     use InteractsWithForms;
@@ -80,7 +82,7 @@ class MediaPickerModal extends Component implements HasForms
         $this->modelClass = $this->modelClass ? str_replace('\\\\', '\\', $this->modelClass) : null;
 
         if ($this->modelClass && !class_exists($this->modelClass)) {
-            throw new \Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
+            throw new Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
         if ($this->modelId && $this->modelClass) {
@@ -101,7 +103,7 @@ class MediaPickerModal extends Component implements HasForms
         $this->collection_name = $firstCollection->id;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
         $collection = Select::make('collection_name')
             ->label(__('media::fields.collection'))
@@ -137,7 +139,7 @@ class MediaPickerModal extends Component implements HasForms
                     })->first();
 
                     if ($existingMedia) {
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->warning()
                             ->title(__('media::fields.duplicate_file'))
                             ->body(__('media::fields.duplicate_file_message', [
@@ -194,7 +196,7 @@ class MediaPickerModal extends Component implements HasForms
                         })->first();
 
                         if ($existingMedia) {
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->warning()
                                 ->title(__('media::fields.duplicate_file'))
                                 ->body(__('media::fields.duplicate_file_message', [
@@ -294,7 +296,7 @@ class MediaPickerModal extends Component implements HasForms
             $upload->visibility($this->uploadConfig['visibility']);
         }
 
-        return $form->schema([$collection, $upload]);
+        return $schema->components([$collection, $upload]);
     }
 
     public function setModel(?int $modelId, string $modelClass): void

@@ -2,14 +2,14 @@
 
 namespace Moox\Passkey\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
@@ -27,13 +27,13 @@ class PasskeyResource extends Resource
 
     protected static ?string $model = Passkey::class;
 
-    protected static ?string $navigationIcon = 'gmdi-fingerprint-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-fingerprint-o';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('title')
                     ->label(__('core::passkey.title'))
                     ->maxLength(255)
@@ -109,10 +109,10 @@ class PasskeyResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

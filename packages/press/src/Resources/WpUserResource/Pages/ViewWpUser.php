@@ -2,6 +2,8 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
+use Moox\Press\Models\WpUserMeta;
+use Moox\Press\Models\WpMedia;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -25,13 +27,13 @@ class ViewWpUser extends ViewRecord
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
-                /** @var \Moox\Press\Models\WpUserMeta $meta */
+                /** @var WpUserMeta $meta */
                 $data[$meta->meta_key] = $meta->meta_value;
             }
         }
 
         if ($user->attachment) {
-            /** @var \Moox\Press\Models\WpMedia $user->attachment */
+            /** @var WpMedia $user ->attachment */
             $data['image_url'] = $user->attachment->image_url;
         }
 

@@ -2,13 +2,13 @@
 
 namespace Moox\Permission\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -23,13 +23,13 @@ class PermissionResource extends Resource
 
     protected static ?string $model = Permission::class;
 
-    protected static ?string $navigationIcon = 'gmdi-engineering';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-engineering';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('name')
                     ->maxLength(255),
                 DateTimePicker::make('started_at'),
@@ -56,10 +56,10 @@ class PermissionResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('name', 'desc')
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

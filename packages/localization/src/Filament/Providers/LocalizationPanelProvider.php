@@ -2,6 +2,11 @@
 
 namespace Moox\Localization\Filament\Providers;
 
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,10 +41,10 @@ class LocalizationPanelProvider extends PanelProvider
             ->discoverPages(in: __DIR__.'/../Pages', for: 'Moox\\Localization\\Filament\\Pages')
             ->discoverWidgets(in: __DIR__.'/../Widgets', for: 'Moox\\Localization\\Filament\\Widgets')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -55,8 +60,8 @@ class LocalizationPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->renderHook(
-                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): string => Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
             )
             ->plugins([
             ]);

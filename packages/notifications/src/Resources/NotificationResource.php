@@ -2,12 +2,12 @@
 
 namespace Moox\Notification\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -27,13 +27,13 @@ class NotificationResource extends Resource
 
     protected static ?string $model = Notification::class;
 
-    protected static ?string $navigationIcon = 'gmdi-notifications';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-notifications';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('type')
                     ->label(__('core::core.type')),
                 TextInput::make('notifiable_type')
@@ -67,10 +67,10 @@ class NotificationResource extends Resource
 
             ])->searchable()
             ->defaultSort('type', 'desc')
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

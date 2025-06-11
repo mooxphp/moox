@@ -1,5 +1,9 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
+use Moox\Tag\Models\Tag;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +18,6 @@
 | outputs 'All'
 |
 */
-
 return [
     'single' => 'trans//item::item.item',
     'plural' => 'trans//item::item.items',
@@ -52,17 +55,17 @@ return [
     'taxonomies' => [
         'category' => [
             'label' => 'Categories',
-            'model' => \Moox\Category\Models\Category::class,
+            'model' => Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
         'tag' => [
             'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
+            'model' => Tag::class,
             'table' => 'taggables',
             'relationship' => 'taggable',
             'foreignKey' => 'taggable_id',

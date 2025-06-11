@@ -9,7 +9,7 @@ use Spatie\BackupServer\Models\Backup;
 
 class BackupChart extends ChartWidget
 {
-    protected static ?string $heading = 'Chart';
+    protected ?string $heading = 'Chart';
 
     protected function getData(): array
     {

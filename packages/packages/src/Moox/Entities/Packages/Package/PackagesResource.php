@@ -2,16 +2,16 @@
 
 namespace Moox\Packages\Moox\Entities\Packages\Package;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Moox\Packages\Models\Package;
-use Filament\Forms\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -30,7 +30,7 @@ class PackagesResource extends BaseItemResource
 
     protected static ?string $model = Package::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -62,7 +62,7 @@ class PackagesResource extends BaseItemResource
         return false;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
 
         $schema = [
@@ -179,7 +179,7 @@ class PackagesResource extends BaseItemResource
         ];
 
         return $form
-            ->schema($schema);
+            ->components($schema);
     }
 
     public static function table(Table $table): Table
@@ -218,7 +218,7 @@ class PackagesResource extends BaseItemResource
                     ->sortable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
             ])
             ->filters([

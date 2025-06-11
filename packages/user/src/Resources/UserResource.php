@@ -2,16 +2,16 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -38,14 +38,14 @@ class UserResource extends Resource
 
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'gmdi-manage-accounts';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'name';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
 
@@ -291,8 +291,8 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions(array_filter([
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions(array_filter([
                 DeleteBulkAction::make(),
                 (config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')) ?
                 SendPasswordResetLinksBulkAction::make() : null,

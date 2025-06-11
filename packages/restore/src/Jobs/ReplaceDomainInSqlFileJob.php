@@ -63,7 +63,7 @@ class ReplaceDomainInSqlFileJob implements ShouldQueue
                 RestoreFailedEvent::dispatch($this->restoreBackup->id, 'Failed to execute command: '.$command);
                 throw new Exception('Failed to execute command: '.$command);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             RestoreFailedEvent::dispatch($this->restoreBackup->id, $e->getMessage());
             throw new Exception($e->getMessage());
         }

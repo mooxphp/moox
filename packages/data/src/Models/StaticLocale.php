@@ -9,8 +9,8 @@ use Moox\Core\Traits\Base\BaseInModel;
 use Moox\Core\Traits\Simple\SingleSimpleInModel;
 
 /**
- * @property-read \Moox\Data\Models\StaticLanguage|null $language
- * @property-read \Moox\Data\Models\StaticCountry|null $country
+ * @property-read StaticLanguage|null $language
+ * @property-read StaticCountry|null $country
  * @property string $flag_country_code
  */
 class StaticLocale extends Model

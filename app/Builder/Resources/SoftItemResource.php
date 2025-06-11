@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use App\Builder\Models\SoftItem;
 use App\Builder\Resources\SoftItemResource\Pages\CreateSoftItem;
 use App\Builder\Resources\SoftItemResource\Pages\EditSoftItem;
 use App\Builder\Resources\SoftItemResource\Pages\ListSoftItems;
 use App\Builder\Resources\SoftItemResource\Pages\ViewSoftItem;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -34,7 +34,7 @@ class SoftItemResource extends Resource
 
     protected static ?string $model = SoftItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     #[Override]
     public static function getModelLabel(): string
@@ -67,9 +67,9 @@ class SoftItemResource extends Resource
     }
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -138,11 +138,11 @@ class SoftItemResource extends Resource
                 TextColumn::make('status')->sortable()->searchable()->toggleable(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.search')),
@@ -159,7 +159,7 @@ class SoftItemResource extends Resource
                         return 'Title: '.$data['title'];
                     }),
                 Filter::make('keks')
-                    ->form([
+                    ->schema([
                         TextInput::make('keks')
                             ->label('Keks')
                             ->placeholder(__('core::core.search')),

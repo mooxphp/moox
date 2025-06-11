@@ -2,18 +2,18 @@
 
 namespace Moox\Training\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -34,16 +34,16 @@ class TrainingResource extends Resource
 
     protected static ?string $model = Training::class;
 
-    protected static ?string $navigationIcon = 'gmdi-school';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-school';
 
-    protected static ?string $navigationGroup = 'Trainings';
+    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('title')
@@ -232,8 +232,8 @@ class TrainingResource extends Resource
                     ->multiple()
                     ->label('TrainingType'),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([
                 DeleteBulkAction::make()
                     ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {

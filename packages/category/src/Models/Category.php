@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Override;
 use Kalnoy\Nestedset\NodeTrait;
 use Spatie\MediaLibrary\HasMedia;
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 /**
  * @property string $title
  * @property string $status
- * @property string $slug 
+ * @property string $slug
  * @property string $content
  * @property int $_lft
  * @property int $_rgt
@@ -30,15 +32,14 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string|null $featured_image_url
  * @property int|null $parent_id
  * @property array|null $data
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Category\Models\Category> $children
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Category\Models\Category> $ancestors
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Collection<int, \Moox\Category\Models\Category> $children
+ * @property-read Collection<int, \Moox\Category\Models\Category> $ancestors
  * @property-read \Moox\Category\Models\Category|null $parent
- * @method static \Moox\Category\Database\Factories\CategoryFactory factory($count = null, $state = [])
+ * @method static CategoryFactory factory($count = null, $state = [])
  */
-
 class Category extends BaseDraftModel implements HasMedia
 {
     use HasFactory;

@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Traits\Tabs;
 
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\HasQueriesInConfig;

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use App\Builder\Models\SoftDeleteItem;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use App\Builder\Resources\SoftDeleteItemResource\Pages\ListSoftDeleteItems;
+use App\Builder\Resources\SoftDeleteItemResource\Pages\CreateSoftDeleteItem;
+use App\Builder\Resources\SoftDeleteItemResource\Pages\EditSoftDeleteItem;
+use App\Builder\Resources\SoftDeleteItemResource\Pages\ViewSoftDeleteItem;
 use App\Builder\Resources\SoftDeleteItemResource\Pages;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -27,9 +32,9 @@ class SoftDeleteItemResource extends Resource
 {
     use BaseInResource, HasResourceTabs, HasResourceTaxonomy, SingleSoftDeleteInResource;
 
-    protected static ?string $model = \App\Builder\Models\SoftDeleteItem::class;
+    protected static ?string $model = SoftDeleteItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -56,9 +61,9 @@ class SoftDeleteItemResource extends Resource
         return config('previews.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -132,11 +137,11 @@ class SoftDeleteItemResource extends Resource
                 TextColumn::make('status')->sortable()->searchable()->toggleable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.filter').' Title'),
@@ -155,7 +160,7 @@ class SoftDeleteItemResource extends Resource
                         return 'Title: '.$data['title'];
                     }),
                 Filter::make('slug')
-                    ->form([
+                    ->schema([
                         TextInput::make('slug')
                             ->label(__('core::core.slug'))
                             ->placeholder(__('core::core.filter').' Title'),
@@ -187,10 +192,10 @@ class SoftDeleteItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSoftDeleteItems::route('/'),
-            'create' => Pages\CreateSoftDeleteItem::route('/create'),
-            'edit' => Pages\EditSoftDeleteItem::route('/{record}/edit'),
-            'view' => Pages\ViewSoftDeleteItem::route('/{record}'),
+            'index' => ListSoftDeleteItems::route('/'),
+            'create' => CreateSoftDeleteItem::route('/create'),
+            'edit' => EditSoftDeleteItem::route('/{record}/edit'),
+            'view' => ViewSoftDeleteItem::route('/{record}'),
         ];
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Moox\Core\Services;
 
+use Moox\Core\MooxServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use RuntimeException;
 use Composer\InstalledVersions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -42,7 +45,7 @@ class PackageService
 
             if (isset($composerData['extra']['laravel']['providers'])) {
                 foreach ($composerData['extra']['laravel']['providers'] as $provider) {
-                    if (class_exists($provider) && is_subclass_of($provider, \Moox\Core\MooxServiceProvider::class)) {
+                    if (class_exists($provider) && is_subclass_of($provider, MooxServiceProvider::class)) {
                         $packages[] = $packageName;
                         break;
                     }
@@ -62,10 +65,10 @@ class PackageService
             $composerData = json_decode(file_get_contents($composerFilePath), true);
 
             foreach ($composerData['extra']['laravel']['providers'] as $provider) {
-                if (class_exists($provider) && is_subclass_of($provider, \Moox\Core\MooxServiceProvider::class)) {
+                if (class_exists($provider) && is_subclass_of($provider, MooxServiceProvider::class)) {
                     $providerInstance = app()->resolveProvider($provider);
-                    if ($providerInstance instanceof \Moox\Core\MooxServiceProvider) {
-                        $package = new \Spatie\LaravelPackageTools\Package;
+                    if ($providerInstance instanceof MooxServiceProvider) {
+                        $package = new Package;
                         $providerInstance->configurePackage($package);
 
                         $packages[$packageName] = [
@@ -157,7 +160,7 @@ class PackageService
             preg_match('/Schema::table\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
         }
 
-        return $matches[1] ?? throw new \RuntimeException('Could not determine table name from migration');
+        return $matches[1] ?? throw new RuntimeException('Could not determine table name from migration');
     }
 
     private function getPendingColumns(string $migrationPath, string $table): array
@@ -188,7 +191,7 @@ class PackageService
         $providerClass = $package['provider'];
         $provider = app()->resolveProvider($providerClass);
 
-        if ($provider instanceof \Moox\Core\MooxServiceProvider) {
+        if ($provider instanceof MooxServiceProvider) {
             return $provider->mooxInfo()['requiredSeeders'] ?? [];
         }
 

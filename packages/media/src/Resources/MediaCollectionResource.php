@@ -2,16 +2,16 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Moox\Media\Models\Media;
 use Filament\Resources\Resource;
 use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Actions\DeleteAction;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
@@ -22,7 +22,7 @@ class MediaCollectionResource extends Resource
     use BaseInResource;
     protected static ?string $model = MediaCollection::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -47,9 +47,9 @@ class MediaCollectionResource extends Resource
     }
 
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             TextInput::make('name')
                 ->label(__('media::fields.collection_name'))
                 ->required()
@@ -77,7 +77,7 @@ class MediaCollectionResource extends Resource
                     ->counts('media')
                     ->sortable(),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
                     ->requiresConfirmation()

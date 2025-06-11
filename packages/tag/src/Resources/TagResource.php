@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -54,16 +54,16 @@ class TagResource extends Resource
         return parent::getEloquentQuery()->withoutGlobalScopes();
     }
 
-    protected static ?string $navigationIcon = 'gmdi-label';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-label';
 
     protected static ?string $authorModel = null;
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         static::initUserModel();
 
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -224,7 +224,7 @@ class TagResource extends Resource
                     ->sortable()
                     ->toggleable(),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make()->url(
                     fn ($record) => request()->has('lang')
                     ? static::getUrl('view', ['record' => $record, 'lang' => request()->get('lang')])
@@ -238,7 +238,7 @@ class TagResource extends Resource
                     )
                     ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
                 RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);

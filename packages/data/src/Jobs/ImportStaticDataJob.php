@@ -2,6 +2,7 @@
 
 namespace Moox\Data\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -251,7 +252,7 @@ class ImportStaticDataJob implements ShouldQueue
                                     'is_primary' => true,
                                 ]);
                                 Log::channel('daily')->info("Added currency {$code} for country {$country->alpha2}");
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 Log::channel('daily')->error("Error processing currency {$code} for country {$country->alpha2}: ".$e->getMessage());
                             }
                         }
@@ -280,7 +281,7 @@ class ImportStaticDataJob implements ShouldQueue
                                     ]
                                 );
                                 Log::channel('daily')->info("Added language {$code} for country {$country->alpha2}");
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 Log::channel('daily')->error("Error processing language {$code} for country {$country->alpha2}: ".$e->getMessage());
                             }
                         }
@@ -298,18 +299,18 @@ class ImportStaticDataJob implements ShouldQueue
                                     'timezone_id' => $timezone->id,
                                 ]);
                                 Log::channel('daily')->info("Added timezone {$timezoneName} for country {$country->alpha2}");
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 Log::channel('daily')->error("Error processing timezone {$timezoneName} for country {$country->alpha2}: ".$e->getMessage());
                             }
                         }
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::channel('daily')->error("Error processing country {$countryData['cca2']}: ".$e->getMessage());
                 }
             }
 
             Log::channel('daily')->info('Finished importing static data from REST Countries API.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::channel('daily')->error('Error during import: '.$e->getMessage());
             Log::channel('daily')->error('Stack trace: '.$e->getTraceAsString());
             throw $e;

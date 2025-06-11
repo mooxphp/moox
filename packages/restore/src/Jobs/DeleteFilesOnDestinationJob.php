@@ -104,7 +104,7 @@ class DeleteFilesOnDestinationJob implements ShouldQueue
             }
 
             $this->setProgress(100);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             RestoreFailedEvent::dispatch($this->restoreBackup->id, $e);
             throw new Exception($e->getMessage());
         }

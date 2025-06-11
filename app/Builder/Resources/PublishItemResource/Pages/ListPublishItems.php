@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\PublishItemResource\Pages;
 
+use App\Builder\Resources\PublishItemResource;
 use App\Builder\Models\PublishItem;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,7 +16,7 @@ class ListPublishItems extends ListRecords
 {
     use BaseInListPage, HasListPageTabs, SinglePublishInListPage;
 
-    protected static string $resource = \App\Builder\Resources\PublishItemResource::class;
+    protected static string $resource = PublishItemResource::class;
 
     public function mount(): void
     {
@@ -25,7 +26,7 @@ class ListPublishItems extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('previews.publish-item.tabs', \App\Builder\Models\PublishItem::class);
+        return $this->getDynamicTabs('previews.publish-item.tabs', PublishItem::class);
     }
 
     protected function applyStatusFilter(Builder $query, string $status): Builder

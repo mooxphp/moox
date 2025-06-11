@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use App\Builder\Models\SimpleTaxonomy;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\CreateSimpleTaxonomy;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\EditSimpleTaxonomy;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\ListSimpleTaxonomies;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\ViewSimpleTaxonomy;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -25,7 +25,7 @@ class SimpleTaxonomyResource extends Resource
 {
     protected static ?string $model = SimpleTaxonomy::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     #[Override]
     public static function getModelLabel(): string
@@ -58,9 +58,9 @@ class SimpleTaxonomyResource extends Resource
     }
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -101,11 +101,11 @@ class SimpleTaxonomyResource extends Resource
                     ->limit(50),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([])
-            ->bulkActions([])
+            ->recordActions([])
+            ->toolbarActions([])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.search')),
@@ -122,7 +122,7 @@ class SimpleTaxonomyResource extends Resource
                         return 'Title: '.$data['title'];
                     }),
                 Filter::make('slug')
-                    ->form([
+                    ->schema([
                         TextInput::make('slug')
                             ->label('Slug')
                             ->placeholder(__('core::core.search')),

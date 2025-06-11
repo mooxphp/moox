@@ -8,13 +8,12 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\SoftDelete;
 
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action as FormAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Schemas\Components\Actions;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -151,9 +150,9 @@ trait SingleSoftDeleteInResource
         return $actions;
     }
 
-    public static function getSoftDeleteEditAction(): FormAction
+    public static function getSoftDeleteEditAction(): Action
     {
-        return FormAction::make('edit')
+        return Action::make('edit')
             ->label(__('core::core.edit'))
             ->color('primary')
             ->extraAttributes(attributes: ['class' => 'w-full'])

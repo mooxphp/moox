@@ -2,17 +2,17 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -27,9 +27,9 @@ class TrainingDatesRelationManager extends RelationManager
     protected static ?string $recordTitleAttribute = 'link';
 
     #[Override]
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(['default' => 0])->schema([
                 DateTimePicker::make('begin')
                     ->rules(['date'])
@@ -135,7 +135,7 @@ class TrainingDatesRelationManager extends RelationManager
             ])
             ->filters([
                 Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
                     ])
@@ -170,7 +170,7 @@ class TrainingDatesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->actions([EditAction::make(), DeleteAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([EditAction::make(), DeleteAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 }

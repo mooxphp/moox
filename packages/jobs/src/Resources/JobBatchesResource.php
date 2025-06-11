@@ -2,8 +2,8 @@
 
 namespace Moox\Jobs\Resources;
 
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -17,7 +17,7 @@ class JobBatchesResource extends Resource
 
     protected static ?string $model = JobBatch::class;
 
-    protected static ?string $navigationIcon = null;
+    protected static string | \BackedEnum | null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string
@@ -88,7 +88,7 @@ class JobBatchesResource extends Resource
                     ->toggleable()
                     ->label(__('jobs::translations.failed_job_id')),
             ])
-            ->actions([
+            ->recordActions([
                 DeleteAction::make('Delete'),
             ])
             ->defaultSort('created_at', 'desc');

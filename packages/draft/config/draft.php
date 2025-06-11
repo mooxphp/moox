@@ -1,5 +1,8 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +17,6 @@
 | outputs 'All'
 |
 */
-
 return [
     'readonly' => false,
 
@@ -54,12 +56,12 @@ return [
     'taxonomies' => [
         'category' => [
             'label' => 'Categories',
-            'model' => \Moox\Category\Models\Category::class,
+            'model' => Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
     ],

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use App\Builder\Models\TranslateItem;
 use App\Builder\Resources\TranslateItemResource\Pages\CreateTranslateItem;
 use App\Builder\Resources\TranslateItemResource\Pages\EditTranslateItem;
 use App\Builder\Resources\TranslateItemResource\Pages\ListTranslateItems;
 use App\Builder\Resources\TranslateItemResource\Pages\ViewTranslateItem;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -33,7 +33,7 @@ class TranslateItemResource extends Resource
 
     protected static ?string $model = TranslateItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     #[Override]
     public static function getModelLabel(): string
@@ -66,9 +66,9 @@ class TranslateItemResource extends Resource
     }
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -137,11 +137,11 @@ class TranslateItemResource extends Resource
                 TextColumn::make('type')->sortable()->searchable()->toggleable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.filter').' Title'),
@@ -158,7 +158,7 @@ class TranslateItemResource extends Resource
                         return 'Title: '.$data['title'];
                     }),
                 Filter::make('slug')
-                    ->form([
+                    ->schema([
                         TextInput::make('slug')
                             ->label(__('core::core.slug'))
                             ->placeholder(__('core::core.filter').' Title'),

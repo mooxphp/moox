@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources\SimpleItemResource\Pages;
 
+use App\Builder\Resources\SimpleItemResource;
+use App\Builder\Models\SimpleItem;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\Simple\SingleSimpleInListPage;
@@ -13,7 +15,7 @@ class ListSimpleItems extends ListRecords
 {
     use BaseInListPage, HasListPageTabs, SingleSimpleInListPage;
 
-    protected static string $resource = \App\Builder\Resources\SimpleItemResource::class;
+    protected static string $resource = SimpleItemResource::class;
 
     public function mount(): void
     {
@@ -23,6 +25,6 @@ class ListSimpleItems extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('previews.simple-item.tabs', \App\Builder\Models\SimpleItem::class);
+        return $this->getDynamicTabs('previews.simple-item.tabs', SimpleItem::class);
     }
 }

@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\ListCategories;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\CreateCategory;
 use Override;
-use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Moox\Category\Models\Category;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
@@ -26,9 +30,7 @@ use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
@@ -47,13 +49,13 @@ class CategoryResource extends BaseDraftResource
 
     protected static ?string $currentTab = null;
 
-    protected static ?string $navigationIcon = 'gmdi-category';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-category';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Grid::make(2)
                     ->schema([
                         Grid::make()
@@ -219,11 +221,11 @@ class CategoryResource extends BaseDraftResource
                     ->toggleable(),
             ])
             ->defaultSort('updated_at', 'desc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted']))
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
                 RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
@@ -264,11 +266,11 @@ class CategoryResource extends BaseDraftResource
                     })),
             ])
             ->defaultSort('id', 'asc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
                 RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
@@ -322,10 +324,10 @@ class CategoryResource extends BaseDraftResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCategories::route('/'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'view' => Pages\ViewCategory::route('/{record}'),
+            'index' => ListCategories::route('/'),
+            'edit' => EditCategory::route('/{record}/edit'),
+            'create' => CreateCategory::route('/create'),
+            'view' => ViewCategory::route('/{record}'),
         ];
     }
 

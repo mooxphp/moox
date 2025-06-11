@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Builder\Resources;
 
+use App\Builder\Models\TestItem;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use App\Builder\Resources\TestItemResource\Pages\ListTestItems;
+use App\Builder\Resources\TestItemResource\Pages\CreateTestItem;
+use App\Builder\Resources\TestItemResource\Pages\EditTestItem;
+use App\Builder\Resources\TestItemResource\Pages\ViewTestItem;
 use App\Builder\Resources\TestItemResource\Pages;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -24,9 +29,9 @@ class TestItemResource extends Resource
 {
     use BaseInResource, SingleSimpleInResource;
 
-    protected static ?string $model = \App\Builder\Models\TestItem::class;
+    protected static ?string $model = TestItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -53,9 +58,9 @@ class TestItemResource extends Resource
         return config('previews.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -117,11 +122,11 @@ class TestItemResource extends Resource
                 TextColumn::make('type')->sortable()->searchable()->toggleable(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.search')),
@@ -153,10 +158,10 @@ class TestItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTestItems::route('/'),
-            'create' => Pages\CreateTestItem::route('/create'),
-            'edit' => Pages\EditTestItem::route('/{record}/edit'),
-            'view' => Pages\ViewTestItem::route('/{record}'),
+            'index' => ListTestItems::route('/'),
+            'create' => CreateTestItem::route('/create'),
+            'edit' => EditTestItem::route('/{record}/edit'),
+            'view' => ViewTestItem::route('/{record}'),
         ];
     }
 

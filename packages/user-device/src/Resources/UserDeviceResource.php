@@ -2,15 +2,15 @@
 
 namespace Moox\UserDevice\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -30,13 +30,13 @@ class UserDeviceResource extends Resource
 
     protected static ?string $model = UserDevice::class;
 
-    protected static ?string $navigationIcon = 'gmdi-devices-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-devices-o';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('title')
                     ->label(__('core::core.title'))
                     ->maxLength(255),
@@ -116,10 +116,10 @@ class UserDeviceResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

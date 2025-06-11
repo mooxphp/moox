@@ -2,13 +2,13 @@
 
 namespace Moox\Jobs\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Forms\Components\ProgressColumn;
@@ -24,7 +24,7 @@ class JobsResource extends Resource
 
     protected static ?string $model = JobManager::class;
 
-    protected static ?string $navigationIcon = null;
+    protected static string | \BackedEnum | null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string
@@ -37,10 +37,10 @@ class JobsResource extends Resource
     }
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('job_id')
                     ->required()
                     ->maxLength(255)
@@ -102,7 +102,7 @@ class JobsResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc')
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

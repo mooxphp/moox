@@ -2,15 +2,15 @@
 
 namespace Moox\UserSession\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Exception;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
@@ -29,15 +29,15 @@ class UserSessionResource extends Resource
 
     protected static ?string $model = UserSession::class;
 
-    protected static ?string $navigationIcon = 'gmdi-safety-check';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-safety-check';
 
     protected static ?string $recordTitleAttribute = 'id';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // TextInput::make('id')
                 //    ->maxLength(255),
                 TextInput::make('user_id')
@@ -96,7 +96,7 @@ class UserSessionResource extends Resource
                     ->since(),
             ])
             ->defaultSort('user_id', 'desc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 DeleteAction::make()
                     ->label(__('core::core.drop'))
@@ -116,7 +116,7 @@ class UserSessionResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

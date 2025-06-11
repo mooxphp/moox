@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Data\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Core\Traits\Base\BaseInModel;
@@ -20,10 +22,10 @@ use Moox\Localization\Models\Localization;
  * @property string|null $script
  * @property string|null $direction
  * @property array $exonyms
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Data\Models\StaticLocale> $locales
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Moox\Localization\Models\Localization> $localizations
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Collection<int, StaticLocale> $locales
+ * @property-read Collection<int, Localization> $localizations
  */
 class StaticLanguage extends Model
 {

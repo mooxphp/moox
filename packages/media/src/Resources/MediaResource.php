@@ -2,17 +2,23 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use DB;
+use Exception;
+use Filament\Schemas\Components\Section;
+use Illuminate\Support\HtmlString;
+use Filament\Schemas\Components\View;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Moox\Media\Models\Media;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\View;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
 use Moox\Media\Models\MediaCollection;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\Layout\Stack;
@@ -27,7 +33,6 @@ use Filament\Tables\Actions\HeaderActionsPosition;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Tables\Actions\DeleteAction as TablesDeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -37,7 +42,7 @@ class MediaResource extends Resource
 
     protected static ?string $model = Media::class;
 
-    protected static ?string $navigationIcon = 'gmdi-view-timeline-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-view-timeline-o';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -56,17 +61,17 @@ class MediaResource extends Resource
         return config('media.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $saveRecord = function ($state, $old, $component) use ($form) {
-            $record = $form->getRecord();
+        $saveRecord = function ($state, $old, $component) use ($schema) {
+            $record = $schema->getRecord();
             if ($state !== $old) {
                 $record->{$component->getName()} = $state;
                 $record->save();
             }
         };
 
-        return $form->schema([
+        return $schema->components([
             SpatieMediaLibraryFileUpload::make('file_name')
                 ->columnSpanFull()
                 ->collection(function ($record) {
@@ -117,7 +122,7 @@ class MediaResource extends Resource
 
                             $usables = [];
                             if ($oldMediaId && !$isEdit) {
-                                $usables = \DB::table('media_usables')
+                                $usables = DB::table('media_usables')
                                     ->where('media_id', $oldMediaId)
                                     ->get()
                                     ->map(function ($item) {
@@ -127,7 +132,7 @@ class MediaResource extends Resource
                             }
 
                             if ($oldMediaId && !$isEdit) {
-                                \DB::table('media')->where('id', $oldMediaId)->delete();
+                                DB::table('media')->where('id', $oldMediaId)->delete();
                             }
 
                             $model = new Media;
@@ -168,7 +173,7 @@ class MediaResource extends Resource
 
                             if (!$isEdit) {
                                 foreach ($usables as $usable) {
-                                    \DB::table('media_usables')->insert([
+                                    DB::table('media_usables')->insert([
                                         'media_id' => $media->id,
                                         'media_usable_id' => $usable['media_usable_id'],
                                         'media_usable_type' => $usable['media_usable_type'],
@@ -233,7 +238,7 @@ class MediaResource extends Resource
                                 ->send();
 
                             return redirect()->to(ListMedia::getUrl());
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             Log::error('File operation failed', [
                                 'error' => $e->getMessage(),
                                 'trace' => $e->getTraceAsString(),
@@ -307,7 +312,7 @@ class MediaResource extends Resource
                     Placeholder::make('usage')
                         ->label(__('media::fields.usage'))
                         ->content(function ($record) {
-                            $usages = \DB::table('media_usables')
+                            $usages = DB::table('media_usables')
                                 ->where('media_id', $record->id)
                                 ->get();
 
@@ -315,7 +320,7 @@ class MediaResource extends Resource
                                 return __('media::fields.not_used');
                             }
 
-                            return new \Illuminate\Support\HtmlString("
+                            return new HtmlString("
                                 <button
                                     type=\"button\"
                                     x-on:click=\"\$dispatch('open-modal', { id: 'usage-modal-{$record->id}' })\"
@@ -522,7 +527,7 @@ class MediaResource extends Resource
             $columns[] = TextColumn::make('usages')
                 ->label(__('media::fields.usage'))
                 ->getStateUsing(function ($record) {
-                    $count = \DB::table('media_usables')
+                    $count = DB::table('media_usables')
                         ->where('media_id', $record->id)
                         ->count();
 
@@ -542,7 +547,7 @@ class MediaResource extends Resource
             ] : null)
             ->headerActionsPosition(HeaderActionsPosition::Bottom)
             ->headerActions([
-                \Filament\Tables\Actions\Action::make('toggleSelect')
+                Action::make('toggleSelect')
                     ->label(function ($livewire) {
                         return $livewire->isSelecting
                             ? __('media::fields.end_selection')
@@ -556,7 +561,7 @@ class MediaResource extends Resource
                         $livewire->selected = [];
                     }),
 
-                \Filament\Tables\Actions\Action::make('deleteSelected')
+                Action::make('deleteSelected')
                     ->label(function ($livewire) {
                         $count = count($livewire->selected);
 
@@ -601,7 +606,7 @@ class MediaResource extends Resource
                                 $media->deletePreservingMedia();
                                 $media->delete();
                                 $successCount++;
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 Log::error('Media deletion failed: ' . $e->getMessage(), [
                                     'media_id' => $id,
                                 ]);
@@ -638,8 +643,8 @@ class MediaResource extends Resource
                         $livewire->selected = [];
                     }),
             ])
-            ->bulkActions([
-                \Filament\Tables\Actions\BulkAction::make('delete')
+            ->toolbarActions([
+                BulkAction::make('delete')
                     ->label(__('media::fields.delete_selected'))
                     ->icon('heroicon-m-trash')
                     ->color('danger')
@@ -671,7 +676,7 @@ class MediaResource extends Resource
                                 $media->deletePreservingMedia();
                                 $media->delete();
                                 $successCount++;
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 Log::error('Media deletion failed: ' . $e->getMessage(), [
                                     'media_id' => $media->id,
                                 ]);
@@ -706,7 +711,7 @@ class MediaResource extends Resource
                     })
             ])
             ->checkIfRecordIsSelectableUsing(fn($record) => !$record->getOriginal('write_protected'))
-            ->actions([
+            ->recordActions([
                 EditAction::make()
                     ->icon('')
                     ->label('')
@@ -715,14 +720,14 @@ class MediaResource extends Resource
                     ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->authorize('view')
                     ->extraModalFooterActions([
-                        TablesDeleteAction::make()
+                        DeleteAction::make()
                             ->label(__('media::fields.delete_file'))
                             ->color('danger')
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
                             ->modalIcon('heroicon-m-trash')
                             ->modalHeading(function ($record) {
-                                $usages = \DB::table('media_usables')
+                                $usages = DB::table('media_usables')
                                     ->where('media_id', $record->id)
                                     ->count();
 
@@ -737,7 +742,7 @@ class MediaResource extends Resource
                                 return __('media::fields.delete_file_heading', ['title' => $record->title ?: $record->name]);
                             })
                             ->modalDescription(function ($record) {
-                                $usages = \DB::table('media_usables')
+                                $usages = DB::table('media_usables')
                                     ->where('media_id', $record->id)
                                     ->count();
 
@@ -758,7 +763,7 @@ class MediaResource extends Resource
 
                                 $description[] = __('media::fields.delete_file_description');
 
-                                return new \Illuminate\Support\HtmlString(implode("\n", $description));
+                                return new HtmlString(implode("\n", $description));
                             })
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
@@ -775,7 +780,7 @@ class MediaResource extends Resource
 
                                         return false;
                                     }
-                                } catch (\Exception $e) {
+                                } catch (Exception $e) {
                                     Notification::make()
                                         ->danger()
                                         ->title(__('media::fields.delete_error'))
@@ -798,7 +803,7 @@ class MediaResource extends Resource
                                         ->send();
 
                                     return redirect(static::getUrl('index'));
-                                } catch (\Exception $e) {
+                                } catch (Exception $e) {
                                     Log::error('Media deletion failed: ' . $e->getMessage(), [
                                         'media_id' => $record->id,
                                         'file_name' => $record->file_name,
@@ -813,7 +818,7 @@ class MediaResource extends Resource
                                     return null;
                                 }
                             }),
-                        \Filament\Tables\Actions\Action::make('download')
+                        Action::make('download')
                             ->label(__('media::fields.download_file'))
                             ->icon('heroicon-m-arrow-down-tray')
                             ->visible(fn() => config('media.modal.resource.show_download_button', true))
@@ -864,7 +869,7 @@ class MediaResource extends Resource
                         $options = [];
 
                         foreach ($uploaderTypes as $type) {
-                            /** @var \Illuminate\Database\Eloquent\Collection<int, Media> $mediaItems */
+                            /** @var Collection<int, Media> $mediaItems */
                             $mediaItems = Media::query()
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id')
@@ -985,7 +990,7 @@ class MediaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMedia::route('/'),
+            'index' => ListMedia::route('/'),
         ];
     }
 

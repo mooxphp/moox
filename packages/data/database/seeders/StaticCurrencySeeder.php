@@ -2,6 +2,7 @@
 
 namespace Moox\Data\Database\Seeders;
 
+use Moox\Data\Models\StaticCurrency;
 use Illuminate\Database\Seeder;
 
 class StaticCurrencySeeder extends Seeder
@@ -11,7 +12,7 @@ class StaticCurrencySeeder extends Seeder
      */
     public function run(): void
     {
-        \Moox\Data\Models\StaticCurrency::create([
+        StaticCurrency::create([
             'code' => 'USD',
             'common_name' => 'United States Dollar',
             'symbol' => '$',
@@ -22,7 +23,7 @@ class StaticCurrencySeeder extends Seeder
             ],
         ]);
 
-        \Moox\Data\Models\StaticCurrency::create([
+        StaticCurrency::create([
             'code' => 'EUR',
             'common_name' => 'Euro',
             'symbol' => '€',
@@ -33,7 +34,7 @@ class StaticCurrencySeeder extends Seeder
             ],
         ]);
 
-        \Moox\Data\Models\StaticCurrency::create([
+        StaticCurrency::create([
             'code' => 'GBP',
             'common_name' => 'Pound Sterling',
             'symbol' => '£',
@@ -44,7 +45,7 @@ class StaticCurrencySeeder extends Seeder
             ],
         ]);
 
-        \Moox\Data\Models\StaticCurrency::create([
+        StaticCurrency::create([
             'code' => 'JPY',
             'common_name' => 'Japanese Yen',
             'symbol' => '¥',
@@ -55,7 +56,7 @@ class StaticCurrencySeeder extends Seeder
             ],
         ]);
 
-        \Moox\Data\Models\StaticCurrency::create([
+        StaticCurrency::create([
             'code' => 'CHF',
             'common_name' => 'Swiss Franc',
             'symbol' => 'CHF',

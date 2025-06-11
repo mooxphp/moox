@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Commands;
 
+use Throwable;
 use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
@@ -42,7 +43,7 @@ class DispatchRestoreCommand extends Command
 
         Bus::batch($jobs)
             ->then(function (Batch $batch) {})
-            ->catch(function (Batch $batch, \Throwable $e) {
+            ->catch(function (Batch $batch, Throwable $e) {
                 Log::error('Restore batch failed.', ['error' => $e->getMessage()]);
             })
             ->finally(function (Batch $batch) {

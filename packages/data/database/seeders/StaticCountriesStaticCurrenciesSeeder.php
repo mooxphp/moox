@@ -2,6 +2,7 @@
 
 namespace Moox\Data\Database\Seeders;
 
+use Moox\Data\Models\StaticCountry;
 use Illuminate\Database\Seeder;
 
 class StaticCountriesStaticCurrenciesSeeder extends Seeder
@@ -11,13 +12,13 @@ class StaticCountriesStaticCurrenciesSeeder extends Seeder
      */
     public function run(): void
     {
-        $us = \Moox\Data\Models\StaticCountry::where('alpha2', 'US')->first();
+        $us = StaticCountry::where('alpha2', 'US')->first();
         $us->currencies()->attach([
             1, // USD currency ID
         ]);
         $us->save();
 
-        $eu = \Moox\Data\Models\StaticCountry::where('alpha2', 'FR')->first();
+        $eu = StaticCountry::where('alpha2', 'FR')->first();
         $eu->currencies()->attach([
             2, // EUR currency ID
         ]);
