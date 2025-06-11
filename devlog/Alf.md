@@ -8,6 +8,8 @@
 -   [ ] News - from Draft ...
 -   [ ] Translations, Weblate
 -   [ ] Packages Service, Installer in Core - SIEHE Core composer.json!
+-   [ ] https://github.com/vuthaihoc/moox-jobs
+-   [ ] Moox Jobs with Fila4 and Redis, optional Horizon
 
 -   [ ] remove boilerplate code taxonomy
 -   [ ] Write protected items - docs, item
