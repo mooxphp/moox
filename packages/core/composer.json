@@ -18,10 +18,9 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "adrolli/filament-title-with-slug": "*",
         "spatie/laravel-package-tools": "^1.13.0",
         "laravel/framework": "^11.0|^12.0",
-        "filament/filament": "^3.2",
+        "filament/filament": "4.0.0-beta1",
         "codeat3/blade-google-material-design-icons": "^1.0"
     },
     "autoload": {
