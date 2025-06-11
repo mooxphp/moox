@@ -3,7 +3,7 @@
 return [
     'title' => 'Titel',
     'name' => 'Name',
-    'vendor' => 'Anbieter',
+    'vendor' => 'Vendor',
     'package_type' => 'Pakettyp',
     'is_theme' => 'Ist ein Thema',
     'version_installed' => 'installierte Version',
