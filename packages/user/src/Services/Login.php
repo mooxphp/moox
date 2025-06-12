@@ -79,6 +79,16 @@ class Login extends SimplePage
         $this->form->fill();
     }
 
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getLoginFormComponent(),
+                $this->getPasswordFormComponent(),
+                $this->getRememberFormComponent(),
+            ]);
+    }
+
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
         if (!$this->isWhitelisted()) {
@@ -176,15 +186,7 @@ class Login extends SimplePage
         return app(LoginResponse::class);
     }
 
-    public function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                $this->getLoginFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getRememberFormComponent(),
-            ]);
-    }
+
 
     public function defaultMultiFactorChallengeForm(Schema $schema): Schema
     {
@@ -220,6 +222,17 @@ class Login extends SimplePage
     public function multiFactorChallengeForm(Schema $schema): Schema
     {
         return $schema;
+    }
+
+    protected function getEmailFormComponent(): Component
+    {
+        return TextInput::make('email')
+            ->label(__('filament-panels::auth/pages/login.form.email.label'))
+            ->email()
+            ->required()
+            ->autocomplete()
+            ->autofocus()
+            ->extraInputAttributes(['tabindex' => 1]);
     }
 
     protected function getLoginFormComponent(): Component
