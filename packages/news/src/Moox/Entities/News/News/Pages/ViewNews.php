@@ -2,6 +2,6 @@
 
 namespace Moox\News\Moox\Entities\News\News\Pages;
 
-use Moox\Core\Entities\Items\News\Pages\BaseViewNews;
+use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
 
-class ViewNews extends BaseViewNews {}
+class ViewNews extends BaseViewDraft {}

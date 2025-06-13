@@ -2,6 +2,6 @@
 
 namespace Moox\News\Moox\Entities\News\News\Pages;
 
-use Moox\Core\Entities\Items\News\Pages\BaseCreateNews;
+use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 
-class CreateNews extends BaseCreateNews {}
+class CreateNews extends BaseCreateDraft {}

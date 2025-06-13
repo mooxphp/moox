@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Draft\Models;
+namespace Moox\News\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,7 +47,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read \Illuminate\Database\Eloquent\Model|null $restoredBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  */
-class News extends BaseNewsModel implements HasMedia
+class News extends BaseDraftModel implements HasMedia
 {
     use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia;
 

@@ -3,11 +3,11 @@
 namespace Moox\News\Moox\Entities\News\News\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Entities\Items\News\Pages\BaseListNewss;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\News\Moox\Entities\News\News\NewsResource;
 
-class ListNews extends BaseListNews
+class ListNews extends BaseListDrafts
 {
     use HasListPageTabs;
 

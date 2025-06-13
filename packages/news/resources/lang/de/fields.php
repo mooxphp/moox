@@ -1,0 +1,28 @@
+<?php
+
+return [
+
+    'is_active' => 'Aktiv',
+    'description' => 'Beschreibung',
+    'content' => 'Inhalt',
+    'data' => 'Daten',
+    'type' => 'Typ',
+    'status' => 'Status',
+    'to_publish_at' => 'Veröffentlichen am',
+    'to_unpublish_at' => 'Deaktivieren am',
+    'author_id' => 'Autor ID',
+    'due_at' => 'Fällig am',
+    'color' => 'Farbe',
+    'id' => 'ID',
+    'uuid' => 'UUID',
+    'ulid' => 'ULID',
+    'created_at' => 'Erstellt am',
+    'updated_at' => 'Aktualisiert am',
+    'published_at' => 'Veröffentlicht am',
+    'title' => 'Titel',
+    'slug' => 'Slug',
+    'author_name' => 'Autorenname',
+    'section' => 'Abschnitt',
+
+
+];

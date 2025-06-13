@@ -23,7 +23,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Core\Entities\Items\News\BaseNewsResource;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\News\Models\News;
@@ -31,7 +31,7 @@ use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
-class NewsResource extends BaseNewsResource
+class NewsResource extends BaseDraftResource
 {
     use HasResourceTaxonomy;
 
@@ -103,13 +103,13 @@ class NewsResource extends BaseNewsResource
                                     ),
 
                                     Toggle::make('is_active')
-                                        ->label('Active'),
+                                        ->label(__('news::fields.is_active')),
                                     RichEditor::make('description')
-                                        ->label('Description'),
+                                        ->label(__('news::fields.description')),
                                     MarkdownEditor::make('content')
-                                        ->label('Content'),
+                                        ->label(__('news::fields.content')),
                                     KeyValue::make('data')
-                                        ->label('Data (JSON)'),
+                                        ->label(__('news::fields.data')),
                                 ]),
                             Grid::make(2)
                                 ->schema([
@@ -126,21 +126,21 @@ class NewsResource extends BaseNewsResource
                             Section::make('')
                                 ->schema([
                                     Select::make('type')
-                                        ->label('Type')
+                                        ->label(__('news::fields.type'))
                                         ->options(['Post' => 'Post', 'Page' => 'Page']),
                                     Select::make('status')
-                                        ->label('Status')
+                                        ->label(__('news::fields.status'))
                                         ->placeholder(__('core::core.status'))
                                         ->reactive()
                                         ->options(['news' => 'News', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published'])
                                         ->default('news'),
                                     DateTimePicker::make('to_publish_at')
-                                        ->label('To publish at')
+                                        ->label(__('news::fields.to_publish_at'))
                                         ->placeholder(__('core::core.to_publish_at'))
                                         ->hidden(fn ($get) => $get('status') !== 'scheduled')
                                         ->dehydrateStateUsing(fn ($state, $get) => $get('status') === 'scheduled' ? $state : null),
                                     DateTimePicker::make('to_unpublish_at')
-                                        ->label('To unpublish at')
+                                        ->label(__('news::fields.to_unpublish_at'))
                                         ->placeholder(__('core::core.to_unpublish_at'))
                                         ->hidden(fn ($get) => ! in_array($get('status'), ['scheduled', 'published']))
                                         ->dehydrateStateUsing(fn ($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
@@ -150,45 +150,45 @@ class NewsResource extends BaseNewsResource
                             Section::make('')
                                 ->schema([
                                     Select::make('author_id')
-                                        ->label('Author')
+                                        ->label(__('news::fields.author_id'))
                                         ->options(\Moox\User\Models\User::all()->pluck('name', 'id')),
                                     DateTimePicker::make('due_at')
-                                        ->label('Due'),
+                                        ->label(__('news::fields.due_at')),
                                     ColorPicker::make('color')
-                                        ->label('Color'),
+                                        ->label(__('news::fields.color')),
                                 ]),
                             Section::make('')
                                 ->schema([
                                     CopyableField::make('id')
-                                        ->label('ID')
+                                        ->label(__('news::fields.id'))
                                         ->defaultValue(fn ($record): string => $record->id ?? ''),
                                     CopyableField::make('uuid')
-                                        ->label('UUID')
+                                        ->label(__('news::fields.uuid'))
                                         ->defaultValue(fn ($record): string => $record->uuid ?? ''),
                                     CopyableField::make('ulid')
-                                        ->label('ULID')
+                                        ->label(__('news::fields.ulid'))
                                         ->defaultValue(fn ($record): string => $record->ulid ?? ''),
                                     Section::make('')
                                         ->schema([
                                             Placeholder::make('created_at')
-                                                ->label('Created')
+                                                ->label(__('news::fields.created_at'))
                                                 ->content(fn ($record): string => $record->created_at ?
                                                     $record->created_at.' - '.$record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('updated_at')
-                                                ->label('Last Updated')
+                                                ->label(__('news::fields.updated_at'))
                                                 ->content(fn ($record): string => $record->updated_at ?
                                                     $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('published_at')
-                                                ->label('Published')
+                                                ->label(__('news::fields.published_at'))
                                                 ->content(fn ($record): string => $record->published_at ?
                                                     $record->published_at.' - '.$record->published_at->diffForHumans().
                                                     ($record->published_by_id ? ' by '.$record->published_by_id : '') : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
                                                 ->hidden(fn ($record) => ! $record->published_at),
                                             Placeholder::make('to_unpublish_at')
-                                                ->label('To Unpublish')
+                                                ->label(__('news::fields.to_unpublish_at'))
                                                 ->content(fn ($record): string => $record->to_unpublish_at ?
                                                     $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
@@ -211,6 +211,7 @@ class NewsResource extends BaseNewsResource
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label(__('news::fields.title'))
                     ->searchable()
                     ->sortable()->state(function ($record) {
                         $lang = request()->get('lang');
@@ -222,10 +223,11 @@ class NewsResource extends BaseNewsResource
                     }),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
+                    ->label(__('news::fields.is_active'))
                     ->boolean()
-                    ->label('Active')
                     ->sortable(),
                 TextColumn::make('slug')
+                    ->label(__('news::fields.slug'))
                     ->searchable()
                     ->sortable()
                     ->state(function ($record) {
@@ -237,6 +239,7 @@ class NewsResource extends BaseNewsResource
                         return $record->slug;
                     }),
                 TextColumn::make('description')
+                    ->label(__('news::fields.description'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->state(function ($record) {
@@ -248,6 +251,7 @@ class NewsResource extends BaseNewsResource
                         return $record->description;
                     }),
                 TextColumn::make('content')
+                    ->label(__('news::fields.content'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->state(function ($record) {
@@ -259,27 +263,34 @@ class NewsResource extends BaseNewsResource
                         return $record->content;
                     }),
                 TextColumn::make('author.name')
-                    ->label('Author')
+                    ->label(__('news::fields.author_name'))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('type')
+                    ->label(__('news::fields.type'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('published_at')
+                    ->label(__('news::fields.published_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
                 ColorColumn::make('color')
+                    ->label(__('news::fields.color'))
                     ->toggleable(),
                 TextColumn::make('uuid')
+                    ->label(__('news::fields.uuid'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ulid')
+                    ->label(__('news::fields.ulid'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('section')
+                    ->label(__('news::fields.section'))
                     ->sortable()
                     ->toggleable(),
                 ...static::getTaxonomyColumns(),
                 TextColumn::make('status')
+                    ->label(__('news::fields.status'))
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -288,11 +299,11 @@ class NewsResource extends BaseNewsResource
             ->bulkActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label('Active'),
+                    ->label(__('news::fields.is_active')),
                 Filter::make('title')
                     ->form([
                         TextInput::make('title')
-                            ->label('Title')
+                            ->label(__('news::fields.title'))
                             ->placeholder(__('core::core.filter').' Title'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -309,15 +320,15 @@ class NewsResource extends BaseNewsResource
                         return 'Title: '.$data['title'];
                     }),
                 SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('news::fields.status'))
                     ->placeholder(__('core::core.filter').' Status')
                     ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                 SelectFilter::make('type')
-                    ->label('Type')
+                    ->label(__('news::fields.type'))
                     ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
-                    ->label('Section')
+                    ->label(__('news::fields.section'))
                     ->placeholder(__('core::core.filter').' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ]);
