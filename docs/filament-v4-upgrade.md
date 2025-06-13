@@ -46,3 +46,11 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 ```
 
+
+Aktuelle Probleme:
+
+- Das CSS macht noch Probleme, Input Felder, Section usw. werden nicht korrekt dargstellt-
+- Die Blade Komponenten x-filament::grid und x-filament-forms::field-wrapperlabel werden nicht mehr gefunden.
+- Das Package RateLimiting von Dan Harrin schmeißt einen Fehler bei Moox User: Access level to            DanHarrin\LivewireRateLimiting\WithRateLimiting::rateLimit() must be public (as in class Filament\Actions\Action)
+
+
