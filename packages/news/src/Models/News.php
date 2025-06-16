@@ -24,7 +24,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $ulid
  * @property-read string $title
  * @property-read string $slug
- * @property-read string $description
+ * @property-read string $link_text
+ * @property-read string $link_url
  * @property-read string $content
  * @property-read string $status
  * @property-read int $author_id
@@ -57,7 +58,8 @@ class News extends BaseDraftModel implements HasMedia
     public $translatedAttributes = [
         'title',
         'slug',
-        'description',
+        'link_text',
+        'link_url',
         'content',
         'author_id',
         'to_publish_at',

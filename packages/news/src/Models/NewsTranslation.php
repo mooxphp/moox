@@ -5,7 +5,7 @@ namespace Moox\News\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NewsTranslationTranslation extends Model
+class NewsTranslation extends Model
 {
     use SoftDeletes;
 
@@ -18,7 +18,8 @@ class NewsTranslationTranslation extends Model
         'title',
         'slug',
         'status',
-        'description',
+        'link_text',
+        'link_url',
         'content',
         'author_id',
 

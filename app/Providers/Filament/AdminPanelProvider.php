@@ -51,6 +51,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Moox\Localization\Filament\Plugins\LocalizationPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Moox\Category\Moox\Entities\Categories\Plugins\CategoryPlugin;
+use Moox\News\Moox\Plugins\NewsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -150,6 +151,7 @@ class AdminPanelProvider extends PanelProvider
 
                 // Packages
                 PackagesPlugin::make(),
+                NewsPlugin::make(),
             ]);
     }
 }

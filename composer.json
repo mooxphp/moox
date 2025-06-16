@@ -46,6 +46,7 @@
         "moox/laravel-icons": "*",
         "moox/login-link": "*",
         "moox/media": "*",
+        "moox/news": "*",
         "moox/notifications": "*",
         "moox/page": "*",
         "moox/passkey": "*",

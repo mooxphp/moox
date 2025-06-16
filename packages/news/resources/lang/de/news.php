@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'news' => 'Nachricht',
-    'news' => 'Nachrichten',
+    'news_single' => 'Nachricht',
+    'news_plural' => 'Nachrichten',
 ];

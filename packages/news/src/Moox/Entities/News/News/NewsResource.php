@@ -104,8 +104,10 @@ class NewsResource extends BaseDraftResource
 
                                     Toggle::make('is_active')
                                         ->label(__('news::fields.is_active')),
-                                    RichEditor::make('description')
-                                        ->label(__('news::fields.description')),
+                                    RichEditor::make('link_text')
+                                        ->label(__('news::fields.link_text')),
+                                    RichEditor::make('link_url')
+                                        ->label(__('news::fields.link_url')),
                                     MarkdownEditor::make('content')
                                         ->label(__('news::fields.content')),
                                     KeyValue::make('data')
@@ -238,17 +240,29 @@ class NewsResource extends BaseDraftResource
 
                         return $record->slug;
                     }),
-                TextColumn::make('description')
-                    ->label(__('news::fields.description'))
+                TextColumn::make('link_text')
+                    ->label(__('news::fields.link_text'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->state(function ($record) {
                         $lang = request()->get('lang');
                         if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->description;
+                            return $record->translate($lang)->link_text;
                         }
 
-                        return $record->description;
+                        return $record->link_text;
+                    }),
+                     TextColumn::make('link_url')
+                    ->label(__('news::fields.link_url'))
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->link_url;
+                        }
+
+                        return $record->link_url;
                     }),
                 TextColumn::make('content')
                     ->label(__('news::fields.content'))

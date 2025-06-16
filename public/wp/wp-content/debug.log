@@ -2,3 +2,53 @@
 [12-Mar-2025 15:41:51 UTC] No moox_session cookie found
 [12-Mar-2025 15:41:51 UTC] PHP Deprecated:  Mustache_Engine::loadSource(): Implicitly marking parameter $cache as nullable is deprecated, the explicit nullable type must be used instead in phar:///usr/local/bin/wp/vendor/mustache/mustache/src/Mustache/Engine.php on line 727
 [12-Mar-2025 15:41:51 UTC] PHP Deprecated:  Mustache_Parser::buildTree(): Implicitly marking parameter $parent as nullable is deprecated, the explicit nullable type must be used instead in phar:///usr/local/bin/wp/vendor/mustache/mustache/src/Mustache/Parser.php on line 73
+[16-Jun-2025 08:07:32 UTC] Checking laravel db session
+[16-Jun-2025 08:07:32 UTC] Found moox_session: eyJpdiI6IjZMNnBBZ3JsNEdOaWJYbDlNU1FtK2c9PSIsInZhbHVlIjoiV3NIcUhDcXV1cHZkemtTTUZZNExEbVlhQ1Ftc2hvMk5HN25HYkNnWlEwZXlFdWh2VklIMDVFYi8vWkNqT2FjdFUzbUtTYXBkNDVFRWE4c293RnR6bEhFSlZINFBlSXhJUUhncE04K0VDSlRjUFBhdjMrRW1JaXltUVR2TXl5ekMiLCJtYWMiOiJkZjBjMGQxZmNlZGM3NWVkNzk3YTM4OGY2MTc5YzE0M2FlN2M2MjYyNmQ4YzcyN2MyMmEwMjFhMGU5NzQ1YzVhIiwidGFnIjoiIn0=
+[16-Jun-2025 08:07:32 UTC] Attempting to decrypt session data
+[16-Jun-2025 08:07:32 UTC] Decoded key length: 32
+[16-Jun-2025 08:07:32 UTC] Base64 decoded data length: 96
+[16-Jun-2025 08:07:32 UTC] IV length: 16, Payload length: 80
+[16-Jun-2025 08:07:32 UTC] Decryption successful. Decrypted data length: 65
+[16-Jun-2025 08:07:32 UTC] Successfully decrypted session data
+[16-Jun-2025 08:07:32 UTC] Decrypted data: 3037663134653461353962633662643130323134383565667c5633667362765348514f5a4950333472636571484146424e6d656378583447554a42523353436d6f
+[16-Jun-2025 08:07:32 UTC] Session ID: V3fsbvSHQOZIP34rceqHAFBNmecxX4GUJBR3SCmo
+[16-Jun-2025 08:07:32 UTC] Attempting to get user ID for session: V3fsbvSHQOZIP34rceqHAFBNmecxX4GUJBR3SCmo
+[16-Jun-2025 08:07:32 UTC] Attempting to connect to Laravel database: host=127.0.0.1, db=moox, user=root
+[16-Jun-2025 08:07:32 UTC] Successfully connected to the Laravel database
+[16-Jun-2025 08:07:32 UTC] Session payload: Array
+(
+    [_token] => nAY384BRvIQnUCe0ZuECVCNr6AjlRiUrelV19307
+    [PHPDEBUGBAR_STACK_DATA] => Array
+        (
+        )
+
+    [_previous] => Array
+        (
+            [url] => https://moox.test/press/login
+        )
+
+    [_flash] => Array
+        (
+            [old] => Array
+                (
+                )
+
+            [new] => Array
+                (
+                )
+
+        )
+
+    [url] => Array
+        (
+            [intended] => https://moox.test/press
+        )
+
+    [login_web_3dc7a913ef5fd4b890ecabe3487085573e16cf82] => 12
+    [password_hash_web] => $2y$10$pH63Zfj/j6ouA0HftlaC0u9lfCGSKtuiTGO0J/HhnrG6YcD9d.ZaG
+    [login_press_3dc7a913ef5fd4b890ecabe3487085573e16cf82] => 2
+)
+
+[16-Jun-2025 08:07:32 UTC] Found user ID: 2
+[16-Jun-2025 08:07:32 UTC] Found session with user-id: 2
+[16-Jun-2025 08:07:32 UTC] Set WordPress auth cookie for user ID: 2

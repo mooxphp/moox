@@ -18,8 +18,8 @@
 return [
     'readonly' => false,
 
-    'single' => 'trans//news::news.news',
-    'plural' => 'trans//news::news.newss',
+    'single' => 'trans//news::news.news_single',
+    'plural' => 'trans//news::news.news_plural',
     'tabs' => [
         'all' => [
             'label' => 'trans//core::core.all',

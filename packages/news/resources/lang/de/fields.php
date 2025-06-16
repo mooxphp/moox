@@ -3,7 +3,8 @@
 return [
 
     'is_active' => 'Aktiv',
-    'description' => 'Beschreibung',
+    'link_text' => 'Link-Text',
+    'link_url' => 'Link-URL',
     'content' => 'Inhalt',
     'data' => 'Daten',
     'type' => 'Typ',
