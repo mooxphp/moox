@@ -17,12 +17,33 @@ return new class extends Migration
             $table->string('locale')->index();
             $table->string('title');
             $table->string('slug');
-            $table->text('link_text')->nullable();
-            $table->text('link_url')->nullable();
             $table->text('content')->nullable();
 
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->string('author_id')->nullable();
+            $table->text('excerpt')->nullable();
+
+
             $table->unique(['news_id', 'locale']);
-            $table->foreign('news_id')->references('id')->on('newss')->onDelete('cascade');
+            $table->foreign('news_id')->references('id')->on('news')->onDelete('cascade');
+
+             // Schedule fields
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            // Actor fields
+            $table->nullableMorphs('published_by');
+            $table->nullableMorphs('unpublished_by');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
         });
     }
 
@@ -33,5 +54,6 @@ return new class extends Migration
 
     {
         Schema::dropIfExists('news_translations');
+
     }
 };

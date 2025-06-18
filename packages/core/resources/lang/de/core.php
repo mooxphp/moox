@@ -14,7 +14,7 @@ return [
     'name' => 'Name',
     'dashboard' => 'Dashboard',
     'main' => 'Haupt',
-    'delete' => 'Delete',
+    'delete' => 'Löschen',
     'uuid' => 'UUID',
     'payload' => 'Nutzlast',
     'connection' => 'Verbindung',

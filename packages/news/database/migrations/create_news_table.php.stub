@@ -16,7 +16,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->json('data')->nullable();
             $table->json('image')->nullable();
-            $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->json('gallery')->nullable();
             $table->string('type')->nullable();
             $table->dateTime('due_at')->nullable();
             $table->string('color')->nullable();
@@ -24,6 +24,9 @@ return new class extends Migration
             $table->ulid('ulid')->unique();
             $table->string('status')->nullable();
             $table->timestamps();
+
+            $table->softDeletes();
+
         });
     }
 
@@ -33,5 +36,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('news');
+
     }
 };

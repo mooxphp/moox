@@ -20,13 +20,21 @@ class TranslationColumn extends TextColumn
             ->toggleable()
             ->alignCenter()
             ->searchable()
-            ->state(function ($record) {
-                $flags = $record->translations->map(function ($translation) {
-                    $languageCode = explode('_', $translation->locale)[0];
-                    $locale = StaticLanguage::where('alpha2', $languageCode)->first();
+              ->state(function ($record) {
+                $flags = $record->translations
+                    ->map(function ($translation) {
+                        $languageCode = explode('_', $translation->locale)[0] ?? null;
 
-                    return 'flag-'.strtolower($locale->alpha2);
-                })->toArray();
+                        if (!$languageCode) {
+                            return null;
+                        }
+
+                        $locale = StaticLanguage::where('alpha2', $languageCode)->first();
+
+                        return $locale?->alpha2 ? 'flag-' . strtolower($locale->alpha2) : null;
+                    })
+                    ->filter()
+                    ->toArray();
 
                 return $flags;
             });

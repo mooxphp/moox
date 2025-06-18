@@ -77,6 +77,8 @@ class NewsResource extends BaseDraftResource
                                 ->schema([
                                     MediaPicker::make('image')
                                         ->label(__('core::core.image')),
+                                     MediaPicker::make('image')
+                                        ->label(__('news::fields.gallery')),
                                     TitleWithSlugInput::make(
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
@@ -104,10 +106,8 @@ class NewsResource extends BaseDraftResource
 
                                     Toggle::make('is_active')
                                         ->label(__('news::fields.is_active')),
-                                    RichEditor::make('link_text')
-                                        ->label(__('news::fields.link_text')),
-                                    RichEditor::make('link_url')
-                                        ->label(__('news::fields.link_url')),
+                                    TextInput::make('excerpt')
+                                        ->label(__('news::fields.excerpt')),
                                     MarkdownEditor::make('content')
                                         ->label(__('news::fields.content')),
                                     KeyValue::make('data')
@@ -240,30 +240,20 @@ class NewsResource extends BaseDraftResource
 
                         return $record->slug;
                     }),
-                TextColumn::make('link_text')
-                    ->label(__('news::fields.link_text'))
+                TextColumn::make('excerpt')
+                    ->label(__('news::fields.excerpt'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->state(function ($record) {
                         $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->link_text;
-                        }
+                        $excerpt = $lang && $record->hasTranslation($lang)
+                            ? $record->translate($lang)->excerpt
+                            : $record->excerpt;
 
-                        return $record->link_text;
-                    }),
-                     TextColumn::make('link_url')
-                    ->label(__('news::fields.link_url'))
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->link_url;
-                        }
+                        return strip_tags($excerpt);
+    }),
 
-                        return $record->link_url;
-                    }),
+
                 TextColumn::make('content')
                     ->label(__('news::fields.content'))
                     ->limit(50)

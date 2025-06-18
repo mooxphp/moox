@@ -24,6 +24,7 @@ return [
     'slug' => 'Slug',
     'author_name' => 'Author Name',
     'section' => 'Section',
-
+    'gallery' => 'Gallery',
+    'excerpt' => 'Excerpt',
 
 ];

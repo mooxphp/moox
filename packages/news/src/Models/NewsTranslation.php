@@ -18,10 +18,12 @@ class NewsTranslation extends Model
         'title',
         'slug',
         'status',
-        'link_text',
-        'link_url',
+        'excerpt',
         'content',
         'author_id',
+        'created_by',
+        'updated_by',
+        'deleted_by',
 
         // Publishing schedule fields
         'to_publish_at',

@@ -58,8 +58,7 @@ class News extends BaseDraftModel implements HasMedia
     public $translatedAttributes = [
         'title',
         'slug',
-        'link_text',
-        'link_url',
+        'excerpt',
         'content',
         'author_id',
         'to_publish_at',
@@ -72,12 +71,16 @@ class News extends BaseDraftModel implements HasMedia
         'deleted_by_id',
         'restored_at',
         'restored_by_id',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $fillable = [
         'is_active',
         'data',
         'image',
+        'gallery',
         'type',
         'color',
         'due_at',

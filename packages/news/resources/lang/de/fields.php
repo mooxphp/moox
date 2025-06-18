@@ -24,6 +24,7 @@ return [
     'slug' => 'Slug',
     'author_name' => 'Autorenname',
     'section' => 'Abschnitt',
-
+    'gallery' => 'Galerie',
+    'excerpt' => 'Auszug',
 
 ];
