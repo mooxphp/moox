@@ -1,11 +1,14 @@
+<div class="filament-hidden">
+
 ![Moox Jobs](https://github.com/mooxphp/moox/raw/main/art/banner/jobs.jpg)
+
+</div>
 
 # Moox Jobs
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
 Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information about Redis, Amazon SQS and Beanstalkd compatibility. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
-
 
 ## Quick installation
 
@@ -20,13 +23,13 @@ Curious what the install command does? See [manual installation](#manual-install
 
 ## Requirements
 
-Moox Jobs requires
+| Plugin Version | Laravel Version | Filament Version | PHP Version |
+|----------------|-----------------|------------------|-------------|
+| 2.x            | 9.x             | 2.x              | \> 8.0      |
+| 3.x            | 10.x            | 3.x              | \> 8.1      |
+| 4.x            | 12.x            | 4.x              | \> 8.3      |
 
--   [PHP 8.1](https://www.php.net/) or higher
--   [Laravel 10](https://laravel.com/docs/installation) or higher
--   [Filament 3](https://filamentphp.com/docs/panels/installation) or higher
-
-in short
+in short steps
 
 ```bash
 composer create-project laravel/laravel moox-jobs-demo
