@@ -6,6 +6,18 @@ Managing Job Queues, Failed Jobs and Batches in Filament.
 
 Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information about Redis, Amazon SQS and Beanstalkd compatibility. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
 
+
+## Quick installation
+
+These two commmands are all you need to install the package:
+
+```bash
+composer require moox/jobs
+php artisan mooxjobs:install
+```
+
+Curious what the install command does? See [manual installation](#manual-installation) below.
+
 ## Requirements
 
 Moox Jobs requires
@@ -33,17 +45,6 @@ php artisan mooxjobs:update
 ```
 
 The update command takes care about changing and creating the new fields without loosing data. Alternatively you may delete the job-manager table and simply run the following install command.
-
-## Quick installation
-
-These two commmands are all you need to install the package:
-
-```bash
-composer require moox/jobs
-php artisan mooxjobs:install
-```
-
-Curious what the install command does? See [manual installation](#manual-installation) below.
 
 ## Features
 
@@ -79,7 +80,7 @@ The configuration of the package is work in progress. To make it better suitable
 
 New in 3.1 is the switch to Google Icons and the ability to [switch back to Heroicons in Moox Core](https://github.com/mooxphp/core#disable-google-icons).
 
-If there is something you need to be configurable, drop us an issue.
+If there is anything else you want to configure, drop us an issue.
 
 ## Manual Installation
 
