@@ -21,10 +21,19 @@ class JobsWaitingOverview extends BaseWidget
             ->select(DB::raw('COUNT(*) as count'))
             ->first();
 
-        $aggregationColumns = [
-            DB::raw('SUM(finished_at - started_at) as total_time_elapsed'),
-            DB::raw('AVG(finished_at - started_at) as average_time_elapsed'),
-        ];
+        $driver = DB::getDriverName();
+
+        if (in_array($driver, ['pgsql', 'crdb'])) {
+            $aggregationColumns = [
+                DB::raw('SUM(finished_at::int - started_at::int) as total_time_elapsed'),
+                DB::raw('AVG(finished_at::int - started_at::int) as average_time_elapsed'),
+            ];
+        } else {
+            $aggregationColumns = [
+                DB::raw('SUM(finished_at - started_at) as total_time_elapsed'),
+                DB::raw('AVG(finished_at - started_at) as average_time_elapsed'),
+            ];
+        }
 
         $aggregatedInfo = JobManager::query()
             ->select($aggregationColumns)
