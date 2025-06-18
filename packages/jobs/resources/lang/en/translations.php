@@ -54,7 +54,7 @@ return [
 
     // jobfailed
     'uuid' => 'Uuid',
-    'payload' => 'Queue',
+    'payload' => 'Payload',
     'connection' => 'Connection',
     'exception' => 'Exception',
     'retry' => 'Retry',

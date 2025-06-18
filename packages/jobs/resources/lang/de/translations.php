@@ -49,9 +49,9 @@ return [
     'average_time' => 'Durchschnittliche Ausführungszeit',
     // jobfailed
     'uuid' => 'Uuid',
-    'payload' => 'Warteschlange',
+    'payload' => 'Payload',
     'connection' => 'Verbindung',
-    'exception' => 'Ausnahme',
+    'exception' => 'Exception',
     'retry' => 'Wiederholen',
     'retry_all_failed_jobs' => 'Alle Jobs wiederholen',
     'retry_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden in die Warteschlage eingereiht',
