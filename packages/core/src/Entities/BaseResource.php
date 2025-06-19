@@ -162,7 +162,7 @@ abstract class BaseResource extends Resource
             ->keyBindings(['escape'])
             ->color('secondary')
             ->outlined()
-            ->url(fn () => static::getUrl('index', ));
+            ->url(fn () => static::getUrl('index'));
         // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
@@ -175,7 +175,7 @@ abstract class BaseResource extends Resource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->action(function ($livewire): void {
                 $livewire->record->delete();
-                $livewire->redirect(static::getUrl('index', ));
+                $livewire->redirect(static::getUrl('index'));
             })
             ->keyBindings(['delete'])
             ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)

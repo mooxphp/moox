@@ -58,10 +58,9 @@ abstract class BaseViewDraft extends ViewRecord
                 ->label('Language')
                 ->icon('flag-'.$this->lang)
                 ->extraAttributes(['class' => '']),
-              
+
             RestoreAction::make(),
-                    
-                
+
         ];
     }
 }

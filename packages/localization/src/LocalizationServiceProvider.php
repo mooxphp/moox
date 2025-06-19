@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Localization;
 
-use Illuminate\Routing\Router;
 use Livewire\Livewire;
-use Moox\Localization\Http\Middleware\LanguageMiddleware;
 use Moox\Localization\Livewire\LanguageSwitch;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -46,7 +44,6 @@ class LocalizationServiceProvider extends PackageServiceProvider
             ->hasCommands()
             ->hasMigration('create_localizations_table');
     }
-
 
     public function registerLivewireComponents()
     {

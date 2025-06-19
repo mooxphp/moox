@@ -54,7 +54,6 @@ trait HasResourceTaxonomy
                 ]);
 
                 if ($validator->fails()) {
-
                     return $validator->errors()->first();
                 }
 
@@ -77,7 +76,6 @@ trait HasResourceTaxonomy
                         'slug' => $data['slug'],
                     ]);
                     \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
-
                 }
                 \Illuminate\Support\Facades\Log::info('newTaxonomy', $newTaxonomy);
 
@@ -92,7 +90,7 @@ trait HasResourceTaxonomy
                     titleAttribute: 'title',
                     parentAttribute: 'parent_id'
                 )
-               
+
                 ->enableBranchNode()
                 ->searchable()
                 ->createOptionForm($commonConfig['createOptionForm'])
@@ -186,7 +184,6 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-
         return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
             ->label($settings['label'] ?? ucfirst((string) $taxonomy))
             ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
@@ -207,7 +204,6 @@ trait HasResourceTaxonomy
                             $join->on('translations.translatable_id', '=', $modelTable.'.id')
                                 ->where('translations.translatable_type', '=', $modelClass)
                                 ->where('translations.locale', '=', request()->get('lang') ?? app()->getLocale());
-
                         })->pluck('translations.title');
                     }, function ($query) use ($modelTable) {
                         return $query->pluck($modelTable.'.title');

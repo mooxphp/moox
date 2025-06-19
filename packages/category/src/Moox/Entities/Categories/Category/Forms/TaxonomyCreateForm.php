@@ -2,15 +2,15 @@
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Forms;
 
-use Filament\Forms\Components\Grid;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\MarkdownEditor;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
 
 class TaxonomyCreateForm
 {

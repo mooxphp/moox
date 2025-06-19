@@ -48,36 +48,35 @@ abstract class BaseEditDraft extends EditRecord
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
-{
-    /** @var Model&TranslatableContract $record */
-    if (! $this->lang) {
-        return parent::handleRecordUpdate($record, $data);
-    }
-
-    if (! property_exists($record, 'translatedAttributes')) {
-        return parent::handleRecordUpdate($record, $data);
-    }
-
-    // Save translation manually
-    $translation = $record->translations()->firstOrNew([
-        'locale' => $this->lang,
-    ]);
-
-    foreach ($record->translatedAttributes as $attr) {
-        if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
-            $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
+    {
+        /** @var Model&TranslatableContract $record */
+        if (! $this->lang) {
+            return parent::handleRecordUpdate($record, $data);
         }
+
+        if (! property_exists($record, 'translatedAttributes')) {
+            return parent::handleRecordUpdate($record, $data);
+        }
+
+        // Save translation manually
+        $translation = $record->translations()->firstOrNew([
+            'locale' => $this->lang,
+        ]);
+
+        foreach ($record->translatedAttributes as $attr) {
+            if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
+                $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
+            }
+        }
+        $translation->save();
+
+        // Remove 'translations' from data before update
+        unset($data['translations']);
+
+        $record->update($data);
+
+        return $record;
     }
-    $translation->save();
-
-    // Remove 'translations' from data before update
-    unset($data['translations']);
-
-    $record->update($data);
-
-    return $record;
-}
-
 
     public function mutateFormDataBeforeSave(array $data): array
     {

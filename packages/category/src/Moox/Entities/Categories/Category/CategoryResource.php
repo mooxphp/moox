@@ -4,40 +4,35 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Override;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Category\Models\Category;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\ColorPicker;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Media\Forms\Components\MediaPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Moox\Media\Tables\Columns\CustomImageColumn;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rules\Unique;
+use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Pages\ViewCategory;
-
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Media\Tables\Columns\CustomImageColumn;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Override;
 
 class CategoryResource extends BaseDraftResource
 {
@@ -77,13 +72,12 @@ class CategoryResource extends BaseDraftResource
                                                     } else {
                                                         $rule->where('locale', $locale);
                                                     }
-    
                                                 },
                                                 'table' => 'category_translations',
                                                 'column' => 'slug',
                                             ]
                                         ),
-                                      MediaPicker::make('featured_image_url')
+                                        MediaPicker::make('featured_image_url')
                                             ->label(__('core::core.featured_image_url')),
                                         MarkdownEditor::make('content')
                                             ->label(__('core::core.content')),
@@ -99,7 +93,6 @@ class CategoryResource extends BaseDraftResource
                                             ->disabledOptions(fn ($get): array => [$get('id')])
                                             ->enableBranchNode()
                                             ->visible(fn () => Category::count() > 0),
-
 
                                     ]),
                             ])
@@ -152,18 +145,18 @@ class CategoryResource extends BaseDraftResource
                     ->label(__('category::fields.modified_title'))
                     ->getStateUsing(function (Category $record): string {
                         $lang = request()->get('lang');
-                        
+
                         $depth = $record->ancestors->count();
                         $prefix = str_repeat('--', $depth);
-                        
-                        $title = $lang && $record->hasTranslation($lang) 
-                            ? $record->translate($lang)->title 
+
+                        $title = $lang && $record->hasTranslation($lang)
+                            ? $record->translate($lang)->title
                             : $record->title;
 
                         return sprintf('%s %s', $prefix, $title);
                     })
                     ->searchable(),
-                   
+
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->searchable()
@@ -221,7 +214,7 @@ class CategoryResource extends BaseDraftResource
             ->defaultSort('updated_at', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted']))
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),

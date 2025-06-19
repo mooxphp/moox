@@ -7,6 +7,7 @@ namespace Moox\Media\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
@@ -74,7 +75,7 @@ class InstallCommand extends Command
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (!File::exists('config/media.php')) {
+            if (! File::exists('config/media.php')) {
                 info('Publishing Media Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'media-config']);
 
@@ -91,7 +92,7 @@ class InstallCommand extends Command
         $this->callSilent('vendor:publish', [
             '--provider' => 'Spatie\MediaLibrary\MediaLibraryServiceProvider',
             '--tag' => 'medialibrary-config',
-            '--force' => true
+            '--force' => true,
         ]);
 
         $configPath = config_path('media-library.php');
@@ -157,11 +158,11 @@ class InstallCommand extends Command
             $newPlugins = '';
 
             foreach ($pluginsToAdd as $plugin) {
-                $searchPlugin = '/' . $plugin . '/';
+                $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    warning($plugin . ' already registered.');
+                    warning($plugin.' already registered.');
                 } else {
-                    $newPlugins .= $intend . $namespace . '\\' . $plugin . $function . "\n";
+                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
             }
 
@@ -176,7 +177,7 @@ class InstallCommand extends Command
 
                     $pluginsSection = "            ->plugins([\n{$newPlugins}\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                    $replacement = "$1\n" . $pluginsSection;
+                    $replacement = "$1\n".$pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
 
@@ -194,7 +195,7 @@ class InstallCommand extends Command
         if ($panelsToregister != null) {
             if (is_array($panelsToregister)) {
                 foreach ($panelsToregister as $panelprovider) {
-                    $this->registerPlugins($providerPath . '/' . $panelprovider);
+                    $this->registerPlugins($providerPath.'/'.$panelprovider);
                 }
             } else {
                 $this->registerPlugins($panelsToregister);
@@ -222,7 +223,7 @@ class InstallCommand extends Command
         }
 
         if (count($providers) == 1) {
-            $providerPath .= '/' . $providers[0]->getBasename();
+            $providerPath .= '/'.$providers[0]->getBasename();
         }
 
         return $providerPath;

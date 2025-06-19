@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('slug');
             $table->text('content')->nullable();
 
-
             // Schedule fields
             $table->timestamp(column: 'to_publish_at')->nullable();
             $table->timestamp('published_at')->nullable();
@@ -41,7 +40,7 @@ return new class extends Migration
 
             // Timestamps
             $table->timestamps();
-            
+
             $table->unique(['category_id', 'locale']);
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });

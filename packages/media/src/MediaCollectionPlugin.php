@@ -2,8 +2,8 @@
 
 namespace Moox\Media;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Media\Resources\MediaCollectionResource;
 
