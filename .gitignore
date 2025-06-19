@@ -1,67 +1,24 @@
-# Environment
+*.log
+.DS_Store
 .env
 .env.backup
-
-# Composer
-/vendor
-auth.json
-composer.lock
-
-# NPM / Node
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
 /node_modules
-package-lock.json
-
-# Laravel
+/public/build
 /public/hot
 /public/storage
 /storage/*.key
-auth.json
-LocalValetDriver.php
-herd.yml
-
-# PHPUnit
-.phpunit.result.cache
-phpunit.cache
-phpunit.xml
-
-# Yarn
-yarn-error.log
-
-# PHPStan
-/build
-phpstan.neon
-
-# Testbench
-testbench.yaml
-
-# PHP CS Fixer
-.php-cs-fixer.cache
-
-# Homestead
+/storage/pail
+/vendor
 Homestead.json
 Homestead.yaml
-
-# IDEs
-/.idea
-/.vscode
-
-# MacOS
-.DS_Store
-
-# Windows
 Thumbs.db
-
-# Moox Custom
-/resources/views/custom/*
-!/resources/views/custom/overview.blade.php
-!/resources/views/custom/example.blade.php
-/_custom/*
-!/_custom/composer.json-example
-!/_custom/README.md
-!/_custom/publish.sh
-/routes/custom_*.php
-!/routes/custom_example.php
-
-# Moox Press - need to be removed for the demo
-#/public/vendor/*
-#/public/wp/*
