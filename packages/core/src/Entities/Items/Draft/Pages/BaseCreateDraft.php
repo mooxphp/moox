@@ -2,6 +2,9 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Moox\Localization\Models\Localization;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -86,11 +89,11 @@ abstract class BaseCreateDraft extends CreateRecord
 
     public function getHeaderActions(): array
     {
-        $languages = \Moox\Localization\Models\Localization::all();
+        $languages = Localization::all();
 
         return [
-            \Filament\Actions\ActionGroup::make(
-                $languages->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
+            ActionGroup::make(
+                $languages->map(fn ($localization) => Action::make('language_'.$localization->language->alpha2)
                     ->icon('flag-'.$localization->language->alpha2)
                     ->label('')
                     ->color('transparent')

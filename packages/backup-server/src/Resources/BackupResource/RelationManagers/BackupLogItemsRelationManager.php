@@ -2,18 +2,20 @@
 
 namespace Moox\BackupServerUi\Resources\BackupResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -25,9 +27,9 @@ class BackupLogItemsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'task';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(['default' => 0])->schema([
                 Select::make('source_id')
                     ->rules(['exists:backup_server_sources,id'])
@@ -91,10 +93,10 @@ class BackupLogItemsRelationManager extends RelationManager
                 TextColumn::make('message')->limit(50),
             ])
             ->filters([
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -131,7 +133,7 @@ class BackupLogItemsRelationManager extends RelationManager
                     ->relationship('backup', 'status'),
             ])
             ->headerActions([CreateAction::make()])
-            ->actions([EditAction::make(), DeleteAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([EditAction::make(), DeleteAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 }

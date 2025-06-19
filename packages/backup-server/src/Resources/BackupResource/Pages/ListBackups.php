@@ -24,7 +24,7 @@ class ListBackups extends ListRecords
             Action::make('backup')
                 ->label('Manual Backup')
                 ->modalHeading('Create Manual Backup')
-                ->form([
+                ->schema([
                     Select::make('source_id')
                         ->rules(['exists:backup_server_sources,id'])
                         ->required()

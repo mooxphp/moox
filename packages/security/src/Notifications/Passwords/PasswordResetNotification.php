@@ -28,7 +28,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
 
     public function __construct(public string $token)
     {
-        $this->panel = Filament::getCurrentPanel();
+        $this->panel = Filament::getCurrentOrDefaultPanel();
     }
 
     public function via($notifiable): array

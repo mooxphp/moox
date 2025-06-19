@@ -2,6 +2,9 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Moox\Localization\Models\Localization;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\CanResolveResourceClass;
@@ -41,11 +44,11 @@ abstract class BaseViewDraft extends ViewRecord
 
     public function getHeaderActions(): array
     {
-        $localizations = \Moox\Localization\Models\Localization::with('language')->get();
+        $localizations = Localization::with('language')->get();
 
         return [
-            \Filament\Actions\ActionGroup::make(
-                $localizations->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
+            ActionGroup::make(
+                $localizations->map(fn ($localization) => Action::make('language_'.$localization->language->alpha2)
                     ->icon('flag-'.$localization->language->alpha2)
                     ->label('')
                     ->color('transparent')
@@ -58,9 +61,10 @@ abstract class BaseViewDraft extends ViewRecord
                 ->label('Language')
                 ->icon('flag-'.$this->lang)
                 ->extraAttributes(['class' => '']),
-
+              
             RestoreAction::make(),
-
+                    
+                
         ];
     }
 }

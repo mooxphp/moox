@@ -2,8 +2,8 @@
 
 namespace Moox\Expiry\Widgets;
 
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -20,7 +20,7 @@ class MyExpiry extends BaseWidget
 
     public $activeTab = 'all';
 
-    protected static string $view = 'expiry::widgets.my-expiry';
+    protected string $view = 'expiry::widgets.my-expiry';
 
     protected int|string|array $columnSpan = [
         'default' => 1, // full width for default
@@ -89,11 +89,11 @@ class MyExpiry extends BaseWidget
                     ->label('Status')
                     ->options(Expiry::getExpiryStatusOptions()),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make()->url(fn ($record): string => $record->link)
                     ->openUrlInNewTab(),
             ])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     public function getTabs(): array

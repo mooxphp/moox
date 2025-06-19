@@ -36,7 +36,7 @@ class EditUser extends EditRecord
 
     public function afterSave()
     {
-        session()->forget('password_hash_'.Filament::getCurrentPanel()->getAuthGuard());
+        session()->forget('password_hash_'.Filament::getCurrentOrDefaultPanel()->getAuthGuard());
         $this->refreshFormData(['new_password', 'current_password', 'new_password_confirmation']);
 
         return redirect('moox/users');

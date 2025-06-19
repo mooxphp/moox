@@ -2,6 +2,7 @@
 
 namespace Moox\Media\Forms\Components;
 
+use Schema;
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Contracts\Support\Arrayable;
@@ -62,7 +63,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
 
-            $columnType = \Schema::getColumnType($record->getTable(), $fieldName);
+            $columnType = Schema::getColumnType($record->getTable(), $fieldName);
 
             if ($columnType === 'json') {
                 $record->{$fieldName} = $component->isMultiple() ? $attachments : ($attachments[1] ?? null);

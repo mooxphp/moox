@@ -2,6 +2,9 @@
 
 namespace Moox\Data\Database\Seeders;
 
+use Moox\Data\Models\StaticLocale;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Data\Models\StaticCountry;
 use Illuminate\Database\Seeder;
 
 class StaticLocaleSeeder extends Seeder
@@ -11,18 +14,18 @@ class StaticLocaleSeeder extends Seeder
      */
     public function run(): void
     {
-        \Moox\Data\Models\StaticLocale::create([
+        StaticLocale::create([
             'locale' => 'en-US',
             'name' => 'English (United States)',
-            'language_id' => \Moox\Data\Models\StaticLanguage::where('alpha2', 'en')->first()->id,
-            'country_id' => \Moox\Data\Models\StaticCountry::where('alpha2', 'US')->first()->id,
+            'language_id' => StaticLanguage::where('alpha2', 'en')->first()->id,
+            'country_id' => StaticCountry::where('alpha2', 'US')->first()->id,
         ]);
 
-        \Moox\Data\Models\StaticLocale::create([
+        StaticLocale::create([
             'locale' => 'fr-FR',
             'name' => 'French (France)',
-            'language_id' => \Moox\Data\Models\StaticLanguage::where('alpha2', 'fr')->first()->id,
-            'country_id' => \Moox\Data\Models\StaticCountry::where('alpha2', 'FR')->first()->id,
+            'language_id' => StaticLanguage::where('alpha2', 'fr')->first()->id,
+            'country_id' => StaticCountry::where('alpha2', 'FR')->first()->id,
         ]);
     }
 }

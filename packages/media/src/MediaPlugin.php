@@ -2,10 +2,10 @@
 
 namespace Moox\Media;
 
-use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Filament\Support\Concerns\EvaluatesClosures;
+use Filament\Contracts\Plugin;
 use Moox\Media\Resources\MediaResource;
+use Filament\Support\Concerns\EvaluatesClosures;
 
 class MediaPlugin implements Plugin
 {

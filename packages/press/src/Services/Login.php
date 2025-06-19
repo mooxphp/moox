@@ -2,37 +2,52 @@
 
 namespace Moox\Press\Services;
 
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Component;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use Filament\Notifications\Notification;
-use Filament\Pages\Concerns\InteractsWithFormActions;
-use Filament\Pages\SimplePage;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
-use Illuminate\Validation\ValidationException;
-use Jenssegers\Agent\Agent;
-use Moox\UserDevice\Services\UserDeviceTracker;
-use Moox\UserSession\Services\SessionRelationService;
 use Override;
+use Illuminate\Support\Arr;
+use Jenssegers\Agent\Agent;
+use Filament\Actions\Action;
+use Filament\Schemas\Schema;
+use Filament\Facades\Filament;
+use Filament\Pages\SimplePage;
+use Livewire\Attributes\Locked;
+use Filament\Actions\ActionGroup;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\HtmlString;
+use Filament\View\PanelsRenderHook;
+use Filament\Forms\Components\Radio;
+use Illuminate\Support\Facades\Auth;
+use Filament\Schemas\Components\Form;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Blade;
+use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Component;
+use Illuminate\Contracts\Support\Htmlable;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Validation\ValidationException;
+use Filament\Schemas\Components\EmbeddedSchema;
+use Moox\UserDevice\Services\UserDeviceTracker;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Moox\UserSession\Services\SessionRelationService;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
+
 
 /**
- * @property Form $form
+ * @property-read Action $registerAction
+ * @property-read Schema $form
+ * @property-read Schema $multiFactorChallengeForm
  */
 class Login extends SimplePage
 {
-    use InteractsWithFormActions;
     use WithRateLimiting;
 
     protected $userDeviceTracker;
@@ -40,14 +55,12 @@ class Login extends SimplePage
     protected $sessionRelationService;
 
     /**
-     * @var view-string
-     */
-    protected static string $view = 'filament-panels::pages.auth.login';
-
-    /**
      * @var array<string, mixed> | null
      */
     public ?array $data = [];
+
+    #[Locked]
+    public ?string $userUndertakingMultiFactorAuthentication = null;
 
     public function __construct()
     {
@@ -69,45 +82,23 @@ class Login extends SimplePage
         $this->form->fill();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 $this->getLoginFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),
-            ])
-            ->statePath('data');
-    }
-
-    protected function getLoginFormComponent(): Component
-    {
-        return
-            TextInput::make('login')
-                ->label('Login')
-                ->required()
-                ->autocomplete()
-                ->autofocus()
-                ->extraInputAttributes(['tabindex' => 1]);
+            ]);
     }
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
-        if (! $this->isWhitelisted()) {
+        if (!$this->isWhitelisted()) {
             try {
                 $this->rateLimit(5);
             } catch (TooManyRequestsException $exception) {
-                Notification::make()
-                    ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-                        'seconds' => $exception->secondsUntilAvailable,
-                        'minutes' => ceil($exception->secondsUntilAvailable / 60),
-                    ]))
-                    ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
-                        'seconds' => $exception->secondsUntilAvailable,
-                        'minutes' => $exception->minutesUntilAvailable,
-                    ]) : null)
-                    ->danger()
-                    ->send();
+                $this->getRateLimitedNotification($exception)?->send();
 
                 return null;
             }
@@ -123,11 +114,11 @@ class Login extends SimplePage
         $userModelEmail = config(sprintf('press.auth.%s.email', $guardName));
         $query = $userModel::query();
 
-        if (! empty($userModelUsername) && $credentialKey === 'name') {
+        if (!empty($userModelUsername) && $credentialKey === 'name') {
             $query->where($userModelUsername, $credentials[$credentialKey]);
         }
 
-        if (! empty($userModelEmail) && $credentialKey === 'email') {
+        if (!empty($userModelEmail) && $credentialKey === 'email') {
             if ($query->getQuery()->wheres) {
                 $query->orWhere($userModelEmail, $credentials[$credentialKey]);
             } else {
@@ -139,11 +130,37 @@ class Login extends SimplePage
 
         if (config('press.wpModel') && $user instanceof (config('press.wpModel'))) {
             $wpAuthService = new WordPressAuthService;
-            if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
+            if (!$wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
-        } elseif (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
+        } elseif (!Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
+        }
+
+        if (
+            filled($this->userUndertakingMultiFactorAuthentication) &&
+            (decrypt($this->userUndertakingMultiFactorAuthentication) === $user->getAuthIdentifier())
+        ) {
+            $this->multiFactorChallengeForm->validate();
+        } else {
+            foreach (Filament::getMultiFactorAuthenticationProviders() as $multiFactorAuthenticationProvider) {
+                if (!$multiFactorAuthenticationProvider->isEnabled($user)) {
+                    continue;
+                }
+
+                $this->userUndertakingMultiFactorAuthentication = encrypt($user->getAuthIdentifier());
+
+                if ($multiFactorAuthenticationProvider instanceof HasBeforeChallengeHook) {
+                    $multiFactorAuthenticationProvider->beforeChallenge($user);
+                }
+
+                break;
+            }
+
+            if (filled($this->userUndertakingMultiFactorAuthentication)) {
+                $this->multiFactorChallengeForm->fill();
+                return null;
+            }
         }
 
         Auth::guard($guardName)->login($user, $data['remember'] ?? false);
@@ -171,36 +188,55 @@ class Login extends SimplePage
             $redirectParam = $redirectTarget === 'frontend' ? '&redirect_to=frontend' : '';
 
             if ($data['remember'] ?? false) {
-                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token.'&remember_me=true'.$redirectParam);
+                return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token . '&remember_me=true' . $redirectParam);
             } else {
-                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token.$redirectParam);
+                return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token . $redirectParam);
             }
         } else {
             return app(LoginResponse::class);
         }
     }
 
-    protected function getCredentialsFromFormData(array $data): array
+    public function defaultMultiFactorChallengeForm(Schema $schema): Schema
     {
-        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+        return $schema
+            ->components(function (): array {
+                if (blank($this->userUndertakingMultiFactorAuthentication)) {
+                    return [];
+                }
 
-        return [
-            $login_type => $data['login'],
-            'password' => $data['password'],
-        ];
+                $authProvider = Filament::auth()->getProvider(); /** @phpstan-ignore-line */
+                $user = $authProvider->retrieveById(decrypt($this->userUndertakingMultiFactorAuthentication));
+
+                $enabledMultiFactorAuthenticationProviders = array_filter(
+                    Filament::getMultiFactorAuthenticationProviders(),
+                    fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
+                );
+
+                return [
+                    ...Arr::wrap($this->getMultiFactorProviderFormComponent()),
+                    ...collect($enabledMultiFactorAuthenticationProviders)
+                        ->map(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getChallengeFormComponents($user))
+                            ->statePath($multiFactorAuthenticationProvider->getId())
+                            ->when(
+                                count($enabledMultiFactorAuthenticationProviders) > 1,
+                                fn(Group $group) => $group->visible(fn(Get $get): bool => $get('provider') === $multiFactorAuthenticationProvider->getId())
+                            ))
+                        ->all(),
+                ];
+            })
+            ->statePath('data.multiFactor');
     }
 
-    protected function throwFailureValidationException(): never
+    public function multiFactorChallengeForm(Schema $schema): Schema
     {
-        throw ValidationException::withMessages([
-            'data.login' => __('filament-panels::pages/auth/login.messages.failed'),
-        ]);
+        return $schema;
     }
 
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label(__('filament-panels::pages/auth/login.form.email.label'))
+            ->label(__('filament-panels::auth/pages/login.form.email.label'))
             ->email()
             ->required()
             ->autocomplete()
@@ -208,11 +244,23 @@ class Login extends SimplePage
             ->extraInputAttributes(['tabindex' => 1]);
     }
 
+
+    protected function getLoginFormComponent(): Component
+    {
+        return
+            TextInput::make('login')
+                ->label('Login')
+                ->required()
+                ->autocomplete()
+                ->autofocus()
+                ->extraInputAttributes(['tabindex' => 1]);
+    }
+
     protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
-            ->label(__('filament-panels::pages/auth/login.form.password.label'))
-            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()"> {{ __(\'filament-panels::pages/auth/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
+            ->label(__('filament-panels::auth/pages/login.form.password.label'))
+            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()" tabindex="3"> {{ __(\'filament-panels::auth/pages/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->autocomplete('current-password')
@@ -229,30 +277,83 @@ class Login extends SimplePage
             ]);
     }
 
+
     protected function getRememberFormComponent(): Component
     {
         return Checkbox::make('remember')
-            ->label(__('filament-panels::pages/auth/login.form.remember.label'));
+            ->label(__('filament-panels::auth/pages/login.form.remember.label'));
+    }
+
+    protected function getMultiFactorProviderFormComponent(): ?Component
+    {
+        $authProvider = Filament::auth()->getProvider(); /** @phpstan-ignore-line */
+        $user = $authProvider->retrieveById(decrypt($this->userUndertakingMultiFactorAuthentication));
+
+        $enabledMultiFactorAuthenticationProviders = array_filter(
+            Filament::getMultiFactorAuthenticationProviders(),
+            fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
+        );
+
+        if (count($enabledMultiFactorAuthenticationProviders) <= 1) {
+            return null;
+        }
+
+        return Section::make()
+            ->compact()
+            ->secondary()
+            ->schema(fn(Section $section): array => [
+                Radio::make('provider')
+                    ->label(__('filament-panels::auth/pages/login.multi_factor.form.provider.label'))
+                    ->options(array_map(
+                        fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): string => $multiFactorAuthenticationProvider->getLoginFormLabel(),
+                        $enabledMultiFactorAuthenticationProviders,
+                    ))
+                    ->live()
+                    ->afterStateUpdated(function (?string $state) use ($enabledMultiFactorAuthenticationProviders, $section, $user): void {
+                        $provider = $enabledMultiFactorAuthenticationProviders[$state] ?? null;
+
+                        if (!$provider) {
+                            return;
+                        }
+
+                        $section
+                            ->getContainer()
+                            ->getComponent($provider->getId())
+                            ->getChildSchema()
+                            ->fill();
+
+                        if (!($provider instanceof HasBeforeChallengeHook)) {
+                            return;
+                        }
+
+                        $provider->beforeChallenge($user);
+                    })
+                    ->default(array_key_first($enabledMultiFactorAuthenticationProviders))
+                    ->required()
+                    ->markAsRequired(false),
+            ]);
     }
 
     public function registerAction(): Action
     {
         return Action::make('register')
             ->link()
-            ->label(__('filament-panels::pages/auth/login.actions.register.label'))
+            ->label(__('filament-panels::auth/pages/login.actions.register.label'))
             ->url(filament()->getRegistrationUrl());
     }
 
-    #[Override]
     public function getTitle(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/login.title');
+        return __('filament-panels::auth/pages/login.title');
     }
 
-    #[Override]
     public function getHeading(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/login.heading');
+        if (filled($this->userUndertakingMultiFactorAuthentication)) {
+            return __('filament-panels::auth/pages/login.multi_factor.heading');
+        }
+
+        return __('filament-panels::auth/pages/login.heading');
     }
 
     /**
@@ -268,7 +369,24 @@ class Login extends SimplePage
     protected function getAuthenticateFormAction(): Action
     {
         return Action::make('authenticate')
-            ->label(__('filament-panels::pages/auth/login.form.actions.authenticate.label'))
+            ->label(__('filament-panels::auth/pages/login.form.actions.authenticate.label'))
+            ->submit('authenticate');
+    }
+
+    /**
+     * @return array<Action | ActionGroup>
+     */
+    protected function getMultiFactorChallengeFormActions(): array
+    {
+        return [
+            $this->getMultiFactorAuthenticateFormAction(),
+        ];
+    }
+
+    protected function getMultiFactorAuthenticateFormAction(): Action
+    {
+        return Action::make('authenticate')
+            ->label(__('filament-panels::auth/pages/login.multi_factor.form.actions.authenticate.label'))
             ->submit('authenticate');
     }
 
@@ -277,13 +395,115 @@ class Login extends SimplePage
         return true;
     }
 
+    protected function hasFullWidthMultiFactorChallengeFormActions(): bool
+    {
+        return $this->hasFullWidthFormActions();
+    }
+
+    protected function getCredentialsFromFormData(array $data): array
+    {
+        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+
+        return [
+            $login_type => $data['login'],
+            'password' => $data['password'],
+        ];
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        if (filled($this->userUndertakingMultiFactorAuthentication)) {
+            return __('filament-panels::auth/pages/login.multi_factor.subheading');
+        }
+
+        if (!filament()->hasRegistration()) {
+            return null;
+        }
+
+        return new HtmlString(__('filament-panels::auth/pages/login.actions.register.before') . ' ' . $this->registerAction->toHtml());
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                RenderHook::make(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE),
+                $this->getFormContentComponent(),
+                $this->getMultiFactorChallengeFormContentComponent(),
+                RenderHook::make(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER),
+            ]);
+    }
+
+    public function getFormContentComponent(): Component
+    {
+        return Form::make([EmbeddedSchema::make('form')])
+            ->id('form')
+            ->livewireSubmitHandler('authenticate')
+            ->footer([
+                Actions::make($this->getFormActions())
+                    ->alignment($this->getFormActionsAlignment())
+                    ->fullWidth($this->hasFullWidthFormActions()),
+            ])
+            ->visible(fn(): bool => blank($this->userUndertakingMultiFactorAuthentication));
+    }
+
+    public function getMultiFactorChallengeFormContentComponent(): Component
+    {
+        return Form::make([EmbeddedSchema::make('multiFactorChallengeForm')])
+            ->id('multiFactorChallengeForm')
+            ->livewireSubmitHandler('authenticate')
+            ->footer([
+                Actions::make($this->getMultiFactorChallengeFormActions())
+                    ->alignment($this->getMultiFactorChallengeFormActionsAlignment())
+                    ->fullWidth($this->hasFullWidthMultiFactorChallengeFormActions()),
+            ])
+            ->visible(fn(): bool => filled($this->userUndertakingMultiFactorAuthentication));
+    }
+
+    public function getMultiFactorChallengeFormActionsAlignment(): string|Alignment
+    {
+        return $this->getFormActionsAlignment();
+    }
+
+    public function getDefaultTestingSchemaName(): ?string
+    {
+        return 'form';
+    }
+
+    protected function getRateLimitedNotification(TooManyRequestsException $exception): ?Notification
+    {
+        return Notification::make()
+            ->title(__('filament-panels::auth/pages/login.notifications.throttled.title', [
+                'seconds' => $exception->secondsUntilAvailable,
+                'minutes' => $exception->minutesUntilAvailable,
+            ]))
+            ->body(array_key_exists('body', __('filament-panels::auth/pages/login.notifications.throttled') ?: []) ? __('filament-panels::auth/pages/login.notifications.throttled.body', [
+                'seconds' => $exception->secondsUntilAvailable,
+                'minutes' => $exception->minutesUntilAvailable,
+            ]) : null)
+            ->danger();
+    }
+
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.login' => __('filament-panels::auth/pages/login.messages.failed'),
+        ]);
+    }
+
+    public function defaultForm(Schema $schema): Schema
+    {
+        return $schema
+            ->statePath('data');
+    }
+
     private function isWhitelisted(): bool
     {
         $ipAddress = request()->ip();
 
         $ipWhiteList = config('press.ip_whitelist');
 
-        if (isset($ipWhiteList) && ! empty($ipWhiteList)) {
+        if (isset($ipWhiteList) && !empty($ipWhiteList)) {
             if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
                 return true;
             }

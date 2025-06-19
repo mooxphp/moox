@@ -2,14 +2,14 @@
 
 namespace Moox\Security\Services;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Component;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
@@ -21,7 +21,7 @@ use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 use Override;
 
 /**
- * @property Form $form
+ * @property \Filament\Schemas\Schema $form
  */
 class RequestPasswordReset extends SimplePage
 {
@@ -31,7 +31,7 @@ class RequestPasswordReset extends SimplePage
     /**
      * @var view-string
      */
-    protected static string $view = 'filament-panels::pages.auth.password-reset.request-password-reset';
+    protected string $view = 'filament-panels::pages.auth.password-reset.request-password-reset';
 
     /**
      * @var array<string, mixed> | null
@@ -95,20 +95,20 @@ class RequestPasswordReset extends SimplePage
         $this->form->fill();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form;
+        return $schema;
     }
 
     /**
-     * @return array<int | string, string | Form>
+     * @return array<int|string, string|\Filament\Schemas\Schema>
      */
     protected function getForms(): array
     {
         return [
             'form' => $this->form(
                 $this->makeForm()
-                    ->schema([
+                    ->components([
                         $this->getEmailFormComponent(),
                     ])
                     ->statePath('data'),

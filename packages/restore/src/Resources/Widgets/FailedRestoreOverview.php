@@ -2,6 +2,8 @@
 
 namespace Moox\Restore\Resources\Widgets;
 
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Moox\Restore\Models\RestoreBackup;
@@ -21,7 +23,7 @@ class FailedRestoreOverview extends BaseWidget
         return $table
             ->query(RestoreBackup::where('status', 'failed'))
             ->columns([
-                \Filament\Tables\Columns\IconColumn::make('status')
+                IconColumn::make('status')
                     ->label(__('restore::translations.status'))
                     ->icon(fn (string $state): string => match ($state) {
                         'heroicon-o-question-mark-circle',
@@ -31,9 +33,9 @@ class FailedRestoreOverview extends BaseWidget
                         'secondary',
                         'danger' => 'failed',
                     ]),
-                \Filament\Tables\Columns\TextColumn::make('restoreDestination.host')->label(__('restore::translations.name')),
-                \Filament\Tables\Columns\TextColumn::make('message')->label(__('restore::translations.message')),
-                \Filament\Tables\Columns\TextColumn::make('created_at')->label(__('restore::translations.created-at'))->date()->timezone('UTC'),
+                TextColumn::make('restoreDestination.host')->label(__('restore::translations.name')),
+                TextColumn::make('message')->label(__('restore::translations.message')),
+                TextColumn::make('created_at')->label(__('restore::translations.created-at'))->date()->timezone('UTC'),
             ]);
     }
 }

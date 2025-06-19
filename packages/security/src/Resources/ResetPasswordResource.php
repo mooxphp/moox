@@ -2,9 +2,9 @@
 
 namespace Moox\Security\Resources;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -23,13 +23,13 @@ class ResetPasswordResource extends Resource
 
     protected static ?string $model = ResetPassword::class;
 
-    protected static ?string $navigationIcon = 'gmdi-token';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-token';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -50,10 +50,10 @@ class ResetPasswordResource extends Resource
                     ->label(__('core::user.user_type'))
                     ->sortable(),
             ])
-            ->actions([
+            ->recordActions([
                 //
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

@@ -2,6 +2,8 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use RuntimeException;
+use Exception;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 
@@ -73,11 +75,11 @@ trait Link
                         exec('mklink /J '.escapeshellarg($link).' '.escapeshellarg($target));
                     } else {
                         if (! symlink($target, $link)) {
-                            throw new \RuntimeException('Failed to create symlink');
+                            throw new RuntimeException('Failed to create symlink');
                         }
                     }
                     $linkedPackages[] = "$name → $target";
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $failedPackages[] = "$name ({$e->getMessage()})";
                 }
             } else {

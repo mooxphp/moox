@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Resources\RestoreBackupResource\Pages;
 
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Restore\Models\RestoreBackup;
@@ -30,7 +31,7 @@ class ListRestoreBackups extends ListRecords
             Action::make('restore_backup')
                 ->label('Manual Restore Backup')
                 ->modalHeading('Manual Restore')
-                ->form([
+                ->schema([
                     Select::make('restoreDestinationId')
                         ->label('Select Restore Destination')
                         ->options(RestoreDestination::query()->pluck('host', 'id'))
@@ -49,7 +50,7 @@ class ListRestoreBackups extends ListRecords
                                     $sourceId = $restoreDestination->source->id;
                                     $backups = Backup::where('source_id', $sourceId)->whereNotNull('completed_at')->orderBy('completed_at', 'desc')->pluck('completed_at', 'id');
                                     $formattedBackups = $backups->mapWithKeys(function ($date, $id) {
-                                        return [$id => \Carbon\Carbon::parse($date)->format('d.m.Y H:i:s')];
+                                        return [$id => Carbon::parse($date)->format('d.m.Y H:i:s')];
                                     });
 
                                     return $formattedBackups;

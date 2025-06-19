@@ -2,17 +2,17 @@
 
 namespace Moox\Press\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -32,14 +32,14 @@ class WpPageResource extends Resource
 
     protected static ?string $model = WpPage::class;
 
-    protected static ?string $navigationIcon = 'gmdi-pages';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-pages';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_author')
@@ -391,12 +391,12 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('Wp Edit')->url(fn ($record): string => sprintf('/wp/wp-admin/post.php?post=%s&action=edit', $record->ID)),
             ])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     #[Override]

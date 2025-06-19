@@ -2,16 +2,16 @@
 
 namespace Moox\Training\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -30,16 +30,16 @@ class TrainingDateResource extends Resource
 
     protected static ?string $model = TrainingDate::class;
 
-    protected static ?string $navigationIcon = 'gmdi-date-range';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-date-range';
 
-    protected static ?string $navigationGroup = 'Trainings';
+    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'link';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     Select::make('training_invitation_id')
@@ -192,8 +192,8 @@ class TrainingDateResource extends Resource
                     ->multiple()
                     ->label('TrainingInvitation'),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     #[Override]

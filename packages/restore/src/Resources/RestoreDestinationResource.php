@@ -2,9 +2,15 @@
 
 namespace Moox\Restore\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\ListRestoreDestinations;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\CreateRestoreDestination;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\EditRestoreDestination;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables;
@@ -18,12 +24,12 @@ class RestoreDestinationResource extends Resource
 {
     protected static ?string $model = RestoreDestination::class;
 
-    protected static ?string $navigationIcon = 'gmdi-pin-end-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-pin-end-o';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('host')
                     ->label(__('restore::translations.host'))
                     ->placeholder(__('restore::translations.host-placeholder'))
@@ -145,12 +151,12 @@ class RestoreDestinationResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -165,9 +171,9 @@ class RestoreDestinationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRestoreDestinations::route('/'),
-            'create' => Pages\CreateRestoreDestination::route('/create'),
-            'edit' => Pages\EditRestoreDestination::route('/{record}/edit'),
+            'index' => ListRestoreDestinations::route('/'),
+            'create' => CreateRestoreDestination::route('/create'),
+            'edit' => EditRestoreDestination::route('/{record}/edit'),
         ];
     }
 

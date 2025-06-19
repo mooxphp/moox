@@ -2,9 +2,9 @@
 
 namespace Moox\Devops\Webhooks;
 
+use Filament\Actions\Action;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Moox\Devops\Models\MooxProject;

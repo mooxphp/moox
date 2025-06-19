@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources\TagResource\Pages;
 
+use Moox\Tag\Models\Tag;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tag\Resources\TagResource;
@@ -31,7 +32,7 @@ class CreateTag extends CreateRecord
         $translations = $data['translations'] ?? [];
         unset($data['translations']);
 
-        /** @var \Moox\Tag\Models\Tag $model */
+        /** @var Tag $model */
         $tag = $model::createWithTranslations($data, $translations);
 
         return $tag;

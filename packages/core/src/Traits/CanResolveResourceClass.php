@@ -2,6 +2,8 @@
 
 namespace Moox\Core\Traits;
 
+use Exception;
+
 trait CanResolveResourceClass
 {
     /**
@@ -43,7 +45,7 @@ trait CanResolveResourceClass
             return $resourceClass;
         }
 
-        throw new \Exception(
+        throw new Exception(
             'Could not automatically determine resource class for '.static::class.
             '. Please define protected static string $resource property.'
         );

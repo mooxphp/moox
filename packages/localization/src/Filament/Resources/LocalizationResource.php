@@ -4,10 +4,23 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources;
 
+use Moox\Localization\Models\Localization;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\Str;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,9 +32,9 @@ class LocalizationResource extends Resource
 {
     use BaseInResource, SingleSimpleInResource;
 
-    protected static ?string $model = \Moox\Localization\Models\Localization::class;
+    protected static ?string $model = Localization::class;
 
-    protected static ?string $navigationIcon = 'gmdi-language';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-language';
 
     public static function getModelLabel(): string
     {
@@ -48,58 +61,58 @@ class LocalizationResource extends Resource
         return config('localization.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Grid::make(2)
                     ->schema([
                         Grid::make()->schema([
                             Section::make([
-                                Forms\Components\Select::make('language_id')
+                                Select::make('language_id')
                                     ->label(__('localization::fields.language'))
                                     ->relationship('language', 'alpha2')
                                     ->required()
                                     ->live(),
-                                Forms\Components\TextInput::make('title')
+                                TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn (\Filament\Forms\Set $set, ?string $state) => $set('slug', \Illuminate\Support\Str::slug($state))),
-                                Forms\Components\TextInput::make('slug')
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
-                                Forms\Components\Select::make('fallback_language_id')
+                                Select::make('fallback_language_id')
                                     ->label(__('localization::fields.fallback_language'))
                                     ->relationship('fallbackLanguage', 'title')
                                     ->nullable(),
-                                Forms\Components\Toggle::make('is_active_admin')
+                                Toggle::make('is_active_admin')
                                     ->label(__('localization::fields.is_activ_admin'))
                                     ->default(false),
 
-                                Forms\Components\Toggle::make('is_active_frontend')
+                                Toggle::make('is_active_frontend')
                                     ->label(__('localization::fields.is_activ_frontend'))
                                     ->default(false),
 
-                                Forms\Components\Toggle::make('is_default')
+                                Toggle::make('is_default')
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false),
 
-                                Forms\Components\TextInput::make('routing_path')
+                                TextInput::make('routing_path')
                                     ->label(__('localization::fields.routing_path'))
                                     ->nullable(),
 
-                                Forms\Components\TextInput::make('routing_subdomain')
+                                TextInput::make('routing_subdomain')
                                     ->label(__('localization::fields.routing_subdomain'))
                                     ->nullable(),
 
-                                Forms\Components\TextInput::make('routing_domain')
+                                TextInput::make('routing_domain')
                                     ->label(__('localization::fields.routing_domain'))
                                     ->nullable(),
 
-                                Forms\Components\TextInput::make('translation_status')
+                                TextInput::make('translation_status')
                                     ->label(__('localization::fields.translation_status'))
                                     ->numeric()
                                     ->nullable(),
 
-                                Forms\Components\Textarea::make('language_settings')
+                                Textarea::make('language_settings')
                                     ->label(__('localization::fields.language_settings'))
                                     ->json(),
                             ]),
@@ -113,14 +126,14 @@ class LocalizationResource extends Resource
                                     ]),
                                 Section::make('')
                                     ->schema([
-                                        Forms\Components\Select::make('fallback_behaviour')
+                                        Select::make('fallback_behaviour')
                                             ->label(__('localization::fields.fallback_behaviour'))
                                             ->options(__('localization::enums/fallback-behaviour'))
                                             ->default('default'),
                                     ]),
                                 Section::make('')
                                     ->schema([
-                                        Forms\Components\Select::make('language_routing')
+                                        Select::make('language_routing')
                                             ->label(__('localization::fields.language_routing'))
                                             ->options(__('localization::enums/language-routing'))
                                             ->default('path'),
@@ -137,39 +150,39 @@ class LocalizationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('language.common_name')
+                TextColumn::make('language.common_name')
                     ->label(__('localization::fields.language')),
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label(__('localization::fields.title')),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('localization::fields.slug')),
-                Tables\Columns\TextColumn::make('fallbackLanguage.title')
+                TextColumn::make('fallbackLanguage.title')
                     ->label(__('localization::fields.fallback_language')),
-                Tables\Columns\ToggleColumn::make('is_active_admin')
+                ToggleColumn::make('is_active_admin')
                     ->label(__('localization::fields.is_activ_admin')),
-                Tables\Columns\ToggleColumn::make('is_active_frontend')
+                ToggleColumn::make('is_active_frontend')
                     ->label(__('localization::fields.is_activ_frontend')),
-                Tables\Columns\ToggleColumn::make('is_default')
+                ToggleColumn::make('is_default')
                     ->label(__('localization::fields.is_default')),
-                Tables\Columns\TextColumn::make('fallback_behaviour')
+                TextColumn::make('fallback_behaviour')
                     ->label(__('localization::fields.fallback_behaviour')),
-                Tables\Columns\TextColumn::make('language_routing')
+                TextColumn::make('language_routing')
                     ->label(__('localization::fields.language_routing')),
-                Tables\Columns\TextColumn::make('translation_status')
+                TextColumn::make('translation_status')
                     ->label(__('localization::fields.translation_status')),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()]);
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLocalizations::route('/'),
-            'create' => Pages\CreateLocalization::route('/create'),
-            'edit' => Pages\EditLocalization::route('/{record}/edit'),
-            'view' => Pages\ViewLocalization::route('/{record}'),
+            'index' => ListLocalizations::route('/'),
+            'create' => CreateLocalization::route('/create'),
+            'edit' => EditLocalization::route('/{record}/edit'),
+            'view' => ViewLocalization::route('/{record}'),
         ];
     }
 }

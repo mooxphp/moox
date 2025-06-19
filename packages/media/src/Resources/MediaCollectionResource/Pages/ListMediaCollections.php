@@ -2,9 +2,9 @@
 
 namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Media\Resources\MediaCollectionResource;
+use Filament\Actions\CreateAction;
 
 class ListMediaCollections extends ListRecords
 {

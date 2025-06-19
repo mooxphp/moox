@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
+use Moox\Data\Models\StaticLanguage;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ListStaticLanguages;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\CreateStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\EditStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ViewStaticLanguage;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -25,9 +30,9 @@ class StaticLanguageResource extends Resource
 {
     use BaseInResource, SingleSimpleInResource;
 
-    protected static ?string $model = \Moox\Data\Models\StaticLanguage::class;
+    protected static ?string $model = StaticLanguage::class;
 
-    protected static ?string $navigationIcon = 'gmdi-language';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-language';
 
     public static function getModelLabel(): string
     {
@@ -54,9 +59,9 @@ class StaticLanguageResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -129,11 +134,11 @@ class StaticLanguageResource extends Resource
                     ->label(__('data::fields.direction')),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('alpha2')
-                    ->form([
+                    ->schema([
                         TextInput::make('alpha2')
                             ->label(__('data::fields.alpha2'))
                             ->placeholder(__('core::core.search')),
@@ -152,7 +157,7 @@ class StaticLanguageResource extends Resource
                         return 'Alpha-2 Code: '.$data['alpha2'];
                     }),
                 Filter::make('alpha3_b')
-                    ->form([
+                    ->schema([
                         TextInput::make('alpha3_b')
                             ->label(__('data::fields.alpha3_b'))
                             ->placeholder(__('core::core.search')),
@@ -171,7 +176,7 @@ class StaticLanguageResource extends Resource
                         return 'Alpha-3 Bibliographic Code: '.$data['alpha3_b'];
                     }),
                 Filter::make('alpha3_t')
-                    ->form([
+                    ->schema([
                         TextInput::make('alpha3_t')
                             ->label(__('data::fields.alpha3_t'))
                             ->placeholder(__('core::core.search')),
@@ -190,7 +195,7 @@ class StaticLanguageResource extends Resource
                         return 'Alpha-3 Terminology Code: '.$data['alpha3_t'];
                     }),
                 Filter::make('common_name')
-                    ->form([
+                    ->schema([
                         TextInput::make('common_name')
                             ->label(__('data::fields.common_name'))
                             ->placeholder(__('core::core.search')),
@@ -209,7 +214,7 @@ class StaticLanguageResource extends Resource
                         return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('native_name')
-                    ->form([
+                    ->schema([
                         TextInput::make('native_name')
                             ->label(__('data::fields.native_name'))
                             ->placeholder(__('core::core.search')),
@@ -246,10 +251,10 @@ class StaticLanguageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticLanguages::route('/'),
-            'create' => Pages\CreateStaticLanguage::route('/create'),
-            'edit' => Pages\EditStaticLanguage::route('/{record}/edit'),
-            'view' => Pages\ViewStaticLanguage::route('/{record}'),
+            'index' => ListStaticLanguages::route('/'),
+            'create' => CreateStaticLanguage::route('/create'),
+            'edit' => EditStaticLanguage::route('/{record}/edit'),
+            'view' => ViewStaticLanguage::route('/{record}'),
         ];
     }
 }

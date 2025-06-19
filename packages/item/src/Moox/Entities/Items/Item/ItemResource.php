@@ -2,20 +2,24 @@
 
 namespace Moox\Item\Moox\Entities\Items\Item;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Item\Moox\Entities\Items\Item\Pages\ListItems;
+use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
+use Moox\Item\Moox\Entities\Items\Item\Pages\EditItem;
+use Moox\Item\Moox\Entities\Items\Item\Pages\ViewItem;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -35,7 +39,7 @@ class ItemResource extends BaseItemResource
 
     protected static ?string $model = Item::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -62,7 +66,7 @@ class ItemResource extends BaseItemResource
         return config('item.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         $taxonomyFields = static::getTaxonomyFields();
 
@@ -161,7 +165,7 @@ class ItemResource extends BaseItemResource
         ];
 
         return $form
-            ->schema($schema);
+            ->components($schema);
     }
 
     public static function table(Table $table): Table
@@ -211,13 +215,13 @@ class ItemResource extends BaseItemResource
                     ->toggleable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Active'),
                 Filter::make('title')
-                    ->form([
+                    ->schema([
                         TextInput::make('title')
                             ->label('Title')
                             ->placeholder(__('core::core.filter').' Title'),
@@ -253,10 +257,10 @@ class ItemResource extends BaseItemResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListItems::route('/'),
-            'create' => Pages\CreateItem::route('/create'),
-            'edit' => Pages\EditItem::route('/{record}/edit'),
-            'view' => Pages\ViewItem::route('/{record}'),
+            'index' => ListItems::route('/'),
+            'create' => CreateItem::route('/create'),
+            'edit' => EditItem::route('/{record}/edit'),
+            'view' => ViewItem::route('/{record}'),
         ];
     }
 }

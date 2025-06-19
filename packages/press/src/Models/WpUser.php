@@ -2,6 +2,7 @@
 
 namespace Moox\Press\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Awobaz\Mutator\Mutable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -176,9 +177,9 @@ class WpUser extends Authenticatable implements FilamentUser
             $this->load('userMeta');
         }
 
-        /** @var \Illuminate\Database\Eloquent\Collection<\Moox\Press\Models\WpUserMeta> $userMeta */
+        /** @var Collection<WpUserMeta> $userMeta */
         $userMeta = $this->userMeta;
-        /** @var ?\Moox\Press\Models\WpUserMeta $meta */
+        /** @var ?WpUserMeta $meta */
         $meta = $userMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;

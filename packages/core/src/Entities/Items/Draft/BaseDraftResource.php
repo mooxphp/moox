@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Filament\Forms\Components\Actions;
+use Filament\Schemas\Components\Actions;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -40,7 +40,6 @@ class BaseDraftResource extends BaseResource
 
         return true;
     }
-
     public static function enablePublish(): bool
     {
         if (static::getReadonlyConfig()) {
@@ -102,22 +101,22 @@ class BaseDraftResource extends BaseResource
             static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
             static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
         ];
-
+        
         if (static::enableCreate()) {
             $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         if (static::enableDelete()) {
             $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         if (static::enableEdit()) {
             $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-        if (static::enablePublish()) {
+        if(static::enablePublish()) {
             $actions[] = static::getPublishAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
-
+        
         return Actions::make($actions);
     }
 

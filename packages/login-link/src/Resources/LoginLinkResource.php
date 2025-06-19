@@ -2,14 +2,14 @@
 
 namespace Moox\LoginLink\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -28,13 +28,13 @@ class LoginLinkResource extends Resource
 
     protected static ?string $model = LoginLink::class;
 
-    protected static ?string $navigationIcon = 'gmdi-lock-clock-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-lock-clock-o';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('email')
                     ->label(__('core::user.email'))
                     ->maxLength(255),
@@ -116,10 +116,10 @@ class LoginLinkResource extends Resource
                     ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

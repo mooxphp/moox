@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
+use Moox\Data\Models\StaticTimezone;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -25,9 +30,9 @@ class StaticTimezoneResource extends Resource
 {
     use BaseInResource, SingleSimpleInResource;
 
-    protected static ?string $model = \Moox\Data\Models\StaticTimezone::class;
+    protected static ?string $model = StaticTimezone::class;
 
-    protected static ?string $navigationIcon = 'gmdi-travel-explore-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-travel-explore-o';
 
     public static function getModelLabel(): string
     {
@@ -54,9 +59,9 @@ class StaticTimezoneResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -111,11 +116,11 @@ class StaticTimezoneResource extends Resource
                     ->datetime(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('name')
-                    ->form([
+                    ->schema([
                         TextInput::make('name')
                             ->label(__('data::fields.name'))
                             ->placeholder(__('core::core.search')),
@@ -134,7 +139,7 @@ class StaticTimezoneResource extends Resource
                         return 'name: '.$data['name'];
                     }),
                 Filter::make('offset_standart')
-                    ->form([
+                    ->schema([
                         TextInput::make('offset_standart')
                             ->label(__('data::fields.offset_standard'))
                             ->placeholder(__('core::core.search')),
@@ -163,10 +168,10 @@ class StaticTimezoneResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticTimezones::route('/'),
-            'create' => Pages\CreateStaticTimezone::route('/create'),
-            'edit' => Pages\EditStaticTimezone::route('/{record}/edit'),
-            'view' => Pages\ViewStaticTimezone::route('/{record}'),
+            'index' => ListStaticTimezones::route('/'),
+            'create' => CreateStaticTimezone::route('/create'),
+            'edit' => EditStaticTimezone::route('/{record}/edit'),
+            'view' => ViewStaticTimezone::route('/{record}'),
         ];
     }
 }

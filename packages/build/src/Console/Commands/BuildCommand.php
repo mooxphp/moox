@@ -2,6 +2,14 @@
 
 namespace Moox\Build\Console\Commands;
 
+use RuntimeException;
+use Throwable;
+use ReflectionClass;
+use ReflectionMethod;
+use Exception;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use finfo;
 use Illuminate\Console\Command;
 use Moox\Core\Console\Traits\ArtLeft;
 
@@ -187,7 +195,7 @@ class BuildCommand extends Command
         $selectedTemplate = $templates[$type] ?? null;
 
         if (! $selectedTemplate) {
-            throw new \RuntimeException('Selected template not found');
+            throw new RuntimeException('Selected template not found');
         }
 
         $this->subject = $selectedTemplate['subject'];
@@ -409,7 +417,7 @@ class BuildCommand extends Command
                 }
 
                 return new $fullyQualifiedClassName(app());
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->line('Debug: Error loading provider: '.$e->getMessage());
             }
         }
@@ -432,10 +440,10 @@ class BuildCommand extends Command
 
         // If we couldn't get the config through methods, try reflection
         try {
-            $reflection = new \ReflectionClass($provider);
+            $reflection = new ReflectionClass($provider);
 
             // Try to find a method that returns the templateRename configuration
-            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
                 $methodName = $method->getName();
                 if (strpos($methodName, 'getTemplateRename') === 0) {
@@ -450,7 +458,7 @@ class BuildCommand extends Command
                 $mooxPackage = $mooxPackageProperty->getValue($provider);
 
                 if ($mooxPackage) {
-                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    $mooxPackageReflection = new ReflectionClass($mooxPackage);
                     if ($mooxPackageReflection->hasProperty('templateRename')) {
                         $templateRenameProperty = $mooxPackageReflection->getProperty('templateRename');
                         $templateRenameProperty->setAccessible(true);
@@ -459,7 +467,7 @@ class BuildCommand extends Command
                     }
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->line('Debug: Reflection error: '.$e->getMessage());
         }
 
@@ -480,10 +488,10 @@ class BuildCommand extends Command
 
         // If we couldn't get the config through methods, try reflection
         try {
-            $reflection = new \ReflectionClass($provider);
+            $reflection = new ReflectionClass($provider);
 
             // Try to find a method that returns the templateReplace configuration
-            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
                 $methodName = $method->getName();
                 if (strpos($methodName, 'getTemplateReplace') === 0) {
@@ -498,7 +506,7 @@ class BuildCommand extends Command
                 $mooxPackage = $mooxPackageProperty->getValue($provider);
 
                 if ($mooxPackage) {
-                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    $mooxPackageReflection = new ReflectionClass($mooxPackage);
                     if ($mooxPackageReflection->hasProperty('templateReplace')) {
                         $templateReplaceProperty = $mooxPackageReflection->getProperty('templateReplace');
                         $templateReplaceProperty->setAccessible(true);
@@ -507,7 +515,7 @@ class BuildCommand extends Command
                     }
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->line('Debug: Reflection error: '.$e->getMessage());
         }
 
@@ -528,10 +536,10 @@ class BuildCommand extends Command
 
         // If we couldn't get the config through methods, try reflection
         try {
-            $reflection = new \ReflectionClass($provider);
+            $reflection = new ReflectionClass($provider);
 
             // Try to find a method that returns the templateSectionReplace configuration
-            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
                 $methodName = $method->getName();
                 if (strpos($methodName, 'getTemplateSectionReplace') === 0) {
@@ -546,7 +554,7 @@ class BuildCommand extends Command
                 $mooxPackage = $mooxPackageProperty->getValue($provider);
 
                 if ($mooxPackage) {
-                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    $mooxPackageReflection = new ReflectionClass($mooxPackage);
                     if ($mooxPackageReflection->hasProperty('templateSectionReplace')) {
                         $templateSectionReplaceProperty = $mooxPackageReflection->getProperty('templateSectionReplace');
                         $templateSectionReplaceProperty->setAccessible(true);
@@ -555,7 +563,7 @@ class BuildCommand extends Command
                     }
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->line('Debug: Reflection error: '.$e->getMessage());
         }
 
@@ -649,7 +657,7 @@ class BuildCommand extends Command
             closedir($directory);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error('  Error copying directory: '.$e->getMessage().' '.$this->emojiNoSee);
 
             return false;
@@ -807,9 +815,9 @@ class BuildCommand extends Command
     {
         $files = [];
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $file) {
@@ -832,7 +840,7 @@ class BuildCommand extends Command
         }
 
         // Check file content
-        $finfo = new \finfo(FILEINFO_MIME);
+        $finfo = new finfo(FILEINFO_MIME);
         $mime = $finfo->file($file);
 
         return strpos($mime, 'text/') !== 0 && strpos($mime, 'application/json') !== 0;

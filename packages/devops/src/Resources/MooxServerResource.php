@@ -2,14 +2,14 @@
 
 namespace Moox\Devops\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,12 +22,12 @@ class MooxServerResource extends Resource
 {
     protected static ?string $model = MooxServer::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('name')
                     ->maxLength(255)
                     ->required(),
@@ -91,7 +91,7 @@ class MooxServerResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('name', 'desc')
-            ->actions([
+            ->recordActions([
                 Action::make('reboot')
                     ->label('Reboot')
                     ->action(function ($record) {
@@ -105,7 +105,7 @@ class MooxServerResource extends Resource
                     ->modalHeading('Reboot')
                     ->modalDescription('Are you sure you\'d like to reboot this server?'),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
                 BulkAction::make('reboot')
                     ->requiresConfirmation()

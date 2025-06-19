@@ -2,6 +2,10 @@
 
 namespace Moox\Draft\Models;
 
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -19,7 +23,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property array $image
  * @property string $type
  * @property string[] $translatedAttributes
- * @property \Carbon\Carbon|null $due_at
+ * @property Carbon|null $due_at
  * @property string $uuid
  * @property string $ulid
  * @property-read string $title
@@ -28,24 +32,24 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $content
  * @property-read string $status
  * @property-read int $author_id
- * @property-read \Carbon\Carbon|null $to_publish_at
- * @property-read \Carbon\Carbon|null $published_at
- * @property-read \Carbon\Carbon|null $to_unpublish_at
- * @property-read \Carbon\Carbon|null $unpublished_at
+ * @property-read Carbon|null $to_publish_at
+ * @property-read Carbon|null $published_at
+ * @property-read Carbon|null $to_unpublish_at
+ * @property-read Carbon|null $unpublished_at
  * @property-read int|null $published_by_id
  * @property-read int|null $unpublished_by_id
- * @property-read \Carbon\Carbon|null $deleted_at
+ * @property-read Carbon|null $deleted_at
  * @property-read int|null $deleted_by_id
- * @property-read \Carbon\Carbon|null $restored_at
+ * @property-read Carbon|null $restored_at
  * @property-read int|null $restored_by_id
- * @property-read \App\Models\User|null $author
- * @property-read \Illuminate\Database\Eloquent\Model|null $publishedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $updatedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $unpublishedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $deletedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $restoredBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read User|null $author
+ * @property-read Model|null $publishedBy
+ * @property-read Model|null $updatedBy
+ * @property-read Model|null $createdBy
+ * @property-read Model|null $unpublishedBy
+ * @property-read Model|null $deletedBy
+ * @property-read Model|null $restoredBy
+ * @property-read Collection<int, Media> $media
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
@@ -97,19 +101,20 @@ class Draft extends BaseDraftModel implements HasMedia
         parent::boot();
 
         static::creating(function ($model) {
-            $model->uuid = (string) \Illuminate\Support\Str::uuid();
-            $model->ulid = (string) \Illuminate\Support\Str::ulid();
+            $model->uuid = (string) Str::uuid();
+            $model->ulid = (string) Str::ulid();
         });
+
     }
 
     public function getUlidAttribute(): string
     {
-        return $this->ulid ?? (string) \Illuminate\Support\Str::ulid();
+        return $this->ulid ?? (string) Str::ulid();
     }
 
     public function getUuidAttribute(): string
     {
-        return $this->uuid ?? (string) \Illuminate\Support\Str::uuid();
+        return $this->uuid ?? (string) Str::uuid();
     }
 
     public static function getResourceName(): string
@@ -140,7 +145,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function handleSchedulingDates(): void
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         if (! $translation) {
@@ -218,7 +223,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isScheduledForPublishing(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
@@ -227,7 +232,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isPublished(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation?->published_at !== null;
@@ -236,7 +241,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isScheduledForUnpublishing(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
@@ -245,7 +250,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isUnpublished(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->unpublished_at !== null;
@@ -303,7 +308,7 @@ class Draft extends BaseDraftModel implements HasMedia
     public function isRestored(): bool
     {
         $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var \Moox\Draft\Models\DraftTranslation|null $translation */
+        /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
         return $translation && $translation->restored_at !== null;

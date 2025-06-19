@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Category;
 
+use Illuminate\Support\Facades\Blade;
+use Spatie\LaravelPackageTools\Package;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
-use Illuminate\Support\Facades\Blade;
 use Moox\Category\Commands\InstallCommand;
-use Moox\Category\Moox\Entities\Categories\Category\Pages\ListCategories;
-use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Category\Moox\Entities\Categories\Category\Pages\ListCategories;
 
 class CategoryServiceProvider extends PackageServiceProvider
 {

@@ -2,6 +2,9 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Moox\Localization\Models\Localization;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -48,35 +51,36 @@ abstract class BaseEditDraft extends EditRecord
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
-    {
-        /** @var Model&TranslatableContract $record */
-        if (! $this->lang) {
-            return parent::handleRecordUpdate($record, $data);
-        }
-
-        if (! property_exists($record, 'translatedAttributes')) {
-            return parent::handleRecordUpdate($record, $data);
-        }
-
-        // Save translation manually
-        $translation = $record->translations()->firstOrNew([
-            'locale' => $this->lang,
-        ]);
-
-        foreach ($record->translatedAttributes as $attr) {
-            if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
-                $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
-            }
-        }
-        $translation->save();
-
-        // Remove 'translations' from data before update
-        unset($data['translations']);
-
-        $record->update($data);
-
-        return $record;
+{
+    /** @var Model&TranslatableContract $record */
+    if (! $this->lang) {
+        return parent::handleRecordUpdate($record, $data);
     }
+
+    if (! property_exists($record, 'translatedAttributes')) {
+        return parent::handleRecordUpdate($record, $data);
+    }
+
+    // Save translation manually
+    $translation = $record->translations()->firstOrNew([
+        'locale' => $this->lang,
+    ]);
+
+    foreach ($record->translatedAttributes as $attr) {
+        if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
+            $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
+        }
+    }
+    $translation->save();
+
+    // Remove 'translations' from data before update
+    unset($data['translations']);
+
+    $record->update($data);
+
+    return $record;
+}
+
 
     public function mutateFormDataBeforeSave(array $data): array
     {
@@ -107,12 +111,12 @@ abstract class BaseEditDraft extends EditRecord
 
     public function getHeaderActions(): array
     {
-        $languages = \Moox\Localization\Models\Localization::with('language')->get();
+        $languages = Localization::with('language')->get();
         $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
 
         return [
-            \Filament\Actions\ActionGroup::make(
-                $languages->map(fn ($localization) => \Filament\Actions\Action::make('language_'.$localization->language->alpha2)
+            ActionGroup::make(
+                $languages->map(fn ($localization) => Action::make('language_'.$localization->language->alpha2)
                     ->icon('flag-'.$localization->language->alpha2)
                     ->label('')
                     ->color('transparent')

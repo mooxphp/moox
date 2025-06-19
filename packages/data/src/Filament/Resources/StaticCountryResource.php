@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
+use Moox\Data\Models\StaticCountry;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\LocalesRelationManager;
+use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticCurrencyRealtionManager;
+use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticTimezoneRealtionManager;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ListStaticCountries;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\CreateStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,9 +31,9 @@ class StaticCountryResource extends Resource
 {
     use BaseInResource, SingleSimpleInResource;
 
-    protected static ?string $model = \Moox\Data\Models\StaticCountry::class;
+    protected static ?string $model = StaticCountry::class;
 
-    protected static ?string $navigationIcon = 'gmdi-flag-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-flag-o';
 
     public static function getModelLabel(): string
     {
@@ -52,9 +60,9 @@ class StaticCountryResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -185,27 +193,27 @@ class StaticCountryResource extends Resource
                 TextColumn::make('date_format')->label(__('data::fields.date_format')),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([]);
     }
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\LocalesRelationManager::class,
-            RelationManagers\StaticCurrencyRealtionManager::class,
-            RelationManagers\StaticTimezoneRealtionManager::class,
+            LocalesRelationManager::class,
+            StaticCurrencyRealtionManager::class,
+            StaticTimezoneRealtionManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticCountries::route('/'),
-            'create' => Pages\CreateStaticCountry::route('/create'),
-            'edit' => Pages\EditStaticCountry::route('/{record}/edit'),
-            'view' => Pages\ViewStaticCountry::route('/{record}'),
+            'index' => ListStaticCountries::route('/'),
+            'create' => CreateStaticCountry::route('/create'),
+            'edit' => EditStaticCountry::route('/{record}/edit'),
+            'view' => ViewStaticCountry::route('/{record}'),
         ];
     }
 }

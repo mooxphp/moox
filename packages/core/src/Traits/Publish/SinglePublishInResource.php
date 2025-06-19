@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\Publish;
 
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
+use Filament\Schemas\Components\Actions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;

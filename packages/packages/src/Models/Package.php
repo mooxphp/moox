@@ -2,20 +2,25 @@
 
 namespace Moox\Packages\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Models\User;
 use Illuminate\Support\Str;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Package extends BaseItemModel
 {
     use HasModelTaxonomy;
+
 
     protected $table = 'packages';
 
     protected $primaryKey = 'id';
 
     public $incrementing = false;
+
+
 
     protected $fillable = [
         'title',
@@ -49,6 +54,8 @@ class Package extends BaseItemModel
         'created_at' => 'datetime',
     ];
 
+
+
     public static function booted()
     {
         static::creating(function ($model) {
@@ -65,6 +72,9 @@ class Package extends BaseItemModel
     {
         return $this->morphTo();
     }
+
+
+
 
     public static function getResourceName(): string
     {

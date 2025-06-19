@@ -2,10 +2,10 @@
 
 namespace Moox\Expiry\Resources;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -29,14 +29,14 @@ class ExpiryResource extends Resource
 
     protected static ?string $model = Expiry::class;
 
-    protected static ?string $navigationIcon = 'gmdi-view-timeline-o';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-view-timeline-o';
 
     protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
 
         ]);
     }
@@ -144,7 +144,7 @@ class ExpiryResource extends Resource
                     ->label(__('core::expiry.notifyUser'))
                     ->options(Expiry::getUserOptions()),
             ])
-            ->actions([
+            ->recordActions([
                 $expiryActionClass::make(),
 
                 ViewAction::make()
@@ -162,7 +162,7 @@ class ExpiryResource extends Resource
                     ->openUrlInNewTab(),
 
             ])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     #[Override]

@@ -2,7 +2,8 @@
 
 namespace Moox\Core\Forms\Components;
 
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
+use Closure;
 use Filament\Forms\Components\TextInput;
 
 class CopyableField extends TextInput
@@ -51,7 +52,7 @@ class CopyableField extends TextInput
         return $component;
     }
 
-    public function defaultValue(string|\Closure $value): static
+    public function defaultValue(string|Closure $value): static
     {
         return $this->default($value);
     }

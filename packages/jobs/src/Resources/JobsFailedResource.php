@@ -2,15 +2,15 @@
 
 namespace Moox\Jobs\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
@@ -26,7 +26,7 @@ class JobsFailedResource extends Resource
 
     protected static ?string $model = FailedJob::class;
 
-    protected static ?string $navigationIcon = null;
+    protected static string | \BackedEnum | null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string
@@ -39,17 +39,19 @@ class JobsFailedResource extends Resource
     }
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('uuid')->disabled()->columnSpan(4)->label(__('jobs::translations.uuid')),
                 TextInput::make('failed_at')->disabled()->label(__('jobs::translations.failed_at')),
                 TextInput::make('id')->disabled()->label(__('jobs::translations.id')),
                 TextInput::make('connection')->disabled()->label(__('jobs::translations.connection')),
                 TextInput::make('queue')->disabled()->label(__('jobs::translations.queue')),
-                TextArea::make('exception')->disabled()->rows(10)->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.exception')),
-                TextArea::make('payload')->disabled()->rows(5)->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.payload')),
+
+                // make text a little bit smaller because often a complete Stack Trace is shown:
+                TextArea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.connection')),
+                TextArea::make('payload')->disabled()->columnSpan(4)->label(__('jobs::translations.payload')),
             ])->columns(4);
     }
 
@@ -74,7 +76,7 @@ class JobsFailedResource extends Resource
                 TextColumn::make('queue')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true)->label(__('jobs::translations.queue')),
             ])
             ->filters([])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkAction::make('retry')
                     ->label(__('jobs::translations.retry'))
                     ->requiresConfirmation()
@@ -89,7 +91,7 @@ class JobsFailedResource extends Resource
                             ->send();
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 DeleteAction::make('Delete')->label(__('jobs::translations.delete')),
                 ViewAction::make('View'),
                 Action::make('retry')

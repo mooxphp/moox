@@ -18,10 +18,9 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "adrolli/filament-title-with-slug": "*",
         "spatie/laravel-package-tools": "^1.13.0",
         "laravel/framework": "^11.0|^12.0",
-        "filament/filament": "^3.2",
+        "filament/filament": "4.0.0-beta2",
         "codeat3/blade-google-material-design-icons": "^1.0"
     },
     "autoload": {
@@ -36,51 +35,30 @@
             ]
         },
         "moox": {
-            "title": "Moox Core",
             "require": {
-                "moox/data": {},
-                "moox/localization": {},
                 "spatie/laravel-medialibrary": {
-                    "auto_publish": "spatie-media-config",
-                    "replace_model": {
-                        "from": "Spatie\\MediaLibrary\\MediaCollections\\Models\\Media",
-                        "to": "Moox\\Core\\Media"
-                    },
-                    "replace_pathgenerator": {
-                        "info": "Replace the path generator with the Moox one.",
-                        "from": "Spatie\\MediaLibrary\\MediaCollections\\Models\\Media",
-                        "to": "Moox\\Core\\Media",
-                        "success": "Path generator replaced."
-                    }
+                    "auto_publish": "spatie-media-config"
                 },
                 "filament/spatie-media-library-plugin": {}
             },
             "install": {
-                "migrate": {
-                    "path": "database/migrations"
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/MediaSeeder.php",
+                "auto_publish": "moox-media-config",
+                "auto_entities": {
+                    "Some Resource": true,
+                    "Another Resource": null
                 },
-                "seed_demodata": {
-                    "ask": "Do you want to seed demo data?",
-                    "default": false,
-                    "file": "database/seeders/MediaDemoSeeder.php"
-                },
-                "publish": {
-                    "tag": "moox-media-config"
-                },
-                "entities": {
-                    "Job Manager": true,
-                    "Failed Jobs": false
-                },
-                "classes": {
+                "auto_class": {
                     "Some Class": "Moox\\Core\\SomeClass",
                     "Another Class": "Moox\\Core\\AnotherClass"
                 },
-                "run": {
+                "auto_run": {
                     "Run this": "php artisan run:this",
                     "Build the frontend": "npm run build",
                     "Clear the cache": "php artisan cache:clear"
                 },
-                "runhere": {
+                "auto_runhere": {
                     "Build the frontend": "npm run build"
                 }
             },
