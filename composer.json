@@ -33,7 +33,6 @@
         "moox/devops": "*",
         "moox/draft": "*",
         "moox/expiry": "*",
-        "moox/featherlight": "dev-main",
         "moox/file-icons": "*",
         "moox/flag-icons-circle": "*",
         "moox/flag-icons-origin": "*",
