@@ -1,8 +1,9 @@
 <?php
 
-return static function (Symplify\MonorepoBuilder\ValueObject\Configuration $config): void {
-    $config->packages([
-        __DIR__ . '/packages/*',
-    ]);
-    $config->defaultBranch('main');
+declare(strict_types=1);
+
+use Symplify\MonorepoBuilder\Config\MBConfig;
+
+return static function (MBConfig $mbConfig): void {
+    $mbConfig->packageDirectories([__DIR__ . '/packages']);
 };
