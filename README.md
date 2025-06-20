@@ -28,3 +28,6 @@ php artisan moox:install
 | 2.x          | \> 9.x          | 2.x              | \> 8.0      |
 | 3.x          | \> 10.x         | 3.x              | \> 8.1      |
 | 4.x          | \> 11.x         | 4.x              | \> 8.2      |
+
+
+Moox Press packages require WordPress Version 6.7, password hashing is currently not compatible with newer versions. We will fix that soon.
