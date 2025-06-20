@@ -23,8 +23,8 @@ php artisan moox:install
 
 ## Requirements
 
-| Plugin Version | Laravel Version | Filament Version | PHP Version |
-| -------------- | --------------- | ---------------- | ----------- |
-| 2.x            | \>9.x             | 2.x             | \> 8.0      |
-| 3.x            | \> 10.x            | 3.x            | \> 8.1      |
-| 4.x            | \> 12.x            | 4.x            | \> 8.2      |
+| Moox Version | Laravel Version | Filament Version | PHP Version |
+| ------------ | --------------- | ---------------- | ----------- |
+| 2.x          | \>9.x           | 2.x              | \> 8.0      |
+| 3.x          | \> 10.x         | 3.x              | \> 8.1      |
+| 4.x          | \> 12.x         | 4.x              | \> 8.2      |
