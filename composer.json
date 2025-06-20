@@ -16,8 +16,17 @@
     "require-dev": {
         "symplify/monorepo-builder": "^11.0"
     },
+    "autoload-dev": {
+        "classmap": [
+            "packages/*/tests",
+            "packages/*/database/factories"
+        ]
+    },
     "scripts": {
         "release": "monorepo-builder release",
         "split": "monorepo-builder split"
+    },
+    "config": {
+        "sort-packages": true
     }
 }

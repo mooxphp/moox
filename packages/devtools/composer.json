@@ -1,0 +1,47 @@
+{
+    "name": "moox/devtools",
+    "description": "This is a Meta Package to have all dev dependencies in one place. Just require-dev this package in your packages.",
+    "type": "moox-core",
+    "license": "MIT",
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^9.5",
+        "pestphp/pest": "^3.2",
+        "pestphp/pest-plugin-livewire": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "phpstan/phpstan": "^2.1",
+        "ryangjchandler/blade-capture-directive": "^1.0",
+        "spatie/larastan": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\DevTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\DevTools\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "lint": "vendor/bin/phpstan analyse --verbose --ansi",
+        "format": "vendor/bin/pint",
+        "analyze": "vendor/bin/phpstan analyse --memory-limit 512m",
+        "build": "vendor/bin/testbench workbench:build",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "vendor/bin/testbench serve"
+        ],
+        "prepare": "vendor/bin/testbench package:discover",
+        "clear": "vendor/bin/testbench package:purge-clipboard"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

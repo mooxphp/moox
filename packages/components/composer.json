@@ -65,7 +65,6 @@
     "prefer-stable": true,
     "require-dev": {
         "orchestra/testbench": "^9.5",
-        "pestphp/pest": "^3.2",
         "pestphp/pest-plugin-livewire": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.0",
         "ryangjchandler/blade-capture-directive": "^1.0"

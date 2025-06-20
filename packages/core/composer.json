@@ -1,6 +1,7 @@
 {
     "name": "moox/core",
     "description": "The Moox Core package cares for many common features. It is required by all Moox packages.",
+    "type": "moox-core",
     "keywords": [
         "Laravel",
         "Filament",
@@ -61,14 +62,6 @@
                 "auto_runhere": {
                     "Build the frontend": "npm run build"
                 }
-            },
-            "update": {
-                "migrate": "database/migrations",
-                "merge": "moox-media-config"
-            },
-            "uninstall": {
-                "migrate": "database/migrations",
-                "remove": "moox-media-config"
             }
         }
     },

@@ -227,7 +227,7 @@ To schedule any command without the need to change code (in kernel.php), you mig
 
 More information:
 
--   [Laravel Forge docs: Queues](https://forge.laravel.com/docs/sites/queues.html)
+- [Laravel Forge docs: Queues](https://forge.laravel.com/docs/sites/queues.html)
 
 ### Shared Hosting
 
@@ -249,18 +249,18 @@ The best way, to automate your jobs (and care for re-running the queue:worker af
 
 More information:
 
--   [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
--   [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
+- [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
+- [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
 
 ### Shared Hosting API
 
 The Shared Hosting API in Moox Core allows to `schedule/run` from an URL. And in Moox Jobs we use this feature to do a `queue:work` from an URL.
 
--   https://yourdomain.com/queue/work?token=secure
+- https://yourdomain.com/queue/work?token=secure
 
 You can add an optional `timeout` parameter to the URL to specify the timeout for the queue worker in seconds. If no timeout is specified, the default timeout of 60 seconds is used.
 
--   https://yourdomain.com/queue/work?token=secure&timeout=300
+- https://yourdomain.com/queue/work?token=secure&timeout=300
 
 If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` in [Core Config](https://github.com/mooxphp/core/blob/main/README.md#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 
@@ -270,7 +270,7 @@ On a Root Server, VPS or Cloud Server Droplet the fastest way is to do job queui
 
 More information:
 
--   [Laravel Horizon on Ubuntu](https://dev.to/shuv1824/laravel-horizon-with-nginx-and-ubuntu-18-04-on-digitalocean-1fod)
+- [Laravel Horizon on Ubuntu](https://dev.to/shuv1824/laravel-horizon-with-nginx-and-ubuntu-18-04-on-digitalocean-1fod)
 
 ### Laravel Vapor
 
@@ -278,7 +278,7 @@ On Laravel Vapor, the first-party deployment tool for going Serverless (using Am
 
 More information:
 
--   [Laravel Vapor Docs: Queues](https://docs.vapor.build/resources/queues.html)
+- [Laravel Vapor Docs: Queues](https://docs.vapor.build/resources/queues.html)
 
 When you got your job queues up and running, a good way to test Moox Jobs is using our
 
@@ -402,9 +402,9 @@ As shown in the Demo Job above, Moox Jobs comes with a progress feature. Using t
 
 If you want to use the progress feature, be reminded that:
 
--   Your jobs will not run without Moox Jobs installed, when using the progress feature. If your jobs are part of an installable package, you should consider requiring Moox Jobs with your package.
--   If you want to remove Moox Jobs from your app, you have to remove the progress feature from your jobs prior to uninstalling Moox Jobs.
--   Coding the setProgress may not give an exact information about the progress. But especially for long running jobs it might be interesting to see where the job hangs (or just makes a long break). Debugging jobs without any glue about the progress may be much harder.
+- Your jobs will not run without Moox Jobs installed, when using the progress feature. If your jobs are part of an installable package, you should consider requiring Moox Jobs with your package.
+- If you want to remove Moox Jobs from your app, you have to remove the progress feature from your jobs prior to uninstalling Moox Jobs.
+- Coding the setProgress may not give an exact information about the progress. But especially for long running jobs it might be interesting to see where the job hangs (or just makes a long break). Debugging jobs without any glue about the progress may be much harder.
 
 ## Model
 
@@ -483,60 +483,60 @@ As there are many parts (plugins) of Moox that need to be developed, there is no
 
 ### Stability
 
--   [ ] Enable Logging with Moox Audit, extend demojob and others
--   [ ] Cleanup, Pruning, Detention (and config / docs for that) - https://github.com/croustibat/filament-jobs-monitor/commit/4616bb4b2f82d542cbbfe88d5143c9c43ec5196b
--   [ ] Improve Batches, see https://laravel.com/docs/10.x/queues#inspecting-batches and https://cosme.dev/post/how-to-handle-longrunning-jobs-in-laravel
--   [ ] Auto-handle the never-ending Jobs running with the sync driver
--   [ ] Maybe there is an easy way to support Jobs waiting with Redis?
+- [ ] Enable Logging with Moox Audit, extend demojob and others
+- [ ] Cleanup, Pruning, Detention (and config / docs for that) - https://github.com/croustibat/filament-jobs-monitor/commit/4616bb4b2f82d542cbbfe88d5143c9c43ec5196b
+- [ ] Improve Batches, see https://laravel.com/docs/10.x/queues#inspecting-batches and https://cosme.dev/post/how-to-handle-longrunning-jobs-in-laravel
+- [ ] Auto-handle the never-ending Jobs running with the sync driver
+- [ ] Maybe there is an easy way to support Jobs waiting with Redis?
 
 #### UX
 
--   [ ] Create a nicer UI (Charts, Apex?) and Dashboard (the Monitor)
--   [ ] Test progress bars
--   [ ] Instead of delete, it is better to Cancel jobs, mark them as Cancelled
--   [ ] Distinct between Failed (retry) and finally Failed or show retries left (like attempts show, but more obvious)
--   [ ] Improve Batches (Partly failing / non failing, see if job belongs to a batch, click-filter the jobs of a batch)
--   [ ] Failed job resource does not show the job name
--   [ ] Add filters and simplify usage
--   [ ] Configuration UX, in Navigation
+- [ ] Create a nicer UI (Charts, Apex?) and Dashboard (the Monitor)
+- [ ] Test progress bars
+- [ ] Instead of delete, it is better to Cancel jobs, mark them as Cancelled
+- [ ] Distinct between Failed (retry) and finally Failed or show retries left (like attempts show, but more obvious)
+- [ ] Improve Batches (Partly failing / non failing, see if job belongs to a batch, click-filter the jobs of a batch)
+- [ ] Failed job resource does not show the job name
+- [ ] Add filters and simplify usage
+- [ ] Configuration UX, in Navigation
 
 ### Notifications
 
--   [ ] Notifications / Mailables for failed jobs and daily stats
+- [ ] Notifications / Mailables for failed jobs and daily stats
 
 ### Redis
 
--   [ ] Improve the support for Redis
--   [ ] Add "soft" dependencies to installer (Horizon or Predis?)
+- [ ] Improve the support for Redis
+- [ ] Add "soft" dependencies to installer (Horizon or Predis?)
 
 ### Queue Worker and Supervisor
 
--   [ ] Improve the support for queue workers and Supervisor
+- [ ] Improve the support for queue workers and Supervisor
 
 ### SQS
 
--   [ ] Improve the support for Amazon SQS or document
--   [ ] Add "soft" dependencies to installer (AWS SDK for PHP)
+- [ ] Improve the support for Amazon SQS or document
+- [ ] Add "soft" dependencies to installer (AWS SDK for PHP)
 
 ### Beanstalkd
 
--   [ ] Improve the support for Beanstalkd or document
+- [ ] Improve the support for Beanstalkd or document
 
 ### API, Scheduler, CRON
 
--   [ ] API
--   [ ] Scheduler (maybe an additional plugin)
--   [ ] CRON (maybe an additional plugin)
+- [ ] API
+- [ ] Scheduler (maybe an additional plugin)
+- [ ] CRON (maybe an additional plugin)
 
 ## Contribute
 
 We welcome every contribution! It would be awesome, if you:
 
--   Create an Issue in this Repo that contains information about the problem or idea. We'll reply within a couple of days.
--   Create a Pull Request in the [Monorepo](https://github.com/mooxphp/moox). Please do not PR to our read-only repos, they are not prepared for code changes. Only the monorepo has quality gates and automated tests.
--   Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
--   Tell other people about Moox or link to us.
--   Consider a [donation or sponsorship](https://github.com/sponsors/mooxphp).
+- Create an Issue in this Repo that contains information about the problem or idea. We'll reply within a couple of days.
+- Create a Pull Request in the [Monorepo](https://github.com/mooxphp/moox). Please do not PR to our read-only repos, they are not prepared for code changes. Only the monorepo has quality gates and automated tests.
+- Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
+- Tell other people about Moox or link to us.
+- Consider a [donation or sponsorship](https://github.com/sponsors/mooxphp).
 
 ## Testing
 
@@ -547,9 +547,9 @@ Moox Jobs has currently no fully automated tests (besides Laravel Pint, PHPStan 
 
 and there are some things to consider:
 
--   Is Filament already installed or not? Our installer provides auto-installation including Filament.
--   Is there data to migrate? Our updater migrates existing data and needs demo data for this.
--   It is important to test different platforms (Linux, Mac, Windows), environments (Forge-Server, Shared Hosts, Local development) and queue drivers (Redis, Database, Sync, SQS, Beanstalkd)
+- Is Filament already installed or not? Our installer provides auto-installation including Filament.
+- Is there data to migrate? Our updater migrates existing data and needs demo data for this.
+- It is important to test different platforms (Linux, Mac, Windows), environments (Forge-Server, Shared Hosts, Local development) and queue drivers (Redis, Database, Sync, SQS, Beanstalkd)
 
 ### Test installation
 
@@ -643,8 +643,8 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 This Filament Plugin is heavily inspired (uses concept and / or code) from:
 
--   https://github.com/croustibat/filament-jobs-monitor
--   https://gitlab.com/amvisor/filament-failed-jobs
+- https://github.com/croustibat/filament-jobs-monitor
+- https://gitlab.com/amvisor/filament-failed-jobs
 
 Both under MIT License.
 A BIG thank you!!!
