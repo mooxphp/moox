@@ -1,3 +1,6 @@
+> We are currently rebuilding the Monorepo, preparing for Filament 4, stay tuned!
+
+
 # Moox
 
 This is the Monorepo of the Moox Project. It is home of our ecosystem of Laravel packages and Filament plugins that are developed to form a CMS, Shop platform or other website or app.
