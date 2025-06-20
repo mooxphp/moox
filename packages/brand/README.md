@@ -12,7 +12,14 @@ This is a Laravel package that also ships every kind of image or blade component
 
 ## Installation
 
-Coming soon ...
+Moox Brand will automatically be installed with Moox Core and every other package that needs our identity.
+
+Installing Moox is as easy as:
+
+```bash
+composer require moox/brand
+php artisan moox:install
+```
 
 ## The Moox Brand
 
@@ -30,7 +37,7 @@ Coming soon ...
 
 We write **Moox**, not ~~moox~~, not ~~MOOX~~, even if the logo does it wrong ;-)
 
-## Our Moox Logo
+## The Moox Logo
 
 Our logo is the infinity symbol — simple, memorable, and hinting at future-proof flexibility.
 
@@ -99,25 +106,65 @@ All our packages have a consistent banner — useful for fast visual context.
 -   Primary size: **2560×1440**
 -   Required by: [filamentphp.com](https://filamentphp.com/)
 -   Compatible with: GitHub, Packagist, VS Code, and beyond
--   See the example in this README.md or any other package.
-
----
+-   See the example in this README.md or in any other package.
 
 ## Moox ASCII Art
 
-For Artisan commands (and others) we use ASCII Art ... more coming soon ...
+For Artisan commands (and others) we use ASCII Art that ships with a trait in this package.
 
----
+```php
+<?php
 
-## Moox Screenshots
+namespace Moox\Brand\Console\Traits;
 
-Our screenshots should use the Moox Screenshot Mockup. Please take care of not leaking private data. We probably use short animated GIF videos instead of static JPEGs.
+use function Laravel\Prompts\info;
+
+trait Art
+{
+    public function art(): void
+    {
+        info('
+
+						Weird looking code, nice ASCII art, we sware! ;-)
+
+        ');
+    }
+}
+
+```
 
 ## The Moox Bot
 
 Moox Bot is the identity of our GitHub Bot and he is always around, when browsing Moox.org. He is a nice and helpful robot.
 
-## Our Moox Colors
+He is used as Avatar:
+
+<p align="center">
+    <br>
+    <img src="./public/robot/mooxbot-avatar.jpg" width="200" alt="Moox">
+    <br>
+    <br>
+</p>
+
+Or flying around:
+
+<p align="center">
+    <br>
+    <img src="./public/robot/2-attention.png" width="200" alt="Moox">
+    <br>
+    <br>
+</p>
+
+Sometimes hiding:
+
+<p align="center">
+    <br>
+    <img src="./public/robot/80-box.png" width="200" alt="Moox">
+    <br>
+    <br>
+</p>
+
+## The Moox Colors
 
 We haven't defined the colors exactly as we only use them as gradients but those are picked from our logo and banner:
 
@@ -126,17 +173,17 @@ We haven't defined the colors exactly as we only use them as gradients but those
 -   **Dark-blue:** #01081b
 -   **Gradient-to:** #190fd6
 
-## Our Moox Fonts
+## The Moox Fonts
 
-- The Moox logo uses **Exo Soft**
-- Our website and Admin Panels use **Exo 2**
-- For documentation we use **Noto Sans** 
-- For code we use **Noto Sans Mono**
-- Headings should be kept in **Exo 2** or **Exo** 
-- All fonts are available on [Google Fonts](https://fonts.google.com/).
+-   The Moox logo uses **Exo Soft**
+-   Our website and Admin Panels use **Exo 2**
+-   For documentation we use **Noto Sans**
+-   For code we use **Noto Sans Mono**
+-   Headings should be kept in **Exo 2** or **Exo**
+-   All fonts are available on [Google Fonts](https://fonts.google.com/).
 
 ## The Copyright
 
-While most of our packages are FOSS (Free Open Source) and licensed under the permissive MIT license, our identity is protected by Copyright. Please use the package and its contents in a respectful way.
+While most of our packages are FOSS (Free Open Source) and licensed under the permissive MIT license, our identity is protected by Copyright. Please use this package and its contents in a respectful way.
 
 **Copyright 2001 - 2025 Alf Drollinger and the Moox Team**
