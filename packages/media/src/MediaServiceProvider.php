@@ -47,11 +47,6 @@ class MediaServiceProvider extends PackageServiceProvider
             __DIR__ . '/../resources/dist/icons' => public_path('vendor/media/icons'),
         ], 'media-icons');
 
-        FilamentAsset::register([
-            Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
-            // Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
-        ]);
-
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
             fn(): string => Blade::render('@include("localization::lang-selector")'),
