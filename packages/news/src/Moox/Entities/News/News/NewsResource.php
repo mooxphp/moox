@@ -75,10 +75,6 @@ class NewsResource extends BaseDraftResource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    MediaPicker::make('image')
-                                        ->label(__('core::core.image')),
-                                     MediaPicker::make('image')
-                                        ->label(__('news::fields.gallery')),
                                     TitleWithSlugInput::make(
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
@@ -106,12 +102,18 @@ class NewsResource extends BaseDraftResource
 
                                     Toggle::make('is_active')
                                         ->label(__('news::fields.is_active')),
-                                    TextInput::make('excerpt')
-                                        ->label(__('news::fields.excerpt')),
+                                    MarkdownEditor::make('excerpt')
+                                        ->label(__('news::fields.excerpt'))
+                                        ->rules(['max:50']),
                                     MarkdownEditor::make('content')
                                         ->label(__('news::fields.content')),
                                     KeyValue::make('data')
                                         ->label(__('news::fields.data')),
+
+                                    MediaPicker::make('image')
+                                        ->label(__('core::core.image')),
+                                    MediaPicker::make('gallery')
+                                        ->label(__('news::fields.gallery')),
                                 ]),
                             Grid::make(2)
                                 ->schema([
