@@ -1,4 +1,4 @@
-![Moox Press](https://github.com/mooxphp/moox/raw/main/art/banner/press.jpg)
+![Moox Press](banner.jpg)
 
 # Moox Press
 
