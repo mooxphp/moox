@@ -2,6 +2,7 @@
 
 namespace Moox\News\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -21,9 +22,13 @@ class NewsTranslation extends Model
         'excerpt',
         'content',
         'author_id',
-        'created_by',
-        'updated_by',
-        'deleted_by',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+        'deleted_by_id',
+        'deleted_by_type',
+
 
         // Publishing schedule fields
         'to_publish_at',
@@ -55,4 +60,46 @@ class NewsTranslation extends Model
         'deleted_at' => 'datetime',
         'restored_at' => 'datetime',
     ];
+
+    public function createdBy()
+    {
+        return $this->morphTo(null, 'created_by_type', 'created_by_id');
+    }
+
+    public function updatedBy()
+    {
+        return $this->morphTo(null, 'updated_by_type', 'updated_by_id');
+    }
+
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        if (Auth::check()) {
+            $userId = Auth::id();
+
+            $model->created_by_id = $userId;
+            $model->created_by_type = 'App\\Models\\User';
+            $model->updated_by_id = $userId;
+            $model->updated_by_type = 'App\\Models\\User';
+
+            if (empty($model->author_id)) {
+                $model->author_id = $userId;
+            }
+        }
+    });
+
+    static::updating(function ($model) {
+        if (Auth::check()) {
+            $userId = Auth::id();
+
+            $model->updated_by_id = $userId;
+            $model->updated_by_type = 'App\\Models\\User';
+        }
+    });
+}
+
+
+
 }

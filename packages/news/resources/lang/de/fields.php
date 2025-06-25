@@ -26,5 +26,6 @@ return [
     'section' => 'Abschnitt',
     'gallery' => 'Galerie',
     'excerpt' => 'Auszug',
-
+    'created_by' => 'Erstellt Von',
+    'updated_by' => 'Aktualisiert Von'
 ];

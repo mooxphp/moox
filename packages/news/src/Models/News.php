@@ -217,6 +217,7 @@ class News extends BaseDraftModel implements HasMedia
         return $this->morphTo();
     }
 
+
     /**
      * Publishing status accessors
      * These methods now use the translation system to access the properties

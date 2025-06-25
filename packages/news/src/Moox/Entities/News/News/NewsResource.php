@@ -109,7 +109,6 @@ class NewsResource extends BaseDraftResource
                                         ->label(__('news::fields.content')),
                                     KeyValue::make('data')
                                         ->label(__('news::fields.data')),
-
                                     MediaPicker::make('image')
                                         ->label(__('core::core.image')),
                                     MediaPicker::make('gallery')
@@ -172,8 +171,23 @@ class NewsResource extends BaseDraftResource
                                     CopyableField::make('ulid')
                                         ->label(__('news::fields.ulid'))
                                         ->defaultValue(fn ($record): string => $record->ulid ?? ''),
-                                    Section::make('')
-                                        ->schema([
+
+                            Section::make('')
+                                    ->schema([
+                                            Placeholder::make('created_by')
+                                                ->label(__('news::fields.created_by'))
+                                                ->content(function ($record) {
+                                                    $lang = request()->get('lang') ?? app()->getLocale();
+                                                    $translation = $record?->translate($lang);
+                                                    return $translation?->createdBy?->name ?? '—';
+                                                }),
+                                            Placeholder::make('updated_by')
+                                                ->label(__('news::fields.updated_by'))
+                                                ->content(function ($record) {
+                                                    $lang = request()->get('lang') ?? app()->getLocale();
+                                                    $translation = $record?->translate($lang);
+                                                    return $translation?->updatedBy?->name ?? '—';
+                                                }),
                                             Placeholder::make('created_at')
                                                 ->label(__('news::fields.created_at'))
                                                 ->content(fn ($record): string => $record->created_at ?
@@ -197,7 +211,9 @@ class NewsResource extends BaseDraftResource
                                                     $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
                                                 ->hidden(fn ($record) => ! $record->to_unpublish_at),
+
                                         ]),
+
                                 ])
                                 ->hidden(fn ($record) => $record === null),
                         ])
@@ -254,6 +270,19 @@ class NewsResource extends BaseDraftResource
 
                         return strip_tags($excerpt);
     }),
+
+                TextColumn::make('created_by')
+                    ->label(__('news::fields.created_by'))
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) => $record->translate()?->createdBy?->name ?? '–')
+                    ->toggleable(),
+
+
+                TextColumn::make('updated_by')
+                    ->label(__('news::fields.updated_by'))
+                    ->sortable()
+                    ->formatStateUsing(fn ($state, $record) => $record->translate()?->updatedBy?->name ?? '–')
+                    ->toggleable(),
 
 
                 TextColumn::make('content')
