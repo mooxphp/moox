@@ -14,7 +14,7 @@ class LinkCommand extends Command
 {
     use Art, Check, Finalize, Link;
 
-    protected $signature = 'devlink:link';
+    protected $signature = 'moox:devlink';
 
     protected $description = 'Symlink Moox packages into the project from multiple base paths and ensure composer.json is updated';
 

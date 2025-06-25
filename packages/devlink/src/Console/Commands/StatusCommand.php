@@ -11,7 +11,7 @@ class StatusCommand extends Command
 {
     use Art, Check, Show;
 
-    protected $signature = 'devlink:status';
+    protected $signature = 'moox:devstatus';
 
     protected $description = 'Show the status of your devlinked packages';
 

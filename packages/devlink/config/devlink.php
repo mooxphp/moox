@@ -62,28 +62,28 @@ return [
 
         // Public
         'audit' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/audit',
             'type' => 'public',
         ],
         'backup-server-ui' => [
-            'active' => false,
+            'active' => true,
             'path' => '../moox-server/packages/backup-server-ui',
             'type' => 'public',
         ],
-        'builder' => [
-            'active' => false,
+        'build' => [
+            'active' => true,
             'path' => $public_base_path.'/builder',
             'type' => 'public',
             'dev' => true,
         ],
         'category' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/category',
             'type' => 'public',
         ],
         'core' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/core',
             'type' => 'public',
         ],
@@ -95,77 +95,72 @@ return [
             'dev' => true,
         ],
         'devops' => [
-            'active' => false,
+            'active' => true,
             'path' => '../moox-server/packages/devops',
             'type' => 'public',
         ],
         'expiry' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/expiry',
             'type' => 'public',
         ],
-        'flags' => [
-            'active' => false,
+        'flags-circle' => [
+            'active' => true,
             'path' => $public_base_path.'/flags',
             'type' => 'public',
         ],
         'jobs' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/jobs',
             'type' => 'public',
         ],
         'login-link' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/login-link',
             'type' => 'public',
         ],
         'notifications' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/notifications',
             'type' => 'public',
         ],
         'passkey' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/passkey',
             'type' => 'public',
         ],
         'press' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/press',
             'type' => 'public',
         ],
         'security' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/security',
             'type' => 'public',
         ],
-        'sync' => [
-            'active' => false,
-            'path' => $public_base_path.'/sync',
-            'type' => 'public',
-        ],
         'tag' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/tag',
             'type' => 'public',
         ],
         'trainings' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/trainings',
             'type' => 'public',
         ],
         'user' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/user',
             'type' => 'public',
         ],
         'user-device' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/user-device',
             'type' => 'public',
         ],
         'user-session' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/user-session',
             'type' => 'public',
         ],
@@ -176,13 +171,6 @@ return [
             'path' => $private_base_path.'/connect',
             'repo_url' => $private_repo_url,
             'type' => 'private',
-        ],
-        'creator' => [
-            'active' => false,
-            'path' => $private_base_path.'/creator',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-            'dev' => true,
         ],
         'data' => [
             'active' => false,

@@ -15,7 +15,7 @@ class DeployCommand extends Command
 {
     use Art, Check, Deploy, Finalize;
 
-    protected $signature = 'devlink:deploy';
+    protected $signature = 'moox:deploy';
 
     protected $description = 'Prepare a devlinked project for deployment';
 

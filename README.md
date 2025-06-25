@@ -1,6 +1,5 @@
 > We are currently rebuilding the Monorepo, preparing for Filament 4, stay tuned!
 
-
 # Moox
 
 This is the Monorepo of the Moox Project. It is home of our ecosystem of Laravel packages and Filament plugins that are developed to form a CMS, Shop platform or other website or app.
@@ -16,9 +15,11 @@ If you want to install and use Moox, please refer to any of our packages or dire
 Install and use the Monorepos ...
 
 ```bash
-composer create-project laravel/laravel moox
+git clone https://github.com/mooxphp/moox
+composer create-project laravel/laravel mooxdev
 composer require moox/devlink
-php artisan moox:install
+php artisan vendor:publish --tag="devlink-config"
+php artisan moox:devlink
 ```
 
 ## Requirements
@@ -28,6 +29,5 @@ php artisan moox:install
 | 2.x          | \> 9.x          | 2.x              | \> 8.0      |
 | 3.x          | \> 10.x         | 3.x              | \> 8.1      |
 | 4.x          | \> 11.x         | 4.x              | \> 8.2      |
-
 
 Moox Press packages require WordPress Version 6.7, password hashing is currently not compatible with newer versions. We will fix that soon.
