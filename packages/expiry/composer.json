@@ -17,11 +17,15 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "self.version"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Expiry\\": "src"
+            "Moox\\Expiry\\": "src",
+            "Moox\\Expiry\\Database\\Factories\\": "database/factories"
         }
     },
     "extra": {

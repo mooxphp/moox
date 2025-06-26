@@ -68,14 +68,13 @@ return [
         ],
         'backup-server-ui' => [
             'active' => true,
-            'path' => '../moox-server/packages/backup-server-ui',
+            'path' => $public_base_path.'/backup-server',
             'type' => 'public',
         ],
         'build' => [
             'active' => true,
-            'path' => $public_base_path.'/builder',
+            'path' => $public_base_path.'/build',
             'type' => 'public',
-            'dev' => true,
         ],
         'category' => [
             'active' => true,
@@ -87,6 +86,11 @@ return [
             'path' => $public_base_path.'/core',
             'type' => 'public',
         ],
+        'data' => [
+            'active' => true,
+            'path' => $public_base_path.'/data',
+            'type' => 'public',
+        ],
         'devlink' => [
             'active' => false,
             'linked' => false,
@@ -96,7 +100,7 @@ return [
         ],
         'devops' => [
             'active' => true,
-            'path' => '../moox-server/packages/devops',
+            'path' => $public_base_path.'/devops',
             'type' => 'public',
         ],
         'expiry' => [
@@ -104,9 +108,9 @@ return [
             'path' => $public_base_path.'/expiry',
             'type' => 'public',
         ],
-        'flags-circle' => [
+        'flag-icons-circle' => [
             'active' => true,
-            'path' => $public_base_path.'/flags',
+            'path' => $public_base_path.'/flag-icons-circle',
             'type' => 'public',
         ],
         'jobs' => [
@@ -114,9 +118,24 @@ return [
             'path' => $public_base_path.'/jobs',
             'type' => 'public',
         ],
+        'localization' => [
+            'active' => true,
+            'path' => $public_base_path.'/localization',
+            'type' => 'public',
+        ],
         'login-link' => [
             'active' => true,
             'path' => $public_base_path.'/login-link',
+            'type' => 'public',
+        ],
+        'media' => [
+            'active' => true,
+            'path' => $public_base_path.'/media',
+            'type' => 'public',
+        ],
+        'monorepo' => [
+            'active' => true,
+            'path' => $public_base_path.'/monorepo',
             'type' => 'public',
         ],
         'notifications' => [
@@ -169,24 +188,6 @@ return [
         'connect' => [
             'active' => false,
             'path' => $private_base_path.'/connect',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'data' => [
-            'active' => false,
-            'path' => $private_base_path.'/data',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'localization' => [
-            'active' => false,
-            'path' => $private_base_path.'/localization',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'media' => [
-            'active' => false,
-            'path' => $private_base_path.'/media',
             'repo_url' => $private_repo_url,
             'type' => 'private',
         ],

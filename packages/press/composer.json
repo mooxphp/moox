@@ -17,8 +17,11 @@
         }
     ],
     "require": {
-        "moox/core": "*",
+        "moox/core": "self.version",
         "adrolli/eloquent-mutators": "*"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {

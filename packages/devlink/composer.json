@@ -13,6 +13,9 @@
             "role": "Developer"
         }
     ],
+    "require-dev": {
+        "moox/devtools": "self.version"
+    },
     "autoload": {
         "psr-4": {
             "Moox\\Devlink\\": "src"

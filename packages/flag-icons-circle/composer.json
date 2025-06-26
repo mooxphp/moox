@@ -15,22 +15,14 @@
         }
     ],
     "require": {
-        "php": "^8.2|^8.3|^8.4",
-        "blade-ui-kit/blade-icons": "^1.6",
-        "illuminate/support": "^10.0|^11.0|^12.0"
+        "blade-ui-kit/blade-icons": "^1.6"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.0",
-        "phpunit/phpunit": "^11.0"
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
             "Moox\\FlagIconsCircle\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests"
         }
     },
     "extra": {

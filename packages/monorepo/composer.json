@@ -11,20 +11,11 @@
     "require": {
         "php": "^8.3",
         "ext-intl": "*",
-        "composer-runtime-api": "^2.1"
-    },
-    "require-dev": {
+        "composer-runtime-api": "^2.1",
         "symplify/monorepo-builder": "^11.0"
     },
-    "autoload-dev": {
-        "classmap": [
-            "packages/*/tests",
-            "packages/*/database/factories"
-        ]
-    },
-    "scripts": {
-        "release": "monorepo-builder release",
-        "split": "monorepo-builder split"
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "config": {
         "sort-packages": true
