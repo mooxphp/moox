@@ -3,8 +3,8 @@
 namespace Moox\Monorepo;
 
 use Moox\Core\MooxServiceProvider;
-use Moox\Monorepo\Console\Commands\ReleaseCommand;
 use Spatie\LaravelPackageTools\Package;
+use Moox\Monorepo\Console\Commands;
 
 class MonorepoServiceProvider extends MooxServiceProvider
 {
@@ -13,7 +13,8 @@ class MonorepoServiceProvider extends MooxServiceProvider
         $package
             ->name('monorepo')
             ->hasCommands([
-                ReleaseCommand::class,
+                Commands\ReleaseCommand::class,
+                Commands\CreateReleaseCommand::class,
             ])
             ->hasConfigFile();
     }
