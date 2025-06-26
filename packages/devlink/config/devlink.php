@@ -158,6 +158,11 @@ return [
             'path' => $public_base_path.'/security',
             'type' => 'public',
         ],
+        'slug' => [
+            'active' => true,
+            'path' => $public_base_path.'/slug',
+            'type' => 'public',
+        ],
         'tag' => [
             'active' => true,
             'path' => $public_base_path.'/tag',
