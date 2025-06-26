@@ -1,10 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
-use Symplify\MonorepoBuilder\Config\MBConfig;
-
-return static function (MBConfig $mbConfig): void {
-    $mbConfig->packageDirectories([__DIR__ . '/packages']);
-    $mbConfig->defaultBranch('main');
-};
+return [
+    'packages_path' => env('MOOX_PACKAGES_PATH', base_path('packages')),
+    'branch' => env('MOOX_RELEASE_BRANCH', 'main'),
+    'public_repo' => env('MOOX_PUBLIC_REPO', 'mooxphp/moox'),
+    'private_repo' => env('MOOX_PRIVATE_REPO', 'mooxphp/mooxpro'),
+];
