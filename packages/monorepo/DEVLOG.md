@@ -1,12 +1,12 @@
 # Devlog
 
-## monorepo
+## Monorepo
 
 -   ReleaseCommand
 -   Fixes
 
-## jobs
+## Jobs
 
-## monoreop
+## Monoreop
 
 -   Hat nen typo
