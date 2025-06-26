@@ -104,7 +104,7 @@ class NewsResource extends BaseDraftResource
                                         ->label(__('news::fields.is_active')),
                                     MarkdownEditor::make('excerpt')
                                         ->label(__('news::fields.excerpt'))
-                                        ->rules(['max:50']),
+                                        ->rules(config('news.rules.excerpt')),
                                     MarkdownEditor::make('content')
                                         ->label(__('news::fields.content')),
                                     KeyValue::make('data')
@@ -273,17 +273,19 @@ class NewsResource extends BaseDraftResource
 
                 TextColumn::make('created_by')
                     ->label(__('news::fields.created_by'))
-                    ->sortable()
-                    ->formatStateUsing(fn ($state, $record) => $record->translate()?->createdBy?->name ?? '–')
-                    ->toggleable(),
-
+                    ->formatStateUsing(function ($state, $record) {
+                        $lang = request()->get('lang') ?? app()->getLocale();
+                        return $record->translate($lang)?->createdBy?->name ?? '–';
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_by')
                     ->label(__('news::fields.updated_by'))
-                    ->sortable()
-                    ->formatStateUsing(fn ($state, $record) => $record->translate()?->updatedBy?->name ?? '–')
-                    ->toggleable(),
-
+                    ->formatStateUsing(function ($state, $record) {
+                        $lang = request()->get('lang') ?? app()->getLocale();
+                        return $record->translate($lang)?->updatedBy?->name ?? '–';
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('content')
                     ->label(__('news::fields.content'))
