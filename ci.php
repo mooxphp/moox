@@ -71,8 +71,8 @@ $composer = [
 
 $composer['config'] = [
     'allow-plugins' => [
-        'pestphp/pest-plugin' => true
-    ]
+        'pestphp/pest-plugin' => true,
+    ],
 ];
 
 // Add local path packages
