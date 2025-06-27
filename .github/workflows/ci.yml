@@ -26,7 +26,7 @@ jobs:
 
       - name: Bootstrap Laravel App
         run: |
-          php .github/scripts/bootstrap.php
+          php ci.php
           touch database/database.sqlite
 
       - name: Upload Build Artifact
@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        php: [8.1, 8.2, 8.3]
+        php: [8.2, 8.3, 8.4]
         os: [ubuntu-latest, windows-latest]
       fail-fast: false
 
