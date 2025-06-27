@@ -84,7 +84,9 @@ foreach ($config['packages'] as $name => $pkg) {
         continue;
     }
 
-    $composer['require']["moox/{$name}"] = '*';
+    $target = ($pkg['dev'] ?? false) ? 'require-dev' : 'require';
+    $composer[$target]["moox/{$name}"] = '*';
+
     $composer['repositories'][] = [
         'type' => 'path',
         'url' => $pkgPath,

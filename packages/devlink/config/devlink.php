@@ -151,6 +151,7 @@ return [
             'active' => true,
             'path' => $public_base_path.'/devtools',
             'type' => 'public',
+            'dev' => true,
         ],
         'draft' => [
             'active' => true,
