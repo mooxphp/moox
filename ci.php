@@ -3,27 +3,23 @@
 // Parse parameters
 $params = getopt('l:d');
 $laravelVersion = $params['l'] ?? null;
-$delete = $params['d'] ?? false;
+$delete = isset($params['d']);
 
 // Delete app folders
 if ($delete) {
-    exec('rm -rf app bootstrap config database public resources routes storage tests vendor composer.json .env');
+    exec('rm -rf app bootstrap config database public resources routes storage tests vendor composer.json .env artisan package.json phpunit.xml vite.config.js');
     echo "✅ App folders deleted.\n";
     exit;
 }
 
-// Create Laravel app in temp directory
-$tempDir = sys_get_temp_dir() . '/moox-laravel';
-exec("composer create-project laravel/laravel {$tempDir} --no-install");
+// Create Laravel app
+exec('composer create-project laravel/laravel laravel-temp --no-install');
 
-// Move Laravel files to current directory
-exec("cp -r {$tempDir}/* .");
-exec("cp {$tempDir}/.env.example . 2>/dev/null || true");
-exec("cp {$tempDir}/.gitattributes . 2>/dev/null || true");
-exec("cp {$tempDir}/.gitignore . 2>/dev/null || true");
+// Move Laravel app without overwriting existing files
+exec('cp -rn laravel-temp/* . 2>/dev/null || true');
 
 // Clean up temp directory
-exec("rm -rf {$tempDir}");
+exec('rm -rf laravel-temp');
 
 // Read env from devlink-config
 if (!function_exists('env')) {
@@ -31,8 +27,13 @@ if (!function_exists('env')) {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
         if ($value === null && file_exists(__DIR__ . '/.env')) {
             foreach (file(__DIR__ . '/.env') as $line) {
-                [$k, $v] = array_map('trim', explode('=', $line, 2));
-                $_ENV[$k] = $_SERVER[$k] = $v;
+                $line = trim($line);
+                if (empty($line) || strpos($line, '#') === 0) continue;
+                $parts = explode('=', $line, 2);
+                if (count($parts) === 2) {
+                    [$k, $v] = array_map('trim', $parts);
+                    $_ENV[$k] = $_SERVER[$k] = $v;
+                }
             }
             $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
         }
@@ -67,6 +68,9 @@ foreach ($config['packages'] as $name => $pkg) {
     $pkgPath = $pkg['path'] ?? null;
     $pkgPath = str_replace('../moox/', '', $pkgPath);
     if (!$pkgPath || !is_dir($pkgPath)) continue;
+
+    // Check if package has composer.json
+    if (!file_exists($pkgPath . '/composer.json')) continue;
 
     $composer['require']["moox/{$name}"] = '*';
     $composer['repositories'][] = [
