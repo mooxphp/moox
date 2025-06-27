@@ -30,9 +30,9 @@ class TrainingDateResource extends Resource
 
     protected static ?string $model = TrainingDate::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-date-range';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-date-range';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'link';
 
@@ -41,110 +41,64 @@ class TrainingDateResource extends Resource
     {
         return $schema->components([
             Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    Select::make('training_invitation_id')
-                        ->rules(['exists:training_invitations,id'])
-                        ->required()
-                        ->relationship('trainingInvitation', 'title')
-                        ->searchable()
-                        ->placeholder('Training Invitation')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                Select::make('training_invitation_id')
+                    ->rules(['exists:training_invitations,id'])
+                    ->required()
+                    ->relationship('trainingInvitation', 'title')
+                    ->searchable()
+                    ->placeholder('Training Invitation')
+                    ->columnSpanFull(),
 
-                    DateTimePicker::make('begin')
-                        ->rules(['date'])
-                        ->required()
-                        ->placeholder('Begin')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                DateTimePicker::make('begin')
+                    ->rules(['date'])
+                    ->required()
+                    ->placeholder('Begin'),
 
-                    DateTimePicker::make('end')
-                        ->rules(['date'])
-                        ->required()
-                        ->placeholder('End')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                DateTimePicker::make('end')
+                    ->rules(['date'])
+                    ->required()
+                    ->placeholder('End'),
 
-                    Select::make('type')
-                        ->rules(['in:onsite,teams,webex,slack,zoom'])
-                        ->required()
-                        ->searchable()
-                        ->options([
-                            'onsite' => 'Onsite',
-                            'teams' => 'Teams',
-                            'webex' => 'Webex',
-                            'slack' => 'Slack',
-                            'zoom' => 'Zoom',
-                        ])
-                        ->placeholder('Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                Select::make('type')
+                    ->rules(['in:onsite,teams,webex,slack,zoom'])
+                    ->required()
+                    ->searchable()
+                    ->options([
+                        'onsite' => 'Onsite',
+                        'teams' => 'Teams',
+                        'webex' => 'Webex',
+                        'slack' => 'Slack',
+                        'zoom' => 'Zoom',
+                    ])
+                    ->placeholder('Type'),
 
-                    TextInput::make('link')
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->placeholder('Link')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('link')
+                    ->rules(['max:255', 'string'])
+                    ->nullable()
+                    ->placeholder('Link'),
 
-                    TextInput::make('location')
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->placeholder('Location')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('location')
+                    ->rules(['max:255', 'string'])
+                    ->nullable()
+                    ->placeholder('Location'),
 
-                    TextInput::make('min_participants')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Min Participants')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('min_participants')
+                    ->rules(['numeric'])
+                    ->nullable()
+                    ->numeric()
+                    ->placeholder('Min Participants'),
 
-                    TextInput::make('max_participants')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Max Participants')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                    DateTimePicker::make('sent_at')
-                        ->rules(['date'])
-                        ->nullable()
-                        ->placeholder('Sent At')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
+                TextInput::make('max_participants')
+                    ->rules(['numeric'])
+                    ->nullable()
+                    ->numeric()
+                    ->placeholder('Max Participants'),
+                DateTimePicker::make('sent_at')
+                    ->rules(['date'])
+                    ->nullable()
+                    ->placeholder('Sent At'),
             ]),
-        ]);
+        ])->columns(1);
     }
 
     #[Override]

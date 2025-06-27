@@ -31,9 +31,9 @@ class TrainingTypeResource extends Resource
 
     protected static ?string $model = TrainingType::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-assignment';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-assignment';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -42,39 +42,21 @@ class TrainingTypeResource extends Resource
     {
         return $schema->components([
             Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    TextInput::make('title')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Title')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('title')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Title'),
+                TextInput::make('slug')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Slug'),
 
-                    TextInput::make('slug')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Slug')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    RichEditor::make('description')
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->placeholder('Description')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
+                RichEditor::make('description')
+                    ->rules(['max:255', 'string'])
+                    ->nullable()
+                    ->placeholder('Description')
             ]),
-        ]);
+        ])->columns(1);
     }
 
     #[Override]
