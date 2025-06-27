@@ -1,0 +1,70 @@
+name: Code Climate
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "!*" # Do not execute on tags
+    paths:
+      - src/*
+      - test/*
+      - "*.php"
+      - "*.json"
+      - ".github/workflows/code-climate.yml"
+  pull_request:
+    paths:
+      - "!*.MD"
+jobs:
+  test:
+    env:
+      DB_DATABASE: testing
+      DB_ROOT_PASSWORD: secretroot
+      DB_HOST: 127.0.0.1
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+    runs-on: ubuntu-latest
+
+    name: Checkout
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: pcov
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Remove PHP-PSR Extension
+        run: |
+          sudo apt remove php8.2-psr
+
+      - name: Install dependencies
+        run: |
+          composer update
+
+      - name: Coverage
+        uses: paambaati/codeclimate-action@v9.0.0
+        env:
+          CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
+        with:
+          coverageCommand: vendor/bin/pest --coverage-clover clover.xml
+

@@ -1,0 +1,37 @@
+name: PHPStan
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      - name: Remove PHP-PSR Extension
+        run: |
+          sudo apt remove php8.2-psr
+
+      - name: Install dependencies
+        run: |
+          composer update
+
+      - name: List Installed Dependencies
+        run: composer show -D
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan --error-format=github
