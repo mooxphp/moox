@@ -27,6 +27,8 @@ jobs:
       - name: Bootstrap Laravel App
         run: |
           php ci.php
+          mkdir -p storage/app storage/framework storage/logs
+          touch storage/.gitkeep
           touch database/database.sqlite
 
       - name: Upload Build Artifact
@@ -49,8 +51,8 @@ jobs:
             phpunit.xml
             clover.xml
 
-  test:
-    name: Test PHP ${{ matrix.php }} on ${{ matrix.os }}
+  pest:
+    name: Run Pest Tests PHP ${{ matrix.php }} on ${{ matrix.os }}
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -63,6 +65,16 @@ jobs:
       DB_DATABASE: testing
       DB_PASSWORD: secretroot
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - uses: actions/checkout@v4
@@ -81,23 +93,70 @@ jobs:
 
       - name: Set permissions (Linux only)
         if: runner.os == 'Linux'
-        run: chmod -R 755 storage bootstrap
+        run: |
+          chmod -R 755 storage bootstrap || echo "Permission fix skipped"
 
       - name: Run Pest Tests
         run: vendor/bin/pest --coverage-clover=clover.xml
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: secretroot
+
+  phpstan:
+    name: Run PHPStan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download App Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse
 
-      - name: Codacy Coverage Reporter
-        if: env.CODACY != ''
+  codacy:
+    name: Send Coverage to Codacy
+    needs: pest
+    runs-on: ubuntu-latest
+    if: env.CODACY != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download App Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Upload to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
           api-token: ${{ secrets.CODACY }}
           coverage-reports: clover.xml
 
-      - name: Code Climate Coverage
-        if: env.CC_TEST_REPORTER_ID != ''
+  codeclimate:
+    name: Send Coverage to Code Climate
+    needs: pest
+    runs-on: ubuntu-latest
+    if: env.CC_TEST_REPORTER_ID != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download App Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Upload to Code Climate
         uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
