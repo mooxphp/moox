@@ -2,12 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
   push:
-    branches:
-      - main
-      - "feature/**"
+    branches: [main, "feature/**"]
 
 jobs:
   build:
@@ -16,8 +13,7 @@ jobs:
     outputs:
       artifact-name: app-artifact
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -52,7 +48,7 @@ jobs:
             clover.xml
 
   pest:
-    name: Run Pest Tests PHP ${{ matrix.php }} on ${{ matrix.os }}
+    name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -60,10 +56,10 @@ jobs:
         php: [8.2, 8.3, 8.4]
         os: [ubuntu-latest, windows-latest]
       fail-fast: false
-
     env:
       DB_DATABASE: testing
       DB_PASSWORD: secretroot
+      DB_USER: root
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
 
     services:
@@ -91,21 +87,18 @@ jobs:
           coverage: pcov
           tools: composer
 
-      - name: Set permissions (Linux only)
+      - name: Fix Permissions (Linux only)
         if: runner.os == 'Linux'
-        run: |
-          chmod -R 755 storage bootstrap || echo "Permission fix skipped"
+        run: chmod -R 755 storage bootstrap
 
-      - name: Run Pest Tests
+      - name: Run Pest
         run: vendor/bin/pest --coverage-clover=clover.xml
         env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: secretroot
 
   phpstan:
-    name: Run PHPStan
+    name: PHPStan
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -125,40 +118,50 @@ jobs:
         run: vendor/bin/phpstan analyse
 
   codacy:
-    name: Send Coverage to Codacy
+    name: Codacy Coverage
     needs: pest
     runs-on: ubuntu-latest
-    if: ${{ secrets.CODACY != '' }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: pcov
 
       - name: Download App Artifact
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
 
-      - name: Upload to Codacy
+      - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
           api-token: ${{ secrets.CODACY }}
           coverage-reports: clover.xml
 
   codeclimate:
-    name: Send Coverage to Code Climate
+    name: Code Climate Coverage
     needs: pest
     runs-on: ubuntu-latest
-    if: ${{ secrets.CC_TEST_REPORTER_ID != '' }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: pcov
 
       - name: Download App Artifact
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
 
-      - name: Upload to Code Climate
+      - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
         with:
           coverageCommand: vendor/bin/pest --coverage-clover clover.xml
