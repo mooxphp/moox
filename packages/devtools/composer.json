@@ -3,15 +3,14 @@
     "description": "This is a Meta Package to have all dev dependencies in one place. Just require-dev this package in your packages.",
     "type": "moox-core",
     "license": "MIT",
-    "require-dev": {
+    "require": {
+        "larastan/larastan": "^3.5",
         "laravel/pint": "^1.0",
         "orchestra/testbench": "^10.0",
         "pestphp/pest": "^3.2",
         "pestphp/pest-plugin-livewire": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.2",
-        "phpstan/phpstan": "^2.1",
-        "ryangjchandler/blade-capture-directive": "^1.0",
-        "spatie/larastan": "^2.0"
+        "ryangjchandler/blade-capture-directive": "^1.0"
     },
     "autoload": {
         "psr-4": {
