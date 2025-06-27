@@ -92,6 +92,8 @@ jobs:
         run: |
           [ -d storage ] && chmod -R 755 storage || echo "⚠️  storage not found"
           [ -d bootstrap ] && chmod -R 755 bootstrap || echo "⚠️  bootstrap not found"
+          chmod +x vendor/bin/phpstan || true
+          chmod +x vendor/bin/pest || true
 
       - name: Run Pest
         run: vendor/bin/pest --coverage-clover=clover.xml
