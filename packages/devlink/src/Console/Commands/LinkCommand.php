@@ -42,6 +42,8 @@ class LinkCommand extends Command
         $this->art();
         info('Hello, I will link the configured packages for you.');
         $this->check();
+        // create a symlink for the DEVLOG.md file
+
         $this->link();
         $this->finalize();
         info('Packages linked! Have a nice dev!');

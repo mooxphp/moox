@@ -59,16 +59,24 @@ return [
     |
     */
     'packages' => [
-
-        // Public
         'audit' => [
             'active' => true,
             'path' => $public_base_path.'/audit',
             'type' => 'public',
         ],
-        'backup-server-ui' => [
+        'backup' => [
+            'active' => false,
+            'path' => $public_base_path.'/backup',
+            'type' => 'public',
+        ],
+        'backup-server' => [
             'active' => true,
             'path' => $public_base_path.'/backup-server',
+            'type' => 'public',
+        ],
+        'brand' => [
+            'active' => false,
+            'path' => $public_base_path.'/brand',
             'type' => 'public',
         ],
         'build' => [
@@ -76,19 +84,55 @@ return [
             'path' => $public_base_path.'/build',
             'type' => 'public',
         ],
+        'calendar' => [
+            'active' => false,
+            'path' => $public_base_path.'/calendar',
+            'type' => 'public',
+        ],
+        'cart' => [
+            'active' => false,
+            'path' => $public_base_path.'/cart',
+            'type' => 'public',
+        ],
         'category' => [
             'active' => true,
             'path' => $public_base_path.'/category',
             'type' => 'public',
+        ],
+        'clipboard' => [
+            'active' => false,
+            'path' => $public_base_path.'/clipboard',
+            'type' => 'public',
+        ],
+        'components' => [
+            'active' => true,
+            'path' => $public_base_path.'/components',
+            'type' => 'public',
+        ],
+        'connect' => [
+            'active' => false,
+            'path' => $private_base_path.'/connect',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
         ],
         'core' => [
             'active' => true,
             'path' => $public_base_path.'/core',
             'type' => 'public',
         ],
+        'customer' => [
+            'active' => false,
+            'path' => $public_base_path.'/customer',
+            'type' => 'public',
+        ],
         'data' => [
             'active' => true,
             'path' => $public_base_path.'/data',
+            'type' => 'public',
+        ],
+        'demo' => [
+            'active' => false,
+            'path' => $public_base_path.'/demo',
             'type' => 'public',
         ],
         'devlink' => [
@@ -103,9 +147,24 @@ return [
             'path' => $public_base_path.'/devops',
             'type' => 'public',
         ],
+        'devtools' => [
+            'active' => true,
+            'path' => $public_base_path.'/devtools',
+            'type' => 'public',
+        ],
+        'draft' => [
+            'active' => true,
+            'path' => $public_base_path.'/draft',
+            'type' => 'public',
+        ],
         'expiry' => [
             'active' => true,
             'path' => $public_base_path.'/expiry',
+            'type' => 'public',
+        ],
+        'featherlight' => [
+            'active' => true,
+            'path' => $public_base_path.'/featherlight',
             'type' => 'public',
         ],
         'flag-icons-circle' => [
@@ -113,9 +172,64 @@ return [
             'path' => $public_base_path.'/flag-icons-circle',
             'type' => 'public',
         ],
+        'flag-icons-origin' => [
+            'active' => true,
+            'path' => $public_base_path.'/flag-icons-origin',
+            'type' => 'public',
+        ],
+        'flag-icons-rect' => [
+            'active' => true,
+            'path' => $public_base_path.'/flag-icons-rect',
+            'type' => 'public',
+        ],
+        'flag-icons-square' => [
+            'active' => true,
+            'path' => $public_base_path.'/flag-icons-square',
+            'type' => 'public',
+        ],
+        'forge' => [
+            'active' => true,
+            'path' => $public_base_path.'/forge',
+            'type' => 'public',
+        ],
+        'forms' => [
+            'active' => false,
+            'path' => $public_base_path.'/forms',
+            'type' => 'public',
+        ],
+        'frontend' => [
+            'active' => false,
+            'path' => $public_base_path.'/frontend',
+            'type' => 'public',
+        ],
+        'github' => [
+            'active' => false,
+            'path' => $public_base_path.'/github',
+            'type' => 'public',
+        ],
+        'impersonate' => [
+            'active' => false,
+            'path' => $public_base_path.'/impersonate',
+            'type' => 'public',
+        ],
+        'item' => [
+            'active' => false,
+            'path' => $public_base_path.'/item',
+            'type' => 'public',
+        ],
         'jobs' => [
             'active' => true,
             'path' => $public_base_path.'/jobs',
+            'type' => 'public',
+        ],
+        'json' => [
+            'active' => false,
+            'path' => $public_base_path.'/json',
+            'type' => 'public',
+        ],
+        'laravel-icons' => [
+            'active' => true,
+            'path' => $public_base_path.'/laravel-icons',
             'type' => 'public',
         ],
         'localization' => [
@@ -128,9 +242,25 @@ return [
             'path' => $public_base_path.'/login-link',
             'type' => 'public',
         ],
+        'markdown' => [
+            'active' => false,
+            'path' => $public_base_path.'/markdown',
+            'type' => 'public',
+        ],
         'media' => [
             'active' => true,
             'path' => $public_base_path.'/media',
+            'type' => 'public',
+        ],
+        'media-pro' => [
+            'active' => false,
+            'path' => $private_base_path.'/media-pro',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
+        ],
+        'module' => [
+            'active' => false,
+            'path' => $public_base_path.'/module',
             'type' => 'public',
         ],
         'monorepo' => [
@@ -138,9 +268,29 @@ return [
             'path' => $public_base_path.'/monorepo',
             'type' => 'public',
         ],
+        'news' => [
+            'active' => false,
+            'path' => $public_base_path.'/news',
+            'type' => 'public',
+        ],
         'notifications' => [
             'active' => true,
             'path' => $public_base_path.'/notifications',
+            'type' => 'public',
+        ],
+        'packages' => [
+            'active' => true,
+            'path' => $public_base_path.'/packages',
+            'type' => 'public',
+        ],
+        'packagist' => [
+            'active' => false,
+            'path' => $public_base_path.'/packagist',
+            'type' => 'public',
+        ],
+        'page' => [
+            'active' => true,
+            'path' => $public_base_path.'/page',
             'type' => 'public',
         ],
         'passkey' => [
@@ -148,14 +298,84 @@ return [
             'path' => $public_base_path.'/passkey',
             'type' => 'public',
         ],
+        'permission' => [
+            'active' => false,
+            'path' => $public_base_path.'/permission',
+            'type' => 'public',
+        ],
+        'post' => [
+            'active' => false,
+            'path' => $public_base_path.'/post',
+            'type' => 'public',
+        ],
         'press' => [
             'active' => true,
             'path' => $public_base_path.'/press',
             'type' => 'public',
         ],
+        'press-trainings' => [
+            'active' => true,
+            'path' => $public_base_path.'/press-trainings',
+            'type' => 'public',
+        ],
+        'press-wiki' => [
+            'active' => true,
+            'path' => $public_base_path.'/press-wiki',
+            'type' => 'public',
+        ],
+        'product' => [
+            'active' => false,
+            'path' => $public_base_path.'/product',
+            'type' => 'public',
+        ],
+        'progress' => [
+            'active' => false,
+            'path' => $public_base_path.'/progress',
+            'type' => 'public',
+        ],
+        'record' => [
+            'active' => false,
+            'path' => $public_base_path.'/record',
+            'type' => 'public',
+        ],
+        'redis' => [
+            'active' => false,
+            'path' => $public_base_path.'/redis',
+            'type' => 'public',
+        ],
+        'restore' => [
+            'active' => true,
+            'path' => $public_base_path.'/restore',
+            'type' => 'public',
+        ],
+        'schedule' => [
+            'active' => false,
+            'path' => $public_base_path.'/schedule',
+            'type' => 'public',
+        ],
+        'search' => [
+            'active' => false,
+            'path' => $public_base_path.'/search',
+            'type' => 'public',
+        ],
         'security' => [
             'active' => true,
             'path' => $public_base_path.'/security',
+            'type' => 'public',
+        ],
+        'seo' => [
+            'active' => false,
+            'path' => $public_base_path.'/seo',
+            'type' => 'public',
+        ],
+        'settings' => [
+            'active' => false,
+            'path' => $public_base_path.'/settings',
+            'type' => 'public',
+        ],
+        'skeleton' => [
+            'active' => true,
+            'path' => $public_base_path.'/skeleton',
             'type' => 'public',
         ],
         'slug' => [
@@ -166,6 +386,16 @@ return [
         'tag' => [
             'active' => true,
             'path' => $public_base_path.'/tag',
+            'type' => 'public',
+        ],
+        'taxonomy' => [
+            'active' => false,
+            'path' => $public_base_path.'/taxonomy',
+            'type' => 'public',
+        ],
+        'themes' => [
+            'active' => false,
+            'path' => $public_base_path.'/themes',
             'type' => 'public',
         ],
         'trainings' => [
@@ -188,30 +418,18 @@ return [
             'path' => $public_base_path.'/user-session',
             'type' => 'public',
         ],
-
-        // Private
-        'connect' => [
+        'website' => [
             'active' => false,
-            'path' => $private_base_path.'/connect',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
+            'path' => $public_base_path.'/website',
+            'type' => 'public',
         ],
-        'page' => [
+        'wishlist' => [
             'active' => false,
-            'path' => $private_base_path.'/page',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
+            'path' => $public_base_path.'/wishlist',
+            'type' => 'public',
         ],
-        'permission' => [
+        'zzz-your-local-package' => [
             'active' => false,
-            'path' => $private_base_path.'/permission',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-
-        // Local
-        'your-local-package' => [
-            'active' => true,
             'type' => 'local',
         ],
     ],
