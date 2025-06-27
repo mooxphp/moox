@@ -128,7 +128,7 @@ jobs:
     name: Send Coverage to Codacy
     needs: pest
     runs-on: ubuntu-latest
-    if: env.CODACY != ''
+    if: ${{ secrets.CODACY }}
     steps:
       - uses: actions/checkout@v4
 
