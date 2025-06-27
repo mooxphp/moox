@@ -128,7 +128,7 @@ jobs:
     name: Send Coverage to Codacy
     needs: pest
     runs-on: ubuntu-latest
-    if: ${{ secrets.CODACY }}
+    if: ${{ secrets.CODACY != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -147,7 +147,7 @@ jobs:
     name: Send Coverage to Code Climate
     needs: pest
     runs-on: ubuntu-latest
-    if: env.CC_TEST_REPORTER_ID != ''
+    if: ${{ secrets.CC_TEST_REPORTER_ID != '' }}
     steps:
       - uses: actions/checkout@v4
 
