@@ -7,7 +7,7 @@ $delete = isset($params['d']);
 
 // Delete app folders
 if ($delete) {
-    exec('rm -rf app bootstrap config database public resources routes storage tests vendor composer.json .env artisan package.json phpunit.xml vite.config.js');
+    exec('rm -rf app bootstrap config database public resources routes storage tests vendor composer.json composer.lock .env artisan package.json phpunit.xml vite.config.js');
     echo "✅ App folders deleted.\n";
     exit;
 }
