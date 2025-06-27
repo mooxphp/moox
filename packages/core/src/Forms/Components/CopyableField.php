@@ -2,8 +2,8 @@
 
 namespace Moox\Core\Forms\Components;
 
-use Filament\Actions\Action;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 
 class CopyableField extends TextInput

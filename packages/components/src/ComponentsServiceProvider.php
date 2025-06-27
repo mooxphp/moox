@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Components;
 
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
 use Moox\Core\MooxServiceProvider;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Spatie\LaravelPackageTools\Package;
 
 class ComponentsServiceProvider extends MooxServiceProvider

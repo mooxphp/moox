@@ -2,12 +2,12 @@
 
 namespace Moox\Notification\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -27,7 +27,7 @@ class NotificationResource extends Resource
 
     protected static ?string $model = Notification::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-notifications';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-notifications';
 
     #[Override]
     public static function form(Schema $schema): Schema

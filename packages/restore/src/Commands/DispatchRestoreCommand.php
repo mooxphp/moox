@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Commands;
 
-use Throwable;
 use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Moox\Restore\Jobs\ProcessRestoreDestinationJob;
 use Moox\Restore\Models\RestoreDestination;
+use Throwable;
 
 class DispatchRestoreCommand extends Command
 {

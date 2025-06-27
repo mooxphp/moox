@@ -3,8 +3,8 @@
 namespace Moox\Monorepo;
 
 use Moox\Core\MooxServiceProvider;
-use Spatie\LaravelPackageTools\Package;
 use Moox\Monorepo\Console\Commands;
+use Spatie\LaravelPackageTools\Package;
 
 class MonorepoServiceProvider extends MooxServiceProvider
 {

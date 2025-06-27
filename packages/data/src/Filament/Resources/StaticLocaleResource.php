@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Moox\Data\Models\StaticLocale;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ListStaticLocales;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\CreateStaticLocale;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\EditStaticLocale;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ViewStaticLocale;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -25,7 +20,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\CreateStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\EditStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ListStaticLocales;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ViewStaticLocale;
+use Moox\Data\Models\StaticLocale;
 
 class StaticLocaleResource extends Resource
 {
@@ -33,7 +32,7 @@ class StaticLocaleResource extends Resource
 
     protected static ?string $model = StaticLocale::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-fmd-good-s';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-fmd-good-s';
 
     public static function getModelLabel(): string
     {

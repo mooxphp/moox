@@ -2,7 +2,6 @@
 
 namespace Moox\Packages\Moox\Entities\Packages\Package\Pages;
 
-use Filament\Pages\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Packages\Moox\Entities\Packages\Package\PackagesResource;
 

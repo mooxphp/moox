@@ -2,16 +2,16 @@
 
 namespace Moox\Audit\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
@@ -28,7 +28,7 @@ class AuditResource extends Resource
 
     protected static ?string $model = Activity::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-troubleshoot';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-troubleshoot';
 
     #[Override]
     public static function form(Schema $schema): Schema

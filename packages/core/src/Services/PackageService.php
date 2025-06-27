@@ -2,12 +2,12 @@
 
 namespace Moox\Core\Services;
 
-use Moox\Core\MooxServiceProvider;
-use Spatie\LaravelPackageTools\Package;
-use RuntimeException;
 use Composer\InstalledVersions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Moox\Core\MooxServiceProvider;
+use RuntimeException;
+use Spatie\LaravelPackageTools\Package;
 
 class PackageService
 {

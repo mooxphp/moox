@@ -2,10 +2,10 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\Pages;
 
-use Filament\Schemas\Schema;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Schema;
 use Moox\Training\Resources\TrainingInvitationResource;
 use Override;
 

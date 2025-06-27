@@ -2,27 +2,26 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Filament\Tables\Table;
-use Moox\Media\Models\Media;
-use Filament\Resources\Resource;
-use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
     use BaseInResource;
+
     protected static ?string $model = MediaCollection::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -45,7 +44,6 @@ class MediaCollectionResource extends Resource
     {
         return config('media.model_label');
     }
-
 
     public static function form(Schema $schema): Schema
     {
@@ -90,9 +88,10 @@ class MediaCollectionResource extends Resource
                             return __('media::fields.delete_collection_with_media_warning', [
                                 'count' => $count,
                                 'files' => trans_choice('media::fields.file|files', $count),
-                                'uncategorized' => __('media::fields.uncategorized')
+                                'uncategorized' => __('media::fields.uncategorized'),
                             ]);
                         }
+
                         return __('media::fields.delete_collection_warning');
                     })
                     ->modalSubmitActionLabel(__('media::fields.delete_collection'))

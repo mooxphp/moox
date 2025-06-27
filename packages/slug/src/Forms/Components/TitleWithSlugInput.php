@@ -2,12 +2,12 @@
 
 namespace Moox\Slug\Forms\Components;
 
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\Utilities\Get;
 use Closure;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Moox\Slug\Forms\Fields\SlugInput;

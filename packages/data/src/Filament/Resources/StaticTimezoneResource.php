@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Moox\Data\Models\StaticTimezone;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -23,8 +18,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone;
 use Moox\Data\Filament\Resources\StaticTimezoneResource\RelationManagers\StaticCountriesRelationManager;
+use Moox\Data\Models\StaticTimezone;
 
 class StaticTimezoneResource extends Resource
 {
@@ -32,7 +31,7 @@ class StaticTimezoneResource extends Resource
 
     protected static ?string $model = StaticTimezone::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-travel-explore-o';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-travel-explore-o';
 
     public static function getModelLabel(): string
     {

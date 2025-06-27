@@ -2,28 +2,27 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
 use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
-use Moox\BackupServerUi\Resources\SourceResource\Pages\ListSources;
-use Moox\BackupServerUi\Resources\SourceResource\Pages\CreateSource;
-use Moox\BackupServerUi\Resources\SourceResource\Pages\ViewSource;
-use Moox\BackupServerUi\Resources\SourceResource\Pages\EditSource;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
-use Moox\BackupServerUi\Resources\SourceResource\Pages;
+use Moox\BackupServerUi\Resources\SourceResource\Pages\CreateSource;
+use Moox\BackupServerUi\Resources\SourceResource\Pages\EditSource;
+use Moox\BackupServerUi\Resources\SourceResource\Pages\ListSources;
+use Moox\BackupServerUi\Resources\SourceResource\Pages\ViewSource;
 use Moox\BackupServerUi\Resources\SourceResource\RelationManagers\BackupsRelationManager;
 use Spatie\BackupServer\Models\Source;
 
@@ -31,13 +30,13 @@ class SourceResource extends Resource
 {
     protected static ?string $model = Source::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-s-arrow-right-start-on-rectangle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-arrow-right-start-on-rectangle';
 
     protected static ?string $navigationLabel = 'Source';
 
     protected static ?string $pluralNavigationLabel = 'Sources';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Backup server';
+    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
 
     protected static ?int $priority = 2;
 

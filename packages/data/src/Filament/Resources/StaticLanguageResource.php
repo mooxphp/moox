@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Moox\Data\Models\StaticLanguage;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ListStaticLanguages;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\CreateStaticLanguage;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\EditStaticLanguage;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ViewStaticLanguage;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -23,8 +18,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\CreateStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\EditStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ListStaticLanguages;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ViewStaticLanguage;
 use Moox\Data\Filament\Resources\StaticLanguageResource\RelationManagers\StaticLocalesRelationManager;
+use Moox\Data\Models\StaticLanguage;
 
 class StaticLanguageResource extends Resource
 {
@@ -32,7 +31,7 @@ class StaticLanguageResource extends Resource
 
     protected static ?string $model = StaticLanguage::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-language';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-language';
 
     public static function getModelLabel(): string
     {

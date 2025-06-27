@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Pages;
 
-use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 
 class CreateCategory extends BaseCreateDraft
 {
