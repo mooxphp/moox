@@ -12,9 +12,8 @@ class GithubServiceProvider extends MooxServiceProvider
         $package
             ->name('github')
             ->hasRoutes([
-                'web'
+                'web',
             ])
             ->hasConfigFile();
     }
-    
 }

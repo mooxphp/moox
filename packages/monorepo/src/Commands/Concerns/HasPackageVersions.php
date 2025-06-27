@@ -62,16 +62,18 @@ trait HasPackageVersions
     {
         $url = "https://packagist.org/packages/list.json?vendor={$vendor}";
         $response = Http::acceptJson()->get($url);
-        
+
         if ($response->failed()) {
             $this->error("Could not fetch packages for vendor '{$vendor}' (HTTP {$response->status()})");
+
             return [];
         }
 
         $data = $response->json();
-        
-        if (!is_array($data) || !isset($data['packageNames'])) {
+
+        if (! is_array($data) || ! isset($data['packageNames'])) {
             $this->warn("No packages found for vendor '{$vendor}'");
+
             return [];
         }
 
