@@ -43,7 +43,11 @@ php ci.php -d
 
 ### Monorepo
 
--   Get CI working again
+-   Get CI working again, parallel one action!
+    1. Build Laravel app including database once
+    2. Run Pest with Matrix for Win/X and supported PHP versions
+    3. PHP Stan
+    4. Codacy
 -   Restore README.md
 -   Release feature
 -   Restore Art files
