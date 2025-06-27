@@ -92,7 +92,6 @@ jobs:
         run: |
           [ -d storage ] && chmod -R 755 storage || echo "⚠️  storage not found"
           [ -d bootstrap ] && chmod -R 755 bootstrap || echo "⚠️  bootstrap not found"
-          chmod +x vendor/bin/phpstan || true
           chmod +x vendor/bin/pest || true
 
       - name: Run Pest
@@ -117,6 +116,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
+
+      - name: Fix bin permissions
+        run: chmod +x vendor/bin/phpstan || true
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse
