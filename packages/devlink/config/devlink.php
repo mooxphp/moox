@@ -188,7 +188,7 @@ return [
             'type' => 'public',
         ],
         'forge' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/forge',
             'type' => 'public',
         ],
