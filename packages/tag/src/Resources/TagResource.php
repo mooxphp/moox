@@ -70,9 +70,7 @@ class TagResource extends BaseDraftResource
                     ->schema([
                         Section::make()
                             ->schema([
-                                MediaPicker::make('featured_image_url')
-                                    ->label(__('core::core.featured_image_url'))
-                                    ->multiple(),
+
                                 Tabs::make('Translations')
                                     ->tabs(self::generateTranslationTabs()),
                             ])
@@ -81,13 +79,6 @@ class TagResource extends BaseDraftResource
                             ->schema([
                                 Section::make()
                                     ->schema([
-                                        Action::make('restore')
-                                            ->label(__('core::core.restore'))
-                                            ->color('success')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn($record) => $record->restore())
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                         static::getFormActions(),
                                     ]),
                                 Section::make('')

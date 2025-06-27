@@ -63,6 +63,15 @@ class BaseDraftResource extends BaseResource
         return true;
     }
 
+    public static function enableRestore(): bool
+    {
+        if (static::getReadonlyConfig()) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * @return mixed[]
      */
@@ -102,6 +111,10 @@ class BaseDraftResource extends BaseResource
             static::getCancelAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
         ];
 
+        if (static::enableRestore()) {
+            $actions[] = static::getRestoreAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
+        }
+
         if (static::enableCreate()) {
             $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
@@ -113,6 +126,7 @@ class BaseDraftResource extends BaseResource
         if (static::enableEdit()) {
             $actions[] = static::getEditAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
+
         if (static::enablePublish()) {
             $actions[] = static::getPublishAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
