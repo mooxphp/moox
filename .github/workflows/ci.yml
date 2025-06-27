@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  build:
+    name: Build Laravel App
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: app-artifact
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Bootstrap Laravel App
+        run: |
+          php .github/scripts/bootstrap.php
+          touch database/database.sqlite
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact
+          path: |
+            .env
+            artisan
+            app
+            bootstrap
+            config
+            database
+            public
+            routes
+            storage
+            tests
+            vendor
+            composer.*
+            phpunit.xml
+            clover.xml
+
+  test:
+    name: Test PHP ${{ matrix.php }} on ${{ matrix.os }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        php: [8.1, 8.2, 8.3]
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+
+    env:
+      DB_DATABASE: testing
+      DB_PASSWORD: secretroot
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download App Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: pcov
+          tools: composer
+
+      - name: Set permissions (Linux only)
+        if: runner.os == 'Linux'
+        run: chmod -R 755 storage bootstrap
+
+      - name: Run Pest Tests
+        run: vendor/bin/pest --coverage-clover=clover.xml
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
+
+      - name: Codacy Coverage Reporter
+        if: env.CODACY != ''
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          api-token: ${{ secrets.CODACY }}
+          coverage-reports: clover.xml
+
+      - name: Code Climate Coverage
+        if: env.CC_TEST_REPORTER_ID != ''
+        uses: paambaati/codeclimate-action@v9.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: vendor/bin/pest --coverage-clover clover.xml
