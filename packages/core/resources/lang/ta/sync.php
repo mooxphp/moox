@@ -1,10 +1,9 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'ஒத்திசைவு',
     // Syncs refers to the package name Moox Sync, and data transfer between platforms
-    'syncs' => 'ஒத்திசைவு',
+    'syncs' => 'ஒத்திசைவுகள்',
     // Platform refers to the platform that data is being transferred from or to
     'platform' => 'இயங்குதளம்',
     // Platforms refers to the platforms that data is being transferred from or to
