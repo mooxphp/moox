@@ -89,7 +89,9 @@ jobs:
 
       - name: Fix Permissions (Linux only)
         if: runner.os == 'Linux'
-        run: chmod -R 755 storage bootstrap
+        run: |
+          [ -d storage ] && chmod -R 755 storage || echo "⚠️  storage not found"
+          [ -d bootstrap ] && chmod -R 755 bootstrap || echo "⚠️  bootstrap not found"
 
       - name: Run Pest
         run: vendor/bin/pest --coverage-clover=clover.xml
@@ -162,6 +164,6 @@ jobs:
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
         env:
-          CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
         with:
           coverageCommand: vendor/bin/pest --coverage-clover clover.xml
