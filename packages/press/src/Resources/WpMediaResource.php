@@ -2,13 +2,13 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -33,7 +33,7 @@ class WpMediaResource extends Resource
 
     protected static ?string $model = WpMedia::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-image';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-image';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 

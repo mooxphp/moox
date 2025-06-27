@@ -2,35 +2,34 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteBulkAction;
-use Moox\BackupServerUi\Resources\BackupResource\Pages\ListBackups;
-use Moox\BackupServerUi\Resources\BackupResource\Pages\ViewBackup;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\BackupServerUi\Resources\BackupResource\Pages;
+use Moox\BackupServerUi\Resources\BackupResource\Pages\ListBackups;
+use Moox\BackupServerUi\Resources\BackupResource\Pages\ViewBackup;
 use Spatie\BackupServer\Models\Backup;
 
 class BackupResource extends Resource
 {
     protected static ?string $model = Backup::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-s-lifebuoy';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-lifebuoy';
 
     protected static ?string $navigationLabel = 'Backup';
 
     protected static ?string $pluralNavigationLabel = 'Backups';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Backup server';
+    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
 
     protected static ?int $priority = 1;
 

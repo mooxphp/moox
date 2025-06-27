@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\SoftDelete;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
-use Filament\Schemas\Components\Actions;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Actions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

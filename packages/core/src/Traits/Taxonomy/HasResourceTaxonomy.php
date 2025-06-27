@@ -2,7 +2,6 @@
 
 namespace Moox\Core\Traits\Taxonomy;
 
-use Illuminate\Support\Facades\Log;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TagsColumn;
@@ -10,6 +9,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
 
@@ -55,7 +55,6 @@ trait HasResourceTaxonomy
                 ]);
 
                 if ($validator->fails()) {
-
                     return $validator->errors()->first();
                 }
 
@@ -78,7 +77,6 @@ trait HasResourceTaxonomy
                         'slug' => $data['slug'],
                     ]);
                     Log::info('newTaxonomy', $newTaxonomy);
-
                 }
                 Log::info('newTaxonomy', $newTaxonomy);
 
@@ -93,7 +91,7 @@ trait HasResourceTaxonomy
                     titleAttribute: 'title',
                     parentAttribute: 'parent_id'
                 )
-               
+
                 ->enableBranchNode()
                 ->searchable()
                 ->createOptionForm($commonConfig['createOptionForm'])
@@ -187,7 +185,6 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-
         return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
             ->label($settings['label'] ?? ucfirst((string) $taxonomy))
             ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
@@ -208,7 +205,6 @@ trait HasResourceTaxonomy
                             $join->on('translations.translatable_id', '=', $modelTable.'.id')
                                 ->where('translations.translatable_type', '=', $modelClass)
                                 ->where('translations.locale', '=', request()->get('lang') ?? app()->getLocale());
-
                         })->pluck('translations.title');
                     }, function ($query) use ($modelTable) {
                         return $query->pluck($modelTable.'.title');

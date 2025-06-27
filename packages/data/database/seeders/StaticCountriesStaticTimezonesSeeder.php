@@ -2,8 +2,8 @@
 
 namespace Moox\Data\Database\Seeders;
 
-use Moox\Data\Models\StaticCountry;
 use Illuminate\Database\Seeder;
+use Moox\Data\Models\StaticCountry;
 
 class StaticCountriesStaticTimezonesSeeder extends Seeder
 {

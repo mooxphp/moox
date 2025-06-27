@@ -2,17 +2,17 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -36,7 +36,7 @@ class WpUserResource extends Resource
 
     protected static ?string $model = WpUser::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-manage-accounts';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'display_name';
 

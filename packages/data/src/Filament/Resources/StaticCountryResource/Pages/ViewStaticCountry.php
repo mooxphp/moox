@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountryResource\Pages;
 
-use Moox\Data\Filament\Resources\StaticCountryResource;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Data\Filament\Resources\StaticCountryResource;
 
 class ViewStaticCountry extends ViewRecord
 {

@@ -2,9 +2,9 @@
 
 namespace Moox\Tag\Database\Factories;
 
-use InvalidArgumentException;
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use InvalidArgumentException;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
 

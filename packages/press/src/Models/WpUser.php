@@ -2,11 +2,11 @@
 
 namespace Moox\Press\Models;
 
-use Illuminate\Database\Eloquent\Collection;
 use Awobaz\Mutator\Mutable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

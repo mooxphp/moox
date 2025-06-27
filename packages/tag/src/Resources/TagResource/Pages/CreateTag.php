@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources\TagResource\Pages;
 
-use Moox\Tag\Models\Tag;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Override;
 

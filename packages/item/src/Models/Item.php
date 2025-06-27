@@ -2,9 +2,9 @@
 
 namespace Moox\Item\Models;
 
-use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 

@@ -4,29 +4,26 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources;
 
-use Moox\Localization\Models\Localization;
-use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Str;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
-use Filament\Forms;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
+use Moox\Localization\Models\Localization;
 
 class LocalizationResource extends Resource
 {
@@ -34,7 +31,7 @@ class LocalizationResource extends Resource
 
     protected static ?string $model = Localization::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-language';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-language';
 
     public static function getModelLabel(): string
     {

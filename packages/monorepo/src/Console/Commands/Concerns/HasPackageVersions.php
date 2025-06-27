@@ -16,33 +16,35 @@ trait HasPackageVersions
         foreach ($packages as $package) {
             $url = "https://repo.packagist.org/p2/{$package}.json";
             $response = Http::acceptJson()->get($url);
-            
+
             if ($response->failed()) {
                 $tableData[] = [
                     'Package' => $package,
                     'Version' => '/',
                     'Homepage' => "Error: HTTP {$response->status()}",
                 ];
+
                 continue;
             }
 
             $data = $response->json();
-            
-            if (!isset($data['packages'][$package])) {
+
+            if (! isset($data['packages'][$package])) {
                 $tableData[] = [
                     'Package' => $package,
                     'Version' => '/',
                     'Homepage' => 'No versions found',
                 ];
+
                 continue;
             }
 
             $packageData = $data['packages'][$package];
             $latestVersion = reset($packageData); // Get the first (latest) version
-            
+
             $homepage = $latestVersion['homepage'] ?? 'N/A';
             $version = $latestVersion['version'] ?? 'N/A';
-            
+
             $tableData[] = [
                 'Package' => $package,
                 'Version' => $version,
@@ -63,7 +65,7 @@ trait HasPackageVersions
 
         foreach ($packages as $name => $package) {
             if ($package['type'] === 'public') {
-                $mooxPackages[] = 'moox/' . $name;
+                $mooxPackages[] = 'moox/'.$name;
             }
         }
 
@@ -80,7 +82,7 @@ trait HasPackageVersions
 
         $tableData = $this->getPackageVersions($packages);
 
-        if (!empty($tableData)) {
+        if (! empty($tableData)) {
             $this->table(['Package', 'Version', 'Homepage'], $tableData);
         } else {
             $this->warn('No packages found to display.');

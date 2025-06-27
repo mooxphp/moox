@@ -2,10 +2,10 @@
 
 namespace Moox\Data\Database\Seeders;
 
-use Moox\Data\Models\StaticLocale;
-use Moox\Data\Models\StaticLanguage;
-use Moox\Data\Models\StaticCountry;
 use Illuminate\Database\Seeder;
+use Moox\Data\Models\StaticCountry;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Data\Models\StaticLocale;
 
 class StaticLocaleSeeder extends Seeder
 {

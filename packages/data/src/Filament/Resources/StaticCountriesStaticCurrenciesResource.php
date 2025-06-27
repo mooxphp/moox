@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Moox\Data\Models\StaticCountriesStaticCurrencies;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ListStaticCountriesStaticCurrencies;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\CreateStaticCountriesStaticCurrencies;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\EditStaticCountriesStaticCurrencies;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ViewStaticCountriesStaticCurrencies;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -25,7 +20,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\CreateStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\EditStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ListStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ViewStaticCountriesStaticCurrencies;
+use Moox\Data\Models\StaticCountriesStaticCurrencies;
 
 class StaticCountriesStaticCurrenciesResource extends Resource
 {
@@ -33,7 +32,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
 
     protected static ?string $model = StaticCountriesStaticCurrencies::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {

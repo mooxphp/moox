@@ -2,8 +2,8 @@
 
 namespace Moox\Monorepo\Console\Commands;
 
-use Moox\Monorepo\Console\Commands\Concerns\HasPackageVersions;
 use Illuminate\Console\Command;
+use Moox\Monorepo\Console\Commands\Concerns\HasPackageVersions;
 
 class CreateReleaseCommand extends Command
 {

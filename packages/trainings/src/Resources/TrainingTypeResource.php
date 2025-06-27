@@ -2,16 +2,16 @@
 
 namespace Moox\Training\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
@@ -31,9 +31,9 @@ class TrainingTypeResource extends Resource
 
     protected static ?string $model = TrainingType::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-assignment';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-assignment';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 

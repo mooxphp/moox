@@ -2,22 +2,21 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages\ListDestinations;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages\CreateDestination;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages\ViewDestination;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages\EditDestination;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\CreateDestination;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\EditDestination;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\ListDestinations;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\ViewDestination;
 use Moox\BackupServerUi\Resources\DestinationResource\RelationManagers\BackupsRelationManager;
 use Spatie\BackupServer\Models\Destination;
 
@@ -25,13 +24,13 @@ class DestinationResource extends Resource
 {
     protected static ?string $model = Destination::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-s-arrow-right-end-on-rectangle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-arrow-right-end-on-rectangle';
 
     protected static ?string $navigationLabel = 'Destination';
 
     protected static ?string $pluralNavigationLabel = 'Destinations';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Backup server';
+    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
 
     protected static ?int $priority = 3;
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages;
 
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource;
-use Moox\Data\Models\StaticCountriesStaticCurrencies;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\Simple\SingleSimpleInListPage;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource;
+use Moox\Data\Models\StaticCountriesStaticCurrencies;
 
 class ListStaticCountriesStaticCurrencies extends ListRecords
 {

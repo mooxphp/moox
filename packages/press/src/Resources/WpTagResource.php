@@ -2,14 +2,14 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +29,7 @@ class WpTagResource extends Resource
 
     protected static ?string $model = WpTerm::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-label';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-label';
 
     protected static ?string $recordTitleAttribute = 'name';
 

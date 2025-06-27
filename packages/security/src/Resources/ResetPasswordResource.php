@@ -2,9 +2,9 @@
 
 namespace Moox\Security\Resources;
 
-use Filament\Schemas\Schema;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -23,7 +23,7 @@ class ResetPasswordResource extends Resource
 
     protected static ?string $model = ResetPassword::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-token';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-token';
 
     #[Override]
     public static function form(Schema $schema): Schema

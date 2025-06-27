@@ -2,13 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Moox\Localization\Models\Localization;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\Action;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
+use Moox\Localization\Models\Localization;
 
 /**
  * @phpstan-type TranslatableModel = Model&TranslatableContract
@@ -51,36 +51,35 @@ abstract class BaseEditDraft extends EditRecord
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
-{
-    /** @var Model&TranslatableContract $record */
-    if (! $this->lang) {
-        return parent::handleRecordUpdate($record, $data);
-    }
-
-    if (! property_exists($record, 'translatedAttributes')) {
-        return parent::handleRecordUpdate($record, $data);
-    }
-
-    // Save translation manually
-    $translation = $record->translations()->firstOrNew([
-        'locale' => $this->lang,
-    ]);
-
-    foreach ($record->translatedAttributes as $attr) {
-        if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
-            $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
+    {
+        /** @var Model&TranslatableContract $record */
+        if (! $this->lang) {
+            return parent::handleRecordUpdate($record, $data);
         }
+
+        if (! property_exists($record, 'translatedAttributes')) {
+            return parent::handleRecordUpdate($record, $data);
+        }
+
+        // Save translation manually
+        $translation = $record->translations()->firstOrNew([
+            'locale' => $this->lang,
+        ]);
+
+        foreach ($record->translatedAttributes as $attr) {
+            if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
+                $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
+            }
+        }
+        $translation->save();
+
+        // Remove 'translations' from data before update
+        unset($data['translations']);
+
+        $record->update($data);
+
+        return $record;
     }
-    $translation->save();
-
-    // Remove 'translations' from data before update
-    unset($data['translations']);
-
-    $record->update($data);
-
-    return $record;
-}
-
 
     public function mutateFormDataBeforeSave(array $data): array
     {

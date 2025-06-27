@@ -2,8 +2,9 @@
 
 namespace Moox\Devlink\Console\Traits;
 
-use RuntimeException;
 use Exception;
+use RuntimeException;
+
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 

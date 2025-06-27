@@ -2,14 +2,14 @@
 
 namespace Moox\Passkey\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
@@ -27,7 +27,7 @@ class PasskeyResource extends Resource
 
     protected static ?string $model = Passkey::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-fingerprint-o';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-fingerprint-o';
 
     #[Override]
     public static function form(Schema $schema): Schema

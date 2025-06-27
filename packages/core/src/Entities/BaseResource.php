@@ -2,12 +2,12 @@
 
 namespace Moox\Core\Entities;
 
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
@@ -162,7 +162,7 @@ abstract class BaseResource extends Resource
             ->keyBindings(['escape'])
             ->color('secondary')
             ->outlined()
-            ->url(fn () => static::getUrl('index', ));
+            ->url(fn () => static::getUrl('index'));
         // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
@@ -175,7 +175,7 @@ abstract class BaseResource extends Resource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->action(function ($livewire): void {
                 $livewire->record->delete();
-                $livewire->redirect(static::getUrl('index', ));
+                $livewire->redirect(static::getUrl('index'));
             })
             ->keyBindings(['delete'])
             ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)
