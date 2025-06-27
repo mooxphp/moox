@@ -1,6 +1,6 @@
 {
-    "name": "moox/monorepo",
-    "description": "The Moox Monorepo containing Laravel and Filament packages (FOSS).",
+    "name": "moox/github",
+    "description": "The Moox GitHub package. Which is a wrapper around the GitHub API implemented in Filament.",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -21,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Monorepo\\": "src"
+            "Moox\\Github\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Monorepo\\MonorepoServiceProvider"
+                "Moox\\Github\\GithubServiceProvider"
             ]
         }
     },

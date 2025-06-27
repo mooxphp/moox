@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Monorepo\Console\Commands\Concerns;
+namespace Moox\Monorepo\Commands\Concerns;
 
 use Illuminate\Support\Facades\Http;
 
@@ -56,20 +56,34 @@ trait HasPackageVersions
     }
 
     /**
-     * Get Moox packages from config
+     * Get packages from Packagist vendor API
+     */
+    protected function getVendorPackages(string $vendor = 'moox'): array
+    {
+        $url = "https://packagist.org/packages/list.json?vendor={$vendor}";
+        $response = Http::acceptJson()->get($url);
+        
+        if ($response->failed()) {
+            $this->error("Could not fetch packages for vendor '{$vendor}' (HTTP {$response->status()})");
+            return [];
+        }
+
+        $data = $response->json();
+        
+        if (!is_array($data) || !isset($data['packageNames'])) {
+            $this->warn("No packages found for vendor '{$vendor}'");
+            return [];
+        }
+
+        return $data['packageNames'];
+    }
+
+    /**
+     * Get Moox packages from local packages directory and Packagist
      */
     protected function getMooxPackages(): array
     {
-        $packages = config('devlink.packages');
-        $mooxPackages = [];
-
-        foreach ($packages as $name => $package) {
-            if ($package['type'] === 'public') {
-                $mooxPackages[] = 'moox/'.$name;
-            }
-        }
-
-        return $mooxPackages;
+        return $this->getVendorPackages('moox');
     }
 
     /**
@@ -77,7 +91,7 @@ trait HasPackageVersions
      */
     protected function displayPackageVersions(array $packages): void
     {
-        $this->info('Fetching versions for Moox packages...');
+        $this->info('Fetching versions for packages...');
         $this->newLine();
 
         $tableData = $this->getPackageVersions($packages);
