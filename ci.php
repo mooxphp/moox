@@ -22,13 +22,16 @@ exec('cp -rn laravel-temp/* . 2>/dev/null || true');
 exec('rm -rf laravel-temp');
 
 // Read env from devlink-config
-if (!function_exists('env')) {
-    function env($key, $default = null) {
+if (! function_exists('env')) {
+    function env($key, $default = null)
+    {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
-        if ($value === null && file_exists(__DIR__ . '/.env')) {
-            foreach (file(__DIR__ . '/.env') as $line) {
+        if ($value === null && file_exists(__DIR__.'/.env')) {
+            foreach (file(__DIR__.'/.env') as $line) {
                 $line = trim($line);
-                if (empty($line) || strpos($line, '#') === 0) continue;
+                if (empty($line) || strpos($line, '#') === 0) {
+                    continue;
+                }
                 $parts = explode('=', $line, 2);
                 if (count($parts) === 2) {
                     [$k, $v] = array_map('trim', $parts);
@@ -37,19 +40,20 @@ if (!function_exists('env')) {
             }
             $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
         }
+
         return $value ?? $default;
     }
 }
 
 // Load devlink config
-$config = require __DIR__ . '/packages/devlink/config/devlink.php';
+$config = require __DIR__.'/packages/devlink/config/devlink.php';
 
 // Create composer.json
 $composer = [
     'name' => 'moox/dev-app',
     'type' => 'project',
     'require' => [
-        'laravel/laravel' => $laravelVersion ? '^' . $laravelVersion : '^12.0',
+        'laravel/laravel' => $laravelVersion ? '^'.$laravelVersion : '^12.0',
     ],
     'autoload' => [
         'psr-4' => [
@@ -63,14 +67,22 @@ $composer = [
 
 // Add local path packages
 foreach ($config['packages'] as $name => $pkg) {
-    if (!($pkg['active'] ?? false)) continue;
-    if (!isset($pkg['type']) || !in_array($pkg['type'], ['local', 'public'])) continue;
+    if (! ($pkg['active'] ?? false)) {
+        continue;
+    }
+    if (! isset($pkg['type']) || ! in_array($pkg['type'], ['local', 'public'])) {
+        continue;
+    }
     $pkgPath = $pkg['path'] ?? null;
     $pkgPath = str_replace('../moox/', '', $pkgPath);
-    if (!$pkgPath || !is_dir($pkgPath)) continue;
+    if (! $pkgPath || ! is_dir($pkgPath)) {
+        continue;
+    }
 
     // Check if package has composer.json
-    if (!file_exists($pkgPath . '/composer.json')) continue;
+    if (! file_exists($pkgPath.'/composer.json')) {
+        continue;
+    }
 
     $composer['require']["moox/{$name}"] = '*';
     $composer['repositories'][] = [
@@ -82,14 +94,14 @@ foreach ($config['packages'] as $name => $pkg) {
 
 // Write composer.json
 file_put_contents(
-    __DIR__ . '/composer.json',
+    __DIR__.'/composer.json',
     json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
 );
 
 // Create .env from env-example
 file_put_contents(
-    __DIR__ . '/.env',
-    file_get_contents(__DIR__ . '/.env.example')
+    __DIR__.'/.env',
+    file_get_contents(__DIR__.'/.env.example')
 );
 
 // Composer update
