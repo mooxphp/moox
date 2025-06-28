@@ -26,7 +26,6 @@ phpunit.xml
 
 # PHPStan
 /build
-phpstan.neon
 
 # Testbench
 testbench.yaml
