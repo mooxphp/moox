@@ -75,6 +75,12 @@ $composer['config'] = [
     ],
 ];
 
+$composer['autoload-dev'] = [
+    'psr-4' => [
+        'Tests\\' => 'tests/',
+    ],
+];
+
 // Add local path packages
 foreach ($config['packages'] as $name => $pkg) {
     if (! ($pkg['active'] ?? false)) {
