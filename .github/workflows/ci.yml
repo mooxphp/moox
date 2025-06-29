@@ -81,6 +81,12 @@ jobs:
           name: app-artifact
           path: .
 
+      - name: Force dump-autoload with classmap optimization
+        run: composer dump-autoload -o
+
+      - name: Check working dir
+        run: ls -la && pwd
+
       - name: Check working dir
         run: ls -la && pwd
 
