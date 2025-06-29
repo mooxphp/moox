@@ -111,6 +111,9 @@ jobs:
     name: PHPStan
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: moox
     steps:
       - uses: actions/checkout@v4
 
@@ -138,6 +141,9 @@ jobs:
     name: Codacy Coverage
     needs: pest
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: moox
     steps:
       - uses: actions/checkout@v4
 
@@ -166,6 +172,9 @@ jobs:
     name: Code Climate Coverage
     needs: pest
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: moox
     steps:
       - uses: actions/checkout@v4
 
