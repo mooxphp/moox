@@ -84,6 +84,9 @@ jobs:
       - name: Force dump-autoload with classmap optimization
         run: composer dump-autoload -o
 
+      - name: Check Laravel App
+        run: php artisan --version
+
       - name: Check working dir
         run: ls -la && pwd
 
