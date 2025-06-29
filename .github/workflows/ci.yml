@@ -81,6 +81,9 @@ jobs:
           name: app-artifact
           path: .
 
+      - name: Check working dir
+        run: ls -la && pwd
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -114,6 +117,9 @@ jobs:
           name: app-artifact
           path: .
 
+      - name: Check working dir
+        run: ls -la && pwd
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -144,6 +150,9 @@ jobs:
           name: app-artifact
           path: .
 
+      - name: Check working dir
+        run: ls -la && pwd
+
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
@@ -168,6 +177,9 @@ jobs:
         with:
           name: app-artifact
           path: .
+
+      - name: Check working dir
+        run: ls -la && pwd
 
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
