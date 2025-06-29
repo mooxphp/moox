@@ -137,8 +137,6 @@ if (! file_exists(__DIR__.'/vendor/pestphp/pest/bin/pest')) {
     exit(1);
 }
 
-exec('composer install --no-interaction --prefer-dist');
-exec('composer dump-autoload -o');
-exec('chmod +x vendor/bin/* || true');
+exec('tar -czf app-artifact.tar.gz . --exclude=app-artifact.tar.gz');
 
 echo "✅ Moox is ready.\n";
