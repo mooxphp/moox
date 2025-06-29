@@ -70,6 +70,9 @@ jobs:
       - name: Extract Artifact
         run: tar -xzf app-artifact.tar.gz
 
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -106,6 +109,9 @@ jobs:
       - name: Extract Artifact
         run: tar -xzf app-artifact.tar.gz
 
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -139,6 +145,9 @@ jobs:
       - name: Extract Artifact
         run: tar -xzf app-artifact.tar.gz
 
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
+
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
@@ -166,6 +175,9 @@ jobs:
 
       - name: Extract Artifact
         run: tar -xzf app-artifact.tar.gz
+
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
 
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
