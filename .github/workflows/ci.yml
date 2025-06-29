@@ -51,6 +51,9 @@ jobs:
     name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
     needs: build
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: moox
     strategy:
       matrix:
         php: [8.3, 8.4]
