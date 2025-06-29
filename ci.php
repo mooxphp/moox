@@ -20,7 +20,7 @@ putenv('COMPOSER_NO_DEV=0');
 exec('composer create-project laravel/laravel laravel-temp --no-install');
 
 // Move Laravel app without overwriting existing files
-exec('cp -rTn laravel-temp/* . 2>/dev/null || true');
+exec('cp -rn laravel-temp/* . 2>/dev/null || true');
 
 // Clean up temp directory
 exec('rm -rf laravel-temp');

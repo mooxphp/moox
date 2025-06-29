@@ -79,6 +79,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
+          path: .
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -111,6 +112,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
+          path: .
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -140,6 +142,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
+          path: .
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
@@ -164,6 +167,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-artifact
+          path: .
 
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
