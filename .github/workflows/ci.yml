@@ -93,6 +93,12 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_HOST: 127.0.0.1
 
+      - name: Upload Clover
+        uses: actions/upload-artifact@v4
+        with:
+          name: clover-report
+          path: coverage/clover.xml
+
   phpstan:
     name: PHPStan
     needs: build
@@ -128,25 +134,11 @@ jobs:
     needs: pest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          coverage: pcov
-
-      - name: Download App Artifact
+      - name: Download Coverage Report
         uses: actions/download-artifact@v4
         with:
-          name: app-artifact
-          path: .
-
-      - name: Extract Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Composer dump-autoload
-        run: composer dump-autoload -o -vvv
+          name: clover-report
+          path: coverage/
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
@@ -159,25 +151,11 @@ jobs:
     needs: pest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          coverage: pcov
-
-      - name: Download App Artifact
+      - name: Download Coverage Report
         uses: actions/download-artifact@v4
         with:
-          name: app-artifact
-          path: .
-
-      - name: Extract Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Composer dump-autoload
-        run: composer dump-autoload -o -vvv
+          name: clover-report
+          path: coverage/
 
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
