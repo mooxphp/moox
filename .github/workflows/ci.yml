@@ -152,10 +152,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Coverage Report
+      - name: Download App Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+          path: .
+
+      - name: Extract App Artifact
+        run: tar -xzf app-artifact.tar.gz
+
+      - name: Download Clover Report
         uses: actions/download-artifact@v4
         with:
           name: clover-report-8.4
+          path: .
 
       - name: Run Code Climate Reporter
         run: |
