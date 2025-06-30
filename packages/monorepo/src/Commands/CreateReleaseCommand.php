@@ -30,21 +30,18 @@ class CreateReleaseCommand extends Command
      */
     public function handle()
     {
-
         if ($this->option('versions')) {
             return $this->checkVersions();
         }
 
-
-
         // Main release creation logic will go here
         // $this->info('Starting release creation process...');
-        
+
         // You can call checkVersions() here too if needed as part of the main flow
         // $this->checkVersions();
-        
+
         // Continue with other release creation steps...
-        
+
         // 1. Check the current version of this monorepo from GitHub API ✓
         // 2. Ask the user for the new version, e.g. 4.2.11
         // 3. Read directory of all packages (also private)
@@ -69,9 +66,10 @@ class CreateReleaseCommand extends Command
         $this->info('Checking current version from GitHub...');
 
         $token = \App\Models\User::first()->github_token;
-        
-        if (!$token) {
+
+        if (! $token) {
             $this->error('No GitHub token found. Please connect your GitHub account first.');
+
             return 1;
         }
 
@@ -81,45 +79,47 @@ class CreateReleaseCommand extends Command
 
         // First, check if the repository exists
         $repoResponse = $this->request("https://api.github.com/repos/{$repo}", $token);
-        
-        $listRepos = $this->request("https://api.github.com/orgs/mooxphp/repos?type=all&per_page=100", $token);
 
-        if (!$repoResponse->successful()) {
+        $listRepos = $this->request('https://api.github.com/orgs/mooxphp/repos?type=all&per_page=100', $token);
+
+        if (! $repoResponse->successful()) {
             $this->error("Repository {$repo} not found or not accessible:");
             $this->error($repoResponse->json()['message'] ?? $repoResponse->status());
+
             return 1;
         }
-        
-        if (!$listRepos->successful()) {
+
+        if (! $listRepos->successful()) {
             $this->error('Failed to fetch organization repositories:');
             $this->error($listRepos->json()['message'] ?? $listRepos->status());
+
             return 1;
         }
-        
+
         $repos = $listRepos->json();
         $tableData = [];
-        
+
         foreach ($repos as $repository) {
             $releasesUrl = "https://api.github.com/repos/{$repository['full_name']}/releases/latest";
-            
+
             $releases = $this->request($releasesUrl, $token);
-            
+
             $latestRelease = 'No releases';
             if ($releases->successful()) {
                 $releaseData = $releases->json();
                 $latestRelease = $releaseData['tag_name'] ?? 'No tag';
             }
-            
+
             $tableData[] = [
                 $repository['name'],
                 $repository['description'] ?? 'No description',
                 $repository['full_name'],
-                $repository['private'] ? 'Yes' : 'No', 
-                $repository['visibility'], 
-                $latestRelease
+                $repository['private'] ? 'Yes' : 'No',
+                $repository['visibility'],
+                $latestRelease,
             ];
         }
-        
+
         $this->table(
             ['Name', 'Description', 'Full Name', 'Private', 'Visibility', 'Latest Release'],
             $tableData
@@ -144,7 +144,7 @@ class CreateReleaseCommand extends Command
         }
 
         $this->info("Working with version: {$currentVersion}");
-        
+
         return $currentVersion;
     }
 
@@ -152,8 +152,8 @@ class CreateReleaseCommand extends Command
     {
         $headers = [
             'Accept' => 'application/vnd.github+json',
-            'Authorization' => 'Bearer ' . $token,
-            'X-GitHub-Api-Version' => '2022-11-28'
+            'Authorization' => 'Bearer '.$token,
+            'X-GitHub-Api-Version' => '2022-11-28',
         ];
 
         return Http::withHeaders($headers)->get($url);
