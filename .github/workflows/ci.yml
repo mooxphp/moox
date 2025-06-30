@@ -158,8 +158,11 @@ jobs:
           name: clover-report-8.4
 
       - name: Run Code Climate Reporter
-        uses: paambaati/codeclimate-action@v9.0.0
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-reporter
+          chmod +x ./cc-reporter
+          ./cc-reporter before-build
+          ./cc-reporter format-coverage clover.xml --input-type clover
+          ./cc-reporter after-build --exit-code $?
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
-        with:
-          coverageCommand: cat clover.xml
