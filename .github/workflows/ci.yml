@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: clover-report
-          path: coverage/clover.xml
+          path: clover.xml
 
   phpstan:
     name: PHPStan
@@ -138,7 +138,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: clover-report
-          path: coverage/
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
@@ -155,7 +154,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: clover-report
-          path: coverage/
 
       - name: Run Code Climate Reporter
         uses: paambaati/codeclimate-action@v9.0.0
