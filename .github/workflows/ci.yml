@@ -160,4 +160,4 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
         with:
-          coverageCommand: vendor/bin/pest --coverage-clover clover.xml
+          coverageCommand: cat clover.xml
