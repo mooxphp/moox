@@ -33,7 +33,7 @@ jobs:
           name: app-artifact
           path: app-artifact.tar.gz
 
-  pest-linux:
+  pest:
     name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
     needs: build
     runs-on: ${{ matrix.os }}
@@ -93,51 +93,6 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_HOST: 127.0.0.1
 
-  pest-windows:
-    name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        php: [8.3, 8.4]
-        os: [windows-latest]
-      fail-fast: false
-    env:
-      DB_DATABASE: testing
-      DB_PASSWORD: secretroot
-      DB_USER: root
-      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download App Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-          path: .
-
-      - name: Extract Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Composer dump-autoload
-        run: composer dump-autoload -o -vvv
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          coverage: pcov
-          tools: composer
-
-      - name: Ensure SQLite DB exists
-        run: |
-          mkdir database 2>NUL
-          type NUL > database/database.sqlite
-
-      - name: Run Pest
-        run: vendor/bin/pest --coverage-clover=clover.xml
-
   phpstan:
     name: PHPStan
     needs: build
@@ -178,7 +133,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: pcov
 
       - name: Download App Artifact
@@ -209,7 +164,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: pcov
 
       - name: Download App Artifact
