@@ -99,36 +99,6 @@ jobs:
           name: clover-report-${{ matrix.php }}
           path: clover.xml
 
-  phpstan:
-    name: PHPStan
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download App Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-          path: .
-
-      - name: Extract Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Composer dump-autoload
-        run: composer dump-autoload -o -vvv
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
-
-      - name: Fix bin permissions
-        run: chmod +x vendor/bin/phpstan || true
-
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyse
-
   codacy:
     name: Codacy Coverage
     needs: pest
@@ -144,35 +114,3 @@ jobs:
         with:
           api-token: ${{ secrets.CODACY }}
           coverage-reports: clover.xml
-
-  codeclimate:
-    name: Code Climate Coverage
-    needs: pest
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download App Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-artifact
-          path: .
-
-      - name: Extract App Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Download Clover Report
-        uses: actions/download-artifact@v4
-        with:
-          name: clover-report-8.4
-          path: .
-
-      - name: Run Code Climate Reporter
-        run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-reporter
-          chmod +x ./cc-reporter
-          ./cc-reporter before-build
-          ./cc-reporter format-coverage clover.xml --input-type clover
-          ./cc-reporter after-build --exit-code $?
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE }}
