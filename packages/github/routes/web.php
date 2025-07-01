@@ -4,8 +4,9 @@ use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+
 // TODO scopes configurable in config file
-//TODO route name should be configurable in config file
+// TODO route name should be configurable in config file
 Route::middleware(['web'])->group(function () {
     Route::middleware(['auth'])->get('/auth/github/connect', function () {
         return Socialite::driver('github')->scopes(['read:org', 'repo'])->redirect();

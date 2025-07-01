@@ -1,8 +1,9 @@
 <?php
+
 namespace Moox\Monorepo\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 
 class GitHubService
 {
@@ -16,12 +17,12 @@ class GitHubService
 
         $this->headers = [
             'Accept' => 'application/vnd.github+json',
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'X-GitHub-Api-Version' => '2022-11-28',
         ];
     }
 
-    public function fetchJson(string $url): array|null
+    public function fetchJson(string $url): ?array
     {
         $response = Http::withHeaders($this->headers)->get($url);
 
@@ -46,11 +47,8 @@ class GitHubService
         return collect($data ?? []);
     }
 
-    public function getRepoInfo(string $repo): array|null
+    public function getRepoInfo(string $repo): ?array
     {
         return $this->fetchJson("https://api.github.com/repos/{$repo}");
-
     }
-
-    
 }

@@ -10,6 +10,7 @@ use Moox\Monorepo\Services\ReleaseService;
 class CreateRelease extends Command
 {
     protected $signature = 'moox:releasing {--versions}';
+
     protected $description = 'Create a release for the monorepo';
 
     public function handle(): int
@@ -19,6 +20,7 @@ class CreateRelease extends Command
         }
 
         $this->info('Release creation coming soon.');
+
         return 0;
     }
 
@@ -28,6 +30,7 @@ class CreateRelease extends Command
 
         if (! $token) {
             $this->error('No GitHub token found. Please link your GitHub account.');
+
             return 1;
         }
 
@@ -35,7 +38,6 @@ class CreateRelease extends Command
         $org = 'mooxphp';
 
         try {
-          
             $github = new GitHubService($token);
             $releaseService = new ReleaseService($github, $mainRepo, $org);
             $result = $releaseService->getVersionsOverview();
@@ -47,7 +49,8 @@ class CreateRelease extends Command
             $this->line("Total repositories:       {$result['stats']['total']}");
             $this->info("Main repository version: {$result['version']}");
         } catch (\Throwable $e) {
-            $this->error("Error: " . $e->getMessage());
+            $this->error('Error: '.$e->getMessage());
+
             return 1;
         }
 
