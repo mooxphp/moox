@@ -114,3 +114,19 @@ jobs:
         with:
           api-token: ${{ secrets.CODACY }}
           coverage-reports: clover.xml
+
+  qlty:
+    name: Qlty Coverage
+    needs: pest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v4
+        with:
+          name: clover-report-8.4
+
+      - name: QLTY Coverage
+        uses: qltysh/qlty-action/coverage@v1
+        with:
+          token: ${{ secrets.QLTY }}
+          files: clover.xml
