@@ -1,5 +1,5 @@
 {
-    "name": "moox/testingsbums",
+    "name": "moox/devtools",
     "description": "This is a Meta Package to have all dev dependencies in one place. Just require-dev this package in your packages.",
     "type": "moox-core",
     "license": "MIT",
