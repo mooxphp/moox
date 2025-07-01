@@ -14,7 +14,8 @@
         "ext-intl": "*",
         "composer-runtime-api": "^2.1",
         "symplify/monorepo-builder": "^11.0",
-        "laravel/socialite": "^5.21"
+        "laravel/socialite": "^5.21",
+        "moox/devlink": "self.version"
     },
     "require-dev": {
         "moox/devtools": "self.version"
