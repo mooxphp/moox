@@ -67,6 +67,15 @@ class CreateReleaseCommand extends Command
 
         $token = \App\Models\User::first()->github_token;
 
+        $response = $this->request('https://api.github.com/user/repos?visibility=private', $token);
+dd($response);
+if ($response->successful()) {
+    $repos = collect($response->json());
+    dd('Anzahl private Repos:', $repos->count());
+} else {
+    dd('Fehler:', $response->status(), $response->json());
+}
+
         if (! $token) {
             $this->error('No GitHub token found. Please connect your GitHub account first.');
 
@@ -107,7 +116,7 @@ class CreateReleaseCommand extends Command
             $latestRelease = 'No releases';
             if ($releases->successful()) {
                 $releaseData = $releases->json();
-                $latestRelease = $releaseData['tag_name'] ?? 'No tag';
+                $latestRelease = $releaseData['name'] ?? 'No release';
             }
 
             $tableData[] = [
