@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 class PackageComparisonService
 {
     protected GitHubService $githubService;
+
     protected string $organization;
 
     public function __construct(GitHubService $githubService, string $organization)
@@ -27,16 +28,16 @@ class PackageComparisonService
 
         return $comparison;
     }
-    
 
     public function extractNotPublishedPackages(Collection $comparison): Collection
     {
-        return $comparison->filter(fn($exists) => !$exists);
+        return $comparison->filter(fn ($exists) => ! $exists);
     }
 
     public function extractDevlinkPackages(): array
     {
         $devlinkConfig = config('devlink.packages');
+
         return array_keys($devlinkConfig);
     }
 
@@ -44,16 +45,13 @@ class PackageComparisonService
     {
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
         $privateBasePath = config('devlink.private_base_path', 'disabled');
-        
+
         $localPackages = collect(array_merge(
             \Illuminate\Support\Facades\File::directories(base_path($publicBasePath)),
             $privateBasePath !== 'disabled' ? \Illuminate\Support\Facades\File::directories(base_path($privateBasePath)) : []
-        ))->map(fn($dir) => basename($dir))
-          ->toArray();
-          
-        return !in_array(strtolower($package), array_map('strtolower', $localPackages));
-            
+        ))->map(fn ($dir) => basename($dir))
+            ->toArray();
+
+        return ! in_array(strtolower($package), array_map('strtolower', $localPackages));
     }
-
-
-} 
+}
