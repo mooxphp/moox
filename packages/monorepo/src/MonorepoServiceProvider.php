@@ -12,7 +12,6 @@ class MonorepoServiceProvider extends MooxServiceProvider
         $package
             ->name('monorepo')
             ->hasCommands([
-                Commands\CreateReleaseCommand::class,
                 Commands\CreateRelease::class,
             ])
             ->hasTranslations()
