@@ -171,7 +171,7 @@
                     @endif
                 </div>
 
-                <div class="fi-sc fi-p-4">
+                <div style="margin-top: 1rem;">
                     <x-filament::pagination :paginator="$mediaItems" />
                 </div>
 
