@@ -147,24 +147,22 @@
                             @endphp
 
                             <div wire:click="toggleMediaSelection({{ $item['id'] }})"
-                                style="position: relative; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); overflow: hidden; background-color: #ffffff; transition: all 0.2s ease-in-out; cursor: pointer; border: 1px solid #f1f5f9; {{ in_array($item['id'], $selectedMediaIds) ? 'box-shadow: 0 0 0 1px #3b82f6, 0 4px 12px rgba(59, 130, 246, 0.15);' : '' }} {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 3px #3b82f6, 0 8px 25px rgba(59, 130, 246, 0.25); border: 2px solid #3b82f6;' : '' }}"
-                                onmouseover="this.style.boxShadow='{{ in_array($item['id'], $selectedMediaIds) ? '0 0 0 1px #3b82f6, 0 6px 20px rgba(59, 130, 246, 0.2)' : '0 4px 12px rgba(0, 0, 0, 0.1)' }}'"
-                                onmouseout="this.style.boxShadow='{{ in_array($item['id'], $selectedMediaIds) ? '0 0 0 1px #3b82f6, 0 4px 12px rgba(59, 130, 246, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)' }}'">
+                                style="position: relative; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; background-color: #f3f4f6; cursor: pointer; transition: all 0.2s ease; {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 4px #93c5fd, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #eff6ff; padding: 0.1rem;' : '' }}"
                                 @if ($fileData)
-                                    <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 100%; height: 8rem; margin-top: 0.75rem;">
-                                        <x-filament::icon icon="{{ $fileData['icon'] }}" style="width: 4rem; height: 4rem;" />
-                                        <div style="font-size: 0.75rem; color: #374151; width: 100%; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: normal; word-break: break-words; padding: 0 0.5rem;">
+                                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 8rem; padding: 1rem; border-radius: 0.5rem;">
+                                        <x-filament::icon icon="{{ $fileData['icon'] }}" style="width: 3rem; height: 3rem; margin-bottom: 0.5rem;" />
+                                        <div style="font-size: 0.875rem; color: #374151; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 500;">
                                             {{ $item['file_name'] }}
                                         </div>
                                     </div>
                                 @else
-                                    <div style="position: relative; width: 100%; height: 8rem;">
-                                        <img src="{{ $item['original_url'] }}" style="object-fit: cover; width: 100%; height: 100%; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem;" />
+                                    <div style="position: relative; width: 100%; height: 8rem; border-radius: 0.5rem; overflow: hidden;">
+                                        <img src="{{ $item['original_url'] }}" style="object-fit: cover; width: 100%; height: 100%;" />
                                     </div>
                                 @endif
 
                                 @if(in_array($item['id'], $selectedMediaIds))
-                                    <div style="position: absolute; top: 0.25rem; right: 0.25rem;">
+                                    <div style="position: absolute; top: 0.25rem; left: 0.25rem;">
                                         <x-filament::icon icon="heroicon-o-check-circle" class="fi-size-lg" fill="#3B82F6" />
                                     </div>
                                 @endif
