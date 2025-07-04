@@ -2,8 +2,8 @@ name: "Split Packages"
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT }}
