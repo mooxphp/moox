@@ -13,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\View;
-use Moox\Media\Models\MediaCollection;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -31,6 +30,8 @@ use Filament\Tables\Actions\HeaderActionsPosition;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas\Components\Grid;
+use Moox\Media\Models\MediaCollection;
 
 class MediaResource extends Resource
 {
@@ -68,7 +69,7 @@ class MediaResource extends Resource
         };
 
         return $schema->schema([
-            SpatieMediaLibraryFileUpload::make('file_name')
+            SpatieMediaLibraryFileUpload::make('image')
                 ->columnSpanFull()
                 ->collection(function ($record) {
                     $mediaCollection = $record->collection_name;
@@ -252,103 +253,106 @@ class MediaResource extends Resource
 
             Section::make()
                 ->schema([
-                    Placeholder::make('file_name')
-                        ->label(__('media::fields.file_name'))
-                        ->content(fn($record) => $record->file_name),
+                    Grid::make(4)
+                        ->schema([
+                            Placeholder::make('file_name')
+                                ->label(__('media::fields.file_name'))
+                                ->content(fn($record) => $record->file_name),
 
-                    Placeholder::make('mime_type')
-                        ->label(__('media::fields.mime_type'))
-                        ->content(fn($record) => $record->getReadableMimeType()),
+                            Placeholder::make('mime_type')
+                                ->label(__('media::fields.mime_type'))
+                                ->content(fn($record) => $record->getReadableMimeType()),
 
-                    Placeholder::make('size')
-                        ->label(__('media::fields.size'))
-                        ->content(function ($record) {
-                            $bytes = $record->size;
-                            $units = ['B', 'KB', 'MB', 'GB'];
-                            $i = 0;
+                            Placeholder::make('size')
+                                ->label(__('media::fields.size'))
+                                ->content(function ($record) {
+                                    $bytes = $record->size;
+                                    $units = ['B', 'KB', 'MB', 'GB'];
+                                    $i = 0;
 
-                            while ($bytes >= 1024 && $i < count($units) - 1) {
-                                $bytes /= 1024;
-                                $i++;
-                            }
+                                    while ($bytes >= 1024 && $i < count($units) - 1) {
+                                        $bytes /= 1024;
+                                        $i++;
+                                    }
 
-                            return number_format($bytes, 2) . ' ' . $units[$i];
-                        }),
+                                    return number_format($bytes, 2) . ' ' . $units[$i];
+                                }),
 
-                    Placeholder::make('dimensions')
-                        ->label(__('media::fields.dimensions'))
-                        ->content(function ($record) {
-                            $dimensions = $record->getCustomProperty('dimensions');
-                            if (!$dimensions) {
-                                return '-';
-                            }
+                            Placeholder::make('dimensions')
+                                ->label(__('media::fields.dimensions'))
+                                ->content(function ($record) {
+                                    $dimensions = $record->getCustomProperty('dimensions');
+                                    if (!$dimensions) {
+                                        return '-';
+                                    }
 
-                            return "{$dimensions['width']} × {$dimensions['height']} Pixel";
-                        })
-                        ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
+                                    return "{$dimensions['width']} × {$dimensions['height']} Pixel";
+                                })
+                                ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
 
-                    Placeholder::make('created_at')
-                        ->label(__('media::fields.created_at'))
-                        ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
+                            Placeholder::make('created_at')
+                                ->label(__('media::fields.created_at'))
+                                ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
 
-                    Placeholder::make('updated_at')
-                        ->label(__('media::fields.updated_at'))
-                        ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
+                            Placeholder::make('updated_at')
+                                ->label(__('media::fields.updated_at'))
+                                ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
 
-                    Placeholder::make('uploaded_by')
-                        ->label(__('media::fields.uploaded_by'))
-                        ->content(function ($record) {
-                            if (!$record->uploader) {
-                                return '-';
-                            }
+                            Placeholder::make('uploaded_by')
+                                ->label(__('media::fields.uploaded_by'))
+                                ->content(function ($record) {
+                                    if (!$record->uploader) {
+                                        return '-';
+                                    }
 
-                            return $record->uploader->name;
-                        }),
+                                    return $record->uploader->name;
+                                }),
 
-                    Placeholder::make('usage')
-                        ->label(__('media::fields.usage'))
-                        ->content(function ($record) {
-                            $usages = \DB::table('media_usables')
-                                ->where('media_id', $record->id)
-                                ->get();
+                            Placeholder::make('usage')
+                                ->label(__('media::fields.usage'))
+                                ->content(function ($record) {
+                                    $usages = \DB::table('media_usables')
+                                        ->where('media_id', $record->id)
+                                        ->get();
 
-                            if ($usages->isEmpty()) {
-                                return __('media::fields.not_used');
-                            }
+                                    if ($usages->isEmpty()) {
+                                        return __('media::fields.not_used');
+                                    }
 
-                            return new \Illuminate\Support\HtmlString("
+                                    return new \Illuminate\Support\HtmlString("
                                 <button
                                     type=\"button\"
                                     x-on:click=\"\$dispatch('open-modal', { id: 'usage-modal-{$record->id}' })\"
-                                    class=\"filament-button filament-button-size-sm inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2rem] px-3 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 border-primary-200 dark:border-primary-500/20 hover:bg-primary-100 dark:hover:bg-primary-500/20 focus:ring-primary-600 dark:focus:ring-primary-400 focus:text-primary-600 dark:focus:text-primary-400 focus:bg-primary-50 dark:focus:bg-primary-500/10 focus:border-primary-600 dark:focus:border-primary-400\"
+                                    class=\"fi-color fi-color-primary fi-bg-color-600 hover:fi-bg-color-500 dark:fi-bg-color-600 dark:hover:fi-bg-color-500 fi-text-color-0 hover:fi-text-color-0 dark:fi-text-color-0 dark:hover:fi-text-color-0 fi-btn fi-size-sm fi-ac-btn-action\"
                                 >
-                                    <span class=\"flex items-center gap-1\">
-                                        <svg class=\"w-4 h-4\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\">
+                                    <span style=\"display: flex; align-items: center; gap: 0.5rem;\">
+                                        <svg style=\"width: 1rem; height: 1rem;\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\">
                                             <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244\" />
                                         </svg>
                                         <span>{$usages->count()} " . trans_choice('media::fields.link|links', $usages->count()) . '</span>
                                     </span>
                                 </button>
                             ');
-                        }),
+                                }),
 
-                    Select::make('collection_name')
-                        ->label(__('media::fields.collection'))
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected'))
-                        ->options(function () {
-                            return MediaCollection::query()
-                                ->pluck('name', 'name')
-                                ->toArray();
-                        })
-                        ->default(fn($record) => $record->collection_name)
-                        ->afterStateUpdated(function ($state, $record) {
-                            if ($state !== $record->collection_name) {
-                                $record->collection_name = $state;
-                                $record->save();
-                            }
-                        }),
+                            Select::make('collection_name')
+                                ->label(__('media::fields.collection'))
+                                ->disabled(fn($record) => $record?->getOriginal('write_protected'))
+                                // ->options(function () {
+                                //     return MediaCollection::query()
+                                //         ->pluck('name', 'name')
+                                //         ->toArray();
+                                // })
+                                ->default(fn($record) => $record->collection_name)
+                                ->afterStateUpdated(function ($state, $record) {
+                                    if ($state !== $record->collection_name) {
+                                        $record->collection_name = $state;
+                                        $record->save();
+                                    }
+                                }),
+                        ]),
                 ])
-                ->columns(4),
+                ->columnSpanFull(),
 
             Section::make(__('media::fields.metadata'))
                 ->schema([
@@ -377,6 +381,7 @@ class MediaResource extends Resource
                         ->afterStateUpdated($saveRecord)
                         ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
+                ->columnSpanFull()
                 ->columns(2)
                 ->collapsed(),
 
@@ -387,6 +392,7 @@ class MediaResource extends Resource
                         ->afterStateUpdated($saveRecord)
                         ->disabled(fn($record) => $record?->getOriginal('write_protected')),
                 ])
+                ->columnSpanFull()
                 ->collapsed(),
 
             View::make('media::components.usage-modal'),
@@ -412,8 +418,7 @@ class MediaResource extends Resource
                                 $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
                             }
                             return [
-                                'class' => 'rounded-lg cursor-pointer',
-                                'style' => $style,
+                                'style' => $style . '; border-radius: 0.5rem; cursor: pointer;',
                                 'wire:click.stop' => "\$set('selected', " .
                                     (in_array($record->id, $livewire->selected)
                                         ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
@@ -422,8 +427,7 @@ class MediaResource extends Resource
                             ];
                         }
                         return [
-                            'class' => 'rounded-lg cursor-pointer',
-                            'style' => $baseStyle,
+                            'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
                             'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
                         ];
                     })
@@ -451,8 +455,7 @@ class MediaResource extends Resource
                         $baseStyle = 'margin-top: 10px; word-break: break-all;';
                         if ($livewire->isSelecting) {
                             return [
-                                'style' => $baseStyle,
-                                'class' => 'cursor-pointer',
+                                'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
                                 'wire:click.stop' => "\$set('selected', " .
                                     (in_array($record->id, $livewire->selected)
                                         ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
@@ -461,8 +464,7 @@ class MediaResource extends Resource
                             ];
                         }
                         return [
-                            'style' => $baseStyle,
-                            'class' => 'cursor-pointer',
+                            'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
                             'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
                         ];
                     }),
@@ -476,8 +478,7 @@ class MediaResource extends Resource
                         : 'width: 50px; height: 50px; margin-top: 10px;';
 
                     return [
-                        'class' => 'rounded-lg cursor-pointer',
-                        'style' => $baseStyle,
+                        'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
                         'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
                     ];
                 })
@@ -555,6 +556,10 @@ class MediaResource extends Resource
                     ->action(function ($livewire) {
                         $livewire->isSelecting = !$livewire->isSelecting;
                         $livewire->selected = [];
+
+                        if (!$livewire->isSelecting) {
+                            return redirect(static::getUrl('index'));
+                        }
                     }),
 
                 Action::make('deleteSelected')
@@ -635,8 +640,12 @@ class MediaResource extends Resource
                                 ->send();
                         }
 
-                        $livewire->isSelecting = false;
+                        $livewire->isSelecting = !$livewire->isSelecting;
                         $livewire->selected = [];
+
+                        if (!$livewire->isSelecting) {
+                            return redirect(static::getUrl('index'));
+                        }
                     }),
             ])
             ->bulkActions([
