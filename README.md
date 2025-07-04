@@ -97,3 +97,12 @@ php ci.php -d
 
 -   Check and Install Filament incl. user
 -   tbc ...
+
+## License
+
+This repository and all packages are commercial software under the [MIT License](./LICENSE.md).
+
+## Security
+
+Before reporting a security issues, please read our [Security Policy](./SECURITY.md).
+
