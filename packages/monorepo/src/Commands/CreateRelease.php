@@ -43,7 +43,7 @@ class CreateRelease extends Command
         parent::__construct();
         $this->githubService = new GitHubService(User::first()?->github_token);
         $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
-        $this->devlogService = new DevlogService();
+        $this->devlogService = new DevlogService;
     }
 
     public function handle(): int
@@ -70,7 +70,7 @@ class CreateRelease extends Command
 
         $newPackages = $this->packageComparisonService->isNewPackage();
 
-        if ($newPackages) { 
+        if ($newPackages) {
             $this->line('New packages detected:');
             foreach ($newPackages as $package) {
                 $this->line("- {$package}");
@@ -79,11 +79,11 @@ class CreateRelease extends Command
 
         // Process all packages with their messages (handled by the service)
         $packagesWithMessages = $this->devlogService->processAllPackagesForRelease($newPackages ?? []);
-        
+
         dd($packagesWithMessages);
         $packageCount = count($packagesWithMessages);
-        
-        if($this->confirm('Do you want to see the table with all packages and their commit messages?')) {
+
+        if ($this->confirm('Do you want to see the table with all packages and their commit messages?')) {
             $this->info("All {$packageCount} packages with their commit messages:");
             $this->table(
                 ['Package', 'Messages'],
@@ -91,29 +91,26 @@ class CreateRelease extends Command
             );
         }
 
-                         // Symlink new packages to devlink monorepo if any exist
-        if (!empty($newPackages)) {
+        // Symlink new packages to devlink monorepo if any exist
+        if (! empty($newPackages)) {
             if ($this->copyNewPackages($newPackages)) {
                 $this->addNewPublicPackagesToDevlinkConfig($newPackages);
                 $this->changeGithubWorkflow($newPackages, $newVersion);
                 $this->commitToMonorepo($newPackages);
             }
         }
-        
-        $this->line("Ensure that youre changes are commited to the main project and the monorepo");
-        $this->line("Ensure that the split packages workflow is done");
+
+        $this->line('Ensure that youre changes are commited to the main project and the monorepo');
+        $this->line('Ensure that the split packages workflow is done');
 
         $this->waitUntilWorkflowIsDone();
         if ($this->confirm('Do you want to create a release for the monorepo?', false)) {
             $this->createRelease($newVersion);
         }
 
-    
-
         return 0;
     }
 
-    
     protected function showVersions(GitHubService $github): int
     {
         $mainRepo = config('monorepo.public_repo', 'mooxphp/moox');
@@ -211,95 +208,98 @@ class CreateRelease extends Command
         return version_compare($newVersion, $currentVersion, '>=');
     }
 
-         protected function copyNewPackages(array $newPackages): bool 
+    protected function copyNewPackages(array $newPackages): bool
     {
         // Ask user if they want to copy the new packages to the devlink monorepo
-        $this->line("New packages to be copied:");
+        $this->line('New packages to be copied:');
         foreach ($newPackages as $package) {
             $this->line("- {$package}");
         }
 
-        if (!$this->confirm('Do you want to copy these packages to the devlink monorepo?', true)) {
-             $this->line('Skipping package copying and devlink config update...');
-             return false;
-         }
+        if (! $this->confirm('Do you want to copy these packages to the devlink monorepo?', true)) {
+            $this->line('Skipping package copying and devlink config update...');
+
+            return false;
+        }
 
         $this->line('Copying new packages to devlink monorepo...');
-        
+
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
-        
+
         foreach ($newPackages as $package) {
             $sourcePath = base_path("packages/{$package}");
             $targetPath = base_path("{$publicBasePath}/{$package}");
-            
-            if (!file_exists($sourcePath)) {
+
+            if (! file_exists($sourcePath)) {
                 $this->warn("Source path not found for package: {$package}");
+
                 continue;
             }
 
             if (file_exists($targetPath)) {
                 $this->warn("Target path already exists for package: {$package}");
+
                 continue;
             }
 
             try {
                 \Illuminate\Support\Facades\File::copyDirectory($sourcePath, $targetPath);
             } catch (\Exception $e) {
-                                 $this->error("Failed to copy {$package}: " . $e->getMessage());
-             }
-         }
-         
-         return true;
+                $this->error("Failed to copy {$package}: ".$e->getMessage());
+            }
+        }
+
+        return true;
     }
 
-    protected function addNewPublicPackagesToDevlinkConfig(array $newPackages): void 
+    protected function addNewPublicPackagesToDevlinkConfig(array $newPackages): void
     {
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
-        $monorepoPath = realpath(base_path($publicBasePath ));
-        $monorepoDevlinkConfig = $monorepoPath . '/devlink/config/devlink.php';
-        
+        $monorepoPath = realpath(base_path($publicBasePath));
+        $monorepoDevlinkConfig = $monorepoPath.'/devlink/config/devlink.php';
 
-                 if (file_exists($monorepoDevlinkConfig)) {
-             $originalContent = file_get_contents($monorepoDevlinkConfig);
-             
-             foreach ($newPackages as $package) {
-                 $packageKey = strtolower($package);
-                 
-                 // Check if package already exists
-                 if (strpos($originalContent, "'{$packageKey}'") !== false) {
-                     $this->warning("Package {$packageKey} already exists, skipping...");
-                     continue; // Skip if already exists
-                 }
-                 
-                 $newPackageEntry = "        '{$packageKey}' => [\n            'active' => true,\n            'path' => \$public_base_path.'/{$package}',\n            'type' => 'public',\n        ],\n";
-                 
-                 // Find the right alphabetical position and insert
-                 preg_match_all("/^        '([^']+)'/m", $originalContent, $matches);
-                 $existingPackages = $matches[1];
-                 
-                 $this->line("Adding package: {$packageKey}");
-                 
-                 $insertAfter = null;
-                 foreach ($existingPackages as $existingPackage) {
-                     if (strcmp($packageKey, $existingPackage) > 0) {
-                         $insertAfter = $existingPackage;
-                     } else {
-                         break;
-                     }
-                 }
-                 
-                 if ($insertAfter) {
-                     // Insert after the found package
-                     $pattern = "/^(        '{$insertAfter}' => \[.*?\],)\n/ms";
-                     $originalContent = preg_replace($pattern, "$1\n{$newPackageEntry}", $originalContent, 1, $count);
-                 } else {
-                     // Insert at the beginning of packages array
-                     $originalContent = preg_replace("/(    'packages' => \[\n)/", "$1{$newPackageEntry}", $originalContent, 1, $count);
-                 }
-             }
-             if (!file_put_contents($monorepoDevlinkConfig, $originalContent)) {
-                 throw new \RuntimeException("Failed to write to devlink config file: $monorepoDevlinkConfig");
-             }
+        if (file_exists($monorepoDevlinkConfig)) {
+            $originalContent = file_get_contents($monorepoDevlinkConfig);
+
+            foreach ($newPackages as $package) {
+                $packageKey = strtolower($package);
+
+                // Check if package already exists
+                if (strpos($originalContent, "'{$packageKey}'") !== false) {
+                    $this->warning("Package {$packageKey} already exists, skipping...");
+
+                    continue; // Skip if already exists
+                }
+
+                $newPackageEntry = "        '{$packageKey}' => [\n            'active' => true,\n            'path' => \$public_base_path.'/{$package}',\n            'type' => 'public',\n        ],\n";
+
+                // Find the right alphabetical position and insert
+                preg_match_all("/^        '([^']+)'/m", $originalContent, $matches);
+                $existingPackages = $matches[1];
+
+                $this->line("Adding package: {$packageKey}");
+
+                $insertAfter = null;
+                foreach ($existingPackages as $existingPackage) {
+                    if (strcmp($packageKey, $existingPackage) > 0) {
+                        $insertAfter = $existingPackage;
+                    } else {
+                        break;
+                    }
+                }
+
+                if ($insertAfter) {
+                    // Insert after the found package
+                    $pattern = "/^(        '{$insertAfter}' => \[.*?\],)\n/ms";
+                    $originalContent = preg_replace($pattern, "$1\n{$newPackageEntry}", $originalContent, 1, $count);
+                } else {
+                    // Insert at the beginning of packages array
+                    $originalContent = preg_replace("/(    'packages' => \[\n)/", "$1{$newPackageEntry}", $originalContent, 1, $count);
+                }
+            }
+            if (! file_put_contents($monorepoDevlinkConfig, $originalContent)) {
+                throw new \RuntimeException("Failed to write to devlink config file: $monorepoDevlinkConfig");
+            }
         }
     }
 
@@ -307,19 +307,20 @@ class CreateRelease extends Command
     {
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
         $monorepoPath = realpath(base_path($publicBasePath));
-        
-        if (!$monorepoPath || !is_dir($monorepoPath)) {
+
+        if (! $monorepoPath || ! is_dir($monorepoPath)) {
             $this->error("Monorepo path not found: {$publicBasePath}");
+
             return;
         }
 
         $originalDir = getcwd();
-        
+
         try {
             // === FIRST: Commit to Monorepo ===
-            $this->line("Committing changes to monorepo...");
+            $this->line('Committing changes to monorepo...');
             chdir($monorepoPath);
-            
+
             // Add all new packages to git
             foreach ($newPackages as $package) {
                 $packagePath = $package;
@@ -330,92 +331,91 @@ class CreateRelease extends Command
                     }
                 }
             }
-            
+
             // Add devlink config changes if modified
-            exec("git diff --quiet devlink/config/devlink.php", $output, $returnCode);
+            exec('git diff --quiet devlink/config/devlink.php', $output, $returnCode);
             if ($returnCode === 1) { // Changes exist
-                exec("git add devlink/config/devlink.php", $output, $returnCode);
+                exec('git add devlink/config/devlink.php', $output, $returnCode);
                 if ($returnCode !== 0) {
-                    $this->warning("Failed to add devlink config to git");
+                    $this->warning('Failed to add devlink config to git');
                 }
             }
-            
+
             // Commit monorepo changes
             $packageList = implode(', ', $newPackages);
             $monorepoCommitMessage = "Add new packages: {$packageList}";
-            
+
             exec("git commit -m \"{$monorepoCommitMessage}\"", $output, $returnCode);
             if ($returnCode === 0) {
-                $this->line("✅ Successfully committed monorepo changes");
+                $this->line('✅ Successfully committed monorepo changes');
                 $this->line("Commit message: {$monorepoCommitMessage}");
             } else {
-                $this->warning("Failed to commit monorepo changes (maybe no changes to commit?)");
+                $this->warning('Failed to commit monorepo changes (maybe no changes to commit?)');
             }
 
             // === SECOND: Commit to Main Project (for workflow) ===
-            $this->line("Committing workflow changes to main project...");
+            $this->line('Committing workflow changes to main project...');
             chdir('..');  // Go to parent directory (main project)
-            
+
             // Check if workflow file exists and has changes, or if it's a new file
             $workflowExists = file_exists('.github/workflows/monorepo-split-packages.yml');
             $workflowHasChanges = false;
-            
+
             if ($workflowExists) {
-                exec("git diff --quiet .github/workflows/monorepo-split-packages.yml", $output, $returnCode);
+                exec('git diff --quiet .github/workflows/monorepo-split-packages.yml', $output, $returnCode);
                 $workflowHasChanges = ($returnCode === 1); // Changes exist
             } else {
                 $workflowHasChanges = true; // New file
             }
-            
+
             if ($workflowHasChanges) {
-                exec("git add .github/workflows/monorepo-split-packages.yml", $output, $returnCode);
+                exec('git add .github/workflows/monorepo-split-packages.yml', $output, $returnCode);
                 if ($returnCode === 0) {
                     $workflowCommitMessage = "Update monorepo workflow for packages: {$packageList}";
                     exec("git commit -m \"{$workflowCommitMessage}\"", $output, $returnCode);
-                    
+
                     if ($returnCode === 0) {
-                        $this->line("✅ Successfully committed workflow changes");
+                        $this->line('✅ Successfully committed workflow changes');
                         $this->line("Commit message: {$workflowCommitMessage}");
                     } else {
-                        $this->warning("Failed to commit workflow changes");
+                        $this->warning('Failed to commit workflow changes');
                     }
                 } else {
-                    $this->warning("Failed to add workflow file to git");
+                    $this->warning('Failed to add workflow file to git');
                 }
             } else {
-                $this->line("No workflow changes to commit");
+                $this->line('No workflow changes to commit');
             }
 
             // === THIRD: Optional commit for remaining changes ===
             chdir($originalDir); // Back to original directory
-            
+
             // Ask user if they want to add all remaining changes
             if ($this->confirm('Do you want to add all remaining changes in the main project?', true)) {
-                exec("git add .", $output, $returnCode);
-                
+                exec('git add .', $output, $returnCode);
+
                 if ($returnCode === 0) {
                     // Check if there are any changes to commit
-                    exec("git diff --quiet --cached", $output, $returnCode);
+                    exec('git diff --quiet --cached', $output, $returnCode);
                     if ($returnCode === 1) { // Changes exist in staging
-                        $defaultMessage = "wip: additional changes";
+                        $defaultMessage = 'wip: additional changes';
                         $commitMessage = $this->ask('Enter commit message:', $defaultMessage);
                         exec("git commit -m \"{$commitMessage}\"", $output, $returnCode);
-                
+
                         if ($returnCode === 0) {
-                            $this->line("✅ Added all remaining changes to git");
+                            $this->line('✅ Added all remaining changes to git');
                         } else {
-                            $this->warning("Failed to commit remaining changes");
+                            $this->warning('Failed to commit remaining changes');
                         }
                     } else {
-                        $this->line("No additional changes to commit");
+                        $this->line('No additional changes to commit');
                     }
                 } else {
-                    $this->error("Failed to add remaining changes");
+                    $this->error('Failed to add remaining changes');
                 }
             }
-            
         } catch (\Exception $e) {
-            $this->error("Error during git operations: " . $e->getMessage());
+            $this->error('Error during git operations: '.$e->getMessage());
         } finally {
             // Always change back to original directory
             chdir($originalDir);
@@ -426,64 +426,64 @@ class CreateRelease extends Command
     {
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
         $monorepoPath = realpath(base_path($publicBasePath));
-        $workflowPath = dirname($monorepoPath) . '/.github/workflows/monorepo-split-packages.yml';
+        $workflowPath = dirname($monorepoPath).'/.github/workflows/monorepo-split-packages.yml';
         // Get file content
         $content = file_get_contents($workflowPath);
-        
+
         // Add new packages to the workflow
         foreach ($newPackages as $package) {
-            if (!str_contains($content, "- {$package}")) {
+            if (! str_contains($content, "- {$package}")) {
                 $content = preg_replace('/(\s+- \w+\n)(?=\s+steps:)/', "$1          - {$package}\n", $content);
             }
         }
-        
+
         // Sort packages alphabetically
         preg_match('/package:\s*\n((\s+- .+\n)+)/', $content, $matches);
         if (isset($matches[1])) {
             $packageLines = explode("\n", trim($matches[1]));
-            $packages = array_map(function($line) {
+            $packages = array_map(function ($line) {
                 return trim(str_replace('- ', '', $line));
             }, $packageLines);
             sort($packages);
-            
+
             $sortedPackageList = '';
             foreach ($packages as $package) {
                 $sortedPackageList .= "          - {$package}\n";
             }
-            
+
             $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
         }
 
         file_put_contents($workflowPath, $content);
-        
-        $this->line("✅ Updated GitHub workflow with " . count($newPackages) . " new packages");
+
+        $this->line('✅ Updated GitHub workflow with '.count($newPackages).' new packages');
     }
 
     protected function createRelease(string $version): void
     {
         $token = User::first()?->github_token;
         $repo = config('monorepo.public_repo', 'mooxphp/moox');
-        
-        $client = new \GuzzleHttp\Client();
+
+        $client = new \GuzzleHttp\Client;
         $response = $client->post("https://api.github.com/repos/{$repo}/releases", [
             'headers' => [
                 'Accept' => 'application/vnd.github+json',
                 'Authorization' => "Bearer {$token}",
-                'X-GitHub-Api-Version' => '2022-11-28'
+                'X-GitHub-Api-Version' => '2022-11-28',
             ],
             'json' => [
                 'tag_name' => "v{$version}",
-                'target_commitish' => 'main', 
+                'target_commitish' => 'main',
                 'name' => "{$version}",
                 'body' => "Release version {$version}, initial release",
                 'draft' => false,
                 'prerelease' => false,
-                'generate_release_notes' => false
-            ]
+                'generate_release_notes' => false,
+            ],
         ]);
-        
+
         if ($response->getStatusCode() !== 201) {
-            throw new \Exception("Failed to create GitHub release. Response code: " . $response->getStatusCode());
+            throw new \Exception('Failed to create GitHub release. Response code: '.$response->getStatusCode());
         }
 
         $this->line("Creating monorepo release for version: {$version}");
@@ -491,38 +491,36 @@ class CreateRelease extends Command
 
     protected function waitUntilWorkflowIsDone(): void
     {
-        $this->info("Waiting for GitHub workflow to complete...");
+        $this->info('Waiting for GitHub workflow to complete...');
         $token = User::first()?->github_token;
         $maxAttempts = 30; // 5 minutes total with 10 second delays
         $attempts = 0;
-        
+
         do {
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get("https://api.github.com/repos/mooxphp/monorepo/actions/workflows/monorepo-split-packages.yml/runs", [
+            $client = new \GuzzleHttp\Client;
+            $response = $client->get('https://api.github.com/repos/mooxphp/monorepo/actions/workflows/monorepo-split-packages.yml/runs', [
                 'headers' => [
                     'Accept' => 'application/vnd.github+json',
                     'Authorization' => "Bearer {$token}",
-                    'X-GitHub-Api-Version' => '2022-11-28'
-                ]
+                    'X-GitHub-Api-Version' => '2022-11-28',
+                ],
             ]);
-            
+
             $data = json_decode($response->getBody(), true);
-            
+
             if (empty($data['workflow_runs']) || $data['workflow_runs'][0]['status'] === 'completed') {
-                $this->info("GitHub workflow has completed!");
+                $this->info('GitHub workflow has completed!');
                 break;
             }
-            
+
             if ($attempts >= $maxAttempts) {
-                $this->warn("Timeout waiting for workflow to complete. Please check GitHub Actions manually.");
+                $this->warn('Timeout waiting for workflow to complete. Please check GitHub Actions manually.');
                 break;
             }
-            
-            $this->line("Workflow still running... waiting 10 seconds");
+
+            $this->line('Workflow still running... waiting 10 seconds');
             sleep(10);
             $attempts++;
-            
         } while (true);
     }
-
 }

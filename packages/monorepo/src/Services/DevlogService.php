@@ -8,7 +8,7 @@ class DevlogService
 {
     protected string $devlogPath;
 
-    public function __construct(string $devlogPath = null)
+    public function __construct(?string $devlogPath = null)
     {
         $this->devlogPath = $devlogPath ?? base_path('packages/monorepo/DEVLOG.md');
     }
@@ -18,7 +18,7 @@ class DevlogService
      */
     public function parseDevlog(): array
     {
-        if (!file_exists($this->devlogPath)) {
+        if (! file_exists($this->devlogPath)) {
             return [];
         }
 
@@ -31,7 +31,7 @@ class DevlogService
         foreach ($lines as $line) {
             if (preg_match('/^##\s+(.*)$/', $line, $matches)) {
                 $currentPackage = trim($matches[1]);
-                if (!isset($commits[strtolower($currentPackage)])) {
+                if (! isset($commits[strtolower($currentPackage)])) {
                     $commits[strtolower($currentPackage)] = [];
                 }
             } elseif ($currentPackage && preg_match('/^-\s+(.*)$/', $line, $matches)) {
@@ -51,7 +51,7 @@ class DevlogService
 
         return collect($packages)->mapWithKeys(function ($package) use ($devlogCommits) {
             $packageKey = strtolower($package);
-            
+
             if (isset($devlogCommits[$packageKey])) {
                 return [$package => $devlogCommits[$packageKey]];
             }
@@ -69,7 +69,7 @@ class DevlogService
 
         foreach ($newPackages as $package) {
             $packageKey = strtolower($package);
-            if (!isset($devlog[$packageKey])) {
+            if (! isset($devlog[$packageKey])) {
                 $devlog[$packageKey] = ['Initial release'];
             }
         }
@@ -87,7 +87,7 @@ class DevlogService
 
         foreach ($allPackages as $package) {
             $packageKey = strtolower($package);
-            
+
             if (isset($devlogCommits[$packageKey])) {
                 $result[$package] = $devlogCommits[$packageKey];
             } else {
@@ -118,9 +118,9 @@ class DevlogService
 
         // Add new packages with "Initial release" message
         $result = $devlinkedMessages->toArray();
-        if (!empty($newPackages)) {
+        if (! empty($newPackages)) {
             foreach ($newPackages as $package) {
-                if (!isset($result[$package])) { // Only add if not already in devlinked
+                if (! isset($result[$package])) { // Only add if not already in devlinked
                     $result[$package] = ['Initial release'];
                 }
             }
@@ -136,11 +136,11 @@ class DevlogService
     public function sortPackagesForTable(array $packagesWithMessages): array
     {
         return collect($packagesWithMessages)
-            ->sortBy(function($messages) {
+            ->sortBy(function ($messages) {
                 // Sort packages with only "Compatibility release" to bottom
                 return count($messages) === 1 && $messages[0] === 'Compatibility release' ? 1 : 0;
             })
-            ->map(function($messages, $package) {
+            ->map(function ($messages, $package) {
                 return [$package, implode("\n", $messages)];
             })
             ->toArray();
