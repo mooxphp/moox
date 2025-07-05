@@ -104,6 +104,7 @@ php ci.php -d
 -   Restore README.md
 -   Release feature
 -   Restore Art files
+-   Restore Moox.org
 
 ### Filament 4
 
@@ -115,7 +116,8 @@ php ci.php -d
 ### Installer
 
 -   Check and Install Filament incl. user
--   tbc ...
+-   Create Panels, suggest Bundles
+-   Install and use Package Registry
 
 ## License
 
