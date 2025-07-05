@@ -40,6 +40,25 @@ This is the Monorepo of the Moox Project. It is home of our ecosystem of Laravel
 
 If you want to install and use Moox, please refer to any of our packages or directly install a Bundle using Moox Core.
 
+## Packages
+
+| Package                | Composer               | Free | Pro | State  |
+| ---------------------- | ---------------------- | ---- | --- | ------ |
+| Moox Core              | moox/core              | x    |     | Stable |
+| Moox Jobs              | moox/jobs              | x    |     | Stable |
+| Moox Skeleton          | moox/skeleton          | x    |     | Stable |
+| Moox Flag Icons Circle | moox/flag-icons-circle | x    |     | Stable |
+| Moox Flag Icons Origin | moox/flag-icons-origin | x    |     | Stable |
+| Moox Flag Icons Square | moox/flag-icons-square | x    |     | Stable |
+| Moox Flag Icons Rect   | moox/flag-icons-rect   | x    |     | Stable |
+| Moox Laravel Icons     | moox/laravel-icons     | x    |     | Stable |
+| Moox Media             | moox/media             | x    |     | Beta   |
+| Moox Data              | moox/data              | x    |     | Beta   |
+| Moox Localization      | moox/localization      | x    |     | Beta   |
+| Moox Press             | moox/press             | x    |     | Beta   |
+
+All others are under hard development.
+
 ## Requirements
 
 | Moox Version | Laravel Version | Filament Version | PHP Version |
