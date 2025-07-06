@@ -5,11 +5,9 @@
 # Composer
 /vendor
 auth.json
-composer.lock
 
 # NPM / Node
 /node_modules
-package-lock.json
 
 # Laravel
 /public/hot
