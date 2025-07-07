@@ -2,8 +2,8 @@ const path = require("path");
 
 module.exports = {
     content: [
-        path.resolve(__dirname, "resources/views/**/*.blade.php"),
-        "../../packages/components/resources/views/**/*.blade.php",
+        path.resolve(__dirname, "resources/mail/templates/**/*.html"),
+        path.resolve(__dirname, "resources/mail/layouts/**/*.html"),
     ],
     theme: {
         extend: {
@@ -17,4 +17,7 @@ module.exports = {
         },
     },
     plugins: [require("daisyui")],
+    corePlugins: {
+        preflight: false,
+    },
 };
