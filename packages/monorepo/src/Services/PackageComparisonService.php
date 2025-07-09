@@ -41,24 +41,15 @@ class PackageComparisonService
         return array_keys($devlinkConfig);
     }
 
-    public function isNewPackage(): ?array
+    public function isNewOrgPackage(array $publicPackages, array $privatePackages, array $orgRepositories): ?array
     {
-        $publicBasePath = config('devlink.public_base_path', '../moox/packages');
-        $privateBasePath = config('devlink.private_base_path', 'disabled');
+        $allExistingPackages = array_merge($publicPackages, $privatePackages);
+        
+        $newPackages = array_filter(array_keys($allExistingPackages), function($package) use ($orgRepositories) {
+            return !in_array($package, $orgRepositories);
+        });
 
-        $localPackages = collect(array_merge(
-            \Illuminate\Support\Facades\File::directories(base_path($publicBasePath)),
-            $privateBasePath !== 'disabled' ? \Illuminate\Support\Facades\File::directories(base_path($privateBasePath)) : []
-        ))->map(fn ($dir) => basename($dir))
-            ->toArray();
+        return !empty($newPackages) ? array_values($newPackages) : null;
 
-        $packages = collect(\Illuminate\Support\Facades\File::directories(base_path('packages')))
-            ->map(fn ($dir) => basename($dir))
-            ->toArray();
-
-        // Find packages that are in local packages but NOT in devlink monorepo
-        $difference = array_diff($packages, $localPackages);
-
-        return ! empty($difference) ? $difference : null;
     }
 }

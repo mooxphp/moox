@@ -8,9 +8,12 @@ class DevlogService
 {
     protected string $devlogPath;
 
-    public function __construct(?string $devlogPath = null)
+    protected GitHubService $githubService;
+
+    public function __construct(GitHubService $githubService, ?string $devlogPath = null)
     {
         $this->devlogPath = $devlogPath ?? base_path('packages/monorepo/DEVLOG.md');
+        $this->githubService = $githubService;
     }
 
     /**
@@ -84,16 +87,27 @@ class DevlogService
     {
         $devlogCommits = $this->parseDevlog();
         $result = [];
-
-        foreach ($allPackages as $package) {
+        foreach ($allPackages as $package => $packageInfo) {
             $packageKey = strtolower($package);
 
             if (isset($devlogCommits[$packageKey])) {
-                $result[$package] = $devlogCommits[$packageKey];
+                // If package has existing messages in packageInfo, merge with devlog messages
+                $result[$package] = array_merge($packageInfo, [
+                    'release-message' => $devlogCommits[$packageKey]
+                ]);
             } else {
-                $result[$package] = ['Compatibility release'];
+                if (isset($packageInfo['minimum-stability']) && $packageInfo['minimum-stability'] === 'init') {
+                    $result[$package] = array_merge($packageInfo, [
+                        'release-message' => ['Initial release']
+                    ]);
+                    continue;
+                }
+                $result[$package] = array_merge($packageInfo, [
+                    'release-message' => ['Compatibility release']
+                ]);
             }
         }
+
 
         return $result;
     }
@@ -101,32 +115,11 @@ class DevlogService
     /**
      * Process packages for release: get devlinked packages + new packages with commit messages
      */
-    public function processAllPackagesForRelease(array $newPackages = []): array
+    public function processAllPackagesForRelease(array $allExistingPackages, array $newPackages = []): array
     {
-        // Get devlinked packages (from monorepo)
-        $publicBasePath = config('devlink.public_base_path', '../moox/packages');
-        $privateBasePath = config('devlink.private_base_path', 'disabled');
-
-        $devlinkedPackages = collect(array_merge(
-            \Illuminate\Support\Facades\File::directories(base_path($publicBasePath)),
-            $privateBasePath !== 'disabled' ? \Illuminate\Support\Facades\File::directories(base_path($privateBasePath)) : []
-        ))->map(fn ($dir) => basename($dir))
-            ->toArray();
-
-        // Get commit messages for devlinked packages
-        $devlinkedMessages = $this->getCommitMessages($devlinkedPackages);
-
-        // Add new packages with "Initial release" message
-        $result = $devlinkedMessages->toArray();
-        if (! empty($newPackages)) {
-            foreach ($newPackages as $package) {
-                if (! isset($result[$package])) { // Only add if not already in devlinked
-                    $result[$package] = ['Initial release'];
-                }
-            }
-        }
-
-        return $result;
+        $allPackages = array_merge($allExistingPackages, $newPackages);
+        
+        return $this->getAllPackagesWithMessages( $allPackages);
     }
 
     /**
@@ -136,12 +129,18 @@ class DevlogService
     public function sortPackagesForTable(array $packagesWithMessages): array
     {
         return collect($packagesWithMessages)
-            ->sortBy(function ($messages) {
+            ->sortBy(function ($packageInfo) {
                 // Sort packages with only "Compatibility release" to bottom
+                $messages = $packageInfo['release-message'];
                 return count($messages) === 1 && $messages[0] === 'Compatibility release' ? 1 : 0;
             })
-            ->map(function ($messages, $package) {
-                return [$package, implode("\n", $messages)];
+            ->map(function ($packageInfo, $package) {
+                $stability = $packageInfo['minimum-stability'] ?? '';
+                return [
+                    $package, 
+                    implode("\n", $packageInfo['release-message']),
+                    $stability
+                ];
             })
             ->toArray();
     }

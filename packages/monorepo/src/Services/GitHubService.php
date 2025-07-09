@@ -51,4 +51,26 @@ class GitHubService
     {
         return $this->fetchJson("https://api.github.com/repos/{$repo}");
     }
+
+    public function getMonorepoPackages($owner, $repo, $path, $visibility = 'public'): array
+    {
+        $data = $this->fetchJson("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}");
+        $packages = [];
+        
+        foreach ($data ?? [] as $item) {
+            if ($item['type'] === 'dir') {
+                $composerJson = $this->fetchJson("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}/{$item['name']}/composer.json");
+                if ($composerJson) {
+                    $content = base64_decode($composerJson['content']);
+                    $composer = json_decode($content, true);
+                    $packages[$item['name']] = [
+                        'minimum-stability' => $composer['minimum-stability'] ?? 'stable',
+                        'visibility' => $visibility,
+                    ];
+                }
+            }
+        }
+
+        return $packages;
+    }
 }
