@@ -44,12 +44,11 @@ class PackageComparisonService
     public function isNewOrgPackage(array $publicPackages, array $privatePackages, array $orgRepositories): ?array
     {
         $allExistingPackages = array_merge($publicPackages, $privatePackages);
-        
-        $newPackages = array_filter(array_keys($allExistingPackages), function($package) use ($orgRepositories) {
-            return !in_array($package, $orgRepositories);
+
+        $newPackages = array_filter(array_keys($allExistingPackages), function ($package) use ($orgRepositories) {
+            return ! in_array($package, $orgRepositories);
         });
 
-        return !empty($newPackages) ? array_values($newPackages) : null;
-
+        return ! empty($newPackages) ? array_values($newPackages) : null;
     }
 }

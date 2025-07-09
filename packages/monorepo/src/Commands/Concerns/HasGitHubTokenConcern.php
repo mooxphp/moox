@@ -11,8 +11,9 @@ trait HasGitHubTokenConcern
     {
         $token = User::first()?->github_token;
 
-        if (!$token) {
+        if (! $token) {
             $this->error('No GitHub token found. Please link your GitHub account.');
+
             return null;
         }
 
@@ -24,8 +25,9 @@ trait HasGitHubTokenConcern
         $process = new Process(['git', '--version']);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             $this->error('Git is not installed or not accessible from command line.');
+
             return false;
         }
 
@@ -34,12 +36,12 @@ trait HasGitHubTokenConcern
 
     protected function validateGitHubAccess(): bool
     {
-        if (!$this->hasGitInstalled()) {
+        if (! $this->hasGitInstalled()) {
             return false;
         }
 
         $token = $this->getGitHubToken();
-        if (!$token) {
+        if (! $token) {
             return false;
         }
 

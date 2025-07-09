@@ -93,21 +93,21 @@ class DevlogService
             if (isset($devlogCommits[$packageKey])) {
                 // If package has existing messages in packageInfo, merge with devlog messages
                 $result[$package] = array_merge($packageInfo, [
-                    'release-message' => $devlogCommits[$packageKey]
+                    'release-message' => $devlogCommits[$packageKey],
                 ]);
             } else {
                 if (isset($packageInfo['minimum-stability']) && $packageInfo['minimum-stability'] === 'init') {
                     $result[$package] = array_merge($packageInfo, [
-                        'release-message' => ['Initial release']
+                        'release-message' => ['Initial release'],
                     ]);
+
                     continue;
                 }
                 $result[$package] = array_merge($packageInfo, [
-                    'release-message' => ['Compatibility release']
+                    'release-message' => ['Compatibility release'],
                 ]);
             }
         }
-
 
         return $result;
     }
@@ -118,8 +118,8 @@ class DevlogService
     public function processAllPackagesForRelease(array $allExistingPackages, array $newPackages = []): array
     {
         $allPackages = array_merge($allExistingPackages, $newPackages);
-        
-        return $this->getAllPackagesWithMessages( $allPackages);
+
+        return $this->getAllPackagesWithMessages($allPackages);
     }
 
     /**
@@ -132,14 +132,16 @@ class DevlogService
             ->sortBy(function ($packageInfo) {
                 // Sort packages with only "Compatibility release" to bottom
                 $messages = $packageInfo['release-message'];
+
                 return count($messages) === 1 && $messages[0] === 'Compatibility release' ? 1 : 0;
             })
             ->map(function ($packageInfo, $package) {
                 $stability = $packageInfo['minimum-stability'] ?? '';
+
                 return [
-                    $package, 
+                    $package,
                     implode("\n", $packageInfo['release-message']),
-                    $stability
+                    $stability,
                 ];
             })
             ->toArray();

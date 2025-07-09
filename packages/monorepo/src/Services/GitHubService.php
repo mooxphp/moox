@@ -56,7 +56,7 @@ class GitHubService
     {
         $data = $this->fetchJson("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}");
         $packages = [];
-        
+
         foreach ($data ?? [] as $item) {
             if ($item['type'] === 'dir') {
                 $composerJson = $this->fetchJson("https://api.github.com/repos/{$owner}/{$repo}/contents/{$path}/{$item['name']}/composer.json");

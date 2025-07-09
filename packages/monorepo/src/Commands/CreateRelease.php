@@ -3,13 +3,12 @@
 namespace Moox\Monorepo\Commands;
 
 use App\Models\User;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Moox\Monorepo\Commands\Concerns\HasGitHubTokenConcern;
 use Moox\Monorepo\Services\DevlogService;
 use Moox\Monorepo\Services\GitHubService;
-use Moox\Monorepo\Services\ReleaseService;
 use Moox\Monorepo\Services\PackageComparisonService;
-use Moox\Monorepo\Commands\Concerns\HasGitHubTokenConcern;
+use Moox\Monorepo\Services\ReleaseService;
 
 class CreateRelease extends Command
 {
@@ -33,7 +32,7 @@ class CreateRelease extends Command
     // 7. Suggest contents from the DEVLOG.md file ✓
     // 8. New packages without DEVLOG-entry are "Initial release" ✓
     // 9. Otherwise, "Compatibility release" for all other packages ✓
-    // 10. Split all packages 
+    // 10. Split all packages
     // Core version in composer schreiben!
     // 11. Create a new tag and release in all repos
     // 12. Create a new Packagist.org package or Satis (3rd iteration)
@@ -48,12 +47,12 @@ class CreateRelease extends Command
         $token = $this->getGitHubToken();
         $this->githubService = new GitHubService($token);
         $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
-        $this->devlogService = new DevlogService( $this->githubService);
+        $this->devlogService = new DevlogService($this->githubService);
     }
 
     public function handle(): int
     {
-        if (!$this->validateGitHubAccess()) {
+        if (! $this->validateGitHubAccess()) {
             return 1;
         }
 
@@ -67,9 +66,6 @@ class CreateRelease extends Command
         $publicmonorepoPackages = $this->githubService->getMonorepoPackages(config('monorepo.github_org'), config('monorepo.public_repo'), config('monorepo.packages_path'));
         $privateMonorepoPackages = $this->githubService->getMonorepoPackages(config('monorepo.github_org'), config('monorepo.private_repo'), config('monorepo.packages_path'), 'private');
         $orgRepositories = $this->githubService->getOrgRepositories(config('monorepo.github_org'))->pluck('name')->toArray();
-        
-        
-        
 
         // If i want to get repos with composer.json in it
         // $orgRepositories = $this->githubService->getOrgRepositories(config('monorepo.github_org'))
@@ -79,23 +75,22 @@ class CreateRelease extends Command
         //             return false;
         //         }
         //         $composerJson = $this->githubService->fetchJson($repoInfo['contents_url']
-        //             ? str_replace('{+path}', 'composer.json', $repoInfo['contents_url']) 
+        //             ? str_replace('{+path}', 'composer.json', $repoInfo['contents_url'])
         //             : '');
         //         return !empty($composerJson);
         //     })
         //     ->pluck('name')
         //     ->toArray();
-    
 
-        $currentVersion = $this->githubService->getLatestReleaseTag(config('monorepo.github_org') . '/' . config('monorepo.public_repo'));
+        $currentVersion = $this->githubService->getLatestReleaseTag(config('monorepo.github_org').'/'.config('monorepo.public_repo'));
 
         $newVersion = $this->askForNewVersion($currentVersion);
         $this->info("New version: {$newVersion}\n");
 
-        $newPackages = $this->packageComparisonService->isNewOrgPackage($publicmonorepoPackages, $privateMonorepoPackages, $orgRepositories );
+        $newPackages = $this->packageComparisonService->isNewOrgPackage($publicmonorepoPackages, $privateMonorepoPackages, $orgRepositories);
         if ($newPackages) {
-            $newPackages = collect($newPackages)->mapWithKeys(fn($package) => [
-                $package => ['minimum-stability' => 'init']
+            $newPackages = collect($newPackages)->mapWithKeys(fn ($package) => [
+                $package => ['minimum-stability' => 'init'],
             ])->toArray();
         }
         if ($newPackages) {
@@ -109,7 +104,6 @@ class CreateRelease extends Command
 
         $packageCount = count($packagesWithMessages);
 
-
         if ($this->confirm('Do you want to see the table with all packages and their commit messages?')) {
             $this->info("All {$packageCount} packages with their commit messages:");
             $this->table(
@@ -119,8 +113,8 @@ class CreateRelease extends Command
         }
 
         if (! empty($newPackages)) {
-                $this->addNewPublicPackagesToDevlinkConfig($newPackages);
-                // $this->changeGithubWorkflow($newPackages, $newVersion);
+            $this->addNewPublicPackagesToDevlinkConfig($newPackages);
+            // $this->changeGithubWorkflow($newPackages, $newVersion);
         }
 
         $this->line('Ensure that youre changes are commited to the main project and the monorepo');
@@ -232,52 +226,51 @@ class CreateRelease extends Command
         return version_compare($newVersion, $currentVersion, '>=');
     }
 
-
     // TODO: Not used anymore but propably helpfull
-// // Not used anymore but propably helpfull
-//     protected function copyNewPackages(array $newPackages): bool
-//     {
-//         // Ask user if they want to copy the new packages to the devlink monorepo
-//         $this->line('New packages to be copied:');
-//         foreach ($newPackages as $package) {
-//             $this->line("- {$package}");
-//         }
+    // // Not used anymore but propably helpfull
+    //     protected function copyNewPackages(array $newPackages): bool
+    //     {
+    //         // Ask user if they want to copy the new packages to the devlink monorepo
+    //         $this->line('New packages to be copied:');
+    //         foreach ($newPackages as $package) {
+    //             $this->line("- {$package}");
+    //         }
 
-//         if (! $this->confirm('Do you want to copy these packages to the devlink monorepo?', true)) {
-//             $this->line('Skipping package copying and devlink config update...');
+    //         if (! $this->confirm('Do you want to copy these packages to the devlink monorepo?', true)) {
+    //             $this->line('Skipping package copying and devlink config update...');
 
-//             return false;
-//         }
+    //             return false;
+    //         }
 
-//         $this->line('Copying new packages to devlink monorepo...');
+    //         $this->line('Copying new packages to devlink monorepo...');
 
-//         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
+    //         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
 
-//         foreach ($newPackages as $package) {
-//             $sourcePath = base_path("packages/{$package}");
-//             $targetPath = base_path("{$publicBasePath}/{$package}");
+    //         foreach ($newPackages as $package) {
+    //             $sourcePath = base_path("packages/{$package}");
+    //             $targetPath = base_path("{$publicBasePath}/{$package}");
 
-//             if (! file_exists($sourcePath)) {
-//                 $this->warn("Source path not found for package: {$package}");
+    //             if (! file_exists($sourcePath)) {
+    //                 $this->warn("Source path not found for package: {$package}");
 
-//                 continue;
-//             }
+    //                 continue;
+    //             }
 
-//             if (file_exists($targetPath)) {
-//                 $this->warn("Target path already exists for package: {$package}");
+    //             if (file_exists($targetPath)) {
+    //                 $this->warn("Target path already exists for package: {$package}");
 
-//                 continue;
-//             }
+    //                 continue;
+    //             }
 
-//             try {
-//                 \Illuminate\Support\Facades\File::copyDirectory($sourcePath, $targetPath);
-//             } catch (\Exception $e) {
-//                 $this->error("Failed to copy {$package}: ".$e->getMessage());
-//             }
-//         }
+    //             try {
+    //                 \Illuminate\Support\Facades\File::copyDirectory($sourcePath, $targetPath);
+    //             } catch (\Exception $e) {
+    //                 $this->error("Failed to copy {$package}: ".$e->getMessage());
+    //             }
+    //         }
 
-//         return true;
-//     }
+    //         return true;
+    //     }
 
     protected function addNewPublicPackagesToDevlinkConfig(array $newPackages): void
     {
@@ -517,8 +510,5 @@ class CreateRelease extends Command
         $this->line("Creating monorepo release for version: {$version}");
     }
 
-   protected function createReleases(): void
-   {
-    
-   }
+    protected function createReleases(): void {}
 }
