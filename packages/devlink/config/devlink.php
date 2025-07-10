@@ -100,7 +100,7 @@ return [
             'type' => 'public',
         ],
         'clipboard' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/clipboard',
             'type' => 'public',
         ],
@@ -265,12 +265,12 @@ return [
             'type' => 'public',
         ],
         'monorepo' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/monorepo',
             'type' => 'public',
         ],
         'news' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/news',
             'type' => 'public',
         ],
@@ -330,7 +330,7 @@ return [
             'type' => 'public',
         ],
         'progress' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/progress',
             'type' => 'public',
         ],
