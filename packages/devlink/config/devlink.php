@@ -151,7 +151,6 @@ return [
             'active' => true,
             'path' => $public_base_path.'/devtools',
             'type' => 'public',
-            'dev' => true,
         ],
         'draft' => [
             'active' => true,
@@ -189,7 +188,7 @@ return [
             'type' => 'public',
         ],
         'forge' => [
-            'active' => false,
+            'active' => true,
             'path' => $public_base_path.'/forge',
             'type' => 'public',
         ],
