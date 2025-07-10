@@ -3,7 +3,6 @@
 namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Core\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Link;
@@ -12,7 +11,7 @@ use function Laravel\Prompts\info;
 
 class LinkCommand extends Command
 {
-    use Art, Check, Finalize, Link;
+    use Check, Finalize, Link;
 
     protected $signature = 'moox:devlink';
 
