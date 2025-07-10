@@ -2,15 +2,15 @@
 
 namespace Moox\Jobs\Resources;
 
-use Filament\Schemas\Schema;
+use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
@@ -26,7 +26,7 @@ class JobsFailedResource extends Resource
 
     protected static ?string $model = FailedJob::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = null;
+    protected static string|\BackedEnum|null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string

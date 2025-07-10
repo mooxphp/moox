@@ -2,21 +2,21 @@
 
 namespace Moox\Jobs\Resources;
 
-use Override;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Moox\Jobs\Models\JobManager;
-use Filament\Forms\Components\Toggle;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Filament\Forms\Components\DateTimePicker;
-use Moox\Progress\Forms\Components\ProgressColumn;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
+use Moox\Progress\Forms\Components\ProgressColumn;
+use Override;
 
 class JobsResource extends Resource
 {
@@ -75,8 +75,8 @@ class JobsResource extends Resource
                     ->badge()
                     ->sortable()
                     ->label(__('jobs::translations.status'))
-                    ->formatStateUsing(fn(string $state): string => __('jobs::translations.' . $state))
-                    ->color(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.'.$state))
+                    ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'succeeded' => 'success',
                         'failed' => 'danger',
@@ -94,7 +94,8 @@ class JobsResource extends Resource
                         if ($record->failed) {
                             return __('jobs::translations.failed');
                         }
-                        return $state . '%';
+
+                        return $state.'%';
                     })
                     ->color(function ($record) {
                         if ($record->failed) {
@@ -108,6 +109,7 @@ class JobsResource extends Resource
                         $r = round($gray[0] + ($green[0] - $gray[0]) * $f);
                         $g = round($gray[1] + ($green[1] - $gray[1]) * $f);
                         $b = round($gray[2] + ($green[2] - $gray[2]) * $f);
+
                         return "rgb({$r}, {$g}, {$b})";
                     }),
                 TextColumn::make('started_at')

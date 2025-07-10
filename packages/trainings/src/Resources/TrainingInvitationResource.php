@@ -2,16 +2,16 @@
 
 namespace Moox\Training\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -33,9 +33,9 @@ class TrainingInvitationResource extends Resource
 
     protected static ?string $model = TrainingInvitation::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-insert-invitation';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-insert-invitation';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 

@@ -2,10 +2,10 @@
 
 namespace Moox\Expiry\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -29,7 +29,7 @@ class ExpiryResource extends Resource
 
     protected static ?string $model = Expiry::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-view-timeline-o';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-view-timeline-o';
 
     protected static ?string $recordTitleAttribute = 'title';
 

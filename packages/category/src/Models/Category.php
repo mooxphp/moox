@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Override;
-use Kalnoy\Nestedset\NodeTrait;
-use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\DB;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Category\Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Kalnoy\Nestedset\NodeTrait;
+use Moox\Category\Database\Factories\CategoryFactory;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Override;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property string $title
@@ -38,15 +38,18 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property-read Collection<int, \Moox\Category\Models\Category> $children
  * @property-read Collection<int, \Moox\Category\Models\Category> $ancestors
  * @property-read \Moox\Category\Models\Category|null $parent
+ *
  * @method static CategoryFactory factory($count = null, $state = [])
  */
 class Category extends BaseDraftModel implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
     use NodeTrait;
     use SoftDeletes;
-    use InteractsWithMedia;
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     public $translatedAttributes = [
@@ -54,12 +57,12 @@ class Category extends BaseDraftModel implements HasMedia
         'status',
         'slug',
         'content',
-        'data'
+        'data',
     ];
 
     protected $fillable = [
         'color',
-        'weight', 
+        'weight',
         'count',
         'featured_image_url',
         'parent_id',
@@ -121,5 +124,4 @@ class Category extends BaseDraftModel implements HasMedia
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
-
 }

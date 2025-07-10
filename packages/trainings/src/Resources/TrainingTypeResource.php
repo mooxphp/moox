@@ -2,16 +2,15 @@
 
 namespace Moox\Training\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
@@ -54,7 +53,7 @@ class TrainingTypeResource extends Resource
                 RichEditor::make('description')
                     ->rules(['max:255', 'string'])
                     ->nullable()
-                    ->placeholder('Description')
+                    ->placeholder('Description'),
             ]),
         ])->columns(1);
     }

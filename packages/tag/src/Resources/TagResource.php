@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Actions;
-use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Utilities\Set;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -88,16 +85,16 @@ class TagResource extends BaseDraftResource
                                         TextInput::make('weight'),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('created_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('updated_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('deleted_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                     ]),
                             ])
                             ->columns(1)
@@ -175,21 +172,21 @@ class TagResource extends BaseDraftResource
             ])
             ->recordActions([
                 ViewAction::make()->url(
-                    fn($record) => request()->has('lang')
+                    fn ($record) => request()->has('lang')
                     ? static::getUrl('view', ['record' => $record, 'lang' => request()->get('lang')])
                     : static::getUrl('view', ['record' => $record])
                 ),
                 EditAction::make()
                     ->url(
-                        fn($record) => request()->has('lang')
+                        fn ($record) => request()->has('lang')
                         ? static::getUrl('edit', ['record' => $record, 'lang' => request()->get('lang')])
                         : static::getUrl('edit', ['record' => $record])
                     )
-                    ->hidden(fn(): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                    ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->toolbarActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);
     }
 
@@ -307,7 +304,7 @@ class TagResource extends BaseDraftResource
                         ->live(onBlur: true)
                         ->label(__('core::core.title'))
                         ->afterStateUpdated(
-                            fn(Set $set, ?string $state) => $set("translations.{$locale}.slug", Str::slug($state))
+                            fn (Set $set, ?string $state) => $set("translations.{$locale}.slug", Str::slug($state))
                         ),
 
                     TextInput::make("translations.{$locale}.slug")
@@ -321,7 +318,7 @@ class TagResource extends BaseDraftResource
                             table: 'tag_translations',
                             column: 'slug',
                             ignoreRecord: true,
-                            ignorable: fn($record) => $record?->translations()
+                            ignorable: fn ($record) => $record?->translations()
                                 ->where('locale', $locale)
                                 ->first()
                         ),

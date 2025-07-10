@@ -2,8 +2,8 @@
 
 namespace Moox\Clipboard\Forms\Components;
 
-use Filament\Actions\Action;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 
 class CopyableField extends TextInput
@@ -19,7 +19,7 @@ class CopyableField extends TextInput
                 Action::make('copy')
                     ->icon('heroicon-s-clipboard')
                     ->action(function ($livewire, $state) {
-                        $livewire->dispatch('copy-to-clipboard-' . $this->getName(), text: $state);
+                        $livewire->dispatch('copy-to-clipboard-'.$this->getName(), text: $state);
                     })
             )
             ->extraAttributes([
@@ -40,7 +40,7 @@ class CopyableField extends TextInput
                             document.body.removeChild(textArea);
                     }
                 }',
-                'x-on:copy-to-clipboard-' . $this->getName() . '.window' => 'copyToClipboard($event.detail.text)',
+                'x-on:copy-to-clipboard-'.$this->getName().'.window' => 'copyToClipboard($event.detail.text)',
             ]);
     }
 

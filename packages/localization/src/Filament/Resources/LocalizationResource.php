@@ -4,28 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources;
 
-use Moox\Localization\Models\Localization;
-use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Str;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
-use Filament\Tables\Table;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Localization\Models\Localization;
 
 class LocalizationResource extends BaseDraftResource
 {
-
     protected static ?string $model = Localization::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-language';
@@ -70,7 +69,7 @@ class LocalizationResource extends BaseDraftResource
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')

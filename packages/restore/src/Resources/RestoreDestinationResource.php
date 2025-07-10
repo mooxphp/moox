@@ -2,29 +2,27 @@
 
 namespace Moox\Restore\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\ListRestoreDestinations;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\CreateRestoreDestination;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages\EditRestoreDestination;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Restore\Models\RestoreDestination;
-use Moox\Restore\Resources\RestoreDestinationResource\Pages;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\CreateRestoreDestination;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\EditRestoreDestination;
+use Moox\Restore\Resources\RestoreDestinationResource\Pages\ListRestoreDestinations;
 use Spatie\BackupServer\Models\Source;
 
 class RestoreDestinationResource extends Resource
 {
     protected static ?string $model = RestoreDestination::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-pin-end-o';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-pin-end-o';
 
     public static function form(Schema $schema): Schema
     {

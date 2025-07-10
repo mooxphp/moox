@@ -2,19 +2,19 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
-use Moox\Press\Models\WpUserMeta;
-use Moox\Press\Models\WpMedia;
-use Illuminate\Database\Eloquent\Model;
 use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpBasePost;
+use Moox\Press\Models\WpMedia;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Models\WpUser;
+use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserResource;
 use Override;
 use Symfony\Component\Mime\MimeTypes;

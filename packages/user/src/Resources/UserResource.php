@@ -2,19 +2,17 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -57,8 +55,7 @@ class UserResource extends Resource
                 TextInput::make('name')
                     ->label(__('core::core.name'))
                     ->rules(['max:255', 'string'])
-                    ->required()
-                ,
+                    ->required(),
                 TextInput::make('slug')
                     ->label(__('core::core.slug'))
                     ->rules(['max:255', 'string']),
@@ -97,7 +94,7 @@ class UserResource extends Resource
                     ->unique(
                         'users',
                         'email',
-                        fn(?Model $record): ?Model => $record
+                        fn (?Model $record): ?Model => $record
                     )
                     ->email(),
                 TextInput::make('website')
@@ -113,7 +110,7 @@ class UserResource extends Resource
                     ->label(__('core::user.password'))
                     ->revealable()
                     ->required()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->password()
                     ->visibleOn('create')
                     ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
@@ -144,7 +141,7 @@ class UserResource extends Resource
                         ->password()
                         ->label('Confirm new password')
                         ->same('new_password')
-                        ->requiredWith('new_password')
+                        ->requiredWith('new_password'),
                 ])->visibleOn('edit'),
         ])->statePath('data')->columns(1);
     }
@@ -159,7 +156,7 @@ class UserResource extends Resource
                     ->circular(),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn($state, User $user): string => $user->first_name . ' ' . $user->last_name)
+                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -176,23 +173,23 @@ class UserResource extends Resource
                     ->sortable()
                     ->alignStart()
                     ->icon(
-                        fn($record): string => is_null(
+                        fn ($record): string => is_null(
                             $record->email_verified_at
                         ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn($record): bool => $record->email_verified_at !== null,
-                        'danger' => fn($record): bool => $record->email_verified_at === null,
+                        'success' => fn ($record): bool => $record->email_verified_at !== null,
+                        'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([

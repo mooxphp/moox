@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Progress;
 
 use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Filament\Support\Facades\FilamentAsset;
 
 class ProgressServiceProvider extends PackageServiceProvider
 {
@@ -25,7 +25,7 @@ class ProgressServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make('core-progress', __DIR__ . '/../resources/css/progress.css'),
+            Css::make('core-progress', __DIR__.'/../resources/css/progress.css'),
         ], 'moox/progress');
     }
 }

@@ -7,7 +7,6 @@ namespace Moox\Clipboard;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-
 class ClipboardServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void

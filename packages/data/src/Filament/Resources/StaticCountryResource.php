@@ -4,30 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Moox\Data\Models\StaticCountry;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\CreateStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ListStaticCountries;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\LocalesRelationManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticCurrencyRealtionManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticTimezoneRealtionManager;
-
+use Moox\Data\Models\StaticCountry;
 
 class StaticCountryResource extends BaseDraftResource
 {
-
     protected static ?string $model = StaticCountry::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-flag-o';
@@ -169,7 +166,7 @@ class StaticCountryResource extends BaseDraftResource
             ->columns([
                 IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('alpha2')
                     ->label('Alpha-2')
                     ->searchable()

@@ -17,7 +17,7 @@ class JobBatchesResource extends Resource
 
     protected static ?string $model = JobBatch::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = null;
+    protected static string|\BackedEnum|null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string

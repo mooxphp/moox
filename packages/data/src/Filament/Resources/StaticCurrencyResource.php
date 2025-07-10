@@ -4,27 +4,25 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables\Filters\Filter;
-use Moox\Data\Models\StaticCurrency;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\EditStaticCurrency;
-use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\ViewStaticCurrency;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\CreateStaticCurrency;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\EditStaticCurrency;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\ListStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\ViewStaticCurrency;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\RelationManagers\StaticCountryRelationManager;
+use Moox\Data\Models\StaticCurrency;
 
 class StaticCurrencyResource extends BaseDraftResource
 {
-
     protected static ?string $model = StaticCurrency::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-euro';
@@ -83,7 +81,7 @@ class StaticCurrencyResource extends BaseDraftResource
                                 Section::make()
                                     ->schema([
                                         static::getFormActions(),
-                                    ])
+                                    ]),
                             ])
                             ->columns(1)
                             ->columnSpan(1),
@@ -115,15 +113,15 @@ class StaticCurrencyResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['id']) {
+                        if (! $data['id']) {
                             return null;
                         }
 
-                        return 'ID: ' . $data['id'];
+                        return 'ID: '.$data['id'];
                     }),
                 Filter::make('code')
                     ->schema([
@@ -134,15 +132,15 @@ class StaticCurrencyResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['code'],
-                            fn(Builder $query, $value): Builder => $query->where('code', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('code', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['code']) {
+                        if (! $data['code']) {
                             return null;
                         }
 
-                        return 'Code: ' . $data['code'];
+                        return 'Code: '.$data['code'];
                     }),
                 Filter::make('common_name')
                     ->schema([
@@ -153,15 +151,15 @@ class StaticCurrencyResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['common_name']) {
+                        if (! $data['common_name']) {
                             return null;
                         }
 
-                        return 'Common Name: ' . $data['common_name'];
+                        return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('symbol')
                     ->schema([
@@ -172,15 +170,15 @@ class StaticCurrencyResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['symbol'],
-                            fn(Builder $query, $value): Builder => $query->where('symbol', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('symbol', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['symbol']) {
+                        if (! $data['symbol']) {
                             return null;
                         }
 
-                        return 'Symbol: ' . $data['symbol'];
+                        return 'Symbol: '.$data['symbol'];
                     }),
                 Filter::make('exonyms')
                     ->schema([
@@ -191,15 +189,15 @@ class StaticCurrencyResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['exonyms'],
-                            fn(Builder $query, $value): Builder => $query->where('exonyms', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('exonyms', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['exonyms']) {
+                        if (! $data['exonyms']) {
                             return null;
                         }
 
-                        return 'Exonyms: ' . $data['exonyms'];
+                        return 'Exonyms: '.$data['exonyms'];
                     }),
             ]);
     }

@@ -4,31 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Schemas\Components\Flex;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Tables\Filters\Filter;
-use Moox\Data\Models\StaticLanguage;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\EditStaticLanguage;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ViewStaticLanguage;
-use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ListStaticLanguages;
 use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\CreateStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\EditStaticLanguage;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ListStaticLanguages;
+use Moox\Data\Filament\Resources\StaticLanguageResource\Pages\ViewStaticLanguage;
 use Moox\Data\Filament\Resources\StaticLanguageResource\RelationManagers\StaticLocalesRelationManager;
+use Moox\Data\Models\StaticLanguage;
 
 class StaticLanguageResource extends BaseDraftResource
 {
-
     protected static ?string $model = StaticLanguage::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-language';
@@ -145,15 +141,15 @@ class StaticLanguageResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha2'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['alpha2']) {
+                        if (! $data['alpha2']) {
                             return null;
                         }
 
-                        return 'Alpha-2 Code: ' . $data['alpha2'];
+                        return 'Alpha-2 Code: '.$data['alpha2'];
                     }),
                 Filter::make('alpha3_b')
                     ->schema([
@@ -164,15 +160,15 @@ class StaticLanguageResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_b'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['alpha3_b']) {
+                        if (! $data['alpha3_b']) {
                             return null;
                         }
 
-                        return 'Alpha-3 Bibliographic Code: ' . $data['alpha3_b'];
+                        return 'Alpha-3 Bibliographic Code: '.$data['alpha3_b'];
                     }),
                 Filter::make('alpha3_t')
                     ->schema([
@@ -183,15 +179,15 @@ class StaticLanguageResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_t'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['alpha3_t']) {
+                        if (! $data['alpha3_t']) {
                             return null;
                         }
 
-                        return 'Alpha-3 Terminology Code: ' . $data['alpha3_t'];
+                        return 'Alpha-3 Terminology Code: '.$data['alpha3_t'];
                     }),
                 Filter::make('common_name')
                     ->schema([
@@ -202,15 +198,15 @@ class StaticLanguageResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['common_name']) {
+                        if (! $data['common_name']) {
                             return null;
                         }
 
-                        return 'Common Name: ' . $data['common_name'];
+                        return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('native_name')
                     ->schema([
@@ -221,23 +217,23 @@ class StaticLanguageResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['native_name'],
-                            fn(Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['native_name']) {
+                        if (! $data['native_name']) {
                             return null;
                         }
 
-                        return 'Native Name: ' . $data['native_name'];
+                        return 'Native Name: '.$data['native_name'];
                     }),
                 SelectFilter::make('script')
                     ->label(__('data::fields.script'))
-                    ->placeholder(__('core::core.filter') . ' Script')
+                    ->placeholder(__('core::core.filter').' Script')
                     ->options(__('data::enums/language-script')),
                 SelectFilter::make('direction')
                     ->label(__('data::fields.direction'))
-                    ->placeholder(__('core::core.filter') . ' Direction')
+                    ->placeholder(__('core::core.filter').' Direction')
                     ->options(__('data::enums/language-direction')),
             ]);
     }

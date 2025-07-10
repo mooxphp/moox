@@ -2,13 +2,13 @@
 
 namespace Moox\Jobs\Resources;
 
-use Filament\Schemas\Schema;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -23,7 +23,7 @@ class JobsWaitingResource extends Resource
 
     protected static ?string $model = Job::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = null;
+    protected static string|\BackedEnum|null $navigationIcon = null;
 
     #[Override]
     public static function getNavigationIcon(): string

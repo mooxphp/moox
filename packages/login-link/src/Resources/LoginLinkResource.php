@@ -2,14 +2,14 @@
 
 namespace Moox\LoginLink\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -28,7 +28,7 @@ class LoginLinkResource extends Resource
 
     protected static ?string $model = LoginLink::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-lock-clock-o';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-lock-clock-o';
 
     #[Override]
     public static function form(Schema $schema): Schema

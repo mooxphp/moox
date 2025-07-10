@@ -2,12 +2,12 @@
 
 namespace Moox\Tag\Forms;
 
-use Filament\Schemas\Components\Grid;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 
 class TaxonomyCreateForm
 {

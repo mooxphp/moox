@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticLanguageResource\Pages;
 
-use Moox\Data\Filament\Resources\StaticLanguageResource;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Data\Filament\Resources\StaticLanguageResource;
 
 class ViewStaticLanguage extends ViewRecord
 {

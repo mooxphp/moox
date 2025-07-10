@@ -2,13 +2,13 @@
 
 namespace Moox\Draft\Models;
 
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
@@ -104,7 +104,6 @@ class Draft extends BaseDraftModel implements HasMedia
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
         });
-
     }
 
     public function getUlidAttribute(): string

@@ -40,6 +40,7 @@ class BaseDraftResource extends BaseResource
 
         return true;
     }
+
     public static function enablePublish(): bool
     {
         if (static::getReadonlyConfig()) {

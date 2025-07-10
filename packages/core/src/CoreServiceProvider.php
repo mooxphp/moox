@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
-use Filament\Support\Assets\Css;
-use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
@@ -42,9 +40,7 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
-    public function packageBooted(): void
-    {
-    }
+    public function packageBooted(): void {}
 
     public function configurePackage(Package $package): void
     {
@@ -92,7 +88,7 @@ class CoreServiceProvider extends PackageServiceProvider
             if (isset($package['models']) && is_array($package['models'])) {
                 foreach ($package['models'] as $model => $settings) {
                     if (isset($settings['policy']) && class_exists($settings['policy'])) {
-                        $modelClass = 'App\Models\\' . $model;
+                        $modelClass = 'App\Models\\'.$model;
                         if (class_exists($modelClass)) {
                             Gate::policy($modelClass, $settings['policy']);
                         }
@@ -101,7 +97,7 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(fn($modelClass): string => DefaultPolicy::class);
+        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
     }
 
     public function hasCommand(string $commandClassName): Package

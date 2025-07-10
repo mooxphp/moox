@@ -11,7 +11,7 @@ return [
     'featured_image_url' => 'Featured Image URL',
     'parent_id' => 'Parent ID',
     'created_at' => 'Created at',
-    'updated_at' => 'Updated at', 
+    'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
     'parent' => 'Parent',
     'children' => 'Children',

@@ -2,9 +2,9 @@
 
 namespace Moox\Progress\Forms\Components;
 
-use Filament\Tables\Columns\Column;
-use Filament\Support\Enums\Alignment;
 use Closure;
+use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\Column;
 
 class ProgressColumn extends Column
 {
@@ -23,6 +23,7 @@ class ProgressColumn extends Column
     public function progress(Closure $callback): static
     {
         $this->progress = $callback;
+
         return $this;
     }
 
@@ -31,12 +32,14 @@ class ProgressColumn extends Column
         if ($this->progress === null) {
             return floor($this->getStateFromRecord());
         }
+
         return $this->evaluate($this->progress);
     }
 
     public function poll(string|Closure $duration): static
     {
         $this->poll = $duration;
+
         return $this;
     }
 
@@ -48,12 +51,14 @@ class ProgressColumn extends Column
     public function getState(): int
     {
         $state = $this->getStateFromRecord();
+
         return is_numeric($state) ? (int) $state : 0;
     }
 
     public function formatStateUsing(Closure $callback): static
     {
         $this->formatStateUsing = $callback;
+
         return $this;
     }
 
@@ -71,13 +76,15 @@ class ProgressColumn extends Column
     public function width(string|int|Closure|null $width): static
     {
         $this->width = $width;
+
         return $this;
     }
 
-    public function getWidth(): string|null
+    public function getWidth(): ?string
     {
         if ($this->width !== null) {
             $width = $this->evaluate($this->width);
+
             return is_string($width) ? $width : (string) $width;
         }
 
@@ -87,6 +94,7 @@ class ProgressColumn extends Column
     public function color(string|Closure $color): static
     {
         $this->color = $color;
+
         return $this;
     }
 
