@@ -27,6 +27,6 @@ return [
     'gallery' => 'Gallery',
     'excerpt' => 'Excerpt',
     'created_by' => 'Created By',
-    'updated_by' => 'Updated By'
+    'updated_by' => 'Updated By',
 
 ];

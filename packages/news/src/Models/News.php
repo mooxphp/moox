@@ -105,7 +105,6 @@ class News extends BaseDraftModel implements HasMedia
             $model->uuid = (string) \Illuminate\Support\Str::uuid();
             $model->ulid = (string) \Illuminate\Support\Str::ulid();
         });
-
     }
 
     public function getUlidAttribute(): string
@@ -216,7 +215,6 @@ class News extends BaseDraftModel implements HasMedia
     {
         return $this->morphTo();
     }
-
 
     /**
      * Publishing status accessors

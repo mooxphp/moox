@@ -8,7 +8,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -26,9 +25,9 @@ use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\News\Models\News;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
+use Moox\News\Models\News;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class NewsResource extends BaseDraftResource
@@ -172,13 +171,14 @@ class NewsResource extends BaseDraftResource
                                         ->label(__('news::fields.ulid'))
                                         ->defaultValue(fn ($record): string => $record->ulid ?? ''),
 
-                            Section::make('')
-                                    ->schema([
+                                    Section::make('')
+                                        ->schema([
                                             Placeholder::make('created_by')
                                                 ->label(__('news::fields.created_by'))
                                                 ->content(function ($record) {
                                                     $lang = request()->get('lang') ?? app()->getLocale();
                                                     $translation = $record?->translate($lang);
+
                                                     return $translation?->createdBy?->name ?? '—';
                                                 }),
                                             Placeholder::make('updated_by')
@@ -186,6 +186,7 @@ class NewsResource extends BaseDraftResource
                                                 ->content(function ($record) {
                                                     $lang = request()->get('lang') ?? app()->getLocale();
                                                     $translation = $record?->translate($lang);
+
                                                     return $translation?->updatedBy?->name ?? '—';
                                                 }),
                                             Placeholder::make('created_at')
@@ -269,12 +270,13 @@ class NewsResource extends BaseDraftResource
                             : $record->excerpt;
 
                         return strip_tags($excerpt);
-    }),
+                    }),
 
                 TextColumn::make('created_by')
                     ->label(__('news::fields.created_by'))
                     ->formatStateUsing(function ($state, $record) {
                         $lang = request()->get('lang') ?? app()->getLocale();
+
                         return $record->translate($lang)?->createdBy?->name ?? '–';
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -283,6 +285,7 @@ class NewsResource extends BaseDraftResource
                     ->label(__('news::fields.updated_by'))
                     ->formatStateUsing(function ($state, $record) {
                         $lang = request()->get('lang') ?? app()->getLocale();
+
                         return $record->translate($lang)?->updatedBy?->name ?? '–';
                     })
                     ->toggleable(isToggledHiddenByDefault: true),

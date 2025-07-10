@@ -2,9 +2,9 @@
 
 namespace Moox\News\Models;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class NewsTranslation extends Model
 {
@@ -28,7 +28,6 @@ class NewsTranslation extends Model
         'updated_by_type',
         'deleted_by_id',
         'deleted_by_type',
-
 
         // Publishing schedule fields
         'to_publish_at',
@@ -72,34 +71,31 @@ class NewsTranslation extends Model
     }
 
     protected static function boot()
-{
-    parent::boot();
+    {
+        parent::boot();
 
-    static::creating(function ($model) {
-        if (Auth::check()) {
-            $userId = Auth::id();
+        static::creating(function ($model) {
+            if (Auth::check()) {
+                $userId = Auth::id();
 
-            $model->created_by_id = $userId;
-            $model->created_by_type = 'App\\Models\\User';
-            $model->updated_by_id = $userId;
-            $model->updated_by_type = 'App\\Models\\User';
+                $model->created_by_id = $userId;
+                $model->created_by_type = 'App\\Models\\User';
+                $model->updated_by_id = $userId;
+                $model->updated_by_type = 'App\\Models\\User';
 
-            if (empty($model->author_id)) {
-                $model->author_id = $userId;
+                if (empty($model->author_id)) {
+                    $model->author_id = $userId;
+                }
             }
-        }
-    });
+        });
 
-    static::updating(function ($model) {
-        if (Auth::check()) {
-            $userId = Auth::id();
+        static::updating(function ($model) {
+            if (Auth::check()) {
+                $userId = Auth::id();
 
-            $model->updated_by_id = $userId;
-            $model->updated_by_type = 'App\\Models\\User';
-        }
-    });
-}
-
-
-
+                $model->updated_by_id = $userId;
+                $model->updated_by_type = 'App\\Models\\User';
+            }
+        });
+    }
 }

@@ -27,5 +27,5 @@ return [
     'gallery' => 'Galerie',
     'excerpt' => 'Auszug',
     'created_by' => 'Erstellt Von',
-    'updated_by' => 'Aktualisiert Von'
+    'updated_by' => 'Aktualisiert Von',
 ];
