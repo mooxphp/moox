@@ -1,7 +1,6 @@
 {
     "name": "moox/core",
     "description": "The Moox Core package cares for many common features. It is required by all Moox packages.",
-    "type": "moox-core",
     "keywords": [
         "Laravel",
         "Filament",
@@ -18,11 +17,16 @@
         }
     ],
     "require": {
-        "php": "^8.2.0",
-        "spatie/laravel-package-tools": "^1.13.0",
+        "codeat3/blade-google-material-design-icons": "^1.0",
+        "filament/filament": "4.0.0-beta15",
         "laravel/framework": "^11.0|^12.0",
-        "filament/filament": "4.0.0-beta11",
-        "codeat3/blade-google-material-design-icons": "^1.0"
+        "moox/clipboard": "self.version",
+        "moox/progress": "self.version",
+        "php": "^8.2.0",
+        "spatie/laravel-package-tools": "^1.13.0"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -62,18 +66,17 @@
                 "auto_runhere": {
                     "Build the frontend": "npm run build"
                 }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-media-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-media-config"
             }
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require-dev": {
-        "moox/devtools": "self.version"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
-        }
-    }
+    "prefer-stable": true
 }

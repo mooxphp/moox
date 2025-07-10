@@ -2,8 +2,8 @@
 
 namespace Moox\Data\Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use Moox\Data\Models\StaticCountry;
+use Illuminate\Database\Seeder;
 
 class StaticCountriesStaticCurrenciesSeeder extends Seeder
 {

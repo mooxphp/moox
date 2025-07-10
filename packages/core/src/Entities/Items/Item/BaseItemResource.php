@@ -66,20 +66,20 @@ class BaseItemResource extends BaseResource
     public static function getFormActions(): Actions
     {
         $actions = [
-            static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
-            static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
+            static::getSaveAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
+            static::getCancelAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
         ];
 
         if (static::enableCreate()) {
-            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableEdit()) {
-            $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getEditAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         return Actions::make($actions);

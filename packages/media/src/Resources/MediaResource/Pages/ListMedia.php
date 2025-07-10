@@ -2,14 +2,15 @@
 
 namespace Moox\Media\Resources\MediaResource\Pages;
 
-use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\Action;
 use Moox\Media\Models\Media;
+use Filament\Forms\Components\Select;
 use Moox\Media\Models\MediaCollection;
+use Filament\Tables\Columns\TextColumn;
 use Moox\Media\Resources\MediaResource;
+use Filament\Forms\Components\FileUpload;
+use Filament\Resources\Pages\ListRecords;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends ListRecords
@@ -32,19 +33,24 @@ class ListMedia extends ListRecords
 
     public function toggleView(): void
     {
-        $this->isGridView = ! $this->isGridView;
+        $this->isGridView = !$this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
+    }
+
+    public function openUsageModal(int $mediaId): void
+    {
+        $this->dispatch('open-modal', id: "usage-modal-{$mediaId}");
     }
 
     public function getHeaderActions(): array
     {
         return [
             Action::make('toggleView')
-                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn () => $this->toggleView())
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
@@ -63,7 +69,6 @@ class ListMedia extends ListRecords
                                 ['name' => __('media::fields.uncategorized')],
                                 ['description' => __('media::fields.uncategorized_description')]
                             );
-
                             return $collection->name;
                         })
                         ->required()
@@ -96,19 +101,20 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
-                            $processedFiles = session('processed_files', []);
                             $collectionName = $get('collection_name') ?? __('media::fields.uncategorized');
 
-                            foreach ($state as $key => $tempFile) {
-                                if (in_array($key, $processedFiles)) {
+                            foreach ($state as $tempFile) {
+
+                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
+
+                                if (in_array($fileHash, $this->processedHashes)) {
                                     continue;
                                 }
 
-                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
                                 $fileName = $tempFile->getClientOriginalName();
 
                                 $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
@@ -158,13 +164,12 @@ class ListMedia extends ListRecords
                                 }
 
                                 $media->save();
-                                $processedFiles[] = $key;
+                                $this->processedHashes[] = $fileHash;
                             }
-
-                            session(['processed_files' => $processedFiles]);
                         }),
                 ])
                 ->modalSubmitAction(false),
         ];
     }
+
 }

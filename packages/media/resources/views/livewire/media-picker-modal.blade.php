@@ -1,28 +1,18 @@
-<x-filament::modal id="mediaPickerModal" width="7xl">
-    <x-slot name="header">
-        <h2 class="text-lg font-bold">{{ __('media::fields.upload_and_select_media') }}</h2>
-    </x-slot>
-
-    <div class="min-w-[1000px]">
-        <div class="mb-4">
-            {{ $this->form }}
-        </div>
-
-        <div class="mt-4">
-        </div>
+<x-filament::modal id="mediaPickerModal" width="7xl" :heading="__('media::fields.upload_and_select_media')">
+    <div>
+        {{ $this->form }}
     </div>
 
-    <div class="flex flex-col md:flex-row gap-4">
-        <div class="flex-1">
+    <div class="fi-sc fi-sc-has-gap fi-grid lg:fi-grid-cols" style="--cols-lg: 6.5fr 3.5fr; --cols-default: repeat(1, minmax(0, 1fr));">
+        <div class="fi-grid-col">
             <x-filament::section>
-                <div class="flex flex-row gap-4 mb-4">
-                    <x-filament::input.wrapper class="">
+                <div class="fi-sc fi-grid lg:fi-grid-cols" style="--cols-lg: 2fr 1fr 1fr 1fr 1fr; --cols-default: repeat(1, minmax(0, 1fr)); gap: 0.5rem;">
+                    <x-filament::input.wrapper>
                         <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
-                            placeholder="{{ __('media::fields.search') }}"
-                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            placeholder="{{ __('media::fields.search') }}" />
                     </x-filament::input.wrapper>
 
-                    <x-filament::input.wrapper class="w-1/6">
+                    <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="fileTypeFilter">
                             <option value="">{{ __('media::fields.all_types') }}</option>
                             <option value="images">{{ __('media::fields.images') }}</option>
@@ -32,7 +22,7 @@
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
 
-                    <x-filament::input.wrapper class="w-1/6">
+                    <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="dateFilter">
                             <option value="">{{ __('media::fields.all_periods') }}</option>
                             <option value="today">{{ __('media::fields.today') }}</option>
@@ -42,7 +32,7 @@
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
 
-                    <x-filament::input.wrapper class="w-1/6">
+                    <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="uploaderFilter">
                             <option value="">{{ __('media::fields.uploaded_by') }}</option>
                             @foreach($uploaderOptions as $type => $uploaders)
@@ -55,7 +45,7 @@
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
 
-                    <x-filament::input.wrapper class="w-1/6">
+                    <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="collectionFilter">
                             <option value="">{{ __('media::fields.all_collections') }}</option>
                             @foreach($collectionOptions as $name)
@@ -142,91 +132,87 @@
                     ];
                 @endphp
 
-                <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div class="fi-sc fi-grid lg:fi-grid-cols" style="--cols-lg: repeat(3, minmax(0, 1fr)); --cols-default: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 1rem;">
                     @if($mediaItems)
-                                    @foreach ($mediaItems as $item)
-                                                    @php
-                                                        $mimeType = $item['mime_type'];
-                                                        $fileData = $mimeTypeLabels[$mimeType] ?? null;
-                                                    @endphp
+                        @foreach ($mediaItems as $item)
+                            @php
+                                $mimeType = $item['mime_type'];
+                                $fileData = $mimeTypeLabels[$mimeType] ?? null;
+                            @endphp
 
-                                                    <div wire:click="toggleMediaSelection({{ $item['id'] }})"
-                                                        class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ in_array($item['id'], $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $selectedMediaMeta['id'] == $item['id'] ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
-                                                        @if ($fileData)
-                                                            <div class="flex flex-col justify-between items-center w-full h-32 mt-3">
-                                                                <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16" />
-                                                                <div
-                                                                    class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
-                                                                    {{ $item['file_name'] }}
-                                                                </div>
-                                                            </div>
-                                                        @else
-                                                            <div class="relative w-full h-32">
-                                                                <img src="{{ $item['original_url'] }}" class="object-cover w-full h-full rounded-t-lg" />
-                                                            </div>
-                                                        @endif
+                            <div wire:click="toggleMediaSelection({{ $item['id'] }})"
+                                style="position: relative; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; background-color: #f3f4f6; cursor: pointer; transition: all 0.2s ease; {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 4px #93c5fd, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #eff6ff; padding: 0.1rem;' : '' }}"
+                                @if ($fileData)
+                                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 8rem; padding: 1rem; border-radius: 0.5rem;">
+                                        <x-filament::icon icon="{{ $fileData['icon'] }}" style="width: 3rem; height: 3rem; margin-bottom: 0.5rem;" />
+                                        <div style="font-size: 0.875rem; color: #374151; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 500;">
+                                            {{ $item['file_name'] }}
+                                        </div>
+                                    </div>
+                                @else
+                                    <div style="position: relative; width: 100%; height: 8rem; border-radius: 0.5rem; overflow: hidden;">
+                                        <img src="{{ $item['original_url'] }}" style="object-fit: cover; width: 100%; height: 100%;" />
+                                    </div>
+                                @endif
 
-                                                        @if(in_array($item['id'], $selectedMediaIds))
-                                                            <div class="absolute top-1 right-1">
-                                                                <x-filament::icon icon="heroicon-o-check-circle" class="w-6 h-6" fill="#3B82F6" />
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                    @endforeach
+                                @if(in_array($item['id'], $selectedMediaIds))
+                                    <div style="position: absolute; top: 0.25rem; left: 0.25rem;">
+                                        <x-filament::icon icon="heroicon-o-check-circle" class="fi-size-lg" fill="#3B82F6" />
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
                     @endif
-                </x-filament::grid>
+                </div>
 
-                <div class="pt-4 mt-4">
+                <div style="margin-top: 1rem;">
                     <x-filament::pagination :paginator="$mediaItems" />
                 </div>
 
             </x-filament::section>
         </div>
 
-        <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4 flex flex-col h-full">
+        <div class="fi-sc fi-sc-has-gap fi-grid lg:fi-grid-cols" style="--cols-lg: 1fr; --cols-default: repeat(1, minmax(0, 1fr)); gap: 0.5rem; align-self: start;">
             @if(!empty($selectedMediaMeta['id']))
-                <div class="flex-1">
-                    <x-filament::section columns="2">
-                        <div class="space-y-4">
+                    <x-filament::section>
+                        <div class="fi-sc fi-grid lg:fi-grid-cols" style="--cols-lg: repeat(2, minmax(0, 1fr)); --cols-default: repeat(1, minmax(0, 1fr)); gap: 1rem;">
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.file_name') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['file_name'] }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.file_name') }}</span>
+                                <p>{{ $selectedMediaMeta['file_name'] }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.file_type') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['mime_type'] }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.file_type') }}</span>
+                                <p>{{ $selectedMediaMeta['mime_type'] }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.size') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ number_format($selectedMediaMeta['size'] / 1024, 2) }} KB</p>
+                                <span class="fi-sc-text">{{ __('media::fields.size') }}</span>
+                                <p>{{ number_format($selectedMediaMeta['size'] / 1024, 2) }} KB</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.dimensions') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['dimensions']['width'] ?? '-' }} x {{ $selectedMediaMeta['dimensions']['height'] ?? '-' }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.dimensions') }}</span>
+                                <p>{{ $selectedMediaMeta['dimensions']['width'] ?? '-' }} x {{ $selectedMediaMeta['dimensions']['height'] ?? '-' }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.created_at') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['created_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['created_at'])->format('d.m.Y H:i') : '-' }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.created_at') }}</span>
+                                <p>{{ $selectedMediaMeta['created_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['created_at'])->format('d.m.Y H:i') : '-' }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.updated_at') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['updated_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['updated_at'])->format('d.m.Y H:i') : '-' }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.updated_at') }}</span>
+                                <p>{{ $selectedMediaMeta['updated_at'] ? \Carbon\Carbon::parse($selectedMediaMeta['updated_at'])->format('d.m.Y H:i') : '-' }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.uploaded_by') }}</span>
-                                <p class="mt-1 text-sm text-gray-900">{{ $selectedMediaMeta['uploader_name'] ?? '-' }}</p>
+                                <span class="fi-sc-text">{{ __('media::fields.uploaded_by') }}</span>
+                                <p>{{ $selectedMediaMeta['uploader_name'] ?? '-' }}</p>
                             </div>
 
                             <div>
-                                <span class="text-sm font-medium text-gray-500">{{ __('media::fields.collection') }}</span>
+                                <span class="fi-sc-text">{{ __('media::fields.collection') }}</span>
                                 <div class="mt-1">
                                     <x-filament::input.wrapper>
                                     <x-filament::input.select 
@@ -245,77 +231,72 @@
 
                     <x-filament::section class="mt-2" collapsible collapsed>
                         <x-slot name="heading">
-                            <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.metadata') }}</h3>
+                            <h2 class="fi-section-header-heading">{{ __('media::fields.metadata') }}</h2>
                         </x-slot>
-                        <form wire:submit.prevent="saveMetadata">
-                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('media::fields.name') }}
-                            </x-filament-forms::field-wrapper.label>
-                            <x-filament::input.wrapper class="mb-4">
-                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.name" placeholder="{{ __('media::fields.name') }}"
-                                    :disabled="(bool) $selectedMediaMeta['write_protected']"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            </x-filament::input.wrapper>
+                        <div class="fi-sc fi-grid lg:fi-grid-cols" style="--cols-lg: repeat(1, minmax(0, 1fr)); --cols-default: repeat(1, minmax(0, 1fr)); gap: 1rem;">
 
-                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('media::fields.title') }}
-                            </x-filament-forms::field-wrapper.label>
-                            <x-filament::input.wrapper class="mb-4">
-                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="{{ __('media::fields.title') }}"
-                                    :disabled="(bool) $selectedMediaMeta['write_protected']"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            </x-filament::input.wrapper>
+                            <div class="fi-grid-col" >
+                                <span class="fi-fo-field-label-content">{{ __('media::fields.name') }}</span>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.name" placeholder="{{ __('media::fields.name') }}"
+                                        :disabled="(bool) $selectedMediaMeta['write_protected']" />
+                                </x-filament::input.wrapper>
+                            </div>
 
-                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('media::fields.description') }}
-                            </x-filament-forms::field-wrapper.label>
-                            <x-filament::input.wrapper class="mb-4">
-                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
-                                    placeholder="{{ __('media::fields.description') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            </x-filament::input.wrapper>
+                            <div class="fi-grid-col">
+                                <span class="fi-fo-field-label-content">{{ __('media::fields.title') }}</span>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="{{ __('media::fields.title') }}"
+                                        :disabled="(bool) $selectedMediaMeta['write_protected']" />
+                                </x-filament::input.wrapper>
+                            </div>
 
-                            <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('media::fields.alt_text') }}
-                            </x-filament-forms::field-wrapper.label>
-                            <x-filament::input.wrapper class="mb-4">
-                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="{{ __('media::fields.alt_text') }}"
-                                    :disabled="$selectedMediaMeta['write_protected'] === true"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            </x-filament::input.wrapper>
-                        </form>
+                            <div class="fi-grid-col">
+                                <span class="fi-fo-field-label-content">{{ __('media::fields.description') }}</span>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
+                                        placeholder="{{ __('media::fields.description') }}" :disabled="$selectedMediaMeta['write_protected'] === true" />
+                                </x-filament::input.wrapper>
+                            </div>
+
+                            <div class="fi-grid-col">
+                                <span class="fi-fo-field-label-content">{{ __('media::fields.alt_text') }}</span>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="{{ __('media::fields.alt_text') }}"
+                                        :disabled="$selectedMediaMeta['write_protected'] === true" />
+                                </x-filament::input.wrapper>
+                            </div>
+                        </div>
                     </x-filament::section>
 
-                    <x-filament::section class="mt-2" collapsible collapsed>
+                    <x-filament::section  collapsible collapsed>
                         <x-slot name="heading">
-                            <h3 class="text-lg font-semibold mb-4">{{ __('media::fields.internal_note') }}</h3>
+                            <h2 class="fi-section-header-heading">{{ __('media::fields.internal_note') }}</h2>
                         </x-slot>
-                        <form wire:submit.prevent="saveMetadata">
-                            <x-filament::input.wrapper class="mb-4">
-                                <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
-                                    placeholder="{{ __('media::fields.internal_note') }}" :disabled="$selectedMediaMeta['write_protected'] === true"
-                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            </x-filament::input.wrapper>
-                        </form>
+                        <x-filament::input.wrapper>
+                            <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
+                                placeholder="{{ __('media::fields.internal_note') }}" :disabled="$selectedMediaMeta['write_protected'] === true" />
+                        </x-filament::input.wrapper>
                     </x-filament::section>
-                </div>
-
-                <div class="mt-2 flex gap-2 justify-end">
-                    <x-filament::button wire:click="applySelection" color="primary">
-                        {{ __('media::fields.apply_selection') }}
-                    </x-filament::button>
-                    <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
-                        {{ __('media::fields.close') }}
-                    </x-filament::button>
+                
+                    <div class="fi-ac fi-align-end">
+                        <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
+                            {{ __('media::fields.close') }}
+                        </x-filament::button>
+                        <x-filament::button wire:click="applySelection" color="primary">
+                            {{ __('media::fields.apply_selection') }}
+                        </x-filament::button>
+                        
+                    </div>
+               
                 </div>
             @else
                 <x-filament::section>
-                    <p class="text-gray-500">{{ __('media::fields.no_media_selected') }}</p>
+                    <p class="fi-sc-text fi-size-lg">{{ __('media::fields.no_media_selected') }}</p>
                 </x-filament::section>
             @endif
         </div>
     </div>
 
-    <x-slot name="footer">
-    </x-slot>
+    
 </x-filament::modal>

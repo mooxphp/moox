@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Resources\Resource;
+use Moox\Data\Models\StaticCountriesStaticTimezones;
+use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ListStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\CreateStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\EditStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ViewStaticCountriesStaticTimezones;
+use Filament\Forms\Components\Select;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\CreateStaticCountriesStaticTimezones;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\EditStaticCountriesStaticTimezones;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ListStaticCountriesStaticTimezones;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ViewStaticCountriesStaticTimezones;
-use Moox\Data\Models\StaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages;
 
 class StaticCountriesStaticTimezonesResource extends Resource
 {
@@ -26,7 +27,7 @@ class StaticCountriesStaticTimezonesResource extends Resource
 
     protected static ?string $model = StaticCountriesStaticTimezones::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {

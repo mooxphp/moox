@@ -2,14 +2,14 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -26,7 +26,7 @@ class WpWikiLocationTopicResource extends Resource
 
     protected static ?string $model = WpWikiLocationTopic::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-location-on';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-location-on';
 
     protected static ?string $recordTitleAttribute = 'name';
 

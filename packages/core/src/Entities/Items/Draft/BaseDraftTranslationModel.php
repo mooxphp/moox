@@ -3,10 +3,13 @@
 namespace Moox\Core\Entities\Items\Draft;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
 
-abstract class BaseDraftTranslationModel extends Model
+abstract class BaseDraftTranslationModel extends Model 
 {
     use SoftDeletes;
 
@@ -17,7 +20,7 @@ abstract class BaseDraftTranslationModel extends Model
             'published_at' => 'datetime',
             'to_unpublish_at' => 'datetime',
             'unpublished_at' => 'datetime',
-            'restored_at' => 'datetime',
+            'restored_at' => 'datetime'
         ], $this->getCustomCasts());
     }
 

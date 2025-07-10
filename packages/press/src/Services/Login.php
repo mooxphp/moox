@@ -2,41 +2,44 @@
 
 namespace Moox\Press\Services;
 
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Override;
+use Illuminate\Support\Arr;
+use Jenssegers\Agent\Agent;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Auth\Http\Responses\Contracts\LoginResponse;
-use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
+use Filament\Schemas\Schema;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Checkbox;
+use Filament\Pages\SimplePage;
+use Livewire\Attributes\Locked;
+use Filament\Actions\ActionGroup;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\HtmlString;
+use Filament\View\PanelsRenderHook;
 use Filament\Forms\Components\Radio;
+use Illuminate\Support\Facades\Auth;
+use Filament\Schemas\Components\Form;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Blade;
+use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Pages\SimplePage;
 use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\EmbeddedSchema;
-use Filament\Schemas\Components\Form;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
-use Filament\Support\Enums\Alignment;
-use Filament\View\PanelsRenderHook;
+use Filament\Schemas\Components\Component;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Validation\ValidationException;
-use Jenssegers\Agent\Agent;
-use Livewire\Attributes\Locked;
+use Filament\Schemas\Components\EmbeddedSchema;
 use Moox\UserDevice\Services\UserDeviceTracker;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Pages\Concerns\InteractsWithFormActions;
 use Moox\UserSession\Services\SessionRelationService;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
+
 
 /**
  * @property-read Action $registerAction
@@ -91,7 +94,7 @@ class Login extends SimplePage
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
-        if (! $this->isWhitelisted()) {
+        if (!$this->isWhitelisted()) {
             try {
                 $this->rateLimit(5);
             } catch (TooManyRequestsException $exception) {
@@ -111,11 +114,11 @@ class Login extends SimplePage
         $userModelEmail = config(sprintf('press.auth.%s.email', $guardName));
         $query = $userModel::query();
 
-        if (! empty($userModelUsername) && $credentialKey === 'name') {
+        if (!empty($userModelUsername) && $credentialKey === 'name') {
             $query->where($userModelUsername, $credentials[$credentialKey]);
         }
 
-        if (! empty($userModelEmail) && $credentialKey === 'email') {
+        if (!empty($userModelEmail) && $credentialKey === 'email') {
             if ($query->getQuery()->wheres) {
                 $query->orWhere($userModelEmail, $credentials[$credentialKey]);
             } else {
@@ -127,10 +130,10 @@ class Login extends SimplePage
 
         if (config('press.wpModel') && $user instanceof (config('press.wpModel'))) {
             $wpAuthService = new WordPressAuthService;
-            if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
+            if (!$wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
-        } elseif (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
+        } elseif (!Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
 
@@ -141,7 +144,7 @@ class Login extends SimplePage
             $this->multiFactorChallengeForm->validate();
         } else {
             foreach (Filament::getMultiFactorAuthenticationProviders() as $multiFactorAuthenticationProvider) {
-                if (! $multiFactorAuthenticationProvider->isEnabled($user)) {
+                if (!$multiFactorAuthenticationProvider->isEnabled($user)) {
                     continue;
                 }
 
@@ -156,7 +159,6 @@ class Login extends SimplePage
 
             if (filled($this->userUndertakingMultiFactorAuthentication)) {
                 $this->multiFactorChallengeForm->fill();
-
                 return null;
             }
         }
@@ -186,9 +188,9 @@ class Login extends SimplePage
             $redirectParam = $redirectTarget === 'frontend' ? '&redirect_to=frontend' : '';
 
             if ($data['remember'] ?? false) {
-                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token.'&remember_me=true'.$redirectParam);
+                return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token . '&remember_me=true' . $redirectParam);
             } else {
-                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token.$redirectParam);
+                return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token . $redirectParam);
             }
         } else {
             return app(LoginResponse::class);
@@ -208,17 +210,17 @@ class Login extends SimplePage
 
                 $enabledMultiFactorAuthenticationProviders = array_filter(
                     Filament::getMultiFactorAuthenticationProviders(),
-                    fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
+                    fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
                 );
 
                 return [
                     ...Arr::wrap($this->getMultiFactorProviderFormComponent()),
                     ...collect($enabledMultiFactorAuthenticationProviders)
-                        ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getChallengeFormComponents($user))
+                        ->map(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getChallengeFormComponents($user))
                             ->statePath($multiFactorAuthenticationProvider->getId())
                             ->when(
                                 count($enabledMultiFactorAuthenticationProviders) > 1,
-                                fn (Group $group) => $group->visible(fn (Get $get): bool => $get('provider') === $multiFactorAuthenticationProvider->getId())
+                                fn(Group $group) => $group->visible(fn(Get $get): bool => $get('provider') === $multiFactorAuthenticationProvider->getId())
                             ))
                         ->all(),
                 ];
@@ -241,6 +243,7 @@ class Login extends SimplePage
             ->autofocus()
             ->extraInputAttributes(['tabindex' => 1]);
     }
+
 
     protected function getLoginFormComponent(): Component
     {
@@ -274,6 +277,7 @@ class Login extends SimplePage
             ]);
     }
 
+
     protected function getRememberFormComponent(): Component
     {
         return Checkbox::make('remember')
@@ -287,7 +291,7 @@ class Login extends SimplePage
 
         $enabledMultiFactorAuthenticationProviders = array_filter(
             Filament::getMultiFactorAuthenticationProviders(),
-            fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
+            fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): bool => $multiFactorAuthenticationProvider->isEnabled($user)
         );
 
         if (count($enabledMultiFactorAuthenticationProviders) <= 1) {
@@ -297,18 +301,18 @@ class Login extends SimplePage
         return Section::make()
             ->compact()
             ->secondary()
-            ->schema(fn (Section $section): array => [
+            ->schema(fn(Section $section): array => [
                 Radio::make('provider')
                     ->label(__('filament-panels::auth/pages/login.multi_factor.form.provider.label'))
                     ->options(array_map(
-                        fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): string => $multiFactorAuthenticationProvider->getLoginFormLabel(),
+                        fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): string => $multiFactorAuthenticationProvider->getLoginFormLabel(),
                         $enabledMultiFactorAuthenticationProviders,
                     ))
                     ->live()
                     ->afterStateUpdated(function (?string $state) use ($enabledMultiFactorAuthenticationProviders, $section, $user): void {
                         $provider = $enabledMultiFactorAuthenticationProviders[$state] ?? null;
 
-                        if (! $provider) {
+                        if (!$provider) {
                             return;
                         }
 
@@ -318,7 +322,7 @@ class Login extends SimplePage
                             ->getChildSchema()
                             ->fill();
 
-                        if (! ($provider instanceof HasBeforeChallengeHook)) {
+                        if (!($provider instanceof HasBeforeChallengeHook)) {
                             return;
                         }
 
@@ -412,11 +416,11 @@ class Login extends SimplePage
             return __('filament-panels::auth/pages/login.multi_factor.subheading');
         }
 
-        if (! filament()->hasRegistration()) {
+        if (!filament()->hasRegistration()) {
             return null;
         }
 
-        return new HtmlString(__('filament-panels::auth/pages/login.actions.register.before').' '.$this->registerAction->toHtml());
+        return new HtmlString(__('filament-panels::auth/pages/login.actions.register.before') . ' ' . $this->registerAction->toHtml());
     }
 
     public function content(Schema $schema): Schema
@@ -440,7 +444,7 @@ class Login extends SimplePage
                     ->alignment($this->getFormActionsAlignment())
                     ->fullWidth($this->hasFullWidthFormActions()),
             ])
-            ->visible(fn (): bool => blank($this->userUndertakingMultiFactorAuthentication));
+            ->visible(fn(): bool => blank($this->userUndertakingMultiFactorAuthentication));
     }
 
     public function getMultiFactorChallengeFormContentComponent(): Component
@@ -453,7 +457,7 @@ class Login extends SimplePage
                     ->alignment($this->getMultiFactorChallengeFormActionsAlignment())
                     ->fullWidth($this->hasFullWidthMultiFactorChallengeFormActions()),
             ])
-            ->visible(fn (): bool => filled($this->userUndertakingMultiFactorAuthentication));
+            ->visible(fn(): bool => filled($this->userUndertakingMultiFactorAuthentication));
     }
 
     public function getMultiFactorChallengeFormActionsAlignment(): string|Alignment
@@ -499,7 +503,7 @@ class Login extends SimplePage
 
         $ipWhiteList = config('press.ip_whitelist');
 
-        if (isset($ipWhiteList) && ! empty($ipWhiteList)) {
+        if (isset($ipWhiteList) && !empty($ipWhiteList)) {
             if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
                 return true;
             }

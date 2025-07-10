@@ -9,46 +9,41 @@
     if ($usages->isEmpty()) {
         return;
     }
-
-    $groupedUsages = $usages->groupBy('media_usable_type')
-        ->map(function ($items, $type) {
-            $typeName = class_basename($type);
-            $baseUrl = Filament::getCurrentPanel()->getUrl();
-
-            $links = $items->map(function ($item) use ($typeName, $baseUrl) {
-                $type = Str::plural(strtolower($typeName));
-                $url = $baseUrl . '/' . $type . '/' . $item->media_usable_id;
-
-                return "
-                            <div class=\"flex items-center gap-2 py-2 px-3 dark:bg-gray-800 dark:hover:bg-gray-700/50 hover:bg-gray-100 rounded-md transition-colors\">
-                                <svg class=\"w-4 h-4 text-gray-400\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\">
-                                    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244\" />
-                                </svg>
-                                <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-500 hover:underline break-all text-sm\">
-                                    {$url}
-                                </a>
-                            </div>
-                            ";
-            })->join("\n");
-
-            return "
-                        <div class=\"mb-6\">
-                            <div class=\"flex items-center gap-2 mb-3\">
-                                <h3 class=\"text-lg font-medium text-gray-900\">{$typeName}</h3>
-                                    <span class=\"px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full\">
-                                        {$items->count()} " . trans_choice('media::fields.link|links', $items->count()) . "
-                                    </span>
-                            </div>
-                        <div class=\"bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-100 dark:divide-gray-700\">
-                            {$links}
-                        </div>
-                        </div>
-                        ";
-        })->join("\n");
 @endphp
 
+
+
 <x-filament::modal id="usage-modal-{{ $record->id }}" width="4xl" :heading="__('media::fields.usage')">
-    <div class="space-y-6">
-        {!! $groupedUsages !!}
-    </div>
+    @foreach($usages->groupBy('media_usable_type') as $type => $items)
+        @php
+            $typeName = class_basename($type);
+            $baseUrl = Filament::getCurrentPanel()->getUrl();
+        @endphp
+
+        <x-filament::section>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <h3 class="fi-section-header-heading">{{ $typeName }}</h3>
+                <x-filament::badge color="gray">
+                    {{ $items->count() }} {{ trans_choice('media::fields.link|links', $items->count()) }}
+                </x-filament::badge>
+            </div>
+
+            <div style="background-color: white; border: 1px solid #e5e7eb; border-radius: 0.5rem;">
+                @foreach($items as $item)
+                    @php
+                        $type = Str::plural(strtolower($typeName));
+                        $url = $baseUrl . '/' . $type . '/' . $item->media_usable_id;
+                    @endphp
+
+                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 0.375rem; transition: background-color 0.2s;"
+                        onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='white'">
+                        <x-filament::icon icon="heroicon-m-link" />
+                        <x-filament::link :href="$url" target="_blank">
+                            {{ $url }}
+                        </x-filament::link>
+                    </div>
+                @endforeach
+            </div>
+        </x-filament::section>
+    @endforeach
 </x-filament::modal>

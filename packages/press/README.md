@@ -1,4 +1,4 @@
-![Moox Press](banner.jpg)
+![Moox Press](https://github.com/mooxphp/moox/raw/main/art/banner/press.jpg)
 
 # Moox Press
 
@@ -11,17 +11,24 @@ Developers notes:
 -   for Herd, Valet use one of the files from the wsconfig folder
 -   for Forge (or Nginx) add the following:
 
-```
-    // after this
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
+    ```config
+        // after this
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
 
-    // add this
-    location /wp/ {
-        try_files $uri $uri/ /wp/index.php?$query_string;
-    }
-```
+        // add this
+        location /wp/ {
+            try_files $uri $uri/ /wp/index.php?$query_string;
+        }
+    ```
+
+-   in composer.json add the plugin for the core installer
+
+    ```json
+            "allow-plugins": {
+                "roots/wordpress-core-installer": true
+    ```
 
 ## Quick Installation
 

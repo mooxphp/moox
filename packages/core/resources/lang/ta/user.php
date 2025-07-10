@@ -36,5 +36,5 @@ return [
     'email_verified_at' => 'மின்னஞ்சல் சரிபார்க்கப்பட்டது',
     'website' => 'வலைத்தளம்',
     'wp_user_meta' => 'WP பயனர் மேவு',
-    'wp_user_metas' => 'WP பயனர் மேவுகள்',
+    'wp_user_metas' => 'WP பயனர் மேவு',
 ];

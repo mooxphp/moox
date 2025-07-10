@@ -4,30 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
+use Moox\Data\Models\StaticTimezone;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
+use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
-use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Data\Filament\Resources\StaticTimezoneResource\RelationManagers\StaticCountriesRelationManager;
-use Moox\Data\Models\StaticTimezone;
 
-class StaticTimezoneResource extends Resource
+class StaticTimezoneResource extends BaseDraftResource
 {
-    use BaseInResource, SingleSimpleInResource;
 
     protected static ?string $model = StaticTimezone::class;
 
@@ -60,40 +58,40 @@ class StaticTimezoneResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([
-            Grid::make(2)
-                ->schema([
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    TextInput::make('name')
-                                        ->label(__('data::fields.name'))
-                                        ->maxLength(255)
-                                        ->required(),
-                                    TextInput::make('offset_standard')
-                                        ->label(__('data::fields.offset_standard'))
-                                        ->maxLength(6)->required(),
-                                    Toggle::make('dst')
-                                        ->label(__('data::fields.dst'))->required(),
-                                    DateTimePicker::make('dst_start')
-                                        ->label(__('data::fields.dst_start')),
-                                    DateTimePicker::make('dst_end')
-                                        ->label(__('data::fields.dst_end')),
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 2]),
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 1]),
-                ])
-                ->columns(['lg' => 3]),
-        ]);
+        return $schema
+            ->schema([
+                Grid::make()
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label(__('data::fields.name'))
+                                    ->maxLength(255)
+                                    ->required(),
+                                TextInput::make('offset_standard')
+                                    ->label(__('data::fields.offset_standard'))
+                                    ->maxLength(6)->required(),
+                                Toggle::make('dst')
+                                    ->label(__('data::fields.dst'))->required(),
+                                DateTimePicker::make('dst_start')
+                                    ->label(__('data::fields.dst_start')),
+                                DateTimePicker::make('dst_end')
+                                    ->label(__('data::fields.dst_end')),
+                            ])
+                            ->columnSpan(2),
+                        Grid::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpan(1),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -127,15 +125,15 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['name']) {
+                        if (!$data['name']) {
                             return null;
                         }
 
-                        return 'name: '.$data['name'];
+                        return 'name: ' . $data['name'];
                     }),
                 Filter::make('offset_standart')
                     ->schema([
@@ -146,15 +144,15 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['offset_standart'],
-                            fn (Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['offset_standart']) {
+                        if (!$data['offset_standart']) {
                             return null;
                         }
 
-                        return 'name: '.$data['offset_standart'];
+                        return 'name: ' . $data['offset_standart'];
                     }),
             ]);
     }

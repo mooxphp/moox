@@ -2,16 +2,16 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -47,194 +47,106 @@ class UserResource extends Resource
     {
         return $schema->components([
             Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
+                MediaPicker::make('avatar_url')
+                    ->label('Avatar')
+                    ->multiple()
+                    ->maxFiles(4)
+                    ->imageEditor()
+                    ->panelLayout('grid'),
 
-                    MediaPicker::make('avatar_url')
-                        ->label('Avatar')
-                        ->multiple()
-                        ->maxFiles(4)
-                        ->imageEditor()
-                        ->panelLayout('grid'),
+                TextInput::make('name')
+                    ->label(__('core::core.name'))
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                ,
+                TextInput::make('slug')
+                    ->label(__('core::core.slug'))
+                    ->rules(['max:255', 'string']),
 
-                    TextInput::make('name')
-                        ->label(__('core::core.name'))
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                Select::make('roles')
+                    ->label(__('core::user.roles'))
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
+                Select::make('gender')
+                    ->label(__('core::user.gender'))
+                    ->rules(['in:unknown,male,female,other'])
+                    ->required()
+                    ->searchable()
+                    ->options([
+                        'unknown' => 'Unknown',
+                        'female' => 'Female',
+                        'male' => 'Male',
+                        'other' => 'Other',
+                    ]),
+                TextInput::make('title')
+                    ->label(__('core::user.title'))
+                    ->rules(['max:255', 'string'])
+                    ->nullable(),
+                TextInput::make('first_name')
+                    ->label(__('core::user.first_name'))
+                    ->rules(['max:255', 'string']),
+                TextInput::make('last_name')
+                    ->label(__('core::user.last_name'))
+                    ->rules(['max:255', 'string']),
+                TextInput::make('email')
+                    ->label(__('core::user.email'))
+                    ->rules(['email'])
+                    ->required()
+                    ->unique(
+                        'users',
+                        'email',
+                        fn(?Model $record): ?Model => $record
+                    )
+                    ->email(),
+                TextInput::make('website')
+                    ->label(__('core::user.website'))
+                    ->rules(['max:255', 'string'])
+                    ->nullable(),
 
-                    TextInput::make('slug')
-                        ->label(__('core::core.slug'))
-                        ->rules(['max:255', 'string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                RichEditor::make('description')
+                    ->label(__('core::core.description'))
+                    ->rules(['max:255']),
 
-                    Select::make('roles')
-                        ->label(__('core::user.roles'))
-                        ->relationship('roles', 'name')
-                        ->multiple()
-                        ->preload()
-                        ->searchable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('password')
+                    ->label(__('core::user.password'))
+                    ->revealable()
+                    ->required()
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->password()
+                    ->visibleOn('create')
+                    ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
+                    ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
 
-                    Select::make('gender')
-                        ->label(__('core::user.gender'))
-                        ->rules(['in:unknown,male,female,other'])
-                        ->required()
-                        ->searchable()
-                        ->options([
-                            'unknown' => 'Unknown',
-                            'female' => 'Female',
-                            'male' => 'Male',
-                            'other' => 'Other',
-                        ])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('title')
-                        ->label(__('core::user.title'))
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('first_name')
-                        ->label(__('core::user.first_name'))
-                        ->rules(['max:255', 'string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('last_name')
-                        ->label(__('core::user.last_name'))
-                        ->rules(['max:255', 'string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('email')
-                        ->label(__('core::user.email'))
-                        ->rules(['email'])
-                        ->required()
-                        ->unique(
-                            'users',
-                            'email',
-                            fn (?Model $record): ?Model => $record
-                        )
-                        ->email()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('website')
-                        ->label(__('core::user.website'))
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    RichEditor::make('description')
-                        ->label(__('core::core.description'))
-                        ->rules(['max:255', 'string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('password')
-                        ->label(__('core::user.password'))
-                        ->revealable()
-                        ->required()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                        ->password()
-                        ->visibleOn('create')
-                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('password_confirmation')
-                        ->label(__('core::user.password_confirmation'))
-                        ->requiredWith('password')
-                        ->password()
-                        ->same('password')
-                        ->visibleOn('create')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
+                TextInput::make('password_confirmation')
+                    ->label(__('core::user.password_confirmation'))
+                    ->requiredWith('password')
+                    ->password()
+                    ->same('password')
+                    ->visibleOn('create'),
             ]),
-
-            Section::make('Update Password')->schema([
-                Grid::make(['default' => 0])->schema([
+            Section::make('Update Password')
+                ->schema([
                     TextInput::make('current_password')
                         ->label(__('core::user.current_password'))
                         ->revealable()
                         ->password()
-                        ->rule('current_password')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                        ->rule('current_password'),
                     TextInput::make('new_password')
                         ->label(__('core::user.new_password'))
                         ->revealable()
                         ->password()
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
                     TextInput::make('new_password_confirmation')
                         ->label(__('core::user.new_password_confirmation'))
                         ->password()
                         ->label('Confirm new password')
                         ->same('new_password')
                         ->requiredWith('new_password')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                ]),
-            ])->visibleOn('edit'),
-
-        ])->statePath('data');
+                ])->visibleOn('edit'),
+        ])->statePath('data')->columns(1);
     }
 
     #[Override]
@@ -247,7 +159,7 @@ class UserResource extends Resource
                     ->circular(),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
+                    ->formatStateUsing(fn($state, User $user): string => $user->first_name . ' ' . $user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -264,32 +176,27 @@ class UserResource extends Resource
                     ->sortable()
                     ->alignStart()
                     ->icon(
-                        fn ($record): string => is_null(
+                        fn($record): string => is_null(
                             $record->email_verified_at
                         ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn ($record): bool => $record->email_verified_at !== null,
-                        'danger' => fn ($record): bool => $record->email_verified_at === null,
+                        'success' => fn($record): bool => $record->email_verified_at !== null,
+                        'danger' => fn($record): bool => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'heroicon-o-shield-exclamation' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'warning' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([
-                SelectFilter::make('language_id')
-                    ->label(__('core::user.language_id'))
-                    ->relationship('language', 'title')
-                    ->indicator('Language')
-                    ->multiple()
-                    ->label('Language'),
+
             ])
             ->recordActions([ViewAction::make(), EditAction::make()])
             ->toolbarActions(array_filter([

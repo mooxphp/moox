@@ -40,7 +40,6 @@ class BaseDraftResource extends BaseResource
 
         return true;
     }
-
     public static function enablePublish(): bool
     {
         if (static::getReadonlyConfig()) {
@@ -56,6 +55,15 @@ class BaseDraftResource extends BaseResource
     }
 
     public static function enableDelete(): bool
+    {
+        if (static::getReadonlyConfig()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function enableRestore(): bool
     {
         if (static::getReadonlyConfig()) {
             return false;
@@ -99,23 +107,28 @@ class BaseDraftResource extends BaseResource
     public static function getFormActions(): Actions
     {
         $actions = [
-            static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
-            static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
+            static::getSaveAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
+            static::getCancelAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
         ];
 
+        if (static::enableRestore()) {
+            $actions[] = static::getRestoreAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
+        }
+
         if (static::enableCreate()) {
-            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableEdit()) {
-            $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getEditAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
+
         if (static::enablePublish()) {
-            $actions[] = static::getPublishAction()->extraAttributes(attributes: ['class' => 'w-full']);
+            $actions[] = static::getPublishAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         return Actions::make($actions);

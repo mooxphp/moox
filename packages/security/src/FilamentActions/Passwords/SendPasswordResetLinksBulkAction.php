@@ -2,10 +2,10 @@
 
 namespace Moox\Security\FilamentActions\Passwords;
 
+use Filament\Actions\BulkAction;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
-use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Auth\CanResetPassword;
@@ -51,7 +51,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                 }
 
                 foreach ($records as $record) {
-                    if (! $record instanceof CanResetPassword) {
+                    if (!$record instanceof CanResetPassword) {
                         $recordClass = $record::class;
                         throw new Exception(sprintf('Model [%s] must implement [Illuminate\Contracts\Auth\CanResetPassword] interface.', $recordClass));
                     }
@@ -70,5 +70,10 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     ->success()
                     ->send();
             });
+    }
+
+    public function rateLimit(int|\Closure|null $maxAttempts): static
+    {
+        return parent::rateLimit($maxAttempts);
     }
 }

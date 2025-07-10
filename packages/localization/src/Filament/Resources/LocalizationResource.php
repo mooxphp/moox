@@ -4,30 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
+use Moox\Localization\Models\Localization;
+use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
-use Moox\Localization\Models\Localization;
+use Filament\Tables\Table;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 
-class LocalizationResource extends Resource
+class LocalizationResource extends BaseDraftResource
 {
-    use BaseInResource, SingleSimpleInResource;
 
     protected static ?string $model = Localization::class;
 
@@ -61,11 +58,11 @@ class LocalizationResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
-            ->components([
-                Grid::make(2)
+            ->schema([
+                Grid::make()
                     ->schema([
-                        Grid::make()->schema([
-                            Section::make([
+                        Section::make()
+                            ->schema([
                                 Select::make('language_id')
                                     ->label(__('localization::fields.language'))
                                     ->relationship('language', 'alpha2')
@@ -73,7 +70,7 @@ class LocalizationResource extends Resource
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')
@@ -83,38 +80,30 @@ class LocalizationResource extends Resource
                                 Toggle::make('is_active_admin')
                                     ->label(__('localization::fields.is_activ_admin'))
                                     ->default(false),
-
                                 Toggle::make('is_active_frontend')
                                     ->label(__('localization::fields.is_activ_frontend'))
                                     ->default(false),
-
                                 Toggle::make('is_default')
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false),
-
                                 TextInput::make('routing_path')
                                     ->label(__('localization::fields.routing_path'))
                                     ->nullable(),
-
                                 TextInput::make('routing_subdomain')
                                     ->label(__('localization::fields.routing_subdomain'))
                                     ->nullable(),
-
                                 TextInput::make('routing_domain')
                                     ->label(__('localization::fields.routing_domain'))
                                     ->nullable(),
-
                                 TextInput::make('translation_status')
                                     ->label(__('localization::fields.translation_status'))
                                     ->numeric()
                                     ->nullable(),
-
                                 Textarea::make('language_settings')
                                     ->label(__('localization::fields.language_settings'))
                                     ->json(),
-                            ]),
-                        ])
-                            ->columnSpan(['lg' => 2]),
+                            ])
+                            ->columnSpan(2),
                         Grid::make()
                             ->schema([
                                 Section::make()
@@ -136,10 +125,11 @@ class LocalizationResource extends Resource
                                             ->default('path'),
                                     ]),
                             ])
-                            ->columnSpan(['lg' => 1]),
+                            ->columns(1)
+                            ->columnSpan(1),
                     ])
-                    ->columns(['lg' => 3]),
-
+                    ->columns(3)
+                    ->columnSpanFull(),
             ]);
     }
 

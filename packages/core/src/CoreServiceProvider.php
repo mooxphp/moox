@@ -44,9 +44,6 @@ class CoreServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        FilamentAsset::register([
-            Css::make('core-progress', __DIR__.'/../resources/dist/progress.css'),
-        ], 'moox/core');
     }
 
     public function configurePackage(Package $package): void
@@ -95,7 +92,7 @@ class CoreServiceProvider extends PackageServiceProvider
             if (isset($package['models']) && is_array($package['models'])) {
                 foreach ($package['models'] as $model => $settings) {
                     if (isset($settings['policy']) && class_exists($settings['policy'])) {
-                        $modelClass = 'App\Models\\'.$model;
+                        $modelClass = 'App\Models\\' . $model;
                         if (class_exists($modelClass)) {
                             Gate::policy($modelClass, $settings['policy']);
                         }
@@ -104,7 +101,7 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
+        Gate::guessPolicyNamesUsing(fn($modelClass): string => DefaultPolicy::class);
     }
 
     public function hasCommand(string $commandClassName): Package

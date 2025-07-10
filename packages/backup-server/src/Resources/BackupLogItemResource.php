@@ -2,34 +2,35 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Actions\DeleteBulkAction;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteBulkAction;
+use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ListBackupLogItems;
+use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ViewBackupLogItem;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\BackupServerUi\Models\BackupLogItem;
-use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ListBackupLogItems;
-use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ViewBackupLogItem;
+use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages;
 
 class BackupLogItemResource extends Resource
 {
     protected static ?string $model = BackupLogItem::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-bars-4';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-s-bars-4';
 
     protected static ?string $navigationLabel = 'Backup Log';
 
     protected static ?string $pluralNavigationLabel = 'Backup Logs';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
+    protected static string | \UnitEnum | null $navigationGroup = 'Backup server';
 
     protected static ?string $recordTitleAttribute = 'Log Entry';
 

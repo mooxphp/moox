@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Resources;
 
+use Filament\Schemas\Schema;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Moox\Restore\Resources\RestoreBackupResource\Pages\ListRestoreBackups;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Restore\Models\RestoreBackup;
-use Moox\Restore\Resources\RestoreBackupResource\Pages\ListRestoreBackups;
+use Moox\Restore\Resources\RestoreBackupResource\Pages;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
@@ -26,7 +27,7 @@ class RestoreBackupResource extends Resource
 
     protected static ?string $currentTab = null;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-restore-page';
+    protected static string | \BackedEnum | null $navigationIcon = 'gmdi-restore-page';
 
     protected static ?string $authorModel = null;
 
