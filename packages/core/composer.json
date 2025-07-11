@@ -18,7 +18,7 @@
     ],
     "require": {
         "codeat3/blade-google-material-design-icons": "^1.0",
-        "filament/support": "^4.0",
+        "filament/filament": "^4.0",
         "laravel/framework": "^11.0|^12.0",
         "moox/clipboard": "self.version",
         "moox/progress": "self.version",
