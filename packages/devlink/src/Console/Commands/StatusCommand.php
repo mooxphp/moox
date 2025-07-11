@@ -36,7 +36,7 @@ class StatusCommand extends Command
 
     public function handle(): void
     {
-        $this->art();
+        // $this->art();
         $this->check();
         $this->show();
     }
