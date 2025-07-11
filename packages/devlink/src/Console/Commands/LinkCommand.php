@@ -38,7 +38,7 @@ class LinkCommand extends Command
 
     public function handle(): void
     {
-        //$this->art();
+        // $this->art();
         info('Hello, I will link the configured packages for you.');
         $this->check();
         // create a symlink for the DEVLOG.md file
