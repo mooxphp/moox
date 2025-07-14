@@ -7,7 +7,7 @@ on:
         description: "New version"
         required: true
       packages: 
-        description: "Packages to deploy (JSON array string)"
+        description: "Packages to deploy (JSON object with package info)"
         required: true
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
           cat packages.json
           
           echo "Parsed packages:"
-          jq -r 'to_entries[] | "\(.key): \(.value | join(", "))"' packages.json
+          jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown") Type=\(.value.type // "unknown")"' packages.json
           
           # Create package list for later steps
           jq -r 'keys[]' packages.json > package-list.txt
@@ -44,11 +44,18 @@ jobs:
           while IFS= read -r package; do
             echo "Processing package: $package"
             
-            # Get messages for this package
-            messages=$(jq -r --arg pkg "$package" '.[$pkg] | join("; ")' packages.json)
-            echo "Messages: $messages"
+            # Get all info for this package
+            messages=$(jq -r --arg pkg "$package" '.[$pkg]["release-message"] | join("; ")' packages.json)
+            stability=$(jq -r --arg pkg "$package" '.[$pkg]["minimum-stability"] // "unknown"' packages.json)
+            pkg_type=$(jq -r --arg pkg "$package" '.[$pkg].type // "unknown"' packages.json)
+            visibility=$(jq -r --arg pkg "$package" '.[$pkg].visibility // "unknown"' packages.json)
             
-            # Your deployment logic here
-            # e.g., clone repo, create release, etc.
+            echo "  Messages: $messages"
+            echo "  Stability: $stability"
+            echo "  Type: $pkg_type"
+            echo "  Visibility: $visibility"
+            
+            # Your deployment logic here can now use all this information
+            # e.g., clone repo, create release with proper stability, etc.
             
           done < package-list.txt
