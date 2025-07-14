@@ -10,17 +10,18 @@ on:
         description: "Packages to deploy (JSON object with package info)"
         required: true
 
+env:
+  GITHUB_TOKEN: ${{ secrets.BOT }}
+
 jobs:
-  deploy:
+  prepare:
     runs-on: ubuntu-latest
+    outputs:
+      package-list: ${{ steps.parse.outputs.package-list }}
+      core-version: ${{ steps.parse.outputs.core-version }}
     steps:
-      - name: Show input
-        run: |
-          echo "Deploying version: ${{ github.event.inputs.version }}"
-          echo "Packages received"
-          
-      - name: Parse packages safely
-        id: parse_packages
+      - name: Parse packages
+        id: parse
         run: |
           # Create a temp file to avoid shell injection
           cat > packages.json << 'EOF'
@@ -31,31 +32,59 @@ jobs:
           cat packages.json
           
           echo "Parsed packages:"
-          jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown") Type=\(.value.type // "unknown")"' packages.json
+          jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown")"' packages.json
           
-          # Create package list for later steps
-          jq -r 'keys[]' packages.json > package-list.txt
+          # Create package list for matrix
+          package_list=$(jq -r 'keys | @json' packages.json)
+          echo "package-list=$package_list" >> $GITHUB_OUTPUT
           
-          echo "Package names only:"
-          cat package-list.txt
+          # Set core version from input (exact version)
+          echo "core-version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          
+          echo "Package list for matrix: $package_list"
 
-      - name: Process each package
+  split:
+    needs: prepare
+    runs-on: ubuntu-latest
+    if: ${{ needs.prepare.outputs.package-list != '[]' }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.prepare.outputs.package-list) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Replace core version in composer.json
+        working-directory: packages/${{ matrix.package }}
         run: |
-          while IFS= read -r package; do
-            echo "Processing package: $package"
+          if [ -f composer.json ]; then
+            echo "Updating moox/core version in ${{ matrix.package }} to ${{ needs.prepare.outputs.core-version }}"
+            sed -i 's/"moox\/core": "\*"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
             
-            # Get all info for this package
-            messages=$(jq -r --arg pkg "$package" '.[$pkg]["release-message"] | join("; ")' packages.json)
-            stability=$(jq -r --arg pkg "$package" '.[$pkg]["minimum-stability"] // "unknown"' packages.json)
-            pkg_type=$(jq -r --arg pkg "$package" '.[$pkg].type // "unknown"' packages.json)
-            visibility=$(jq -r --arg pkg "$package" '.[$pkg].visibility // "unknown"' packages.json)
-            
-            echo "  Messages: $messages"
-            echo "  Stability: $stability"
-            echo "  Type: $pkg_type"
-            echo "  Visibility: $visibility"
-            
-            # Your deployment logic here can now use all this information
-            # e.g., clone repo, create release with proper stability, etc.
-            
-          done < package-list.txt
+            echo "Updated composer.json:"
+            cat composer.json | grep "moox/core" || echo "No moox/core dependency found"
+          else
+            echo "No composer.json found in ${{ matrix.package }}"
+          fi
+
+      - name: Commit changes
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          if [ -f composer.json ]; then
+            git config --global user.name "mooxbot"
+            git config --global user.email "bot@moox.org"
+            git add composer.json
+            git commit -m "Update moox/core dependency to ${{ needs.prepare.outputs.core-version }}" || echo "No changes to commit"
+          fi
+
+      - name: Split package to separate repository
+        uses: "symplify/monorepo-split-github-action@v2.3.0"
+        with:
+          tag: "v${{ github.event.inputs.version }}"
+          package_directory: "packages/${{ matrix.package }}"
+          repository_organization: "mooxphp"
+          repository_name: "${{ matrix.package }}"
+          user_name: "mooxbot"
+          user_email: "bot@moox.org"
