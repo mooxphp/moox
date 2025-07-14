@@ -375,7 +375,7 @@ class CreateRelease extends Command
 
         $this->line("Suggested next version: {$suggestedVersion}");
         $this->line('Examples: 3.1.5, 3.1.5-beta.1, 3.1.5-alpha.1, 3.1.5-rc.1');
-        
+
         $version = $this->ask('Enter the new version:', $suggestedVersion);
 
         if (! $this->validateVersionFormat($version)) {
@@ -418,12 +418,13 @@ class CreateRelease extends Command
             // For prerelease, suggest either next prerelease or stable version
             $nextPrerelease = "{$major}.{$minor}.{$patch}-{$prerelease}.".($prereleaseVersion + 1);
             $stableVersion = "{$major}.{$minor}.{$patch}";
-            
+
             // If it's rc, suggest stable version, otherwise suggest next prerelease
             return $prerelease === 'rc' ? $stableVersion : $nextPrerelease;
         } else {
             // For stable version, suggest next patch version
             [$major, $minor, $patch] = explode('.', $currentVersion);
+
             return "$major.$minor.".((int) $patch + 1);
         }
     }
