@@ -17,10 +17,38 @@ jobs:
       - name: Show input
         run: |
           echo "Deploying version: ${{ github.event.inputs.version }}"
-          echo "Packages (raw): ${{ github.event.inputs.packages }}"
+          echo "Packages received"
           
-          # Parse string input into array using jq
-          echo '${{ github.event.inputs.packages }}' | jq -r '.[]' > package-list.txt
+      - name: Parse packages safely
+        id: parse_packages
+        run: |
+          # Create a temp file to avoid shell injection
+          cat > packages.json << 'EOF'
+          ${{ github.event.inputs.packages }}
+          EOF
           
-          echo "Package list:"
+          echo "Raw packages file:"
+          cat packages.json
+          
+          echo "Parsed packages:"
+          jq -r 'to_entries[] | "\(.key): \(.value | join(", "))"' packages.json
+          
+          # Create package list for later steps
+          jq -r 'keys[]' packages.json > package-list.txt
+          
+          echo "Package names only:"
           cat package-list.txt
+
+      - name: Process each package
+        run: |
+          while IFS= read -r package; do
+            echo "Processing package: $package"
+            
+            # Get messages for this package
+            messages=$(jq -r --arg pkg "$package" '.[$pkg] | join("; ")' packages.json)
+            echo "Messages: $messages"
+            
+            # Your deployment logic here
+            # e.g., clone repo, create release, etc.
+            
+          done < package-list.txt
