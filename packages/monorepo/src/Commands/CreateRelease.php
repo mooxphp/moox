@@ -62,14 +62,14 @@ class CreateRelease extends Command
                 return $this->comparePackages($this->githubService);
         }
         $publicPackages = $this->githubService->getMonorepoPackages(
-            config('monorepo.github_org'), 
+            config('monorepo.github_org'),
             config('monorepo.public_repo'),
             config('monorepo.packages_path')
         );
 
         $privatePackages = $this->githubService->getMonorepoPackages(
             config('monorepo.github_org'),
-            config('monorepo.private_repo'), 
+            config('monorepo.private_repo'),
             config('monorepo.packages_path'),
             'private'
         );
@@ -83,18 +83,18 @@ class CreateRelease extends Command
             'public' => $publicPackages,
             'private' => $privatePackages,
             'org' => array_fill_keys($orgPackages, ['type' => 'org']),
-            'all' => []
+            'all' => [],
         ];
-        
+
         // Merge all packages with type information
         foreach ($publicPackages as $package => $info) {
             $packages['all'][$package] = array_merge($info, ['type' => 'public']);
         }
         foreach ($privatePackages as $package => $info) {
-            $packages['all'][$package] = array_merge($info, ['type' => 'private']); 
+            $packages['all'][$package] = array_merge($info, ['type' => 'private']);
         }
         foreach ($orgPackages as $package) {
-            if (!isset($packages['all'][$package])) {
+            if (! isset($packages['all'][$package])) {
                 $packages['all'][$package] = ['type' => 'org'];
             }
         }
@@ -114,35 +114,33 @@ class CreateRelease extends Command
         //     ->pluck('name')
         //     ->toArray();
 
-
         $currentVersion = $this->githubService->getLatestReleaseTag(config('monorepo.github_org').'/'.config('monorepo.public_repo'));
 
         $newVersion = $this->askForNewVersion($currentVersion);
         $this->info("New version: {$newVersion}\n");
 
-
         $missingPackagesResult = $this->packageComparisonService->isNewOrgPackage(array_keys($packages['public']), array_keys($packages['private']), $orgPackages);
 
         // Flatten the missing packages result into a single array
         $missingPackages = [];
-        if (!empty($missingPackagesResult['public'])) {
+        if (! empty($missingPackagesResult['public'])) {
             foreach ($missingPackagesResult['public'] as $package) {
                 $missingPackages[$package] = ['minimum-stability' => 'init', 'type' => 'public'];
             }
         }
-        if (!empty($missingPackagesResult['private'])) {
+        if (! empty($missingPackagesResult['private'])) {
             foreach ($missingPackagesResult['private'] as $package) {
                 $missingPackages[$package] = ['minimum-stability' => 'init', 'type' => 'private'];
             }
         }
-        
-        if (!empty($missingPackages)) {
+
+        if (! empty($missingPackages)) {
             $this->line('Missing packages detected:');
             foreach ($missingPackages as $package => $info) {
                 $this->line("- {$package} ({$info['type']})");
             }
         }
-        
+
         // Process all packages with their messages (handled by the service)
         $packagesWithMessages = $this->devlogService->processAllPackagesForRelease(array_merge($packages['public'], $packages['private']));
 
@@ -165,47 +163,46 @@ class CreateRelease extends Command
         // Extract and filter packages with messages for workflows
         $publicPackagesWithMessages = [];
         $privatePackagesWithMessages = [];
-    
-        
+
         foreach ($packagesWithMessages as $packageName => $packageInfo) {
             if (array_key_exists($packageName, $packages['public'])) {
                 $publicPackagesWithMessages[$packageName] = $packageInfo;
             }
-            
+
             if (array_key_exists($packageName, $packages['private'])) {
                 $privatePackagesWithMessages[$packageName] = $packageInfo;
             }
         }
 
         // Trigger workflow for public packages
-        if (!empty($publicPackagesWithMessages)) {
-            $this->line("📦 Preparing public packages for workflow...");
+        if (! empty($publicPackagesWithMessages)) {
+            $this->line('📦 Preparing public packages for workflow...');
             $publicPackagesJson = $this->preparePackagesForWorkflow($publicPackagesWithMessages);
-            
+
             $this->githubService->triggerWorkflowDispatch(
-                config('monorepo.github_org'), 
-                config('monorepo.public_repo'), 
-                'split.yml', 
-                'main', 
+                config('monorepo.github_org'),
+                config('monorepo.public_repo'),
+                'split.yml',
+                'main',
                 [
                     'version' => $newVersion,
-                    'packages' => $publicPackagesJson
+                    'packages' => $publicPackagesJson,
                 ]
             );
         }
 
-        if (!empty($privatePackagesWithMessages)) {
-            $this->line("📦 Preparing private packages for workflow...");
+        if (! empty($privatePackagesWithMessages)) {
+            $this->line('📦 Preparing private packages for workflow...');
             $privatePackagesJson = $this->preparePackagesForWorkflow($privatePackagesWithMessages);
-            
+
             $this->githubService->triggerWorkflowDispatch(
                 config('monorepo.github_org'),
                 config('monorepo.private_repo'),
                 'split.yml',
                 'main',
                 [
-                    'version' => $newVersion, 
-                    'packages' => $privatePackagesJson
+                    'version' => $newVersion,
+                    'packages' => $privatePackagesJson,
                 ]
             );
         }
@@ -228,53 +225,55 @@ class CreateRelease extends Command
                 $cleanMessage = $this->sanitizeMessage($message);
                 $sanitizedMessages[] = $cleanMessage;
             }
-            
+
             // Keep all package info but sanitize the messages
             $sanitizedPackages[$package] = array_merge($packageInfo, [
-                'release-message' => $sanitizedMessages
+                'release-message' => $sanitizedMessages,
             ]);
         }
-        
+
         $packagesJson = json_encode($sanitizedPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $currentLength = strlen($packagesJson);
-        
+
         if ($currentLength <= $maxLength) {
-            $this->line("✅ Packages JSON size: " . number_format($currentLength) . " bytes (within limit)");
+            $this->line('✅ Packages JSON size: '.number_format($currentLength).' bytes (within limit)');
+
             return $packagesJson;
         }
-        
-        $this->warn("⚠️  Packages JSON too large: " . number_format($currentLength) . " bytes (limit: " . number_format($maxLength) . ")");
-        $this->line("Truncating messages to fit GitHub workflow input limits...");
-        
+
+        $this->warn('⚠️  Packages JSON too large: '.number_format($currentLength).' bytes (limit: '.number_format($maxLength).')');
+        $this->line('Truncating messages to fit GitHub workflow input limits...');
+
         // Truncate messages to fit within limit
         $truncatedPackages = [];
         foreach ($sanitizedPackages as $package => $packageInfo) {
             $messages = $packageInfo['release-message'] ?? ['Release update'];
             // Keep only first message and truncate if needed
-            $firstMessage = is_array($messages) && !empty($messages) ? $messages[0] : 'Release update';
-            $truncatedMessage = strlen($firstMessage) > 100 ? substr($firstMessage, 0, 97) . '...' : $firstMessage;
-            
+            $firstMessage = is_array($messages) && ! empty($messages) ? $messages[0] : 'Release update';
+            $truncatedMessage = strlen($firstMessage) > 100 ? substr($firstMessage, 0, 97).'...' : $firstMessage;
+
             $truncatedPackages[$package] = array_merge($packageInfo, [
-                'release-message' => [$truncatedMessage]
+                'release-message' => [$truncatedMessage],
             ]);
         }
-        
+
         $truncatedJson = json_encode($truncatedPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $newLength = strlen($truncatedJson);
-        
+
         if ($newLength > $maxLength) {
             // If still too large, just use package names with generic message
-            $this->error("Still too large after truncation. Using generic messages.");
+            $this->error('Still too large after truncation. Using generic messages.');
             $genericPackages = [];
             foreach ($packagesWithMessages as $package => $packageInfo) {
                 $genericPackages[$package] = array_merge($packageInfo, [
-                    'release-message' => ['Release update']
+                    'release-message' => ['Release update'],
                 ]);
             }
             $truncatedJson = json_encode($genericPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        
-        $this->line("✅ Truncated to: " . number_format(strlen($truncatedJson)) . " bytes");
+
+        $this->line('✅ Truncated to: '.number_format(strlen($truncatedJson)).' bytes');
+
         return $truncatedJson;
     }
 
@@ -283,7 +282,7 @@ class CreateRelease extends Command
         // Remove or replace problematic characters for bash
         $message = str_replace([
             '(', ')', // Parentheses cause syntax errors
-            '`',      // Backticks for command substitution  
+            '`',      // Backticks for command substitution
             '$',      // Variable expansion
             '"',      // Double quotes
             "'",      // Single quotes - replace with safe alternative
@@ -296,19 +295,19 @@ class CreateRelease extends Command
             '',       // Remove single quotes
             ' ', ' ', ' ', // Replace whitespace with spaces
         ], $message);
-        
+
         // Trim and limit length
         $message = trim($message);
         if (strlen($message) > 200) {
-            $message = substr($message, 0, 197) . '...';
+            $message = substr($message, 0, 197).'...';
         }
-        
+
         return $message;
     }
 
     protected function showVersions(GitHubService $github): int
     {
-        $mainRepo = config('monorepo.github_org') . '/' . config('monorepo.public_repo');
+        $mainRepo = config('monorepo.github_org').'/'.config('monorepo.public_repo');
         $org = config('monorepo.github_org');
 
         try {
@@ -634,22 +633,22 @@ class CreateRelease extends Command
             $existingPackages = array_map(function ($line) {
                 return trim(str_replace('- ', '', $line));
             }, $packageLines);
-            
+
             // Filter out empty lines
             $existingPackages = array_filter($existingPackages);
-            
+
             // Add new packages that don't already exist
             $packagesToAdd = [];
             foreach ($newPackages as $package => $info) {
-                if (!in_array($package, $existingPackages)) {
+                if (! in_array($package, $existingPackages)) {
                     $packagesToAdd[] = $package;
                     $this->line("Adding package {$package} to workflow file");
                 } else {
                     $this->line("Package {$package} already exists in workflow file");
                 }
             }
-            
-            if (!empty($packagesToAdd)) {
+
+            if (! empty($packagesToAdd)) {
                 // Merge and sort all packages
                 $allPackages = array_merge($existingPackages, $packagesToAdd);
                 sort($allPackages);
@@ -660,7 +659,7 @@ class CreateRelease extends Command
                 }
 
                 $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
-                
+
                 file_put_contents($workflowPath, $content);
                 $this->line('✅ Updated GitHub workflow with '.count($packagesToAdd).' new packages');
             } else {
@@ -674,11 +673,11 @@ class CreateRelease extends Command
     protected function createRelease(string $version): void
     {
         $repo = config('monorepo.public_repo', 'mooxphp/moox');
-        
+
         $this->line("Creating monorepo release for version: {$version}");
-        
+
         $result = $this->githubService->createRelease($repo, $version, "Release version {$version}, initial release");
-        
+
         if ($result !== null) {
             $this->line('✅ Successfully created monorepo release');
             $this->line("Release created: v{$version}");
@@ -691,23 +690,22 @@ class CreateRelease extends Command
     {
         $repo = config('monorepo.public_repo', 'mooxphp/moox');
         $workflowFile = 'monorepo-split-packages.yml';
-        
+
         $this->line("Triggering monorepo split workflow for version: {$version}");
-        
+
         $inputs = [
             'version' => $version,
             'packages' => json_encode($packages),
         ];
-        
+
         $result = $this->githubService->triggerWorkflowDispatch($repo, $workflowFile, 'main', $inputs);
-        
+
         if ($result !== null) {
             $this->line('✅ Successfully triggered monorepo split workflow');
-            $this->line("Packages to be split: " . implode(', ', $packages));
+            $this->line('Packages to be split: '.implode(', ', $packages));
             $this->line("You can monitor the workflow at: https://github.com/{$repo}/actions");
         } else {
             $this->error('❌ Failed to trigger monorepo split workflow');
         }
     }
-
 }

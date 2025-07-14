@@ -47,14 +47,14 @@ class PackageComparisonService
 
         // Check public packages
         foreach ($publicPackages as $package) {
-            if (!in_array($package, $orgRepositories)) {
+            if (! in_array($package, $orgRepositories)) {
                 $missingPackages['public'][] = $package;
             }
         }
 
         // Check private packages
         foreach ($privatePackages as $package) {
-            if (!in_array($package, $orgRepositories)) {
+            if (! in_array($package, $orgRepositories)) {
                 $missingPackages['private'][] = $package;
             }
         }

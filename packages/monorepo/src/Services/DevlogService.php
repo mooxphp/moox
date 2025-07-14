@@ -136,6 +136,7 @@ class DevlogService
             ->map(function ($packageInfo, $package) {
                 $stability = $packageInfo['minimum-stability'] ?? '';
                 $visibility = $packageInfo['visibility'] ?? 'error';
+
                 return [
                     $package,
                     implode("\n", $packageInfo['release-message']),
