@@ -1,4 +1,4 @@
-name: Split Packages
+name: Split
 
 on:
   workflow_dispatch:
