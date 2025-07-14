@@ -179,6 +179,20 @@ class CreateRelease extends Command
             $this->line('📦 Preparing public packages for workflow...');
             $publicPackagesJson = $this->preparePackagesForWorkflow($publicPackagesWithMessages);
 
+            $this->githubService->createRelease(
+                config('monorepo.github_org').'/'.config('monorepo.public_repo'),
+                $newVersion,
+                'Release '.$newVersion,
+                'main'
+            );
+
+            $this->githubService->createRelease(
+                config('monorepo.github_org').'/'.config('monorepo.private_repo'),
+                $newVersion,
+                'Release '.$newVersion,
+                'main'
+            );
+
             $this->githubService->triggerWorkflowDispatch(
                 config('monorepo.github_org'),
                 config('monorepo.public_repo'),

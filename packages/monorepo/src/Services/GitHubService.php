@@ -79,13 +79,6 @@ class GitHubService
     {
         $url = "https://api.github.com/repos/{$org}/{$repo}/actions/workflows/{$workflowId}/dispatches";
 
-        // Automatically add user information to inputs
-        $user = $this->getCurrentUser();
-        if ($user && ! isset($inputs['user_name']) && ! isset($inputs['user_email'])) {
-            $inputs['user_name'] = $user['name'] ?? $user['login'] ?? 'Unknown User';
-            $inputs['user_email'] = $user['email'] ?? $user['login'].'@users.noreply.github.com';
-        }
-
         $data = [
             'ref' => $ref,
         ];
@@ -97,9 +90,9 @@ class GitHubService
         return $this->postJson($url, $data);
     }
 
-    public function createRelease(string $repoFullName, string $version, ?string $body = null, string $targetCommitish = 'main'): ?array
+    public function createRelease(string $org, string $repo, string $version, ?string $body = null, string $targetCommitish = 'main'): ?array
     {
-        $url = "https://api.github.com/repos/{$repoFullName}/releases";
+        $url = "https://api.github.com/repos/{$org}/{$repo}/releases";
 
         // Detect if this is a prerelease (alpha, beta, rc)
         $isPrerelease = preg_match('/-(alpha|beta|rc)\b/i', $version);
@@ -117,9 +110,9 @@ class GitHubService
         return $this->postJson($url, $data);
     }
 
-    public function getLatestReleaseTag(string $repoFullName): string
+    public function getLatestReleaseTag(string $org, string $repo): string
     {
-        $data = $this->fetchJson("https://api.github.com/repos/{$repoFullName}/releases/latest");
+        $data = $this->fetchJson("https://api.github.com/repos/{$org}/{$repo}/releases/latest");
 
         return $data['name'] ?? 'No release';
     }
