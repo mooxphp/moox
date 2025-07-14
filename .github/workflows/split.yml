@@ -31,6 +31,16 @@ jobs:
           echo "Raw packages file:"
           cat packages.json
           
+          # Check if this is a prerelease version
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ $VERSION =~ -(alpha|beta|rc) ]]; then
+            echo "🚧 Detected prerelease version: $VERSION"
+            IS_PRERELEASE=true
+          else
+            echo "✅ Detected stable version: $VERSION"
+            IS_PRERELEASE=false
+          fi
+          
           echo "Parsed packages:"
           jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown")"' packages.json
           
@@ -40,8 +50,10 @@ jobs:
           
           # Set core version from input (exact version)
           echo "core-version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          echo "is-prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
           
           echo "Package list for matrix: $package_list"
+          echo "Is prerelease: $IS_PRERELEASE"
 
   split:
     needs: prepare
