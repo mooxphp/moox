@@ -1,4 +1,4 @@
-name: Split
+name: Split & Release
 
 on:
   workflow_dispatch:
