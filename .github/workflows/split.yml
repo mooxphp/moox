@@ -1,0 +1,26 @@
+name: Split Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "New version"
+        required: true
+      packages: 
+        description: "Packages to deploy (JSON array string)"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show input
+        run: |
+          echo "Deploying version: ${{ github.event.inputs.version }}"
+          echo "Packages (raw): ${{ github.event.inputs.packages }}"
+          
+          # Parse string input into array using jq
+          echo '${{ github.event.inputs.packages }}' | jq -r '.[]' > package-list.txt
+          
+          echo "Package list:"
+          cat package-list.txt
