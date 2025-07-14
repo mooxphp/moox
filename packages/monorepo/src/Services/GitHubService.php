@@ -68,9 +68,22 @@ class GitHubService
         return $this->fetchJson($url);
     }
 
+    public function getCurrentUser(): ?array
+    {
+        $url = 'https://api.github.com/user';
+        return $this->fetchJson($url);
+    }
+
     public function triggerWorkflowDispatch(string $org, string $repo, string $workflowId, string $ref = 'main', array $inputs = []): ?array
     {
         $url = "https://api.github.com/repos/{$org}/{$repo}/actions/workflows/{$workflowId}/dispatches";
+
+        // Automatically add user information to inputs
+        $user = $this->getCurrentUser();
+        if ($user && !isset($inputs['user_name']) && !isset($inputs['user_email'])) {
+            $inputs['user_name'] = $user['name'] ?? $user['login'] ?? 'Unknown User';
+            $inputs['user_email'] = $user['email'] ?? $user['login'] . '@users.noreply.github.com';
+        }
 
         $data = [
             'ref' => $ref,
