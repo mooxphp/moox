@@ -15,10 +15,10 @@
         "composer-runtime-api": "^2.1",
         "symplify/monorepo-builder": "^11.0",
         "laravel/socialite": "^5.21",
-        "moox/devlink": "self.version"
+        "moox/core": "*"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devlink": "*"
     },
     "autoload": {
         "psr-4": {

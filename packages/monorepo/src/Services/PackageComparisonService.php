@@ -41,14 +41,24 @@ class PackageComparisonService
         return array_keys($devlinkConfig);
     }
 
-    public function isNewOrgPackage(array $publicPackages, array $privatePackages, array $orgRepositories): ?array
+    public function isNewOrgPackage(array $publicPackages, array $privatePackages, array $orgRepositories): array
     {
-        $allExistingPackages = array_merge($publicPackages, $privatePackages);
+        $missingPackages = [];
 
-        $newPackages = array_filter(array_keys($allExistingPackages), function ($package) use ($orgRepositories) {
-            return ! in_array($package, $orgRepositories);
-        });
+        // Check public packages
+        foreach ($publicPackages as $package) {
+            if (!in_array($package, $orgRepositories)) {
+                $missingPackages['public'][] = $package;
+            }
+        }
 
-        return ! empty($newPackages) ? array_values($newPackages) : null;
+        // Check private packages
+        foreach ($privatePackages as $package) {
+            if (!in_array($package, $orgRepositories)) {
+                $missingPackages['private'][] = $package;
+            }
+        }
+
+        return $missingPackages;
     }
 }

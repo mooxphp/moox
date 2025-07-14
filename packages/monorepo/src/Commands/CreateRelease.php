@@ -2,7 +2,6 @@
 
 namespace Moox\Monorepo\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
 use Moox\Monorepo\Commands\Concerns\HasGitHubTokenConcern;
 use Moox\Monorepo\Services\DevlogService;
@@ -62,10 +61,43 @@ class CreateRelease extends Command
             case $this->option('compare-packages'):
                 return $this->comparePackages($this->githubService);
         }
+        $publicPackages = $this->githubService->getMonorepoPackages(
+            config('monorepo.github_org'), 
+            config('monorepo.public_repo'),
+            config('monorepo.packages_path')
+        );
 
-        $publicmonorepoPackages = $this->githubService->getMonorepoPackages(config('monorepo.github_org'), config('monorepo.public_repo'), config('monorepo.packages_path'));
-        $privateMonorepoPackages = $this->githubService->getMonorepoPackages(config('monorepo.github_org'), config('monorepo.private_repo'), config('monorepo.packages_path'), 'private');
-        $orgRepositories = $this->githubService->getOrgRepositories(config('monorepo.github_org'))->pluck('name')->toArray();
+        $privatePackages = $this->githubService->getMonorepoPackages(
+            config('monorepo.github_org'),
+            config('monorepo.private_repo'), 
+            config('monorepo.packages_path'),
+            'private'
+        );
+
+        $orgPackages = $this->githubService->getOrgRepositories(
+            config('monorepo.github_org')
+        )->pluck('name')->toArray();
+
+        // Create unified packages structure
+        $packages = [
+            'public' => $publicPackages,
+            'private' => $privatePackages,
+            'org' => array_fill_keys($orgPackages, ['type' => 'org']),
+            'all' => []
+        ];
+        
+        // Merge all packages with type information
+        foreach ($publicPackages as $package => $info) {
+            $packages['all'][$package] = array_merge($info, ['type' => 'public']);
+        }
+        foreach ($privatePackages as $package => $info) {
+            $packages['all'][$package] = array_merge($info, ['type' => 'private']); 
+        }
+        foreach ($orgPackages as $package) {
+            if (!isset($packages['all'][$package])) {
+                $packages['all'][$package] = ['type' => 'org'];
+            }
+        }
 
         // If i want to get repos with composer.json in it
         // $orgRepositories = $this->githubService->getOrgRepositories(config('monorepo.github_org'))
@@ -82,57 +114,202 @@ class CreateRelease extends Command
         //     ->pluck('name')
         //     ->toArray();
 
+
         $currentVersion = $this->githubService->getLatestReleaseTag(config('monorepo.github_org').'/'.config('monorepo.public_repo'));
 
         $newVersion = $this->askForNewVersion($currentVersion);
         $this->info("New version: {$newVersion}\n");
 
-        $newPackages = $this->packageComparisonService->isNewOrgPackage($publicmonorepoPackages, $privateMonorepoPackages, $orgRepositories);
-        if ($newPackages) {
-            $newPackages = collect($newPackages)->mapWithKeys(fn ($package) => [
-                $package => ['minimum-stability' => 'init'],
-            ])->toArray();
-        }
-        if ($newPackages) {
-            $this->line('New packages detected:');
-            foreach ($newPackages as $package => $info) {
-                $this->line("- {$package}");
+
+        $missingPackagesResult = $this->packageComparisonService->isNewOrgPackage(array_keys($packages['public']), array_keys($packages['private']), $orgPackages);
+
+        // Flatten the missing packages result into a single array
+        $missingPackages = [];
+        if (!empty($missingPackagesResult['public'])) {
+            foreach ($missingPackagesResult['public'] as $package) {
+                $missingPackages[$package] = ['minimum-stability' => 'init', 'type' => 'public'];
             }
         }
+        if (!empty($missingPackagesResult['private'])) {
+            foreach ($missingPackagesResult['private'] as $package) {
+                $missingPackages[$package] = ['minimum-stability' => 'init', 'type' => 'private'];
+            }
+        }
+        
+        if (!empty($missingPackages)) {
+            $this->line('Missing packages detected:');
+            foreach ($missingPackages as $package => $info) {
+                $this->line("- {$package} ({$info['type']})");
+            }
+        }
+        
         // Process all packages with their messages (handled by the service)
-        $packagesWithMessages = $this->devlogService->processAllPackagesForRelease(array_merge($publicmonorepoPackages, $privateMonorepoPackages), $newPackages ?? []);
+        $packagesWithMessages = $this->devlogService->processAllPackagesForRelease(array_merge($packages['public'], $packages['private']));
 
         $packageCount = count($packagesWithMessages);
 
         if ($this->confirm('Do you want to see the table with all packages and their commit messages?')) {
+            dump($packagesWithMessages);
             $this->info("All {$packageCount} packages with their commit messages:");
             $this->table(
-                ['Package', 'Messages', 'Minimum Stability'],
+                ['Package', 'Messages', 'Minimum Stability', 'Type'],
                 $this->devlogService->sortPackagesForTable($packagesWithMessages)
             );
         }
 
-        if (! empty($newPackages)) {
-            $this->addNewPublicPackagesToDevlinkConfig($newPackages);
-            // $this->changeGithubWorkflow($newPackages, $newVersion);
+        if (! empty($missingPackages)) {
+            $this->addNewPublicPackagesToDevlinkConfig($missingPackages);
+            $this->changeGithubWorkflow($missingPackages, $newVersion);
         }
 
-        $this->line('Ensure that youre changes are commited to the main project and the monorepo');
-        $this->line('Ensure that the split packages workflow is done');
-
-        dd($packagesWithMessages);
-        $this->waitUntilWorkflowIsDone();
-        if ($this->confirm('Do you want to create a release for the monorepo?', false)) {
-            $this->createRelease($newVersion);
+        // Extract and filter packages with messages for workflows
+        $publicPackagesWithMessages = [];
+        $privatePackagesWithMessages = [];
+    
+        
+        foreach ($packagesWithMessages as $packageName => $packageInfo) {
+            if (array_key_exists($packageName, $packages['public'])) {
+                $publicPackagesWithMessages[$packageName] = $packageInfo;
+            }
+            
+            if (array_key_exists($packageName, $packages['private'])) {
+                $privatePackagesWithMessages[$packageName] = $packageInfo;
+            }
         }
+
+        // Trigger workflow for public packages
+        if (!empty($publicPackagesWithMessages)) {
+            $this->line("📦 Preparing public packages for workflow...");
+            $publicPackagesJson = $this->preparePackagesForWorkflow($publicPackagesWithMessages);
+            
+            $this->githubService->triggerWorkflowDispatch(
+                config('monorepo.github_org'), 
+                config('monorepo.public_repo'), 
+                'split.yml', 
+                'main', 
+                [
+                    'version' => $newVersion,
+                    'packages' => $publicPackagesJson
+                ]
+            );
+        }
+
+        if (!empty($privatePackagesWithMessages)) {
+            $this->line("📦 Preparing private packages for workflow...");
+            $privatePackagesJson = $this->preparePackagesForWorkflow($privatePackagesWithMessages);
+            
+            $this->githubService->triggerWorkflowDispatch(
+                config('monorepo.github_org'),
+                config('monorepo.private_repo'),
+                'split.yml',
+                'main',
+                [
+                    'version' => $newVersion, 
+                    'packages' => $privatePackagesJson
+                ]
+            );
+        }
+
+        // $allPackages = array_merge($publicmonorepoPackages, $privateMonorepoPackages);
+        // $this->triggerMonorepoSplitWorkflow($newVersion, array_keys($allPackages));
 
         return 0;
     }
 
+    protected function preparePackagesForWorkflow(array $packagesWithMessages, int $maxLength = 50000): string
+    {
+        // Sanitize package info to prevent bash syntax errors
+        $sanitizedPackages = [];
+        foreach ($packagesWithMessages as $package => $packageInfo) {
+            $messages = $packageInfo['release-message'] ?? ['Release update'];
+            $sanitizedMessages = [];
+            foreach ($messages as $message) {
+                // Remove or escape problematic characters
+                $cleanMessage = $this->sanitizeMessage($message);
+                $sanitizedMessages[] = $cleanMessage;
+            }
+            
+            // Keep all package info but sanitize the messages
+            $sanitizedPackages[$package] = array_merge($packageInfo, [
+                'release-message' => $sanitizedMessages
+            ]);
+        }
+        
+        $packagesJson = json_encode($sanitizedPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $currentLength = strlen($packagesJson);
+        
+        if ($currentLength <= $maxLength) {
+            $this->line("✅ Packages JSON size: " . number_format($currentLength) . " bytes (within limit)");
+            return $packagesJson;
+        }
+        
+        $this->warn("⚠️  Packages JSON too large: " . number_format($currentLength) . " bytes (limit: " . number_format($maxLength) . ")");
+        $this->line("Truncating messages to fit GitHub workflow input limits...");
+        
+        // Truncate messages to fit within limit
+        $truncatedPackages = [];
+        foreach ($sanitizedPackages as $package => $packageInfo) {
+            $messages = $packageInfo['release-message'] ?? ['Release update'];
+            // Keep only first message and truncate if needed
+            $firstMessage = is_array($messages) && !empty($messages) ? $messages[0] : 'Release update';
+            $truncatedMessage = strlen($firstMessage) > 100 ? substr($firstMessage, 0, 97) . '...' : $firstMessage;
+            
+            $truncatedPackages[$package] = array_merge($packageInfo, [
+                'release-message' => [$truncatedMessage]
+            ]);
+        }
+        
+        $truncatedJson = json_encode($truncatedPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $newLength = strlen($truncatedJson);
+        
+        if ($newLength > $maxLength) {
+            // If still too large, just use package names with generic message
+            $this->error("Still too large after truncation. Using generic messages.");
+            $genericPackages = [];
+            foreach ($packagesWithMessages as $package => $packageInfo) {
+                $genericPackages[$package] = array_merge($packageInfo, [
+                    'release-message' => ['Release update']
+                ]);
+            }
+            $truncatedJson = json_encode($genericPackages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+        
+        $this->line("✅ Truncated to: " . number_format(strlen($truncatedJson)) . " bytes");
+        return $truncatedJson;
+    }
+
+    protected function sanitizeMessage(string $message): string
+    {
+        // Remove or replace problematic characters for bash
+        $message = str_replace([
+            '(', ')', // Parentheses cause syntax errors
+            '`',      // Backticks for command substitution  
+            '$',      // Variable expansion
+            '"',      // Double quotes
+            "'",      // Single quotes - replace with safe alternative
+            "\n", "\r", "\t", // Newlines and tabs
+        ], [
+            '[', ']', // Replace parentheses with brackets
+            '',       // Remove backticks
+            '',       // Remove dollar signs
+            '',       // Remove double quotes
+            '',       // Remove single quotes
+            ' ', ' ', ' ', // Replace whitespace with spaces
+        ], $message);
+        
+        // Trim and limit length
+        $message = trim($message);
+        if (strlen($message) > 200) {
+            $message = substr($message, 0, 197) . '...';
+        }
+        
+        return $message;
+    }
+
     protected function showVersions(GitHubService $github): int
     {
-        $mainRepo = config('monorepo.public_repo', 'mooxphp/moox');
-        $org = 'mooxphp';
+        $mainRepo = config('monorepo.github_org') . '/' . config('monorepo.public_repo');
+        $org = config('monorepo.github_org');
 
         try {
             $releaseService = new ReleaseService($github, $mainRepo, $org);
@@ -278,7 +455,6 @@ class CreateRelease extends Command
         $monorepoPath = realpath(base_path($publicBasePath));
         $monorepoDevlinkConfig = $monorepoPath.'/devlink/config/devlink.php';
 
-        dump($newPackages);
         if (file_exists($monorepoDevlinkConfig)) {
             $originalContent = file_get_contents($monorepoDevlinkConfig);
 
@@ -451,64 +627,87 @@ class CreateRelease extends Command
         // Get file content
         $content = file_get_contents($workflowPath);
 
-        // Add new packages to the workflow
-        foreach ($newPackages as $package) {
-            if (! str_contains($content, "- {$package}")) {
-                $content = preg_replace('/(\s+- \w+\n)(?=\s+steps:)/', "$1          - {$package}\n", $content);
-            }
-        }
-
-        // Sort packages alphabetically
+        // Extract existing packages and add new ones
         preg_match('/package:\s*\n((\s+- .+\n)+)/', $content, $matches);
         if (isset($matches[1])) {
             $packageLines = explode("\n", trim($matches[1]));
-            $packages = array_map(function ($line) {
+            $existingPackages = array_map(function ($line) {
                 return trim(str_replace('- ', '', $line));
             }, $packageLines);
-            sort($packages);
-
-            $sortedPackageList = '';
-            foreach ($packages as $package) {
-                $sortedPackageList .= "          - {$package}\n";
+            
+            // Filter out empty lines
+            $existingPackages = array_filter($existingPackages);
+            
+            // Add new packages that don't already exist
+            $packagesToAdd = [];
+            foreach ($newPackages as $package => $info) {
+                if (!in_array($package, $existingPackages)) {
+                    $packagesToAdd[] = $package;
+                    $this->line("Adding package {$package} to workflow file");
+                } else {
+                    $this->line("Package {$package} already exists in workflow file");
+                }
             }
+            
+            if (!empty($packagesToAdd)) {
+                // Merge and sort all packages
+                $allPackages = array_merge($existingPackages, $packagesToAdd);
+                sort($allPackages);
 
-            $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
+                $sortedPackageList = '';
+                foreach ($allPackages as $package) {
+                    $sortedPackageList .= "          - {$package}\n";
+                }
+
+                $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
+                
+                file_put_contents($workflowPath, $content);
+                $this->line('✅ Updated GitHub workflow with '.count($packagesToAdd).' new packages');
+            } else {
+                $this->line('No new packages to add to workflow');
+            }
+        } else {
+            $this->warn('Could not find package section in workflow file');
         }
-
-        file_put_contents($workflowPath, $content);
-
-        $this->line('✅ Updated GitHub workflow with '.count($newPackages).' new packages');
     }
 
     protected function createRelease(string $version): void
     {
-        $token = User::first()?->github_token;
         $repo = config('monorepo.public_repo', 'mooxphp/moox');
-
-        $client = new \GuzzleHttp\Client;
-        $response = $client->post("https://api.github.com/repos/{$repo}/releases", [
-            'headers' => [
-                'Accept' => 'application/vnd.github+json',
-                'Authorization' => "Bearer {$token}",
-                'X-GitHub-Api-Version' => '2022-11-28',
-            ],
-            'json' => [
-                'tag_name' => "v{$version}",
-                'target_commitish' => 'main',
-                'name' => "{$version}",
-                'body' => "Release version {$version}, initial release",
-                'draft' => false,
-                'prerelease' => false,
-                'generate_release_notes' => false,
-            ],
-        ]);
-
-        if ($response->getStatusCode() !== 201) {
-            throw new \Exception('Failed to create GitHub release. Response code: '.$response->getStatusCode());
-        }
-
+        
         $this->line("Creating monorepo release for version: {$version}");
+        
+        $result = $this->githubService->createRelease($repo, $version, "Release version {$version}, initial release");
+        
+        if ($result !== null) {
+            $this->line('✅ Successfully created monorepo release');
+            $this->line("Release created: v{$version}");
+        } else {
+            $this->error('❌ Failed to create monorepo release');
+        }
     }
 
-    protected function createReleases(): void {}
+    protected function triggerMonorepoSplitWorkflow(string $version, array $packages): void
+    {
+        $repo = config('monorepo.public_repo', 'mooxphp/moox');
+        $workflowFile = 'monorepo-split-packages.yml';
+        
+        $this->line("Triggering monorepo split workflow for version: {$version}");
+        
+        $inputs = [
+            'version' => $version,
+            'packages' => json_encode($packages),
+        ];
+        
+        $result = $this->githubService->triggerWorkflowDispatch($repo, $workflowFile, 'main', $inputs);
+        
+        if ($result !== null) {
+            $this->line('✅ Successfully triggered monorepo split workflow');
+            $this->line("Packages to be split: " . implode(', ', $packages));
+            $this->line("You can monitor the workflow at: https://github.com/{$repo}/actions");
+        } else {
+            $this->error('❌ Failed to trigger monorepo split workflow');
+        }
+    }
+
 }

@@ -115,11 +115,9 @@ class DevlogService
     /**
      * Process packages for release: get devlinked packages + new packages with commit messages
      */
-    public function processAllPackagesForRelease(array $allExistingPackages, array $newPackages = []): array
+    public function processAllPackagesForRelease(array $packages): array
     {
-        $allPackages = array_merge($allExistingPackages, $newPackages);
-
-        return $this->getAllPackagesWithMessages($allPackages);
+        return $this->getAllPackagesWithMessages($packages);
     }
 
     /**
@@ -137,11 +135,12 @@ class DevlogService
             })
             ->map(function ($packageInfo, $package) {
                 $stability = $packageInfo['minimum-stability'] ?? '';
-
+                $visibility = $packageInfo['visibility'] ?? 'error';
                 return [
                     $package,
                     implode("\n", $packageInfo['release-message']),
                     $stability,
+                    $visibility,
                 ];
             })
             ->toArray();
