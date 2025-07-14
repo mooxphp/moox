@@ -401,17 +401,19 @@ class CreateRelease extends Command
     public function askForUserToken(): string
     {
         $this->line("\n🔑 GitHub Release Authorship");
-        $this->line("To appear as the author of GitHub releases, provide your personal access token.");
-        $this->line("Leave empty to use bot token (releases will show as created by mooxbot).");
+        $this->line('To appear as the author of GitHub releases, provide your personal access token.');
+        $this->line('Leave empty to use bot token (releases will show as created by mooxbot).');
         $this->line("Token needs 'public_repo' or 'repo' scope for the target repositories.");
-        
+
         $token = $this->secret('Enter your GitHub personal access token (optional):');
-        
+
         if (empty($token)) {
-            $this->line("ℹ️  Using bot token - releases will be created by mooxbot");
+            $this->line('ℹ️  Using bot token - releases will be created by mooxbot');
+
             return '';
         } else {
-            $this->line("✅ Using your token - releases will show you as author");
+            $this->line('✅ Using your token - releases will show you as author');
+
             return $token;
         }
     }

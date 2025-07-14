@@ -71,6 +71,7 @@ class GitHubService
     public function getCurrentUser(): ?array
     {
         $url = 'https://api.github.com/user';
+
         return $this->fetchJson($url);
     }
 
@@ -80,9 +81,9 @@ class GitHubService
 
         // Automatically add user information to inputs
         $user = $this->getCurrentUser();
-        if ($user && !isset($inputs['user_name']) && !isset($inputs['user_email'])) {
+        if ($user && ! isset($inputs['user_name']) && ! isset($inputs['user_email'])) {
             $inputs['user_name'] = $user['name'] ?? $user['login'] ?? 'Unknown User';
-            $inputs['user_email'] = $user['email'] ?? $user['login'] . '@users.noreply.github.com';
+            $inputs['user_email'] = $user['email'] ?? $user['login'].'@users.noreply.github.com';
         }
 
         $data = [
