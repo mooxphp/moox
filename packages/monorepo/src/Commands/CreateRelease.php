@@ -670,30 +670,30 @@ class CreateRelease extends Command
         }
     }
 
-        protected function createRelease(string $version): void
+    protected function createRelease(string $version): void
     {
         $repo = config('monorepo.public_repo', 'mooxphp/moox');
-        
+
         // Detect if this is a prerelease
         $isPrerelease = preg_match('/-(alpha|beta|rc)\b/i', $version);
         $releaseType = $isPrerelease ? 'prerelease' : 'stable release';
-        
+
         $this->line("Creating monorepo {$releaseType} for version: {$version}");
-        
+
         // Create appropriate release body
-        $releaseBody = $isPrerelease 
+        $releaseBody = $isPrerelease
             ? "Prerelease version {$version} - Please test thoroughly before using in production."
             : "Release version {$version}";
-        
+
         $result = $this->githubService->createRelease($repo, $version, $releaseBody);
-        
+
         if ($result !== null) {
             $icon = $isPrerelease ? '🚧' : '✅';
             $this->line("{$icon} Successfully created monorepo {$releaseType}");
             $this->line("Release created: v{$version}");
-            
+
             if ($isPrerelease) {
-                $this->warn("⚠️  This is a prerelease - users will need to explicitly install this version");
+                $this->warn('⚠️  This is a prerelease - users will need to explicitly install this version');
             }
         } else {
             $this->error('❌ Failed to create monorepo release');

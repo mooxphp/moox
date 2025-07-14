@@ -50,45 +50,46 @@ class GitHubService
         $errorMessage = $response->body();
         $statusCode = $response->status();
         \Log::error("GitHub API POST ({$url}) request failed: Status {$statusCode}, Message: {$errorMessage}");
-        
+
         return null;
     }
 
     public function getOrgHostedRunners(string $org): ?array
     {
         $url = "https://api.github.com/orgs/{$org}/actions/hosted-runners";
+
         return $this->fetchJson($url);
     }
 
     public function getWorkflows(string $org, string $repo): ?array
     {
         $url = "https://api.github.com/repos/{$org}/{$repo}/actions/workflows";
+
         return $this->fetchJson($url);
     }
-
 
     public function triggerWorkflowDispatch(string $org, string $repo, string $workflowId, string $ref = 'main', array $inputs = []): ?array
     {
         $url = "https://api.github.com/repos/{$org}/{$repo}/actions/workflows/{$workflowId}/dispatches";
-        
+
         $data = [
             'ref' => $ref,
         ];
-        
-        if (!empty($inputs)) {
+
+        if (! empty($inputs)) {
             $data['inputs'] = $inputs;
         }
-        
+
         return $this->postJson($url, $data);
     }
 
-    public function createRelease(string $repoFullName, string $version, string $body = null, string $targetCommitish = 'main'): ?array
+    public function createRelease(string $repoFullName, string $version, ?string $body = null, string $targetCommitish = 'main'): ?array
     {
         $url = "https://api.github.com/repos/{$repoFullName}/releases";
-        
+
         // Detect if this is a prerelease (alpha, beta, rc)
         $isPrerelease = preg_match('/-(alpha|beta|rc)\b/i', $version);
-        
+
         $data = [
             'tag_name' => "v{$version}",
             'target_commitish' => $targetCommitish,
@@ -98,7 +99,7 @@ class GitHubService
             'prerelease' => $isPrerelease,
             'generate_release_notes' => false,
         ];
-        
+
         return $this->postJson($url, $data);
     }
 
