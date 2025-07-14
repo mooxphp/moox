@@ -119,9 +119,6 @@ class CreateRelease extends Command
         $newVersion = $this->askForNewVersion($currentVersion);
         $this->info("New version: {$newVersion}\n");
 
-        // Ask for user token for release authorship
-        $userToken = $this->askForUserToken();
-
         $missingPackagesResult = $this->packageComparisonService->isNewOrgPackage(array_keys($packages['public']), array_keys($packages['private']), $orgPackages);
 
         // Flatten the missing packages result into a single array
@@ -190,7 +187,7 @@ class CreateRelease extends Command
                 [
                     'version' => $newVersion,
                     'packages' => $publicPackagesJson,
-                    'user_token' => $userToken,
+                    'user_token' => $this->getGitHubToken(),
                 ]
             );
         }
@@ -207,7 +204,7 @@ class CreateRelease extends Command
                 [
                     'version' => $newVersion,
                     'packages' => $privatePackagesJson,
-                    'user_token' => $userToken,
+                    'user_token' => $this->getGitHubToken(),
                 ]
             );
         }
@@ -396,26 +393,6 @@ class CreateRelease extends Command
         }
 
         return $version;
-    }
-
-    public function askForUserToken(): string
-    {
-        $this->line("\n🔑 GitHub Release Authorship");
-        $this->line('To appear as the author of GitHub releases, provide your personal access token.');
-        $this->line('Leave empty to use bot token (releases will show as created by mooxbot).');
-        $this->line("Token needs 'public_repo' or 'repo' scope for the target repositories.");
-
-        $token = $this->secret('Enter your GitHub personal access token (optional):');
-
-        if (empty($token)) {
-            $this->line('ℹ️  Using bot token - releases will be created by mooxbot');
-
-            return '';
-        } else {
-            $this->line('✅ Using your token - releases will show you as author');
-
-            return $token;
-        }
     }
 
     // Helper methods
