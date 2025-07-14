@@ -9,6 +9,18 @@ on:
       packages: 
         description: "Packages to deploy (JSON object with package info)"
         required: true
+      user_name:
+        description: "User name for commits and releases"
+        required: false
+        default: ""
+      user_email:
+        description: "User email for commits and releases"
+        required: false
+        default: ""
+      user_token:
+        description: "User's GitHub token (for release authorship)"
+        required: false
+        default: ""
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT }}
@@ -73,7 +85,8 @@ jobs:
         run: |
           if [ -f composer.json ]; then
             echo "Updating moox/core version in ${{ matrix.package }} to ${{ needs.prepare.outputs.core-version }}"
-            sed -i 's/"moox\/core": "\*"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
+            # Replace any existing moox/core version with the current version
+            sed -i 's/"moox\/core": "[^"]*"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
             
             echo "Updated composer.json:"
             cat composer.json | grep "moox/core" || echo "No moox/core dependency found"
@@ -85,8 +98,10 @@ jobs:
         working-directory: packages/${{ matrix.package }}
         run: |
           if [ -f composer.json ]; then
-            git config --global user.name "mooxbot"
-            git config --global user.email "bot@moox.org"
+            USER_NAME="${{ github.event.inputs.user_name || github.actor }}"
+            USER_EMAIL="${{ github.event.inputs.user_email || format('{0}@users.noreply.github.com', github.actor) }}"
+            git config --global user.name "$USER_NAME"
+            git config --global user.email "$USER_EMAIL"
             git add composer.json
             git commit -m "Update moox/core dependency to ${{ needs.prepare.outputs.core-version }}" || echo "No changes to commit"
           fi
@@ -94,9 +109,39 @@ jobs:
       - name: Split package to separate repository
         uses: "symplify/monorepo-split-github-action@v2.3.0"
         with:
-          tag: "v${{ github.event.inputs.version }}"
+          tag: "${{ github.event.inputs.version }}"
           package_directory: "packages/${{ matrix.package }}"
           repository_organization: "mooxphp"
           repository_name: "${{ matrix.package }}"
-          user_name: "mooxbot"
-          user_email: "bot@moox.org"
+          user_name: "${{ github.event.inputs.user_name || github.actor }}"
+          user_email: "${{ github.event.inputs.user_email || format('{0}@users.noreply.github.com', github.actor) }}"
+
+      - name: Create GitHub Release for split package
+        run: |
+          PACKAGE="${{ matrix.package }}"
+          VERSION="${{ github.event.inputs.version }}"
+          RELEASE_BODY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"release-message\"[]" | head -10 | tr '\n' ' ')
+          IS_PRERELEASE=${{ contains(github.event.inputs.version, 'alpha') || contains(github.event.inputs.version, 'beta') || contains(github.event.inputs.version, 'rc') }}
+          USER_NAME="${{ github.event.inputs.user_name || github.actor }}"
+          
+          # Use user token if provided, otherwise use bot token
+          if [ -n "${{ github.event.inputs.user_token }}" ]; then
+            RELEASE_TOKEN="${{ github.event.inputs.user_token }}"
+            echo "Creating release as user: $USER_NAME"
+          else
+            RELEASE_TOKEN="${{ secrets.TOKEN }}"
+            echo "Creating release as bot (no user token provided)"
+            RELEASE_BODY="$RELEASE_BODY - Released by: $USER_NAME"
+          fi
+          
+          # Wait a moment for tag to be available
+          sleep 10
+          
+          # Create release from existing tag using GitHub CLI
+          gh release create "$VERSION" \
+            --repo "mooxphp/$PACKAGE" \
+            --title "Release $VERSION" \
+            --notes "$RELEASE_BODY" \
+            $([ "$IS_PRERELEASE" = "true" ] && echo "--prerelease" || echo "")
+        env:
+          GH_TOKEN: ${{ github.event.inputs.user_token || secrets.TOKEN }}
