@@ -370,14 +370,16 @@ class CreateRelease extends Command
             $suggestedVersion = $currentVersion;
         } else {
             $this->line("Current version: {$currentVersion}");
-            [$major, $minor, $patch] = explode('.', $currentVersion);
-            $suggestedVersion = "$major.$minor.".((int) $patch + 1);
+            $suggestedVersion = $this->suggestNextVersion($currentVersion);
         }
 
+        $this->line("Suggested next version: {$suggestedVersion}");
+        $this->line('Examples: 3.1.5, 3.1.5-beta.1, 3.1.5-alpha.1, 3.1.5-rc.1');
+        
         $version = $this->ask('Enter the new version:', $suggestedVersion);
 
         if (! $this->validateVersionFormat($version)) {
-            $this->error('Invalid version format. Please use X.X.X format.');
+            $this->error('Invalid version format. Please use X.X.X or X.X.X-prerelease format (alpha, beta, rc).');
 
             return $this->askForNewVersion($currentVersion);
         }
@@ -394,12 +396,36 @@ class CreateRelease extends Command
     // Helper methods
     private function validateVersionFormat(string $version): bool
     {
-        return preg_match('/^\\d+\\.\\d+\\.\\d+$/', $version);
+        // Support both stable versions (X.X.X) and prerelease versions (X.X.X-alpha.X, X.X.X-beta.X, X.X.X-rc.X)
+        return preg_match('/^\\d+\\.\\d+\\.\\d+(?:-(alpha|beta|rc)(?:\\.\\d+)?)?$/', $version);
     }
 
     private function validateVersionOrder(string $newVersion, string $currentVersion): bool
     {
         return version_compare($newVersion, $currentVersion, '>=');
+    }
+
+    private function suggestNextVersion(string $currentVersion): string
+    {
+        // Check if current version is a prerelease
+        if (preg_match('/^(\d+)\.(\d+)\.(\d+)-(alpha|beta|rc)(?:\.(\d+))?$/', $currentVersion, $matches)) {
+            $major = (int) $matches[1];
+            $minor = (int) $matches[2];
+            $patch = (int) $matches[3];
+            $prerelease = $matches[4];
+            $prereleaseVersion = isset($matches[5]) ? (int) $matches[5] : 1;
+
+            // For prerelease, suggest either next prerelease or stable version
+            $nextPrerelease = "{$major}.{$minor}.{$patch}-{$prerelease}.".($prereleaseVersion + 1);
+            $stableVersion = "{$major}.{$minor}.{$patch}";
+            
+            // If it's rc, suggest stable version, otherwise suggest next prerelease
+            return $prerelease === 'rc' ? $stableVersion : $nextPrerelease;
+        } else {
+            // For stable version, suggest next patch version
+            [$major, $minor, $patch] = explode('.', $currentVersion);
+            return "$major.$minor.".((int) $patch + 1);
+        }
     }
 
     // TODO: Not used anymore but propably helpfull
