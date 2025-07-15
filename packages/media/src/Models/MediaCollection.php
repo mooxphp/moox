@@ -2,9 +2,9 @@
 
 namespace Moox\Media\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MediaCollection extends Model implements TranslatableContract
@@ -12,8 +12,6 @@ class MediaCollection extends Model implements TranslatableContract
     use Translatable;
 
     public $translatedAttributes = ['name', 'description'];
-
-
 
     public function media(): HasMany
     {
@@ -30,7 +28,7 @@ class MediaCollection extends Model implements TranslatableContract
             }
             if ($mediaCollection->media()->exists()) {
                 $uncategorized = static::whereTranslation('name', __('media::fields.uncategorized'))->first();
-                if (!$uncategorized) {
+                if (! $uncategorized) {
                     $uncategorized = static::create([
                         'name' => __('media::fields.uncategorized'),
                         'description' => __('media::fields.uncategorized_description'),

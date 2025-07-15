@@ -19,6 +19,4 @@ class MediaCollectionTranslation extends Model
             }
         });
     }
-
-
 }
