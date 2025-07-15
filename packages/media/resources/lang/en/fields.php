@@ -104,6 +104,7 @@ return [
 
     // Errors
     'class_not_found' => 'The class ":class" does not exist.',
+    'collection_name_already_exists' => 'A collection with this name already exists.',
 
     // Media Picker
     'upload_and_select_media' => 'Upload & Select Media',

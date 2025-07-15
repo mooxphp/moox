@@ -2,18 +2,19 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Schemas\Schema;
+use Moox\Media\Models\Media;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -51,8 +52,18 @@ class MediaCollectionResource extends Resource
             TextInput::make('name')
                 ->label(__('media::fields.collection_name'))
                 ->required()
-                ->unique(ignoreRecord: true)
-                ->maxLength(255),
+                ->maxLength(255)
+                ->rule(function ($record) {
+                    return function ($attribute, $value, $fail) use ($record) {
+                        $locale = app()->getLocale();
+                        $exists = MediaCollection::whereTranslation('name', $value, $locale)
+                            ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                            ->exists();
+                        if ($exists) {
+                            $fail(__('media::fields.collection_name_already_exists'));
+                        }
+                    };
+                }),
             TextInput::make('description')
                 ->label(__('media::fields.collection_description'))
                 ->maxLength(255),
@@ -72,8 +83,9 @@ class MediaCollectionResource extends Resource
                     ->searchable(),
                 TextColumn::make('media_count')
                     ->label(__('media::fields.media_count'))
-                    ->counts('media')
-                    ->sortable(),
+                    ->getStateUsing(function ($record) {
+                        return Media::where('media_collection_id', $record->id)->count();
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),

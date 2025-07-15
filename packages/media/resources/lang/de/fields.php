@@ -99,6 +99,7 @@ return [
 
     // Errors
     'class_not_found' => 'Die Klasse ":class" existiert nicht.',
+    'collection_name_already_exists' => 'Eine Sammlung mit diesem Namen existiert bereits.',
 
     // Media Picker
     'upload_and_select_media' => 'Hochladen und Medien auswählen',

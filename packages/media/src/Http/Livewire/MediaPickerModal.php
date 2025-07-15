@@ -83,7 +83,7 @@ class MediaPickerModal extends Component implements HasForms
 
         $this->modelClass = $this->modelClass ? str_replace('\\\\', '\\', $this->modelClass) : null;
 
-        if ($this->modelClass && ! class_exists($this->modelClass)) {
+        if ($this->modelClass && !class_exists($this->modelClass)) {
             throw new Exception(__('media::fields.class_not_found', ['class' => $this->modelClass]));
         }
 
@@ -91,12 +91,12 @@ class MediaPickerModal extends Component implements HasForms
             $this->model = app($this->modelClass)::find($this->modelId);
         }
 
-        if (! $this->modelId || ! $this->model) {
+        if (!$this->modelId || !$this->model) {
             $this->modelId = 0;
         }
 
         $firstCollection = MediaCollection::first();
-        if (! $firstCollection) {
+        if (!$firstCollection) {
             $firstCollection = MediaCollection::create([
                 'name' => __('media::fields.uncategorized'),
                 'description' => __('media::fields.uncategorized_description'),
@@ -109,13 +109,22 @@ class MediaPickerModal extends Component implements HasForms
     {
         $collection = Select::make('collection_name')
             ->label(__('media::fields.collection'))
-            // ->options(function () {
-            //     return MediaCollection::query()
-            //         ->pluck('name', 'id')
-            //         ->toArray();
-            // })
-            ->default($this->collection_name)
-            ->searchable()
+            ->options(fn() => MediaCollection::all()->pluck('name', 'id')->toArray())
+            ->default(function () {
+                $name = __('media::fields.uncategorized');
+                $description = __('media::fields.uncategorized_description');
+
+                $collection = MediaCollection::all()->first(fn($c) => $c->name === $name);
+
+                if (!$collection) {
+                    $collection = MediaCollection::create([
+                        'name' => $name,
+                        'description' => $description,
+                    ]);
+                }
+
+                return $collection->id;
+            })->searchable()
             ->required()
             ->live();
 
@@ -123,11 +132,13 @@ class MediaPickerModal extends Component implements HasForms
             ->label(__('media::fields.upload'))
             ->live()
             ->afterStateUpdated(function ($state, $get) {
-                if (! $state) {
+                if (!$state) {
                     return;
                 }
 
-                $collectionName = $get('collection_name') ?? __('media::fields.uncategorized');
+                $collectionId = $get('media_collection_id');
+                $collection = MediaCollection::find($collectionId);
+                $collectionName = $collection?->name ?? __('media::fields.uncategorized');
 
                 foreach ($state as $tempFile) {
                     $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -163,10 +174,13 @@ class MediaPickerModal extends Component implements HasForms
                     $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
                     $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
+                    $media->media_collection_id = $collectionId;
+                    $media->save();
+
                     $title = pathinfo($fileName, PATHINFO_FILENAME);
 
-                    $media->setAttribute('title', $title);
-                    $media->setAttribute('alt', $title);
+                    $media->title = $title;
+                    $media->alt = $title;
                     $media->uploader_type = get_class(auth()->user());
                     $media->uploader_id = auth()->id();
                     $media->original_model_type = Media::class;
@@ -265,7 +279,7 @@ class MediaPickerModal extends Component implements HasForms
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
@@ -280,7 +294,7 @@ class MediaPickerModal extends Component implements HasForms
                 if (isset($media->uploader->name)) {
                     $uploaderName = $media->uploader->name;
                 } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
-                    $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
+                    $uploaderName = $media->uploader->first_name . ' ' . $media->uploader->last_name;
                 }
             }
 
@@ -327,7 +341,7 @@ class MediaPickerModal extends Component implements HasForms
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -337,7 +351,7 @@ class MediaPickerModal extends Component implements HasForms
                     'name' => $media->getAttribute('name'),
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -390,11 +404,11 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
                         ->orWhereHas('translations', function ($query) {
-                            $query->where('title', 'like', '%'.$this->searchQuery.'%')
-                                ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                                ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                            $query->where('title', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
                         });
                 });
             })
@@ -482,13 +496,13 @@ class MediaPickerModal extends Component implements HasForms
                     $uploader = $media->uploader;
                     if ($uploader && method_exists($uploader, 'getName')) {
                         return [
-                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                             'name' => $uploader->getName(),
                         ];
                     }
                     if ($uploader && isset($uploader->name)) {
                         return [
-                            'id' => $media->uploader_type.'::'.$media->uploader_id,
+                            'id' => $media->uploader_type . '::' . $media->uploader_id,
                             'name' => $uploader->name,
                         ];
                     }
@@ -496,11 +510,11 @@ class MediaPickerModal extends Component implements HasForms
                     return null;
                 })
                 ->filter()
-                ->unique(fn (array $item): string => $item['id'])
+                ->unique(fn(array $item): string => $item['id'])
                 ->pluck('name', 'id')
                 ->toArray();
 
-            if (! empty($uploaders)) {
+            if (!empty($uploaders)) {
                 $typeName = class_basename($type);
                 $uploaderOptions[$typeName] = $uploaders;
             }

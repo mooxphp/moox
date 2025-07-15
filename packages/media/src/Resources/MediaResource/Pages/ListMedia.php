@@ -18,6 +18,8 @@ class ListMedia extends ListRecords
 
     protected array $processedFiles = [];
 
+    public array $processedHashes = [];
+
     public bool $isSelecting = false;
 
     public array $selected = [];
@@ -32,7 +34,7 @@ class ListMedia extends ListRecords
 
     public function toggleView(): void
     {
-        $this->isGridView = ! $this->isGridView;
+        $this->isGridView = !$this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
@@ -47,29 +49,32 @@ class ListMedia extends ListRecords
     {
         return [
             Action::make('toggleView')
-                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn () => $this->toggleView())
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
                 ->schema([
-                    Select::make('collection_name')
+                    Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(function () {
-                            return MediaCollection::query()
-                                ->pluck('name', 'name')
-                                ->toArray();
-                        })
+                        ->options(fn() => MediaCollection::all()->pluck('name', 'id')->toArray())
                         ->searchable()
                         ->default(function () {
-                            $collection = MediaCollection::firstOrCreate(
-                                ['name' => __('media::fields.uncategorized')],
-                                ['description' => __('media::fields.uncategorized_description')]
-                            );
+                            $name = __('media::fields.uncategorized');
+                            $description = __('media::fields.uncategorized_description');
 
-                            return $collection->name;
+                            $collection = MediaCollection::all()->first(fn($c) => $c->name === $name);
+
+                            if (!$collection) {
+                                $collection = MediaCollection::create([
+                                    'name' => $name,
+                                    'description' => $description,
+                                ]);
+                            }
+
+                            return $collection->id;
                         })
                         ->required()
                         ->live(),
@@ -101,11 +106,13 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
-                            $collectionName = $get('collection_name') ?? __('media::fields.uncategorized');
+                            $collectionId = $get('media_collection_id');
+                            $collection = MediaCollection::find($collectionId);
+                            $collectionName = $collection?->name ?? __('media::fields.uncategorized');
 
                             foreach ($state as $tempFile) {
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -141,10 +148,13 @@ class ListMedia extends ListRecords
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
+                                $media->media_collection_id = $collectionId;
+                                $media->save();
+
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->setAttribute('title', $title);
-                                $media->setAttribute('alt', $title);
+                                $media->title = $title;
+                                $media->alt = $title;
                                 $media->uploader_type = get_class(auth()->user());
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
