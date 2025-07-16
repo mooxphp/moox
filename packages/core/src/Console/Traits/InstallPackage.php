@@ -17,8 +17,6 @@ trait InstallPackage
     use RegisterFilamentPlugin;
     use SelectFilamentPanel;
 
-    protected ?PackageService $packageService = null;
-
     public function setPackageService(PackageService $packageService): void
     {
         $this->packageService = $packageService;
