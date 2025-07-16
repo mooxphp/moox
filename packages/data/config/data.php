@@ -34,7 +34,7 @@ return [
     ],
     'relations' => [],
     'taxonomies' => [],
-    'enable-panel' => true,
+    'enable-panel' => false,
     'navigation-group' => 'Data',
     'navigation-sort' => 1,
 ];
