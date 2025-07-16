@@ -16,6 +16,8 @@ class MooxInstaller extends Command
     protected $signature = 'moox:install';
     protected $description = 'Install Moox Plugins and register all needed plugins.';
 
+    protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php';
+
     protected array $selectedPanels = [];
 
     public function __construct(
