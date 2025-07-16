@@ -1,10 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 beforeEach(function () {
     // Use in-memory sqlite for isolation
@@ -63,11 +62,11 @@ test('creates a user if none exist', function () {
 });
 
 // Register a test command using the trait
-if (!Artisan::has('test:filament-user')) {
+if (! Artisan::has('test:filament-user')) {
     \Illuminate\Console\Command::macro('handle', function () {
         return $this->checkOrCreateFilamentUser();
     });
     Artisan::command('test:filament-user', function () {
         return $this->checkOrCreateFilamentUser();
     })->describe('Test command for CheckOrCreateFilamentUser')->uses(\Moox\Core\Console\Traits\CheckOrCreateFilamentUser::class);
-} 
+}
