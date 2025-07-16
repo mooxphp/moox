@@ -46,6 +46,7 @@ trait InstallPackage
 
         if (empty($migrations)) {
             info("No migrations found for {$package['name']}");
+
             return;
         }
 
@@ -56,6 +57,7 @@ trait InstallPackage
                 if ($status['hasDataInDeletedFields']) {
                     if (! confirm("Migration {$migration} will delete fields containing data. Proceed?", false)) {
                         warning("Skipping migration {$migration}");
+
                         continue;
                     }
                 }
@@ -79,12 +81,14 @@ trait InstallPackage
             if (! file_exists($publishPath)) {
                 info("Publishing new config file: {$path}");
                 File::put($publishPath, $content);
+
                 continue;
             }
 
             $existingContent = File::get($publishPath);
             if ($existingContent === $content) {
                 info("Config file {$path} is up to date");
+
                 continue;
             }
 
@@ -106,6 +110,7 @@ trait InstallPackage
 
             if (! $table || ! Schema::hasTable($table)) {
                 warning("Could not determine table for seeder {$seeder}, skipping");
+
                 continue;
             }
 
@@ -115,6 +120,7 @@ trait InstallPackage
                     '--class' => $seeder,
                     '--force' => true,
                 ]);
+
                 continue;
             }
 
@@ -135,6 +141,7 @@ trait InstallPackage
         $plugins = $this->packageService->getPlugins($package);
         if (empty($plugins)) {
             info("No plugins found for {$package['name']}");
+
             return;
         }
 
@@ -147,6 +154,7 @@ trait InstallPackage
     private function getSeederTable(string $seederClass): ?string
     {
         $seeder = new $seederClass;
+
         return property_exists($seeder, 'table') ? $seeder->table : null;
     }
 }

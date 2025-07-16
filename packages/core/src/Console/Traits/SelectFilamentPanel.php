@@ -2,10 +2,8 @@
 
 namespace Moox\Core\Console\Traits;
 
-use Illuminate\Support\Facades\File;
-
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\warning;
 
 trait SelectFilamentPanel
@@ -24,11 +22,12 @@ trait SelectFilamentPanel
         $selectedPanels = $this->panelBundles[$bundleName];
 
         $this->info("You selected the '{$bundleName}' bundle.");
-        $this->info("Included panels: " . implode(', ', $selectedPanels));
+        $this->info('Included panels: '.implode(', ', $selectedPanels));
 
         foreach ($selectedPanels as $panel) {
             if ($this->panelExists($panel)) {
                 warning("Panel '{$panel}' already exists. Skipping generation.");
+
                 continue;
             }
 
@@ -44,8 +43,8 @@ trait SelectFilamentPanel
 
     protected function panelExists(string $panel): bool
     {
-        $panelClass = "App\\Panels\\" . ucfirst($panel) . "Panel";
+        $panelClass = 'App\\Panels\\'.ucfirst($panel).'Panel';
+
         return class_exists($panelClass);
     }
 }
-

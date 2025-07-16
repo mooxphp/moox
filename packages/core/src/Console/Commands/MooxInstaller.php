@@ -14,6 +14,7 @@ class MooxInstaller extends Command
     use Art, CheckForFilament, CheckOrCreateFilamentUser, InstallPackages;
 
     protected $signature = 'moox:install';
+
     protected $description = 'Install Moox Plugins and register all needed plugins.';
 
     protected array $selectedPanels = [];
@@ -40,4 +41,3 @@ class MooxInstaller extends Command
         $this->info('Moox installed successfully. Enjoy!');
     }
 }
-

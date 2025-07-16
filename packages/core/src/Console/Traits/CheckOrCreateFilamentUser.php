@@ -11,13 +11,15 @@ trait CheckOrCreateFilamentUser
     {
         $userModel = config('filament.auth.providers.users.model') ?? \App\Models\User::class;
 
-        if (!Schema::hasTable((new $userModel)->getTable())) {
-            $this->warn("User table not found. Did you run migrations?");
+        if (! Schema::hasTable((new $userModel)->getTable())) {
+            $this->warn('User table not found. Did you run migrations?');
+
             return;
         }
 
         if ($userModel::count() > 0) {
-            $this->info("There are already users. Skipping user creation.");
+            $this->info('There are already users. Skipping user creation.');
+
             return;
         }
 
