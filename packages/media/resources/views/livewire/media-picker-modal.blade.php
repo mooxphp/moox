@@ -48,8 +48,8 @@
                     <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="collectionFilter">
                             <option value="">{{ __('media::fields.all_collections') }}</option>
-                            @foreach($collectionOptions as $name)
-                                <option value="{{ $name }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
+                            @foreach($collectionOptions as $id => $name)
+                                <option value="{{ $id }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
                             @endforeach
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
@@ -216,11 +216,11 @@
                                 <div class="mt-1">
                                     <x-filament::input.wrapper>
                                     <x-filament::input.select 
-                                        wire:model.live="selectedMediaMeta.collection_name"
+                                        wire:model.live="selectedMediaMeta.media_collection_id"
                                         :disabled="$selectedMediaMeta['write_protected']"
                                     >
-                                        @foreach($collectionOptions as $name)
-                                            <option value="{{ $name }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
+                                        @foreach($collectionOptions as $id => $name)
+                                            <option value="{{ $id }}">{{ $name === __('media::fields.uncategorized') ? __('media::fields.uncategorized') : $name }}</option>
                                             @endforeach
                                         </x-filament::input.select>
                                     </x-filament::input.wrapper>
