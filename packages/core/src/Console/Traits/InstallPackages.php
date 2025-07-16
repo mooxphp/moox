@@ -6,12 +6,13 @@ trait InstallPackages
 {
     use InstallPackage;
 
-    public function installPackages(): void
+    public function installPackages(array $panelPaths): void
     {
         $packages = $this->getMooxPackages();
 
         foreach ($packages as $package) {
-            $this->installPackage($package);
+            $this->installPackage($package, $panelPaths);
         }
     }
 }
+

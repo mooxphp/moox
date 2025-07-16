@@ -75,6 +75,6 @@ return [
     |
     */
     'navigation_group' => 'trans//core::core.system',
-    'enable-panel' => true,
+    'enable-panel' => false,
 
 ];

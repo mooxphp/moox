@@ -4,31 +4,48 @@ namespace Moox\Core\Console\Traits;
 
 use Illuminate\Support\Facades\File;
 
-use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\warning;
 
 trait SelectFilamentPanel
 {
-    public function selectFilamentPanel(): string|array
+    protected array $panelBundles = [
+        'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'jobs'],
+    ];
+
+    public function selectPanelBundle(): array
     {
-        $providerPath = app_path('Providers/Filament');
-        $providers = File::allFiles($providerPath);
-        if (count($providers) > 1) {
-            $providerNames = [];
-            foreach ($providers as $provider) {
-                $providerNames[] = $provider->getBasename();
+        $bundleName = select(
+            'Which panel bundle do you want to install?',
+            array_keys($this->panelBundles),
+        );
+
+        $selectedPanels = $this->panelBundles[$bundleName];
+
+        $this->info("You selected the '{$bundleName}' bundle.");
+        $this->info("Included panels: " . implode(', ', $selectedPanels));
+
+        foreach ($selectedPanels as $panel) {
+            if ($this->panelExists($panel)) {
+                warning("Panel '{$panel}' already exists. Skipping generation.");
+                continue;
             }
 
-            $providerPath = multiselect(
-                label: 'Which Panel should it be registered',
-                options: [...$providerNames],
-                default: [$providerNames[0]],
-            );
+            $this->call('make:filament-panel', [
+                'name' => ucfirst($panel),
+            ]);
+
+            info("Filament panel '{$panel}' generated.");
         }
 
-        if (count($providers) == 1) {
-            $providerPath .= '/'.$providers[0]->getBasename();
-        }
+        return $selectedPanels;
+    }
 
-        return $providerPath;
+    protected function panelExists(string $panel): bool
+    {
+        $panelClass = "App\\Panels\\" . ucfirst($panel) . "Panel";
+        return class_exists($panelClass);
     }
 }
+
