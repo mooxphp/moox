@@ -11,6 +11,7 @@ use function Laravel\Prompts\warning;
 trait SelectFilamentPanel
 {
     protected array $panelBundles = [
+        'None' => [],
         'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'jobs'],
     ];
 
@@ -33,7 +34,7 @@ trait SelectFilamentPanel
             }
 
             $this->call('make:filament-panel', [
-                'name' => ucfirst($panel),
+                '--id' => strtolower($panel),
             ]);
 
             info("Filament panel '{$panel}' generated.");
