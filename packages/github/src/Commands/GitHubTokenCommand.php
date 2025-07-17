@@ -4,6 +4,7 @@ namespace Moox\Github\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+
 class GitHubTokenCommand extends Command
 {
     protected $signature = 'github:token 
@@ -16,9 +17,10 @@ class GitHubTokenCommand extends Command
     public function handle(): int
     {
         $user = User::first();
-        
-        if (!$user) {
+
+        if (! $user) {
             $this->error('No user found in database. Please create a user first.');
+
             return 1;
         }
 
@@ -43,21 +45,22 @@ class GitHubTokenCommand extends Command
         // Check environment variable first (like monorepo v2 does)
         $token = env('GITHUB_TOKEN');
         $source = 'environment';
-        
+
         // Fallback to user model
-        if (!$token) {
+        if (! $token) {
             $token = $user->github_token;
             $source = 'user model';
         }
-        
-        if (!$token) {
+
+        if (! $token) {
             $this->warn('No GitHub token found.');
             $this->showInstructions();
+
             return 1;
         }
 
-        $this->info("GitHub token found in {$source}: " . substr($token, 0, 10) . '...');
-        
+        $this->info("GitHub token found in {$source}: ".substr($token, 0, 10).'...');
+
         // Test the token
         try {
             $response = \Illuminate\Support\Facades\Http::withHeaders([
@@ -68,20 +71,20 @@ class GitHubTokenCommand extends Command
             if ($response->successful()) {
                 $userData = $response->json();
                 $this->info("✅ Token is valid for user: {$userData['login']}");
-                
+
                 // Check scopes
                 $scopes = $response->header('X-OAuth-Scopes');
                 $this->line("📋 Available scopes: {$scopes}");
-                
+
                 $availableScopes = explode(', ', $scopes ?? '');
-                
+
                 // Check required scopes (with equivalent higher-level scopes)
                 $scopeChecks = [
                     'repo' => ['repo'],
                     'read:org' => ['read:org', 'admin:org'], // admin:org includes read:org
-                    'workflow' => ['workflow']
+                    'workflow' => ['workflow'],
                 ];
-                
+
                 foreach ($scopeChecks as $required => $acceptable) {
                     $hasScope = false;
                     foreach ($acceptable as $scope) {
@@ -90,7 +93,7 @@ class GitHubTokenCommand extends Command
                             break;
                         }
                     }
-                    
+
                     if ($hasScope) {
                         $this->info("✅ {$required}");
                     } else {
@@ -102,10 +105,12 @@ class GitHubTokenCommand extends Command
             } else {
                 $this->error('❌ Token is invalid or expired.');
                 $this->showInstructions();
+
                 return 1;
             }
         } catch (\Exception $e) {
             $this->error("❌ Failed to validate token: {$e->getMessage()}");
+
             return 1;
         }
     }
@@ -118,6 +123,7 @@ class GitHubTokenCommand extends Command
         ]);
 
         $this->info('✅ GitHub token cleared.');
+
         return 0;
     }
 
@@ -126,15 +132,16 @@ class GitHubTokenCommand extends Command
         // Check environment variable first
         $token = env('GITHUB_TOKEN');
         $source = 'environment';
-        
+
         // Fallback to user model
-        if (!$token) {
+        if (! $token) {
             $token = $user->github_token;
             $source = 'user model';
         }
-        
-        if (!$token) {
+
+        if (! $token) {
             $this->warn('No GitHub token found.');
+
             return 1;
         }
 
@@ -142,8 +149,8 @@ class GitHubTokenCommand extends Command
         $this->line("Source: {$source}");
         $this->line("User ID: {$user->id}");
         $this->line("GitHub ID: {$user->github_id}");
-        $this->line("Token: " . substr($token, 0, 10) . '...' . substr($token, -4));
-        $this->line("Token Type: " . (str_starts_with($token, 'gho_') ? 'OAuth Token' : 'Personal Access Token'));
+        $this->line('Token: '.substr($token, 0, 10).'...'.substr($token, -4));
+        $this->line('Token Type: '.(str_starts_with($token, 'gho_') ? 'OAuth Token' : 'Personal Access Token'));
 
         return 0;
     }
@@ -156,16 +163,16 @@ class GitHubTokenCommand extends Command
         // Check environment variable first
         $token = env('GITHUB_TOKEN');
         $source = 'environment';
-        
+
         // Fallback to user model
-        if (!$token) {
+        if (! $token) {
             $token = $user->github_token;
             $source = 'user model';
         }
-        
+
         if ($token) {
             $this->info("✅ Token found in {$source} for user: {$user->name}");
-            $this->line("Token: " . substr($token, 0, 10) . '...');
+            $this->line('Token: '.substr($token, 0, 10).'...');
             $this->line('');
             $this->line('Use --check to validate the token');
         } else {
@@ -196,4 +203,4 @@ class GitHubTokenCommand extends Command
         $this->line('   php artisan github:token --info     # Show token details');
         $this->line('   php artisan github:token --clear    # Remove token');
     }
-} 
+}

@@ -26,6 +26,7 @@ trait HasGitHubTokenConcern
 
         if (! $token) {
             $this->error('No GitHub token found. Please link your GitHub account.');
+
             return null;
         }
 

@@ -25,7 +25,7 @@ class CreateRelease extends Command
     // 1. Check the current version of this monorepo from GitHub API ✓
     // 2. Ask the user for the new version, e.g. 4.2.11 ✓
     // 3. Read directory of all packages (also private) ✓
-    // 4. If repos do not exist, create them (2nd iteration) 
+    // 4. If repos do not exist, create them (2nd iteration)
     // 5. For each new repo, add it to devlink.php (2nd iteration)
     // 6. Read the DEVLOG.md file ✓
     // 7. Suggest contents from the DEVLOG.md file ✓
@@ -44,7 +44,7 @@ class CreateRelease extends Command
     {
         parent::__construct();
         $token = $this->getGitHubToken();
-        
+
         // Only initialize services if token exists
         // If no token, we'll handle the error in the handle() method
         if ($token) {
@@ -57,12 +57,12 @@ class CreateRelease extends Command
     public function handle(): int
     {
         // If services weren't initialized due to missing token, initialize them now with validation
-        if (!isset($this->githubService)) {
+        if (! isset($this->githubService)) {
             $token = $this->getGitHubTokenWithValidation();
-            if (!$token) {
+            if (! $token) {
                 return 1;
             }
-            
+
             $this->githubService = new GitHubService($token);
             $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
             $this->devlogService = new DevlogService($this->githubService);
