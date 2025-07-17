@@ -9,21 +9,12 @@ return new class extends Migration {
     {
         Schema::create('media_collections', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('description')->nullable();
             $table->timestamps();
         });
-
-        
     }
 
     public function down(): void
     {
-        Schema::table('media', function (Blueprint $table) {
-            $table->dropForeign(['collection_id']);
-            $table->dropColumn('collection_id');
-        });
-
         Schema::dropIfExists('media_collections');
     }
 };

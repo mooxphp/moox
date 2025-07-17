@@ -44,13 +44,30 @@ class CreateRelease extends Command
     {
         parent::__construct();
         $token = $this->getGitHubToken();
-        $this->githubService = new GitHubService($token);
-        $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
-        $this->devlogService = new DevlogService($this->githubService);
+
+        // Only initialize services if token exists
+        // If no token, we'll handle the error in the handle() method
+        if ($token) {
+            $this->githubService = new GitHubService($token);
+            $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
+            $this->devlogService = new DevlogService($this->githubService);
+        }
     }
 
     public function handle(): int
     {
+        // If services weren't initialized due to missing token, initialize them now with validation
+        if (! isset($this->githubService)) {
+            $token = $this->getGitHubTokenWithValidation();
+            if (! $token) {
+                return 1;
+            }
+
+            $this->githubService = new GitHubService($token);
+            $this->packageComparisonService = new PackageComparisonService($this->githubService, config('monorepo.organization', 'mooxphp'));
+            $this->devlogService = new DevlogService($this->githubService);
+        }
+
         if (! $this->validateGitHubAccess()) {
             return 1;
         }
@@ -114,7 +131,10 @@ class CreateRelease extends Command
         //     ->pluck('name')
         //     ->toArray();
 
-        $currentVersion = $this->githubService->getLatestReleaseTag(config('monorepo.github_org').'/'.config('monorepo.public_repo'));
+        $currentVersion = $this->githubService->getLatestReleaseTag(
+            config('monorepo.github_org'),
+            config('monorepo.public_repo')
+        );
 
         $newVersion = $this->askForNewVersion($currentVersion);
         $this->info("New version: {$newVersion}\n");
@@ -147,7 +167,6 @@ class CreateRelease extends Command
         $packageCount = count($packagesWithMessages);
 
         if ($this->confirm('Do you want to see the table with all packages and their commit messages?')) {
-            dump($packagesWithMessages);
             $this->info("All {$packageCount} packages with their commit messages:");
             $this->table(
                 ['Package', 'Messages', 'Minimum Stability', 'Type'],
@@ -157,7 +176,7 @@ class CreateRelease extends Command
 
         if (! empty($missingPackages)) {
             $this->addNewPublicPackagesToDevlinkConfig($missingPackages);
-            $this->changeGithubWorkflow($missingPackages, $newVersion);
+            // $this->changeGithubWorkflow($missingPackages, $newVersion);
         }
 
         // Extract and filter packages with messages for workflows
@@ -323,11 +342,12 @@ class CreateRelease extends Command
 
     protected function showVersions(GitHubService $github): int
     {
-        $mainRepo = config('monorepo.github_org').'/'.config('monorepo.public_repo');
         $org = config('monorepo.github_org');
+        $publicRepo = config('monorepo.public_repo');
+        $privateRepo = config('monorepo.private_repo');
 
         try {
-            $releaseService = new ReleaseService($github, $mainRepo, $org);
+            $releaseService = new ReleaseService($github, $publicRepo, $org);
             $result = $releaseService->getVersionsOverview();
 
             $this->table(
@@ -661,57 +681,57 @@ class CreateRelease extends Command
         }
     }
 
-    protected function changeGithubWorkflow(array $newPackages, string $version): void
-    {
-        $publicBasePath = config('devlink.public_base_path', '../moox/packages');
-        $monorepoPath = realpath(base_path($publicBasePath));
-        $workflowPath = dirname($monorepoPath).'/.github/workflows/monorepo-split-packages.yml';
-        // Get file content
-        $content = file_get_contents($workflowPath);
+    // protected function changeGithubWorkflow(array $newPackages, string $version): void
+    // {
+    //     $publicBasePath = config('devlink.public_base_path', '../moox/packages');
+    //     $monorepoPath = realpath(base_path($publicBasePath));
+    //     $workflowPath = dirname($monorepoPath).'/.github/workflows/monorepo-split-packages.yml';
+    //     // Get file content
+    //     $content = file_get_contents($workflowPath);
 
-        // Extract existing packages and add new ones
-        preg_match('/package:\s*\n((\s+- .+\n)+)/', $content, $matches);
-        if (isset($matches[1])) {
-            $packageLines = explode("\n", trim($matches[1]));
-            $existingPackages = array_map(function ($line) {
-                return trim(str_replace('- ', '', $line));
-            }, $packageLines);
+    //     // Extract existing packages and add new ones
+    //     preg_match('/package:\s*\n((\s+- .+\n)+)/', $content, $matches);
+    //     if (isset($matches[1])) {
+    //         $packageLines = explode("\n", trim($matches[1]));
+    //         $existingPackages = array_map(function ($line) {
+    //             return trim(str_replace('- ', '', $line));
+    //         }, $packageLines);
 
-            // Filter out empty lines
-            $existingPackages = array_filter($existingPackages);
+    //         // Filter out empty lines
+    //         $existingPackages = array_filter($existingPackages);
 
-            // Add new packages that don't already exist
-            $packagesToAdd = [];
-            foreach ($newPackages as $package => $info) {
-                if (! in_array($package, $existingPackages)) {
-                    $packagesToAdd[] = $package;
-                    $this->line("Adding package {$package} to workflow file");
-                } else {
-                    $this->line("Package {$package} already exists in workflow file");
-                }
-            }
+    //         // Add new packages that don't already exist
+    //         $packagesToAdd = [];
+    //         foreach ($newPackages as $package => $info) {
+    //             if (! in_array($package, $existingPackages)) {
+    //                 $packagesToAdd[] = $package;
+    //                 $this->line("Adding package {$package} to workflow file");
+    //             } else {
+    //                 $this->line("Package {$package} already exists in workflow file");
+    //             }
+    //         }
 
-            if (! empty($packagesToAdd)) {
-                // Merge and sort all packages
-                $allPackages = array_merge($existingPackages, $packagesToAdd);
-                sort($allPackages);
+    //         if (! empty($packagesToAdd)) {
+    //             // Merge and sort all packages
+    //             $allPackages = array_merge($existingPackages, $packagesToAdd);
+    //             sort($allPackages);
 
-                $sortedPackageList = '';
-                foreach ($allPackages as $package) {
-                    $sortedPackageList .= "          - {$package}\n";
-                }
+    //             $sortedPackageList = '';
+    //             foreach ($allPackages as $package) {
+    //                 $sortedPackageList .= "          - {$package}\n";
+    //             }
 
-                $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
+    //             $content = preg_replace('/package:\s*\n(\s+- .+\n)+/', "package:\n{$sortedPackageList}", $content);
 
-                file_put_contents($workflowPath, $content);
-                $this->line('✅ Updated GitHub workflow with '.count($packagesToAdd).' new packages');
-            } else {
-                $this->line('No new packages to add to workflow');
-            }
-        } else {
-            $this->warn('Could not find package section in workflow file');
-        }
-    }
+    //             file_put_contents($workflowPath, $content);
+    //             $this->line('✅ Updated GitHub workflow with '.count($packagesToAdd).' new packages');
+    //         } else {
+    //             $this->line('No new packages to add to workflow');
+    //         }
+    //     } else {
+    //         $this->warn('Could not find package section in workflow file');
+    //     }
+    // }
 
     protected function createRelease(string $version): void
     {

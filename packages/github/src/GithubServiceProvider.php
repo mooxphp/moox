@@ -14,6 +14,10 @@ class GithubServiceProvider extends MooxServiceProvider
             ->hasRoutes([
                 'web',
             ])
+            ->hasConfigFile()
+            ->hasCommands([
+                Commands\GitHubTokenCommand::class,
+            ])
             ->hasConfigFile();
     }
 }

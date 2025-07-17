@@ -336,7 +336,11 @@ class MediaResource extends Resource
                             Select::make('media_collection_id')
                                 ->label(__('media::fields.collection'))
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
-                                ->options(MediaCollection::all()->pluck('name', 'id'))
+                                ->options(
+                                    MediaCollection::whereHas('translations', function ($query) {
+                                        $query->where('locale', app()->getLocale());
+                                    })->get()->pluck('name', 'id')->filter()->toArray()
+                                )
                                 ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
                                     if ($state !== $record->media_collection_id) {

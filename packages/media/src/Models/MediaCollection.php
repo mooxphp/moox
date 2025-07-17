@@ -13,6 +13,8 @@ class MediaCollection extends Model implements TranslatableContract
 
     public $translatedAttributes = ['name', 'description'];
 
+    protected $fillable = ['name', 'description'];
+
     public function media(): HasMany
     {
         return $this->hasMany(Media::class, 'media_collection_id');
@@ -40,5 +42,17 @@ class MediaCollection extends Model implements TranslatableContract
                 ]);
             }
         });
+    }
+
+    public static function ensureUncategorizedExists()
+    {
+        if (static::count() > 0) {
+            return;
+        }
+
+        static::create([
+            'name' => __('media::fields.uncategorized'),
+            'description' => __('media::fields.uncategorized_description'),
+        ]);
     }
 }

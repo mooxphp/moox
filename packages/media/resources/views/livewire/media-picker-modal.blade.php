@@ -213,7 +213,7 @@
 
                             <div>
                                 <span class="fi-sc-text">{{ __('media::fields.collection') }}</span>
-                                <div class="mt-1">
+                                <div>
                                     <x-filament::input.wrapper>
                                     <x-filament::input.select 
                                         wire:model.live="selectedMediaMeta.media_collection_id"

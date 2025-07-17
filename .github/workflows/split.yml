@@ -112,25 +112,37 @@ jobs:
           PACKAGE="${{ matrix.package }}"
           VERSION="${{ github.event.inputs.version }}"
           RELEASE_BODY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"release-message\" // [] | .[:10] | join(\"\\n\")")
+          STABILITY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"moox-stability\" // \"dev\"")
 
-          echo "Creating release for $PACKAGE $VERSION"
-          echo "Release notes:"
-          echo "$RELEASE_BODY"
+          echo "Package: $PACKAGE"
+          echo "Version: $VERSION"
+          echo "Stability: $STABILITY"
+          echo "Release notes: $RELEASE_BODY"
 
-          # Wait for tag propagation
-          sleep 10
+          # Only create release if stability is not 'dev'
+          if [ "$STABILITY" != "dev" ]; then
+            echo "✅ Creating release for $PACKAGE (stability: $STABILITY)"
+            
+            # Wait for tag propagation
+            sleep 10
 
-          if [ "${{ needs.prepare.outputs.is-prerelease }}" = "true" ]; then
-            gh release create "$VERSION" \
-              --repo "mooxphp/$PACKAGE" \
-              --title "Release $VERSION" \
-              --notes "$RELEASE_BODY" \
-              --prerelease
+            if [ "${{ needs.prepare.outputs.is-prerelease }}" = "true" ]; then
+              gh release create "$VERSION" \
+                --repo "mooxphp/$PACKAGE" \
+                --title "Release $VERSION" \
+                --notes "$RELEASE_BODY" \
+                --prerelease
+            else
+              gh release create "$VERSION" \
+                --repo "mooxphp/$PACKAGE" \
+                --title "Release $VERSION" \
+                --notes "$RELEASE_BODY"
+            fi
+            
+            echo "✅ Release created successfully"
           else
-            gh release create "$VERSION" \
-              --repo "mooxphp/$PACKAGE" \
-              --title "Release $VERSION" \
-              --notes "$RELEASE_BODY"
+            echo "⏭️  Skipping release for $PACKAGE (stability: dev)"
+            echo "   Package was split to repository but no release was created"
           fi
         env:
           GH_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.TOKEN }}

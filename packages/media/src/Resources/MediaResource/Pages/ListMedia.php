@@ -59,23 +59,11 @@ class ListMedia extends ListRecords
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => MediaCollection::all()->pluck('name', 'id')->toArray())
+                        ->options(fn () => MediaCollection::whereHas('translations', function ($query) {
+                            $query->where('locale', app()->getLocale());
+                        })->get()->pluck('name', 'id')->filter()->toArray())
+                        ->default(MediaCollection::first()->id)
                         ->searchable()
-                        ->default(function () {
-                            $name = __('media::fields.uncategorized');
-                            $description = __('media::fields.uncategorized_description');
-
-                            $collection = MediaCollection::all()->first(fn ($c) => $c->name === $name);
-
-                            if (! $collection) {
-                                $collection = MediaCollection::create([
-                                    'name' => $name,
-                                    'description' => $description,
-                                ]);
-                            }
-
-                            return $collection->id;
-                        })
                         ->required()
                         ->live(),
                     FileUpload::make('file')

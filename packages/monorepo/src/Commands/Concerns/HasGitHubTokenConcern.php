@@ -12,6 +12,19 @@ trait HasGitHubTokenConcern
         $token = User::first()?->github_token;
 
         if (! $token) {
+            // Don't use console output in constructor - it causes null reference errors
+            // Just return null and let the command handle the error later
+            return null;
+        }
+
+        return $token;
+    }
+
+    protected function getGitHubTokenWithValidation(): ?string
+    {
+        $token = User::first()?->github_token;
+
+        if (! $token) {
             $this->error('No GitHub token found. Please link your GitHub account.');
 
             return null;
@@ -40,7 +53,7 @@ trait HasGitHubTokenConcern
             return false;
         }
 
-        $token = $this->getGitHubToken();
+        $token = $this->getGitHubTokenWithValidation();
         if (! $token) {
             return false;
         }

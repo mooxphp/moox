@@ -4,6 +4,7 @@ namespace Moox\Media\Resources;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -49,6 +50,34 @@ class MediaCollectionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
+            Select::make('extend_existing_collection')
+                ->label(__('media::fields.extend_existing_collection'))
+                ->placeholder(__('media::fields.create_new_collection'))
+                ->options(function () {
+                    $currentLocale = app()->getLocale();
+
+                    $collections = MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
+                        $query->where('locale', '!=', $currentLocale);
+                    })->get();
+
+                    $options = [];
+                    foreach ($collections as $collection) {
+                        $translation = $collection->translations->where('locale', '!=', $currentLocale)->first();
+                        if ($translation && is_string($translation->name) && $translation->name !== '') {
+                            $options[$collection->id] = $translation->name." ({$translation->locale})";
+                        }
+                    }
+
+                    return $options;
+                })
+                ->searchable()
+                ->hidden(function () {
+                    $currentLocale = app()->getLocale();
+
+                    return ! MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
+                        $query->where('locale', '!=', $currentLocale);
+                    })->exists();
+                }),
             TextInput::make('name')
                 ->label(__('media::fields.collection_name'))
                 ->required()
@@ -127,6 +156,8 @@ class MediaCollectionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getModel()::whereHas('translations', function ($query) {
+            $query->where('locale', app()->getLocale());
+        })->count();
     }
 }

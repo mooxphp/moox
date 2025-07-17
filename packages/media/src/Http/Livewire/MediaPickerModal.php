@@ -111,23 +111,11 @@ class MediaPickerModal extends Component implements HasForms
     {
         $collection = Select::make('media_collection_id')
             ->label(__('media::fields.collection'))
-            ->options(fn () => MediaCollection::all()->pluck('name', 'id')->toArray())
+            ->options(fn () => MediaCollection::whereHas('translations', function ($query) {
+                $query->where('locale', app()->getLocale());
+            })->get()->pluck('name', 'id')->filter()->toArray())
             ->searchable()
-            ->default(function () {
-                $name = __('media::fields.uncategorized');
-                $description = __('media::fields.uncategorized_description');
-
-                $collection = MediaCollection::all()->first(fn ($c) => $c->name === $name);
-
-                if (! $collection) {
-                    $collection = MediaCollection::create([
-                        'name' => $name,
-                        'description' => $description,
-                    ]);
-                }
-
-                return $collection->id;
-            })
+            ->default(MediaCollection::first()->id)
             ->required()
             ->live();
 
@@ -317,6 +305,7 @@ class MediaPickerModal extends Component implements HasForms
                 'updated_at' => $media->updated_at,
                 'uploader_name' => $uploaderName,
                 'collection_name' => $media->collection_name,
+                'media_collection_id' => $media->media_collection_id,
             ];
         } else {
             $this->selectedMediaMeta = [
@@ -482,7 +471,9 @@ class MediaPickerModal extends Component implements HasForms
             ->orderBy('created_at', 'desc')
             ->paginate(18);
 
-        $collectionOptions = MediaCollection::all()->pluck('name', 'id')->toArray();
+        $collectionOptions = MediaCollection::whereHas('translations', function ($query) {
+            $query->where('locale', app()->getLocale());
+        })->get()->pluck('name', 'id')->filter()->toArray();
 
         $uploaderOptions = [];
         $uploaderTypes = Media::query()
