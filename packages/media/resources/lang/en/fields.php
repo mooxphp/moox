@@ -95,7 +95,7 @@ return [
     'uncategorized' => 'Not Assigned',
     'uncategorized_description' => 'Not Assigned Media',
     'extend_existing_collection' => 'Translate Existing Collection',
-    'create_new_collection' => 'New Collection (new language)',
+    'create_new_collection' => 'New Collection',
 
     // Media Types
     'uploaded' => 'Uploaded',

@@ -91,7 +91,7 @@ return [
     'uncategorized' => 'Nicht zugeordnet',
     'uncategorized_description' => 'Nicht zugeordnete Medien',
     'extend_existing_collection' => 'Vorhandene Sammlung übersetzen',
-    'create_new_collection' => 'Neue Sammlung (neue Sprache)',
+    'create_new_collection' => 'Neue Sammlung',
 
     // Media Types
     'images' => 'Bilder',
