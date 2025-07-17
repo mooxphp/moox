@@ -38,8 +38,26 @@ class MooxInstaller extends Command
 
         $this->selectedPanels = $this->selectPanelBundle();
 
+        if (empty($this->selectedPanels)) {
+            $this->info('No panel bundle selected. Skipping package installation.');
+            return;
+        }
+
         $this->installPackages($this->selectedPanels);
 
         $this->info('Moox installed successfully. Enjoy!');
+    }
+
+    protected function getMooxPackages(): array
+    {
+        return [
+            'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'jobs'],
+            'Admin Only'    => ['admin'],
+            'Shop Only'     => ['shop'],
+            'Press Only'    => ['press'],
+            'Devops Only'   => ['devops'],
+            'Jobs Only'     => ['jobs'],
+            'None'          => [],
+        ];
     }
 }

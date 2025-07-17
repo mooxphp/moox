@@ -5,12 +5,13 @@ namespace Moox\Core\Console\Traits;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\warning;
+use function Laravel\Prompts\text;
 
 trait SelectFilamentPanel
 {
     protected array $panelBundles = [
         'None' => [],
-        'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'jobs'],
+        'Moox Complete' => ['shop', 'press', 'devops', 'jobs'],
     ];
 
     public function selectPanelBundle(): array
@@ -23,17 +24,18 @@ trait SelectFilamentPanel
         $selectedPanels = $this->panelBundles[$bundleName];
 
         $this->info("You selected the '{$bundleName}' bundle.");
-        $this->info('Included panels: '.implode(', ', $selectedPanels));
+        $this->info('Included panels: ' . implode(', ', $selectedPanels));
 
         foreach ($selectedPanels as $panel) {
             if ($this->panelExists($panel)) {
                 warning("Panel '{$panel}' already exists. Skipping generation.");
-
                 continue;
             }
 
+            $panelId = text("What is the panel ID for '{$panel}'?", default: $panel);
+
             $this->call('make:filament-panel', [
-                '--id' => strtolower($panel),
+                'id' => $panelId,
             ]);
 
             info("Filament panel '{$panel}' generated.");
@@ -44,8 +46,9 @@ trait SelectFilamentPanel
 
     protected function panelExists(string $panel): bool
     {
-        $panelClass = 'App\\Panels\\'.ucfirst($panel).'Panel';
+        $panelClass = 'App\\Panels\\' . ucfirst($panel) . 'Panel';
+        $providerPath = base_path('app/Providers/Filament/' . ucfirst($panel) . 'PanelProvider.php');
 
-        return class_exists($panelClass);
+        return class_exists($panelClass) || file_exists($providerPath);
     }
 }
