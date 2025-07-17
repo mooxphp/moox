@@ -3,8 +3,8 @@
 namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Moox\Media\Resources\MediaCollectionResource;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource;
 
 class CreateMediaCollection extends CreateRecord
 {
@@ -26,6 +26,7 @@ class CreateMediaCollection extends CreateRecord
         }
 
         unset($data['extend_existing_collection']);
+
         return MediaCollection::create($data);
     }
 }
