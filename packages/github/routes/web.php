@@ -9,12 +9,12 @@ use Laravel\Socialite\Facades\Socialite;
 // TODO route name should be configurable in config file
 Route::middleware(['web'])->group(function () {
     Route::middleware(['auth'])->get('/auth/github/connect', function () {
-        return Socialite::driver('github')->scopes(['read:org', 'repo'])->redirect();
+        return Socialite::driver('github')->scopes(['read:org', 'repo', 'workflow'])->redirect();
     })->name('github.connect');
 
     Route::get('/auth/github/callback', function () {
         try {
-            $githubUser = Socialite::driver('github')->scopes(['read:org', 'repo'])->user();
+            $githubUser = Socialite::driver('github')->scopes(['read:org', 'repo', 'workflow'])->user();
             $currentUser = Auth::user();
 
             if (! $currentUser) {

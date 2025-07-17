@@ -32,7 +32,7 @@ class ReleaseService
             $counts['total']++;
             $repo['private'] ? $counts['private']++ : $counts['public']++;
 
-            $releaseTag = $this->github->getLatestReleaseTag($repo['full_name']);
+            $releaseTag = $this->github->getLatestReleaseTag($this->org, $repo['name']);
             if ($releaseTag !== 'No tag') {
                 $counts['with_release']++;
             } else {

@@ -1,4 +1,4 @@
-name: Split & Release
+name: Split & Release (DEBUG MODE)
 
 on:
   workflow_dispatch:
@@ -28,13 +28,17 @@ jobs:
       - name: Parse packages
         id: parse
         run: |
+          echo "🔍 DEBUG MODE: This workflow will show what would happen without making actual releases"
+          echo "=========================================="
+          
           # Create a temp file to avoid shell injection
           cat > packages.json << 'EOF'
           ${{ github.event.inputs.packages }}
           EOF
           
-          echo "Raw packages file:"
+          echo "📄 Raw packages file:"
           cat packages.json
+          echo ""
           
           # Validate JSON
           if ! jq empty packages.json 2>/dev/null; then
@@ -51,7 +55,7 @@ jobs:
             IS_PRERELEASE=false
           fi
           
-          echo "Parsed packages:"
+          echo "📦 Parsed packages:"
           jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown")"' packages.json
           
           package_list=$(jq -r 'keys | @json' packages.json)
@@ -59,8 +63,9 @@ jobs:
           echo "core-version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
           echo "is-prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
           
-          echo "Package list for matrix: $package_list"
-          echo "Is prerelease: $IS_PRERELEASE"
+          echo "📋 Package list for matrix: $package_list"
+          echo "🔍 Is prerelease: $IS_PRERELEASE"
+          echo "=========================================="
 
   split:
     needs: prepare
@@ -75,62 +80,162 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Replace core version in composer.json
+      - name: DEBUG - Show package info
+        run: |
+          echo "🔍 DEBUG: Processing package: ${{ matrix.package }}"
+          echo "🔍 DEBUG: Version: ${{ needs.prepare.outputs.core-version }}"
+          echo "🔍 DEBUG: Is prerelease: ${{ needs.prepare.outputs.is-prerelease }}"
+          echo "🔍 DEBUG: Working directory: packages/${{ matrix.package }}"
+          
+          if [ -d "packages/${{ matrix.package }}" ]; then
+            echo "✅ Package directory exists"
+            ls -la packages/${{ matrix.package }}/
+          else
+            echo "❌ Package directory does not exist"
+          fi
+
+      - name: DEBUG - Show composer.json changes that would be made
         working-directory: packages/${{ matrix.package }}
         run: |
           if [ -f composer.json ]; then
-            echo "Updating moox/core version in ${{ matrix.package }} to ${{ needs.prepare.outputs.core-version }}"
-            sed -i 's/"moox\/core": "[^"]*"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
-            echo "Updated composer.json:"
+            echo "📄 Current composer.json:"
+            cat composer.json
+            
+            echo ""
+            echo "🔍 DEBUG: Would update moox/core version to: ${{ needs.prepare.outputs.core-version }}"
+            
+            # Show what the sed command would do
+            echo "🔍 DEBUG: sed command would be:"
+            echo "sed -i 's/\"moox\/core\": \"[^\"]*\"/\"moox\/core\": \"${{ needs.prepare.outputs.core-version }}\"/g' composer.json"
+            
+            # Show current moox/core dependency
+            echo "🔍 DEBUG: Current moox/core dependency:"
             grep "moox/core" composer.json || echo "No moox/core dependency found"
           else
-            echo "No composer.json found in ${{ matrix.package }}"
+            echo "❌ No composer.json found in ${{ matrix.package }}"
           fi
 
-      - name: Commit changes
+      - name: DEBUG - Show what would be committed
         working-directory: packages/${{ matrix.package }}
         run: |
           if [ -f composer.json ]; then
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git add composer.json
-            git commit -m "Update moox/core dependency to ${{ needs.prepare.outputs.core-version }}" || echo "No changes to commit"
+            echo "🔍 DEBUG: Would commit with message:"
+            echo "Update moox/core dependency to ${{ needs.prepare.outputs.core-version }}"
+            
+            echo ""
+            echo "🔍 DEBUG: Git config would be:"
+            echo "user.name: github-actions"
+            echo "user.email: github-actions@github.com"
+          else
+            echo "❌ No composer.json to commit"
           fi
 
-      - name: Split package to separate repository
-        uses: symplify/monorepo-split-github-action@v2.3.0
-        env:
-          GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
-        with:
-          tag: "${{ github.event.inputs.version }}"
-          package_directory: "packages/${{ matrix.package }}"
-          repository_organization: "mooxphp"
-          repository_name: "${{ matrix.package }}"
+      - name: DEBUG - Show split action parameters
+        run: |
+          echo "🔍 DEBUG: Split action parameters:"
+          echo "  - tag: ${{ github.event.inputs.version }}"
+          echo "  - package_directory: packages/${{ matrix.package }}"
+          echo "  - repository_organization: mooxphp"
+          echo "  - repository_name: ${{ matrix.package }}"
+          echo "  - GITHUB_TOKEN: [would use user_token if provided, otherwise secrets.BOT]"
 
-      - name: Create GitHub Release for split package
+      - name: DEBUG - Show release creation parameters
         run: |
           PACKAGE="${{ matrix.package }}"
           VERSION="${{ github.event.inputs.version }}"
           RELEASE_BODY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"release-message\" // [] | .[:10] | join(\"\\n\")")
+          STABILITY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"moox-stability\" // \"dev\"")
 
-          echo "Creating release for $PACKAGE $VERSION"
-          echo "Release notes:"
-          echo "$RELEASE_BODY"
+          echo "🔍 DEBUG: Release creation parameters for $PACKAGE:"
+          echo "  - Package: $PACKAGE"
+          echo "  - Version: $VERSION"
+          echo "  - Stability: $STABILITY"
+          echo "  - Is prerelease: ${{ needs.prepare.outputs.is-prerelease }}"
+          echo "  - Release notes: $RELEASE_BODY"
+          echo "  - Repository: mooxphp/$PACKAGE"
 
-          # Wait for tag propagation
-          sleep 10
-
-          if [ "${{ needs.prepare.outputs.is-prerelease }}" = "true" ]; then
-            gh release create "$VERSION" \
-              --repo "mooxphp/$PACKAGE" \
-              --title "Release $VERSION" \
-              --notes "$RELEASE_BODY" \
-              --prerelease
+          # Show what would happen
+          if [ "$STABILITY" != "dev" ]; then
+            echo "✅ Would create release for $PACKAGE (stability: $STABILITY)"
+            if [ "${{ needs.prepare.outputs.is-prerelease }}" = "true" ]; then
+              echo "🔍 DEBUG: Would run: gh release create \"$VERSION\" --repo \"mooxphp/$PACKAGE\" --title \"Release $VERSION\" --notes \"$RELEASE_BODY\" --prerelease"
+            else
+              echo "🔍 DEBUG: Would run: gh release create \"$VERSION\" --repo \"mooxphp/$PACKAGE\" --title \"Release $VERSION\" --notes \"$RELEASE_BODY\""
+            fi
           else
-            gh release create "$VERSION" \
-              --repo "mooxphp/$PACKAGE" \
-              --title "Release $VERSION" \
-              --notes "$RELEASE_BODY"
+            echo "⏭️  Would skip release for $PACKAGE (stability: dev)"
+            echo "   Package would be split to repository but no release would be created"
           fi
-        env:
-          GH_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.TOKEN }}
+
+      # Commented out actual actions for debug mode
+      # - name: Replace core version in composer.json
+      #   working-directory: packages/${{ matrix.package }}
+      #   run: |
+      #     if [ -f composer.json ]; then
+      #       echo "Updating moox/core version in ${{ matrix.package }} to ${{ needs.prepare.outputs.core-version }}"
+      #       sed -i 's/"moox\/core": "[^"]*"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
+      #       echo "Updated composer.json:"
+      #       grep "moox/core" composer.json || echo "No moox/core dependency found"
+      #     else
+      #       echo "No composer.json found in ${{ matrix.package }}"
+      #     fi
+
+      # - name: Commit changes
+      #   working-directory: packages/${{ matrix.package }}
+      #   run: |
+      #     if [ -f composer.json ]; then
+      #       git config user.name "github-actions"
+      #       git config user.email "github-actions@github.com"
+      #       git add composer.json
+      #       git commit -m "Update moox/core dependency to ${{ needs.prepare.outputs.core-version }}" || echo "No changes to commit"
+      #     fi
+
+      # - name: Split package to separate repository
+      #   uses: symplify/monorepo-split-github-action@v2.3.0
+      #   env:
+      #     GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
+      #   with:
+      #       tag: "${{ github.event.inputs.version }}"
+      #       package_directory: "packages/${{ matrix.package }}"
+      #       repository_organization: "mooxphp"
+      #       repository_name: "${{ matrix.package }}"
+
+      # - name: Create GitHub Release for split package
+      #   run: |
+      #     PACKAGE="${{ matrix.package }}"
+      #     VERSION="${{ github.event.inputs.version }}"
+      #     RELEASE_BODY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"release-message\" // [] | .[:10] | join(\"\\n\")")
+      #     STABILITY=$(echo '${{ github.event.inputs.packages }}' | jq -r ".\"$PACKAGE\".\"moox-stability\" // \"dev\"")
+
+      #     echo "Package: $PACKAGE"
+      #     echo "Version: $VERSION"
+      #     echo "Stability: $STABILITY"
+      #     echo "Release notes: $RELEASE_BODY"
+
+      #     # Only create release if stability is not 'dev'
+      #     if [ "$STABILITY" != "dev" ]; then
+      #       echo "✅ Creating release for $PACKAGE (stability: $STABILITY)"
+          
+      #       # Wait for tag propagation
+      #       sleep 10
+
+      #       if [ "${{ needs.prepare.outputs.is-prerelease }}" = "true" ]; then
+      #         gh release create "$VERSION" \
+      #           --repo "mooxphp/$PACKAGE" \
+      #           --title "Release $VERSION" \
+      #           --notes "$RELEASE_BODY" \
+      #           --prerelease
+      #       else
+      #         gh release create "$VERSION" \
+      #           --repo "mooxphp/$PACKAGE" \
+      #           --title "Release $VERSION" \
+      #           --notes "$RELEASE_BODY"
+      #       fi
+          
+      #       echo "✅ Release created successfully"
+      #     else
+      #       echo "⏭️  Skipping release for $PACKAGE (stability: dev)"
+      #       echo "   Package was split to repository but no release was created"
+      #     fi
+      #   env:
+      #     GH_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.TOKEN }}
