@@ -2,19 +2,21 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Schemas\Schema;
 use Moox\Media\Models\Media;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\Select;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Media\Models\MediaCollectionTranslation;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -49,6 +51,32 @@ class MediaCollectionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
+            Select::make('extend_existing_collection')
+                ->label(__('media::fields.extend_existing_collection'))
+                ->placeholder(__('media::fields.create_new_collection'))
+                ->options(function () {
+                    $currentLocale = app()->getLocale();
+
+                    $collections = MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
+                        $query->where('locale', '!=', $currentLocale);
+                    })->get();
+
+                    $options = [];
+                    foreach ($collections as $collection) {
+                        $translation = $collection->translations->where('locale', '!=', $currentLocale)->first();
+                        if ($translation && is_string($translation->name) && $translation->name !== '') {
+                            $options[$collection->id] = $translation->name . " ({$translation->locale})";
+                        }
+                    }
+                    return $options;
+                })
+                ->searchable()
+                ->hidden(function () {
+                    $currentLocale = app()->getLocale();
+                    return !MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
+                        $query->where('locale', '!=', $currentLocale);
+                    })->exists();
+                }),
             TextInput::make('name')
                 ->label(__('media::fields.collection_name'))
                 ->required()
@@ -57,7 +85,7 @@ class MediaCollectionResource extends Resource
                     return function ($attribute, $value, $fail) use ($record) {
                         $locale = app()->getLocale();
                         $exists = MediaCollection::whereTranslation('name', $value, $locale)
-                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                            ->when($record, fn($q) => $q->where('id', '!=', $record->id))
                             ->exists();
                         if ($exists) {
                             $fail(__('media::fields.collection_name_already_exists'));
@@ -127,6 +155,8 @@ class MediaCollectionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getModel()::whereHas('translations', function ($query) {
+            $query->where('locale', app()->getLocale());
+        })->count();
     }
 }

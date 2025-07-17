@@ -34,7 +34,7 @@ class ListMedia extends ListRecords
 
     public function toggleView(): void
     {
-        $this->isGridView = ! $this->isGridView;
+        $this->isGridView = !$this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
@@ -45,13 +45,14 @@ class ListMedia extends ListRecords
         $this->dispatch('open-modal', id: "usage-modal-{$mediaId}");
     }
 
+
     public function getHeaderActions(): array
     {
         return [
             Action::make('toggleView')
-                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn () => $this->toggleView())
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
@@ -59,23 +60,11 @@ class ListMedia extends ListRecords
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => MediaCollection::all()->pluck('name', 'id')->toArray())
+                        ->options(fn() => MediaCollection::whereHas('translations', function ($query) {
+                            $query->where('locale', app()->getLocale());
+                        })->get()->pluck('name', 'id')->filter()->toArray())
+                        ->default(MediaCollection::first()->id)
                         ->searchable()
-                        ->default(function () {
-                            $name = __('media::fields.uncategorized');
-                            $description = __('media::fields.uncategorized_description');
-
-                            $collection = MediaCollection::all()->first(fn ($c) => $c->name === $name);
-
-                            if (! $collection) {
-                                $collection = MediaCollection::create([
-                                    'name' => $name,
-                                    'description' => $description,
-                                ]);
-                            }
-
-                            return $collection->id;
-                        })
                         ->required()
                         ->live(),
                     FileUpload::make('file')
@@ -106,7 +95,7 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
