@@ -30,46 +30,62 @@ trait InstallPackage
     }
 
     public function installPackage(array $package, array $panelPaths): void
-    {
-        $this->ensurePackageServiceIsSet();
-
-        $this->info("Checking package {$package['name']}");
-        $this->runMigrations($package);
-        $this->publishConfig($package);
-        $this->runSeeders($package);
-        $this->installPlugins($package, $panelPaths);
+{
+    if (empty($package) || !isset($package['name'])) {
+        $this->info('Empty or invalid package data. Skipping.');
+        return;
     }
+
+    $this->ensurePackageServiceIsSet();
+
+    $this->info("Checking package {$package['name']}");
+    $this->runMigrations($package);
+    $this->publishConfig($package);
+    $this->runSeeders($package);
+    $this->installPlugins($package, $panelPaths);
+}
+
 
     protected function runMigrations(array $package): void
     {
+        info('runMigrations() called');
+        
         $migrations = $this->packageService->getMigrations($package);
-
+        
+        info('Migrations found: ' . print_r($migrations, true));
+        
         if (empty($migrations)) {
             info("No migrations found for {$package['name']}");
-
             return;
         }
-
+        
         foreach ($migrations as $migration) {
+            info("Checking migration: {$migration}");
+            
             $status = $this->packageService->checkMigrationStatus($migration);
-
+            
+            info("Migration status: " . print_r($status, true));
+            
             if ($status['hasChanges']) {
                 if ($status['hasDataInDeletedFields']) {
                     if (! confirm("Migration {$migration} will delete fields containing data. Proceed?", false)) {
                         warning("Skipping migration {$migration}");
-
                         continue;
                     }
                 }
-
+                
                 info("Running migration {$migration}");
-                Artisan::call('migrate', [
+                $exitCode = Artisan::call('migrate', [
                     '--path' => $migration,
                     '--force' => true,
                 ]);
+                info("Artisan migrate exit code: {$exitCode}");
+            } else {
+                info("No changes detected for migration {$migration}, skipping.");
             }
         }
     }
+
 
     protected function publishConfig(array $package): void
     {
