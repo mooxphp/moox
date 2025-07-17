@@ -78,7 +78,7 @@ return [
     'month' => 'Diesen Monat',
     'year' => 'Dieses Jahr',
 
-    // Collection Filters
+    // Collections
     'all_collections' => 'Alle Sammlungen',
     'collection_name' => 'Sammlungsname',
     'collection_description' => 'Sammlungsbeschreibung',
@@ -90,6 +90,8 @@ return [
     'delete_collection_with_media_warning' => 'Diese Sammlung enthält :count :files. Diese Dateien werden automatisch in die Sammlung ":uncategorized" verschoben.',
     'uncategorized' => 'Nicht zugeordnet',
     'uncategorized_description' => 'Nicht zugeordnete Medien',
+    'extend_existing_collection' => 'Vorhandene Sammlung übersetzen',
+    'create_new_collection' => 'Neue Sammlung (neue Sprache)',
 
     // Media Types
     'images' => 'Bilder',
