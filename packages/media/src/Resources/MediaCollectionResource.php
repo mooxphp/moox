@@ -2,21 +2,20 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Moox\Media\Models\Media;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Media\Models\MediaCollectionTranslation;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -65,15 +64,17 @@ class MediaCollectionResource extends Resource
                     foreach ($collections as $collection) {
                         $translation = $collection->translations->where('locale', '!=', $currentLocale)->first();
                         if ($translation && is_string($translation->name) && $translation->name !== '') {
-                            $options[$collection->id] = $translation->name . " ({$translation->locale})";
+                            $options[$collection->id] = $translation->name." ({$translation->locale})";
                         }
                     }
+
                     return $options;
                 })
                 ->searchable()
                 ->hidden(function () {
                     $currentLocale = app()->getLocale();
-                    return !MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
+
+                    return ! MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
                         $query->where('locale', '!=', $currentLocale);
                     })->exists();
                 }),
@@ -85,7 +86,7 @@ class MediaCollectionResource extends Resource
                     return function ($attribute, $value, $fail) use ($record) {
                         $locale = app()->getLocale();
                         $exists = MediaCollection::whereTranslation('name', $value, $locale)
-                            ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
                             ->exists();
                         if ($exists) {
                             $fail(__('media::fields.collection_name_already_exists'));

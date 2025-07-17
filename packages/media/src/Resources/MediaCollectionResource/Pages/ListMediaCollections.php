@@ -5,9 +5,9 @@ namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Media\Resources\MediaCollectionResource;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource;
 
 class ListMediaCollections extends ListRecords
 {
