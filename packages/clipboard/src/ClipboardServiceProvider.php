@@ -14,7 +14,6 @@ class ClipboardServiceProvider extends PackageServiceProvider
         $package
             ->name('clipboard')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasCommands()
             ->hasAssets();
