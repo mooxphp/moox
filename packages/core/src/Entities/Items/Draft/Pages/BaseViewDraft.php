@@ -48,18 +48,19 @@ abstract class BaseViewDraft extends ViewRecord
 
         return [
             ActionGroup::make(
-                $localizations->map(fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                    ->icon('flag-'.$localization->language->alpha2)
-                    ->label('')
-                    ->color('transparent')
-                    ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                    ->url(fn () => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                $localizations->map(
+                    fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                        ->icon('flag-' . $localization->language->alpha2)
+                        ->label('')
+                        ->color('transparent')
+                        ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
+                        ->url(fn() => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
                 )
-                    ->toArray()
+                    ->all()
             )
                 ->color('transparent')
                 ->label('Language')
-                ->icon('flag-'.$this->lang)
+                ->icon('flag-' . $this->lang)
                 ->extraAttributes(['class' => '']),
 
             RestoreAction::make(),
