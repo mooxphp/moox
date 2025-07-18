@@ -94,17 +94,17 @@ abstract class BaseCreateDraft extends CreateRecord
         return [
             ActionGroup::make(
                 $languages->map(
-                    fn($localization) => Action::make('language_' . $localization->language->alpha2)
-                        ->icon('flag-' . $localization->language->alpha2)
+                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
+                        ->icon('flag-'.$localization->language->alpha2)
                         ->label('')
                         ->color('transparent')
                         ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn() => $this->getResource()::getUrl('create', ['lang' => $localization->language->alpha2]))
+                        ->url(fn () => $this->getResource()::getUrl('create', ['lang' => $localization->language->alpha2]))
                 )->all()
             )
                 ->color('transparent')
                 ->label('Language')
-                ->icon('flag-' . $this->lang)
+                ->icon('flag-'.$this->lang)
                 ->extraAttributes(['class' => '']),
         ];
     }
