@@ -1,4 +1,4 @@
-<x-filament-forms::field-wrapper.index
+<x-filament-forms::field-wrapper
     :id="$getId()"
     :label="$getLabel()"
     :label-sr-only="$isLabelHidden()"
@@ -85,7 +85,7 @@
                 </span>
 
                 @if($getSlugInputUrlVisitLinkVisible())
-                    <x-filament::link
+                    <x-filament::link 
                         :href="$getRecordUrl()"
                         target="_blank"
                         size="sm"
@@ -114,7 +114,7 @@
                     <a
                         href="#"
                         role="button"
-                        title="{{ trans('filament-title-with-slug::package.permalink_action_edit') }}"
+                        title={{ __('slug::fields.permalink_action_edit') }}
                         x-on:click.prevent="initModification()"
                         x-show="!editing"
                         class="
@@ -131,7 +131,7 @@
 
                         @svg('heroicon-m-pencil-square', 'h-4 w-4 text-primary-600 dark:text-primary-400', ['stroke-width' => '2'])
 
-                        <span class="sr-only">{{ trans('filament-title-with-slug::package.permalink_action_edit') }}</span>
+                        <span class="sr-only">{{ __('slug::fields.permalink_action_edit') }}</span>
 
                     </a>
 
@@ -142,7 +142,7 @@
                         >{{ $getSlugLabelPostfix() }}</span>
                     @endif
 
-                    <span x-show="!editing && context !== 'create' && modified"> [{{ trans('filament-title-with-slug::package.permalink_status_changed') }}]</span>
+                    <span x-show="!editing && context !== 'create' && modified"> [{{ __('slug::fields.permalink_status_changed') }}]</span>
 
                 </span>
 
@@ -187,7 +187,7 @@
                             fi-btn fi-btn-size-md relative grid-flow-col items-center justify-center font-semibold outline-none transition duration-75 focus:ring-2 disabled:pointer-events-none disabled:opacity-70 rounded-lg fi-btn-color-primary gap-1.5 px-3 py-2 text-sm inline-grid shadow-sm bg-custom-600 text-white hover:bg-custom-500 dark:bg-custom-500 dark:hover:bg-custom-400 focus:ring-custom-500/50 dark:focus:ring-custom-400/50 fi-ac-btn-action
                         "
                     >
-                        {{ trans('filament-title-with-slug::package.permalink_action_ok') }}
+                        {{ __('slug::fields.permalink_action_ok') }}
                     </a>
 
                     <x-filament::link
@@ -197,9 +197,9 @@
                         icon="heroicon-o-arrow-path"
                         color="gray"
                         size="sm"
-                        title="{{ trans('filament-title-with-slug::package.permalink_action_reset') }}"
+                        title="{{ __('slug::fields.permalink_action_reset') }}"
                     >
-                        <span class="sr-only">{{ trans('filament-title-with-slug::package.permalink_action_reset') }}</span>
+                        <span class="sr-only">{{ __('slug::fields.permalink_action_reset') }}</span>
                     </x-filament::link>
 
                     <x-filament::link
@@ -208,9 +208,9 @@
                         icon="heroicon-o-x-mark"
                         color="gray"
                         size="sm"
-                        title="{{ trans('filament-title-with-slug::package.permalink_action_cancel') }}"
+                        title="{{ __('slug::fields.permalink_action_cancel') }}"
                     >
-                        <span class="sr-only">{{ trans('filament-title-with-slug::package.permalink_action_cancel') }}</span>
+                        <span class="sr-only">{{ __('slug::fields.permalink_action_cancel') }}</span>
                     </x-filament::link>
 
                 </div>
@@ -242,4 +242,4 @@
 
     </div>
 
-</x-filament-forms::field-wrapper.index>
+</x-filament-forms::field-wrapper>
