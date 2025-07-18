@@ -75,11 +75,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure Git identity
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-
       - name: Replace core version in composer.json
         working-directory: packages/${{ matrix.package }}
         run: |
@@ -106,17 +101,13 @@ jobs:
         uses: symplify/monorepo-split-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
-          GIT_AUTHOR_NAME: "github-actions"
-          GIT_AUTHOR_EMAIL: "github-actions@github.com"
-          GIT_COMMITTER_NAME: "github-actions"
-          GIT_COMMITTER_EMAIL: "github-actions@github.com"
         with:
           tag: "${{ github.event.inputs.version }}"
           package_directory: "packages/${{ matrix.package }}"
           repository_organization: "mooxphp"
           repository_name: "${{ matrix.package }}"
-          user_name: "github-actions"
-          user_email: "github-actions@github.com"
+          user_name: "Moox Bot"
+          user_email: "bot@moox.org"
 
       - name: Create GitHub Release for split package
         run: |
