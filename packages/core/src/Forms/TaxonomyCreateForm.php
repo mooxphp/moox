@@ -2,7 +2,8 @@
 
 namespace Moox\Core\Forms;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+
 
 class TaxonomyCreateForm
 {
