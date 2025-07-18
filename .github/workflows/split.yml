@@ -52,7 +52,7 @@ jobs:
           fi
           
           echo "Parsed packages:"
-          jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["minimum-stability"] // "unknown")"' packages.json
+          jq -r 'to_entries[] | "\(.key): Messages=[\(.value["release-message"] | join(", "))] Stability=\(.value["moox-stability"] // "dev")"' packages.json
           
           package_list=$(jq -r 'keys | @json' packages.json)
           echo "package-list=$package_list" >> $GITHUB_OUTPUT
