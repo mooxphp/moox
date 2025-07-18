@@ -30,7 +30,8 @@
             "providers": [
                 "Moox\\Monorepo\\MonorepoServiceProvider"
             ]
-        }
+        },
+        "moox-stability": "stable"
     },
     "config": {
         "sort-packages": true

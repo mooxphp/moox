@@ -35,10 +35,11 @@
 - Progress indicators during API operations
 
 **3. `monorepo:create-missing`**
-- Options: `--public`, `--private`, `--force`, `--interactive`, `--dry-run`
+- Options: `--public`, `--private`, `--force`, `--interactive`, `--dry-run`, `--skip-devlink`
 - Interactive mode for per-repository confirmation
 - Configurable repository settings (based on mooxphp/jobs defaults)
 - Progress bars for batch operations
+- **Devlink Integration**: Automatically updates `config/devlink.php` with new packages
 
 #### ✅ **Stability-Based Release Control**
 - **Package Configuration**: `"moox-stability": "stable"` in composer.json extra section
@@ -50,6 +51,7 @@
 - **Comprehensive Environment Variables**: 15+ configurable options
 - **Repository Settings**: Fully configurable GitHub repository creation (issues, projects, wiki, discussions, forking, merge preferences)
 - **Default Templates**: Based on mooxphp/jobs repository settings
+- **Devlink Integration**: Automatic devlink configuration updates with alphabetical ordering
 - **Backward Compatibility**: Clean migration path from v1.0
 
 #### ✅ **Developer Experience**
