@@ -111,29 +111,18 @@
                         class="text-gray-400"
                     ></span>
 
-                    <a
-                        href="#"
-                        role="button"
-                        title={{ __('slug::fields.permalink_action_edit') }}
+                    <x-filament::link
+                        tag="button"
                         x-on:click.prevent="initModification()"
                         x-show="!editing"
-                        class="
-                            cursor-pointer
-                            font-semibold text-gray-400
-                            inline-flex items-center justify-center
-                            hover:underline hover:text-primary-500
-                            dark:hover:text-primary-400
-                            gap-1
-                        "
-                        :class="context !== 'create' && modified ? 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 px-1 rounded-md' : ''"
+                        x-bind:class="context !== 'create' && modified ? 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 px-1 rounded-md' : ''"
+                        icon="heroicon-m-pencil-square"
+                        icon-size="sm"
+                        icon-position="after"
                     >
                         <span class="mr-1">{{ $getState() }}</span>
-
-                        @svg('heroicon-m-pencil-square', 'h-4 w-4 text-primary-600 dark:text-primary-400', ['stroke-width' => '2'])
-
-                        <span class="sr-only">{{ __('slug::fields.permalink_action_edit') }}</span>
-
-                    </a>
+                        {{-- <span class="sr-only">{{ __('slug::fields.permalink_action_edit') }}</span> --}}
+                    </x-filament::link>
 
                     @if($getSlugLabelPostfix())
                         <span
@@ -151,8 +140,8 @@
                     x-show="editing"
                     style="display: none;"
                 >
-                    <div class="flex overflow-hidden transition duration-75 bg-white rounded-lg shadow-sm fi-input-wrapper ring-1 focus-within:ring-2 dark:bg-white/5 ring-gray-950/10 focus-within:ring-primary-600 dark:ring-white/20 dark:focus-within:ring-primary-500 fi-fo-text-input">
-                        <input
+                    <x-filament::input.wrapper>
+                        <x-filament::input
                             type="text"
                             x-ref="slugInput"
                             x-model="stateInitial"
@@ -168,7 +157,7 @@
                                 'border-danger-600 ring-danger-600' => $errors->has($getStatePath())])
                             }}
                         />
-                    </div>
+                    </x-filament::input.wrapper>
 
                 </div>
 
@@ -178,22 +167,17 @@
                     style="display: none;"
                 >
 
-                    <a
-                        href="#"
-                        role="button"
+                    <x-filament::button
+                        type="button"
                         x-on:click.prevent="submitModification()"
-                        style="--c-400:var(--primary-400);--c-500:var(--primary-500);--c-600:var(--primary-600);"
-                        class="
-                            fi-btn fi-btn-size-md relative grid-flow-col items-center justify-center font-semibold outline-none transition duration-75 focus:ring-2 disabled:pointer-events-none disabled:opacity-70 rounded-lg fi-btn-color-primary gap-1.5 px-3 py-2 text-sm inline-grid shadow-sm bg-custom-600 text-white hover:bg-custom-500 dark:bg-custom-500 dark:hover:bg-custom-400 focus:ring-custom-500/50 dark:focus:ring-custom-400/50 fi-ac-btn-action
-                        "
                     >
                         {{ __('slug::fields.permalink_action_ok') }}
-                    </a>
+                    </x-filament::button>
 
                     <x-filament::link
                         x-show="context === 'edit' && modified"
                         x-on:click.prevent="resetModification()"
-                        class="cursor-pointer ml-4"
+                        tag="button"
                         icon="heroicon-o-arrow-path"
                         color="gray"
                         size="sm"
@@ -204,7 +188,7 @@
 
                     <x-filament::link
                         x-on:click.prevent="cancelModification()"
-                        class="cursor-pointer"
+                        tag="button"
                         icon="heroicon-o-x-mark"
                         color="gray"
                         size="sm"
