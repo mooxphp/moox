@@ -12,7 +12,7 @@ use function Laravel\Prompts\warning;
 
 trait CheckForFilament
 {
-    protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php'; // Oder passe den Pfad an dein Projekt an!
+    protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php';
 
     public function checkForFilament(): void
     {

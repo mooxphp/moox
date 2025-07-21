@@ -11,7 +11,7 @@ trait SelectFilamentPanel
 {
     protected array $panelBundles = [
         'None' => [],
-        'Moox Complete' => ['shop', 'press', 'devops', 'jobs'],
+        'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'cms', 'empty'],
     ];
 
     public function selectPanelBundle(): array
@@ -39,6 +39,8 @@ trait SelectFilamentPanel
             ]);
 
             info("Filament panel '{$panel}' generated.");
+
+            $this->registerDefaultPluginsForPanel($panel);
         }
 
         return $selectedPanels;
@@ -46,9 +48,94 @@ trait SelectFilamentPanel
 
     protected function panelExists(string $panel): bool
     {
-        $panelClass = 'App\\Panels\\' . ucfirst($panel) . 'Panel';
-        $providerPath = base_path('app/Providers/Filament/' . ucfirst($panel) . 'PanelProvider.php');
+        $providerClass = 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider';
 
-        return class_exists($panelClass) || file_exists($providerPath);
+        $providersFile = base_path('bootstrap/providers.php');
+
+        if (!file_exists($providersFile)) {
+            return false;
+        }
+
+        $registeredProviders = include $providersFile;
+
+        return in_array($providerClass, $registeredProviders, true);
+    }
+
+    protected function registerDefaultPluginsForPanel(string $panel): void
+    {
+        $pluginMap = [
+            'press' => [
+                '\Moox\Press\WpCategoryPlugin::make()',
+                '\Moox\Press\WpCommentMetaPlugin::make()',
+                '\Moox\Press\WpCommentPlugin::make()',
+                '\Moox\Press\WpMediaPlugin::make()',
+                '\Moox\Press\WpOptionPlugin::make()',
+                '\Moox\Press\WpPagePlugin::make()',
+                '\Moox\Press\WpPostPlugin::make()',
+                '\Moox\Press\WpPostMetaPlugin::make()',
+                '\Moox\Press\WpTagPlugin::make()',
+                '\Moox\Press\WpTermMetaPlugin::make()',
+                '\Moox\Press\WpTermPlugin::make()',
+                '\Moox\Press\WpTermRelationshipPlugin::make()',
+                '\Moox\Press\WpTermTaxonomyPlugin::make()',
+                '\Moox\Press\WpUserMetaPlugin::make()',
+                '\Moox\Press\WpUserPlugin::make()',
+            ],
+            'devops' => [
+                
+            ],
+            'shop' => [
+                
+            ],
+            'cms' => [
+               
+            ],
+            'empty' => [
+            
+            ],
+            'admin' => [
+            
+            ],
+        ];
+
+        $plugins = $pluginMap[$panel] ?? [];
+
+        if (empty($plugins)) {
+            info("No default plugins defined for panel '{$panel}'.");
+            return;
+        }
+
+        $providerPath = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
+
+        if (!file_exists($providerPath)) {
+            warning("Provider file for panel '{$panel}' not found at {$providerPath}.");
+            return;
+        }
+
+        $content = file_get_contents($providerPath);
+
+        if (str_contains($content, '->plugins([')) {
+            warning("Panel '{$panel}' already has plugins registered. Skipping.");
+            return;
+        }
+
+        $pluginCode = implode(",\n        ", $plugins);
+
+        $insert = <<<PHP
+    ->plugins([
+        {$pluginCode}
+    ])
+PHP;
+
+        $content = preg_replace(
+            '/return\s+\$panel(.*?)(;)/s',
+            "return \$panel\$1{$insert}\$2",
+            $content,
+            1
+        );
+
+        file_put_contents($providerPath, $content);
+
+        info("Plugins for panel '{$panel}' registered.");
     }
 }
