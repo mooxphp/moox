@@ -3,15 +3,17 @@
 namespace Moox\Core\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\CheckOrCreateFilamentUser;
 use Moox\Core\Console\Traits\InstallPackages;
+use Moox\Core\Console\Traits\SelectFilamentPanel;
 use Moox\Core\Services\PackageService;
 
 class MooxInstaller extends Command
 {
-    use Art, CheckForFilament, CheckOrCreateFilamentUser, InstallPackages;
+    use Art, CheckForFilament, CheckOrCreateFilamentUser, InstallPackages, SelectFilamentPanel;
 
     protected $signature = 'moox:install';
 
@@ -45,18 +47,34 @@ class MooxInstaller extends Command
 
         $this->installPackages($this->selectedPanels);
 
+        $this->createAdminPanelProvider();
+
         $this->info('Moox installed successfully. Enjoy!');
+    }
+
+    protected function createAdminPanelProvider()
+    {
+        $path = base_path($this->providerPath);
+
+        if (!File::exists(dirname($path))) {
+            File::makeDirectory(dirname($path), 0755, true);
+        }
+
+        if (!File::exists($path)) {
+            $stubPath = base_path('app/stub/panels/admin-panel-provider.stub');
+            $stub = File::get($stubPath);
+
+            File::put($path, $stub);
+            $this->info("Created AdminPanelProvider at {$this->providerPath}");
+        } else {
+            $this->info("AdminPanelProvider already exists at {$this->providerPath}");
+        }
     }
 
     protected function getMooxPackages(): array
     {
         return [
-            'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'jobs'],
-            'Admin Only'    => ['admin'],
-            'Shop Only'     => ['shop'],
-            'Press Only'    => ['press'],
-            'Devops Only'   => ['devops'],
-            'Jobs Only'     => ['jobs'],
+            'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'cms', 'empty'],
             'None'          => [],
         ];
     }
