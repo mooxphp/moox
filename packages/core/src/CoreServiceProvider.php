@@ -48,7 +48,6 @@ class CoreServiceProvider extends PackageServiceProvider
             ->name('core')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasViews()
             ->hasRoutes(['api', 'web'])
             ->hasCommand(MooxInstaller::class)
             ->hasCommand(PackageServiceCommand::class);
