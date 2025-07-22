@@ -39,11 +39,14 @@ If you want to install and use Moox, please refer to any of our packages or dire
 
 ## Packages
 
+Some of our packages:
+
 | Package                                                                | Composer               | Free | Pro | State  |
 | ---------------------------------------------------------------------- | ---------------------- | ---- | --- | ------ |
 | [Moox Core](https://github.com/mooxphp/core)                           | moox/core              | x    |     | Stable |
 | [Moox Jobs](https://github.com/mooxphp/jobs)                           | moox/jobs              | x    |     | Stable |
 | [Moox Skeleton](https://github.com/mooxphp/skeleton)                   | moox/skeleton          | x    |     | Stable |
+| [Moox Expiry](https://github.com/mooxphp/expiry)                       | moox/expiry            | x    |     | Stable |
 | [Moox Flag Icons Circle](https://github.com/mooxphp/flag-icons-circle) | moox/flag-icons-circle | x    |     | Stable |
 | [Moox Flag Icons Origin](https://github.com/mooxphp/flag-icons-origin) | moox/flag-icons-origin | x    |     | Stable |
 | [Moox Flag Icons Square](https://github.com/mooxphp/flag-icons-square) | moox/flag-icons-square | x    |     | Stable |
@@ -53,8 +56,21 @@ If you want to install and use Moox, please refer to any of our packages or dire
 | [Moox Data](https://github.com/mooxphp/data)                           | moox/data              | x    |     | Beta   |
 | [Moox Localization](https://github.com/mooxphp/localization)           | moox/localization      | x    |     | Beta   |
 | [Moox Press](https://github.com/mooxphp/press)                         | moox/press             | x    |     | Beta   |
+| [Moox Build](https://github.com/mooxphp/build)                         | moox/build             | x    |     | Beta   |
+| [Moox User Device](https://github.com/mooxphp/user-device)             | moox/user-device       | x    |     | Beta   |
+| [Moox User Session](https://github.com/mooxphp/user-session)           | moox/user-session      | x    |     | Beta   |
+| [Moox User](https://github.com/mooxphp/user)                           | moox/user              | x    |     | Beta   |
+| [Moox Audit](https://github.com/mooxphp/audit)                         | moox/audit             | x    |     | Dev    |
+| [Moox Login Link](https://github.com/mooxphp/login-link)               | moox/login-link        | x    |     | Dev    |
+| [Moox Page](https://github.com/mooxphp/page)                           | moox/page              | x    |     | Dev    |
+| [Moox Passkey](https://github.com/mooxphp/passkey)                     | moox/passkey           | x    |     | Dev    |
+| [Moox Permission](https://github.com/mooxphp/permission)               | moox/permission        | x    |     | Dev    |
+| [Moox Security](https://github.com/mooxphp/security)                   | moox/security          | x    |     | Beta   |
+| [Moox DevOps](https://github.com/mooxphp/devops)                       | moox/devops            | x    |     | Dev    |
+| [Moox Backup Server](https://github.com/mooxphp/backup-server)         | moox/backup-server     | x    |     | Stable |
+| [Moox VS Code](https://github.com/mooxphp/vscode)                      | moox/vscode            | x    |     | Beta   |
 
-All others are under hard development.
+The list is incomplete. We will soon list all packages on moox.org.
 
 ## Requirements
 
