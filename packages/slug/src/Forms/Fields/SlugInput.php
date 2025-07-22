@@ -102,12 +102,12 @@ class SlugInput extends TextInput
             return '';
         }
 
-        return $label ?: __('slug::fields.permalink_label_link_visit').' '.$this->getSlugInputModelName();
+        return $label ?: __('slug::fields.permalink_label_link_visit') . ' ' . $this->getSlugInputModelName();
     }
 
     public function slugInputLabelPrefix(?string $labelPrefix): static
     {
-        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label');
+        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label') . ':';
 
         return $this;
     }
@@ -167,7 +167,7 @@ class SlugInput extends TextInput
 
     public function getRecordUrl(): ?string
     {
-        if (! $this->getRecordSlug()) {
+        if (!$this->getRecordSlug()) {
             return null;
         }
 
@@ -175,12 +175,12 @@ class SlugInput extends TextInput
 
         return $visitLinkRoute
             ? $this->getVisitLinkRoute()
-            : $this->getBaseUrl().$this->getBasePath().$this->evaluate($this->recordSlug);
+            : $this->getBaseUrl() . $this->getBasePath() . $this->evaluate($this->recordSlug);
     }
 
     public function slugInputBasePath(string|Closure|null $path): static
     {
-        $this->basePath = ! is_null($path) ? $path : $this->basePath;
+        $this->basePath = !is_null($path) ? $path : $this->basePath;
 
         return $this;
     }
@@ -212,7 +212,7 @@ class SlugInput extends TextInput
     public function getFullBaseUrl(): ?string
     {
         return $this->showUrl
-            ? $this->getBaseUrl().$this->getBasePath()
+            ? $this->getBaseUrl() . $this->getBasePath()
             : $this->getBasePath();
     }
 
