@@ -14,7 +14,6 @@ class PackagesServiceProvider extends PackageServiceProvider
         $package
             ->name('packages')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_packages_table']);
     }

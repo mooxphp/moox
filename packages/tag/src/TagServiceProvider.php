@@ -19,7 +19,6 @@ class TagServiceProvider extends PackageServiceProvider
         $package
             ->name('tag')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_tags_table', 'create_taggables_table', 'create_tag_translations'])
             ->hasCommand(InstallCommand::class);

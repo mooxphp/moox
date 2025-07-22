@@ -16,7 +16,6 @@ class DevopsServiceProvider extends PackageServiceProvider
         $package
             ->name('devops')
             ->hasConfigFile()
-            ->hasViews()
             ->hasRoute('api')
             ->hasTranslations()
             ->hasMigrations([

@@ -18,7 +18,6 @@ class DraftServiceProvider extends MooxServiceProvider
         $package
             ->name('draft')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();

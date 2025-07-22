@@ -15,7 +15,6 @@ class PermissionServiceProvider extends PackageServiceProvider
         $package
             ->name('permission')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_permissions_table'])
             ->hasCommand(InstallCommand::class);

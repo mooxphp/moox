@@ -14,7 +14,6 @@ class ThemeBaseServiceProvider extends MooxServiceProvider
         $package
             ->name('theme-base')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();

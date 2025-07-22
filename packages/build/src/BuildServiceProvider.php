@@ -15,7 +15,6 @@ class BuildServiceProvider extends MooxServiceProvider
         $package
             ->name('build')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();

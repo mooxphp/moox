@@ -18,7 +18,6 @@ class SecurityServiceProvider extends PackageServiceProvider
         $package
             ->name('security')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['extend_password_reset_tokens_table'])
             ->hasCommands(InstallCommand::class, GetPasswordResetLinksCommand::class);

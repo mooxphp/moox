@@ -17,7 +17,6 @@ class UserSessionServiceProvider extends PackageServiceProvider
         $package
             ->name('user-session')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasCommand(InstallCommand::class);
     }

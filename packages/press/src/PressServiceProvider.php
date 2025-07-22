@@ -21,7 +21,6 @@ class PressServiceProvider extends PackageServiceProvider
         $package
             ->name('press')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
             ->hasCommands(
