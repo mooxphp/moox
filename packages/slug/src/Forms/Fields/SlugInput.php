@@ -107,7 +107,7 @@ class SlugInput extends TextInput
 
     public function slugInputLabelPrefix(?string $labelPrefix): static
     {
-        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label');
+        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label').':';
 
         return $this;
     }
