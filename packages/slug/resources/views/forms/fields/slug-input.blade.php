@@ -78,11 +78,11 @@
                         <div style="display: flex; align-items: center; flex: 1 1 0; min-width: 0;">
                             <span>{{ $getLabelPrefix() }}</span>
                             <span style="color: #9ca3af; margin-left: 0.25rem;">{{ $getFullBaseUrl() }}</span>
+                            <span style="color: #9ca3af; font-weight: 600; margin-left: 0.25rem;">{{ $getState() }}</span>
                             <x-filament::link tag="button" x-on:click.prevent="initModification()" x-show="!editing"
                                 x-bind:class="context !== 'create' && modified ? 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 px-1 rounded-md' : ''"
                                 icon="heroicon-m-pencil-square" icon-size="sm" icon-position="after"
                                 style="margin-left: 0.25rem;">
-                                <span class="mr-1">{{ $getState() }}</span>
                             </x-filament::link>
                             @if($getSlugLabelPostfix())
                                 <span style="margin-left: 0.125rem; color: #9ca3af;">{{ $getSlugLabelPostfix() }}</span>
@@ -117,10 +117,12 @@
                                     {{ __('slug::fields.permalink_action_ok') }}
                                 </x-filament::button>
                                 <x-filament::link x-show="context === 'edit' && modified"
-                                    x-on:click.prevent="resetModification()" tag="button" icon="heroicon-o-arrow-path"
+                                    x-on:click.prevent="resetModification()" tag="button"
+                                    tooltip="{{ __('slug::fields.permalink_action_reset') }}" icon="heroicon-o-arrow-path"
                                     color="gray" size="sm">
                                 </x-filament::link>
-                                <x-filament::link x-on:click.prevent="cancelModification()" tag="button"
+                                <x-filament::link x-on:click.prevent="cancelModification()"
+                                    tooltip="{{ __('slug::fields.permalink_action_cancel') }}" tag="button"
                                     icon="heroicon-o-x-mark" color="gray" size="sm">
                                 </x-filament::link>
                             </div>
