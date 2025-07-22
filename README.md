@@ -84,7 +84,7 @@ Moox Press packages require WordPress Version 6.7, password hashing is currently
 
 ## Installation
 
-Install and use the Monorepos ...
+Install and use the Monorepo:
 
 ```bash
 git clone https://github.com/mooxphp/moox
@@ -92,9 +92,14 @@ composer create-project laravel/laravel mooxdev
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 php artisan moox:devlink
+php artisan moox:install
+npm install
+npm run dev
 ```
 
-There is another option for running our CI ...
+We are currently rebuilding the Monorepo architecture. The installation might be incomplete. We will soon provide a single command for that.
+
+There is another option for running our CI:
 
 ```bash
 # Installs a fresh Laravel app and all packages
@@ -104,6 +109,20 @@ php ci.php -l=11.0
 # and to clean up the Laravel app
 php ci.php -d
 ```
+
+We do not recommend to use this kind of installation but it might be useful to know about it.
+
+To install Moox Press, you need a WordPress running in /public/wp (or another subdirectory, configured in .env).
+
+### Install a fresh WordPress
+
+To install a fresh WordPress, we provide an artisan command, shipped with the Moox Press package:
+
+```bash
+php artisan mooxpress:wpinstall
+```
+
+This command is subject to change. It will be part of moox:install soon.
 
 ## Contributors
 
