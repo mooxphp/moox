@@ -150,6 +150,10 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/marcelonogueira"><img src="https://avatars.githubusercontent.com/u/15114097?v=4?s=100" width="100px;" alt="Marcelo Nogueira"/><br /><sub><b>Marcelo Nogueira</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Amarcelonogueira" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/flashadvocate"><img src="https://avatars.githubusercontent.com/u/7848492?v=4?s=100" width="100px;" alt="Guybrush"/><br /><sub><b>Guybrush</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=flashadvocate" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/momostafa"><img src="https://avatars.githubusercontent.com/u/12662539?v=4?s=100" width="100px;" alt="momostafa"/><br /><sub><b>momostafa</b></sub></a><br /><a href="#question-momostafa" title="Answering Questions">💬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chris-ware"><img src="https://avatars.githubusercontent.com/u/19684457?v=4?s=100" width="100px;" alt="Chris Ware"/><br /><sub><b>Chris Ware</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=chris-ware" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.morphsites.com/"><img src="https://avatars.githubusercontent.com/u/13981922?v=4?s=100" width="100px;" alt="morphsites®"/><br /><sub><b>morphsites®</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=morphsites-limited" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
