@@ -2,6 +2,8 @@
 
 namespace Moox\Core\Console\Traits;
 
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\warning;
@@ -12,6 +14,15 @@ trait SelectFilamentPanel
     protected array $panelBundles = [
         'None' => [],
         'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'cms', 'empty'],
+    ];
+
+    protected array $panelMap = [
+        'cms'   => ['path' => 'packages/content/src/panels', 'namespace' => 'Moox\\Content\\Panels'],
+        'devops'=> ['path' => 'packages/devops/src/panels',  'namespace' => 'Moox\\Devops\\Panels'],
+        'shop'  => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
+        'press' => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
+        'empty' => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
+        'admin' => ['path' => 'packages/admin/src/panels',   'namespace' => 'Moox\\Admin\\Panels'],
     ];
 
     public function selectPanelBundle(): array
@@ -27,41 +38,49 @@ trait SelectFilamentPanel
         $this->info('Included panels: ' . implode(', ', $selectedPanels));
 
         foreach ($selectedPanels as $panel) {
-            if ($this->panelExists($panel)) {
-                warning("Panel '{$panel}' already exists. Skipping generation.");
+            if (!isset($this->panelMap[$panel])) {
+                warning("No path mapping found for panel '{$panel}'. Skipping.");
                 continue;
             }
 
             $panelId = text("What is the panel ID for '{$panel}'?", default: $panel);
 
+            // Step 1: Panel im Default-Pfad generieren
             $this->call('make:filament-panel', [
                 'id' => $panelId,
             ]);
 
-            info("Filament panel '{$panel}' generated.");
+            // Step 2: Pfade berechnen
+            $from = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
+            $toDir = base_path($this->panelMap[$panel]['path']);
+            $to = $toDir . '/' . ucfirst($panel) . "PanelProvider.php";
 
-            $this->registerDefaultPluginsForPanel($panel);
+            // Step 3: Datei verschieben
+            if (File::exists($from)) {
+                File::ensureDirectoryExists($toDir);
+                File::move($from, $to);
+                info("Moved panel provider to: {$to}");
+
+                // Namespace ersetzen
+                $content = File::get($to);
+                $content = preg_replace(
+                    '/namespace App\\\Providers\\\Filament;/',
+                    'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
+                    $content
+                );
+                File::put($to, $content);
+                info("Updated namespace to " . $this->panelMap[$panel]['namespace']);
+            } else {
+                warning("Expected panel file {$from} not found.");
+            }
+
+            $this->registerDefaultPluginsForPanel($panel, $to);
         }
 
         return $selectedPanels;
     }
 
-    protected function panelExists(string $panel): bool
-    {
-        $providerClass = 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider';
-
-        $providersFile = base_path('bootstrap/providers.php');
-
-        if (!file_exists($providersFile)) {
-            return false;
-        }
-
-        $registeredProviders = include $providersFile;
-
-        return in_array($providerClass, $registeredProviders, true);
-    }
-
-    protected function registerDefaultPluginsForPanel(string $panel): void
+    protected function registerDefaultPluginsForPanel(string $panel, string $providerPath): void
     {
         $pluginMap = [
             'press' => [
@@ -81,21 +100,11 @@ trait SelectFilamentPanel
                 '\Moox\Press\WpUserMetaPlugin::make()',
                 '\Moox\Press\WpUserPlugin::make()',
             ],
-            'devops' => [
-                
-            ],
-            'shop' => [
-                
-            ],
-            'cms' => [
-               
-            ],
-            'empty' => [
-            
-            ],
-            'admin' => [
-            
-            ],
+            'devops' => [],
+            'shop' => [],
+            'cms' => [],
+            'empty' => [],
+            'admin' => [],
         ];
 
         $plugins = $pluginMap[$panel] ?? [];
@@ -105,10 +114,8 @@ trait SelectFilamentPanel
             return;
         }
 
-        $providerPath = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
-
         if (!file_exists($providerPath)) {
-            warning("Provider file for panel '{$panel}' not found at {$providerPath}.");
+            warning("Provider file not found: {$providerPath}");
             return;
         }
 
@@ -137,5 +144,10 @@ PHP;
         file_put_contents($providerPath, $content);
 
         info("Plugins for panel '{$panel}' registered.");
+    }
+
+    protected function panelExists(string $panel): bool
+    {
+        return false; // oder bessere Prüfung einbauen
     }
 }
