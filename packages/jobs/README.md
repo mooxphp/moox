@@ -410,7 +410,7 @@ If you want to use the progress feature, be reminded that:
 
 The database model for Moox Jobs is designed with [Vemto](https://vemto.app):
 
-![jobs-model](https://github.com/mooxphp/moox/raw/main/art/vemto/moox-jobs.jpg)
+![jobs-model](screenshot/vemto-jobs.jpg)
 
 ## Authorization
 
