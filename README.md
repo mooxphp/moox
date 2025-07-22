@@ -87,14 +87,30 @@ Moox Press packages require WordPress Version 6.7, password hashing is currently
 Install and use the Monorepo:
 
 ```bash
+# Clone the Moox Monorepo (in /Herd maybe)
 git clone https://github.com/mooxphp/moox
+
+# Create a new Laravel project
 composer create-project laravel/laravel mooxdev
+cd mooxdev
+
+# Use Moox Devlink to Symlink Moox packages
 composer require moox/devlink
+
+# Publish the Devlink config if you need to change
+# folders or packages, otherwise run with defaults
 php artisan vendor:publish --tag="devlink-config"
+
+# Symlink all packages and run Composer
 php artisan moox:devlink
+
+# Use the Moox Installer
 php artisan moox:install
+
+# Just for Filament, otherwise go inside a theme folder
 npm install
 npm run dev
+npm run build # before commit
 ```
 
 We are currently rebuilding the Monorepo architecture. The installation might be incomplete. We will soon provide a single command for that.
