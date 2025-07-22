@@ -79,11 +79,14 @@
                             <span>{{ $getLabelPrefix() }}</span>
                             <span style="color: #9ca3af; margin-left: 0.25rem;">{{ $getFullBaseUrl() }}</span>
                             <span style="color: #9ca3af; font-weight: 600; margin-left: 0.25rem;">{{ $getState() }}</span>
-                            <x-filament::link tag="button" x-on:click.prevent="initModification()" x-show="!editing"
-                                x-bind:class="context !== 'create' && modified ? 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 px-1 rounded-md' : ''"
-                                icon="heroicon-m-pencil-square" icon-size="sm" icon-position="after"
-                                style="margin-left: 0.25rem;">
-                            </x-filament::link>
+                            @if ($this instanceof \Filament\Resources\Pages\EditRecord)
+                                <x-filament::link tag="button" x-on:click.prevent="initModification()" x-show="!editing"
+                                    tooltip="{{ __('slug::fields.permalink_action_edit') }}"
+                                    x-bind:class="context !== 'create' && modified ? 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-700 px-1 rounded-md' : ''"
+                                    icon="heroicon-m-pencil-square" icon-size="sm" icon-position="after"
+                                    style="margin-left: 0.25rem;">
+                                </x-filament::link>
+                            @endif
                             @if($getSlugLabelPostfix())
                                 <span style="margin-left: 0.125rem; color: #9ca3af;">{{ $getSlugLabelPostfix() }}</span>
                             @endif
