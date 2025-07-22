@@ -385,6 +385,15 @@
       "contributions": [
         "question"
       ]
+    },
+    {
+      "login": "chris-ware",
+      "name": "Chris Ware",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19684457?v=4",
+      "profile": "https://github.com/chris-ware",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
