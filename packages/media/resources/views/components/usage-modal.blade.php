@@ -11,9 +11,14 @@
     }
 @endphp
 
+<style>
+    .usage-modal .fi-modal-window {
+        height: auto;
+    }
+</style>
 
-
-<x-filament::modal id="usage-modal-{{ $record->id }}" width="4xl" :heading="__('media::fields.usage')">
+<x-filament::modal id="usage-modal-{{ $record->id }}" width="4xl" :heading="__('media::fields.usage')"
+    class="usage-modal">
     @foreach($usages->groupBy('media_usable_type') as $type => $items)
         @php
             $typeName = class_basename($type);
