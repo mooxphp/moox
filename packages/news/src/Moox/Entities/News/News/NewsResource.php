@@ -12,7 +12,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -29,6 +29,7 @@ use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\News\Models\News;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use BackedEnum;
 
 class NewsResource extends BaseDraftResource
 {
@@ -36,7 +37,7 @@ class NewsResource extends BaseDraftResource
 
     protected static ?string $model = News::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -63,11 +64,11 @@ class NewsResource extends BaseDraftResource
         return config('news.navigation_group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         $taxonomyFields = static::getTaxonomyFields();
 
-        $schema = [
+        return $schema->schema([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -134,7 +135,13 @@ class NewsResource extends BaseDraftResource
                                         ->label(__('news::fields.status'))
                                         ->placeholder(__('core::core.status'))
                                         ->reactive()
-                                        ->options(['news' => 'News', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published'])
+                                        ->options([
+                                            'news' => 'News',
+                                            'waiting' => 'Waiting',
+                                            'privat' => 'Privat',
+                                            'scheduled' => 'Scheduled',
+                                            'published' => 'Published',
+                                        ])
                                         ->default('news'),
                                     DateTimePicker::make('to_publish_at')
                                         ->label(__('news::fields.to_publish_at'))
@@ -221,10 +228,7 @@ class NewsResource extends BaseDraftResource
                         ->columnSpan(['lg' => 1]),
                 ])
                 ->columns(['lg' => 3]),
-        ];
-
-        return $form
-            ->schema($schema);
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -234,7 +238,8 @@ class NewsResource extends BaseDraftResource
                 TextColumn::make('title')
                     ->label(__('news::fields.title'))
                     ->searchable()
-                    ->sortable()->state(function ($record) {
+                    ->sortable()
+                    ->state(function ($record) {
                         $lang = request()->get('lang');
                         if ($lang && $record->hasTranslation($lang)) {
                             return $record->translate($lang)->title;
@@ -316,71 +321,22 @@ class NewsResource extends BaseDraftResource
                     ->sortable()
                     ->toggleable(),
                 ColorColumn::make('color')
-                    ->label(__('news::fields.color'))
-                    ->toggleable(),
-                TextColumn::make('uuid')
-                    ->label(__('news::fields.uuid'))
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('ulid')
-                    ->label(__('news::fields.ulid'))
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('section')
-                    ->label(__('news::fields.section'))
-                    ->sortable()
-                    ->toggleable(),
-                ...static::getTaxonomyColumns(),
-                TextColumn::make('status')
-                    ->label(__('news::fields.status'))
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->label(__('news::fields.color')),
             ])
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(__('news::fields.is_active')),
-                Filter::make('title')
-                    ->form([
-                        TextInput::make('title')
-                            ->label(__('news::fields.title'))
-                            ->placeholder(__('core::core.filter').' Title'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['title'],
-                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['title']) {
-                            return null;
-                        }
-
-                        return 'Title: '.$data['title'];
-                    }),
-                SelectFilter::make('status')
-                    ->label(__('news::fields.status'))
-                    ->placeholder(__('core::core.filter').' Status')
-                    ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                 SelectFilter::make('type')
                     ->label(__('news::fields.type'))
-                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
-                SelectFilter::make('section')
-                    ->label(__('news::fields.section'))
-                    ->placeholder(__('core::core.filter').' Section')
-                    ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
-            ]);
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListNews::route('/'),
-            'create' => Pages\CreateNews::route('/create'),
-            'edit' => Pages\EditNews::route('/{record}/edit'),
-            'view' => Pages\ViewNews::route('/{record}'),
-        ];
+                Filter::make('author_id')
+                    ->form([
+                        Select::make('author_id')
+                            ->label(__('news::fields.author_id'))
+                            ->options(\Moox\User\Models\User::all()->pluck('name', 'id'))
+                            ->searchable(),
+                    ]),
+                TernaryFilter::make('is_active')
+                    ->label(__('news::fields.is_active')),
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }

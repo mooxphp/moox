@@ -5,37 +5,42 @@ namespace Moox\Core\Console\Traits;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\warning;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\multiselect;
 
 trait SelectFilamentPanel
 {
-    protected array $panelBundles = [
-        'None' => [],
-        'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'cms', 'empty'],
-    ];
-
     protected array $panelMap = [
-        'cms'   => ['path' => 'packages/content/src/panels', 'namespace' => 'Moox\\Content\\Panels'],
-        'devops'=> ['path' => 'packages/devops/src/panels',  'namespace' => 'Moox\\Devops\\Panels'],
-        'shop'  => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
-        'press' => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
-        'empty' => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
-        'admin' => ['path' => 'packages/admin/src/panels',   'namespace' => 'Moox\\Admin\\Panels'],
+        'cms'    => ['path' => 'packages/content/src/panels', 'namespace' => 'Moox\\Content\\Panels'],
+        'devops' => ['path' => 'packages/devops/src/panels',  'namespace' => 'Moox\\Devops\\Panels'],
+        'shop'   => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
+        'press'  => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
+        'empty'  => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
     ];
 
-    public function selectPanelBundle(): array
+    public function selectPanels(): array
     {
-        $bundleName = select(
-            'Which panel bundle do you want to install?',
-            array_keys($this->panelBundles),
+        $availablePanels = collect($this->panelMap)
+            ->filter(fn($config, $panel) => !$this->panelExists($panel))
+            ->keys()
+            ->toArray();
+
+        if (empty($availablePanels)) {
+            info('All panels are already installed. Nothing to install.');
+            return [];
+        }
+
+        $selectedPanels = multiselect(
+            label: 'Which panels do you want to install?',
+            options: $availablePanels,
+            required: false
         );
 
-        $selectedPanels = $this->panelBundles[$bundleName];
-
-        $this->info("You selected the '{$bundleName}' bundle.");
-        $this->info('Included panels: ' . implode(', ', $selectedPanels));
+        if (empty($selectedPanels)) {
+            info('No panels selected. Nothing to install.');
+            return [];
+        }
 
         foreach ($selectedPanels as $panel) {
             if (!isset($this->panelMap[$panel])) {
@@ -43,25 +48,29 @@ trait SelectFilamentPanel
                 continue;
             }
 
+            if ($this->panelExists($panel)) {
+                info("Panel '{$panel}' already exists. Skipping creation.");
+                continue;
+            }
+
             $panelId = text("What is the panel ID for '{$panel}'?", default: $panel);
 
-            // Step 1: Panel im Default-Pfad generieren
+            // Panel generieren
             $this->call('make:filament-panel', [
                 'id' => $panelId,
             ]);
 
-            // Step 2: Pfade berechnen
+            // PanelProvider verschieben
             $from = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
             $toDir = base_path($this->panelMap[$panel]['path']);
             $to = $toDir . '/' . ucfirst($panel) . "PanelProvider.php";
 
-            // Step 3: Datei verschieben
             if (File::exists($from)) {
                 File::ensureDirectoryExists($toDir);
                 File::move($from, $to);
                 info("Moved panel provider to: {$to}");
 
-                // Namespace ersetzen
+                // Namespace aktualisieren
                 $content = File::get($to);
                 $content = preg_replace(
                     '/namespace App\\\Providers\\\Filament;/',
@@ -74,6 +83,11 @@ trait SelectFilamentPanel
                 warning("Expected panel file {$from} not found.");
             }
 
+            // AppServiceProvider-Eintrag
+            $providerClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+            $this->registerPanelProviderInAppServiceProvider($providerClass);
+
+            // Plugins registrieren
             $this->registerDefaultPluginsForPanel($panel, $to);
         }
 
@@ -101,10 +115,35 @@ trait SelectFilamentPanel
                 '\Moox\Press\WpUserPlugin::make()',
             ],
             'devops' => [],
-            'shop' => [],
-            'cms' => [],
-            'empty' => [],
-            'admin' => [],
+            'shop'   => [],
+            'cms'    => [
+                '\Moox\News\Moox\Plugins\NewsPlugin::make()',
+
+                '\Moox\Media\MediaCollectionPlugin::make()',
+                '\Moox\Media\MediaPlugin::make()',
+
+                '\Moox\Jobs\JobsBatchesPlugin::make()',
+                '\Moox\Jobs\JobsFailedPlugin::make()',
+                '\Moox\Jobs\JobsPlugin::make()',
+                '\Moox\Jobs\JobsWaitingPlugin::make()',
+
+                '\Moox\User\UserPlugin::make()',
+
+                '\Moox\Page\PagePlugin::make()',
+
+                '\Moox\Tag\TagPlugin::make()',
+
+                '\Moox\Category\Moox\Entities\Categories\Plugins\CategoryPlugin::make()',
+
+                '\Moox\Security\ResetPasswordPlugin::make()',
+
+                '\Moox\UserSession\UserSessionPlugin::make()',
+
+                '\Moox\UserDevice\UserDevicePlugin::make()',
+                
+            ],
+            'empty'  => [],
+            'admin'  => [],
         ];
 
         $plugins = $pluginMap[$panel] ?? [];
@@ -148,6 +187,45 @@ PHP;
 
     protected function panelExists(string $panel): bool
     {
-        return false; // oder bessere Prüfung einbauen
+        if (!isset($this->panelMap[$panel])) {
+            return false;
+        }
+
+        $providerPath = base_path($this->panelMap[$panel]['path'] . '/' . ucfirst($panel) . 'PanelProvider.php');
+        return File::exists($providerPath);
+    }
+
+    protected function registerPanelProviderInAppServiceProvider(string $providerClass): void
+    {
+        $appServiceProviderPath = app_path('Providers/AppServiceProvider.php');
+
+        if (!file_exists($appServiceProviderPath)) {
+            $this->warn("AppServiceProvider.php not found at {$appServiceProviderPath}");
+            return;
+        }
+
+        $content = file_get_contents($appServiceProviderPath);
+
+        if (
+            str_contains($content, $providerClass . '::class') ||
+            str_contains($content, '\\' . $providerClass . '::class')
+        ) {
+            info("Provider {$providerClass} is already registered in AppServiceProvider.");
+            return;
+        }
+
+        // register()-Methode finden und registrieren
+        $pattern = '/public function register\(\): void\s*\{\s*/';
+
+        if (preg_match($pattern, $content, $matches, PREG_OFFSET_CAPTURE)) {
+            $pos = $matches[0][1] + strlen($matches[0][0]);
+            $insertLine = "\n        \$this->app->register(\\{$providerClass}::class);\n";
+            $newContent = substr($content, 0, $pos) . $insertLine . substr($content, $pos);
+            file_put_contents($appServiceProviderPath, $newContent);
+
+            info("Provider {$providerClass} added to AppServiceProvider.");
+        } else {
+            $this->warn('Could not find register() method in AppServiceProvider.php to insert provider.');
+        }
     }
 }
