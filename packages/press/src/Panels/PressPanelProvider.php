@@ -24,19 +24,17 @@ class PressPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('press')
             ->path('press')
-            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverResources(in: app_path('Filament/Press/Resources'), for: 'App\Filament\Press\Resources')
+            ->discoverPages(in: app_path('Filament/Press/Pages'), for: 'App\Filament\Press\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Press/Widgets'), for: 'App\Filament\Press\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,

@@ -35,7 +35,7 @@ class MooxInstaller extends Command
         $this->checkForFilament();
         $this->checkOrCreateFilamentUser();
 
-        $this->selectedPanels = $this->selectPanelBundle();
+        $this->selectedPanels = $this->selectPanels();
 
         if (empty($this->selectedPanels)) {
             $this->info('No panel bundle selected. Skipping package installation.');
@@ -50,7 +50,7 @@ class MooxInstaller extends Command
     protected function getMooxPackages(): array
     {
         return [
-            'Moox Complete' => ['admin', 'shop', 'press', 'devops', 'cms', 'empty'],
+            'Moox Complete' => ['shop', 'press', 'devops', 'cms', 'empty'],
             'None'          => [],
         ];
     }
