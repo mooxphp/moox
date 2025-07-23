@@ -29,7 +29,8 @@
             "providers": [
                 "Moox\\Github\\GithubServiceProvider"
             ]
-        }
+        },
+        "moox-stability": "stable"
     },
     "config": {
         "sort-packages": true

@@ -39,6 +39,7 @@
                 "Moox\\Core\\CoreServiceProvider"
             ]
         },
+        "moox-stability": "stable",
         "moox": {
             "require": {
                 "spatie/laravel-medialibrary": {

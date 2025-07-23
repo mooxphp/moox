@@ -38,6 +38,9 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "extra": {
+        "moox-stability": "dev"
+    },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
