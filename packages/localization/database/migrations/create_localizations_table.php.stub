@@ -19,7 +19,7 @@ return new class extends Migration {
                 ->nullOnDelete();
 
             $table->string('title');
-            $table->string('slug')->unique;
+            $table->string('slug')->unique();
             $table->boolean('is_active_admin')->default(false);
             $table->boolean('is_active_frontend')->default(false);
             $table->boolean('is_default')->default(false);
