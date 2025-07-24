@@ -12,7 +12,6 @@
         $visibleFlags = [];
         $remainingFlags = 0;
     }
-    // Für "überlappend nach vorne": Array umdrehen
     $visibleFlags = array_reverse($visibleFlags);
 @endphp
 <x-filament-forms::field-wrapper>
