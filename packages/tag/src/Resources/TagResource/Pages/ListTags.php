@@ -7,13 +7,13 @@ namespace Moox\Tag\Resources\TagResource\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Override;
 
-class ListTags extends ListRecords
+class ListTags extends BaseListDrafts
 {
     use HasListPageTabs;
 
@@ -23,8 +23,8 @@ class ListTags extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Tag => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Tag => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -39,7 +39,7 @@ class ListTags extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && Tag::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && Tag::onlyTrashed()->exists()),
         ];
     }
 
@@ -47,6 +47,12 @@ class ListTags extends ListRecords
     public function getTitle(): string
     {
         return config('tag.resources.tag.plural');
+    }
+
+    public function mount(): void
+    {
+        parent::mount();
+        $this->mountTabsInListPage();
     }
 
     public function getTabs(): array
