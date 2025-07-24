@@ -3,8 +3,6 @@
 namespace Moox\Tag\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class TagTranslation extends Model
 {
@@ -22,6 +20,4 @@ class TagTranslation extends Model
         'slug' => 'string',
         'content' => 'string',
     ];
-
-
 }

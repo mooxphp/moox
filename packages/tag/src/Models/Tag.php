@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
 use Spatie\Image\Enums\Fit;
@@ -38,10 +37,6 @@ class Tag extends Model implements HasMedia, TranslatableContract
         'weight' => 'integer',
         'count' => 'integer',
     ];
-
-
-
-
 
     protected static function newFactory(): TagFactory
     {
