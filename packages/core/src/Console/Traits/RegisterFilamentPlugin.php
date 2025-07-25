@@ -16,14 +16,16 @@ trait RegisterFilamentPlugin
 
         if (empty($panelsToRegister)) {
             alert('⚠️ No panel providers found. Please register plugins manually.');
+
             return;
         }
 
         foreach ((array) $panelsToRegister as $panelProvider) {
-            $fullPath = $providerPath . '/' . $panelProvider;
+            $fullPath = $providerPath.'/'.$panelProvider;
 
-            if (!file_exists($fullPath)) {
+            if (! file_exists($fullPath)) {
                 warning("⚠️ Panel provider not found: {$fullPath}. Skipping.");
+
                 continue;
             }
 
@@ -41,7 +43,7 @@ trait RegisterFilamentPlugin
         $changed = false;
 
         foreach ($plugins as $plugin) {
-            if (!str_contains($content, $plugin)) {
+            if (! str_contains($content, $plugin)) {
                 $content = str_replace(
                     'return $panel;',
                     "        \$panel->plugin(new {$plugin}());\n        return \$panel;",
