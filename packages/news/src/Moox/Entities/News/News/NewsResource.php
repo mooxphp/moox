@@ -2,6 +2,7 @@
 
 namespace Moox\News\Moox\Entities\News\News;
 
+use BackedEnum;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
@@ -10,7 +11,6 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
@@ -20,7 +20,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Forms\Components\CopyableField;
@@ -29,7 +28,6 @@ use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\News\Models\News;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use BackedEnum;
 
 class NewsResource extends BaseDraftResource
 {

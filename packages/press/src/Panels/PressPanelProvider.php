@@ -54,22 +54,22 @@ class PressPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])    ->plugins([
-        \Moox\Press\WpCategoryPlugin::make(),
-        \Moox\Press\WpCommentMetaPlugin::make(),
-        \Moox\Press\WpCommentPlugin::make(),
-        \Moox\Press\WpMediaPlugin::make(),
-        \Moox\Press\WpOptionPlugin::make(),
-        \Moox\Press\WpPagePlugin::make(),
-        \Moox\Press\WpPostPlugin::make(),
-        \Moox\Press\WpPostMetaPlugin::make(),
-        \Moox\Press\WpTagPlugin::make(),
-        \Moox\Press\WpTermMetaPlugin::make(),
-        \Moox\Press\WpTermPlugin::make(),
-        \Moox\Press\WpTermRelationshipPlugin::make(),
-        \Moox\Press\WpTermTaxonomyPlugin::make(),
-        \Moox\Press\WpUserMetaPlugin::make(),
-        \Moox\Press\WpUserPlugin::make()
-    ]);
+            ])->plugins([
+                \Moox\Press\WpCategoryPlugin::make(),
+                \Moox\Press\WpCommentMetaPlugin::make(),
+                \Moox\Press\WpCommentPlugin::make(),
+                \Moox\Press\WpMediaPlugin::make(),
+                \Moox\Press\WpOptionPlugin::make(),
+                \Moox\Press\WpPagePlugin::make(),
+                \Moox\Press\WpPostPlugin::make(),
+                \Moox\Press\WpPostMetaPlugin::make(),
+                \Moox\Press\WpTagPlugin::make(),
+                \Moox\Press\WpTermMetaPlugin::make(),
+                \Moox\Press\WpTermPlugin::make(),
+                \Moox\Press\WpTermRelationshipPlugin::make(),
+                \Moox\Press\WpTermTaxonomyPlugin::make(),
+                \Moox\Press\WpUserMetaPlugin::make(),
+                \Moox\Press\WpUserPlugin::make(),
+            ]);
     }
 }

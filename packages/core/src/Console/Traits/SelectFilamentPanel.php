@@ -3,32 +3,33 @@
 namespace Moox\Core\Console\Traits;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\warning;
+
 use function Laravel\Prompts\error;
-use function Laravel\Prompts\text;
+use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\warning;
 
 trait SelectFilamentPanel
 {
     protected array $panelMap = [
-        'cms'    => ['path' => 'packages/content/src/panels', 'namespace' => 'Moox\\Content\\Panels'],
+        'cms' => ['path' => 'packages/content/src/panels', 'namespace' => 'Moox\\Content\\Panels'],
         'devops' => ['path' => 'packages/devops/src/panels',  'namespace' => 'Moox\\Devops\\Panels'],
-        'shop'   => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
-        'press'  => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
-        'empty'  => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
+        'shop' => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
+        'press' => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
+        'empty' => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
     ];
 
     public function selectPanels(): array
     {
         $availablePanels = collect($this->panelMap)
-            ->filter(fn($config, $panel) => !$this->panelExists($panel))
+            ->filter(fn ($config, $panel) => ! $this->panelExists($panel))
             ->keys()
             ->toArray();
 
         if (empty($availablePanels)) {
             info('✅ All panels are already installed. Nothing to do.');
+
             return [];
         }
 
@@ -40,17 +41,20 @@ trait SelectFilamentPanel
 
         if (empty($selectedPanels)) {
             warning('⚠️ No panels selected. Aborting.');
+
             return [];
         }
 
         foreach ($selectedPanels as $panel) {
-            if (!isset($this->panelMap[$panel])) {
+            if (! isset($this->panelMap[$panel])) {
                 error("❌ No path mapping found for panel '{$panel}'. Skipping.");
+
                 continue;
             }
 
             if ($this->panelExists($panel)) {
                 warning("⚠️ Panel '{$panel}' already exists. Skipping creation.");
+
                 continue;
             }
 
@@ -60,9 +64,9 @@ trait SelectFilamentPanel
                 'id' => $panelId,
             ]);
 
-            $from = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
+            $from = base_path('app/Providers/Filament/'.ucfirst($panel).'PanelProvider.php');
             $toDir = base_path($this->panelMap[$panel]['path']);
-            $to = $toDir . '/' . ucfirst($panel) . "PanelProvider.php";
+            $to = $toDir.'/'.ucfirst($panel).'PanelProvider.php';
 
             if (File::exists($from)) {
                 File::ensureDirectoryExists($toDir);
@@ -72,16 +76,16 @@ trait SelectFilamentPanel
                 $content = File::get($to);
                 $content = preg_replace(
                     '/namespace App\\\Providers\\\Filament;/',
-                    'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
+                    'namespace '.$this->panelMap[$panel]['namespace'].';',
                     $content
                 );
                 File::put($to, $content);
-                info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
+                info('🧭 Updated namespace to: '.$this->panelMap[$panel]['namespace']);
             } else {
                 warning("⚠️ Expected file {$from} not found. Skipping.");
             }
 
-            $providerClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+            $providerClass = $this->panelMap[$panel]['namespace'].'\\'.ucfirst($panel).'PanelProvider';
             $this->registerPanelProviderInAppServiceProvider($providerClass);
 
             $this->registerDefaultPluginsForPanel($panel, $to);
@@ -127,20 +131,22 @@ trait SelectFilamentPanel
                 '\Moox\UserDevice\UserDevicePlugin::make()',
             ],
             'devops' => [],
-            'shop'   => [],
-            'empty'  => [],
-            'admin'  => [],
+            'shop' => [],
+            'empty' => [],
+            'admin' => [],
         ];
 
         $plugins = $pluginMap[$panel] ?? [];
 
         if (empty($plugins)) {
             info("ℹ️ No default plugins defined for panel '{$panel}'.");
+
             return;
         }
 
-        if (!file_exists($providerPath)) {
+        if (! file_exists($providerPath)) {
             error("❌ Provider file not found: {$providerPath}");
+
             return;
         }
 
@@ -148,6 +154,7 @@ trait SelectFilamentPanel
 
         if (str_contains($content, '->plugins([')) {
             warning("⚠️ Panel '{$panel}' already has plugins registered. Skipping.");
+
             return;
         }
 
@@ -173,11 +180,12 @@ PHP;
 
     protected function panelExists(string $panel): bool
     {
-        if (!isset($this->panelMap[$panel])) {
+        if (! isset($this->panelMap[$panel])) {
             return false;
         }
 
-        $providerPath = base_path($this->panelMap[$panel]['path'] . '/' . ucfirst($panel) . 'PanelProvider.php');
+        $providerPath = base_path($this->panelMap[$panel]['path'].'/'.ucfirst($panel).'PanelProvider.php');
+
         return File::exists($providerPath);
     }
 
@@ -185,18 +193,20 @@ PHP;
     {
         $appServiceProviderPath = app_path('Providers/AppServiceProvider.php');
 
-        if (!file_exists($appServiceProviderPath)) {
+        if (! file_exists($appServiceProviderPath)) {
             error("❌ AppServiceProvider.php not found at {$appServiceProviderPath}");
+
             return;
         }
 
         $content = file_get_contents($appServiceProviderPath);
 
         if (
-            str_contains($content, $providerClass . '::class') ||
-            str_contains($content, '\\' . $providerClass . '::class')
+            str_contains($content, $providerClass.'::class') ||
+            str_contains($content, '\\'.$providerClass.'::class')
         ) {
             info("✅ Provider {$providerClass} is already registered.");
+
             return;
         }
 
@@ -205,7 +215,7 @@ PHP;
         if (preg_match($pattern, $content, $matches, PREG_OFFSET_CAPTURE)) {
             $pos = $matches[0][1] + strlen($matches[0][0]);
             $insertLine = "\n        \$this->app->register(\\{$providerClass}::class);\n";
-            $newContent = substr($content, 0, $pos) . $insertLine . substr($content, $pos);
+            $newContent = substr($content, 0, $pos).$insertLine.substr($content, $pos);
             file_put_contents($appServiceProviderPath, $newContent);
 
             info("✅ Provider {$providerClass} added to AppServiceProvider.php.");

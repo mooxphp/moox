@@ -5,11 +5,10 @@ namespace Moox\Core\Console\Traits;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\warning;
-use function Laravel\Prompts\text;
 use function Laravel\Prompts\password;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\warning;
 
 trait CheckOrCreateFilamentUser
 {
@@ -19,11 +18,13 @@ trait CheckOrCreateFilamentUser
 
         if (! Schema::hasTable((new $userModel)->getTable())) {
             warning('User table not found. Did you run migrations?');
+
             return;
         }
 
         if ($userModel::count() > 0) {
             info('There are already users. Skipping user creation.');
+
             return;
         }
 

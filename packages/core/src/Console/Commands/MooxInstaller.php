@@ -39,6 +39,7 @@ class MooxInstaller extends Command
 
         if (empty($this->selectedPanels)) {
             $this->info('No panel bundle selected. Skipping package installation.');
+
             return;
         }
 
@@ -51,7 +52,7 @@ class MooxInstaller extends Command
     {
         return [
             'Moox Complete' => ['shop', 'press', 'devops', 'cms', 'empty'],
-            'None'          => [],
+            'None' => [],
         ];
     }
 }

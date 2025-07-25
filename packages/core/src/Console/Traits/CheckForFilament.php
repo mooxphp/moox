@@ -23,6 +23,7 @@ trait CheckForFilament
             if (confirm('Do you want to install Filament now?', true)) {
                 if (! array_key_exists('filament:install', Artisan::all())) {
                     error('filament:install command not available. Please check if Filament is installed as a dependency.');
+
                     return;
                 }
 
@@ -36,6 +37,7 @@ trait CheckForFilament
             ! confirm('Filament is not installed properly. Do you want to proceed anyway?', false)
         ) {
             info('Installation cancelled.');
+
             return;
         }
     }

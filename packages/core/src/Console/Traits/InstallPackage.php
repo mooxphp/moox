@@ -31,8 +31,9 @@ trait InstallPackage
 
     public function installPackage(array $package, array $panelPaths): void
     {
-        if (empty($package) || !isset($package['name'])) {
+        if (empty($package) || ! isset($package['name'])) {
             warning('⚠️ Empty or invalid package data. Skipping.');
+
             return;
         }
 
@@ -48,27 +49,29 @@ trait InstallPackage
     protected function runMigrations(array $package): void
     {
         info('🔍 Checking for migrations...');
-        
+
         $migrations = $this->packageService->getMigrations($package);
-        
+
         if (empty($migrations)) {
             info("ℹ️ No migrations found for {$package['name']}.");
+
             return;
         }
-        
+
         foreach ($migrations as $migration) {
             info("➡️ Checking migration: {$migration}");
-            
+
             $status = $this->packageService->checkMigrationStatus($migration);
-            
+
             if ($status['hasChanges']) {
                 if ($status['hasDataInDeletedFields']) {
                     if (! confirm("❗ Migration '{$migration}' removes columns with existing data. Continue anyway?", false)) {
                         warning("⏭️ Skipped migration '{$migration}'.");
+
                         continue;
                     }
                 }
-                
+
                 info("🚀 Running migration {$migration}...");
                 $exitCode = Artisan::call('migrate', [
                     '--path' => $migration,
@@ -91,12 +94,14 @@ trait InstallPackage
             if (! file_exists($publishPath)) {
                 info("📄 Publishing new config file: {$path}");
                 File::put($publishPath, $content);
+
                 continue;
             }
 
             $existingContent = File::get($publishPath);
             if ($existingContent === $content) {
                 info("✅ Config file {$path} is already up to date.");
+
                 continue;
             }
 
@@ -118,6 +123,7 @@ trait InstallPackage
 
             if (! $table || ! Schema::hasTable($table)) {
                 warning("⚠️ Could not determine table for seeder {$seeder}. Skipping.");
+
                 continue;
             }
 
@@ -127,6 +133,7 @@ trait InstallPackage
                     '--class' => $seeder,
                     '--force' => true,
                 ]);
+
                 continue;
             }
 
@@ -147,6 +154,7 @@ trait InstallPackage
         $plugins = $this->packageService->getPlugins($package);
         if (empty($plugins)) {
             info("ℹ️ No plugins found for package '{$package['name']}'.");
+
             return;
         }
 
@@ -159,6 +167,7 @@ trait InstallPackage
     private function getSeederTable(string $seederClass): ?string
     {
         $seeder = new $seederClass;
+
         return property_exists($seeder, 'table') ? $seeder->table : null;
     }
 }
