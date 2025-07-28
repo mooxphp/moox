@@ -2,8 +2,8 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {
@@ -28,7 +28,6 @@ class DraftTranslation extends BaseDraftTranslationModel
         'published_at',
         'to_unpublish_at',
         'unpublished_at',
-
 
         // Actor fields
         'published_by_id',
