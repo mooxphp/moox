@@ -47,6 +47,7 @@ class Category extends BaseDraftModel implements HasMedia
     use NodeTrait;
 
     public $incrementing = true;
+
     public $timestamps = false;
 
     protected $keyType = 'int';

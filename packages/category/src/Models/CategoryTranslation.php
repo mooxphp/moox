@@ -2,12 +2,13 @@
 
 namespace Moox\Category\Models;
 
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class CategoryTranslation extends BaseDraftTranslationModel
 {
     use SoftDeletes;
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -26,7 +27,6 @@ class CategoryTranslation extends BaseDraftTranslationModel
         'published_at',
         'to_unpublish_at',
         'unpublished_at',
-
 
         // Actor fields
         'published_by_id',
