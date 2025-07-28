@@ -105,16 +105,16 @@ class TagResource extends BaseDraftResource
                                         TextInput::make('weight'),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('created_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('updated_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                         DateTimePicker::make('deleted_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                     ]),
                             ])
                             ->columns(1)
@@ -192,21 +192,21 @@ class TagResource extends BaseDraftResource
             ])
             ->recordActions([
                 ViewAction::make()->url(
-                    fn($record) => request()->has('lang')
+                    fn ($record) => request()->has('lang')
                     ? static::getUrl('view', ['record' => $record, 'lang' => request()->get('lang')])
                     : static::getUrl('view', ['record' => $record])
                 ),
                 EditAction::make()
                     ->url(
-                        fn($record) => request()->has('lang')
+                        fn ($record) => request()->has('lang')
                         ? static::getUrl('edit', ['record' => $record, 'lang' => request()->get('lang')])
                         : static::getUrl('edit', ['record' => $record])
                     )
-                    ->hidden(fn(): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                    ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->toolbarActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);
     }
 
