@@ -70,21 +70,36 @@ trait SelectFilamentPanel
                 info("✅ Moved panel provider to: {$to}");
 
                 $content = File::get($to);
-                $content = preg_replace(
-                    '/namespace App\\\Providers\\\Filament;/',
+                $content = str_replace(
+                    'namespace App\\Providers\\Filament;',
                     'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
                     $content
                 );
                 File::put($to, $content);
                 info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
+
+                $this->registerDefaultPluginsForPanel($panel, $to);
+
+                $shouldPublish = \Laravel\Prompts\confirm("❓Do you want to customize the panel (publishen)?", default: false);
+                if ($shouldPublish) {
+                    $publishDir = base_path('app/Providers/Filament');
+                    File::ensureDirectoryExists($publishDir);
+                    $publishPath = $publishDir . '/' . ucfirst($panel) . 'PanelProvider.php';
+                    $publishContent = File::get($to);
+                    $publishContent = preg_replace(
+                        '/namespace\s+[^;]+;/',
+                        'namespace App\\Providers\\Filament;',
+                        $publishContent
+                    );
+                    File::put($publishPath, $publishContent);
+                    info("📤 Panel has been published: {$publishPath}");
+                }
             } else {
                 warning("⚠️ Expected file {$from} not found. Skipping.");
             }
 
             $providerClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
-            $this->registerPanelProviderInAppServiceProvider($providerClass);
-
-            $this->registerDefaultPluginsForPanel($panel, $to);
+            $this->registerPanelProviderInAppServiceProvider($providerClass, $panel);
         }
 
         return $selectedPanels;
@@ -181,9 +196,10 @@ PHP;
         return File::exists($providerPath);
     }
 
-    protected function registerPanelProviderInAppServiceProvider(string $providerClass): void
+    protected function registerPanelProviderInAppServiceProvider(string $providerClass, string $panel): void
     {
         $appServiceProviderPath = app_path('Providers/AppServiceProvider.php');
+        $appPanelProviderClass = 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider';
 
         if (!file_exists($appServiceProviderPath)) {
             error("❌ AppServiceProvider.php not found at {$appServiceProviderPath}");
@@ -192,11 +208,17 @@ PHP;
 
         $content = file_get_contents($appServiceProviderPath);
 
+        $registerClass = $providerClass;
+        $appPanelProviderPath = app_path('Providers/Filament/' . ucfirst($panel) . 'PanelProvider.php');
+        if (file_exists($appPanelProviderPath)) {
+            $registerClass = $appPanelProviderClass;
+        }
+
         if (
-            str_contains($content, $providerClass . '::class') ||
-            str_contains($content, '\\' . $providerClass . '::class')
+            str_contains($content, $registerClass . '::class') ||
+            str_contains($content, '\\' . $registerClass . '::class')
         ) {
-            info("✅ Provider {$providerClass} is already registered.");
+            info("✅ Provider {$registerClass} is already registered.");
             return;
         }
 
@@ -204,11 +226,11 @@ PHP;
 
         if (preg_match($pattern, $content, $matches, PREG_OFFSET_CAPTURE)) {
             $pos = $matches[0][1] + strlen($matches[0][0]);
-            $insertLine = "\n        \$this->app->register(\\{$providerClass}::class);\n";
+            $insertLine = "\n        \$this->app->register(\\{$registerClass}::class);\n";
             $newContent = substr($content, 0, $pos) . $insertLine . substr($content, $pos);
             file_put_contents($appServiceProviderPath, $newContent);
 
-            info("✅ Provider {$providerClass} added to AppServiceProvider.php.");
+            info("✅ Provider {$registerClass} added to AppServiceProvider.php.");
         } else {
             error('❌ Could not find register() method in AppServiceProvider.php. Provider not added.');
         }
