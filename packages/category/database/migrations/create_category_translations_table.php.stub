@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('locale')->index();
             $table->string('title');
             $table->string('slug');
+            $table->string('permalink', 512)->unique();
             $table->text('content')->nullable();
 
             $table->nullableMorphs('created_by');
