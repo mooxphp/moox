@@ -2,13 +2,40 @@
 
 namespace Moox\Tag\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TagTranslation extends Model
+class TagTranslation extends BaseDraftTranslationModel
 {
-    public $timestamps = false;
+    use SoftDeletes;
+    public $timestamps = true;
 
-    protected $fillable = ['locale', 'tag_id', 'title', 'slug', 'content'];
+    protected $fillable = [
+        'locale',
+        'tag_id',
+        'title',
+        'slug',
+        'content',
+        'author_id',
+        'author_type',
+        'to_publish_at',
+        'published_at',
+        'to_unpublish_at',
+        'unpublished_at',
+        'published_by_id',
+        'unpublished_by_id',
+        'unpublished_by_type',
+        'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+    ];
 
     /**
      * The attributes that should be cast.
@@ -19,5 +46,10 @@ class TagTranslation extends Model
         'title' => 'string',
         'slug' => 'string',
         'content' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+        'restored_at' => 'datetime',
     ];
+
 }

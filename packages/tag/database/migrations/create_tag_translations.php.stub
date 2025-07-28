@@ -30,9 +30,30 @@ return new class extends Migration
                 ->references('id')
                 ->on('tags')
                 ->onDelete('cascade');
+
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');    
                 
             // Add index for faster slug lookups
             $table->index(['slug'], 'tag_translations_slug_index');
+
+             // Schedule fields
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            // Actor fields
+            $table->nullableMorphs('published_by');
+            $table->nullableMorphs('unpublished_by');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
+            
+            $table->timestamps();
         });
     }
 

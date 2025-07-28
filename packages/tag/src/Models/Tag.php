@@ -9,7 +9,6 @@ use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
@@ -20,11 +19,36 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
+    use HasFactory, InteractsWithMedia, Translatable;
+
+    public $timestamps = false;
 
     protected $table = 'tags';
 
-    public $translatedAttributes = ['title', 'slug', 'content'];
+    public $translatedAttributes = [
+        'title',
+        'slug',
+        'content',
+        'author_id',
+        'author_type',
+        'to_publish_at',
+        'published_at',
+        'to_unpublish_at',
+        'unpublished_at',
+        'published_by_id',
+        'unpublished_by_id',
+        'unpublished_by_type',
+        'deleted_at',
+        'deleted_by_id',
+        'deleted_by_type',
+        'restored_at',
+        'restored_by_id',
+        'restored_by_type',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
+    ];
 
     protected $fillable = [
         'color',
@@ -45,7 +69,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
 
     public function getStatusAttribute(): string
     {
-        return $this->trashed() ? 'deleted' : 'active';
+        return 'active';
     }
 
     public function taggables(string $type): MorphToMany
