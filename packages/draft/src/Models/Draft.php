@@ -158,13 +158,13 @@ class Draft extends BaseDraftModel implements HasMedia
         /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (!$translation) {
+        if (! $translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (!$translation->to_publish_at) {
+                if (! $translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;
