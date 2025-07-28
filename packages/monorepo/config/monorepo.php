@@ -76,4 +76,4 @@ return [
         'ttl' => env('MONOREPO_CACHE_TTL', 300), // 5 minutes
         'prefix' => 'monorepo_v2',
     ],
-]; 
+];

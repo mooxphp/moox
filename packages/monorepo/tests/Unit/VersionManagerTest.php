@@ -15,7 +15,7 @@ it('validates semantic version format correctly', function () {
     expect($this->versionManager->validateVersionFormat('1.0.0-alpha.1'))->toBeTrue();
     expect($this->versionManager->validateVersionFormat('1.0.0-beta.2'))->toBeTrue();
     expect($this->versionManager->validateVersionFormat('1.0.0-rc.1'))->toBeTrue();
-    
+
     expect($this->versionManager->validateVersionFormat('1.0'))->toBeFalse();
     expect($this->versionManager->validateVersionFormat('v1.0.0'))->toBeFalse();
     expect($this->versionManager->validateVersionFormat('1.0.0-invalid'))->toBeFalse();
@@ -92,7 +92,7 @@ it('handles missing releases', function () {
 
 it('creates version suggestions', function () {
     $suggestions = $this->versionManager->createVersionSuggestions('1.2.3');
-    
+
     expect($suggestions['patch'])->toBe('1.2.4');
     expect($suggestions['minor'])->toBe('1.3.0');
     expect($suggestions['major'])->toBe('2.0.0');
@@ -106,4 +106,4 @@ it('formats version for display', function () {
     expect($this->versionManager->formatVersionForDisplay('1.2.3-alpha.1'))->toBe('v1.2.3-alpha.1 (Alpha)');
     expect($this->versionManager->formatVersionForDisplay('1.2.3-beta.1'))->toBe('v1.2.3-beta.1 (Beta)');
     expect($this->versionManager->formatVersionForDisplay('1.2.3-rc.1'))->toBe('v1.2.3-rc.1 (Release Candidate)');
-}); 
+});

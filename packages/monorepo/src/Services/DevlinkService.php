@@ -3,7 +3,6 @@
 namespace Moox\Monorepo\Services;
 
 use Illuminate\Support\Collection;
-use Moox\Monorepo\DataTransferObjects\PackageInfo;
 
 class DevlinkService
 {
@@ -19,7 +18,7 @@ class DevlinkService
      */
     public function addPackagesToDevlinkConfig(Collection $packages): array
     {
-        if (!file_exists($this->devlinkConfigPath)) {
+        if (! file_exists($this->devlinkConfigPath)) {
             throw new \RuntimeException("Devlink config file not found: {$this->devlinkConfigPath}");
         }
 
@@ -36,10 +35,10 @@ class DevlinkService
             }
 
             $newPackageEntry = $this->generatePackageEntry($packageKey, $package->visibility);
-            
+
             // Find the right alphabetical position and insert
             $updatedContent = $this->insertPackageAlphabetically($updatedContent, $packageKey, $newPackageEntry);
-            
+
             $addedPackages[] = $packageKey;
         }
 
@@ -58,22 +57,22 @@ class DevlinkService
     {
         $publicBasePath = config('devlink.public_base_path', '../moox/packages');
         $privateBasePath = config('devlink.private_base_path', 'disabled');
-        
+
         $basePath = $visibility === 'private' ? $privateBasePath : $publicBasePath;
         $type = $visibility === 'private' ? 'private' : 'public';
-        
+
         $entry = "        '{$packageKey}' => [\n";
         $entry .= "            'active' => false,\n";
         $entry .= "            'path' => \$public_base_path.'/{$packageKey}',\n";
         $entry .= "            'type' => '{$type}',\n";
-        
+
         if ($visibility === 'private') {
             $privateRepoUrl = config('devlink.private_repo_url', 'https://pkg.moox.pro/');
             $entry .= "            'repo_url' => \$private_repo_url,\n";
         }
-        
+
         $entry .= "        ],\n";
-        
+
         return $entry;
     }
 
@@ -100,7 +99,7 @@ class DevlinkService
             // Insert after the found package
             $pattern = "/^(        '{$insertAfter}' => \[.*?\],)\n/ms";
             $content = preg_replace($pattern, "$1\n{$newPackageEntry}", $content, 1, $count);
-            
+
             if ($count === 0) {
                 // Fallback: insert at the beginning of packages array
                 $content = preg_replace("/(    'packages' => \[\n)/", "$1{$newPackageEntry}", $content, 1);
@@ -118,13 +117,13 @@ class DevlinkService
      */
     public function packageExistsInDevlink(string $packageName): bool
     {
-        if (!file_exists($this->devlinkConfigPath)) {
+        if (! file_exists($this->devlinkConfigPath)) {
             return false;
         }
 
         $content = file_get_contents($this->devlinkConfigPath);
         $packageKey = strtolower($packageName);
-        
+
         return strpos($content, "'{$packageKey}'") !== false;
     }
 
@@ -135,4 +134,4 @@ class DevlinkService
     {
         return $this->devlinkConfigPath;
     }
-} 
+}

@@ -22,7 +22,7 @@ class ProcessChangelogAction implements ChangelogProcessorInterface
      */
     public function parseChangelog(string $changelogPath): Collection
     {
-        if (!File::exists($changelogPath)) {
+        if (! File::exists($changelogPath)) {
             return collect();
         }
 
@@ -36,20 +36,21 @@ class ProcessChangelogAction implements ChangelogProcessorInterface
             // Match package headers like "## PackageName"
             if (preg_match('/^##\s+(.*)$/', $line, $matches)) {
                 $currentPackage = trim($matches[1]);
-                if (!$changes->has(strtolower($currentPackage))) {
+                if (! $changes->has(strtolower($currentPackage))) {
                     $changes->put(strtolower($currentPackage), collect());
                 }
-            } 
+            }
             // Match change entries like "- Some change"
             elseif ($currentPackage && preg_match('/^-\s+(.*)$/', $line, $matches)) {
                 $change = trim($matches[1]);
-                if (!empty($change)) {
+                if (! empty($change)) {
                     $changes->get(strtolower($currentPackage))->push($change);
                 }
             }
         }
 
         $this->parsedChanges = $changes;
+
         return $changes;
     }
 
@@ -79,8 +80,8 @@ class ProcessChangelogAction implements ChangelogProcessorInterface
             };
         }
 
-        return $changes->count() === 1 
-            ? $changes->first() 
+        return $changes->count() === 1
+            ? $changes->first()
             : $changes->implode('; ');
     }
 
@@ -126,4 +127,4 @@ class ProcessChangelogAction implements ChangelogProcessorInterface
             default => PackageChange::compatibility($packageName, $packageType)
         };
     }
-} 
+}

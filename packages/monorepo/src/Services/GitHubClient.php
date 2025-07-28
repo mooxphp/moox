@@ -2,7 +2,6 @@
 
 namespace Moox\Monorepo\Services;
 
-use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -13,8 +12,11 @@ use Moox\Monorepo\Contracts\GitHubClientInterface;
 class GitHubClient implements GitHubClientInterface
 {
     private array $headers;
+
     private bool $cacheEnabled;
+
     private int $cacheTtl;
+
     private string $cachePrefix;
 
     public function __construct(string $token)
@@ -39,7 +41,7 @@ class GitHubClient implements GitHubClientInterface
      */
     public function getCurrentUser(): ?array
     {
-        return $this->cachedRequest('user', fn() => $this->get('https://api.github.com/user'));
+        return $this->cachedRequest('user', fn () => $this->get('https://api.github.com/user'));
     }
 
     /**
@@ -48,7 +50,7 @@ class GitHubClient implements GitHubClientInterface
     public function getOrganizationRepositories(string $organization): Collection
     {
         $cacheKey = "org_repos_{$organization}";
-        
+
         return $this->cachedRequest($cacheKey, function () use ($organization) {
             $repos = collect();
             $page = 1;
@@ -62,14 +64,13 @@ class GitHubClient implements GitHubClientInterface
                     'page' => $page,
                 ]);
 
-                if (!$response) {
+                if (! $response) {
                     break;
                 }
 
                 $pageRepos = collect($response);
                 $repos = $repos->concat($pageRepos);
                 $page++;
-
             } while ($pageRepos->count() === $perPage);
 
             return $repos;
@@ -82,7 +83,7 @@ class GitHubClient implements GitHubClientInterface
     public function getRepository(string $organization, string $repository): ?array
     {
         $cacheKey = "repo_{$organization}_{$repository}";
-        
+
         return $this->cachedRequest($cacheKey, function () use ($organization, $repository) {
             return $this->get("https://api.github.com/repos/{$organization}/{$repository}");
         });
@@ -94,9 +95,10 @@ class GitHubClient implements GitHubClientInterface
     public function getLatestReleaseTag(string $organization, string $repository): ?string
     {
         $cacheKey = "latest_release_{$organization}_{$repository}";
-        
+
         return $this->cachedRequest($cacheKey, function () use ($organization, $repository) {
             $response = $this->get("https://api.github.com/repos/{$organization}/{$repository}/releases/latest");
+
             return $response['name'] ?? $response['tag_name'] ?? null;
         }, 60); // Shorter cache for release tags
     }
@@ -121,7 +123,7 @@ class GitHubClient implements GitHubClientInterface
         ];
 
         $response = $this->post("https://api.github.com/repos/{$organization}/{$repository}/releases", $data);
-        
+
         if ($response) {
             // Clear cache for this repository's releases
             $this->clearCachePattern("latest_release_{$organization}_{$repository}");
@@ -143,7 +145,7 @@ class GitHubClient implements GitHubClientInterface
             'ref' => config('monorepo.github.default_branch', 'main'),
         ];
 
-        if (!empty($inputs)) {
+        if (! empty($inputs)) {
             $data['inputs'] = $inputs;
         }
 
@@ -162,26 +164,26 @@ class GitHubClient implements GitHubClientInterface
         string $path
     ): Collection {
         $cacheKey = "monorepo_packages_{$organization}_{$repository}_{$path}";
-        
+
         return $this->cachedRequest($cacheKey, function () use ($organization, $repository, $path) {
             $contents = $this->get("https://api.github.com/repos/{$organization}/{$repository}/contents/{$path}");
-            
-            if (!$contents) {
+
+            if (! $contents) {
                 return collect();
             }
 
             return collect($contents)
-                ->filter(fn($item) => $item['type'] === 'dir')
+                ->filter(fn ($item) => $item['type'] === 'dir')
                 ->map(function ($item) use ($organization, $repository, $path) {
                     $composerUrl = "https://api.github.com/repos/{$organization}/{$repository}/contents/{$path}/{$item['name']}/composer.json";
                     $composerData = $this->get($composerUrl);
-                    
-                    if (!$composerData) {
+
+                    if (! $composerData) {
                         return null;
                     }
 
                     $composer = json_decode(base64_decode($composerData['content']), true);
-                    
+
                     return [
                         'name' => $item['name'],
                         'composer' => $composer,
@@ -220,7 +222,7 @@ class GitHubClient implements GitHubClientInterface
         ], $options);
 
         $response = $this->post("https://api.github.com/orgs/{$organization}/repos", $data);
-        
+
         if ($response) {
             // Clear cache for organization repositories
             $this->clearCachePattern("org_repos_{$organization}");
@@ -236,12 +238,14 @@ class GitHubClient implements GitHubClientInterface
     {
         try {
             $response = Http::withHeaders($this->headers)->get($url, $query);
+
             return $this->handleResponse($response, 'GET', $url);
         } catch (\Exception $e) {
-            Log::error("GitHub API GET request failed", [
+            Log::error('GitHub API GET request failed', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -253,12 +257,14 @@ class GitHubClient implements GitHubClientInterface
     {
         try {
             $response = Http::withHeaders($this->headers)->post($url, $data);
+
             return $this->handleResponse($response, 'POST', $url);
         } catch (\Exception $e) {
-            Log::error("GitHub API POST request failed", [
+            Log::error('GitHub API POST request failed', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -286,7 +292,7 @@ class GitHubClient implements GitHubClientInterface
      */
     private function cachedRequest(string $key, callable $callback, ?int $ttl = null): mixed
     {
-        if (!$this->cacheEnabled) {
+        if (! $this->cacheEnabled) {
             return $callback();
         }
 
@@ -301,10 +307,10 @@ class GitHubClient implements GitHubClientInterface
      */
     private function clearCachePattern(string $pattern): void
     {
-        if (!$this->cacheEnabled) {
+        if (! $this->cacheEnabled) {
             return;
         }
 
         Cache::forget("{$this->cachePrefix}:{$pattern}");
     }
-} 
+}

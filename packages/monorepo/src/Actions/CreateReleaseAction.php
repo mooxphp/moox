@@ -5,8 +5,8 @@ namespace Moox\Monorepo\Actions;
 use Illuminate\Support\Collection;
 use Moox\Monorepo\Contracts\GitHubClientInterface;
 use Moox\Monorepo\Contracts\VersionManagerInterface;
-use Moox\Monorepo\DataTransferObjects\ReleaseInfo;
 use Moox\Monorepo\DataTransferObjects\PackageChange;
+use Moox\Monorepo\DataTransferObjects\ReleaseInfo;
 
 class CreateReleaseAction
 {
@@ -37,7 +37,7 @@ class CreateReleaseAction
     public function preparePackagesForWorkflow(Collection $packageChanges): array
     {
         $maxSize = config('monorepo.release.max_payload_size', 50000);
-        
+
         // Convert package changes to workflow format
         $packages = $packageChanges->mapWithKeys(function (PackageChange $change) {
             return [
@@ -45,7 +45,7 @@ class CreateReleaseAction
                     'release-message' => [$change->getSanitizedReleaseMessage()],
                     'change-type' => $change->changeType,
                     'moox-stability' => $change->metadata['moox_stability'] ?? 'dev',
-                ]
+                ],
             ];
         })->toArray();
 
@@ -94,7 +94,7 @@ class CreateReleaseAction
     {
         return $releaseInfos->map(function (ReleaseInfo $releaseInfo) {
             $success = $this->createRelease($releaseInfo);
-            
+
             return $releaseInfo->withMetadata([
                 'created' => $success,
                 'created_at' => now()->toISOString(),
@@ -112,8 +112,8 @@ class CreateReleaseAction
     ): array {
         // Create the release
         $releaseCreated = $this->createRelease($releaseInfo);
-        
-        if (!$releaseCreated) {
+
+        if (! $releaseCreated) {
             return [
                 'success' => false,
                 'error' => 'Failed to create release',
@@ -146,7 +146,7 @@ class CreateReleaseAction
     private function truncatePackagesPayload(array $packages, int $maxSize): array
     {
         $truncated = [];
-        
+
         foreach ($packages as $name => $data) {
             $truncated[$name] = [
                 'release-message' => ['Release update'],
@@ -157,4 +157,4 @@ class CreateReleaseAction
 
         return $truncated;
     }
-} 
+}

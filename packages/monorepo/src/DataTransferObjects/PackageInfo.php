@@ -22,7 +22,7 @@ class PackageInfo
         if ($name === 'type') {
             return $this->visibility;
         }
-        
+
         throw new \InvalidArgumentException("Property {$name} does not exist");
     }
 
@@ -82,4 +82,4 @@ class PackageInfo
             'existsInOrganization' => $this->existsInOrganization,
         ];
     }
-} 
+}

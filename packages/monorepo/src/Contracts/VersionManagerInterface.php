@@ -33,4 +33,4 @@ interface VersionManagerInterface
      * Parse version components
      */
     public function parseVersion(string $version): array;
-} 
+}

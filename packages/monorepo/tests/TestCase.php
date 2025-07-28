@@ -29,4 +29,4 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('monorepo.github.public_repo', 'test-repo');
         $app['config']->set('monorepo.cache.enabled', false);
     }
-} 
+}

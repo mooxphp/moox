@@ -20,37 +20,37 @@ class DiscoverPackagesAction implements PackageDiscoveryInterface
     public function discoverPackages(string $path, string $visibility = 'public'): Collection
     {
         $organization = config('monorepo.github.organization');
-        $repoName = $visibility === 'public' 
+        $repoName = $visibility === 'public'
             ? config('monorepo.github.public_repo')
             : config('monorepo.github.private_repo');
 
-        if (!$repoName) {
+        if (! $repoName) {
             return collect();
         }
 
         // Get packages from GitHub monorepo
         $remotePackages = $this->githubClient->getMonorepoPackages($organization, $repoName, 'packages');
-        
+
         if ($remotePackages->isEmpty()) {
             return collect();
         }
 
         $localPath = base_path($path);
-        
+
         return $remotePackages->map(function ($remotePackage) use ($localPath, $path, $visibility) {
             $packageName = $remotePackage['name'];
-            $localPackagePath = $localPath . '/' . $packageName;
-            
+            $localPackagePath = $localPath.'/'.$packageName;
+
             // Ensure local directory exists
-            if (!File::isDirectory($localPackagePath)) {
+            if (! File::isDirectory($localPackagePath)) {
                 $this->createLocalPackageDirectory($localPackagePath, $packageName);
             }
-            
+
             // Create package info from remote data
             $composerData = $remotePackage['composer'] ?? [];
             $description = $composerData['description'] ?? null;
             $stability = $remotePackage['stability'] ?? 'dev';
-            
+
             return new PackageInfo(
                 name: $packageName,
                 path: $path,
@@ -69,16 +69,15 @@ class DiscoverPackagesAction implements PackageDiscoveryInterface
     {
         try {
             File::makeDirectory($path, 0755, true);
-            
+
             // Optionally create a basic README to indicate this was auto-created
-            $readmePath = $path . '/README.md';
-            if (!File::exists($readmePath)) {
+            $readmePath = $path.'/README.md';
+            if (! File::exists($readmePath)) {
                 File::put($readmePath, "# {$packageName}\n\nAuto-created package directory for GitHub repository sync.\n");
             }
-            
         } catch (\Exception $e) {
             // Log error but don't fail the discovery process
-            logger()->warning("Failed to create directory for package {$packageName}: " . $e->getMessage());
+            logger()->warning("Failed to create directory for package {$packageName}: ".$e->getMessage());
         }
     }
 
@@ -99,15 +98,15 @@ class DiscoverPackagesAction implements PackageDiscoveryInterface
     public function getPackageInfo(string $packageName, string $path, string $visibility = 'public'): ?PackageInfo
     {
         $composerPath = base_path("{$path}/{$packageName}/composer.json");
-        
-        if (!File::exists($composerPath)) {
+
+        if (! File::exists($composerPath)) {
             return null;
         }
 
         try {
             $composer = json_decode(File::get($composerPath), true);
-            
-            if (!$composer) {
+
+            if (! $composer) {
                 return null;
             }
 
@@ -124,4 +123,4 @@ class DiscoverPackagesAction implements PackageDiscoveryInterface
     {
         return $this->githubClient->getRepository($organization, $packageName) !== null;
     }
-} 
+}

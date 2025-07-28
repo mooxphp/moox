@@ -36,8 +36,8 @@ class MonorepoServiceProvider extends MooxServiceProvider
         // Register GitHub client
         $this->app->bind(GitHubClientInterface::class, function ($app) {
             $token = $this->getGitHubToken();
-            
-            if (!$token) {
+
+            if (! $token) {
                 throw new \RuntimeException('GitHub token not found. Please link your GitHub account.');
             }
 
@@ -56,6 +56,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
 
         $this->app->bind(ProcessChangelogAction::class, function ($app) {
             $changelogPath = config('monorepo.packages.devlog_path');
+
             return new ProcessChangelogAction($changelogPath);
         });
 
@@ -93,13 +94,11 @@ class MonorepoServiceProvider extends MooxServiceProvider
                 $app->make(DiscoverPackagesAction::class)
             );
         });
-
-
     }
 
     /**
      * Get GitHub token from the first user
-     * 
+     *
      * This is a simple implementation. In production, you might want
      * to have more sophisticated token management.
      */
@@ -114,6 +113,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
             // Try to get token from first user (simplified approach)
             if (class_exists(User::class)) {
                 $user = User::first();
+
                 return $user?->github_token;
             }
         } catch (\Exception) {
@@ -122,4 +122,4 @@ class MonorepoServiceProvider extends MooxServiceProvider
 
         return null;
     }
-} 
+}

@@ -49,8 +49,8 @@ class PackageChange
     public static function withChanges(string $packageName, array $changes, string $packageType = 'public'): self
     {
         $changeCollection = collect($changes);
-        $releaseMessage = $changeCollection->count() === 1 
-            ? $changeCollection->first() 
+        $releaseMessage = $changeCollection->count() === 1
+            ? $changeCollection->first()
             : $changeCollection->implode('; ');
 
         return new self(
@@ -85,9 +85,9 @@ class PackageChange
     {
         // Remove problematic characters for bash/workflow usage
         $message = str_replace([
-            '(', ')', '`', '$', '"', "'", "\n", "\r", "\t"
+            '(', ')', '`', '$', '"', "'", "\n", "\r", "\t",
         ], [
-            '[', ']', '', '', '', '', ' ', ' ', ' '
+            '[', ']', '', '', '', '', ' ', ' ', ' ',
         ], $this->releaseMessage);
 
         return trim(substr($message, 0, 200));
@@ -107,4 +107,4 @@ class PackageChange
             'metadata' => $this->metadata,
         ];
     }
-} 
+}

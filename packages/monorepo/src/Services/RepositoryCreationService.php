@@ -11,8 +11,7 @@ class RepositoryCreationService
     public function __construct(
         private GitHubClientInterface $githubClient,
         private DevlinkService $devlinkService
-    ) {
-    }
+    ) {}
 
     /**
      * Find missing repositories for packages
@@ -20,17 +19,17 @@ class RepositoryCreationService
     public function findMissingRepositories(string $type): Collection
     {
         $organization = config('monorepo.github.organization');
-        $repoName = $type === 'public' 
+        $repoName = $type === 'public'
             ? config('monorepo.github.public_repo')
             : config('monorepo.github.private_repo');
 
-        if (!$repoName) {
+        if (! $repoName) {
             return collect();
         }
 
         // Get packages from GitHub monorepo
         $packages = $this->githubClient->getMonorepoPackages($organization, $repoName, 'packages');
-        
+
         // Convert to PackageInfo objects
         $packageInfos = $packages->map(function ($package) use ($type) {
             return new PackageInfo(
@@ -46,10 +45,10 @@ class RepositoryCreationService
         // Compare with organization repositories
         $orgRepositories = $this->githubClient->getOrganizationRepositories($organization);
         $repoNames = $orgRepositories->pluck('name')->toArray();
-        
+
         // Return only packages that don't have corresponding repositories
         return $packageInfos->filter(function ($package) use ($repoNames) {
-            return !in_array($package->name, $repoNames);
+            return ! in_array($package->name, $repoNames);
         });
     }
 
@@ -68,7 +67,7 @@ class RepositoryCreationService
             try {
                 $this->createSingleRepository($package, $organization);
                 $created++;
-                
+
                 // Update devlink configuration
                 if ($updateDevlink) {
                     try {
@@ -78,10 +77,9 @@ class RepositoryCreationService
                         $errors[] = "Failed to update devlink config for {$package->name}: {$e->getMessage()}";
                     }
                 }
-                
+
                 // Small delay to avoid rate limiting
                 usleep(100000); // 0.1 seconds
-                
             } catch (\Exception $e) {
                 $failed++;
                 $errors[] = "Failed to create repository for {$package->name}: {$e->getMessage()}";
@@ -102,7 +100,7 @@ class RepositoryCreationService
     private function createSingleRepository(PackageInfo $package, string $organization): void
     {
         $isPrivate = $package->visibility === 'private';
-        
+
         // Use configurable repository settings
         $options = [
             'description' => $package->description ?: "Package repository for {$package->name}",
@@ -130,7 +128,7 @@ class RepositoryCreationService
 
         $result = $this->githubClient->createRepository($organization, $package->name, $options);
 
-        if (!$result) {
+        if (! $result) {
             throw new \Exception('Repository creation failed - no response from GitHub API');
         }
 
@@ -160,9 +158,10 @@ class RepositoryCreationService
     {
         try {
             $user = $this->githubClient->getCurrentUser();
+
             return $user !== null;
         } catch (\Exception $e) {
             return false;
         }
     }
-} 
+}

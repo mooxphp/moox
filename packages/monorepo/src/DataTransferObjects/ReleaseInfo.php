@@ -12,7 +12,7 @@ class ReleaseInfo
         public readonly string $repository,
         public readonly bool $isPrerelease = false,
         public readonly ?string $body = null,
-        public readonly Collection $packages = new Collection(),
+        public readonly Collection $packages = new Collection,
         public readonly array $metadata = []
     ) {}
 
@@ -91,4 +91,4 @@ class ReleaseInfo
             'metadata' => $this->metadata,
         ];
     }
-} 
+}

@@ -35,7 +35,7 @@ class CreateMissingRepositoriesCommand extends Command
 
         // Validate GitHub access
         $this->line('🔐 Authenticating with GitHub...');
-        if (!$this->validateGitHubAccess()) {
+        if (! $this->validateGitHubAccess()) {
             return 1;
         }
 
@@ -47,14 +47,14 @@ class CreateMissingRepositoriesCommand extends Command
         $this->line('🔍 Analyzing packages and repositories...');
         $missingPackages = collect();
 
-        if (!$this->option('private') && $publicRepo) {
+        if (! $this->option('private') && $publicRepo) {
             $this->line('   📂 Checking public packages...');
             $publicMissing = $this->findMissingPackages('public');
             $missingPackages = $missingPackages->concat($publicMissing);
             $this->line("   ✅ Found {$publicMissing->count()} missing public repositories");
         }
 
-        if (!$this->option('public') && $privateRepo) {
+        if (! $this->option('public') && $privateRepo) {
             $this->line('   📂 Checking private packages...');
             $privateMissing = $this->findMissingPackages('private');
             $missingPackages = $missingPackages->concat($privateMissing);
@@ -63,6 +63,7 @@ class CreateMissingRepositoriesCommand extends Command
 
         if ($missingPackages->isEmpty()) {
             $this->info('✅ No missing repositories found. All packages have corresponding GitHub repositories.');
+
             return 0;
         }
 
@@ -70,13 +71,15 @@ class CreateMissingRepositoriesCommand extends Command
 
         if ($this->option('dry-run')) {
             $this->info('🏁 Dry run completed. No repositories created.');
+
             return 0;
         }
 
         // Ask for confirmation
-        if (!$this->option('force')) {
-            if (!$this->confirm("Create {$missingPackages->count()} missing repositories?", true)) {
+        if (! $this->option('force')) {
+            if (! $this->confirm("Create {$missingPackages->count()} missing repositories?", true)) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -89,16 +92,19 @@ class CreateMissingRepositoriesCommand extends Command
     {
         try {
             $user = $this->githubClient->getCurrentUser();
-            
-            if (!$user) {
+
+            if (! $user) {
                 $this->error('Failed to authenticate with GitHub. Check your token.');
+
                 return false;
             }
 
             $this->info("✅ Authenticated as: {$user['login']}");
+
             return true;
         } catch (\Exception $e) {
             $this->error("GitHub authentication failed: {$e->getMessage()}");
+
             return false;
         }
     }
@@ -106,18 +112,18 @@ class CreateMissingRepositoriesCommand extends Command
     private function findMissingPackages(string $type): Collection
     {
         $organization = config('monorepo.github.organization');
-        $repoName = $type === 'public' 
+        $repoName = $type === 'public'
             ? config('monorepo.github.public_repo')
             : config('monorepo.github.private_repo');
 
-        if (!$repoName) {
+        if (! $repoName) {
             return collect();
         }
 
         // Get packages from GitHub monorepo
         $this->line("     📡 Fetching packages from {$organization}/{$repoName}...");
         $packages = $this->githubClient->getMonorepoPackages($organization, $repoName, 'packages');
-        
+
         // Convert to PackageInfo objects
         $this->line("     🔄 Processing {$packages->count()} packages...");
         $packageInfos = $packages->map(function ($package) use ($type) {
@@ -132,13 +138,13 @@ class CreateMissingRepositoriesCommand extends Command
         });
 
         // Compare with organization repositories
-        $this->line("     📊 Comparing with organization repositories...");
+        $this->line('     📊 Comparing with organization repositories...');
         $orgRepositories = $this->githubClient->getOrganizationRepositories($organization);
         $repoNames = $orgRepositories->pluck('name')->toArray();
-        
+
         // Return only packages that don't have corresponding repositories
         return $packageInfos->filter(function ($package) use ($repoNames) {
-            return !in_array($package->name, $repoNames);
+            return ! in_array($package->name, $repoNames);
         });
     }
 
@@ -182,19 +188,19 @@ class CreateMissingRepositoriesCommand extends Command
         if ($this->option('interactive')) {
             // Interactive mode - ask for each repository
             foreach ($missingPackages as $index => $package) {
-                $this->line("Repository " . ($index + 1) . "/" . $missingPackages->count() . ": {$package->name}");
+                $this->line('Repository '.($index + 1).'/'.$missingPackages->count().": {$package->name}");
                 $this->line("  Type: {$package->visibility}");
                 $this->line("  Stability: {$package->stability}");
-                $this->line("  Description: " . ($package->description ?: '—'));
-                
+                $this->line('  Description: '.($package->description ?: '—'));
+
                 if ($this->confirm("Create repository for {$package->name}?", true)) {
                     try {
                         $this->createSingleRepository($package, $organization);
                         $created++;
                         $this->info("  ✅ Created: {$package->name}");
-                        
+
                         // Update devlink configuration
-                        if (!$this->option('skip-devlink')) {
+                        if (! $this->option('skip-devlink')) {
                             try {
                                 $this->updateDevlinkConfig($package);
                                 $devlinkUpdated++;
@@ -203,10 +209,9 @@ class CreateMissingRepositoriesCommand extends Command
                                 $this->warn("  ⚠️  Failed to update devlink config for {$package->name}: {$e->getMessage()}");
                             }
                         }
-                        
+
                         // Small delay to avoid rate limiting
                         usleep(100000); // 0.1 seconds
-                        
                     } catch (\Exception $e) {
                         $failed++;
                         $this->error("  ❌ Failed to create {$package->name}: {$e->getMessage()}");
@@ -215,7 +220,7 @@ class CreateMissingRepositoriesCommand extends Command
                     $skipped++;
                     $this->line("  ⏭️  Skipped: {$package->name}");
                 }
-                
+
                 $this->line('');
             }
         } else {
@@ -225,13 +230,13 @@ class CreateMissingRepositoriesCommand extends Command
 
             foreach ($missingPackages as $package) {
                 $progressBar->advance();
-                
+
                 try {
                     $this->createSingleRepository($package, $organization);
                     $created++;
-                    
+
                     // Update devlink configuration
-                    if (!$this->option('skip-devlink')) {
+                    if (! $this->option('skip-devlink')) {
                         try {
                             $this->updateDevlinkConfig($package);
                             $devlinkUpdated++;
@@ -240,10 +245,9 @@ class CreateMissingRepositoriesCommand extends Command
                             $this->warn("Failed to update devlink config for {$package->name}: {$e->getMessage()}");
                         }
                     }
-                    
+
                     // Small delay to avoid rate limiting
                     usleep(100000); // 0.1 seconds
-                    
                 } catch (\Exception $e) {
                     $failed++;
                     $this->line('');
@@ -297,7 +301,7 @@ class CreateMissingRepositoriesCommand extends Command
     private function createSingleRepository(PackageInfo $package, string $organization): void
     {
         $isPrivate = $package->visibility === 'private';
-        
+
         // Use configurable repository settings (defaults based on mooxphp/jobs)
         $options = [
             'description' => $package->description ?: "Package repository for {$package->name}",
@@ -325,7 +329,7 @@ class CreateMissingRepositoriesCommand extends Command
 
         $result = $this->githubClient->createRepository($organization, $package->name, $options);
 
-        if (!$result) {
+        if (! $result) {
             throw new \Exception('Repository creation failed - no response from GitHub API');
         }
 
@@ -347,4 +351,4 @@ class CreateMissingRepositoriesCommand extends Command
         // Add the package to devlink config
         $this->devlinkService->addPackagesToDevlinkConfig(collect([$package]));
     }
-} 
+}

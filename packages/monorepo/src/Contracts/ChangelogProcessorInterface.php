@@ -30,4 +30,4 @@ interface ChangelogProcessorInterface
      * Get all packages with their changes
      */
     public function getAllPackagesWithChanges(): Collection;
-} 
+}

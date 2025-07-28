@@ -39,7 +39,7 @@ class ReleaseCommand extends Command
 
         // Validate GitHub access
         $this->line('🔐 Authenticating with GitHub...');
-        if (!$this->validateGitHubAccess()) {
+        if (! $this->validateGitHubAccess()) {
             return 1;
         }
 
@@ -50,8 +50,8 @@ class ReleaseCommand extends Command
 
         $this->line('📡 Getting current version from GitHub...');
         $currentVersion = $this->versionManager->getCurrentVersion($organization, $publicRepo);
-        
-        if (!$currentVersion) {
+
+        if (! $currentVersion) {
             $currentVersion = '0.0.0';
             $this->warn('No existing release found. Starting from v0.0.1');
         }
@@ -59,13 +59,15 @@ class ReleaseCommand extends Command
         // Get new version
         $newVersion = $this->option('version') ?: $this->askForVersion($currentVersion);
 
-        if (!$this->versionManager->validateVersionFormat($newVersion)) {
+        if (! $this->versionManager->validateVersionFormat($newVersion)) {
             $this->error('Invalid version format. Please use semantic versioning (e.g., 1.2.3)');
+
             return 1;
         }
 
         if ($this->versionManager->compareVersions($newVersion, $currentVersion) <= 0) {
             $this->error('New version must be greater than current version');
+
             return 1;
         }
 
@@ -77,12 +79,12 @@ class ReleaseCommand extends Command
         $publicPackages = collect();
         $privatePackages = collect();
 
-        if (!$this->option('private-only')) {
+        if (! $this->option('private-only')) {
             $this->line('   📂 Scanning public packages...');
             $publicPackages = $this->discoverPackages('public');
         }
 
-        if (!$this->option('public-only')) {
+        if (! $this->option('public-only')) {
             $this->line('   📂 Scanning private packages...');
             $privatePackages = $this->discoverPackages('private');
         }
@@ -91,6 +93,7 @@ class ReleaseCommand extends Command
 
         if ($allPackages->isEmpty()) {
             $this->warn('No packages found to release');
+
             return 0;
         }
 
@@ -111,19 +114,21 @@ class ReleaseCommand extends Command
 
         if ($missingPackages->isNotEmpty()) {
             $this->displayMissingRepositories($missingPackages);
-            
-            if (!$this->option('dry-run') && $this->confirm('Create missing repositories before release?', true)) {
+
+            if (! $this->option('dry-run') && $this->confirm('Create missing repositories before release?', true)) {
                 $this->createMissingRepositories($missingPackages);
             }
         }
 
         if ($this->option('dry-run')) {
             $this->info('🏁 Dry run completed. No changes made.');
+
             return 0;
         }
 
-        if (!$this->confirm('Proceed with release?', true)) {
+        if (! $this->confirm('Proceed with release?', true)) {
             $this->info('Release cancelled.');
+
             return 0;
         }
 
@@ -135,16 +140,19 @@ class ReleaseCommand extends Command
     {
         try {
             $user = $this->githubClient->getCurrentUser();
-            
-            if (!$user) {
+
+            if (! $user) {
                 $this->error('Failed to authenticate with GitHub. Check your token.');
+
                 return false;
             }
 
             $this->info("✅ Authenticated as: {$user['login']}");
+
             return true;
         } catch (\Exception $e) {
             $this->error("GitHub authentication failed: {$e->getMessage()}");
+
             return false;
         }
     }
@@ -158,7 +166,7 @@ class ReleaseCommand extends Command
         $this->line("Suggested version: {$suggested}");
         $this->line('');
         $this->line('Available suggestions:');
-        
+
         foreach ($suggestions as $type => $version) {
             $this->line("  {$type}: {$version}");
         }
@@ -169,30 +177,30 @@ class ReleaseCommand extends Command
     private function discoverPackages(string $type): Collection
     {
         $organization = config('monorepo.github.organization');
-        $repoName = $type === 'public' 
+        $repoName = $type === 'public'
             ? config('monorepo.github.public_repo')
             : config('monorepo.github.private_repo');
 
-        if (!$repoName) {
+        if (! $repoName) {
             return collect();
         }
 
         // Get packages from GitHub monorepo (not local directories)
         $this->line("     📡 Fetching packages from {$organization}/{$repoName}...");
         $packages = $this->githubClient->getMonorepoPackages($organization, $repoName, 'packages');
-        
+
         // Convert to PackageInfo objects and read local composer.json for moox-stability
         $this->line("     🔄 Processing {$packages->count()} packages...");
         $packageInfos = $packages->map(function ($package) use ($type) {
             // Read local composer.json to get actual moox-stability
             $localComposerPath = "packages/{$package['name']}/composer.json";
             $mooxStability = 'dev'; // default
-            
+
             if (file_exists($localComposerPath)) {
                 $composerData = json_decode(file_get_contents($localComposerPath), true);
                 $mooxStability = $composerData['extra']['moox-stability'] ?? 'stable';
             }
-            
+
             return new \Moox\Monorepo\DataTransferObjects\PackageInfo(
                 name: $package['name'],
                 path: '', // No local path since we're getting from GitHub
@@ -200,16 +208,16 @@ class ReleaseCommand extends Command
                 stability: $package['stability'] ?? 'stable',
                 description: $package['composer']['description'] ?? null,
                 composer: array_merge($package['composer'] ?? [], [
-                    'moox-stability' => $mooxStability
+                    'moox-stability' => $mooxStability,
                 ])
             );
         });
 
         // Compare with organization repositories (GitHub to GitHub comparison)
-        $this->line("     📊 Comparing with organization repositories...");
+        $this->line('     📊 Comparing with organization repositories...');
         $orgRepositories = $this->githubClient->getOrganizationRepositories($organization);
         $repoNames = $orgRepositories->pluck('name')->toArray();
-        
+
         return $packageInfos->map(function ($package) use ($repoNames) {
             return $package->with(['existsInOrganization' => in_array($package->name, $repoNames)]);
         });
@@ -218,18 +226,18 @@ class ReleaseCommand extends Command
     private function processPackageChanges(Collection $packages, string $changelogPath): Collection
     {
         $this->changelogProcessor = new ProcessChangelogAction($changelogPath);
-        
+
         return $packages->map(function ($package) {
             $packageChange = $this->changelogProcessor->createPackageChange(
                 $package->name,
                 $package->stability,
                 $package->visibility // Pass the package type (public/private)
             );
-            
+
             // Add moox_stability to metadata from composer extra section
             $metadata = $packageChange->metadata;
             $metadata['moox_stability'] = $package->composer['extra']['moox-stability'] ?? 'stable';
-            
+
             return new \Moox\Monorepo\DataTransferObjects\PackageChange(
                 packageName: $packageChange->packageName,
                 changes: $packageChange->changes,
@@ -244,7 +252,7 @@ class ReleaseCommand extends Command
     private function showReleasePreview(Collection $packageChanges): void
     {
         $this->info('📋 Release Preview:');
-        
+
         $tableData = $packageChanges->map(function ($change) {
             return [
                 $change->packageName,
@@ -258,7 +266,7 @@ class ReleaseCommand extends Command
         // Show workflow API payload
         $this->info('🔧 Workflow API Payload:');
         $packages = $this->releaseAction->preparePackagesForWorkflow($packageChanges);
-        
+
         $payloadTable = collect($packages)->map(function ($data, $packageName) {
             return [
                 $packageName,
@@ -286,9 +294,8 @@ class ReleaseCommand extends Command
 
         $results = [];
 
-
         // Create public repo release
-        if (!$this->option('private-only')) {
+        if (! $this->option('private-only')) {
             $publicPackages = $packageChanges->filter(function ($change) {
                 // Find the original package to check its type
                 return $change->packageType === 'public';
@@ -298,7 +305,7 @@ class ReleaseCommand extends Command
                 $publicRelease = ReleaseInfo::create($version, $organization, $publicRepo);
                 $result = $this->releaseAction->processCompleteRelease($publicRelease, $publicPackages);
                 $results['public'] = $result;
-                
+
                 if ($result['success']) {
                     $this->info("✅ Public release created: v{$version}");
                 } else {
@@ -308,7 +315,7 @@ class ReleaseCommand extends Command
         }
 
         // Create private repo release
-        if (!$this->option('public-only') && $privateRepo) {
+        if (! $this->option('public-only') && $privateRepo) {
             $privatePackages = $packageChanges->filter(function ($change) {
                 // Find the original package to check its type
                 return $change->packageType === 'private';
@@ -318,7 +325,7 @@ class ReleaseCommand extends Command
                 $privateRelease = ReleaseInfo::create($version, $organization, $privateRepo);
                 $result = $this->releaseAction->processCompleteRelease($privateRelease, $privatePackages);
                 $results['private'] = $result;
-                
+
                 if ($result['success']) {
                     $this->info("✅ Private release created: v{$version}");
                 } else {
@@ -328,10 +335,10 @@ class ReleaseCommand extends Command
         }
 
         $this->info('🎉 Release process completed!');
-        
+
         $successCount = collect($results)->where('success', true)->count();
         $totalCount = count($results);
-        
+
         $this->info("📊 Results: {$successCount}/{$totalCount} releases successful");
 
         return $successCount === $totalCount ? 0 : 1;
@@ -344,12 +351,12 @@ class ReleaseCommand extends Command
     {
         $missingPackages = collect();
 
-        if (!$this->option('private-only')) {
+        if (! $this->option('private-only')) {
             $publicMissing = $this->repositoryCreationService->findMissingRepositories('public');
             $missingPackages = $missingPackages->concat($publicMissing);
         }
 
-        if (!$this->option('public-only')) {
+        if (! $this->option('public-only')) {
             $privateMissing = $this->repositoryCreationService->findMissingRepositories('private');
             $missingPackages = $missingPackages->concat($privateMissing);
         }
@@ -411,7 +418,7 @@ class ReleaseCommand extends Command
             $this->warn("⚠️  Failed to create {$results['failed']} repositories");
         }
 
-        if (!empty($results['errors'])) {
+        if (! empty($results['errors'])) {
             foreach ($results['errors'] as $error) {
                 $this->error($error);
             }
@@ -431,4 +438,4 @@ class ReleaseCommand extends Command
             $this->line('   • The repositories are ready to receive content from the monorepo');
         }
     }
-} 
+}

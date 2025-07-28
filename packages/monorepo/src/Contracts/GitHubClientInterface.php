@@ -64,4 +64,4 @@ interface GitHubClientInterface
         string $name,
         array $options = []
     ): ?array;
-} 
+}

@@ -26,4 +26,4 @@ interface PackageDiscoveryInterface
      * Check if a package exists in the organization
      */
     public function existsInOrganization(string $packageName, string $organization): bool;
-} 
+}

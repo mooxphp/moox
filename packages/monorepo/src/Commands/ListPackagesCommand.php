@@ -37,36 +37,37 @@ class ListPackagesCommand extends Command
         // Get current version
         $this->line('📡 Getting current monorepo version...');
         $currentVersion = $this->versionManager->getCurrentVersion($organization, $publicRepo);
-        $this->info("Current monorepo version: " . ($currentVersion ?: 'No release'));
+        $this->info('Current monorepo version: '.($currentVersion ?: 'No release'));
         $this->line('');
 
         // Discover packages with progress
         $this->line('🔍 Discovering packages from monorepo...');
         $allPackages = collect();
 
-        if (!$this->option('private')) {
+        if (! $this->option('private')) {
             $this->line('   📂 Scanning public packages...');
             $publicPackages = $this->discoverPackages('public');
-            $allPackages = $allPackages->concat($publicPackages->map(fn($pkg) => $pkg->with(['type' => 'public'])));
+            $allPackages = $allPackages->concat($publicPackages->map(fn ($pkg) => $pkg->with(['type' => 'public'])));
             $this->line("   ✅ Found {$publicPackages->count()} public packages");
         }
 
-        if (!$this->option('public') && $privateRepo) {
+        if (! $this->option('public') && $privateRepo) {
             $this->line('   📂 Scanning private packages...');
             $privatePackages = $this->discoverPackages('private');
-            $allPackages = $allPackages->concat($privatePackages->map(fn($pkg) => $pkg->with(['type' => 'private'])));
+            $allPackages = $allPackages->concat($privatePackages->map(fn ($pkg) => $pkg->with(['type' => 'private'])));
             $this->line("   ✅ Found {$privatePackages->count()} private packages");
         }
 
         if ($allPackages->isEmpty()) {
             $this->warn('No packages found');
+
             return 0;
         }
 
         // Filter packages based on options
         if ($this->option('missing')) {
             $this->line('🔍 Filtering packages missing repositories...');
-            $allPackages = $allPackages->filter(fn($pkg) => !$pkg->existsInOrganization);
+            $allPackages = $allPackages->filter(fn ($pkg) => ! $pkg->existsInOrganization);
         }
 
         if ($this->option('changes')) {
@@ -92,18 +93,18 @@ class ListPackagesCommand extends Command
     private function discoverPackages(string $type): \Illuminate\Support\Collection
     {
         $organization = config('monorepo.github.organization');
-        $repoName = $type === 'public' 
+        $repoName = $type === 'public'
             ? config('monorepo.github.public_repo')
             : config('monorepo.github.private_repo');
 
-        if (!$repoName) {
+        if (! $repoName) {
             return collect();
         }
 
         // Get packages from GitHub monorepo (not local directories)
         $this->line("     📡 Fetching packages from {$organization}/{$repoName}...");
         $packages = $this->githubClient->getMonorepoPackages($organization, $repoName, 'packages');
-        
+
         // Convert to PackageInfo objects
         $this->line("     🔄 Processing {$packages->count()} packages...");
         $packageInfos = $packages->map(function ($package) use ($type) {
@@ -118,10 +119,10 @@ class ListPackagesCommand extends Command
         });
 
         // Compare with organization repositories (GitHub to GitHub comparison)
-        $this->line("     📊 Comparing with organization repositories...");
+        $this->line('     📊 Comparing with organization repositories...');
         $orgRepositories = $this->githubClient->getOrganizationRepositories($organization);
         $repoNames = $orgRepositories->pluck('name')->toArray();
-        
+
         return $packageInfos->map(function ($package) use ($repoNames) {
             return $package->with(['existsInOrganization' => in_array($package->name, $repoNames)]);
         });
@@ -140,7 +141,7 @@ class ListPackagesCommand extends Command
             $hasRepo = $package->existsInOrganization ? '✅' : '❌';
             $type = $package->type ?? $package->visibility;
             $stability = $package->stability;
-            
+
             return [
                 $package->name,
                 $type,
@@ -167,17 +168,17 @@ class ListPackagesCommand extends Command
         $this->line('');
         $this->info('📊 Summary:');
         $this->line("Total packages (from monorepos): {$total}");
-        
+
         if ($public > 0) {
             $this->line("Public packages: {$public}");
         }
-        
+
         if ($private > 0) {
             $this->line("Private packages: {$private}");
         }
-        
+
         $this->line("Packages with own repositories: {$hasRepo}");
-        
+
         if ($missingRepo > 0) {
             $this->warn("Packages missing own repositories: {$missingRepo}");
         }
@@ -193,4 +194,4 @@ class ListPackagesCommand extends Command
             });
         }
     }
-} 
+}
