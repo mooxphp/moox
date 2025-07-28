@@ -2,12 +2,13 @@
 
 namespace Moox\Tag\Models;
 
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class TagTranslation extends BaseDraftTranslationModel
 {
     use SoftDeletes;
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -51,5 +52,4 @@ class TagTranslation extends BaseDraftTranslationModel
         'deleted_at' => 'datetime',
         'restored_at' => 'datetime',
     ];
-
 }
