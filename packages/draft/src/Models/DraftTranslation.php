@@ -17,6 +17,7 @@ class DraftTranslation extends BaseDraftTranslationModel
         'draft_id',
         'title',
         'slug',
+        'permalink',
         'status',
         'description',
         'content',

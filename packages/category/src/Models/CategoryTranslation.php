@@ -15,6 +15,7 @@ class CategoryTranslation extends BaseDraftTranslationModel
         'title',
         'locale',
         'slug',
+        'permalink',
         'content',
         'to_publish_at',
         'published_at',

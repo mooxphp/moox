@@ -16,6 +16,7 @@ class TagTranslation extends BaseDraftTranslationModel
         'tag_id',
         'title',
         'slug',
+        'permalink',
         'content',
         'author_id',
         'author_type',

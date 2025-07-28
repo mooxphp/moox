@@ -56,6 +56,7 @@ class Category extends BaseDraftModel implements HasMedia
         'title',
         'status',
         'slug',
+        'permalink',
         'content',
         'author_id',
         'author_type',

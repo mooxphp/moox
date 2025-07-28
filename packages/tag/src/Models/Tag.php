@@ -28,6 +28,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
     public $translatedAttributes = [
         'title',
         'slug',
+        'permalink',
         'content',
         'author_id',
         'author_type',
