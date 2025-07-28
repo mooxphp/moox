@@ -55,6 +55,8 @@ class Draft extends BaseDraftModel implements HasMedia
 {
     use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia;
 
+    public $timestamps = false;
+
     /**
      * Attributes that should be translated
      */
@@ -64,16 +66,24 @@ class Draft extends BaseDraftModel implements HasMedia
         'description',
         'content',
         'author_id',
+        'author_type',
         'to_publish_at',
         'published_at',
         'to_unpublish_at',
         'unpublished_at',
         'published_by_id',
         'unpublished_by_id',
+        'unpublished_by_type',
         'deleted_at',
         'deleted_by_id',
+        'deleted_by_type',
         'restored_at',
         'restored_by_id',
+        'restored_by_type',
+        'created_by_id',
+        'created_by_type',
+        'updated_by_id',
+        'updated_by_type',
     ];
 
     protected $fillable = [
@@ -147,13 +157,13 @@ class Draft extends BaseDraftModel implements HasMedia
         /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (! $translation) {
+        if (!$translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (! $translation->to_publish_at) {
+                if (!$translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;

@@ -2,10 +2,10 @@
 
 namespace Moox\Draft\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DraftTranslation extends Model
+class DraftTranslation extends BaseDraftTranslationModel
 {
     use SoftDeletes;
 
@@ -21,12 +21,14 @@ class DraftTranslation extends Model
         'description',
         'content',
         'author_id',
+        'author_type',
 
         // Publishing schedule fields
         'to_publish_at',
         'published_at',
         'to_unpublish_at',
         'unpublished_at',
+
 
         // Actor fields
         'published_by_id',
@@ -41,6 +43,14 @@ class DraftTranslation extends Model
         'restored_at',
         'restored_by_id',
         'restored_by_type',
+
+        // Created by fields
+        'created_by_id',
+        'created_by_type',
+
+        // Updated by fields
+        'updated_by_id',
+        'updated_by_type',
     ];
 
     protected $casts = [
@@ -51,5 +61,7 @@ class DraftTranslation extends Model
         'unpublished_at' => 'datetime',
         'deleted_at' => 'datetime',
         'restored_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 }

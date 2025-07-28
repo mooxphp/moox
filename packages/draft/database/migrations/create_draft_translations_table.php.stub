@@ -20,8 +20,31 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('content')->nullable();
 
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->nullableMorphs('author');
+
+
             $table->unique(['draft_id', 'locale']);
             $table->foreign('draft_id')->references('id')->on('drafts')->onDelete('cascade');
+
+            // Schedule fields
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            // Actor fields
+            $table->nullableMorphs('published_by');
+            $table->nullableMorphs('unpublished_by');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
+            $table->timestamps();
         });
     }
 
