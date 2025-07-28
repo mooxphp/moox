@@ -64,10 +64,10 @@ class TitleWithSlugInput
             ->autocomplete(false)
             ->rules($titleRules)
             ->extraInputAttributes($titleExtraInputAttributes ?? ['class' => 'text-xl font-semibold'])
-            ->beforeStateDehydrated(fn(TextInput $component, $state) => $component->state(trim($state)))
+            ->beforeStateDehydrated(fn (TextInput $component, $state) => $component->state(trim($state)))
             ->afterStateUpdated(
                 function ($state, Set $set, Get $get, string $context, ?Model $record, TextInput $component) use ($slugSlugifier, $fieldSlug, $titleAfterStateUpdated) {
-                    $slugAutoUpdateDisabled = $get($fieldSlug . '_slug_auto_update_disabled');
+                    $slugAutoUpdateDisabled = $get($fieldSlug.'_slug_auto_update_disabled');
 
                     // Verbessert: Beim Anlegen einer neuen Translation wie im Create-Modus behandeln
                     if ($context === 'edit' && filled($record)) {
@@ -78,7 +78,7 @@ class TitleWithSlugInput
                         }
                     }
 
-                    if (!$slugAutoUpdateDisabled && filled($state)) {
+                    if (! $slugAutoUpdateDisabled && filled($state)) {
                         $set($fieldSlug, self::slugify($slugSlugifier, $state));
                     }
 
@@ -93,10 +93,10 @@ class TitleWithSlugInput
         }
 
         if ($titlePlaceholder !== '') {
-            $textInput->placeholder($titlePlaceholder ?: fn() => Str::of($fieldTitle)->headline());
+            $textInput->placeholder($titlePlaceholder ?: fn () => Str::of($fieldTitle)->headline());
         }
 
-        if (!$titleLabel) {
+        if (! $titleLabel) {
             $textInput->hiddenLabel();
         }
 
@@ -115,10 +115,10 @@ class TitleWithSlugInput
             ->slugInputVisitLinkRoute($urlVisitLinkRoute)
             ->slugInputVisitLinkLabel($urlVisitLinkLabel)
             ->slugInputUrlVisitLinkVisible($urlVisitLinkVisible)
-            ->slugInputContext(fn($context) => $context === 'create' ? 'create' : 'edit')
-            ->slugInputRecordSlug(fn(?Model $record) => data_get($record?->attributesToArray(), $fieldSlug))
+            ->slugInputContext(fn ($context) => $context === 'create' ? 'create' : 'edit')
+            ->slugInputRecordSlug(fn (?Model $record) => data_get($record?->attributesToArray(), $fieldSlug))
             ->slugInputModelName(
-                fn(?Model $record) => $record
+                fn (?Model $record) => $record
                 ? Str::of(class_basename($record))->headline()
                 : ''
             )
@@ -143,7 +143,7 @@ class TitleWithSlugInput
 
                     $set($fieldSlug, self::slugify($slugSlugifier, $text));
 
-                    $set($fieldSlug . '_slug_auto_update_disabled', true);
+                    $set($fieldSlug.'_slug_auto_update_disabled', true);
 
                     if ($slugAfterStateUpdated) {
                         $component->evaluate($slugAfterStateUpdated);
@@ -160,7 +160,7 @@ class TitleWithSlugInput
         }
 
         /** Input: "Slug Auto Update Disabled" (Hidden) */
-        $hiddenInputSlugAutoUpdateDisabled = Hidden::make($fieldSlug . '_slug_auto_update_disabled')
+        $hiddenInputSlugAutoUpdateDisabled = Hidden::make($fieldSlug.'_slug_auto_update_disabled')
             ->dehydrated(false);
 
         /** Group */
@@ -176,7 +176,7 @@ class TitleWithSlugInput
     /** Fallback slugifier, over-writable with slugSlugifier parameter. */
     protected static function slugify(?Closure $slugifier, ?string $text): string
     {
-        if (is_null($text) || !trim($text)) {
+        if (is_null($text) || ! trim($text)) {
             return '';
         }
 
