@@ -37,7 +37,7 @@ abstract class BaseEditDraft extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
@@ -53,40 +53,54 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang) {
+        if (!$this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (! property_exists($record, 'translatedAttributes')) {
+        if (!property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        // Save translation manually
-        $translation = $record->translations()->firstOrNew([
-            'locale' => $this->lang,
-        ]);
+        $translationData = $data['translations'][$this->lang] ?? [];
 
-        foreach ($record->translatedAttributes as $attr) {
-            if (array_key_exists($attr, $data['translations'][$this->lang] ?? [])) {
-                $translation->setAttribute($attr, $data['translations'][$this->lang][$attr]);
-            }
-        }
-        $translation->save();
-
-        // Remove 'translations' from data before update
         unset($data['translations']);
 
         $record->update($data);
+
+        if (!empty($translationData)) {
+            $relation = $record->translations();
+            $translationModel = $relation->getRelated();
+            $foreignKey = $relation->getForeignKeyName();
+
+            $translation = $record->translations()
+                ->where('locale', $this->lang)
+                ->first();
+
+            if (!$translation) {
+                $translation = $record->translations()->make([
+                    $relation->getForeignKeyName() => $record->id,
+                    'locale' => $this->lang,
+                ]);
+            }
+
+            foreach ($record->translatedAttributes as $attr) {
+                if (array_key_exists($attr, $translationData)) {
+                    $translation->setAttribute($attr, $translationData[$attr]);
+                }
+            }
+            $translation->save();
+        }
 
         return $record;
     }
 
     public function mutateFormDataBeforeSave(array $data): array
     {
+
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! property_exists($model, 'translatedAttributes')) {
+        if (!property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -105,29 +119,55 @@ abstract class BaseEditDraft extends EditRecord
             }
         }
 
+        $integerFields = [
+            'author_id',
+            'published_by_id',
+            'unpublished_by_id',
+            'deleted_by_id',
+            'restored_by_id',
+            'published_at',
+            'unpublished_at',
+            'deleted_at',
+            'restored_at',
+            'to_publish_at',
+            'to_unpublish_at',
+            'created_by_id',
+            'updated_by_id',
+        ];
+
+        foreach ($translatedFields as $field) {
+            if (!isset($data[$field])) {
+                if (in_array($field, $integerFields)) {
+                    $data[$field] = null;
+                } else {
+                    $data[$field] = '';
+                }
+            }
+        }
+
         return $data;
     }
 
     public function getHeaderActions(): array
     {
         $languages = Localization::with('language')->get();
-        $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
+        $languageCodes = $languages->map(fn($localization) => $localization->language->alpha2);
 
         return [
             ActionGroup::make(
                 $languages->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
+                    fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                        ->icon('flag-' . $localization->language->alpha2)
                         ->label('')
                         ->color('transparent')
                         ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                        ->url(fn() => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
                 )
                     ->all()
             )
                 ->color('transparent')
                 ->label('Language')
-                ->icon('flag-'.$this->lang)
+                ->icon('flag-' . $this->lang)
                 ->extraAttributes(['class' => '']),
         ];
     }
