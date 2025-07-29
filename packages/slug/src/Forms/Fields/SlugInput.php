@@ -39,6 +39,8 @@ class SlugInput extends TextInput
 
     protected string|Closure|null $helperText = null;
 
+    protected ?string $urlPathEntityType = null;
+
     public function helperText(Htmlable|Closure|string|null $helperText): static
     {
         $this->helperText = $helperText;
@@ -102,12 +104,12 @@ class SlugInput extends TextInput
             return '';
         }
 
-        return $label ?: __('slug::fields.permalink_label_link_visit').' '.$this->getSlugInputModelName();
+        return $label ?: __('slug::fields.permalink_label_link_visit') . ' ' . $this->getSlugInputModelName();
     }
 
     public function slugInputLabelPrefix(?string $labelPrefix): static
     {
-        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label').':';
+        $this->labelPrefix = $labelPrefix ?? __('slug::fields.permalink_label') . ':';
 
         return $this;
     }
@@ -167,20 +169,27 @@ class SlugInput extends TextInput
 
     public function getRecordUrl(): ?string
     {
-        if (! $this->getRecordSlug()) {
+        if (!$this->getRecordSlug()) {
             return null;
         }
 
         $visitLinkRoute = $this->getVisitLinkRoute();
 
-        return $visitLinkRoute
-            ? $this->getVisitLinkRoute()
-            : $this->getBaseUrl().$this->getBasePath().$this->evaluate($this->recordSlug);
+        if ($visitLinkRoute) {
+            return $this->getVisitLinkRoute();
+        }
+
+        $baseUrl = $this->getBaseUrl();
+        $basePath = $this->getBasePath();
+        $entityPath = $this->getUrlPathEntityType() ? '/' . $this->getUrlPathEntityType() : '';
+        $slug = $this->evaluate($this->recordSlug);
+
+        return $baseUrl . $basePath . $entityPath . '/' . $slug;
     }
 
     public function slugInputBasePath(string|Closure|null $path): static
     {
-        $this->basePath = ! is_null($path) ? $path : $this->basePath;
+        $this->basePath = !is_null($path) ? $path : $this->basePath;
 
         return $this;
     }
@@ -212,12 +221,24 @@ class SlugInput extends TextInput
     public function getFullBaseUrl(): ?string
     {
         return $this->showUrl
-            ? $this->getBaseUrl().$this->getBasePath()
+            ? $this->getBaseUrl() . $this->getBasePath()
             : $this->getBasePath();
     }
 
     public function getBasePath(): string
     {
         return $this->evaluate($this->basePath);
+    }
+
+    public function slugInputUrlPathEntityType(?string $urlPathEntityType): static
+    {
+        $this->urlPathEntityType = $urlPathEntityType;
+
+        return $this;
+    }
+
+    public function getUrlPathEntityType(): ?string
+    {
+        return $this->urlPathEntityType;
     }
 }
