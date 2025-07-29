@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Moox\Category\Resources\CategoryResource;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Override;
 
 class EditCategory extends EditRecord

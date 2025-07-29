@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
+use Moox\Tag\Models\Tag;
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Moox\Category\Models\Category;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Category\Models\Category;
-use Moox\Category\Resources\CategoryResource;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Override;
+use Moox\Category\Models\CategoryTranslation;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 
 class ListCategories extends ListRecords
 {
@@ -23,8 +25,8 @@ class ListCategories extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Category => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Category => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -39,7 +41,7 @@ class ListCategories extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
         ];
     }
 
