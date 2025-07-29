@@ -59,6 +59,7 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [
                         [
+                            'relation' => 'translations',
                             'field' => 'deleted_at',
                             'operator' => '=',
                             'value' => null,
@@ -70,6 +71,7 @@ return [
                     'icon' => 'gmdi-delete',
                     'query' => [
                         [
+                            'relation' => 'translations',
                             'field' => 'deleted_at',
                             'operator' => '!=',
                             'value' => null,
