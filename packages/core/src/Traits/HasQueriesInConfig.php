@@ -15,7 +15,6 @@ trait HasQueriesInConfig
                 : $condition['value'];
 
             if (isset($condition['relation'])) {
-                // Wenn eine Relation angegeben ist (z. B. translations)
                 $query = $query->whereHas($condition['relation'], function ($q) use ($condition, $value) {
                     if (
                         $condition['field'] === 'deleted_at' &&
