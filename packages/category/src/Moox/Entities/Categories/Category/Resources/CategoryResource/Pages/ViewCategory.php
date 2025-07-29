@@ -8,8 +8,8 @@ use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
-use Override;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Override;
 
 class ViewCategory extends ViewRecord
 {
@@ -28,7 +28,7 @@ class ViewCategory extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title . ' - ' . __('core::core.deleted');
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;
