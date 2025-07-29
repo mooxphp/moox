@@ -2,20 +2,20 @@
 
 namespace Moox\Draft\Models;
 
-use Carbon\Carbon;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\HasScheduledPublish;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Database\Eloquent\Model;
-use Moox\Core\Traits\HasScheduledPublish;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -159,13 +159,13 @@ class Draft extends BaseDraftModel implements HasMedia
         /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (!$translation) {
+        if (! $translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (!$translation->to_publish_at) {
+                if (! $translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;

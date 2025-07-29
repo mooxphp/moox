@@ -19,7 +19,6 @@ trait HasQueriesInConfig
                 $query = $query->withTrashed();
             }
 
-
             $query = $query->where($condition['field'], $condition['operator'], $value);
         }
 

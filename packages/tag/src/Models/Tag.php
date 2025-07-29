@@ -9,6 +9,7 @@ use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
@@ -16,11 +17,10 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory, InteractsWithMedia, Translatable, SoftDeletes;
+    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
 
     public $timestamps = false;
 
