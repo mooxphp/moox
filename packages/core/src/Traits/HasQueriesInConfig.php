@@ -40,5 +40,4 @@ trait HasQueriesInConfig
 
         return $query;
     }
-
 }
