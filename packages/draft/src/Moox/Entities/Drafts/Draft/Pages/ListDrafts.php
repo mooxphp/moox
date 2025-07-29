@@ -2,9 +2,10 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft\Pages;
 
+use Moox\Draft\Models\Draft;
 use Filament\Actions\CreateAction;
-use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Draft\Moox\Entities\Drafts\Draft\DraftResource;
 
 class ListDrafts extends BaseListDrafts
@@ -19,7 +20,7 @@ class ListDrafts extends BaseListDrafts
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('previews.simple-draft.tabs', DraftResource::class);
+        return $this->getDynamicTabs('draft.resources.draft.tabs', Draft::class);
     }
 
     protected function getHeaderActions(): array

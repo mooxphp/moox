@@ -20,6 +20,57 @@ use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
 return [
     'readonly' => false,
 
+    'resources' => [
+        'draft' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | <Tabs></Tabs>
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
     'single' => 'trans//draft::draft.draft',
     'plural' => 'trans//draft::draft.drafts',
     'tabs' => [
