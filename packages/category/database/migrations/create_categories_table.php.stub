@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('color')->nullable();
             $table->json('basedata')->nullable();
             NestedSet::columns($table);
+            $table->softDeletes();
+
         });
     }
 

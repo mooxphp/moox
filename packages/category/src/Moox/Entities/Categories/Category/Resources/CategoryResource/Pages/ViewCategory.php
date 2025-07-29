@@ -6,20 +6,20 @@ namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryReso
 
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
-use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Override;
 
-class ViewCategory extends ViewRecord
+class ViewCategory extends BaseViewDraft
 {
     protected static string $resource = CategoryResource::class;
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
         return [
-            // EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
-            // RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
+            EditAction::make()->hidden(fn() => $this->isRecordTrashed()),
+            RestoreAction::make()->visible(fn() => $this->isRecordTrashed()),
         ];
     }
 
@@ -28,7 +28,7 @@ class ViewCategory extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
+            $title = $title . ' - ' . __('core::core.deleted');
         }
 
         return $title;

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
             $table->string('status')->nullable();
+            $table->softDeletes();
+
         });
     }
 

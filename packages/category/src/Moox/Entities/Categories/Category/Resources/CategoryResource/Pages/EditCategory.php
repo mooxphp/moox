@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Resources\Pages\EditRecord;
+use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Override;
 
-class EditCategory extends EditRecord
+class EditCategory extends BaseEditDraft
 {
     protected static string $resource = CategoryResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            // DeleteAction::make(),
-        ];
-    }
+
 
     #[Override]
     protected function getFormActions(): array

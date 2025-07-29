@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
+use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Override;
 
-class CreateCategory extends CreateRecord
+class CreateCategory extends BaseCreateDraft
 {
     protected static string $resource = CategoryResource::class;
 

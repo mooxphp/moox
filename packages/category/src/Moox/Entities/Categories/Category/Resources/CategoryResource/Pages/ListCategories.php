@@ -10,10 +10,11 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Override;
 
-class ListCategories extends ListRecords
+class ListCategories extends BaseListDrafts
 {
     use HasListPageTabs;
 
@@ -23,8 +24,8 @@ class ListCategories extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Category => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Category => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -39,7 +40,7 @@ class ListCategories extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
         ];
     }
 

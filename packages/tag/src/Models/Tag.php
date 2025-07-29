@@ -16,10 +16,11 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory, InteractsWithMedia, Translatable;
+    use HasFactory, InteractsWithMedia, Translatable, SoftDeletes;
 
     public $timestamps = false;
 
@@ -70,7 +71,7 @@ class Tag extends Model implements HasMedia, TranslatableContract
 
     public function getStatusAttribute(): string
     {
-        return 'active';
+        return $this->trashed() ? 'deleted' : 'active';
     }
 
     public function taggables(string $type): MorphToMany

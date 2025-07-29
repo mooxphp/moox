@@ -17,6 +17,7 @@ use Override;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property string $title
@@ -45,6 +46,7 @@ class Category extends BaseDraftModel implements HasMedia
     use HasFactory;
     use InteractsWithMedia;
     use NodeTrait;
+    use SoftDeletes;
 
     public $incrementing = true;
 
