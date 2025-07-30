@@ -2,6 +2,8 @@
 
 namespace Moox\Devops\Panels;
 
+use Filament\Facades\Filament;
+
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -24,19 +26,22 @@ class DevopsPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('devops')
             ->path('devops')
-            ->login()
+    ->login(
+    fn () => Filament::auth(
+        userModel: Moox\User\Models\User::class,
+    ),
+)
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverResources(in: app_path('Filament/Devops/Resources'), for: 'App\Filament\Devops\Resources')
+            ->discoverPages(in: app_path('Filament/Devops/Pages'), for: 'App\Filament\Devops\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Devops/Widgets'), for: 'App\Filament\Devops\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
