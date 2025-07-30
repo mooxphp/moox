@@ -79,6 +79,7 @@ trait SelectFilamentPanel
                 info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
 
                 $this->registerDefaultPluginsForPanel($panel, $to);
+                $this->configureAuthUserModelForPanel($panel, $to);
 
                 $shouldPublish = \Laravel\Prompts\confirm("❓Do you want to customize the panel (publishen)?", default: false);
                 if ($shouldPublish) {
@@ -185,6 +186,56 @@ PHP;
 
         info("✅ Plugins registered for panel '{$panel}'.");
     }
+
+    protected function configureAuthUserModelForPanel(string $panel, string $providerPath): void
+    {
+        if (!file_exists($providerPath)) {
+            error("❌ PanelProvider not found: {$providerPath}");
+            return;
+        }
+
+        $userModel = $panel === 'press'
+            ? 'Moox\\Press\\Models\\WpUser::class'
+            : 'Moox\\User\\Models\\User::class';
+
+        $content = file_get_contents($providerPath);
+
+        // Prüfen, ob Auth-Konfiguration bereits existiert
+        if (str_contains($content, '->login(') || str_contains($content, '->auth(')) {
+            info("ℹ️ Auth already configured for panel '{$panel}'. Skipping.");
+            return;
+        }
+
+        // Sicherstellen, dass Filament-Facade eingebunden ist
+        if (!str_contains($content, 'use Filament\Facades\Filament;')) {
+            $content = preg_replace(
+                '/(namespace\s+[^\s;]+;)/',
+                "$1\n\nuse Filament\Facades\Filament;",
+                $content
+            );
+        }
+
+        // Füge ->login(...) nach ->path(...) ein
+        $authCode = <<<PHP
+    ->login(
+        fn () => Filament::auth(
+            userModel: {$userModel},
+        ),
+    )
+    PHP;
+
+        $content = preg_replace(
+            '/(->path\(.*?\))/',
+            "\$1\n    {$authCode}",
+            $content,
+            1
+        );
+
+        file_put_contents($providerPath, $content);
+
+        info("✅ Auth configuration for panel '{$panel}' set to: {$userModel}");
+    }
+
 
     protected function panelExists(string $panel): bool
     {
