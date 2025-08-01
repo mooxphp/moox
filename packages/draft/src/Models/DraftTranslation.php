@@ -2,7 +2,9 @@
 
 namespace Moox\Draft\Models;
 
+use Moox\User\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class DraftTranslation extends BaseDraftTranslationModel
@@ -64,4 +66,9 @@ class DraftTranslation extends BaseDraftTranslationModel
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'author_id');
+    }
 }

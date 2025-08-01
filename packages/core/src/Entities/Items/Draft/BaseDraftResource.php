@@ -102,6 +102,10 @@ class BaseDraftResource extends BaseResource
             $actions[] = static::getDeleteBulkAction();
         }
 
+        if (static::enableRestore()) {
+            $actions[] = static::getRestoreBulkAction();
+        }
+
         return $actions;
     }
 

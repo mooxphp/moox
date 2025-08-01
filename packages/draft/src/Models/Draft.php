@@ -2,7 +2,7 @@
 
 namespace Moox\Draft\Models;
 
-use App\Models\User;
+use Moox\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -82,8 +82,10 @@ class Draft extends BaseDraftModel implements HasMedia
         'restored_at',
         'restored_by_id',
         'restored_by_type',
+        'created_at',
         'created_by_id',
         'created_by_type',
+        'updated_at',
         'updated_by_id',
         'updated_by_type',
     ];
@@ -95,6 +97,7 @@ class Draft extends BaseDraftModel implements HasMedia
         'type',
         'color',
         'due_at',
+        'status',
         'uuid',
         'ulid',
     ];
@@ -115,6 +118,18 @@ class Draft extends BaseDraftModel implements HasMedia
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
+        });
+
+        static::deleted(function ($model) {
+            if ($model->isForceDeleting()) {
+                $model->translations()->forceDelete();
+            } else {
+                $model->translations()->delete();
+            }
+        });
+
+        static::restored(function ($model) {
+            $model->translations()->restore();
         });
     }
 
@@ -159,13 +174,13 @@ class Draft extends BaseDraftModel implements HasMedia
         /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (! $translation) {
+        if (!$translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (! $translation->to_publish_at) {
+                if (!$translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;

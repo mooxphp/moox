@@ -7,6 +7,7 @@ use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Draft\Models\Draft;
 use Moox\Draft\Moox\Entities\Drafts\Draft\DraftResource;
+use Filament\Actions\Action;
 
 class ListDrafts extends BaseListDrafts
 {
@@ -25,10 +26,25 @@ class ListDrafts extends BaseListDrafts
 
     protected function getHeaderActions(): array
     {
-        if (DraftResource::enableCreate()) {
-            return [CreateAction::make()];
-        }
-
-        return [];
+        return [
+            CreateAction::make()
+                ->using(fn(array $data, string $model): Draft => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
+            Action::make('emptyTrash')
+                ->label(__('core::core.empty_trash'))
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->action(function (): void {
+                    $trashedCount = Draft::onlyTrashed()->count();
+                    Draft::onlyTrashed()->forceDelete();
+                    Notification::make()
+                        ->title(__('core::core.trash_emptied_successfully'))
+                        ->body(trans_choice('core::core.categories_permanently_deleted', $trashedCount, ['count' => $trashedCount]))
+                        ->success()
+                        ->send();
+                })
+                ->requiresConfirmation()
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && Draft::onlyTrashed()->exists()),
+        ];
     }
 }
