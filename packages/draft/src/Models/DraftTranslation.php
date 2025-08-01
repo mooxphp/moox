@@ -2,10 +2,10 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\User\Models\User;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\User\Models\User;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {

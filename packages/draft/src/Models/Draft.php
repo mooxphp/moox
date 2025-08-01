@@ -2,7 +2,6 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +12,7 @@ use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -174,13 +174,13 @@ class Draft extends BaseDraftModel implements HasMedia
         /** @var DraftTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (!$translation) {
+        if (! $translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (!$translation->to_publish_at) {
+                if (! $translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;

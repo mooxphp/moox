@@ -2,12 +2,11 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Draft\Models\Draft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\DraftResource;
-use Filament\Actions\Action;
 
 class ListDrafts extends BaseListDrafts
 {
@@ -28,8 +27,8 @@ class ListDrafts extends BaseListDrafts
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Draft => $model::create($data))
-                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Draft => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -44,7 +43,7 @@ class ListDrafts extends BaseListDrafts
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn(): bool => $this->activeTab === 'deleted' && Draft::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && Draft::onlyTrashed()->exists()),
         ];
     }
 }
