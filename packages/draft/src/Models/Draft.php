@@ -2,7 +2,6 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +12,7 @@ use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -118,8 +118,6 @@ class Draft extends BaseDraftModel implements HasMedia
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
-
-
         });
 
         static::deleted(function ($model) {
@@ -172,10 +170,9 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function handleSchedulingDates(): void
     {
-
         switch ($this->status) {
             case 'scheduled':
-                if (!$this->to_publish_at) {
+                if (! $this->to_publish_at) {
                     $this->to_publish_at = now();
                 }
                 $this->published_at = null;
