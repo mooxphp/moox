@@ -52,6 +52,9 @@ return [
     'parent' => 'Parent',
     'spam' => 'Spam',
     'guid' => 'Guid',
+    'due' => 'Due',
+    'to_publish_at' => 'To publish at',
+    'to_unpublish_at' => 'To unpublish at',
     'created_at' => 'Created at',
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
@@ -130,4 +133,6 @@ return [
     'hard_delete_description' => 'This action will permanently delete this item.',
     'empty_trash_confirmation' => 'Are you sure you want to empty the trash?',
     'empty_trash_description' => 'This action will permanently delete all items in the trash.',
+    'color' => 'Color',
+    'by' => 'by',
 ];
