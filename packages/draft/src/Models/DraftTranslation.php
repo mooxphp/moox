@@ -2,10 +2,10 @@
 
 namespace Moox\Draft\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\User\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {
@@ -70,5 +70,32 @@ class DraftTranslation extends BaseDraftTranslationModel
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->created_by_id = auth()->id();
+                $model->created_by_type = auth()->user()::class;
+            }
+
+            if ($model->author_id && !$model->author_type) {
+                $model->author_type = User::class;
+            }
+        });
+
+        static::updating(function ($model) {
+            if (auth()->check()) {
+                $model->updated_by_id = auth()->id();
+                $model->updated_by_type = auth()->user()::class;
+            }
+
+            if ($model->author_id && !$model->author_type) {
+                $model->author_type = User::class;
+            }
+        });
     }
 }

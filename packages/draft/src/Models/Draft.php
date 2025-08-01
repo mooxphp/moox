@@ -2,6 +2,7 @@
 
 namespace Moox\Draft\Models;
 
+use Moox\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,6 @@ use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -118,6 +118,8 @@ class Draft extends BaseDraftModel implements HasMedia
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
+
+
         });
 
         static::deleted(function ($model) {
@@ -170,40 +172,33 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function handleSchedulingDates(): void
     {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var DraftTranslation|null $translation */
-        $translation = $this->translate($locale);
 
-        if (! $translation) {
-            return;
-        }
-
-        switch ($translation->status) {
+        switch ($this->status) {
             case 'scheduled':
-                if (! $translation->to_publish_at) {
-                    $translation->to_publish_at = now();
+                if (!$this->to_publish_at) {
+                    $this->to_publish_at = now();
                 }
-                $translation->published_at = null;
-                $translation->unpublished_at = null;
+                $this->published_at = null;
+                $this->unpublished_at = null;
                 break;
 
             case 'published':
-                $translation->published_at = now();
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
+                $this->published_at = now();
+                $this->to_publish_at = null;
+                $this->unpublished_at = null;
+                $this->to_unpublish_at = null;
                 break;
 
             case 'draft':
             default:
-                $translation->published_at = null;
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
+                $this->published_at = null;
+                $this->to_publish_at = null;
+                $this->unpublished_at = null;
+                $this->to_unpublish_at = null;
                 break;
         }
 
-        $translation->save();
+        $this->save();
     }
 
     public function author(): BelongsTo
