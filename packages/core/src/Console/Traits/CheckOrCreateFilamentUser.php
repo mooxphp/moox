@@ -4,6 +4,8 @@ namespace Moox\Core\Console\Traits;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Model;
 
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
@@ -15,33 +17,51 @@ trait CheckOrCreateFilamentUser
 {
     public function checkOrCreateFilamentUser(): void
     {
-        $userModel = config('filament.auth.providers.users.model') ?? \App\Models\User::class;
+        /** @var class-string<Model> $userModel */
+        $userModel = Config::get('filament.auth.providers.users.model') ?? \App\Models\User::class;
 
-        if (! Schema::hasTable((new $userModel)->getTable())) {
-            warning('User table not found. Did you run migrations?');
+        if (! class_exists($userModel)) {
+            warning("⚠️ User model '{$userModel}' does not exist.");
+            return;
+        }
+
+        $table = (new $userModel)->getTable();
+
+        info("🔍 Checking user setup for Filament panel [Model: {$userModel}]...");
+
+        if (! Schema::hasTable($table)) {
+            warning("⚠️ Table '{$table}' not found. Did you run migrations?");
             return;
         }
 
         if ($userModel::count() > 0) {
-            info('There are already users. Skipping user creation.');
+            info("✅ Found existing users in '{$table}'. Skipping user creation.");
             return;
         }
 
+        alert("🚨 No users found in '{$table}'. Let's create the first Filament user.");
         $this->createFilamentUser($userModel);
     }
 
-    protected function createFilamentUser($userModel): void
+    protected function createFilamentUser(string $userModel): void
     {
-        $name = text('Enter a name for the admin user');
-        $email = text('Enter an email for the admin user');
-        $password = password('Enter a password for the admin user');
+        info("🧑 Creating new admin user for model '{$userModel}'...");
 
-        $userModel::create([
+        $name = text('Enter name', default: 'Admin');
+        $email = text('Enter email', default: 'admin@example.com');
+        $password = password('Enter password (min. 6 characters)', required: true);
+
+        if (strlen($password) < 6) {
+            warning('⚠️ Password too short. Aborting.');
+            return;
+        }
+
+        $user = $userModel::create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
         ]);
 
-        info("User {$email} created successfully.");
+        info("✅ User '{$user->email}' created successfully.");
     }
 }

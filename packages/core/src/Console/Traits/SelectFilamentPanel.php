@@ -2,13 +2,14 @@
 
 namespace Moox\Core\Console\Traits;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\warning;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\confirm;
 
 trait SelectFilamentPanel
 {
@@ -54,56 +55,88 @@ trait SelectFilamentPanel
                 continue;
             }
 
+            // 1. Frage vor Erstellung, ob Panel veröffentlicht werden soll
+            $shouldPublish = confirm("📤 Do you want to publish the panel '{$panel}' into app/Providers/Filament?", default: false);
+
+            // 2. Panel ID erfragen
             $panelId = text("🔧 Enter the panel ID for '{$panel}':", default: $panel);
 
+            // 3. Panel erstellen
             $this->call('make:filament-panel', [
                 'id' => $panelId,
             ]);
 
+            // 4. Dateien verschieben und Namespace anpassen
             $from = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
             $toDir = base_path($this->panelMap[$panel]['path']);
             $to = $toDir . '/' . ucfirst($panel) . "PanelProvider.php";
 
-            if (File::exists($from)) {
-                File::ensureDirectoryExists($toDir);
-                File::move($from, $to);
-                info("✅ Moved panel provider to: {$to}");
-
-                $content = File::get($to);
-                $content = str_replace(
-                    'namespace App\\Providers\\Filament;',
-                    'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
-                    $content
-                );
-                File::put($to, $content);
-                info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
-
-                $this->registerDefaultPluginsForPanel($panel, $to);
-                $this->configureAuthUserModelForPanel($panel, $to);
-
-                $shouldPublish = \Laravel\Prompts\confirm("❓Do you want to customize the panel (publishen)?", default: false);
-                if ($shouldPublish) {
-                    $publishDir = base_path('app/Providers/Filament');
-                    File::ensureDirectoryExists($publishDir);
-                    $publishPath = $publishDir . '/' . ucfirst($panel) . 'PanelProvider.php';
-                    $publishContent = File::get($to);
-                    $publishContent = preg_replace(
-                        '/namespace\s+[^;]+;/',
-                        'namespace App\\Providers\\Filament;',
-                        $publishContent
-                    );
-                    File::put($publishPath, $publishContent);
-                    info("📤 Panel has been published: {$publishPath}");
-                }
-            } else {
+            if (!File::exists($from)) {
                 warning("⚠️ Expected file {$from} not found. Skipping.");
+                continue;
             }
 
-            $providerClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+            File::ensureDirectoryExists($toDir);
+            File::move($from, $to);
+            info("✅ Moved panel provider to: {$to}");
+
+            // Namespace anpassen
+            $content = File::get($to);
+            $content = str_replace(
+                'namespace App\\Providers\\Filament;',
+                'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
+                $content
+            );
+            File::put($to, $content);
+            info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
+
+            // 5. Plugins registrieren (falls definiert)
+            $this->registerDefaultPluginsForPanel($panel, $to);
+
+            // 6. Auth User Model konfigurieren
+            $this->configureAuthUserModelForPanel($panel, $to);
+
+            // 7. Wenn publish gewünscht, Panel nochmal nach app/Providers/Filament kopieren mit angepasstem Namespace
+            if ($shouldPublish) {
+                $publishDir = base_path('app/Providers/Filament');
+                File::ensureDirectoryExists($publishDir);
+                $publishPath = $publishDir . '/' . ucfirst($panel) . 'PanelProvider.php';
+
+                $publishContent = File::get($to);
+                $publishContent = preg_replace(
+                    '/namespace\s+[^;]+;/',
+                    'namespace App\\Providers\\Filament;',
+                    $publishContent
+                );
+
+                File::put($publishPath, $publishContent);
+                info("📤 Panel has been published: {$publishPath}");
+            }
+
+            // 8. Provider in AppServiceProvider registrieren
+            $providerClass = $shouldPublish
+                ? 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider'
+                : $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+
             $this->registerPanelProviderInAppServiceProvider($providerClass, $panel);
         }
 
+        // 9. Am Ende Upgrade ausführen
+        $this->runFilamentUpgrade();
+
         return $selectedPanels;
+    }
+
+    protected function runFilamentUpgrade(): void
+    {
+        info("⚙️ Running php artisan filament:upgrade ...");
+
+        Artisan::call('filament:upgrade');
+
+        $output = Artisan::output();
+
+        info($output);
+        info("✅ Filament upgrade command finished.");
     }
 
     protected function registerDefaultPluginsForPanel(string $panel, string $providerPath): void
@@ -155,12 +188,12 @@ trait SelectFilamentPanel
             return;
         }
 
-        if (!file_exists($providerPath)) {
+        if (!File::exists($providerPath)) {
             error("❌ Provider file not found: {$providerPath}");
             return;
         }
 
-        $content = file_get_contents($providerPath);
+        $content = File::get($providerPath);
 
         if (str_contains($content, '->plugins([')) {
             warning("⚠️ Panel '{$panel}' already has plugins registered. Skipping.");
@@ -175,6 +208,7 @@ trait SelectFilamentPanel
     ])
 PHP;
 
+        // Insert plugins vor dem letzten Semikolon nach return $panel
         $content = preg_replace(
             '/return\s+\$panel(.*?)(;)/s',
             "return \$panel\$1{$insert}\$2",
@@ -182,31 +216,32 @@ PHP;
             1
         );
 
-        file_put_contents($providerPath, $content);
+        File::put($providerPath, $content);
 
         info("✅ Plugins registered for panel '{$panel}'.");
     }
 
     protected function configureAuthUserModelForPanel(string $panel, string $providerPath): void
     {
-        if (!file_exists($providerPath)) {
+        if (!File::exists($providerPath)) {
             error("❌ PanelProvider not found: {$providerPath}");
             return;
         }
 
+        // Je nach Panel unterschiedliches User-Model setzen
         $userModel = $panel === 'press'
             ? 'Moox\\Press\\Models\\WpUser::class'
             : 'Moox\\User\\Models\\User::class';
 
-        $content = file_get_contents($providerPath);
+        $content = File::get($providerPath);
 
-        // Prüfen, ob Auth-Konfiguration bereits existiert
+        // Wenn auth() oder login() schon gesetzt, skip
         if (str_contains($content, '->login(') || str_contains($content, '->auth(')) {
             info("ℹ️ Auth already configured for panel '{$panel}'. Skipping.");
             return;
         }
 
-        // Sicherstellen, dass Filament-Facade eingebunden ist
+        // use Filament import ergänzen, falls nicht vorhanden
         if (!str_contains($content, 'use Filament\Facades\Filament;')) {
             $content = preg_replace(
                 '/(namespace\s+[^\s;]+;)/',
@@ -215,15 +250,16 @@ PHP;
             );
         }
 
-        // Füge ->login(...) nach ->path(...) ein
+        // Auth-Block als String (Fluent-Chain Syntax)
         $authCode = <<<PHP
     ->login(
         fn () => Filament::auth(
             userModel: {$userModel},
         ),
     )
-    PHP;
+PHP;
 
+        // Auth-Block nach ->path(...) einfügen
         $content = preg_replace(
             '/(->path\(.*?\))/',
             "\$1\n    {$authCode}",
@@ -231,11 +267,10 @@ PHP;
             1
         );
 
-        file_put_contents($providerPath, $content);
+        File::put($providerPath, $content);
 
         info("✅ Auth configuration for panel '{$panel}' set to: {$userModel}");
     }
-
 
     protected function panelExists(string $panel): bool
     {
@@ -250,40 +285,45 @@ PHP;
     protected function registerPanelProviderInAppServiceProvider(string $providerClass, string $panel): void
     {
         $appServiceProviderPath = app_path('Providers/AppServiceProvider.php');
-        $appPanelProviderClass = 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider';
 
-        if (!file_exists($appServiceProviderPath)) {
+        if (!File::exists($appServiceProviderPath)) {
             error("❌ AppServiceProvider.php not found at {$appServiceProviderPath}");
             return;
         }
 
-        $content = file_get_contents($appServiceProviderPath);
+        $content = File::get($appServiceProviderPath);
 
-        $registerClass = $providerClass;
-        $appPanelProviderPath = app_path('Providers/Filament/' . ucfirst($panel) . 'PanelProvider.php');
-        if (file_exists($appPanelProviderPath)) {
-            $registerClass = $appPanelProviderClass;
-        }
-
+        // Bereits registriert?
         if (
-            str_contains($content, $registerClass . '::class') ||
-            str_contains($content, '\\' . $registerClass . '::class')
+            str_contains($content, $providerClass . '::class') ||
+            str_contains($content, '\\' . $providerClass . '::class')
         ) {
-            info("✅ Provider {$registerClass} is already registered.");
+            info("✅ Provider {$providerClass} is already registered in AppServiceProvider.");
             return;
         }
 
-        $pattern = '/public function register\(\): void\s*\{\s*/';
+        // Suche boot()-Methode und füge dort $this->app->register() hinzu
+        $pattern = '/public function boot\(\)\s*\{(.*?)\}/s';
 
-        if (preg_match($pattern, $content, $matches, PREG_OFFSET_CAPTURE)) {
-            $pos = $matches[0][1] + strlen($matches[0][0]);
-            $insertLine = "\n        \$this->app->register(\\{$registerClass}::class);\n";
-            $newContent = substr($content, 0, $pos) . $insertLine . substr($content, $pos);
-            file_put_contents($appServiceProviderPath, $newContent);
+        if (preg_match($pattern, $content, $matches)) {
+            $bootBody = $matches[1];
 
-            info("✅ Provider {$registerClass} added to AppServiceProvider.php.");
+            $registerLine = "        \$this->app->register({$providerClass}::class);";
+
+            if (str_contains($bootBody, $registerLine)) {
+                info("✅ Provider {$providerClass} already registered inside boot().");
+                return;
+            }
+
+            $bootBodyNew = $bootBody . "\n" . $registerLine;
+
+            $contentNew = preg_replace($pattern, "public function boot()\n    {\n{$bootBodyNew}\n    }", $content);
+
+            File::put($appServiceProviderPath, $contentNew);
+
+            info("✅ Registered {$providerClass} in AppServiceProvider::boot()");
         } else {
-            error('❌ Could not find register() method in AppServiceProvider.php. Provider not added.');
+            warning("⚠️ Could not find boot() method in AppServiceProvider.php to register provider {$providerClass}.");
         }
     }
 }

@@ -16,6 +16,9 @@ trait InstallPackage
 {
     use RegisterFilamentPlugin;
     use SelectFilamentPanel;
+    use CheckOrCreateFilamentUser;
+
+    protected PackageService $packageService;
 
     public function setPackageService(PackageService $packageService): void
     {
@@ -29,54 +32,93 @@ trait InstallPackage
         }
     }
 
+    protected function requirePackage(string $package): void
+    {
+        $composerJson = json_decode(file_get_contents(base_path('composer.json')), true);
+
+        if (! isset($composerJson['require'][$package])) {
+            info("📦 Füge Package {$package} via composer require hinzu...");
+
+            $command = "composer require {$package}:* 2>&1";
+            exec($command, $output, $returnVar);
+
+            // 👉 Ausgabe von composer require anzeigen (neutral)
+            foreach ($output as $line) {
+                line("    " . $line); // neutrales Grau, statt info()
+            }
+
+            if ($returnVar !== 0) {
+                warning("❌ Fehler beim composer require {$package}.");
+                throw new \RuntimeException("Composer require für {$package} fehlgeschlagen.");
+            }
+
+            info("✅ Package {$package} erfolgreich installiert.");
+        } else {
+            info("✅ Package {$package} ist bereits installiert.");
+        }
+    }
+
+
+
     public function installPackage(array $package, array $panelPaths): void
     {
-        if (empty($package) || !isset($package['name'])) {
-            warning('⚠️ Empty or invalid package data. Skipping.');
+        if (empty($package) || ! isset($package['name'])) {
+            warning('⚠️ Empty or invalid package. Skip installation.');
             return;
+        }
+
+        if (isset($package['composer'])) {
+            $this->requirePackage($package['composer']);
         }
 
         $this->ensurePackageServiceIsSet();
 
-        info("📦 Installing package: {$package['name']}");
+        info("🚀 Installiere Paket: {$package['name']}");
+
         $this->runMigrations($package);
         $this->publishConfig($package);
         $this->runSeeders($package);
         $this->installPlugins($package, $panelPaths);
+
+        $this->checkOrCreateFilamentUser();
+
+        info("🛠️ Führe filament:upgrade aus...");
+        Artisan::call('filament:upgrade', ['--force' => true]);
+        info("✅ Upgrade abgeschlossen.");
     }
 
     protected function runMigrations(array $package): void
     {
-        info('🔍 Checking for migrations...');
-        
+        info('🔍 Prüfe Migrationen...');
+
         $migrations = $this->packageService->getMigrations($package);
-        
+
         if (empty($migrations)) {
-            info("ℹ️ No migrations found for {$package['name']}.");
+            info("ℹ️ Keine Migrationen gefunden für {$package['name']}.");
             return;
         }
-        
+
         foreach ($migrations as $migration) {
-            info("➡️ Checking migration: {$migration}");
-            
+            info("➡️ Prüfe Migration: {$migration}");
+
             $status = $this->packageService->checkMigrationStatus($migration);
-            
+
             if ($status['hasChanges']) {
                 if ($status['hasDataInDeletedFields']) {
-                    if (! confirm("❗ Migration '{$migration}' removes columns with existing data. Continue anyway?", false)) {
-                        warning("⏭️ Skipped migration '{$migration}'.");
+                    if (! confirm("❗ Migration '{$migration}' entfernt Spalten mit Daten. Trotzdem fortfahren?", false)) {
+                        warning("⏭️ Migration '{$migration}' übersprungen.");
                         continue;
                     }
                 }
-                
-                info("🚀 Running migration {$migration}...");
+
+                info("📥 Führe Migration {$migration} aus...");
                 $exitCode = Artisan::call('migrate', [
                     '--path' => $migration,
                     '--force' => true,
                 ]);
-                info("✅ Migration completed (Exit Code: {$exitCode})");
+                info("✅ Migration abgeschlossen (Exit Code: {$exitCode})");
             } else {
-                info("⏭️ No changes detected in {$migration}, skipping.");
+                info("⏭️ Keine Änderungen in {$migration}, übersprungen.");
             }
         }
     }
@@ -89,22 +131,22 @@ trait InstallPackage
             $publishPath = config_path(basename($path));
 
             if (! file_exists($publishPath)) {
-                info("📄 Publishing new config file: {$path}");
+                info("📄 Veröffentliche neue Konfig: {$path}");
                 File::put($publishPath, $content);
                 continue;
             }
 
             $existingContent = File::get($publishPath);
             if ($existingContent === $content) {
-                info("✅ Config file {$path} is already up to date.");
+                info("✅ Konfiguration {$path} ist aktuell.");
                 continue;
             }
 
-            if (confirm("⚠️ Config file {$path} has changed. Overwrite?", false)) {
-                info("🔄 Updating config file: {$path}");
+            if (confirm("⚠️ Config-Datei {$path} hat Änderungen. Überschreiben?", false)) {
+                info("🔄 Aktualisiere Config-Datei: {$path}");
                 File::put($publishPath, $content);
             } else {
-                warning("⏭️ Skipping overwrite of config file {$path}.");
+                warning("⏭️ Konfig {$path} wurde nicht überschrieben.");
             }
         }
     }
@@ -117,12 +159,12 @@ trait InstallPackage
             $table = $this->getSeederTable($seeder);
 
             if (! $table || ! Schema::hasTable($table)) {
-                warning("⚠️ Could not determine table for seeder {$seeder}. Skipping.");
+                warning("⚠️ Tabelle für Seeder {$seeder} nicht gefunden. Überspringe.");
                 continue;
             }
 
             if (DB::table($table)->count() === 0) {
-                info("🌱 Seeding initial data for table {$table}...");
+                info("🌱 Seed initialer Daten in {$table}...");
                 Artisan::call('db:seed', [
                     '--class' => $seeder,
                     '--force' => true,
@@ -130,14 +172,14 @@ trait InstallPackage
                 continue;
             }
 
-            if (confirm("📂 Table '{$table}' already contains data. Reseed anyway?", false)) {
-                info("🔁 Reseeding data for {$table}...");
+            if (confirm("📂 Tabelle '{$table}' enthält bereits Daten. Trotzdem neu seeden?", false)) {
+                info("🔁 Seed wiederhole für {$table}...");
                 Artisan::call('db:seed', [
                     '--class' => $seeder,
                     '--force' => true,
                 ]);
             } else {
-                warning("⏭️ Seeder skipped for {$table}.");
+                warning("⏭️ Seeder für {$table} übersprungen.");
             }
         }
     }
@@ -145,13 +187,14 @@ trait InstallPackage
     public function installPlugins(array $package, array $panelPaths): void
     {
         $plugins = $this->packageService->getPlugins($package);
+
         if (empty($plugins)) {
-            info("ℹ️ No plugins found for package '{$package['name']}'.");
+            info("ℹ️ Keine Plugins im Paket '{$package['name']}'.");
             return;
         }
 
         foreach ($panelPaths as $panelPath) {
-            info("🔌 Registering plugins for panel: {$panelPath}");
+            info("🔌 Registriere Plugins für Panel: {$panelPath}");
             $this->registerPlugins($panelPath, $package);
         }
     }
