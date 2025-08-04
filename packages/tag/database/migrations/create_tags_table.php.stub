@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('weight')->nullable();
             $table->integer('count')->nullable();
             $table->string('color')->nullable();
+            $table->json('custom_properties')->nullable();
             $table->softDeletes();
 
         });
