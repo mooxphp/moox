@@ -12,7 +12,7 @@ It will be integrated into Moox Auth in the near future.
 
 ## Screenshot
 
-[!Firewall Backdoor](./screenshot/main.jpg)
+![Firewall Backdoor](./screenshot/main.jpg)
 
 ## Features
 
