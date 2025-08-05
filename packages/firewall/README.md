@@ -22,10 +22,6 @@ Moox Firewall allows you to lock down your website or application and allow acce
 
 <!--/features-->
 
-## Screenshot
-
-![Firewall Backdoor](./screenshot/main.jpg)
-
 ## Installation
 
 ```bash
@@ -37,6 +33,10 @@ and publish the config, to activate and adjust Moox Firewall:
 ```bash
 php artisan vendor:publish --tag="firewall-config"
 ```
+
+## Screenshot
+
+![Firewall Backdoor](./screenshot/main.jpg)
 
 ## Configuration
 
