@@ -1,8 +1,9 @@
 {
     "name": "moox/firewall",
-    "description": "Firewall is a Moox Package using Moox Skeleton.",
+    "description": "Moox Firewall is a simple application level firewall for Laravel and Filament.",
     "keywords": [
         "Moox",
+        "Firewall",
         "Laravel",
         "Filament",
         "Moox package",
@@ -18,7 +19,7 @@
         }
     ],
     "require": {
-        "moox/core": "self.version"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +36,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {
