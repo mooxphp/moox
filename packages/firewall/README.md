@@ -6,6 +6,10 @@ Moox Firewall allows you to lock down your website or application and allow acce
 
 It will be integrated into Moox Auth in the near future.
 
+## Screenshot
+
+[!Firewall Backdoor](./screenshot/main.jpg)
+
 ## Features
 
 <!--features-->
