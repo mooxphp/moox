@@ -135,4 +135,7 @@ return [
     'empty_trash_description' => 'This action will permanently delete all items in the trash.',
     'color' => 'Color',
     'by' => 'by',
+    'publish_modal_description' => 'This action will publish the item.',
+    'taxonomy_created_successfully' => 'Taxonomy created successfully',
+    'taxonomy_created_successfully_body' => 'The taxonomy "{title}" was created successfully.',
 ];

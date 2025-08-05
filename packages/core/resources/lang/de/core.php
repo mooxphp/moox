@@ -135,4 +135,7 @@ return [
     'empty_trash_description' => 'Diese Aktion wird alle Elemente im Papierkorb dauerhaft löschen.',
     'color' => 'Farbe',
     'by' => 'von',
+    'publish_modal_description' => 'Diese Aktion wird das Element veröffentlichen.',
+    'taxonomy_created_successfully' => 'Taxonomie erfolgreich erstellt',
+    'taxonomy_created_successfully_body' => 'Die Taxonomie "{title}" wurde erfolgreich erstellt.',
 ];
