@@ -44,8 +44,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -74,8 +74,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -88,14 +88,14 @@ abstract class BaseResource extends Resource
     {
         return EditAction::make('edit')
             ->color('primary')
-            ->url(fn($record) => static::getUrl('edit', ['record' => $record]));
+            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]));
     }
 
     public static function getViewTableAction(): ViewAction
     {
         return ViewAction::make('view')
             ->color('secondary')
-            ->url(fn($record) => static::getUrl('view', ['record' => $record]));
+            ->url(fn ($record) => static::getUrl('view', ['record' => $record]));
     }
 
     public static function getRestoreTableAction(): RestoreAction
@@ -106,7 +106,7 @@ abstract class BaseResource extends Resource
     public static function getRestoreBulkAction(): RestoreBulkAction
     {
         return RestoreBulkAction::make()
-            ->visible(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getDeleteBulkAction(): DeleteBulkAction
@@ -125,7 +125,7 @@ abstract class BaseResource extends Resource
                     $record->delete();
                 }
             })
-            ->hidden(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->hidden(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getSaveAction(): Action
@@ -137,7 +137,7 @@ abstract class BaseResource extends Resource
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
             })
-            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
 
     public static function getPublishAction(): Action
@@ -161,7 +161,7 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
             })
-            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
             ->requiresConfirmation()
             ->modalDescription(__('core::core.publish_modal_description'));
     }
@@ -176,7 +176,7 @@ abstract class BaseResource extends Resource
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('create'));
             })
-            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getCancelAction(): Action
@@ -186,7 +186,7 @@ abstract class BaseResource extends Resource
             ->keyBindings(['escape'])
             ->color('secondary')
             ->outlined()
-            ->url(fn() => static::getUrl('index'));
+            ->url(fn () => static::getUrl('index'));
         // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
@@ -208,7 +208,7 @@ abstract class BaseResource extends Resource
                 $livewire->redirect(static::getUrl('index'));
             })
             ->keyBindings(['delete'])
-            ->visible(fn($livewire): bool => $livewire instanceof EditRecord)
+            ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)
             ->requiresConfirmation();
     }
 
@@ -219,8 +219,8 @@ abstract class BaseResource extends Resource
             ->color('primary')
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+e', 'ctrl+e'])
-            ->url(fn($record, $livewire) => static::getUrl('edit', ['record' => $record]))
-            ->visible(fn($livewire): bool => $livewire instanceof ViewRecord);
+            ->url(fn ($record, $livewire) => static::getUrl('edit', ['record' => $record]))
+            ->visible(fn ($livewire): bool => $livewire instanceof ViewRecord);
     }
 
     public static function getRestoreAction(): Action
@@ -230,7 +230,7 @@ abstract class BaseResource extends Resource
             ->color('success')
             ->button()
             ->extraAttributes(['class' => 'w-full'])
-            ->action(fn($record) => $record->restore())
-            ->visible(fn($livewire, $record): bool => $record && method_exists($record, 'trashed') && $record->trashed());
+            ->action(fn ($record) => $record->restore())
+            ->visible(fn ($livewire, $record): bool => $record && method_exists($record, 'trashed') && $record->trashed());
     }
 }
