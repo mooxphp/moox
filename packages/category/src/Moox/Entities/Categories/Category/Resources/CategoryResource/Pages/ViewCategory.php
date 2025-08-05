@@ -15,20 +15,13 @@ class ViewCategory extends BaseViewDraft
 {
     protected static string $resource = CategoryResource::class;
 
-    public function getHeaderActions(): array
-    {
-        return [
-            EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
-            RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
-        ];
-    }
 
     #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
+            $title = $title . ' - ' . __('core::core.deleted');
         }
 
         return $title;
