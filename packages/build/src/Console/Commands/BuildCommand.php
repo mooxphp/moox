@@ -258,7 +258,7 @@ class BuildCommand extends Command
 
     protected function askForNamespace(): void
     {
-        $this->namespace = text('What is the namespace of the package?', default: config('build.default_namespace'));
+        $this->namespace = text('What is the vendor namespace of the package?', default: config('build.default_namespace'));
 
         if (empty($this->namespace)) {
             error('  Please provide a valid namespace. '.$this->emojiNoSee);
@@ -268,7 +268,7 @@ class BuildCommand extends Command
 
     protected function askForPackagist(): void
     {
-        $this->packagist = text('What is the packagist name of the package?', default: config('build.default_packagist'));
+        $this->packagist = text('What is the packagist organization name of the package?', default: config('build.default_packagist'));
 
         if (empty($this->packagist)) {
             error('  Please provide a valid packagist name. '.$this->emojiNoSee);
