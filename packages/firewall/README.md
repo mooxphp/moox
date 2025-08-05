@@ -51,13 +51,13 @@ You can configure all things in firewall.php:
 
 ```php
 return [
-    // Whitelist IP addresses to access the route or route group
+    // Enable firewall?
+    'enabled' => env('MOOX_FIREWALL_ENABLED', true),
+
+    // Whitelist IP addresses
     'whitelist' => array_filter(explode(',', env('MOOX_FIREWALL_WHITELIST', ''))),
 
-    // Globally enable firewall?
-    'global_enabled' => env('MOOX_FIREWALL_ENABLED', false),
-
-    // Logo to display on the firewall page, not used yet
+    // Logo to display on the firewall page
     'logo' => env('MOOX_FIREWALL_LOGO', 'img/logo.png'),
 
     // Backdoor allowed?
@@ -69,7 +69,7 @@ return [
     // Firewall page message
     'message' => env('MOOX_FIREWALL_MESSAGE', 'Moox Firewall'),
 
-    // Firewall page color, currently hex only
+    // Firewall page color as hex
     'color' => env('MOOX_FIREWALL_COLOR', 'darkblue'),
 
     // Firewall page description
@@ -79,7 +79,7 @@ return [
 
 ## Usage
 
-1. After installation you need to global_enable the firewall or use it in your routes
+1. After installation you need to global_enable the firewall
 2. Set config values or use your environment to adjust it to your needs
 3. Use the backdoor token to log in or append it to your URL like `?backdoor_token=let-me-in`
 

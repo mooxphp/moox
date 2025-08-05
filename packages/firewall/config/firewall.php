@@ -17,11 +17,11 @@
 
 return [
 
-    // Whitelist IP addresses to access the route or route group
-    'whitelist' => array_filter(explode(',', env('MOOX_FIREWALL_WHITELIST', ''))),
+    // Enable firewall?
+    'enabled' => env('MOOX_FIREWALL_ENABLED', false),
 
-    // Globally enable firewall?
-    'global_enabled' => env('MOOX_FIREWALL_ENABLED', false),
+    // Whitelist IP addresses
+    'whitelist' => array_filter(explode(',', env('MOOX_FIREWALL_WHITELIST', ''))),
 
     // Logo to display on the firewall page, not used yet, must be tied to Moox Brand
     'logo' => env('MOOX_FIREWALL_LOGO', 'img/logo.png'),

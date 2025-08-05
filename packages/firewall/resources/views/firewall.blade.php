@@ -99,10 +99,14 @@
         <h1 class="title">{{ config('firewall.message', 'Moox Firewall') }}</h1>
         <p class="message">{{ config('firewall.description', 'Please enter your access token to continue.') }}</p>
 
-        @if(session('firewall_error'))
-            <div class="error">
-                {{ session('firewall_error') }}
-            </div>
+        @if(isset($firewall_error) && $firewall_error)
+        <div class="error">
+            {{ $firewall_error }}
+        </div>
+        @elseif(session('firewall_error'))
+        <div class="error">
+            {{ session('firewall_error') }}
+        </div>
         @endif
 
         <form method="GET" class="form">
