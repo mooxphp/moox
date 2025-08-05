@@ -8,7 +8,14 @@
 
 <!-- description -->
 
-Moox Firewall allows you to lock down your website or application and allow access by whitelisting IP addresses or open a backdoor that needs a access token.
+Moox Firewall allows you to secure your Laravel application by restricting access to whitelisted IP addresses.
+
+For maintenance or emergency access, you can enable a temporary backdoor using a secret access token.
+
+Moox Firewall provides an additional security layer on top of your existing authentication mechanisms.
+It strengthens access control but does not replace Multi-Factor Authentication (MFA) as defined by the BSI.
+
+Support for MFA and modern Passkeys is planned for an upcoming release, see [Roadmap](ROADMAP.md) for more
 
 <!-- /description -->
 
@@ -78,7 +85,7 @@ return [
 
 ## Roadmap
 
-See the [roadmap](ROADMAP.md) for more.
+See the [ROADMAP](ROADMAP.md) for more.
 
 ## Security
 
