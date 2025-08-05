@@ -1,4 +1,8 @@
-![Moox Firewall](https://github.com/mooxphp/moox/raw/main/art/banner/firewall.jpg)
+<div class="filament-hidden">
+
+![Moox Firewall](banner.jpg)
+
+</div>
 
 # Moox Firewall
 
