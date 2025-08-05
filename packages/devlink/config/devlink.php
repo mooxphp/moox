@@ -167,6 +167,11 @@ return [
             'path' => $public_base_path.'/featherlight',
             'type' => 'public',
         ],
+        'firewall' => [
+            'active' => true,
+            'path' => $public_base_path.'/firewall',
+            'type' => 'public',
+        ],
         'flag-icons-circle' => [
             'active' => true,
             'path' => $public_base_path.'/flag-icons-circle',
