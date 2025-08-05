@@ -6,13 +6,11 @@
 
 # Moox Firewall
 
+<!-- description -->
+
 Moox Firewall allows you to lock down your website or application and allow access by whitelisting IP addresses or open a backdoor that needs a access token.
 
-It will be integrated into Moox Auth in the near future.
-
-## Screenshot
-
-![Firewall Backdoor](./screenshot/main.jpg)
+<!-- /description -->
 
 ## Features
 
@@ -24,10 +22,20 @@ It will be integrated into Moox Auth in the near future.
 
 <!--/features-->
 
+## Screenshot
+
+![Firewall Backdoor](./screenshot/main.jpg)
+
 ## Installation
 
 ```bash
 composer require moox/firewall
+```
+
+and publish the config, to activate and adjust Moox Firewall:
+
+```bash
+php artisan vendor:publish --tag="firewall-config"
 ```
 
 ## Configuration
