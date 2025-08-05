@@ -2,16 +2,16 @@
 
 namespace Moox\Core\Traits\Taxonomy;
 
-use CodeWithDennis\FilamentSelectTree\SelectTree;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TagsColumn;
+use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Services\TaxonomyService;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
-use Moox\Core\Services\TaxonomyService;
 
 trait HasResourceTaxonomy
 {
@@ -33,7 +33,7 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
 
         return collect($taxonomyService->getTaxonomies())
-            ->map(fn ($settings, $taxonomy): Select|SelectTree => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
+            ->map(fn($settings, $taxonomy): Select|SelectTree => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
             ->toArray();
     }
 
@@ -48,7 +48,7 @@ trait HasResourceTaxonomy
             'label' => $settings['label'] ?? ucfirst($taxonomy),
             'searchable' => true,
             'createOptionForm' => $createFormClass::getSchema(),
-            'createOptionUsing' => function (array $data) use ($modelClass) {
+            'createOptionUsing' => function (array $data, $livewire) use ($modelClass) {
                 $validator = validator($data, [
                     'title' => ['required', 'string', 'max:255'],
                     'slug' => ['required', 'string', 'max:255'],
@@ -61,24 +61,19 @@ trait HasResourceTaxonomy
                 $model = app($modelClass);
 
                 // Check if model is translatable
-                if (method_exists($model, 'createWithTranslations')) {
-                    $locale = request()->get('lang') ?? app()->getLocale();
-                    $translations = [
-                        $locale => [
-                            'title' => $data['title'],
-                            'slug' => $data['slug'],
-                        ],
-                    ];
-                    Log::info('translations', $translations);
-                    $newTaxonomy = $model::createWithTranslations([], $translations);
-                } else {
-                    $newTaxonomy = $model::create([
-                        'title' => $data['title'],
-                        'slug' => $data['slug'],
-                    ]);
-                    Log::info('newTaxonomy', $newTaxonomy);
+                if (method_exists($model, 'createTranslation')) {
+                    $locale = $livewire->lang ?? app()->getLocale();
+
+                    $newTaxonomy = $model::create([]);
+
+                    $newTaxonomy->createTranslation($locale, $data);
+
+                    Notification::make()
+                        ->title(__('core::core.taxonomy_created_successfully'))
+                        ->body(__('core::core.taxonomy_created_successfully_body', ['title' => $data['title']]))
+                        ->success()
+                        ->send();
                 }
-                Log::info('newTaxonomy', $newTaxonomy);
 
                 return $newTaxonomy->id;
             },
@@ -101,14 +96,14 @@ trait HasResourceTaxonomy
 
         return Select::make($taxonomy)
             ->multiple()
-            ->options(fn () => app($modelClass)::get()->mapWithKeys(fn ($item) => [$item->id => $item->title])->toArray())
+            ->options(fn() => app($modelClass)::get()->mapWithKeys(fn($item) => [$item->id => $item->title])->toArray())
             ->getSearchResultsUsing(
-                fn (string $search) => app($modelClass)::query()
-                    ->when(method_exists($modelClass, 'with'), fn ($query) => $query->with('translations'))
-                    ->when(method_exists($modelClass, 'whereHas'), function ($query) use ($search) {
-                        $query->whereHas('translations', function ($q) use ($search) {
+                fn(string $search) => app($modelClass)::query()
+                    ->when(method_exists($modelClass, 'with'), fn($query) => $query->with('translations'))
+                    ->when(method_exists($modelClass, 'whereHas'), function ($query, $livewire) use ($search) {
+                        $query->whereHas('translations', function ($q) use ($search, $livewire) {
                             $q->where('title', 'like', sprintf('%%%s%%', $search))
-                                ->where('locale', request()->get('lang') ?? app()->getLocale());
+                                ->where('locale', $livewire->lang ?? app()->getLocale());
                         });
                     }, function ($query) use ($search) {
                         $query->where('title', 'like', sprintf('%%%s%%', $search));
@@ -120,7 +115,7 @@ trait HasResourceTaxonomy
                             $locale = app()->getLocale();
                             $translation = $item->translate($locale);
 
-                            return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
+                            return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
                         }
 
                         return [$item->id => $item->title];
@@ -151,28 +146,29 @@ trait HasResourceTaxonomy
             return SelectFilter::make($taxonomy)
                 ->label($settings['label'] ?? ucfirst($taxonomy))
                 ->multiple()
-                ->options(fn () => app($taxonomyModel)::query()
-                    ->when(method_exists($taxonomyModel, 'with'), fn ($query) => $query->with('translations'))
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        if (method_exists($item, 'translate')) {
-                            $locale = app()->getLocale();
-                            $translation = $item->translate($locale);
+                ->options(
+                    fn() => app($taxonomyModel)::query()
+                        ->when(method_exists($taxonomyModel, 'with'), fn($query) => $query->with('translations'))
+                        ->get()
+                        ->mapWithKeys(function ($item) {
+                            if (method_exists($item, 'translate')) {
+                                $locale = app()->getLocale();
+                                $translation = $item->translate($locale);
 
-                            return [$item->id => $translation ? $translation->title : 'ID: '.$item->id];
-                        }
+                                return [$item->id => $translation ? $translation->title : 'ID: ' . $item->id];
+                            }
 
-                        return [$item->id => $item->title];
-                    })
-                    ->toArray()
+                            return [$item->id => $item->title];
+                        })
+                        ->toArray()
                 )
                 ->query(function (Builder $query, array $data) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable): void {
                     $selectedIds = $data['values'] ?? [];
-                    if (! empty($selectedIds)) {
+                    if (!empty($selectedIds)) {
                         $query->whereExists(function ($subQuery) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable, $selectedIds): void {
                             $subQuery->select(DB::raw(1))
                                 ->from($pivotTable)
-                                ->whereColumn(sprintf('%s.%s', $pivotTable, $foreignKey), $resourceTable.'.id')
+                                ->whereColumn(sprintf('%s.%s', $pivotTable, $foreignKey), $resourceTable . '.id')
                                 ->whereIn(sprintf('%s.%s', $pivotTable, $relatedKey), $selectedIds);
                         });
                     }
@@ -185,7 +181,7 @@ trait HasResourceTaxonomy
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-        return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
+        return collect($taxonomies)->map(fn($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
             ->label($settings['label'] ?? ucfirst((string) $taxonomy))
             ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
                 $relationshipName = $settings['relationship'] ?? $taxonomy;
@@ -198,16 +194,16 @@ trait HasResourceTaxonomy
                 $modelTable = $model->getTable();
 
                 return DB::table($table)
-                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
+                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable . '.id')
                     ->where(sprintf('%s.%s', $table, $foreignKey), $record->id)
                     ->when(method_exists($model, 'with'), function ($query) use ($modelTable, $modelClass) {
                         return $query->join('translations', function ($join) use ($modelTable, $modelClass) {
-                            $join->on('translations.translatable_id', '=', $modelTable.'.id')
+                            $join->on('translations.translatable_id', '=', $modelTable . '.id')
                                 ->where('translations.translatable_type', '=', $modelClass)
                                 ->where('translations.locale', '=', request()->get('lang') ?? app()->getLocale());
                         })->pluck('translations.title');
                     }, function ($query) use ($modelTable) {
-                        return $query->pluck($modelTable.'.title');
+                        return $query->pluck($modelTable . '.title');
                     })
                     ->toArray();
             })
