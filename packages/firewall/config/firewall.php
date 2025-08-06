@@ -30,14 +30,19 @@ return [
     'backdoor' => env('MOOX_FIREWALL_BACKDOOR', true),
 
     // Backdoor bypass token
-    'backdoor_token' => env('MOOX_FIREWALL_BACKDOOR_TOKEN', 'let-me-in'),
+    'backdoor_token' => env('MOOX_FIREWALL_BACKDOOR_TOKEN', 'v4a'),
 
     // Firewall page message
     'message' => env('MOOX_FIREWALL_MESSAGE', 'Moox Firewall'),
 
+    // Firewall page description
+    'description' => env('MOOX_FIREWALL_DESCRIPTION', 'Please enter your access token to continue.'),
+
     // Firewall page color, currently hex, will be Tailwind color in the future
     'color' => env('MOOX_FIREWALL_COLOR', 'darkblue'),
 
-    // Firewall page description
-    'description' => env('MOOX_FIREWALL_DESCRIPTION', 'Please enter your access token to continue.'),
+    // Exclude routes from firewall
+    'exclude' => [
+        'api/expiries/*',
+    ],
 ];

@@ -22,6 +22,14 @@ class FirewallListener
             'ip' => $request->ip(),
         ]);
 
+        $excludedRoutes = $config['exclude'] ?? [];
+
+        foreach ($excludedRoutes as $pattern) {
+            if ($request->is($pattern)) {
+                return;
+            }
+        }
+
         if (in_array($request->ip(), $config['whitelist'] ?? [])) {
             return;
         }
