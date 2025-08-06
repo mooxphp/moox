@@ -38,7 +38,20 @@ class FirewallListener
             return;
         }
 
-        $token = $config['backdoor_token'] ?? '';
+        if (! config('firewall.backdoor')) {
+            echo View::make('firewall::access-denied')->render();
+            exit;
+        }
+
+        $backdoorUrl = $config['backdoor_url'] ?? null;
+        $isBackdoorUrl = $backdoorUrl ? ($request->is($backdoorUrl) || $request->path() === ltrim($backdoorUrl, '/')) : false;
+
+        if ($backdoorUrl && ! $isBackdoorUrl) {
+            echo View::make('firewall::access-denied')->render();
+            exit;
+        }
+
+        $token = $config['backdoor_token'] ?? 'let-me-in';
         $requestToken = $request->get('backdoor_token') ?? $request->header('X-Backdoor-Token');
 
         if ($token && $requestToken === $token) {
@@ -46,7 +59,11 @@ class FirewallListener
                 $request->session()->put('firewall_authenticated', true);
             }
 
-            return redirect($request->url());
+            if ($isBackdoorUrl) {
+                return redirect('/');
+            } else {
+                return redirect($request->url());
+            }
         }
 
         $errorMessage = null;
@@ -58,7 +75,7 @@ class FirewallListener
             }
         }
 
-        echo View::make('firewall::firewall', [
+        echo View::make('firewall::backdoor', [
             'firewall_error' => $errorMessage,
         ])->render();
         exit;

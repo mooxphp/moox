@@ -30,13 +30,19 @@ return [
     'backdoor' => env('MOOX_FIREWALL_BACKDOOR', true),
 
     // Backdoor bypass token
-    'backdoor_token' => env('MOOX_FIREWALL_BACKDOOR_TOKEN', 'v4a'),
+    'backdoor_token' => env('MOOX_FIREWALL_BACKDOOR_TOKEN', 'let-me-in'),
+
+    // Backdoor limited to URL
+    'backdoor_url' => env('MOOX_FIREWALL_BACKDOOR_URL', '/backdoor'),
 
     // Firewall page message
     'message' => env('MOOX_FIREWALL_MESSAGE', 'Moox Firewall'),
 
     // Firewall page description
     'description' => env('MOOX_FIREWALL_DESCRIPTION', 'Please enter your access token to continue.'),
+
+    // Firewall denied message
+    'denied_message' => env('MOOX_FIREWALL_DENIED_MESSAGE', 'Access denied. Please contact the IT department.'),
 
     // Firewall page color, currently hex, will be Tailwind color in the future
     'color' => env('MOOX_FIREWALL_COLOR', 'darkblue'),
