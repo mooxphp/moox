@@ -3,16 +3,9 @@
 namespace Moox\Firewall\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Moox\Firewall\FirewallServiceProvider;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Illuminate\Foundation\Bootstrap\LoadConfiguration;
-use Illuminate\Foundation\Bootstrap\HandleExceptions;
-use Illuminate\Foundation\Bootstrap\RegisterFacades;
-use Illuminate\Foundation\Bootstrap\SetRequestForConsole;
-use Illuminate\Foundation\Bootstrap\RegisterProviders;
-use Illuminate\Foundation\Bootstrap\BootProviders;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Moox\Firewall\FirewallServiceProvider;
 
 class TestCase extends BaseTestCase
 {
