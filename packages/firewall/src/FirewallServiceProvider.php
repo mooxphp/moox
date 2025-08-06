@@ -17,7 +17,8 @@ class FirewallServiceProvider extends PackageServiceProvider
         $package
             ->name('firewall')
             ->hasConfigFile()
-            ->hasViews('firewall')
+            ->hasViews('access-denied')
+            ->hasViews('backdoor')
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();

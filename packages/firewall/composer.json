@@ -23,7 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Firewall\\": "src"
+            "Moox\\Firewall\\": "src",
+            "Moox\\Firewall\\Tests\\": "tests"
         }
     },
     "extra": {
