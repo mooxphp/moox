@@ -166,36 +166,148 @@ class Draft extends BaseDraftModel implements HasMedia
     }
 
     /**
+     * Publish the draft and set all necessary fields
+     */
+    public function publish(): void
+    {
+        $this->status = 'published';
+        $this->handleSchedulingDates();
+    }
+
+    /**
+     * Unpublish the draft and set all necessary fields
+     */
+    public function unpublish(): void
+    {
+        $this->status = 'draft';
+        $this->handleSchedulingDates();
+    }
+
+    /**
+     * Schedule the draft for publishing
+     */
+    public function scheduleForPublishing(?Carbon $publishAt = null): void
+    {
+        $this->status = 'scheduled';
+        if ($publishAt) {
+            $this->to_publish_at = $publishAt;
+        }
+        $this->handleSchedulingDates();
+    }
+
+    /**
+     * Set draft to waiting status (for review/approval)
+     */
+    public function setToWaiting(): void
+    {
+        $this->status = 'waiting';
+        $this->handleSchedulingDates();
+    }
+
+    /**
+     * Set draft to private status (internal use only)
+     */
+    public function setToPrivate(): void
+    {
+        $this->status = 'privat';
+        $this->handleSchedulingDates();
+    }
+
+    /**
      * Handle scheduling dates based on status changes
      */
     public function handleSchedulingDates(): void
     {
+        $locale = request()->query('lang') ?? app()->getLocale();
+        $translation = $this->translateOrNew($locale);
+
         switch ($this->status) {
             case 'scheduled':
-                if (! $this->to_publish_at) {
-                    $this->to_publish_at = now();
+                if ($translation->published_at !== null) {
+                    $translation->unpublished_at = now();
+                    $translation->unpublished_by_id = auth()->id();
+                    $translation->unpublished_by_type = auth()->user()::class;
                 }
-                $this->published_at = null;
-                $this->unpublished_at = null;
+
+                $translation->published_at = null;
+                $translation->published_by_id = null;
+                $translation->published_by_type = null;
                 break;
 
             case 'published':
-                $this->published_at = now();
-                $this->to_publish_at = null;
-                $this->unpublished_at = null;
-                $this->to_unpublish_at = null;
+                $translation->published_at = now();
+                $translation->published_by_id = auth()->id();
+                $translation->published_by_type = auth()->user()::class;
+                $translation->to_publish_at = null;
+                $translation->unpublished_at = null;
+                $translation->to_unpublish_at = null;
+                break;
+
+            case 'waiting':
+                $translation->published_at = null;
+                $translation->published_by_id = null;
+                $translation->published_by_type = null;
+                $translation->to_publish_at = null;
+                $translation->unpublished_at = null;
+                $translation->to_unpublish_at = null;
+                break;
+
+            case 'privat':
+                if ($translation->published_at !== null) {
+                    $translation->unpublished_at = now();
+                    $translation->unpublished_by_id = auth()->id();
+                    $translation->unpublished_by_type = auth()->user()::class;
+                }
+
+                $translation->published_at = null;
+                $translation->published_by_id = null;
+                $translation->published_by_type = null;
+                $translation->to_publish_at = null;
+                $translation->to_unpublish_at = null;
                 break;
 
             case 'draft':
             default:
-                $this->published_at = null;
-                $this->to_publish_at = null;
-                $this->unpublished_at = null;
-                $this->to_unpublish_at = null;
+                $translation->published_at = null;
+                $translation->published_by_id = null;
+                $translation->published_by_type = null;
+                $translation->to_publish_at = null;
+                $translation->unpublished_at = null;
+                $translation->to_unpublish_at = null;
+                $translation->unpublished_at = now();
+                $translation->unpublished_by_id = auth()->id();
+                $translation->unpublished_by_type = auth()->user()::class;
+
                 break;
         }
 
+        $translation->save();
         $this->save();
+    }
+
+    /**
+     * Override the setAttribute method to automatically handle scheduling dates
+     * when status is changed
+     */
+    public function setAttribute($key, $value)
+    {
+        $oldStatus = $this->status;
+
+        if (in_array($key, $this->translatedAttributes)) {
+            $lang = request()->query('lang') ?? app()->getLocale();
+
+            $this->translateOrNew($lang)->$key = $value;
+
+            return $this;
+        }
+
+        $result = parent::setAttribute($key, $value);
+
+        if ($key === 'status' && $oldStatus !== $value) {
+            $this->handleSchedulingDates();
+        }
+
+        return $result;
     }
 
     public function author(): BelongsTo
@@ -354,19 +466,6 @@ class Draft extends BaseDraftModel implements HasMedia
         }
 
         return parent::getAttribute($key);
-    }
-
-    public function setAttribute($key, $value)
-    {
-        if (in_array($key, $this->translatedAttributes)) {
-            $lang = request()->query('lang') ?? app()->getLocale();
-
-            $this->translateOrNew($lang)->$key = $value;
-
-            return $this;
-        }
-
-        return parent::setAttribute($key, $value);
     }
 
     /**
