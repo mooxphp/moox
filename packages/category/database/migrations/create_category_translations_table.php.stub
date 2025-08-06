@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('slug');
             $table->string('permalink', 512)->unique();
             $table->text('content')->nullable();
+            $table->string('status')->nullable();
+
+
 
             $table->nullableMorphs('created_by');
             $table->nullableMorphs('updated_by');
