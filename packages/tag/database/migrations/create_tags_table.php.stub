@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('featured_image_url')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('count')->nullable();
-            $table->string('color')->nullable();
+            $table->string('color')->nullable();                           
+            $table->string('status')->nullable();
             $table->json('custom_properties')->nullable();
             $table->softDeletes();
-
         });
     }
 
