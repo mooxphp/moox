@@ -1,4 +1,4 @@
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton.jpg)
+![Moox Skeleton](banner.jpg)
 
 # Moox Skeleton
 
@@ -12,15 +12,16 @@ This template is used for generating Laravel packages, all Moox packages are bui
 
 <!--features-->
 
--   Feature 1
--   Feature 2
--   Feature 3
+-   Laravel package
+-   PHP package
+-   Composer package
+-   Moox plugin
 
 <!--/features-->
 
 ## Requirements
 
-See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
+See [Requirements](https://github.com/mooxphp/moox/#Requirements ).
 
 ## Installation
 
@@ -29,31 +30,21 @@ composer require moox/skeleton
 php artisan moox:install
 ```
 
-Curious what the install command does? See [Installation](https://github.com/mooxphp/moox/blob/main/docs/Installation.md).
-
 ## Screenshot
 
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/screenshots/skeleton.jpg)
+![Moox Skeleton](screenshot/main.jpg)
 
-## Get Started
+## Usage
 
-See [Get Started](docs/GetStarted.md).
+<!--usage-->
 
-## User Guide
+The best way to use Moox Skeleton is by using the [Moox Build](https://github.com/mooxphp/build) command.
 
-See [User Guide](docs/UserGuide.md).
-
-## Integration
-
-See [Integration](docs/Integration.md).
+<!--/usage -->
 
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Roadmap
-
-Please see [ROADMAP](ROADMAP.md) for more information on what is planned for this package.
 
 ## Security
 
@@ -61,7 +52,7 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 ## Credits
 
-Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to this package.
+Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to Moox, special thanks to our sponsors.
 
 ## License
 

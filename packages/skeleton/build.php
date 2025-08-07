@@ -190,7 +190,6 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
-        'skeleton.jpg' => 'made-with-moox.jpg',
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
@@ -207,6 +206,8 @@ foreach ($files as $file) {
     };
 }
 
+unlink(determineSeparator('banner.jpg'));
+rename(determineSeparator('bannernew.jpg'), determineSeparator('banner.jpg'));
 rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
 
 if (confirm('Execute `composer install` and run tests?')) {
