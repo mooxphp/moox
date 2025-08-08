@@ -88,6 +88,7 @@ class Draft extends BaseDraftModel implements HasMedia
         'updated_at',
         'updated_by_id',
         'updated_by_type',
+        'translation_status',
     ];
 
     protected $fillable = [
@@ -213,77 +214,77 @@ class Draft extends BaseDraftModel implements HasMedia
         $this->handleSchedulingDates();
     }
 
-    /**
-     * Handle scheduling dates based on status changes
-     */
-    public function handleSchedulingDates(): void
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        $translation = $this->translateOrNew($locale);
+    // /**
+    //  * Handle scheduling dates based on status changes
+    //  */
+    // public function handleSchedulingDates(): void
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
+    //     $translation = $this->translateOrNew($locale);
 
-        switch ($this->status) {
-            case 'scheduled':
-                if ($translation->published_at !== null) {
-                    $translation->unpublished_at = now();
-                    $translation->unpublished_by_id = auth()->id();
-                    $translation->unpublished_by_type = auth()->user()::class;
-                }
+    //     switch ($this->status) {
+    //         case 'scheduled':
+    //             if ($translation->published_at !== null) {
+    //                 $translation->unpublished_at = now();
+    //                 $translation->unpublished_by_id = auth()->id();
+    //                 $translation->unpublished_by_type = auth()->user()::class;
+    //             }
 
-                $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
-                break;
+    //             $translation->published_at = null;
+    //             $translation->published_by_id = null;
+    //             $translation->published_by_type = null;
+    //             break;
 
-            case 'published':
-                $translation->published_at = now();
-                $translation->published_by_id = auth()->id();
-                $translation->published_by_type = auth()->user()::class;
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
-                break;
+    //         case 'published':
+    //             $translation->published_at = now();
+    //             $translation->published_by_id = auth()->id();
+    //             $translation->published_by_type = auth()->user()::class;
+    //             $translation->to_publish_at = null;
+    //             $translation->unpublished_at = null;
+    //             $translation->to_unpublish_at = null;
+    //             break;
 
-            case 'waiting':
-                $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
-                break;
+    //         case 'waiting':
+    //             $translation->published_at = null;
+    //             $translation->published_by_id = null;
+    //             $translation->published_by_type = null;
+    //             $translation->to_publish_at = null;
+    //             $translation->unpublished_at = null;
+    //             $translation->to_unpublish_at = null;
+    //             break;
 
-            case 'privat':
-                if ($translation->published_at !== null) {
-                    $translation->unpublished_at = now();
-                    $translation->unpublished_by_id = auth()->id();
-                    $translation->unpublished_by_type = auth()->user()::class;
-                }
+    //         case 'privat':
+    //             if ($translation->published_at !== null) {
+    //                 $translation->unpublished_at = now();
+    //                 $translation->unpublished_by_id = auth()->id();
+    //                 $translation->unpublished_by_type = auth()->user()::class;
+    //             }
 
-                $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
-                $translation->to_publish_at = null;
-                $translation->to_unpublish_at = null;
-                break;
+    //             $translation->published_at = null;
+    //             $translation->published_by_id = null;
+    //             $translation->published_by_type = null;
+    //             $translation->to_publish_at = null;
+    //             $translation->to_unpublish_at = null;
+    //             break;
 
-            case 'draft':
-            default:
-                $translation->published_at = null;
-                $translation->published_by_id = null;
-                $translation->published_by_type = null;
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
-                $translation->unpublished_at = now();
-                $translation->unpublished_by_id = auth()->id();
-                $translation->unpublished_by_type = auth()->user()::class;
+    //         case 'draft':
+    //         default:
+    //             $translation->published_at = null;
+    //             $translation->published_by_id = null;
+    //             $translation->published_by_type = null;
+    //             $translation->to_publish_at = null;
+    //             $translation->unpublished_at = null;
+    //             $translation->to_unpublish_at = null;
+    //             $translation->unpublished_at = now();
+    //             $translation->unpublished_by_id = auth()->id();
+    //             $translation->unpublished_by_type = auth()->user()::class;
 
-                break;
-        }
+    //             break;
+    //     }
 
-        $translation->save();
-        $this->save();
-    }
+    //     $translation->save();
+    //     $this->save();
+    // }
 
     /**
      * Override the setAttribute method to automatically handle scheduling dates
@@ -291,8 +292,6 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function setAttribute($key, $value)
     {
-        $oldStatus = $this->status;
-
         if (in_array($key, $this->translatedAttributes)) {
             $lang = request()->query('lang') ?? app()->getLocale();
 
@@ -301,13 +300,7 @@ class Draft extends BaseDraftModel implements HasMedia
             return $this;
         }
 
-        $result = parent::setAttribute($key, $value);
-
-        if ($key === 'status' && $oldStatus !== $value) {
-            $this->handleSchedulingDates();
-        }
-
-        return $result;
+        return parent::setAttribute($key, $value);
     }
 
     public function author(): BelongsTo
@@ -350,87 +343,87 @@ class Draft extends BaseDraftModel implements HasMedia
      * Publishing status accessors
      * These methods now use the translation system to access the properties
      */
-    public function isScheduledForPublishing(): bool
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var DraftTranslation|null $translation */
-        $translation = $this->translate($locale);
+    // public function isScheduledForPublishing(): bool
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
+    //     /** @var DraftTranslation|null $translation */
+    //     $translation = $this->translate($locale);
 
-        return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
-    }
+    //     return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
+    // }
 
-    public function isPublished(): bool
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var DraftTranslation|null $translation */
-        $translation = $this->translate($locale);
+    // public function isPublished(): bool
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
+    //     /** @var DraftTranslation|null $translation */
+    //     $translation = $this->translate($locale);
 
-        return $translation?->published_at !== null;
-    }
+    //     return $translation?->published_at !== null;
+    // }
 
-    public function isScheduledForUnpublishing(): bool
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var DraftTranslation|null $translation */
-        $translation = $this->translate($locale);
+    // public function isScheduledForUnpublishing(): bool
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
+    //     /** @var DraftTranslation|null $translation */
+    //     $translation = $this->translate($locale);
 
-        return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
-    }
+    //     return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
+    // }
 
-    public function isUnpublished(): bool
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
-        /** @var DraftTranslation|null $translation */
-        $translation = $this->translate($locale);
+    // public function isUnpublished(): bool
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
+    //     /** @var DraftTranslation|null $translation */
+    //     $translation = $this->translate($locale);
 
-        return $translation && $translation->unpublished_at !== null;
-    }
+    //     return $translation && $translation->unpublished_at !== null;
+    // }
 
-    /**
-     * Query scopes
-     * These scopes now work with the translation system
-     */
-    public function scopeScheduledForPublishing($query)
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
+    // /**
+    //  * Query scopes
+    //  * These scopes now work with the translation system
+    //  */
+    // public function scopeScheduledForPublishing($query)
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
 
-        return $query->whereHas('translations', function ($q) use ($locale) {
-            $q->where('locale', $locale)
-                ->whereNotNull('to_publish_at')
-                ->whereNull('published_at');
-        });
-    }
+    //     return $query->whereHas('translations', function ($q) use ($locale) {
+    //         $q->where('locale', $locale)
+    //             ->whereNotNull('to_publish_at')
+    //             ->whereNull('published_at');
+    //     });
+    // }
 
-    public function scopePublished($query)
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
+    // public function scopePublished($query)
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
 
-        return $query->whereHas('translations', function ($q) use ($locale) {
-            $q->where('locale', $locale)
-                ->whereNotNull('published_at');
-        });
-    }
+    //     return $query->whereHas('translations', function ($q) use ($locale) {
+    //         $q->where('locale', $locale)
+    //             ->whereNotNull('published_at');
+    //     });
+    // }
 
-    public function scopeScheduledForUnpublishing($query)
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
+    // public function scopeScheduledForUnpublishing($query)
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
 
-        return $query->whereHas('translations', function ($q) use ($locale) {
-            $q->where('locale', $locale)
-                ->whereNotNull('to_unpublish_at')
-                ->whereNull('unpublished_at');
-        });
-    }
+    //     return $query->whereHas('translations', function ($q) use ($locale) {
+    //         $q->where('locale', $locale)
+    //             ->whereNotNull('to_unpublish_at')
+    //             ->whereNull('unpublished_at');
+    //     });
+    // }
 
-    public function scopeUnpublished($query)
-    {
-        $locale = request()->query('lang') ?? app()->getLocale();
+    // public function scopeUnpublished($query)
+    // {
+    //     $locale = request()->query('lang') ?? app()->getLocale();
 
-        return $query->whereHas('translations', function ($q) use ($locale) {
-            $q->where('locale', $locale)
-                ->whereNotNull('unpublished_at');
-        });
-    }
+    //     return $query->whereHas('translations', function ($q) use ($locale) {
+    //         $q->where('locale', $locale)
+    //             ->whereNotNull('unpublished_at');
+    //     });
+    // }
 
     /**
      * Restoration status
