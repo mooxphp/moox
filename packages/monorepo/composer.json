@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "pestphp/pest": "^2.0",
-        "pestphp/pest-plugin-laravel": "^2.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^9.0"
     },
