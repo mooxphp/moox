@@ -14,7 +14,7 @@ use Moox\User\Models\User;
 
 class PublishScheduledContentJob implements ShouldQueue
 {
-    use JobProgress, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -29,16 +29,16 @@ class PublishScheduledContentJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('🚀 Starting scheduled content publishing job at ' . now());
+        Log::info('🚀 Starting scheduled content publishing job at '.now());
 
         try {
             $this->publishScheduledContent();
             $this->unpublishScheduledContent();
 
-            Log::info('✅ Completed scheduled content publishing job at ' . now());
+            Log::info('✅ Completed scheduled content publishing job at '.now());
         } catch (\Exception $e) {
-            Log::error('❌ Error in scheduled content publishing job: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            Log::error('❌ Error in scheduled content publishing job: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
             throw $e;
         }
     }
@@ -57,7 +57,7 @@ class PublishScheduledContentJob implements ShouldQueue
             try {
                 $this->processTableForPublishing($table);
             } catch (\Exception $e) {
-                Log::error("❌ Error processing table {$table} for publishing: " . $e->getMessage());
+                Log::error("❌ Error processing table {$table} for publishing: ".$e->getMessage());
             }
         }
 
@@ -78,7 +78,7 @@ class PublishScheduledContentJob implements ShouldQueue
             try {
                 $this->processTableForUnpublishing($table);
             } catch (\Exception $e) {
-                Log::error("❌ Error processing table {$table} for unpublishing: " . $e->getMessage());
+                Log::error("❌ Error processing table {$table} for unpublishing: ".$e->getMessage());
             }
         }
 
@@ -97,12 +97,12 @@ class PublishScheduledContentJob implements ShouldQueue
 
                 $hasPublishField = DB::select("SHOW COLUMNS FROM `{$tableName}` LIKE 'to_publish_at'");
 
-                if (!empty($hasPublishField)) {
+                if (! empty($hasPublishField)) {
                     $tables[] = $tableName;
                 }
             }
         } catch (\Exception $e) {
-            Log::error("❌ Error getting translation tables: " . $e->getMessage());
+            Log::error('❌ Error getting translation tables: '.$e->getMessage());
         }
 
         return $tables;
@@ -120,12 +120,12 @@ class PublishScheduledContentJob implements ShouldQueue
 
                 $hasUnpublishField = DB::select("SHOW COLUMNS FROM `{$tableName}` LIKE 'to_unpublish_at'");
 
-                if (!empty($hasUnpublishField)) {
+                if (! empty($hasUnpublishField)) {
                     $tables[] = $tableName;
                 }
             }
         } catch (\Exception $e) {
-            Log::error("❌ Error getting translation tables for unpublishing: " . $e->getMessage());
+            Log::error('❌ Error getting translation tables for unpublishing: '.$e->getMessage());
         }
 
         return $tables;
@@ -140,7 +140,6 @@ class PublishScheduledContentJob implements ShouldQueue
             ->get();
 
         if ($translationsToPublish->count() > 0) {
-
             foreach ($translationsToPublish as $translation) {
                 $this->publishTranslation($tableName, $translation);
             }
@@ -157,7 +156,6 @@ class PublishScheduledContentJob implements ShouldQueue
             ->get();
 
         if ($translationsToUnpublish->count() > 0) {
-
             foreach ($translationsToUnpublish as $translation) {
                 $this->unpublishTranslation($tableName, $translation);
             }
@@ -180,13 +178,9 @@ class PublishScheduledContentJob implements ShouldQueue
                         'unpublished_by_id' => null,
                         'unpublished_by_type' => null,
                     ]);
-
-
             });
-
-
         } catch (\Exception $e) {
-            Log::error("❌ Error publishing translation {$translation->id}: " . $e->getMessage());
+            Log::error("❌ Error publishing translation {$translation->id}: ".$e->getMessage());
         }
     }
 
@@ -203,14 +197,9 @@ class PublishScheduledContentJob implements ShouldQueue
                         'to_unpublish_at' => null,
                         'translation_status' => 'draft',
                     ]);
-
-
             });
-
-
         } catch (\Exception $e) {
-            Log::error("❌ Error unpublishing translation {$translation->id}: " . $e->getMessage());
+            Log::error("❌ Error unpublishing translation {$translation->id}: ".$e->getMessage());
         }
     }
-
 }

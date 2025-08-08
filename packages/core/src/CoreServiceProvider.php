@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
-use Override;
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Traits\HasGoogleIcons;
-use Moox\Core\Services\TabStateManager;
-use Moox\Core\Services\TaxonomyService;
-use Spatie\LaravelPackageTools\Package;
-use Moox\Core\Traits\HasTranslatableConfig;
-use Moox\Permission\Policies\DefaultPolicy;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Moox\Core\Console\Commands\PublishScheduledContentCommand;
+use Moox\Core\Services\TabStateManager;
+use Moox\Core\Services\TaxonomyService;
+use Moox\Core\Traits\HasGoogleIcons;
+use Moox\Core\Traits\HasTranslatableConfig;
+use Moox\Permission\Policies\DefaultPolicy;
+use Override;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
@@ -41,9 +41,7 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
-    public function packageBooted(): void
-    {
-    }
+    public function packageBooted(): void {}
 
     public function configurePackage(Package $package): void
     {
@@ -89,7 +87,7 @@ class CoreServiceProvider extends PackageServiceProvider
             if (isset($package['models']) && is_array($package['models'])) {
                 foreach ($package['models'] as $model => $settings) {
                     if (isset($settings['policy']) && class_exists($settings['policy'])) {
-                        $modelClass = 'App\Models\\' . $model;
+                        $modelClass = 'App\Models\\'.$model;
                         if (class_exists($modelClass)) {
                             Gate::policy($modelClass, $settings['policy']);
                         }
@@ -98,7 +96,7 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(fn($modelClass): string => DefaultPolicy::class);
+        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
     }
 
     public function hasCommand(string $commandClassName): Package
