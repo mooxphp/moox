@@ -1,5 +1,5 @@
 {
-    "name": "block-editor",
+    "name": "block-editor-ui",
     "version": "1.0.0",
     "description": "This is the block editor for Moox, based on Blocknote, React, ShadCN, TailwindCSS, Vite, and TypeScript.",
     "type": "module",
