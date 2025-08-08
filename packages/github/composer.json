@@ -13,7 +13,7 @@
         "php": "^8.3",
         "ext-intl": "*",
         "composer-runtime-api": "^2.1",
-        "symplify/monorepo-builder": "^11.0",
+        "symplify/monorepo-builder": "^12.0",
         "laravel/socialite": "^5.21"
     },
     "require-dev": {
