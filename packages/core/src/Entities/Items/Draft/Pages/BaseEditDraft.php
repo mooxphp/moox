@@ -37,7 +37,7 @@ abstract class BaseEditDraft extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
@@ -53,11 +53,11 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang) {
+        if (!$this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (! property_exists($record, 'translatedAttributes')) {
+        if (!property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -67,7 +67,7 @@ abstract class BaseEditDraft extends EditRecord
 
         $record->update($data);
 
-        if (! empty($translationData)) {
+        if (!empty($translationData)) {
             $relation = $record->translations();
             $translationModel = $relation->getRelated();
             $foreignKey = $relation->getForeignKeyName();
@@ -76,7 +76,7 @@ abstract class BaseEditDraft extends EditRecord
                 ->where('locale', $this->lang)
                 ->first();
 
-            if (! $translation) {
+            if (!$translation) {
                 $translation = $record->translations()->make([
                     $relation->getForeignKeyName() => $record->id,
                     'locale' => $this->lang,
@@ -99,7 +99,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! property_exists($model, 'translatedAttributes')) {
+        if (!property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -144,10 +144,16 @@ abstract class BaseEditDraft extends EditRecord
             'unpublished_by_type',
             'to_publish_at',
             'to_unpublish_at',
+            'created_at',
+            'created_by_id',
+            'created_by_type',
+            'updated_at',
+            'updated_by_id',
+            'updated_by_type',
         ];
 
         foreach ($translatedFields as $field) {
-            if (! isset($data[$field])) {
+            if (!isset($data[$field])) {
                 // Don't set protected fields to null automatically
                 if (in_array($field, $protectedFields)) {
                     continue;
@@ -167,23 +173,23 @@ abstract class BaseEditDraft extends EditRecord
     public function getHeaderActions(): array
     {
         $languages = Localization::with('language')->get();
-        $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
+        $languageCodes = $languages->map(fn($localization) => $localization->language->alpha2);
 
         return [
             ActionGroup::make(
                 $languages->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
+                    fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                        ->icon('flag-' . $localization->language->alpha2)
                         ->label('')
                         ->color('transparent')
                         ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                        ->url(fn() => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
                 )
                     ->all()
             )
                 ->color('transparent')
                 ->label('Language')
-                ->icon('flag-'.$this->lang)
+                ->icon('flag-' . $this->lang)
                 ->extraAttributes(['class' => '']),
         ];
     }
