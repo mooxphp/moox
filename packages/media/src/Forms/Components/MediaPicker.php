@@ -22,11 +22,15 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         $this->saveRelationshipsUsing(function (self $component, $state) {
             /** @var MediaUsable|null $record */
             $record = $component->getRecord();
-            if (! $record) {
+            if (!$record) {
                 return;
             }
 
             $mediaIds = is_array($state) ? $state : [$state];
+
+            $mediaIds = array_filter($mediaIds, function ($id) {
+                return $id !== null && $id !== '';
+            });
 
             MediaUsable::where('media_usable_id', $record->id)
                 ->where('media_usable_type', get_class($record))
@@ -39,7 +43,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             foreach ($mediaIds as $mediaId) {
                 $media = Media::where('id', $mediaId)->first();
 
-                if (! $media) {
+                if (!$media) {
                     continue;
                 }
 
