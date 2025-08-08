@@ -1,14 +1,15 @@
 {
-    "name": "moox/skeleton",
-    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "name": "moox/block-editor",
+    "description": "Moox Block Editor",
     "keywords": [
         "Moox",
+        "React",
         "Laravel",
-        "Filament",
-        "Moox package",
+        "BlockNote",
+        "Block Editor",
         "Laravel package"
     ],
-    "homepage": "https://moox.org/docs/skeleton",
+    "homepage": "https://moox.org/docs/block-editor",
     "license": "MIT",
     "authors": [
         {
@@ -22,13 +23,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Skeleton\\": "src"
+            "Moox\\BlockEditor\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Skeleton\\SkeletonServiceProvider"
+                "Moox\\BlockEditor\\BlockEditorServiceProvider"
             ]
         }
     },

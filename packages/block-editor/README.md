@@ -1,3 +1,11 @@
 # Moox Block Editor
 
-This will become the Laravel Package for the Moox Block Editor using the Block Editor UI.
+Early development of the Moox Block Editor
+
+```bash
+
+npm run dev
+
+```
+
+http://localhost:5173/

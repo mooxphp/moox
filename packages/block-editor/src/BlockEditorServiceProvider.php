@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Moox\Skeleton;
+namespace Moox\BlockEditor;
 
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
-class SkeletonServiceProvider extends MooxServiceProvider
+class BlockEditorServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
         $package
-            ->name('skeleton')
+            ->name('block-editor')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasViews('block-editor')
+            ->hasAssets()
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
 
         $this->getMooxPackage()
-            ->title('Moox Skeleton')
+            ->title('Moox Block Editor')
             ->released(true)
             ->stability('stable')
             ->category('development')
@@ -53,5 +54,12 @@ class SkeletonServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 'build.php',
             ]);
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
     }
 }
