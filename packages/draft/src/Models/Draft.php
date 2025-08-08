@@ -171,7 +171,7 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function publish(): void
     {
-        $this->status = 'published';
+        $this->translation_status = 'published';
         $this->handleSchedulingDates();
     }
 
@@ -180,7 +180,7 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function unpublish(): void
     {
-        $this->status = 'draft';
+        $this->translation_status = 'draft';
         $this->handleSchedulingDates();
     }
 
@@ -189,7 +189,7 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function scheduleForPublishing(?Carbon $publishAt = null): void
     {
-        $this->status = 'scheduled';
+        $this->translation_status = 'scheduled';
         if ($publishAt) {
             $this->to_publish_at = $publishAt;
         }
@@ -201,7 +201,7 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function setToWaiting(): void
     {
-        $this->status = 'waiting';
+        $this->translation_status = 'waiting';
         $this->handleSchedulingDates();
     }
 
@@ -210,7 +210,7 @@ class Draft extends BaseDraftModel implements HasMedia
      */
     public function setToPrivate(): void
     {
-        $this->status = 'privat';
+        $this->translation_status = 'privat';
         $this->handleSchedulingDates();
     }
 
@@ -343,87 +343,87 @@ class Draft extends BaseDraftModel implements HasMedia
      * Publishing status accessors
      * These methods now use the translation system to access the properties
      */
-    // public function isScheduledForPublishing(): bool
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
-    //     /** @var DraftTranslation|null $translation */
-    //     $translation = $this->translate($locale);
+    public function isScheduledForPublishing(): bool
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var DraftTranslation|null $translation */
+        $translation = $this->translate($locale);
 
-    //     return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
-    // }
+        return $translation && $translation->to_publish_at !== null && $translation->published_at === null;
+    }
 
-    // public function isPublished(): bool
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
-    //     /** @var DraftTranslation|null $translation */
-    //     $translation = $this->translate($locale);
+    public function isPublished(): bool
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var DraftTranslation|null $translation */
+        $translation = $this->translate($locale);
 
-    //     return $translation?->published_at !== null;
-    // }
+        return $translation?->published_at !== null;
+    }
 
-    // public function isScheduledForUnpublishing(): bool
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
-    //     /** @var DraftTranslation|null $translation */
-    //     $translation = $this->translate($locale);
+    public function isScheduledForUnpublishing(): bool
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var DraftTranslation|null $translation */
+        $translation = $this->translate($locale);
 
-    //     return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
-    // }
+        return $translation && $translation->to_unpublish_at !== null && $translation->unpublished_at === null;
+    }
 
-    // public function isUnpublished(): bool
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
-    //     /** @var DraftTranslation|null $translation */
-    //     $translation = $this->translate($locale);
+    public function isUnpublished(): bool
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
+        /** @var DraftTranslation|null $translation */
+        $translation = $this->translate($locale);
 
-    //     return $translation && $translation->unpublished_at !== null;
-    // }
+        return $translation && $translation->unpublished_at !== null;
+    }
 
-    // /**
-    //  * Query scopes
-    //  * These scopes now work with the translation system
-    //  */
-    // public function scopeScheduledForPublishing($query)
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
+    /**
+     * Query scopes
+     * These scopes now work with the translation system
+     */
+    public function scopeScheduledForPublishing($query)
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
 
-    //     return $query->whereHas('translations', function ($q) use ($locale) {
-    //         $q->where('locale', $locale)
-    //             ->whereNotNull('to_publish_at')
-    //             ->whereNull('published_at');
-    //     });
-    // }
+        return $query->whereHas('translations', function ($q) use ($locale) {
+            $q->where('locale', $locale)
+                ->whereNotNull('to_publish_at')
+                ->whereNull('published_at');
+        });
+    }
 
-    // public function scopePublished($query)
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
+    public function scopePublished($query)
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
 
-    //     return $query->whereHas('translations', function ($q) use ($locale) {
-    //         $q->where('locale', $locale)
-    //             ->whereNotNull('published_at');
-    //     });
-    // }
+        return $query->whereHas('translations', function ($q) use ($locale) {
+            $q->where('locale', $locale)
+                ->whereNotNull('published_at');
+        });
+    }
 
-    // public function scopeScheduledForUnpublishing($query)
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
+    public function scopeScheduledForUnpublishing($query)
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
 
-    //     return $query->whereHas('translations', function ($q) use ($locale) {
-    //         $q->where('locale', $locale)
-    //             ->whereNotNull('to_unpublish_at')
-    //             ->whereNull('unpublished_at');
-    //     });
-    // }
+        return $query->whereHas('translations', function ($q) use ($locale) {
+            $q->where('locale', $locale)
+                ->whereNotNull('to_unpublish_at')
+                ->whereNull('unpublished_at');
+        });
+    }
 
-    // public function scopeUnpublished($query)
-    // {
-    //     $locale = request()->query('lang') ?? app()->getLocale();
+    public function scopeUnpublished($query)
+    {
+        $locale = request()->query('lang') ?? app()->getLocale();
 
-    //     return $query->whereHas('translations', function ($q) use ($locale) {
-    //         $q->where('locale', $locale)
-    //             ->whereNotNull('unpublished_at');
-    //     });
-    // }
+        return $query->whereHas('translations', function ($q) use ($locale) {
+            $q->where('locale', $locale)
+                ->whereNotNull('unpublished_at');
+        });
+    }
 
     /**
      * Restoration status
