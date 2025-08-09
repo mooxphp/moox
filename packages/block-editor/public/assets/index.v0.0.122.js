@@ -1,1 +1,0 @@
-import{c as e}from"./index.v0.0.121.js";const n=e(["break","delete","emphasis","footnote","footnoteReference","image","imageReference","inlineCode","inlineMath","link","linkReference","mdxJsxTextElement","mdxTextExpression","strong","text","textDirective"]);export{n as p};
