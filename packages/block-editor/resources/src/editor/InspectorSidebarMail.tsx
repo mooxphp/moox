@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { JSX } from "react";
 
-export type SidebarTab = "page" | "block";
+export type SidebarTab = "mail" | "block";
 
 export type TextControl = {
   id: string;
@@ -60,17 +60,17 @@ export type InspectorPanel = {
   controls: InspectorControl[];
 };
 
-export type InspectorSidebarProps = {
+export type InspectorSidebarMailProps = {
   pagePanels: InspectorPanel[];
   blockPanels: InspectorPanel[];
   hasSelection: boolean;
   onClose?: () => void;
 };
 
-export function EditorShell(props: React.PropsWithChildren<InspectorSidebarProps>): JSX.Element {
+export function EditorShellMail(props: React.PropsWithChildren<InspectorSidebarMailProps>): JSX.Element {
   const { children, pagePanels, blockPanels, hasSelection, onClose } = props;
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<SidebarTab>("page");
+  const [activeTab, setActiveTab] = useState<SidebarTab>("mail");
   const [sidebarWidth, setSidebarWidth] = useState<number>(380);
   const resizingRef = useRef<boolean>(false);
   const startXRef = useRef<number>(0);
@@ -107,11 +107,11 @@ export function EditorShell(props: React.PropsWithChildren<InspectorSidebarProps
       <button
         className={
           "px-3 py-1 text-xs rounded-md transition-colors " +
-          (activeTab === "page" ? "bg-zinc-900 shadow-sm" : "hover:bg-zinc-800")
+          (activeTab === "mail" ? "bg-zinc-900 shadow-sm" : "hover:bg-zinc-800")
         }
-        onClick={() => setActiveTab("page")}
+        onClick={() => setActiveTab("mail")}
       >
-        Page
+        Mail
       </button>
       <button
         className={
@@ -139,7 +139,7 @@ export function EditorShell(props: React.PropsWithChildren<InspectorSidebarProps
           </div>
           <div className="absolute top-0 left-0 w-1 h-full cursor-col-resize" onMouseDown={beginResize} />
           <div className="h-[calc(100%-41px)] overflow-auto p-3">
-            {activeTab === "page" ? (
+            {activeTab === "mail" ? (
               <PanelsRenderer panels={pagePanels} />
             ) : (
               <PanelsRenderer panels={blockPanels} />

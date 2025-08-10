@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 
-export type TopBarProps = {
+export type TopBarWebProps = {
   onSave?: () => void;
   onPublish?: () => void;
   onDelete?: () => void;
 };
 
-export function TopBar({ onSave, onPublish, onDelete }: TopBarProps): JSX.Element {
+export function TopBarWeb({ onSave, onPublish, onDelete }: TopBarWebProps): JSX.Element {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const logoSrc = `${import.meta.env.BASE_URL}images/logo.png`;
