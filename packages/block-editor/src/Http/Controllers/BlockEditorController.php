@@ -10,7 +10,7 @@ class BlockEditorController extends Controller
     {
         return view('block-editor::editor', [
             'mode' => 'web',
-            'initialContent' => []
+            'initialContent' => [],
         ]);
     }
 
@@ -18,7 +18,7 @@ class BlockEditorController extends Controller
     {
         return view('block-editor::editor', [
             'mode' => 'mail',
-            'initialContent' => []
+            'initialContent' => [],
         ]);
     }
 }
