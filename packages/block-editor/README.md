@@ -17,8 +17,7 @@ Alternatives:
 -   https://editorjs.io/ - not as modern and maintained
 -   https://yoopta.dev/ - seems a bit akward
 -   https://lexical.dev/ - not really a block editor, too
-
-Oder eben: https://github.com/VanOns/laraberg mit https://github.com/Automattic/isolated-block-editor
+-   https://github.com/VanOns/laraberg and https://github.com/Automattic/isolated-block-editor - the monster, nobody gets that to work outside WP
 
 ```bash
 
@@ -59,6 +58,14 @@ Align the design with Filament.
 Get most features from Gutenberg.
 
 ![Gutenberg](screenshot/gutenberg.jpg)
+
+## Packages
+
+-   Moox Page (or Post, Product ...)
+-   Moox Layout
+-   Moox Blocks
+-   Moox Content
+-   Moox Designer ... Frontend Editing und Theme Designer (Pro)
 
 ## API Ideas
 
