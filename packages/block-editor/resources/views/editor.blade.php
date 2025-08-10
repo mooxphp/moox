@@ -9,6 +9,10 @@
         <link rel="stylesheet" crossorigin href="{{ url('moox/block-editor/assets/index.css?v=0.0.1') }}">
     </head>
     <body class="min-h-screen">
-        <div id="root"></div>
+        <div
+            id="block-editor"
+            data-mode="{{ $mode ?? 'web' }}"
+            data-initial-content='@json($initialContent ?? [])'
+        ></div>
     </body>
 </html>

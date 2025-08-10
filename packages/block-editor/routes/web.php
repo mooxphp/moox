@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Moox\BlockEditor\Http\Controllers\BlockEditorController;
+
+Route::prefix('moox')->group(function () {
+    Route::get('/block-editor', [BlockEditorController::class, 'web'])->name('block-editor.web');
+    Route::get('/mail-editor', [BlockEditorController::class, 'mail'])->name('block-editor.mail');
+});
 
 Route::prefix('moox/block-editor')->group(function () {
-    Route::get('/', function () {
-        return view('block-editor::editor');
-    })->name('block-editor');
-
     Route::get('images/{path}', function (string $path) {
         $file = base_path('packages/block-editor/public/images/'.$path);
         if (file_exists($file)) {

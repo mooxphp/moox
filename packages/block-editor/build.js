@@ -54,7 +54,11 @@ try {
         <link rel="stylesheet" crossorigin href="{{ url('moox/block-editor/assets/${cssFile}') }}">
     </head>
     <body class="min-h-screen">
-        <div id="root"></div>
+        <div
+            id="block-editor"
+            data-mode="{{ $mode ?? 'web' }}"
+            data-initial-content='@json($initialContent ?? [])'
+        ></div>
     </body>
 </html>`;
 
