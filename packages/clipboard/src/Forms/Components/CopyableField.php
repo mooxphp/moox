@@ -13,7 +13,7 @@ class CopyableField extends TextInput
     {
         parent::setUp();
 
-        $btnAttr = 'copy-btn-'.$this->getName();
+        $btnAttr = 'copy-btn-' . $this->getName();
 
         $this->disabled()
             ->suffix('')
@@ -27,7 +27,7 @@ class CopyableField extends TextInput
                     ->action(function ($livewire, $state) use ($btnAttr) {
                         $livewire->js(sprintf(
                             'const doSwap = () => {
-                                const btn = document.querySelector(`[data-copy-button="%s"]`);
+                                const btn = document.querySelector(`[data-copy-button=%s]`);
                                 if (!btn) return;
                                 const svg = btn.querySelector("svg");
                                 if (!svg) return;
@@ -36,8 +36,8 @@ class CopyableField extends TextInput
                                 const checkSvg = `<svg xmlns="http://www.w3.org/2000/svg" 
                                     viewBox="0 0 20 20" fill="currentColor" 
                                     style="width: 24px; height: 24px; color: #10b981">
-                                <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 0 1.414l-7.5 7.5a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L8.5 12.086l6.793-6.793a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/>
-                                </svg>`;
+                                    <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 0 1.414l-7.5 7.5a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L8.5 12.086l6.793-6.793a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/>
+                                    </svg>`;
 
                                 svg.outerHTML = checkSvg;
                                 setTimeout(() => {
