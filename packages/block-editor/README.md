@@ -10,6 +10,7 @@ Stack:
 -   https://tiptap.dev/
 -   https://prosemirror.net/
 -   https://yjs.dev/ for Collaboration
+-   https://github.com/maizzle/framework for the Mail Editor
 
 Alternatives:
 
