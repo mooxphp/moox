@@ -18,7 +18,8 @@
     ],
     "require": {
         "moox/core": "self.version",
-        "adrolli/eloquent-mutators": "*"
+        "adrolli/eloquent-mutators": "*",
+        "moox/press": "*"
     },
     "require-dev": {
         "moox/devtools": "self.version"

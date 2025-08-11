@@ -32,41 +32,48 @@ class MooxInstaller extends Command
     }
 
     public function handle(): void
-    {
-        // 🖼️ Schritt 0: ASCII-Art Begrüßung
-        $this->art();
-        $this->info('✨ Welcome to the Moox installer');
+{
+    $this->art();
+    $this->info('✨ Welcome to the Moox installer');
 
-        // ✅ Schritt 1: Filament prüfen/ggf. installieren
-        // ✅ Schritt 2: PanelProvider-Dateien analysieren
-        $this->checkForFilament();
+    if (! $this->checkForFilament()) {
+        $this->error('❌ Filament installation required or aborted. Aborting installation.');
+        return;
+    }
 
-        // ✅ Schritt 3: Admin-User prüfen/ggf. erstellen
-        $this->checkOrCreateFilamentUser();
-
-        // ✅ Schritt 4: Panel-Auswahl und automatische Erstellung inkl. auth(), plugin(), provider-Registrierung
+    $existingPanels = $this->getExistingPanelsWithLogin();
+    if (count($existingPanels) > 0) {
+        $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
+    } else {
         $this->selectedPanels = $this->selectPanels();
-
-        // ⚠️ Falls keine Panel-Auswahl → Abbruch
         if (empty($this->selectedPanels)) {
             $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
             return;
         }
-
-        // ✅ Schritt 5–7:
-        //   - composer require (falls Paket nicht installiert)
-        //   - migrations / config / seeders
-        //   - plugin registrieren
-        //   - filament:upgrade ausführen
         $this->installPackages($this->selectedPanels);
-
-        // ✅ Fertig
-        $this->info('✅ Moox installed successfully. Enjoy! 🎉');
     }
 
-    /**
-     * Optional: Alternative Vorauswahl – wird aktuell nicht genutzt
-     */
+    $this->checkOrCreateFilamentUser();
+
+    // $this->info('⚙️ Running php artisan filament:upgrade ...');
+
+    $this->info('✅ Moox installed successfully. Enjoy! 🎉');
+}
+
+
+
+protected function getExistingPanelsWithLogin(): array
+{
+    $panelFiles = $this->getPanelProviderFiles();
+    $panelsWithLogin = $this->filterPanelsWithLogin($panelFiles);
+
+    return $panelsWithLogin->map(fn($file) => $file->getRelativePathname())->toArray();
+}
+
+
+    
+
+   
     protected function getMooxPackages(): array
     {
         return [
