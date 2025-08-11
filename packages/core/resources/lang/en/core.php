@@ -137,5 +137,5 @@ return [
     'by' => 'by',
     'publish_modal_description' => 'This action will publish the item.',
     'taxonomy_created_successfully' => 'Taxonomy created successfully',
-    'taxonomy_created_successfully_body' => 'The taxonomy "{title}" was created successfully.',
+    'taxonomy_created_successfully_body' => 'The taxonomy was created successfully.',
 ];
