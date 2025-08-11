@@ -21,6 +21,20 @@ trait SelectFilamentPanel
         'empty'  => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
     ];
 
+    protected array $pluginPackageMap = [
+        'Moox\\News\\' => 'moox/news',
+        'Moox\\Media\\' => 'moox/media',
+        'Moox\\Jobs\\' => 'moox/jobs',
+        'Moox\\User\\' => 'moox/user',
+        'Moox\\Page\\' => 'moox/page',
+        'Moox\\Tag\\' => 'moox/tag',
+        'Moox\\Category\\' => 'moox/category',
+        'Moox\\Security\\' => 'moox/security',
+        'Moox\\UserSession\\' => 'moox/user-session',
+        'Moox\\UserDevice\\' => 'moox/user-device',
+        'Moox\\Press\\' => 'moox/press',
+    ];
+
     public function selectPanels(): array
     {
         $availablePanels = collect($this->panelMap)
@@ -55,18 +69,14 @@ trait SelectFilamentPanel
                 continue;
             }
 
-            // 1. Frage vor Erstellung, ob Panel veröffentlicht werden soll
             $shouldPublish = confirm("📤 Do you want to publish the panel '{$panel}' into app/Providers/Filament?", default: false);
 
-            // 2. Panel ID erfragen
             $panelId = text("🔧 Enter the panel ID for '{$panel}':", default: $panel);
 
-            // 3. Panel erstellen
             $this->call('make:filament-panel', [
                 'id' => $panelId,
             ]);
 
-            // 4. Dateien verschieben und Namespace anpassen
             $from = base_path("app/Providers/Filament/" . ucfirst($panel) . "PanelProvider.php");
             $toDir = base_path($this->panelMap[$panel]['path']);
             $to = $toDir . '/' . ucfirst($panel) . "PanelProvider.php";
@@ -80,7 +90,6 @@ trait SelectFilamentPanel
             File::move($from, $to);
             info("✅ Moved panel provider to: {$to}");
 
-            // Namespace anpassen
             $content = File::get($to);
             $content = str_replace(
                 'namespace App\\Providers\\Filament;',
@@ -90,13 +99,10 @@ trait SelectFilamentPanel
             File::put($to, $content);
             info("🧭 Updated namespace to: " . $this->panelMap[$panel]['namespace']);
 
-            // 5. Plugins registrieren (falls definiert)
             $this->registerDefaultPluginsForPanel($panel, $to);
 
-            // 6. Auth User Model konfigurieren
             $this->configureAuthUserModelForPanel($panel, $to);
 
-            // 7. Wenn publish gewünscht, Panel nochmal nach app/Providers/Filament kopieren mit angepasstem Namespace
             if ($shouldPublish) {
                 $publishDir = base_path('app/Providers/Filament');
                 File::ensureDirectoryExists($publishDir);
@@ -113,31 +119,31 @@ trait SelectFilamentPanel
                 info("📤 Panel has been published: {$publishPath}");
             }
 
-            // 8. Provider in AppServiceProvider registrieren
             $providerClass = $shouldPublish
                 ? 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider'
                 : $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
 
-            $this->registerPanelProviderInAppServiceProvider($providerClass, $panel);
+            $this->registerPanelProviderInBootstrapProviders($providerClass, $panel);
+
+            if (! $shouldPublish) {
+                $this->cleanupPanelProviderInAppServiceProvider($panel);
+            }
         }
 
-        // 9. Am Ende Upgrade ausführen
-        $this->runFilamentUpgrade();
+        //$this->runFilamentUpgrade();
 
         return $selectedPanels;
     }
 
-    protected function runFilamentUpgrade(): void
-    {
-        info("⚙️ Running php artisan filament:upgrade ...");
+    //protected function runFilamentUpgrade(): void
+    //{
+        //info("⚙️ Running php artisan filament:upgrade ...");
 
-        Artisan::call('filament:upgrade');
+        //Artisan::call('filament:upgrade');
 
-        $output = Artisan::output();
-
-        info($output);
-        info("✅ Filament upgrade command finished.");
-    }
+       //info($output);
+       //info("✅ Filament upgrade command finished.");
+   //}
 
     protected function registerDefaultPluginsForPanel(string $panel, string $providerPath): void
     {
@@ -208,7 +214,6 @@ trait SelectFilamentPanel
     ])
 PHP;
 
-        // Insert plugins vor dem letzten Semikolon nach return $panel
         $content = preg_replace(
             '/return\s+\$panel(.*?)(;)/s',
             "return \$panel\$1{$insert}\$2",
@@ -219,6 +224,155 @@ PHP;
         File::put($providerPath, $content);
 
         info("✅ Plugins registered for panel '{$panel}'.");
+
+        $requiredPackages = [];
+        
+        foreach ($plugins as $plugin) {
+            if (preg_match('/\\\\?([\w\\\\]+)::make/', $plugin, $matches)) {
+                $class = ltrim($matches[1], '\\');
+                $package = $this->guessComposerPackageFromClass($class);
+                if ($package && !in_array($package, $requiredPackages)) {
+                    $requiredPackages[] = $package;
+                }
+            }
+        }
+
+        foreach ($requiredPackages as $package) {
+            if (!$this->isPackageInstalled($package)) {
+                $this->requireComposerPackage($package);
+            }
+        }
+
+        if (!empty($requiredPackages)) {
+            $this->updatePanelPackageComposerJson($panel, $requiredPackages);
+        }
+    }
+
+    protected function guessComposerPackageFromClass(string $class): ?string
+    {
+        foreach ($this->pluginPackageMap as $namespacePrefix => $packageName) {
+            if (str_starts_with($class, $namespacePrefix)) {
+                return $packageName;
+            }
+        }
+        return null;
+    }
+
+    protected function isPackageInstalled(string $package): bool
+    {
+        $installed = shell_exec("composer show {$package} 2>&1");
+        return !str_contains($installed, 'not found');
+    }
+
+    protected function requireComposerPackage(string $package): void
+    {
+        info("📦 Requiring composer package: {$package} ...");
+        exec("composer require {$package}", $output, $exitCode);
+        if ($exitCode !== 0) {
+            warning("⚠️ Failed to require {$package}. Please check manually.");
+        } else {
+            info("✅ Package {$package} required successfully.");
+        }
+    }
+
+    protected function updatePanelPackageComposerJson(string $panel, array $requiredPackages): void
+    {
+        $panelPath = $this->panelMap[$panel]['path'] ?? null;
+        if (!$panelPath) {
+            warning("⚠️ No path found for panel '{$panel}'. Cannot update composer.json.");
+            return;
+        }
+
+        $composerJsonPath = base_path($panelPath . '/../../composer.json');
+        
+        if (!File::exists($composerJsonPath)) {
+            info("ℹ️ No composer.json found for panel package at: {$composerJsonPath}");
+            return;
+        }
+
+        $composerJson = json_decode(File::get($composerJsonPath), true);
+        if (!$composerJson) {
+            warning("⚠️ Invalid composer.json at: {$composerJsonPath}");
+            return;
+        }
+
+        $updated = false;
+        if (!isset($composerJson['require'])) {
+            $composerJson['require'] = [];
+        }
+
+        foreach ($requiredPackages as $package) {
+            if (!isset($composerJson['require'][$package])) {
+                $composerJson['require'][$package] = '*';
+                $updated = true;
+                info("📝 Added {$package} to panel package composer.json");
+            }
+        }
+
+        if ($updated) {
+            File::put($composerJsonPath, json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            info("✅ Updated composer.json for panel package: {$composerJsonPath}");
+        } else {
+            info("ℹ️ No new dependencies to add to panel package composer.json");
+        }
+    }
+
+    /**
+     * Update composer dependencies for an existing panel
+     */
+    public function updatePanelDependencies(string $panel): void
+    {
+        if (!isset($this->panelMap[$panel])) {
+            error("❌ Panel '{$panel}' not found in panel map.");
+            return;
+        }
+
+        $providerPath = base_path($this->panelMap[$panel]['path'] . '/' . ucfirst($panel) . 'PanelProvider.php');
+        
+        if (!File::exists($providerPath)) {
+            error("❌ Panel provider not found: {$providerPath}");
+            return;
+        }
+
+        info("🔍 Analyzing plugins for panel '{$panel}'...");
+        
+        $content = File::get($providerPath);
+        $plugins = $this->extractPluginsFromProvider($content);
+        
+        if (empty($plugins)) {
+            info("ℹ️ No plugins found in panel '{$panel}'.");
+            return;
+        }
+
+        $requiredPackages = [];
+        foreach ($plugins as $plugin) {
+            $package = $this->guessComposerPackageFromClass($plugin);
+            if ($package && !in_array($package, $requiredPackages)) {
+                $requiredPackages[] = $package;
+            }
+        }
+
+        if (!empty($requiredPackages)) {
+            $this->updatePanelPackageComposerJson($panel, $requiredPackages);
+        }
+    }
+
+    protected function extractPluginsFromProvider(string $content): array
+    {
+        $plugins = [];
+        
+        // Extract plugins from ->plugins([...]) call
+        if (preg_match('/->plugins\(\[(.*?)\]\)/s', $content, $matches)) {
+            $pluginLines = explode(',', $matches[1]);
+            foreach ($pluginLines as $line) {
+                $line = trim($line);
+                if (preg_match('/\\\\?([\w\\\\]+)::make\(\)/', $line, $matches)) {
+                    $plugins[] = ltrim($matches[1], '\\');
+                }
+            }
+        }
+        
+        return $plugins;
     }
 
     protected function configureAuthUserModelForPanel(string $panel, string $providerPath): void
@@ -228,20 +382,17 @@ PHP;
             return;
         }
 
-        // Je nach Panel unterschiedliches User-Model setzen
         $userModel = $panel === 'press'
             ? 'Moox\\Press\\Models\\WpUser::class'
             : 'Moox\\User\\Models\\User::class';
 
         $content = File::get($providerPath);
 
-        // Wenn auth() oder login() schon gesetzt, skip
         if (str_contains($content, '->login(') || str_contains($content, '->auth(')) {
             info("ℹ️ Auth already configured for panel '{$panel}'. Skipping.");
             return;
         }
 
-        // use Filament import ergänzen, falls nicht vorhanden
         if (!str_contains($content, 'use Filament\Facades\Filament;')) {
             $content = preg_replace(
                 '/(namespace\s+[^\s;]+;)/',
@@ -250,7 +401,6 @@ PHP;
             );
         }
 
-        // Auth-Block als String (Fluent-Chain Syntax)
         $authCode = <<<PHP
     ->login(
         fn () => Filament::auth(
@@ -259,7 +409,6 @@ PHP;
     )
 PHP;
 
-        // Auth-Block nach ->path(...) einfügen
         $content = preg_replace(
             '/(->path\(.*?\))/',
             "\$1\n    {$authCode}",
@@ -293,37 +442,105 @@ PHP;
 
         $content = File::get($appServiceProviderPath);
 
-        // Bereits registriert?
-        if (
-            str_contains($content, $providerClass . '::class') ||
-            str_contains($content, '\\' . $providerClass . '::class')
-        ) {
+        if (str_contains($content, $providerClass . '::class')) {
             info("✅ Provider {$providerClass} is already registered in AppServiceProvider.");
             return;
         }
 
-        // Suche boot()-Methode und füge dort $this->app->register() hinzu
-        $pattern = '/public function boot\(\)\s*\{(.*?)\}/s';
+        $pattern = '/public function register\s*\([^)]*\)\s*(?::\s*\w+)?\s*\{(.*?)\}/s';
 
         if (preg_match($pattern, $content, $matches)) {
-            $bootBody = $matches[1];
+            $registerBody = $matches[1];
 
             $registerLine = "        \$this->app->register({$providerClass}::class);";
 
-            if (str_contains($bootBody, $registerLine)) {
-                info("✅ Provider {$providerClass} already registered inside boot().");
+            if (str_contains($registerBody, $registerLine)) {
+                info("✅ Provider {$providerClass} already registered inside register().");
                 return;
             }
 
-            $bootBodyNew = $bootBody . "\n" . $registerLine;
+            $registerBodyNew = rtrim($registerBody) . "\n" . $registerLine;
 
-            $contentNew = preg_replace($pattern, "public function boot()\n    {\n{$bootBodyNew}\n    }", $content);
+            $contentNew = preg_replace($pattern, "public function register(): void\n    {\n{$registerBodyNew}\n    }", $content);
 
             File::put($appServiceProviderPath, $contentNew);
 
-            info("✅ Registered {$providerClass} in AppServiceProvider::boot()");
+            info("✅ Registered {$providerClass} in AppServiceProvider::register()");
         } else {
-            warning("⚠️ Could not find boot() method in AppServiceProvider.php to register provider {$providerClass}.");
+            warning("⚠️ Could not find register() method in AppServiceProvider.php to register provider {$providerClass}.");
         }
     }
+
+    protected function registerPanelProviderInBootstrapProviders(string $providerClass, string $panel): void
+    {
+        $bootstrapProvidersPath = base_path('bootstrap/providers.php');
+    
+        if (!File::exists($bootstrapProvidersPath)) {
+            return;
+        }
+    
+        $content = File::get($bootstrapProvidersPath);
+    
+        $appClass = 'App\\Providers\\Filament\\' . ucfirst($panel) . 'PanelProvider';
+        $packageClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+    
+        $desiredClass = $providerClass;
+        $otherClass = ($providerClass === $appClass) ? $packageClass : $appClass;
+    
+        $patternRemove = '/^\s*' . preg_quote($otherClass, '/') . '::class\s*,?\s*$/m';
+    
+        $contentWithoutOther = preg_replace($patternRemove, '', $content);
+    
+        if (str_contains($contentWithoutOther, $desiredClass . '::class')) {
+            if ($contentWithoutOther !== $content) {
+                File::put($bootstrapProvidersPath, $contentWithoutOther);
+                info("🧹 Removed other provider variant from bootstrap/providers.php");
+            } else {
+                info("✅ Provider {$providerClass} already present in bootstrap/providers.php");
+            }
+            return;
+        }
+    
+        // Füge die gewünschte Klasse in das Array der Provider ein
+        $updated = preg_replace_callback(
+            '/return\s*\[([\s\S]*?)\];/m',
+            function (array $matches) use ($desiredClass) {
+                $inner = rtrim($matches[1]);
+                if ($inner !== '' && !str_ends_with(trim($inner), ',')) {
+                    $inner .= ",";
+                }
+                $inner .= "\n    {$desiredClass}::class,";
+                return "return [\n{$inner}\n];";
+            },
+            $contentWithoutOther ?? $content,
+            1
+        );
+    
+        if ($updated && $updated !== $content) {
+            File::put($bootstrapProvidersPath, $updated);
+            info("✅ Registered {$providerClass} in bootstrap/providers.php");
+        } else {
+            warning("⚠️ Could not update bootstrap/providers.php to register {$providerClass}");
+        }
+    }
+    
+
+    protected function cleanupPanelProviderInAppServiceProvider(string $panel): void
+    {
+        $appServiceProviderPath = app_path('Providers/AppServiceProvider.php');
+        if (!File::exists($appServiceProviderPath)) {
+            return;
+        }
+
+        $content = File::get($appServiceProviderPath);
+        $pattern = '/\$this->\\app->\\register\((App\\\\Providers\\\\Filament\\\\' . ucfirst($panel) . 'PanelProvider::class)\);/';
+        $updated = preg_replace($pattern, '', $content);
+
+        if ($updated !== null && $updated !== $content) {
+            File::put($appServiceProviderPath, $updated);
+            info("🧹 Removed published App provider registration from AppServiceProvider for panel '{$panel}'");
+        }
+    }
+
+
 }

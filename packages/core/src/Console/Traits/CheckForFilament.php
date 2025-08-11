@@ -3,7 +3,6 @@
 namespace Moox\Core\Console\Traits;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
 use function Laravel\Prompts\confirm;
@@ -13,57 +12,66 @@ use function Laravel\Prompts\warning;
 
 trait CheckForFilament
 {
-    // Standard-Pfad zum wichtigsten Filament PanelProvider
     protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php';
 
     /**
-     * Prüft, ob Filament installiert ist und bietet ggf. Installation an.
+     * Prüft, ob Filament installiert ist und bietet ggf. Installation a
+     * 
+     * @return bool true wenn Filament vorhanden (oder erfolgreich installiert), sonst false
      */
-    public function checkForFilament(): void
+    public function checkForFilament(): bool
     {
-        // Schritt 1: Composer require prüfen
         if (! class_exists(\Filament\PanelProvider::class)) {
             error('❌ Filament is not installed. Please run: composer require filament/filament');
 
             if (! confirm('📦 Do you want to install filament/filament now?', true)) {
                 info('⛔ Installation cancelled.');
-                return;
+                return false;
             }
 
             info('📦 Running: composer require filament/filament...');
             exec('composer require filament/filament:* 2>&1', $output, $returnVar);
             foreach ($output as $line) {
-                line("    " . $line);
+                info("    " . $line);
             }
 
             if ($returnVar !== 0) {
                 error('❌ Composer installation of Filament failed. Please check your setup.');
-                return;
+                return false;
             }
 
             info('✅ filament/filament successfully installed.');
         }
 
-        // Schritt 2: Dateiprüfung
         if (! File::exists(base_path($this->providerPath))) {
             warning('⚠️ Filament panel file does not exist: ' . $this->providerPath);
 
-            if (! confirm('Do you want to continue without a panel?', false)) {
+            if (! confirm('Do you want to continue ?', false)) {
                 info('⛔ Installation cancelled.');
-                return;
+                return false;
             }
         }
 
-        // Schritt 3: Analyse vorhandener Panels
         $this->analyzeFilamentEnvironment();
 
-        // Schritt 4: PanelProvider-Registrierung prüfen
         if (! $this->hasRegisteredPanelProvider()) {
             warning('⚠️ No PanelProvider registered in AppServiceProvider.');
         }
 
-        // Schritt 5: Benutzer prüfen oder erstellen
-        $this->checkOrCreateFilamentUser();
+        return true;
+    }
+
+    /**
+     * Prüft, ob mindestens ein PanelProvider mit login() existiert.
+     * 
+     * @return bool
+     */
+    public function hasPanelsWithLogin(): bool
+    {
+        $panelFiles = $this->getPanelProviderFiles();
+        $panelsWithLogin = $this->filterPanelsWithLogin($panelFiles);
+
+        return $panelsWithLogin->isNotEmpty();
     }
 
     /**
@@ -92,7 +100,7 @@ trait CheckForFilament
 
     /**
      * Sucht rekursiv nach allen Dateien, die auf *PanelProvider.php enden.
-     * 
+     *
      * @return Collection<\SplFileInfo>
      */
     protected function getPanelProviderFiles(): Collection
@@ -103,7 +111,7 @@ trait CheckForFilament
 
     /**
      * Filtert PanelProvider-Dateien mit login().
-     * 
+     *
      * @param Collection<\SplFileInfo> $panelFiles
      * @return Collection<\SplFileInfo>
      */
@@ -116,6 +124,8 @@ trait CheckForFilament
 
     /**
      * Prüft, ob ein PanelProvider in AppServiceProvider registriert ist.
+     *
+     * @return bool
      */
     protected function hasRegisteredPanelProvider(): bool
     {

@@ -43,18 +43,31 @@ trait CheckOrCreateFilamentUser
         $this->createFilamentUser($userModel);
     }
 
+    public function hasFilamentUsers(): bool
+    {
+        /** @var class-string<Model> $userModel */
+        $userModel = Config::get('filament.auth.providers.users.model') ?? \App\Models\User::class;
+
+        if (! class_exists($userModel)) {
+            return false;
+        }
+
+        $table = (new $userModel)->getTable();
+
+        if (! Schema::hasTable($table)) {
+            return false;
+        }
+
+        return $userModel::count() > 0;
+    }
+
     protected function createFilamentUser(string $userModel): void
     {
         info("🧑 Creating new admin user for model '{$userModel}'...");
 
         $name = text('Enter name', default: 'Admin');
         $email = text('Enter email', default: 'admin@example.com');
-        $password = password('Enter password (min. 6 characters)', required: true);
-
-        if (strlen($password) < 6) {
-            warning('⚠️ Password too short. Aborting.');
-            return;
-        }
+        $password = password('Enter password', required: true);
 
         $user = $userModel::create([
             'name' => $name,
