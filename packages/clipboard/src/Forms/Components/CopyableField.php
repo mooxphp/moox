@@ -13,7 +13,7 @@ class CopyableField extends TextInput
     {
         parent::setUp();
 
-        $btnAttr = 'copy-btn-' . $this->getName();
+        $btnAttr = 'copy-btn-'.$this->getName();
 
         $this->disabled()
             ->suffix('')
