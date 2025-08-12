@@ -11,16 +11,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Moox\Media\Traits\HasMediaUsable;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Moox\Media\Traits\HasMediaUsable;
+
 class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable, HasMediaUsable;
+    use HasFactory, HasMediaUsable, InteractsWithMedia, SoftDeletes, Translatable;
 
     public $timestamps = false;
 

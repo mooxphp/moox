@@ -12,12 +12,13 @@ use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Media\Traits\HasMediaUsable;
 use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Moox\Media\Traits\HasMediaUsable;
+
 /**
  * @property bool $is_active
  * @property array $data
@@ -54,7 +55,7 @@ use Moox\Media\Traits\HasMediaUsable;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, SoftDeletes, HasMediaUsable;
+    use HasMediaUsable, HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, SoftDeletes;
 
     public $timestamps = false;
 

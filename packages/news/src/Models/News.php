@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Moox\Media\Traits\HasMediaUsable;
+
 /**
  * @property bool $is_active
  * @property array $data
@@ -50,7 +51,7 @@ use Moox\Media\Traits\HasMediaUsable;
  */
 class News extends BaseDraftModel implements HasMedia
 {
-    use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, HasMediaUsable;
+    use HasMediaUsable, HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia;
 
     /**
      * Attributes that should be translated
@@ -148,13 +149,13 @@ class News extends BaseDraftModel implements HasMedia
         /** @var \Moox\News\Models\NewsTranslation|null $translation */
         $translation = $this->translate($locale);
 
-        if (!$translation) {
+        if (! $translation) {
             return;
         }
 
         switch ($translation->status) {
             case 'scheduled':
-                if (!$translation->to_publish_at) {
+                if (! $translation->to_publish_at) {
                     $translation->to_publish_at = now();
                 }
                 $translation->published_at = null;

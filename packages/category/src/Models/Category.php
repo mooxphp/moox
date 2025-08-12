@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Media\Traits\HasMediaUsable;
 use Override;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Moox\Media\Traits\HasMediaUsable;
+
 /**
  * @property string $title
  * @property string $status
@@ -44,10 +45,10 @@ use Moox\Media\Traits\HasMediaUsable;
 class Category extends BaseDraftModel implements HasMedia
 {
     use HasFactory;
+    use HasMediaUsable;
     use InteractsWithMedia;
     use NodeTrait;
     use SoftDeletes;
-    use HasMediaUsable;
 
     public $incrementing = true;
 
