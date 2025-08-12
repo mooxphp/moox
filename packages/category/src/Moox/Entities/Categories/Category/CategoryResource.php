@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -39,7 +37,6 @@ use Override;
 class CategoryResource extends BaseDraftResource
 {
     use HasResourceTabs;
-
 
     protected static ?string $model = Category::class;
 
@@ -89,13 +86,13 @@ class CategoryResource extends BaseDraftResource
                                         relationship: 'parent',
                                         titleAttribute: 'title',
                                         parentAttribute: 'parent_id',
-                                        modifyQueryUsing: fn(Builder $query, $get) => $query->where('id', '!=', $get('id'))
+                                        modifyQueryUsing: fn (Builder $query, $get) => $query->where('id', '!=', $get('id'))
                                     )
                                     ->label('Parent Category')
                                     ->searchable()
-                                    ->disabledOptions(fn($get): array => [$get('id')])
+                                    ->disabledOptions(fn ($get): array => [$get('id')])
                                     ->enableBranchNode()
-                                    ->visible(fn() => Category::count() > 0),
+                                    ->visible(fn () => Category::count() > 0),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -110,16 +107,16 @@ class CategoryResource extends BaseDraftResource
                                         TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('created_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('updated_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('deleted_at')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
                                     ]),
                             ])
                             ->columnSpan(1)
@@ -136,7 +133,7 @@ class CategoryResource extends BaseDraftResource
         $currentTab = static::getCurrentTab();
 
         return $table
-            ->query(fn(): Builder => static::getEloquentQuery())
+            ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
             ->columns([
                 TextColumn::make('id')->sortable(),
@@ -173,7 +170,7 @@ class CategoryResource extends BaseDraftResource
                     }),
                 TextColumn::make('level')
                     ->label(__('category::fields.level'))
-                    ->getStateUsing(fn(Category $record): int => $record->ancestors->count() + 1)
+                    ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('children_count')
@@ -215,13 +212,13 @@ class CategoryResource extends BaseDraftResource
             ->defaultSort('updated_at', 'desc')
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn(): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 SelectFilter::make('parent_id')
                     ->label(__('category::fields.parent'))
-                    ->relationship('parent', 'title', fn($query) => $query->has('children'))
+                    ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
                     ->label(__('category::fields.children_count'))
@@ -231,7 +228,7 @@ class CategoryResource extends BaseDraftResource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
                         switch ($option) {
                             case '0':
                                 return $query->doesntHave('children');
@@ -245,8 +242,8 @@ class CategoryResource extends BaseDraftResource
                     })),
                 SelectFilter::make('depth')
                     ->label(__('category::fields.level'))
-                    ->options(fn(): array => array_combine(range(1, 5), range(1, 5)))
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                    ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
                             $subquery->select('id')
                                 ->from('categories as c')
@@ -257,14 +254,14 @@ class CategoryResource extends BaseDraftResource
             ->defaultSort('id', 'asc')
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn(): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->toolbarActions([
             ])
             ->filters([
                 SelectFilter::make('parent_id')
                     ->label(__('category::fields.parent'))
-                    ->relationship('parent', 'title', fn($query) => $query->has('children'))
+                    ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
                     ->label(__('category::fields.children_count'))
@@ -274,7 +271,7 @@ class CategoryResource extends BaseDraftResource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
                         switch ($option) {
                             case '0':
                                 return $query->doesntHave('children');
@@ -288,8 +285,8 @@ class CategoryResource extends BaseDraftResource
                     })),
                 SelectFilter::make('depth')
                     ->label(__('category::fields.level'))
-                    ->options(fn(): array => array_combine(range(1, 5), range(1, 5)))
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                    ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
                             $subquery->select('id')
                                 ->from('categories as c')

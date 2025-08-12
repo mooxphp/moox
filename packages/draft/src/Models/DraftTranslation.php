@@ -82,7 +82,7 @@ class DraftTranslation extends BaseDraftTranslationModel
                 $model->created_by_type = auth()->user()::class;
             }
 
-            if ($model->author_id && !$model->author_type) {
+            if ($model->author_id && ! $model->author_type) {
                 $model->author_type = User::class;
             }
         });
@@ -93,7 +93,7 @@ class DraftTranslation extends BaseDraftTranslationModel
                 $model->updated_by_type = auth()->user()::class;
             }
 
-            if ($model->author_id && !$model->author_type) {
+            if ($model->author_id && ! $model->author_type) {
                 $model->author_type = User::class;
             }
         });
