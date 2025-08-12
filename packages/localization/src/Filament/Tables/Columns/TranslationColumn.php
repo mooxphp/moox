@@ -21,11 +21,21 @@ class TranslationColumn extends TextColumn
             ->alignCenter()
             ->searchable()
             ->state(function ($record) {
-                $flags = $record->translations->map(function ($translation) {
+                // Load all translations including trashed ones
+                $translations = $record->translations()->withTrashed()->get();
+
+                $flags = $translations->map(function ($translation) {
                     $languageCode = explode('_', $translation->locale)[0];
                     $locale = StaticLanguage::where('alpha2', $languageCode)->first();
 
-                    return 'flag-'.strtolower($locale->alpha2);
+                    $flagClass = 'flag-' . strtolower($locale->alpha2);
+
+                    // Add trashed indicator if translation is soft deleted
+                    if ($translation->trashed()) {
+                        $flagClass .= ' trashed';
+                    }
+
+                    return $flagClass;
                 })->toArray();
 
                 return $flags;

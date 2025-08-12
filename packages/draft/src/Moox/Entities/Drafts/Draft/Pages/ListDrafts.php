@@ -28,8 +28,8 @@ class ListDrafts extends BaseListDrafts
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Draft => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Draft => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -39,12 +39,12 @@ class ListDrafts extends BaseListDrafts
                     Draft::onlyTrashed()->forceDelete();
                     Notification::make()
                         ->title(__('core::core.trash_emptied_successfully'))
-                        ->body(trans_choice('core::core.categories_permanently_deleted', $trashedCount, ['count' => $trashedCount]))
+                        ->body(trans_choice('core::core.items_permanently_deleted', $trashedCount, ['count' => $trashedCount]))
                         ->success()
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && Draft::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && Draft::onlyTrashed()->exists()),
         ];
     }
 }
