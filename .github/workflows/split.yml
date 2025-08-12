@@ -73,7 +73,7 @@ jobs:
         package: ${{ fromJson(needs.prepare.outputs.package-list) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Get package stability and determine version
         working-directory: packages/${{ matrix.package }}
