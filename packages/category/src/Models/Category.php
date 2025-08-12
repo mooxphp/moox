@@ -18,7 +18,7 @@ use Override;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
+use Moox\Media\Traits\HasMediaUsable;
 /**
  * @property string $title
  * @property string $status
@@ -47,6 +47,7 @@ class Category extends BaseDraftModel implements HasMedia
     use InteractsWithMedia;
     use NodeTrait;
     use SoftDeletes;
+    use HasMediaUsable;
 
     public $incrementing = true;
 

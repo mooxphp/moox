@@ -11,10 +11,10 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
-
+use Moox\Media\Traits\HasMediaUsable;
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
-    use InteractsWithMedia, Translatable;
+    use InteractsWithMedia, Translatable, HasMediaUsable;
 
     public $translatedAttributes = ['name', 'title', 'alt', 'description', 'internal_note'];
 
@@ -96,14 +96,14 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (! $model) {
+                if (!$model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (! is_array($jsonData)) {
+                    if (!is_array($jsonData)) {
                         continue;
                     }
 

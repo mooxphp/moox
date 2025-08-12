@@ -17,7 +17,7 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
+use Moox\Media\Traits\HasMediaUsable;
 /**
  * @property bool $is_active
  * @property array $data
@@ -54,7 +54,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, SoftDeletes;
+    use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, SoftDeletes, HasMediaUsable;
 
     public $timestamps = false;
 

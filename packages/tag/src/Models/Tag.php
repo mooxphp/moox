@@ -17,10 +17,10 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
+use Moox\Media\Traits\HasMediaUsable;
 class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
+    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable, HasMediaUsable;
 
     public $timestamps = false;
 
