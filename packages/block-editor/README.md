@@ -1,5 +1,33 @@
 # Moox Block Editor
 
+## Plan B no BlockNote
+
+Nesting seems to be the problem ... decide.
+Last state in BlockNote, try to ditch H1, add Mac Shortcuts, probably easier using https://ui.mantine.dev/.
+
+Before switching:
+
+-   Test with Mantine
+-   Do H2-H6 with Shortcuts
+-   Do all Mac Shortcuts
+-   Try a 50/50 column
+
+After failing:
+
+1. SPA (React + TipTap): Slash-Menu custom, Properties-Panel, H2–H6, Row/Column (2–3 Presets), Auto-Save.
+2. Mini-Endpoints instead of clunky JSON:API
+   • GET /moox/media?search=… → Liste/Select
+   • GET /moox/taxonomies?search=…
+   • POST /moox/editor/autosave
+   • POST /moox/editor/publish
+3. Filament-Media-Picker as Overlay/Popup: own Route, Return via postMessage → set URL in TipTap.
+4. Two Modes (Web/Mail): two Extension-Sets in same SPA.
+5. Export:
+   • Web → HTML/JSON directly from TipTap.
+   • Mail → Server-Endpoint, TipTap-JSON maps to Maizzle-Markup/Tabellen.
+
+## Plan A using BlockNote
+
 Development of the Moox Block Editor, used for Web and Mail.
 
 Stack:
