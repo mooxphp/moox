@@ -23,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -132,29 +133,29 @@ class ItemResource extends BaseItemResource
                                 ->schema([
                                     CopyableField::make('id')
                                         ->label('ID')
-                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
+                                        ->defaultValue(fn($record): string => $record->id ?? ''),
                                     CopyableField::make('uuid')
                                         ->label('UUID')
-                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
+                                        ->defaultValue(fn($record): string => $record->uuid ?? ''),
                                     CopyableField::make('ulid')
                                         ->label('ULID')
-                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
+                                        ->defaultValue(fn($record): string => $record->ulid ?? ''),
 
                                     Section::make('')
                                         ->schema([
-                                            Placeholder::make('created_at')
+                                            TextEntry::make('created_at')
                                                 ->label('Created')
-                                                ->content(fn ($record): string => $record->created_at ?
-                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
+                                                ->state(fn($record): string => $record->created_at ?
+                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('updated_at')
+                                            TextEntry::make('updated_at')
                                                 ->label('Last Updated')
-                                                ->content(fn ($record): string => $record->updated_at ?
-                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
+                                                ->state(fn($record): string => $record->updated_at ?
+                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -223,32 +224,32 @@ class ItemResource extends BaseItemResource
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
-                            ->placeholder(__('core::core.filter').' Title'),
+                            ->placeholder(__('core::core.filter') . ' Title'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['title'],
-                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['title']) {
+                        if (!$data['title']) {
                             return null;
                         }
 
-                        return 'Title: '.$data['title'];
+                        return 'Title: ' . $data['title'];
                     }),
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->placeholder(__('core::core.filter').' Status')
+                    ->placeholder(__('core::core.filter') . ' Status')
                     ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->placeholder(__('core::core.filter') . ' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter').' Section')
+                    ->placeholder(__('core::core.filter') . ' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ]);
     }
