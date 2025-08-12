@@ -10,8 +10,14 @@ trait InstallPackages
     {
         $packages = $this->getMooxPackages();
 
+        $packages = array_filter(
+            $packages,
+            fn($p) => !empty($p) && isset($p['name'])
+        );
+        
         foreach ($packages as $package) {
             $this->installPackage($package, $panelPaths);
         }
+        
     }
 }
