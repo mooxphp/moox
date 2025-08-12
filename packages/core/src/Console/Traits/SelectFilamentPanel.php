@@ -130,20 +130,20 @@ trait SelectFilamentPanel
             }
         }
 
-        //$this->runFilamentUpgrade();
-
         return $selectedPanels;
     }
 
-    //protected function runFilamentUpgrade(): void
-    //{
-        //info("⚙️ Running php artisan filament:upgrade ...");
+    protected function runFilamentUpgrade(): void
+    {
+        info("⚙️ Running php artisan filament:upgrade ...");
 
-        //Artisan::call('filament:upgrade');
+        Artisan::call('filament:upgrade');
+        $output = Artisan::output();
 
-       //info($output);
-       //info("✅ Filament upgrade command finished.");
-   //}
+        info($output);
+        info("✅ Filament upgrade command finished.");
+    }
+
 
     protected function registerDefaultPluginsForPanel(string $panel, string $providerPath): void
     {
@@ -501,7 +501,6 @@ PHP;
             return;
         }
     
-        // Füge die gewünschte Klasse in das Array der Provider ein
         $updated = preg_replace_callback(
             '/return\s*\[([\s\S]*?)\];/m',
             function (array $matches) use ($desiredClass) {

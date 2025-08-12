@@ -4,10 +4,10 @@ namespace Moox\Core\Console\Commands;
 
 use Illuminate\Console\Command;
 use Moox\Core\Console\Traits\Art;
-use Moox\Core\Console\Traits\CheckForFilament;            // Schritt 1–2
-use Moox\Core\Console\Traits\CheckOrCreateFilamentUser;   // Schritt 3
-use Moox\Core\Console\Traits\InstallPackages;             // Schritt 5–7
-use Moox\Core\Console\Traits\SelectFilamentPanel;         // Schritt 4
+use Moox\Core\Console\Traits\CheckForFilament;            
+use Moox\Core\Console\Traits\CheckOrCreateFilamentUser;   
+use Moox\Core\Console\Traits\InstallPackages;             
+use Moox\Core\Console\Traits\SelectFilamentPanel;         
 use Moox\Core\Services\PackageService;
 
 class MooxInstaller extends Command
@@ -55,7 +55,7 @@ class MooxInstaller extends Command
 
     $this->checkOrCreateFilamentUser();
 
-    // $this->info('⚙️ Running php artisan filament:upgrade ...');
+    $this->info('⚙️ Running php artisan filament:upgrade ...');
 
     $this->info('✅ Moox installed successfully. Enjoy! 🎉');
 }
