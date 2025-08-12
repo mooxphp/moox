@@ -2,34 +2,33 @@
 
 namespace Moox\News\Moox\Entities\News\News;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\News\Models\News;
-use Filament\Schemas\Schema;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Infolists\Components\TextEntry;
-use Moox\Media\Forms\Components\MediaPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
 use Moox\Clipboard\Forms\Components\CopyableField;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\News\Models\News;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class NewsResource extends BaseDraftResource
 {
@@ -140,13 +139,13 @@ class NewsResource extends BaseDraftResource
                                     DateTimePicker::make('to_publish_at')
                                         ->label(__('news::fields.to_publish_at'))
                                         ->placeholder(__('core::core.to_publish_at'))
-                                        ->hidden(fn($get) => $get('status') !== 'scheduled')
-                                        ->dehydrateStateUsing(fn($state, $get) => $get('status') === 'scheduled' ? $state : null),
+                                        ->hidden(fn ($get) => $get('status') !== 'scheduled')
+                                        ->dehydrateStateUsing(fn ($state, $get) => $get('status') === 'scheduled' ? $state : null),
                                     DateTimePicker::make('to_unpublish_at')
                                         ->label(__('news::fields.to_unpublish_at'))
                                         ->placeholder(__('core::core.to_unpublish_at'))
-                                        ->hidden(fn($get) => !in_array($get('status'), ['scheduled', 'published']))
-                                        ->dehydrateStateUsing(fn($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
+                                        ->hidden(fn ($get) => ! in_array($get('status'), ['scheduled', 'published']))
+                                        ->dehydrateStateUsing(fn ($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -164,13 +163,13 @@ class NewsResource extends BaseDraftResource
                                 ->schema([
                                     CopyableField::make('id')
                                         ->label(__('news::fields.id'))
-                                        ->defaultValue(fn($record): string => $record->id ?? ''),
+                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
                                     CopyableField::make('uuid')
                                         ->label(__('news::fields.uuid'))
-                                        ->defaultValue(fn($record): string => $record->uuid ?? ''),
+                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
                                     CopyableField::make('ulid')
                                         ->label(__('news::fields.ulid'))
-                                        ->defaultValue(fn($record): string => $record->ulid ?? ''),
+                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
 
                                     Section::make('')
                                         ->schema([
@@ -192,32 +191,32 @@ class NewsResource extends BaseDraftResource
                                                 }),
                                             TextEntry::make('created_at')
                                                 ->label(__('news::fields.created_at'))
-                                                ->state(fn($record): string => $record->created_at ?
-                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->created_at ?
+                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('updated_at')
                                                 ->label(__('news::fields.updated_at'))
-                                                ->state(fn($record): string => $record->updated_at ?
-                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->updated_at ?
+                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('published_at')
                                                 ->label(__('news::fields.published_at'))
-                                                ->state(fn($record): string => $record->published_at ?
-                                                    $record->published_at . ' - ' . $record->published_at->diffForHumans() .
-                                                    ($record->published_by_id ? ' by ' . $record->published_by_id : '') : '')
+                                                ->state(fn ($record): string => $record->published_at ?
+                                                    $record->published_at.' - '.$record->published_at->diffForHumans().
+                                                    ($record->published_by_id ? ' by '.$record->published_by_id : '') : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn($record) => !$record->published_at),
+                                                ->hidden(fn ($record) => ! $record->published_at),
                                             TextEntry::make('to_unpublish_at')
                                                 ->label(__('news::fields.to_unpublish_at'))
-                                                ->state(fn($record): string => $record->to_unpublish_at ?
-                                                    $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->to_unpublish_at ?
+                                                    $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn($record) => !$record->to_unpublish_at),
+                                                ->hidden(fn ($record) => ! $record->to_unpublish_at),
 
                                         ]),
 
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -345,32 +344,32 @@ class NewsResource extends BaseDraftResource
                     ->form([
                         TextInput::make('title')
                             ->label(__('news::fields.title'))
-                            ->placeholder(__('core::core.filter') . ' Title'),
+                            ->placeholder(__('core::core.filter').' Title'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['title'],
-                            fn(Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['title']) {
+                        if (! $data['title']) {
                             return null;
                         }
 
-                        return 'Title: ' . $data['title'];
+                        return 'Title: '.$data['title'];
                     }),
                 SelectFilter::make('status')
                     ->label(__('news::fields.status'))
-                    ->placeholder(__('core::core.filter') . ' Status')
+                    ->placeholder(__('core::core.filter').' Status')
                     ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                 SelectFilter::make('type')
                     ->label(__('news::fields.type'))
-                    ->placeholder(__('core::core.filter') . ' Type')
+                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label(__('news::fields.section'))
-                    ->placeholder(__('core::core.filter') . ' Section')
+                    ->placeholder(__('core::core.filter').' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ]);
     }

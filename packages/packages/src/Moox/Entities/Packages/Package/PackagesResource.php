@@ -2,27 +2,26 @@
 
 namespace Moox\Packages\Moox\Entities\Packages\Package;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 use Filament\Actions\ViewAction;
-use Moox\Packages\Models\Package;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Placeholder;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Table;
 use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
-use Moox\Packages\Moox\Entities\Packages\Package\Pages\ViewPackage;
-use Moox\Packages\Moox\Entities\Packages\Package\Pages\ListPackages;
+use Moox\Packages\Models\Package;
 use Moox\Packages\Moox\Entities\Packages\Package\Pages\CreatePackage;
+use Moox\Packages\Moox\Entities\Packages\Package\Pages\ListPackages;
+use Moox\Packages\Moox\Entities\Packages\Package\Pages\ViewPackage;
 
 class PackagesResource extends BaseItemResource
 {
@@ -136,38 +135,38 @@ class PackagesResource extends BaseItemResource
                                 ->schema([
                                     CopyableField::make('id')
                                         ->label('ID')
-                                        ->defaultValue(fn($record): string => $record->id ?? ''),
+                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
 
                                     Section::make('')
                                         ->schema([
                                             TextEntry::make('created_at')
                                                 ->label('Created')
-                                                ->state(fn($record): string => $record->created_at ?
-                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->created_at ?
+                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('installed_at')
                                                 ->label('Installed At')
-                                                ->state(fn($record): string => $record->installed_at ?
-                                                    $record->installed_at . ' - ' . $record->installed_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->installed_at ?
+                                                    $record->installed_at.' - '.$record->installed_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('installed_by')
                                                 ->label('Installed By')
-                                                ->state(fn($record): string => $record->installed_by ?
+                                                ->state(fn ($record): string => $record->installed_by ?
                                                     $record->installed_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('updated_at')
                                                 ->label('Updated At')
-                                                ->state(fn($record): string => $record->updated_at ?
-                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
+                                                ->state(fn ($record): string => $record->updated_at ?
+                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('updated_by')
                                                 ->label('Updated By')
-                                                ->state(fn($record): string => $record->updated_by ?
+                                                ->state(fn ($record): string => $record->updated_by ?
                                                     $record->updated_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -185,27 +184,27 @@ class PackagesResource extends BaseItemResource
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucfirst($state)),
+                    ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('name')
                     ->label('Packagist')
-                    ->formatStateUsing(fn($record) => "{$record->vendor}/{$record->name}")
+                    ->formatStateUsing(fn ($record) => "{$record->vendor}/{$record->name}")
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('package_type')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucwords(str_replace('_', ' ', $state))),
+                    ->formatStateUsing(fn ($state): string => ucwords(str_replace('_', ' ', $state))),
                 TextColumn::make('version_installed')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('install_status')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucfirst($state)),
+                    ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('update_status')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucwords(str_replace('-', ' ', $state))),
+                    ->formatStateUsing(fn ($state): string => ucwords(str_replace('-', ' ', $state))),
                 ToggleColumn::make('auto_update')
                     ->searchable()
                     ->sortable(),
@@ -220,15 +219,15 @@ class PackagesResource extends BaseItemResource
             ->filters([
                 SelectFilter::make('install_status')
                     ->label('Install Status')
-                    ->placeholder(__('core::core.filter') . ' Install Status')
+                    ->placeholder(__('core::core.filter').' Install Status')
                     ->options(['available' => 'Available', 'installed' => 'Installed', 'active' => 'Active']),
                 SelectFilter::make('package_type')
                     ->label('Package Type')
-                    ->placeholder(__('core::core.filter') . ' Package Type')
+                    ->placeholder(__('core::core.filter').' Package Type')
                     ->options(['moox_package' => 'Moox Package', 'moox_compatible' => 'Moox Compatible', 'moox_dependency' => 'Moox Dependency', 'filament_plugin' => 'Filament Plugin', 'laravel_package' => 'Laravel Package', 'php_package' => 'PHP Package']),
                 SelectFilter::make('update_status')
                     ->label('Update Status')
-                    ->placeholder(__('core::core.filter') . ' Update Status')
+                    ->placeholder(__('core::core.filter').' Update Status')
                     ->options(['up-to-date' => 'Up to Date', 'update-available' => 'Update Available', 'update-scheduled' => 'Update Scheduled', 'update-failed' => 'Update Failed']),
             ]);
     }
