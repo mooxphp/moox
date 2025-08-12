@@ -10,11 +10,11 @@
     <a href="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml"><img alt="PHPStan Level 5" src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg"></a>
 </p>
 <p align="center">
-    <a href="https://www.tailwindcss.com"><img alt="TailwindCSS 3" src="https://img.shields.io/badge/TailwindCSS-v3-orange?logo=tailwindcss&color=06B6D4"></a>
-    <a href="https://www.alpinejs.dev"><img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0"></a>
     <a href="https://www.laravel.com"><img alt="Laravel 12" src="https://img.shields.io/badge/Laravel-v12-orange?logo=Laravel&color=FF2D20"></a>
     <a href="https://www.laravel-livewire.com"><img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v3-orange?logo=livewire&color=4E56A6"></a>
     <a href="https://www.filamentphp.com"><img alt="Filament 3" src="https://img.shields.io/badge/Filament-v4-orange?logo=filament&color=4E56A6"></a>
+    <a href="https://www.tailwindcss.com"><img alt="TailwindCSS 4" src="https://img.shields.io/badge/TailwindCSS-v4-orange?logo=tailwindcss&color=06B6D4"></a>
+    <a href="https://www.alpinejs.dev"><img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0"></a>
 </p>
 <p align="center">
     <a href="https://app.codacy.com/gh/mooxphp/moox/dashboard"><img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555" alt="Codacy Code Quality"></a>
