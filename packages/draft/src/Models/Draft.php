@@ -140,8 +140,6 @@ class Draft extends BaseDraftModel implements HasMedia
         });
     }
 
-
-
     public function getUlidAttribute(): string
     {
         return $this->ulid ?? (string) Str::ulid();
