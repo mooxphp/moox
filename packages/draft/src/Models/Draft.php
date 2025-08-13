@@ -129,7 +129,18 @@ class Draft extends BaseDraftModel implements HasMedia
                 $model->translations()->delete();
             }
         });
+
+        static::restored(function ($model) {
+            // Restore all trashed translations when main model is restored
+            $model->translations()->withTrashed()->get()->each(function ($translation) {
+                if ($translation->trashed()) {
+                    $translation->restore();
+                }
+            });
+        });
     }
+
+
 
     public function getUlidAttribute(): string
     {

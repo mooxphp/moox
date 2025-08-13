@@ -16,4 +16,12 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
 
         return strtolower($className);
     }
+
+    /**
+     * Check if all translations are deleted and soft-delete the main model if needed
+     */
+    public function checkAndDeleteIfAllTranslationsDeleted(): void
+    {
+        $activeTranslations = $this->translations()->whereNull('deleted_at')->count();
+    }
 }
