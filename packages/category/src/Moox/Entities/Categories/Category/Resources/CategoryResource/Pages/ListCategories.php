@@ -19,30 +19,6 @@ class ListCategories extends BaseListDrafts
 
     public static string $resource = CategoryResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make()
-                ->using(fn (array $data, string $model): Category => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
-            Action::make('emptyTrash')
-                ->label(__('core::core.empty_trash'))
-                ->icon('heroicon-o-trash')
-                ->color('danger')
-                ->action(function (): void {
-                    $trashedCount = Category::onlyTrashed()->count();
-                    Category::onlyTrashed()->forceDelete();
-                    Notification::make()
-                        ->title(__('core::core.trash_emptied_successfully'))
-                        ->body(trans_choice('core::core.categories_permanently_deleted', $trashedCount, ['count' => $trashedCount]))
-                        ->success()
-                        ->send();
-                })
-                ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
-        ];
-    }
-
     #[Override]
     public function getTitle(): string
     {
