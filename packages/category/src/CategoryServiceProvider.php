@@ -28,7 +28,7 @@ class CategoryServiceProvider extends PackageServiceProvider
     {
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
-            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListCategories::class
         );
     }
