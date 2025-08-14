@@ -80,6 +80,10 @@ class BaseDraftResource extends BaseResource
     {
         $actions = [];
 
+        if (static::enableRestore()) {
+            $actions[] = static::getRestoreTableAction();
+        }
+
         if (static::enableEdit()) {
             $actions[] = static::getEditTableAction();
         }
@@ -87,6 +91,8 @@ class BaseDraftResource extends BaseResource
         if (static::enableView()) {
             $actions[] = static::getViewTableAction();
         }
+
+
 
         return $actions;
     }
