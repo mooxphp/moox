@@ -2,13 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Core\Traits\CanResolveResourceClass;
+use Filament\Resources\Pages\ViewRecord;
 use Moox\Localization\Models\Localization;
-use Override;
+use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseViewDraft extends ViewRecord
 {
@@ -21,7 +21,7 @@ abstract class BaseViewDraft extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
+            $title = $title . ' - ' . __('core::core.deleted');
         }
 
         return $title;
@@ -29,7 +29,7 @@ abstract class BaseViewDraft extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (! $this->record) {
+        if (!$this->record) {
             return false;
         }
 
@@ -77,19 +77,29 @@ abstract class BaseViewDraft extends ViewRecord
 
         return [
             ActionGroup::make(
-                $localizations->filter(fn ($localization) => $localization->language->alpha2 !== $this->lang)
+                $localizations->filter(fn($localization) => $localization->language->alpha2 !== $this->lang)
                     ->map(
-                        fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                            ->icon('flag-'.$localization->language->alpha2)
+                        fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                            ->icon('flag-' . $localization->language->alpha2)
                             ->label($localization->language->native_name ?? $localization->language->common_name)
                             ->color('gray')
-                            ->url(fn () => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                            ->url(function () use ($localization) {
+                                $targetLang = $localization->language->alpha2;
+
+                                $translation = $this->record->translations()->where('locale', $targetLang)->first();
+
+                                if ($translation) {
+                                    return $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $targetLang]);
+                                } else {
+                                    return $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $targetLang]);
+                                }
+                            })
                     )
                     ->all()
             )
                 ->color('gray')
                 ->label($localizations->firstWhere('language.alpha2', $this->lang)?->language->native_name ?? $localizations->firstWhere('language.alpha2', $this->lang)?->language->common_name)
-                ->icon('flag-'.$this->lang)
+                ->icon('flag-' . $this->lang)
                 ->button()
                 ->extraAttributes(['style' => 'border-radius: 8px; border: 1px solid #e5e7eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-left: -8px; min-width: 225px; justify-content: flex-start; padding: 10px 12px;']),
         ];
