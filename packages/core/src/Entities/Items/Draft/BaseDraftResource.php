@@ -3,7 +3,7 @@
 namespace Moox\Core\Entities\Items\Draft;
 
 use Filament\Schemas\Components\Actions;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
@@ -150,5 +150,20 @@ class BaseDraftResource extends BaseResource
     public static function query(): Builder
     {
         return parent::getEloquentQuery();
+    }
+
+    public static function modifyEloquentQuery(Builder $query): Builder
+    {
+        $query = parent::modifyEloquentQuery($query);
+
+        if (method_exists(static::getModel(), 'translations')) {
+            $query->with([
+                'translations' => function ($query) {
+                    $query->withTrashed();
+                },
+            ]);
+        }
+
+        return $query;
     }
 }

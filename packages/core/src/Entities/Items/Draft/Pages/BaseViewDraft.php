@@ -7,12 +7,41 @@ use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Localization\Models\Localization;
+use Illuminate\Database\Eloquent\Model;
+use Override;
 
 abstract class BaseViewDraft extends ViewRecord
 {
     use CanResolveResourceClass;
 
     public ?string $lang = null;
+
+    #[Override]
+    public function getTitle(): string
+    {
+        $title = parent::getTitle();
+        if ($this->isRecordTrashed()) {
+            $title = $title . ' - ' . __('core::core.deleted');
+        }
+
+        return $title;
+    }
+
+    protected function isRecordTrashed(): bool
+    {
+        if (!$this->record) {
+            return false;
+        }
+
+        $currentLang = $this->lang ?? request()->query('lang') ?? app()->getLocale();
+
+        if (method_exists($this->record, 'translations')) {
+            $translation = $this->record->translations()->withTrashed()->where('locale', $currentLang)->first();
+            return $translation && $translation->trashed();
+        }
+
+        return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
+    }
 
     public function getFormActions(): array
     {
@@ -48,18 +77,18 @@ abstract class BaseViewDraft extends ViewRecord
         return [
             ActionGroup::make(
                 $localizations->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
+                    fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                        ->icon('flag-' . $localization->language->alpha2)
                         ->label('')
                         ->color('transparent')
                         ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                        ->url(fn() => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
                 )
                     ->all()
             )
                 ->color('transparent')
                 ->label('Language')
-                ->icon('flag-'.$this->lang)
+                ->icon('flag-' . $this->lang)
                 ->extraAttributes(['class' => '']),
         ];
     }
