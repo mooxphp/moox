@@ -92,8 +92,6 @@ class BaseDraftResource extends BaseResource
             $actions[] = static::getViewTableAction();
         }
 
-
-
         return $actions;
     }
 
