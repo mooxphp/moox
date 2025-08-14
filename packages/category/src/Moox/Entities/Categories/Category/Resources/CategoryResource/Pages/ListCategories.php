@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
-use Filament\Notifications\Notification;
 use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;

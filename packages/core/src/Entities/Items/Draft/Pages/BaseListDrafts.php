@@ -2,13 +2,12 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\CanResolveResourceClass;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Actions\CreateAction;
 use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseListDrafts extends ListRecords
 {
@@ -21,8 +20,8 @@ abstract class BaseListDrafts extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Model => $model::create($data))
-                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Model => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -38,7 +37,7 @@ abstract class BaseListDrafts extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn(): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
         ];
     }
 }
