@@ -45,7 +45,7 @@ abstract class BaseEditDraft extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
@@ -61,11 +61,11 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang) {
+        if (!$this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (! property_exists($record, 'translatedAttributes')) {
+        if (!property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -75,7 +75,7 @@ abstract class BaseEditDraft extends EditRecord
 
         $record->update($data);
 
-        if (! empty($translationData)) {
+        if (!empty($translationData)) {
             $relation = $record->translations();
             $translationModel = $relation->getRelated();
             $foreignKey = $relation->getForeignKeyName();
@@ -84,7 +84,7 @@ abstract class BaseEditDraft extends EditRecord
                 ->where('locale', $this->lang)
                 ->first();
 
-            if (! $translation) {
+            if (!$translation) {
                 $translation = $record->translations()->make([
                     $relation->getForeignKeyName() => $record->id,
                     'locale' => $this->lang,
@@ -107,7 +107,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! property_exists($model, 'translatedAttributes')) {
+        if (!property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -161,7 +161,7 @@ abstract class BaseEditDraft extends EditRecord
         ];
 
         foreach ($translatedFields as $field) {
-            if (! isset($data[$field])) {
+            if (!isset($data[$field])) {
                 // Don't set protected fields to null automatically
                 if (in_array($field, $protectedFields)) {
                     continue;
@@ -180,28 +180,25 @@ abstract class BaseEditDraft extends EditRecord
 
     public function getHeaderActions(): array
     {
-        $languages = Localization::with('language')->get();
-        $languageCodes = $languages->map(fn ($localization) => $localization->language->alpha2);
+        $localizations = Localization::with('language')->get();
 
         return [
             ActionGroup::make(
-                $languages->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
-                        ->label('')
-                        ->color('transparent')
-                        ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl(
-                            'edit',
-                            ['record' => $this->record, 'lang' => $localization->language->alpha2]
-                        ))
-                )
+                $localizations->filter(fn($localization) => $localization->language->alpha2 !== $this->lang)
+                    ->map(
+                        fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                            ->icon('flag-' . $localization->language->alpha2)
+                            ->label($localization->language->native_name ?? $localization->language->common_name)
+                            ->color('gray')
+                            ->url(fn() => $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                    )
                     ->all()
             )
-                ->color('transparent')
-                ->label('Language')
-                ->icon('flag-'.$this->lang)
-                ->extraAttributes(['class' => '']),
+                ->color('gray')
+                ->label($localizations->firstWhere('language.alpha2', $this->lang)?->language->native_name ?? $localizations->firstWhere('language.alpha2', $this->lang)?->language->common_name)
+                ->icon('flag-' . $this->lang)
+                ->button()
+                ->extraAttributes(['style' => 'border-radius: 8px; border: 1px solid #e5e7eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-left: -8px; min-width: 225px; justify-content: flex-start; padding: 10px 12px;']),
         ];
     }
 }

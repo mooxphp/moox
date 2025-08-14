@@ -21,7 +21,7 @@ abstract class BaseViewDraft extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
+            $title = $title . ' - ' . __('core::core.deleted');
         }
 
         return $title;
@@ -29,7 +29,7 @@ abstract class BaseViewDraft extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (! $this->record) {
+        if (!$this->record) {
             return false;
         }
 
@@ -77,20 +77,21 @@ abstract class BaseViewDraft extends ViewRecord
 
         return [
             ActionGroup::make(
-                $localizations->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
-                        ->label('')
-                        ->color('transparent')
-                        ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
-                )
+                $localizations->filter(fn($localization) => $localization->language->alpha2 !== $this->lang)
+                    ->map(
+                        fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                            ->icon('flag-' . $localization->language->alpha2)
+                            ->label($localization->language->native_name ?? $localization->language->common_name)
+                            ->color('gray')
+                            ->url(fn() => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
+                    )
                     ->all()
             )
-                ->color('transparent')
-                ->label('Language')
-                ->icon('flag-'.$this->lang)
-                ->extraAttributes(['class' => '']),
+                ->color('gray')
+                ->label($localizations->firstWhere('language.alpha2', $this->lang)?->language->native_name ?? $localizations->firstWhere('language.alpha2', $this->lang)?->language->common_name)
+                ->icon('flag-' . $this->lang)
+                ->button()
+                ->extraAttributes(['style' => 'border-radius: 8px; border: 1px solid #e5e7eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-left: -8px; min-width: 225px; justify-content: flex-start; padding: 10px 12px;']),
         ];
     }
 }

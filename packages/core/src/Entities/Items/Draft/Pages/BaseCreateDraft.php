@@ -89,23 +89,25 @@ abstract class BaseCreateDraft extends CreateRecord
 
     public function getHeaderActions(): array
     {
-        $languages = Localization::all();
+        $localizations = Localization::with('language')->get();
 
         return [
             ActionGroup::make(
-                $languages->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
-                        ->label('')
-                        ->color('transparent')
-                        ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('create', ['lang' => $localization->language->alpha2]))
-                )->all()
+                $localizations->filter(fn($localization) => $localization->language->alpha2 !== $this->lang)
+                    ->map(
+                        fn($localization) => Action::make('language_' . $localization->language->alpha2)
+                            ->icon('flag-' . $localization->language->alpha2)
+                            ->label($localization->language->native_name ?? $localization->language->common_name)
+                            ->color('gray')
+                            ->url(fn() => $this->getResource()::getUrl('create', ['lang' => $localization->language->alpha2]))
+                    )
+                    ->all()
             )
-                ->color('transparent')
-                ->label('Language')
-                ->icon('flag-'.$this->lang)
-                ->extraAttributes(['class' => '']),
+                ->color('gray')
+                ->label($localizations->firstWhere('language.alpha2', $this->lang)?->language->native_name ?? $localizations->firstWhere('language.alpha2', $this->lang)?->language->common_name)
+                ->icon('flag-' . $this->lang)
+                ->button()
+                ->extraAttributes(['style' => 'border-radius: 8px; border: 1px solid #e5e7eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-left: -8px; min-width: 225px; justify-content: flex-start; padding: 10px 12px;']),
         ];
     }
 }
