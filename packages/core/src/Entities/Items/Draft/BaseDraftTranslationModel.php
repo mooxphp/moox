@@ -3,7 +3,6 @@
 namespace Moox\Core\Entities\Items\Draft;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 abstract class BaseDraftTranslationModel extends Model
@@ -101,7 +100,6 @@ abstract class BaseDraftTranslationModel extends Model
     {
         return [];
     }
-
 
     /**
      * Boot method for common translation functionality

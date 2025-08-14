@@ -4,14 +4,14 @@ namespace Moox\Core\Entities\Items\Draft;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 abstract class BaseDraftModel extends Model implements TranslatableContract
 {
-    use Translatable, SoftDeletes;
+    use SoftDeletes, Translatable;
 
     public $timestamps = false;
 
@@ -87,8 +87,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     {
         parent::boot();
 
-
-
         static::deleted(function ($model) {
             if ($model->isForceDeleting()) {
                 $model->translations()->forceDelete();
@@ -113,8 +111,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
 
         return strtolower($className);
     }
-
-
 
     public function checkAndDeleteIfAllTranslationsDeleted(): void
     {
