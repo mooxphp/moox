@@ -10,43 +10,203 @@ abstract class BaseDraftTranslationModel extends Model
 {
     use SoftDeletes;
 
-    public function getCasts(): array
+    public $timestamps = true;
+
+    /**
+     * Get the base fillable fields that should always be present
+     */
+    protected function getBaseFillable(): array
     {
-        return array_merge(parent::getCasts(), [
+        return [
+            // Translation fields
+            'locale',
+            'translation_status',
+
+            // Publishing schedule fields
+            'to_publish_at',
+            'published_at',
+            'to_unpublish_at',
+            'unpublished_at',
+
+            // Actor fields
+            'published_by_id',
+            'published_by_type',
+            'unpublished_by_id',
+            'unpublished_by_type',
+
+            // Soft delete and restoration fields
+            'deleted_at',
+            'deleted_by_id',
+            'deleted_by_type',
+            'restored_at',
+            'restored_by_id',
+            'restored_by_type',
+
+            // Created by fields
+            'created_by_id',
+            'created_by_type',
+
+            // Updated by fields
+            'updated_by_id',
+            'updated_by_type',
+        ];
+    }
+
+    /**
+     * Get the base casts that should always be present
+     */
+    protected function getBaseCasts(): array
+    {
+        return [
+            // DateTime casts
             'to_publish_at' => 'datetime',
             'published_at' => 'datetime',
             'to_unpublish_at' => 'datetime',
             'unpublished_at' => 'datetime',
+            'deleted_at' => 'datetime',
             'restored_at' => 'datetime',
-        ], $this->getCustomCasts());
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
     }
 
     /**
-     * Get custom casts for child models to extend.
+     * Get the fillable attributes by merging base and custom fillable
+     */
+    public function getFillable(): array
+    {
+        return array_merge($this->getBaseFillable(), $this->getCustomFillable());
+    }
+
+    /**
+     * Get custom fillable for child models to extend
+     */
+    protected function getCustomFillable(): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the casts by merging base and custom casts
+     */
+    public function getCasts(): array
+    {
+        return array_merge($this->getBaseCasts(), $this->getCustomCasts());
+    }
+
+    /**
+     * Get custom casts for child models to extend
      */
     protected function getCustomCasts(): array
     {
         return [];
     }
 
-    public function publishedBy(): MorphTo
+
+    /**
+     * Boot method for common translation functionality
+     */
+    protected static function boot(): void
     {
-        return $this->morphTo();
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (auth()->check()) {
+                $model->created_by_id = auth()->id();
+                $model->created_by_type = auth()->user()::class;
+            }
+        });
+
+        static::updating(function ($model) {
+            if (auth()->check()) {
+                $model->updated_by_id = auth()->id();
+                $model->updated_by_type = auth()->user()::class;
+            }
+        });
     }
 
-    public function unpublishedBy(): MorphTo
+    /**
+     * Handle translation status changes and scheduling dates
+     */
+    public function setTranslationStatusAttribute($value)
     {
-        return $this->morphTo();
-    }
+        $oldValue = $this->getOriginal('translation_status') ?? $this->attributes['translation_status'] ?? null;
 
-    public function deletedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
+        $oldValue = $oldValue === '' ? null : $oldValue;
+        $newValue = $value === '' ? null : $value;
 
-    public function restoredBy(): MorphTo
-    {
-        return $this->morphTo();
+        if (empty($newValue)) {
+            return;
+        }
+
+        if ($oldValue === $newValue) {
+            return;
+        }
+
+        $this->attributes['translation_status'] = $value;
+
+        switch ($value) {
+            case 'scheduled':
+                if ($this->published_at !== null) {
+                    $this->unpublished_at = now();
+                    $this->unpublished_by_id = auth()->id();
+                    $this->unpublished_by_type = auth()->user()::class;
+                }
+
+                $this->published_at = null;
+                $this->published_by_id = null;
+                $this->published_by_type = null;
+                break;
+
+            case 'published':
+                $this->published_at = now();
+                $this->published_by_id = auth()->id();
+                $this->published_by_type = auth()->user()::class;
+                $this->to_publish_at = null;
+                $this->to_unpublish_at = null;
+                $this->unpublished_at = null;
+                $this->unpublished_by_id = null;
+                $this->unpublished_by_type = null;
+                break;
+
+            case 'waiting':
+                $this->published_at = null;
+                $this->published_by_id = null;
+                $this->published_by_type = null;
+                $this->to_publish_at = null;
+                $this->unpublished_at = null;
+                $this->to_unpublish_at = null;
+                break;
+
+            case 'privat':
+                if ($this->published_at !== null) {
+                    $this->unpublished_at = now();
+                    $this->unpublished_by_id = auth()->id();
+                    $this->unpublished_by_type = auth()->user()::class;
+                }
+
+                $this->published_at = null;
+                $this->published_by_id = null;
+                $this->published_by_type = null;
+                $this->to_publish_at = null;
+                $this->to_unpublish_at = null;
+                break;
+
+            case 'draft':
+            default:
+                if ($this->published_at !== null) {
+                    $this->unpublished_at = now();
+                    $this->unpublished_by_id = auth()->id();
+                    $this->unpublished_by_type = auth()->user()::class;
+                }
+
+                $this->published_at = null;
+                $this->published_by_id = null;
+                $this->published_by_type = null;
+                $this->to_publish_at = null;
+                $this->to_unpublish_at = null;
+                break;
+        }
     }
 
     public static function getResourceName(): string
