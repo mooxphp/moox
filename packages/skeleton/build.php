@@ -94,14 +94,20 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-function replace_readme_paragraphs(string $file, string $content): void
+function replace_readme_sections(string $file, array $sections): void
 {
     $contents = file_get_contents($file);
 
-    file_put_contents(
-        $file,
-        preg_replace('/<!--shortdesc-->.*<!--\/shortdesc-->/s', $content, $contents) ?: $contents
-    );
+    foreach ($sections as $sectionName => $content) {
+        $startComment = '<!-- '.$sectionName.' -->';
+        $endComment = '<!-- /'.$sectionName.' -->';
+
+        $pattern = '/'.preg_quote($startComment, '/').'.*?'.preg_quote($endComment, '/').'/s';
+
+        $contents = preg_replace($pattern, $startComment.PHP_EOL.PHP_EOL.$content.PHP_EOL.PHP_EOL.$endComment, $contents) ?: $contents;
+    }
+
+    file_put_contents($file, $contents);
 }
 
 function safeUnlink(string $filename): void
@@ -172,6 +178,10 @@ $className = ask('Class name', $className);
 $variableName = lcfirst($className);
 $description = ask('Package description', $packageName.' is under hard development. We do not know what it will do someday. Please wear a hard hat before installing.');
 
+$features = ask('Package features (comma separated)', 'Basic functionality, Easy to use, Well documented');
+
+$usage = ask('Package usage instructions', 'Simply install the package and follow the documentation for setup and configuration.');
+
 writeln('------');
 writeln('Author : '.$authorName);
 writeln('Author Email : '.$authorEmail);
@@ -194,14 +204,15 @@ foreach ($files as $file) {
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
         'skeleton' => $packageSlug,
-        'This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.' => $description,
-        'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
-        'creating simple Laravel packages' => 'we do not know yet',
     ]);
 
     match (true) {
         str_contains((string) $file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains((string) $file, 'README.md') => replace_readme_paragraphs($file, $description),
+        str_contains((string) $file, 'README.md') => replace_readme_sections($file, [
+            'Description' => $description,
+            'Features' => '- '.implode(PHP_EOL.'- ', array_map('trim', explode(',', $features))),
+            'Usage' => $usage,
+        ]),
         default => [],
     };
 }

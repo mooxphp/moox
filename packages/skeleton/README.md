@@ -6,7 +6,11 @@
 
 # Moox Skeleton
 
+<!-- Description -->
+
 This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.
+
+<!-- /Description -->
 
 The package is part of the **Moox ecosystem** — a suite of Filament packages that form a solid foundation for Laravel apps, websites, CMS, and eCommerce projects.
 
@@ -14,7 +18,12 @@ Learn more about [Moox](https://moox.org).
 
 ## Features
 
--   New Laravel package
+<!-- Features -->
+
+-   Skeleton Package
+-   Build Command
+
+<!-- /Features -->
 
 ## Installation
 
@@ -33,7 +42,15 @@ Learn more about the [Moox Installer or common requirements](https://moox.org/do
 
 ## Usage
 
-The best way to use Moox Skeleton is by using the [Moox Build](https://github.com/mooxphp/build) command.
+<!-- Usage -->
+
+The best way to use Moox Skeleton is by using the [Moox Build](https://github.com/mooxphp/build) command. Alternatively you can use the GitHub-template and the PHP-command that ships with the package.
+
+```php
+php build.php
+```
+
+<!-- /Usage -->
 
 ## Changelog
 
