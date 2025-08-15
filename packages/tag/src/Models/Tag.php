@@ -6,12 +6,12 @@ namespace Moox\Tag\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Media\Traits\HasMediaUsable;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
