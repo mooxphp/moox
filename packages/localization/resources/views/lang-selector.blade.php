@@ -1,9 +1,24 @@
-<select onchange="if(this.value) window.location.href = window.location.pathname + '?lang=' + this.value"
-    class="fi-input block w-full rounded-lg border-gray-300 shadow-sm outline-none transition duration-75 focus:border-primary-500 focus:ring-1 focus:ring-inset focus:ring-primary-500 disabled:opacity-70 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500">
-    <option value="">{{ __('localization::localization.select_language') }}</option>
-    @foreach(\Moox\Localization\Models\Localization::all() as $locale)
-        <option value="{{ $locale->language->alpha2 }}" {{ request()->get('lang') == $locale->language->alpha2 ? 'selected' : '' }}>
-            {{ $locale->language->common_name }}
-        </option>
+@php
+    $currentLang = request()->get('lang', app()->getLocale());
+    $currentLocalization = \Moox\Localization\Models\Localization::with('language')->whereHas('language', function ($query) use ($currentLang) {
+        $query->where('alpha2', $currentLang);
+    })->first();
+    $allLocalizations = \Moox\Localization\Models\Localization::with('language')->get();
+@endphp
+
+<x-filament::dropdown>
+    <x-slot name="trigger">
+        <x-filament::button color="gray" icon="flag-{{ $currentLang }}" size="md"
+            style="min-width: 225px; justify-content: flex-start; padding: 10px 12px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            {{ $currentLocalization?->language->common_name ?? $currentLang }}
+        </x-filament::button>
+    </x-slot>
+
+    @foreach($allLocalizations as $locale)
+        @if($locale->language->alpha2 !== $currentLang)
+            <x-filament::dropdown.list.item :href="request()->url() . '?lang=' . $locale->language->alpha2" :icon="'flag-' . $locale->language->alpha2" tag="a">
+                {{ $locale->language->common_name }}
+            </x-filament::dropdown.list.item>
+        @endif
     @endforeach
-</select>
+</x-filament::dropdown>

@@ -6,6 +6,7 @@ namespace Moox\Tag\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -19,7 +20,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Tag extends Model implements HasMedia, TranslatableContract
+class Tag extends BaseDraftModel implements HasMedia, TranslatableContract
 {
     use HasFactory, HasMediaUsable, InteractsWithMedia, SoftDeletes, Translatable;
 
@@ -27,31 +28,21 @@ class Tag extends Model implements HasMedia, TranslatableContract
 
     protected $table = 'tags';
 
-    public $translatedAttributes = [
-        'title',
-        'slug',
-        'permalink',
-        'content',
-        'author_id',
-        'author_type',
-        'to_publish_at',
-        'published_at',
-        'to_unpublish_at',
-        'unpublished_at',
-        'published_by_id',
-        'unpublished_by_id',
-        'unpublished_by_type',
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-    ];
+    /**
+     * Get custom translated attributes for Draft
+     */
+    protected function getCustomTranslatedAttributes(): array
+    {
+        return [
+            'title',
+            'slug',
+            'permalink',
+            'description',
+            'content',
+            'author_id',
+            'author_type',
+        ];
+    }
 
     protected $fillable = [
         'color',
