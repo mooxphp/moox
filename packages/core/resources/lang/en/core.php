@@ -115,7 +115,6 @@ return [
     'published' => 'Published',
     'scheduled' => 'Scheduled',
     'draft' => 'Draft',
-    'trash' => 'Trash',
     'image' => 'Image',
     'author' => 'Author',
     'drafted' => 'Drafted',

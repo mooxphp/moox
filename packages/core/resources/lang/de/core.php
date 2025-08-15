@@ -112,7 +112,6 @@ return [
     'published' => 'Veröffentlicht',
     'scheduled' => 'Geplant',
     'draft' => 'Entwurf',
-    'trash' => 'Papierkorb',
     'term' => 'Begriff',
     'terms' => 'Begriffe',
     'tag' => 'Schlagwort',
