@@ -170,7 +170,7 @@ $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
-$description = ask('Package description', 'This is my package '.$packageSlug);
+$description = ask('Package description', $packageName.' is under hard development. We do not know what it will do someday. Please wear a hard hat before installing.');
 
 writeln('------');
 writeln('Author : '.$authorName);
@@ -194,7 +194,7 @@ foreach ($files as $file) {
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
         'skeleton' => $packageSlug,
-        'This template is used for generating Laravel packages, all Moox packages are built with this template.' => $description,
+        'This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.' => $description,
         'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
         'creating simple Laravel packages' => 'we do not know yet',
     ]);
@@ -207,7 +207,9 @@ foreach ($files as $file) {
 }
 
 unlink(determineSeparator('banner.jpg'));
-rename(determineSeparator('bannernew.jpg'), determineSeparator('banner.jpg'));
+rename(determineSeparator('banner_build.jpg'), determineSeparator('banner.jpg'));
+unlink(determineSeparator('screenshot/main.jpg'));
+rename(determineSeparator('screenshot/main_build.jpg'), determineSeparator('screenshot/main.jpg'));
 rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
 
 if (confirm('Execute `composer install` and run tests?')) {
@@ -219,4 +221,4 @@ if (confirm('Let this script delete itself?', true)) {
 }
 
 writeln(' ');
-writeln('Moox Builder is finished. Have fun!');
+writeln('Moox Builder has finished. Have fun!');

@@ -1,46 +1,37 @@
+<div class="filament-hidden">
+
 ![Moox Skeleton](banner.jpg)
+
+</div>
 
 # Moox Skeleton
 
-<!--shortdesc-->
-
 This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.
 
-<!--/shortdesc-->
+The package is part of the **Moox ecosystem** — a suite of Filament packages that form a solid foundation for Laravel apps, websites, CMS, and eCommerce projects.
 
 ## Features
 
-<!--features-->
-
--   Laravel package
--   PHP package
--   Composer package
--   Moox plugin
-
-<!--/features-->
-
-## Requirements
-
-See [Requirements](https://github.com/mooxphp/moox/#Requirements ).
+-   New Laravel package
 
 ## Installation
+
+To install this package, require it via Composer and run the Moox Installer:
 
 ```bash
 composer require moox/skeleton
 php artisan moox:install
 ```
 
+Learn more about the [Moox Installer](https://github.com/mooxphp/docs/tree/main/getting-started/installation) or [common requirements](https://github.com/mooxphp/core/tree/main/getting-started/installation#requirements).
+
 ## Screenshot
 
-![Moox Skeleton](screenshot/main.jpg)
+![Moox Skeleton screenshot](screenshot/main.jpg)
 
 ## Usage
 
-<!--usage-->
-
 The best way to use Moox Skeleton is by using the [Moox Build](https://github.com/mooxphp/build) command.
-
-<!--/usage -->
 
 ## Changelog
 
