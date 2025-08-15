@@ -176,9 +176,9 @@ $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
-$description = ask('Package description', $packageName.' is under hard development. We do not know what it will do someday. Please wear a hard hat before installing.');
+$description = ask('Package description', $packageName.' is a new package made with Moox.');
 
-$features = ask('Package features (comma separated)', 'Basic functionality, Easy to use, Well documented');
+$features = ask('Package features (comma separated)', 'New Moox Package, Make it awesome!');
 
 $usage = ask('Package usage instructions', 'Simply install the package and follow the documentation for setup and configuration.');
 
