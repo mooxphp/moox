@@ -10,6 +10,8 @@ This template is used for generating Laravel packages, all Moox packages are bui
 
 The package is part of the **Moox ecosystem** — a suite of Filament packages that form a solid foundation for Laravel apps, websites, CMS, and eCommerce projects.
 
+Learn more about [Moox](https://moox.org).
+
 ## Features
 
 -   New Laravel package
@@ -23,7 +25,7 @@ composer require moox/skeleton
 php artisan moox:install
 ```
 
-Learn more about the [Moox Installer](https://github.com/mooxphp/docs/tree/main/getting-started/installation) or [common requirements](https://github.com/mooxphp/core/tree/main/getting-started/installation#requirements).
+Learn more about the [Moox Installer or common requirements](https://moox.org/docs/getting-started/installation).
 
 ## Screenshot
 
@@ -44,6 +46,10 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 ## Credits
 
 Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to Moox, special thanks to our sponsors.
+
+## Help Moox
+
+Want to help us to develop and grow Moox. Fortunately there are so many ways to do this, learn more about [helping Moox](https://moox.org/help-moox).
 
 ## License
 
