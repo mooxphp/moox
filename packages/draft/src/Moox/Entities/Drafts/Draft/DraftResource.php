@@ -115,7 +115,7 @@ class DraftResource extends BaseDraftResource
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
                             KeyValue::make('data')
-                                ->label(__('core::core.data').' (JSON)'),
+                                ->label(__('core::core.data') . ' (JSON)'),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -142,14 +142,14 @@ class DraftResource extends BaseDraftResource
                                         ->label(__('core::core.to_publish_at'))
                                         ->placeholder(__('core::core.to_publish_at'))
                                         ->minDate(now())
-                                        ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
-                                        ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null),
+                                        ->hidden(fn($get) => $get('translation_status') !== 'scheduled')
+                                        ->dehydrateStateUsing(fn($state, $get) => $get('translation_status') === 'scheduled' ? $state : null),
                                     DateTimePicker::make('to_unpublish_at')
                                         ->label(__('core::core.to_unpublish_at'))
                                         ->placeholder(__('core::core.to_unpublish_at'))
                                         ->minDate(now())
-                                        ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
-                                        ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null),
+                                        ->hidden(fn($get) => !in_array($get('translation_status'), ['scheduled', 'published']))
+                                        ->dehydrateStateUsing(fn($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -172,52 +172,52 @@ class DraftResource extends BaseDraftResource
                                 ->schema([
                                     CopyableField::make('id')
                                         ->label('ID')
-                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
+                                        ->defaultValue(fn($record): string => $record->id ?? ''),
                                     CopyableField::make('uuid')
                                         ->label('UUID')
-                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
+                                        ->defaultValue(fn($record): string => $record->uuid ?? ''),
                                     CopyableField::make('ulid')
                                         ->label('ULID')
-                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
+                                        ->defaultValue(fn($record): string => $record->ulid ?? ''),
                                     Section::make('')
                                         ->schema([
                                             TextEntry::make('created_at')
                                                 ->label(__('core::core.created_at'))
-                                                ->state(fn ($record): string => $record->created_at ?
-                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
+                                                ->state(fn($record): string => $record->created_at ?
+                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('updated_at')
                                                 ->label(__('core::core.updated_at'))
-                                                ->state(fn ($record): string => $record->updated_at ?
-                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
+                                                ->state(fn($record): string => $record->updated_at ?
+                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             TextEntry::make('published_at')
                                                 ->label(__('core::core.published_at'))
                                                 ->state(function ($record): string {
                                                     $translation = $record->translations()->withTrashed()->first();
-                                                    if (! $translation || ! $translation->published_at) {
+                                                    if (!$translation || !$translation->published_at) {
                                                         return '';
                                                     }
 
                                                     $publishedBy = '';
                                                     if ($translation->published_by_id && $translation->published_by_type) {
                                                         $user = app($translation->published_by_type)->find($translation->published_by_id);
-                                                        $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
+                                                        $publishedBy = $user ? ' ' . __('core::core.by') . ' ' . $user->name : '';
                                                     }
 
-                                                    return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
+                                                    return $translation->published_at . ' - ' . $translation->published_at->diffForHumans() . $publishedBy;
                                                 })
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->published_at),
+                                                ->hidden(fn($record) => !$record->published_at),
                                             TextEntry::make('to_unpublish_at')
                                                 ->label(__('core::core.to_unpublish_at'))
-                                                ->state(fn ($record): string => $record->to_unpublish_at ?
-                                                    $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
+                                                ->state(fn($record): string => $record->to_unpublish_at ?
+                                                    $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->to_unpublish_at),
+                                                ->hidden(fn($record) => !$record->to_unpublish_at),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -236,12 +236,7 @@ class DraftResource extends BaseDraftResource
             ->columns([
                 TextColumn::make('title')
                     ->searchable()
-                    ->sortable()
-                    ->state(function ($record) {
-                        $translation = $record->translations()->withTrashed()->first();
-
-                        return $translation ? $translation->title : '';
-                    }),
+                    ->sortable(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
                     ->boolean()
@@ -249,43 +244,17 @@ class DraftResource extends BaseDraftResource
                     ->sortable(),
                 TextColumn::make('slug')
                     ->searchable()
-                    ->sortable()
-                    ->state(function ($record) {
-                        $translation = $record->translations()->withTrashed()->first();
-
-                        return $translation ? $translation->slug : '';
-                    }),
+                    ->sortable(),
                 TextColumn::make('description')
                     ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->description;
-                        }
-
-                        return $record->description;
-                    }),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->content;
-                        }
-
-                        return $record->content;
-                    }),
+                ,
                 TextColumn::make('author.name')
                     ->label('Author')
-                    ->sortable()
-                    ->toggleable()
-                    ->state(function ($record) {
-                        $translation = $record->translations()->withTrashed()->first();
-
-                        return $translation && $translation->author ? $translation->author->name : '';
-                    }),
+                    ->sortable(),
                 TextColumn::make('type')
                     ->sortable()
                     ->searchable(),
@@ -299,11 +268,12 @@ class DraftResource extends BaseDraftResource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ulid')
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('section')
-                    ->sortable()
-                    ->toggleable(),
-                ...static::getTaxonomyColumns(),
-                TextColumn::make('status')
+                // TextColumn::make('section')
+                //     ->sortable()
+                //     ->toggleable(),
+                // ...static::getTaxonomyColumns(),
+                TextColumn::make('translation_status')
+                    ->label('Status')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -317,32 +287,32 @@ class DraftResource extends BaseDraftResource
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
-                            ->placeholder(__('core::core.filter').' Title'),
+                            ->placeholder(__('core::core.filter') . ' Title'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['title'],
-                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['title']) {
+                        if (!$data['title']) {
                             return null;
                         }
 
-                        return 'Title: '.$data['title'];
+                        return 'Title: ' . $data['title'];
                     }),
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->placeholder(__('core::core.filter').' Status')
+                    ->placeholder(__('core::core.filter') . ' Status')
                     ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->placeholder(__('core::core.filter') . ' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter').' Section')
+                    ->placeholder(__('core::core.filter') . ' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ]);
     }

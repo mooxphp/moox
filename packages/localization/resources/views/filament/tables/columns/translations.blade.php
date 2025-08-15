@@ -19,20 +19,19 @@
         <div style="position: relative; height: 28px; min-width: 66px;">
             @foreach($visibleFlags as $revIndex => $flag)
                 @php 
-                                                    $index = count($visibleFlags) - 1 - $revIndex;
+                    $index = count($visibleFlags) - 1 - $revIndex;
                     $isTrashed = str_contains($flag, 'trashed');
                     $flagComponent = str_replace(' trashed', '', $flag);
-                    $opacity = $isTrashed ? '0.5' : '1';
                 @endphp
                             <span style="position: absolute; left: {{ $index * 18 }}px; z-index: {{ 10 + $index }};">
                             <x-dynamic-component :component="$flagComponent"
-                        style="width: 24px; height: 24px; border-radius: 50%; background: #fff; opacity: {{ $opacity }};" />
+                        style="width: 24px; height: 24px; border-radius: 50%; background: #fff;" />
                 </span>
             @endforeach
     @if($remainingFlags > 0)
-        <span style="position: absolute; left: {{ count($visibleFlags) * 18 }}px; z-index: 1;">
+        <span style="position: absolute; left: {{ (count($visibleFlags) * 18) + 8 }}px; z-index: 20;">
                         <div
-                        class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white">
+                        class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
                         +{{ $remainingFlags }}
                     </div>
                 </span>

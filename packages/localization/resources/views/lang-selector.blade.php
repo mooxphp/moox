@@ -16,7 +16,7 @@
 
     @foreach($allLocalizations as $locale)
         @if($locale->language->alpha2 !== $currentLang)
-            <x-filament::dropdown.list.item :href="request()->url() . '?lang=' . $locale->language->alpha2" :icon="'flag-' . $locale->language->alpha2" tag="a">
+            <x-filament::dropdown.list.item :href="request()->url() . '?' . http_build_query(array_merge(request()->query(), ['lang' => $locale->language->alpha2]))" :icon="'flag-' . $locale->language->alpha2" tag="a">
                 {{ $locale->language->common_name }}
             </x-filament::dropdown.list.item>
         @endif

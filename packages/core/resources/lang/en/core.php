@@ -40,6 +40,7 @@ return [
     'order' => 'Order',
     'media' => 'Media',
     'deleted' => 'Deleted',
+    'trash' => 'Trash',
     'active' => 'Active',
     'status' => 'Status',
     'failed' => 'Failed',

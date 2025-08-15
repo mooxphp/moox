@@ -39,6 +39,7 @@ return [
     'order' => 'Sortierung',
     'media' => 'Media',
     'deleted' => 'Gelöscht',
+    'trash' => 'Papierkorb',
     'active' => 'Aktiv',
     'status' => 'Status',
     'failed' => 'Fehlgeschlagen',
