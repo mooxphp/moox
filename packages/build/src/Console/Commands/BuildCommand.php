@@ -218,6 +218,8 @@ class BuildCommand extends Command
 
         $this->replacePlaceholdersInFiles($targetPath, $packageSlug);
         $this->displayBuildSummary($packageSlug, $targetPath);
+
+        $this->handleDevlinkIntegration($packageSlug, $targetPath);
     }
 
     protected function copyDirectory(string $source, string $destination): bool
@@ -349,5 +351,116 @@ class BuildCommand extends Command
         }
 
         return rmdir($dir);
+    }
+
+    protected function handleDevlinkIntegration(string $packageSlug, string $targetPath): void
+    {
+        if (! $this->isDevlinkInstalled()) {
+            return;
+        }
+
+        $this->newLine();
+        note('  🔗 Devlink detected in this project!');
+
+        $packageLocation = select('Where would you like to place this package?', [
+            'public' => 'Public Monorepo (default) - Make package available to everyone',
+            'private' => 'Private Monorepo - Keep package in private repository',
+            'local' => 'Leave in App packages directory - Keep package in current project only',
+        ]);
+
+        if ($packageLocation === 'public' || $packageLocation === 'private') {
+            $this->movePackageToDevlink($packageSlug, $targetPath, $packageLocation);
+        }
+    }
+
+    protected function isDevlinkInstalled(): bool
+    {
+        return is_dir(base_path('vendor/moox/devlink')) ||
+               is_dir(base_path('packages/devlink'));
+    }
+
+    protected function movePackageToDevlink(string $packageSlug, string $targetPath, string $monorepoType): void
+    {
+        $monorepoName = ucfirst($monorepoType);
+        info("  📦 Moving package to {$monorepoName} Monorepo...");
+
+        $devlinkConfig = $this->getDevlinkConfig();
+        if (! $devlinkConfig) {
+            error('  Could not read devlink configuration');
+
+            return;
+        }
+
+        $basePathKey = $monorepoType.'_base_path';
+        $devlinkPackagePath = $devlinkConfig[$basePathKey] ?? null;
+
+        if (! $devlinkPackagePath) {
+            error("  Devlink {$monorepoName} monorepo path not configured ({$basePathKey})");
+
+            return;
+        }
+
+        $finalPackagePath = $devlinkPackagePath.'/'.$packageSlug;
+
+        if (is_dir($finalPackagePath)) {
+            error('  Package already exists in '.$monorepoType.' monorepo: '.$finalPackagePath);
+
+            $overwriteChoice = select('What would you like to do?', [
+                'overwrite' => 'Overwrite existing package in '.$monorepoType.' monorepo',
+                'cancel' => 'Cancel - Keep package in current location',
+            ]);
+
+            if ($overwriteChoice === 'overwrite') {
+                info('  🗑️ Removing existing package from '.$monorepoType.' monorepo...');
+                if (! $this->deleteDirectory($finalPackagePath)) {
+                    error('  Failed to remove existing package from '.$monorepoType.' monorepo');
+
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+
+        if (! $this->moveDirectory($targetPath, $finalPackagePath)) {
+            error('  Failed to move package to '.$monorepoType.' monorepo');
+
+            return;
+        }
+
+        info('  🎉 Package successfully moved to '.$monorepoType.' monorepo!');
+        info('  🔗 You can add it to the Devlink config and use it in your project!');
+    }
+
+    protected function getDevlinkConfig(): ?array
+    {
+        $configPath = base_path('vendor/moox/devlink/config/devlink.php');
+        if (file_exists($configPath)) {
+            return require $configPath;
+        }
+
+        $configPath = base_path('packages/devlink/config/devlink.php');
+        if (file_exists($configPath)) {
+            return require $configPath;
+        }
+
+        return null;
+    }
+
+    protected function moveDirectory(string $source, string $destination): bool
+    {
+        try {
+            if (! $this->copyDirectory($source, $destination)) {
+                return false;
+            }
+
+            $this->deleteDirectory($source);
+
+            return true;
+        } catch (Exception $e) {
+            error('  Error moving directory: '.$e->getMessage().' 🙈');
+
+            return false;
+        }
     }
 }
