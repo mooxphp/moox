@@ -5,6 +5,7 @@ namespace Moox\Core\Console\Commands;
 use Illuminate\Console\Command;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;            
+use Moox\Core\Console\Traits\CheckForMooxPackages;
 use Moox\Core\Console\Traits\CheckOrCreateFilamentUser;   
 use Moox\Core\Console\Traits\InstallPackages;             
 use Moox\Core\Console\Traits\SelectFilamentPanel;         
@@ -14,6 +15,7 @@ class MooxInstaller extends Command
 {
     use Art,
         CheckForFilament,
+        CheckForMooxPackages,
         CheckOrCreateFilamentUser,
         InstallPackages,
         SelectFilamentPanel;
@@ -32,48 +34,47 @@ class MooxInstaller extends Command
     }
 
     public function handle(): void
-{
-    $this->art();
-    $this->info('✨ Welcome to the Moox installer');
+    {
+        $this->art();
+        $this->info('✨ Welcome to the Moox installer');
 
-    if (! $this->checkForFilament()) {
-        $this->error('❌ Filament installation required or aborted. Aborting installation.');
-        return;
-    }
-
-    $existingPanels = $this->getExistingPanelsWithLogin();
-    if (count($existingPanels) > 0) {
-        $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
-    } else {
-        $this->selectedPanels = $this->selectPanels();
-        if (empty($this->selectedPanels)) {
-            $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
+        if (! $this->checkForFilament()) {
+            $this->error('❌ Filament installation required or aborted. Aborting installation.');
             return;
         }
-        $this->installPackages($this->selectedPanels);
+
+        if (! $this->checkForMooxPackage('moox/jobs')) {
+            $this->error('❌ Moox Jobs installation required or aborted. Aborting installation.');
+            return;
+        }
+
+        $existingPanels = $this->getExistingPanelsWithLogin();
+        if (count($existingPanels) > 0) {
+            $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
+        } else {
+            $this->selectedPanels = $this->selectPanels();
+            if (empty($this->selectedPanels)) {
+                $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
+                return;
+            }
+            $this->installPackages($this->selectedPanels);
+        }
+
+        $this->checkOrCreateFilamentUser();
+
+        $this->info('⚙️ Running php artisan filament:upgrade ...');
+
+        $this->info('✅ Moox installed successfully. Enjoy! 🎉');
     }
 
-    $this->checkOrCreateFilamentUser();
+    protected function getExistingPanelsWithLogin(): array
+    {
+        $panelFiles = $this->getPanelProviderFiles();
+        $panelsWithLogin = $this->filterPanelsWithLogin($panelFiles);
 
-    $this->info('⚙️ Running php artisan filament:upgrade ...');
+        return $panelsWithLogin->map(fn($file) => $file->getRelativePathname())->toArray();
+    }
 
-    $this->info('✅ Moox installed successfully. Enjoy! 🎉');
-}
-
-
-
-protected function getExistingPanelsWithLogin(): array
-{
-    $panelFiles = $this->getPanelProviderFiles();
-    $panelsWithLogin = $this->filterPanelsWithLogin($panelFiles);
-
-    return $panelsWithLogin->map(fn($file) => $file->getRelativePathname())->toArray();
-}
-
-
-    
-
-   
     protected function getMooxPackages(): array
     {
         return [
