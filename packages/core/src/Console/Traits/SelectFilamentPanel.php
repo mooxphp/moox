@@ -383,12 +383,12 @@ PHP;
         }
 
         $userModel = $panel === 'press'
-            ? 'Moox\\Press\\Models\\WpUser::class'
-            : 'Moox\\User\\Models\\User::class';
+            ? '\\Moox\\Press\\Models\\WpUser'
+            : '\\Moox\\User\\Models\\User';
 
         $content = File::get($providerPath);
 
-        if (str_contains($content, '->login(') || str_contains($content, '->auth(')) {
+        if (str_contains($content, 'Filament::auth(')) {
             info("ℹ️ Auth already configured for panel '{$panel}'. Skipping.");
             return;
         }
@@ -396,18 +396,16 @@ PHP;
         if (!str_contains($content, 'use Filament\Facades\Filament;')) {
             $content = preg_replace(
                 '/(namespace\s+[^\s;]+;)/',
-                "$1\n\nuse Filament\Facades\Filament;",
+                "$1\n\nuse Filament\Facades\\Filament;",
                 $content
             );
         }
 
         $authCode = <<<PHP
     ->login(
-        fn () => Filament::auth(
-            userModel: {$userModel},
-        ),
+        fn () => Filament::auth({$userModel}::class),
     )
-PHP;
+    PHP;
 
         $content = preg_replace(
             '/(->path\(.*?\))/',
@@ -420,6 +418,7 @@ PHP;
 
         info("✅ Auth configuration for panel '{$panel}' set to: {$userModel}");
     }
+
 
     protected function panelExists(string $panel): bool
     {
