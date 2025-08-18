@@ -4,13 +4,11 @@ namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
-use Moox\Localization\Models\Localization;
 use Override;
 
 abstract class BaseCreateDraft extends CreateRecord

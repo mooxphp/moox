@@ -3,11 +3,9 @@
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
-use Moox\Localization\Models\Localization;
 use Override;
 
 abstract class BaseViewDraft extends ViewRecord
@@ -21,7 +19,7 @@ abstract class BaseViewDraft extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title . ' - ' . __('core::core.deleted');
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;
@@ -29,7 +27,7 @@ abstract class BaseViewDraft extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (!$this->record) {
+        if (! $this->record) {
             return false;
         }
 
