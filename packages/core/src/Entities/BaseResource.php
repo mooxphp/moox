@@ -3,6 +3,7 @@
 namespace Moox\Core\Entities;
 
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
@@ -169,41 +170,70 @@ abstract class BaseResource extends Resource
             });
     }
 
-    public static function getDeleteBulkAction(): DeleteBulkAction
+    public static function getDeleteBulkAction(): BulkAction
     {
-        return DeleteBulkAction::make()
+        return BulkAction::make('delete')
+            ->label(function ($livewire) {
+                if (isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted'])) {
+                    return __('core::core.selected_records_delete_permanently');
+                }
+                return __('core::core.selected_records_delete');
+            })
+            ->requiresConfirmation()
+            ->color('danger')
             ->action(function ($records, $livewire): void {
-                if (auth()->check()) {
+                $isTrashedTab = isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']);
+
+                if ($isTrashedTab) {
                     foreach ($records as $record) {
-                        $record->save();
+                        $record->forceDelete();
+                    }
 
-                        if (method_exists($record, 'translations')) {
-                            $translations = $record->translations()->withTrashed()->get();
-                            foreach ($translations as $translation) {
-                                $translation->deleted_by_id = auth()->id();
-                                $translation->deleted_by_type = auth()->user()::class;
+                    Notification::make()
+                        ->title(__('core::core.records_permanently_deleted'))
+                        ->success()
+                        ->send();
 
-                                if (isset($translation->restored_at)) {
-                                    $translation->restored_at = null;
-                                }
-                                if (isset($translation->restored_by_id)) {
-                                    $translation->restored_by_id = null;
-                                }
-                                if (isset($translation->restored_by_type)) {
-                                    $translation->restored_by_type = null;
-                                }
+                    $livewire->redirect(static::getUrl('index', ['tab' => 'deleted']));
+                } else {
+                    if (auth()->check()) {
+                        foreach ($records as $record) {
+                            $record->save();
 
-                                $translation->save();
+                            if (method_exists($record, 'translations')) {
+                                $translations = $record->translations()->withTrashed()->get();
+                                foreach ($translations as $translation) {
+                                    $translation->deleted_by_id = auth()->id();
+                                    $translation->deleted_by_type = auth()->user()::class;
+
+                                    if (isset($translation->restored_at)) {
+                                        $translation->restored_at = null;
+                                    }
+                                    if (isset($translation->restored_by_id)) {
+                                        $translation->restored_by_id = null;
+                                    }
+                                    if (isset($translation->restored_by_type)) {
+                                        $translation->restored_by_type = null;
+                                    }
+
+                                    $translation->save();
+                                }
                             }
                         }
                     }
+
+                    foreach ($records as $record) {
+                        $record->delete();
+                    }
+
+                    Notification::make()
+                        ->title(__('core::core.records_moved_to_trash'))
+                        ->success()
+                        ->send();
                 }
 
-                foreach ($records as $record) {
-                    $record->delete();
-                }
-            })
-            ->hidden(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+                $livewire->redirect(static::getUrl('index'));
+            });
     }
 
     public static function getSaveAction(): Action
