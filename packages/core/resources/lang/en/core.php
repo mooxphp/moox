@@ -113,6 +113,7 @@ return [
     'trainings' => 'Trainings',
     'autoload' => 'Autoload',
     'drop' => 'Drop',
+    'create' => 'Create',
     'edit' => 'Edit',
     'save' => 'Save',
     'save_and_create_another' => 'Save & create another',

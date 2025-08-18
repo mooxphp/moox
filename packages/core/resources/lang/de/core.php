@@ -110,6 +110,7 @@ return [
     'trainings' => 'Trainings',
     'autoload' => 'Autoload',
     'drop' => 'Löschen',
+    'create' => 'Erstellen',
     'edit' => 'Bearbeiten',
     'save' => 'Speichern',
     'save_and_create_another' => 'Speichern & weiteren erstellen',
