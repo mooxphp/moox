@@ -5,17 +5,15 @@ namespace Moox\Core\Entities;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -93,6 +91,7 @@ abstract class BaseResource extends Resource
             ->color('primary')
             ->url(function ($record, $livewire) {
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+
                 return static::getUrl('edit', ['record' => $record, 'lang' => $currentLang]);
             })
             ->hidden(fn($livewire) => $livewire->activeTab === 'deleted');
@@ -104,6 +103,7 @@ abstract class BaseResource extends Resource
             ->color('secondary')
             ->url(function ($record, $livewire) {
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+
                 return static::getUrl('view', ['record' => $record, 'lang' => $currentLang]);
             });
     }
@@ -365,6 +365,7 @@ abstract class BaseResource extends Resource
                             ->send();
 
                         $livewire->redirect(static::getUrl('index'));
+
                         return;
                     }
                 }
@@ -378,6 +379,7 @@ abstract class BaseResource extends Resource
                         ->send();
 
                     $livewire->redirect(static::getUrl('index'));
+
                     return;
                 }
 
@@ -434,6 +436,7 @@ abstract class BaseResource extends Resource
 
                     if (method_exists($livewire->record, 'translations')) {
                         $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
                         return $translation && !$translation->trashed();
                     }
 
@@ -445,6 +448,7 @@ abstract class BaseResource extends Resource
 
                     if (method_exists($livewire->record, 'translations')) {
                         $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
                         return $translation && $translation->trashed();
                     }
 
