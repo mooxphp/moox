@@ -1,5 +1,5 @@
 @php
-    $currentLang = request()->get('lang', app()->getLocale());
+    $currentLang = $this->lang ?? request()->get('lang', app()->getLocale());
     $currentLocalization = \Moox\Localization\Models\Localization::with('language')->whereHas('language', function ($query) use ($currentLang) {
         $query->where('alpha2', $currentLang);
     })->first();
@@ -20,8 +20,9 @@
     @foreach($allLocalizations as $locale)
         @if($locale->language->alpha2 !== $currentLang)
             @php
+                $targetUrl = request()->url() . '?' . http_build_query(array_merge(request()->query(), ['lang' => $locale->language->alpha2]));
+
                 if ($this instanceof \Filament\Resources\Pages\ListRecords) {
-                    $targetUrl = request()->url() . '?' . http_build_query(array_merge(request()->query(), ['lang' => $locale->language->alpha2]));
                 } elseif ($this instanceof \Filament\Resources\Pages\ViewRecord) {
                     if ($this->record && method_exists($this->record, 'translations')) {
                         $translation = $this->record->translations()->where('locale', $locale->language->alpha2)->first();

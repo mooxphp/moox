@@ -2,7 +2,7 @@
     $flags = $getState(); // Example: More than 4 flags
     $visibleFlags = [];
     $remainingFlags = 0;
-    $currentLang = request()->get('lang', app()->getLocale());
+    $currentLang = $this->lang ?? request()->get('lang', app()->getLocale());
 
     try {
         if (is_array($flags)) {
