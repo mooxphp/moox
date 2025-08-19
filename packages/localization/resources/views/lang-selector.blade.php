@@ -45,7 +45,8 @@
                     }
                 }
             @endphp
-            <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2" tag="a">
+            <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2"
+                wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
                 {{ $locale->language->common_name }}
             </x-filament::dropdown.list.item>
         @endif
