@@ -2,9 +2,11 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
+use Moox\Core\Entities\BaseResource;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Schemas\Components\Actions;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
 class BaseDraftResource extends BaseResource
@@ -170,4 +172,139 @@ class BaseDraftResource extends BaseResource
 
         return $query;
     }
+
+    /**
+     * Get a title column with fallback to app locale when translation is missing
+     */
+    public static function getTitleColumn(): TextColumn
+    {
+        return TextColumn::make('title')
+            ->label('Title')
+            ->searchable()
+            ->sortable()
+            ->extraAttributes(fn($record) => [
+                'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
+                    ? ''
+                    : 'color: var(--gray-500);'
+            ])
+            ->getStateUsing(function ($record) {
+                $currentLang = request()->get('lang', app()->getLocale());
+
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+                if ($translation && $translation->title) {
+                    return $translation->title;
+                }
+
+                $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
+
+                if ($fallbackTranslation && $fallbackTranslation->title) {
+                    return $fallbackTranslation->title . ' (' . app()->getLocale() . ')';
+                }
+
+                return 'No title available';
+            });
+    }
+
+    /**
+     * Get status badge column for translation status
+     */
+    public static function getStatusColumn(): TextColumn
+    {
+        return TextColumn::make('translation_status')
+            ->label('Status')
+            ->sortable()
+            ->searchable()
+            ->toggleable()
+            ->badge()
+            ->color(fn(string $state): string => match ($state) {
+                'Published' => 'success',
+                'Scheduled' => 'warning',
+                'Draft' => 'info',
+                'Waiting' => 'primary',
+                'Private' => 'success',
+                'Deleted' => 'danger',
+                'Not Translated' => 'gray',
+                default => 'gray',
+            })
+            ->getStateUsing(function ($record) {
+                $currentLang = request()->get('lang', app()->getLocale());
+
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+                if (!$translation) {
+                    return static::getTranslationStatusOptions()['not_translated'];
+                }
+
+                if ($translation->trashed()) {
+                    return static::getTranslationStatusOptions()['deleted'];
+                }
+
+                $status = $translation->translation_status ?? static::getDefaultStatus();
+                return static::getTranslationStatusOptions()[$status];
+            });
+    }
+
+    public static function getTranslationStatusSelect(): Select
+    {
+        return Select::make('translation_status')
+            ->label('Status')
+            ->reactive()
+            ->default('draft')
+            ->selectablePlaceholder(false)
+            ->options(static::getEditableTranslationStatusOptions());
+    }
+
+    /**
+     * Get editable translation status options (without not_translated)
+     */
+    public static function getEditableTranslationStatusOptions(): array
+    {
+        $options = static::getTranslationStatusOptions();
+        unset($options['not_translated'], $options['deleted']);
+        return $options;
+    }
+
+    protected static function getCurrentTranslationStatus($record): string
+    {
+        if (!$record) {
+            return 'draft';
+        }
+
+        $currentLang = request()->get('lang', app()->getLocale());
+        $translation = $record->translations()->where('locale', $currentLang)->first();
+
+        if (!$translation) {
+            return 'not_translated';
+        }
+
+        if ($translation->trashed()) {
+            return 'deleted';
+        }
+
+        return $translation->translation_status ?? 'draft';
+    }
+
+    protected static function getDefaultStatus(): string
+    {
+        return 'draft';
+    }
+
+    /**
+     * Get available translation status options
+     */
+    public static function getTranslationStatusOptions(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'waiting' => 'Waiting',
+            'private' => 'Private',
+            'scheduled' => 'Scheduled',
+            'published' => 'Published',
+            'not_translated' => 'Not Translated',
+            'deleted' => 'Deleted',
+        ];
+    }
+
+
 }
