@@ -30,6 +30,8 @@ trait CheckForMooxPackages
             return false;
         }
 
+        $package = (string) $package;
+
         info("📦 Running: composer require {$package}:* ...");
         exec("composer require {$package}:* 2>&1", $output, $returnVar);
         foreach ($output as $line) {
@@ -43,5 +45,21 @@ trait CheckForMooxPackages
 
         info("✅ {$package} successfully installed.");
         return true;
+    }
+
+    public function getInstalledMooxPackages(): array
+    {
+        $composerJsonPath = base_path('composer.json');
+        $composerJson = json_decode(file_get_contents($composerJsonPath), true);
+
+        $packages = array_merge(
+            $composerJson['require'] ?? [],
+            $composerJson['require-dev'] ?? []
+        );
+
+        return collect(array_keys($packages))
+            ->filter(fn ($pkg) => str_starts_with($pkg, 'moox/'))
+            ->values()
+            ->toArray();
     }
 }
