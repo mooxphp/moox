@@ -2,11 +2,11 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Moox\Core\Entities\BaseResource;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Schemas\Components\Actions;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
 class BaseDraftResource extends BaseResource
@@ -182,10 +182,10 @@ class BaseDraftResource extends BaseResource
             ->label('Title')
             ->searchable()
             ->sortable()
-            ->extraAttributes(fn($record) => [
+            ->extraAttributes(fn ($record) => [
                 'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
                     ? ''
-                    : 'color: var(--gray-500);'
+                    : 'color: var(--gray-500);',
             ])
             ->getStateUsing(function ($record) {
                 $currentLang = request()->get('lang', app()->getLocale());
@@ -199,7 +199,7 @@ class BaseDraftResource extends BaseResource
                 $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title . ' (' . app()->getLocale() . ')';
+                    return $fallbackTranslation->title.' ('.app()->getLocale().')';
                 }
 
                 return 'No title available';
@@ -217,7 +217,7 @@ class BaseDraftResource extends BaseResource
             ->searchable()
             ->toggleable()
             ->badge()
-            ->color(fn(string $state): string => match ($state) {
+            ->color(fn (string $state): string => match ($state) {
                 'Published' => 'success',
                 'Scheduled' => 'warning',
                 'Draft' => 'info',
@@ -232,7 +232,7 @@ class BaseDraftResource extends BaseResource
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                if (!$translation) {
+                if (! $translation) {
                     return static::getTranslationStatusOptions()['not_translated'];
                 }
 
@@ -241,6 +241,7 @@ class BaseDraftResource extends BaseResource
                 }
 
                 $status = $translation->translation_status ?? static::getDefaultStatus();
+
                 return static::getTranslationStatusOptions()[$status];
             });
     }
@@ -262,19 +263,20 @@ class BaseDraftResource extends BaseResource
     {
         $options = static::getTranslationStatusOptions();
         unset($options['not_translated'], $options['deleted']);
+
         return $options;
     }
 
     protected static function getCurrentTranslationStatus($record): string
     {
-        if (!$record) {
+        if (! $record) {
             return 'draft';
         }
 
         $currentLang = request()->get('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
-        if (!$translation) {
+        if (! $translation) {
             return 'not_translated';
         }
 
@@ -305,6 +307,4 @@ class BaseDraftResource extends BaseResource
             'deleted' => 'Deleted',
         ];
     }
-
-
 }
