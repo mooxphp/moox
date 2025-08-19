@@ -57,10 +57,12 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
             // Created by fields
             'created_by_id',
             'created_by_type',
+            'created_at',
 
             // Updated by fields
             'updated_by_id',
             'updated_by_type',
+            'updated_at',
 
             // Translation status
             'translation_status',

@@ -115,7 +115,7 @@ class DraftResource extends BaseDraftResource
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
                             KeyValue::make('data')
-                                ->label(__('core::core.data').' (JSON)'),
+                                ->label(__('core::core.data') . ' (JSON)'),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -129,35 +129,16 @@ class DraftResource extends BaseDraftResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    Select::make('type')
-                                        ->label(__('core::core.type'))
-                                        ->options(['Post' => 'Post', 'Page' => 'Page']),
+                                    static::getTypeSelect(),
                                     static::getTranslationStatusSelect(),
-                                    DateTimePicker::make('to_publish_at')
-                                        ->label(__('core::core.to_publish_at'))
-                                        ->placeholder(__('core::core.to_publish_at'))
-                                        ->minDate(now())
-                                        ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
-                                        ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null),
-                                    DateTimePicker::make('to_unpublish_at')
-                                        ->label(__('core::core.to_unpublish_at'))
-                                        ->placeholder(__('core::core.to_unpublish_at'))
-                                        ->minDate(now())
-                                        ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
-                                        ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null),
+                                    static::getPublishDateField(),
+                                    static::getUnpublishDateField(),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
-                                    Select::make('author_id')
-                                        ->label(__('core::core.author'))
-                                        ->options(User::all()->pluck('name', 'id'))
-                                        ->afterStateUpdated(function ($state, $set) {
-                                            if ($state) {
-                                                $set('author_type', User::class);
-                                            }
-                                        }),
+                                    static::getAuthorSelect(),
                                     DateTimePicker::make('due_at')
                                         ->label(__('core::core.due')),
                                     ColorPicker::make('color')
@@ -165,54 +146,13 @@ class DraftResource extends BaseDraftResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    CopyableField::make('id')
-                                        ->label('ID')
-                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
-                                    CopyableField::make('uuid')
-                                        ->label('UUID')
-                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
-                                    CopyableField::make('ulid')
-                                        ->label('ULID')
-                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
+                                    ...static::getStandardCopyableFields(),
                                     Section::make('')
                                         ->schema([
-                                            TextEntry::make('created_at')
-                                                ->label(__('core::core.created_at'))
-                                                ->state(fn ($record): string => $record->created_at ?
-                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('updated_at')
-                                                ->label(__('core::core.updated_at'))
-                                                ->state(fn ($record): string => $record->updated_at ?
-                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('published_at')
-                                                ->label(__('core::core.published_at'))
-                                                ->state(function ($record): string {
-                                                    $translation = $record->translations()->withTrashed()->first();
-                                                    if (! $translation || ! $translation->published_at) {
-                                                        return '';
-                                                    }
-
-                                                    $publishedBy = '';
-                                                    if ($translation->published_by_id && $translation->published_by_type) {
-                                                        $user = app($translation->published_by_type)->find($translation->published_by_id);
-                                                        $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
-                                                    }
-
-                                                    return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
-                                                })
-                                                ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->published_at),
-                                            TextEntry::make('to_unpublish_at')
-                                                ->label(__('core::core.to_unpublish_at'))
-                                                ->state(fn ($record): string => $record->to_unpublish_at ?
-                                                    $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->to_unpublish_at),
+                                            ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -267,38 +207,16 @@ class DraftResource extends BaseDraftResource
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Active'),
-                Filter::make('title')
-                    ->schema([
-                        TextInput::make('title')
-                            ->label('Title')
-                            ->placeholder(__('core::core.filter').' Title'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['title'],
-                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['title']) {
-                            return null;
-                        }
-
-                        return 'Title: '.$data['title'];
-                    }),
-                SelectFilter::make('status')
-                    ->label('Status')
-                    ->placeholder(__('core::core.filter').' Status')
-                    ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
+                static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->placeholder(__('core::core.filter') . ' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter').' Section')
+                    ->placeholder(__('core::core.filter') . ' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
-            ]);
+            ])->deferFilters(false);
     }
 
     public static function getPages(): array
