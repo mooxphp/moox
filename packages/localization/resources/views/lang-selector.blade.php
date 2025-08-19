@@ -45,10 +45,16 @@
                     }
                 }
             @endphp
-            <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2"
-                wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
-                {{ $locale->language->common_name }}
-            </x-filament::dropdown.list.item>
+            @if ($this instanceof \Filament\Resources\Pages\ListRecords)
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2"
+                    wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
+                    {{ $locale->language->common_name }}
+                </x-filament::dropdown.list.item>
+            @else
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2" tag="a">
+                    {{ $locale->language->common_name }}
+                </x-filament::dropdown.list.item>
+            @endif
         @endif
     @endforeach
 </x-filament::dropdown>
