@@ -7,23 +7,17 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -35,7 +29,6 @@ use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ViewDraft;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\User\Models\User;
 
 class DraftResource extends BaseDraftResource
 {
@@ -115,7 +108,7 @@ class DraftResource extends BaseDraftResource
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
                             KeyValue::make('data')
-                                ->label(__('core::core.data') . ' (JSON)'),
+                                ->label(__('core::core.data').' (JSON)'),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -152,7 +145,7 @@ class DraftResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -210,11 +203,11 @@ class DraftResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter') . ' Type')
+                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter') . ' Section')
+                    ->placeholder(__('core::core.filter').' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ])->deferFilters(false);
     }

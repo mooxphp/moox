@@ -2,17 +2,17 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Moox\User\Models\User;
-use Moox\Core\Entities\BaseResource;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Actions;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Forms\Components\DateTimePicker;
 use Moox\Clipboard\Forms\Components\CopyableField;
+use Moox\Core\Entities\BaseResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\User\Models\User;
 
 class BaseDraftResource extends BaseResource
 {
@@ -187,10 +187,10 @@ class BaseDraftResource extends BaseResource
             ->label('Title')
             ->searchable()
             ->sortable()
-            ->extraAttributes(fn($record) => [
+            ->extraAttributes(fn ($record) => [
                 'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
                     ? ''
-                    : 'color: var(--gray-500);'
+                    : 'color: var(--gray-500);',
             ])
             ->getStateUsing(function ($record) {
                 $currentLang = request()->get('lang', app()->getLocale());
@@ -204,7 +204,7 @@ class BaseDraftResource extends BaseResource
                 $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title . ' (' . app()->getLocale() . ')';
+                    return $fallbackTranslation->title.' ('.app()->getLocale().')';
                 }
 
                 return 'No title available';
@@ -222,7 +222,7 @@ class BaseDraftResource extends BaseResource
             ->searchable()
             ->toggleable()
             ->badge()
-            ->color(fn(string $state): string => match ($state) {
+            ->color(fn (string $state): string => match ($state) {
                 'Published' => 'success',
                 'Scheduled' => 'warning',
                 'Draft' => 'info',
@@ -237,7 +237,7 @@ class BaseDraftResource extends BaseResource
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                if (!$translation) {
+                if (! $translation) {
                     return static::getTranslationStatusOptions()['not_translated'];
                 }
 
@@ -246,6 +246,7 @@ class BaseDraftResource extends BaseResource
                 }
 
                 $status = $translation->translation_status ?? static::getDefaultStatus();
+
                 return static::getTranslationStatusOptions()[$status];
             });
     }
@@ -267,19 +268,20 @@ class BaseDraftResource extends BaseResource
     {
         $options = static::getTranslationStatusOptions();
         unset($options['not_translated'], $options['deleted']);
+
         return $options;
     }
 
     protected static function getCurrentTranslationStatus($record): string
     {
-        if (!$record) {
+        if (! $record) {
             return 'draft';
         }
 
         $currentLang = request()->get('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
-        if (!$translation) {
+        if (! $translation) {
             return 'not_translated';
         }
 
@@ -330,8 +332,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_publish_at'))
             ->placeholder(__('core::core.to_publish_at'))
             ->minDate(now())
-            ->hidden(fn($get) => $get('translation_status') !== 'scheduled')
-            ->dehydrateStateUsing(fn($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
+            ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
+            ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
     }
 
     /**
@@ -343,8 +345,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_unpublish_at'))
             ->placeholder(__('core::core.to_unpublish_at'))
             ->minDate(now())
-            ->hidden(fn($get) => !in_array($get('translation_status'), ['scheduled', 'published']))
-            ->dehydrateStateUsing(fn($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
+            ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
+            ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
     }
 
     public static function getAuthorSelect(): Select
@@ -366,7 +368,7 @@ class BaseDraftResource extends BaseResource
     {
         return CopyableField::make('id')
             ->label('ID')
-            ->defaultValue(fn($record): string => $record->id ?? '');
+            ->defaultValue(fn ($record): string => $record->id ?? '');
     }
 
     /**
@@ -376,7 +378,7 @@ class BaseDraftResource extends BaseResource
     {
         return CopyableField::make('uuid')
             ->label('UUID')
-            ->defaultValue(fn($record): string => $record->uuid ?? '');
+            ->defaultValue(fn ($record): string => $record->uuid ?? '');
     }
 
     /**
@@ -386,7 +388,7 @@ class BaseDraftResource extends BaseResource
     {
         return CopyableField::make('ulid')
             ->label('ULID')
-            ->defaultValue(fn($record): string => $record->ulid ?? '');
+            ->defaultValue(fn ($record): string => $record->ulid ?? '');
     }
 
     /**
@@ -408,8 +410,8 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('created_at')
             ->label(__('core::core.created_at'))
-            ->state(fn($record): string => $record->created_at ?
-                $record->created_at . ' - ' . $record->created_at->diffForHumans() : '');
+            ->state(fn ($record): string => $record->created_at ?
+                $record->created_at.' - '.$record->created_at->diffForHumans() : '');
     }
 
     /**
@@ -419,8 +421,8 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('updated_at')
             ->label(__('core::core.updated_at'))
-            ->state(fn($record): string => $record->updated_at ?
-                $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '');
+            ->state(fn ($record): string => $record->updated_at ?
+                $record->updated_at.' - '.$record->updated_at->diffForHumans() : '');
     }
 
     /**
@@ -432,19 +434,19 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.published_at'))
             ->state(function ($record): string {
                 $translation = $record->translations()->withTrashed()->first();
-                if (!$translation || !$translation->published_at) {
+                if (! $translation || ! $translation->published_at) {
                     return '';
                 }
 
                 $publishedBy = '';
                 if ($translation->published_by_id && $translation->published_by_type) {
                     $user = app($translation->published_by_type)->find($translation->published_by_id);
-                    $publishedBy = $user ? ' ' . __('core::core.by') . ' ' . $user->name : '';
+                    $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
                 }
 
-                return $translation->published_at . ' - ' . $translation->published_at->diffForHumans() . $publishedBy;
+                return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
             })
-            ->hidden(fn($record) => !$record->published_at);
+            ->hidden(fn ($record) => ! $record->published_at);
     }
 
     /**
@@ -454,9 +456,9 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('to_unpublish_at')
             ->label(__('core::core.to_unpublish_at'))
-            ->state(fn($record): string => $record->to_unpublish_at ?
-                $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
-            ->hidden(fn($record) => !$record->to_unpublish_at);
+            ->state(fn ($record): string => $record->to_unpublish_at ?
+                $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
+            ->hidden(fn ($record) => ! $record->to_unpublish_at);
     }
 
     /**
