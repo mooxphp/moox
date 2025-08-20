@@ -13,10 +13,22 @@ abstract class BaseListDrafts extends ListRecords
 {
     use CanResolveResourceClass;
 
+    public string $lang;
+
+    protected $queryString = [
+        'lang' => ['except' => ''],
+    ];
+
+    public function mount(): void
+    {
+        parent::mount();
+        $this->lang = request()->get('lang', app()->getLocale());
+    }
+
     public function getTitle(): string
     {
         if ($this->activeTab === 'deleted') {
-            return parent::getTitle().' - '.__('core::core.trash');
+            return parent::getTitle() . ' - ' . __('core::core.trash');
         }
 
         return parent::getTitle();
@@ -29,8 +41,8 @@ abstract class BaseListDrafts extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Model => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Model => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -46,7 +58,7 @@ abstract class BaseListDrafts extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
         ];
     }
 

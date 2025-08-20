@@ -1,8 +1,11 @@
 @php
-    $currentLang = $this->lang ?? request()->get('lang', app()->getLocale());
-    $currentLocalization = \Moox\Localization\Models\Localization::with('language')->whereHas('language', function ($query) use ($currentLang) {
-        $query->where('alpha2', $currentLang);
-    })->first();
+    $currentLang = $this->lang ?: app()->getLocale();
+
+
+
+    $currentLocalization = \Moox\Localization\Models\Localization::with('language')
+        ->whereHas('language', fn($q) => $q->where('alpha2', $currentLang))
+        ->first();
     $allLocalizations = \Moox\Localization\Models\Localization::with('language')->get();
 @endphp
 
