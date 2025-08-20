@@ -106,7 +106,7 @@ class PackageService
         $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
         $composerData = json_decode(file_get_contents($composerFilePath), true);
 
-        return $composerData['extra']['laravel']['seeders'];
+        return $composerData['extra']['laravel']['seeders'] ?? [];
     }
 
     public function getPlugins(array $package): array
@@ -114,7 +114,7 @@ class PackageService
         $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
         $composerData = json_decode(file_get_contents($composerFilePath), true);
 
-        return $composerData['extra']['laravel']['plugins'];
+        return $composerData['extra']['laravel']['plugins'] ?? [];
     }
 
     public function checkMigrationStatus(string $migrationPath): array
@@ -188,7 +188,12 @@ class PackageService
 
     public function getRequiredSeeders(array $package): array
     {
-        $providerClass = $package['provider'];
+        $providerClass = $package['provider'] ?? $this->resolveProviderClass($package['name'] ?? '');
+
+        if (empty($providerClass) || !class_exists($providerClass)) {
+            return [];
+        }
+
         $provider = app()->resolveProvider($providerClass);
 
         if ($provider instanceof MooxServiceProvider) {
@@ -196,5 +201,29 @@ class PackageService
         }
 
         return [];
+    }
+
+    private function resolveProviderClass(string $packageName): ?string
+    {
+        if ($packageName === '') {
+            return null;
+        }
+
+        $composerFilePath = base_path("vendor/{$packageName}/composer.json");
+        if (!file_exists($composerFilePath)) {
+            return null;
+        }
+
+        $composerData = json_decode(file_get_contents($composerFilePath), true);
+        $providers = $composerData['extra']['laravel']['providers'] ?? [];
+
+        foreach ($providers as $provider) {
+            if (class_exists($provider) && is_subclass_of($provider, MooxServiceProvider::class)) {
+                return $provider;
+            }
+        }
+
+        // Fallback: return first provider if present
+        return $providers[0] ?? null;
     }
 }
