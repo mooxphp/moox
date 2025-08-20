@@ -14,11 +14,7 @@ trait CheckForFilament
 {
     protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php';
 
-    /**
-     * Prüft, ob Filament installiert ist und bietet ggf. Installation an
-     *
-     * @return bool true wenn Filament vorhanden (oder erfolgreich installiert), sonst false
-     */
+
     public function checkForFilament(): bool
     {
         if (!class_exists(\Filament\PanelProvider::class, false)) {
@@ -58,11 +54,6 @@ trait CheckForFilament
     }
 
 
-    /**
-     * Prüft, ob mindestens ein PanelProvider mit login() existiert.
-     *
-     * @return bool
-     */
     public function hasPanelsWithLogin(): bool
     {
         $panelFiles = $this->getPanelProviderFiles();
@@ -71,9 +62,7 @@ trait CheckForFilament
         return $panelsWithLogin->isNotEmpty();
     }
 
-    /**
-     * Analysiert vorhandene PanelProvider-Dateien.
-     */
+
     protected function analyzeFilamentEnvironment(): void
     {
         info('🔍 Checking existing Filament PanelProviders...');
@@ -95,23 +84,12 @@ trait CheckForFilament
         }
     }
 
-    /**
-     * Sucht rekursiv nach allen Dateien, die auf *PanelProvider.php enden.
-     *
-     * @return Collection<\SplFileInfo>
-     */
     protected function getPanelProviderFiles(): Collection
     {
         return collect(File::allFiles(base_path()))
             ->filter(fn ($file) => str_ends_with($file->getFilename(), 'PanelProvider.php'));
     }
 
-    /**
-     * Filtert PanelProvider-Dateien mit login().
-     *
-     * @param Collection<\SplFileInfo> $panelFiles
-     * @return Collection<\SplFileInfo>
-     */
     protected function filterPanelsWithLogin(Collection $panelFiles): Collection
     {
         return $panelFiles->filter(function ($file) {

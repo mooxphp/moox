@@ -57,7 +57,7 @@ trait InstallPackage
         }
     }
 
-    public function installPackage(array $package, array $panelPaths): void
+    public function installPackage(array $package, array $panelPaths = []): void
     {
         if (empty($package) || ! isset($package['name'])) {
             warning('⚠️ Empty or invalid package. Skipping installation.');
@@ -75,13 +75,74 @@ trait InstallPackage
         $this->runMigrations($package);
         $this->publishConfig($package);
         $this->runSeeders($package);
+
+        if (empty($panelPaths)) {
+            $panelPaths = $this->determinePanelsForPackage($package);
+        }
+
+        
         $this->installPlugins($package, $panelPaths);
+
 
         $this->checkOrCreateFilamentUser();
 
         info("🛠️ Running filament:upgrade...");
-        Artisan::call('filament:upgrade', ['--force' => true]);
+        Artisan::call('filament:upgrade');
         info("✅ Upgrade completed.");
+    }
+
+    protected function determinePanelsForPackage(array $package): array
+    {
+        $existingPanels = $this->getExistingPanelsWithLogin();
+
+        if (empty($existingPanels)) {
+            info("ℹ️ No existing panels found. Creating a new panel...");
+            $newPanel = $this->createNewPanelProvider();
+            return [$newPanel];
+        }
+
+        info("🔹 Existing panels found:");
+        foreach ($existingPanels as $key => $panel) {
+            info("  [{$key}] {$panel}");
+        }
+
+        $useExisting = confirm("Do you want to install '{$package['name']}' in an existing panel?", true);
+
+        if ($useExisting) {
+            $selectedKey = $this->selectFromList($existingPanels, "Select panel for '{$package['name']}'");
+            $selectedPanel = $existingPanels[$selectedKey];
+            info("✅ Installing in existing panel: {$selectedPanel}");
+            return [$selectedPanel];
+        }
+
+        info("ℹ️ Creating a new panel for '{$package['name']}'...");
+        $newPanel = $this->createNewPanelProvider();
+        return [$newPanel];
+    }
+
+    public function installPlugins(array $package, array $panelPaths): void
+    {
+        $plugins = $this->packageService->getPlugins($package);
+
+        if (empty($plugins)) {
+            info("ℹ️ No plugins found in package '{$package['name']}'.");
+            return;
+        }
+
+        foreach ($panelPaths as $panelPath) {
+            info("🔌 Registering plugins for panel: {$panelPath}");
+            $this->registerPlugins($panelPath, $package);
+        }
+    }
+
+    protected function createNewPanelProvider(): string
+    {
+        $panelName = 'Panel' . time();
+        info("Creating new panel provider: {$panelName} ...");
+
+        Artisan::call('make:filament-panel', ['name' => $panelName]);
+
+        return $panelName;
     }
 
     protected function runMigrations(array $package): void
@@ -181,24 +242,45 @@ trait InstallPackage
         }
     }
 
-    public function installPlugins(array $package, array $panelPaths): void
-    {
-        $plugins = $this->packageService->getPlugins($package);
-
-        if (empty($plugins)) {
-            info("ℹ️ No plugins found in package '{$package['name']}'.");
-            return;
-        }
-
-        foreach ($panelPaths as $panelPath) {
-            info("🔌 Registering plugins for panel: {$panelPath}");
-            $this->registerPlugins($panelPath, $package);
-        }
-    }
-
     private function getSeederTable(string $seederClass): ?string
     {
         $seeder = new $seederClass;
         return property_exists($seeder, 'table') ? $seeder->table : null;
+    }
+
+    protected function getExistingPanelsWithLogin(): array
+    {
+        $panels = [];
+        $panelPath = app_path('Filament/Pages');
+
+        if (! is_dir($panelPath)) {
+            return [];
+        }
+
+        $files = scandir($panelPath);
+        foreach ($files as $file) {
+            if (str_ends_with($file, '.php')) {
+                $panels[] = pathinfo($file, PATHINFO_FILENAME);
+            }
+        }
+
+        return $panels;
+    }
+
+    protected function selectFromList(array $items, string $prompt): int
+    {
+        info($prompt);
+
+        foreach ($items as $key => $item) {
+            info("  [{$key}] {$item}");
+        }
+
+        $choice = (int) readline("Enter number: ");
+        if (! isset($items[$choice])) {
+            warning("Invalid selection, defaulting to first item.");
+            return 0;
+        }
+
+        return $choice;
     }
 }

@@ -7,6 +7,7 @@ use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\CheckForMooxPackages;
 use Moox\Core\Console\Traits\CheckOrCreateFilamentUser;
+use Moox\Core\Console\Traits\InstallPackage;
 use Moox\Core\Console\Traits\InstallPackages;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 use Moox\Core\Services\PackageService;
@@ -20,18 +21,16 @@ class MooxInstaller extends Command
         CheckForFilament,
         CheckForMooxPackages,
         CheckOrCreateFilamentUser,
+        InstallPackage,
         InstallPackages,
         SelectFilamentPanel;
 
     protected $signature = 'moox:install';
-
     protected $description = 'Install Moox Packages or generate Filament Panels.';
-
     protected array $selectedPanels = [];
 
-    public function __construct(
-        protected PackageService $packageService
-    ) {
+    public function __construct(protected PackageService $packageService)
+    {
         parent::__construct();
         $this->setPackageService($packageService);
     }
@@ -49,11 +48,15 @@ class MooxInstaller extends Command
             ]
         );
 
-        if ($choice === 'packages') {
-            $this->runPackageInstallFlow();
-        } else {
-            $this->runPanelGenerationFlow();
+        if (! $this->checkForFilament()) {
+            $this->error('❌ Filament installation required or aborted.');
+            return;
         }
+
+        match ($choice) {
+            'packages' => $this->runPackageInstallFlow(),
+            'panels'   => $this->runPanelGenerationFlow(),
+        };
     }
 
     protected function runPackageInstallFlow(): void
@@ -61,29 +64,19 @@ class MooxInstaller extends Command
         $categories = $this->getAllKnownMooxPackages();
         $installed = $this->getInstalledMooxPackages();
 
-        $this->info("📚 All Moox Packages (installed or not):\n");
-
-        foreach ($categories as $category => $packages) {
-            $this->line("  🔹 {$category}");
-            foreach ($packages as $pkg) {
-                $status = in_array($pkg, $installed, true) ? '✅ installed' : '— not installed';
-                $this->line("    • {$pkg} {$status}");
-            }
-            $this->newLine();
-        }
+        $this->displayPackageStatus($categories, $installed);
 
         $notInstalled = collect($categories)->flatten()->diff($installed)->toArray();
+        sort($notInstalled);
         if (empty($notInstalled)) {
             $this->info('🎉 All Moox Packages are already installed!');
             return;
         }
 
-        $options = array_combine($notInstalled, $notInstalled);
-
         $selection = multiselect(
             label: 'Which of the not yet installed packages do you want to install?',
-            options: $options,
-            required: false
+            options: array_combine($notInstalled, $notInstalled),
+            required: true
         );
 
         if (empty($selection)) {
@@ -91,32 +84,114 @@ class MooxInstaller extends Command
             return;
         }
 
-        foreach ($selection as $package) {
-            if (! $this->checkForMooxPackage($package)) {
-                $this->error("❌ Installation of {$package} failed or was aborted.");
+        $existingPanel = $this->getPanelFromBootstrapProviders();
+
+        $selectedPanelKey = null;
+        if ($existingPanel !== null) {
+            $panelChoice = select(
+                label: 'A panel is already registered. Where should we register the selected packages?',
+                options: [
+                    'existing' => "Use existing panel ({$existingPanel})",
+                    'choose'   => 'Choose one of Moox panels',
+                ]
+            );
+
+            if ($panelChoice === 'existing') {
+                $selectedPanelKey = $existingPanel;
             }
         }
 
-        $this->info('🎉 The selected packages have been installed (if possible).');
+        if ($selectedPanelKey === null) {
+            $panelOptions = array_keys($this->panelMap);
+            $selectedPanelKey = select(
+                label: 'Select a panel to register the packages into',
+                options: $panelOptions
+            );
+        }
+
+        $this->ensurePanelForKey($selectedPanelKey);
+
+        $providerPath = $this->panelMap[$selectedPanelKey]['path'] . '/' . ucfirst($selectedPanelKey) . 'PanelProvider.php';
+
+        foreach ($selection as $package) {
+            if (! $this->checkForMooxPackage($package)) {
+                $this->error("❌ Installation of {$package} failed or aborted.");
+                continue;
+            }
+
+            $packageData = ['name' => $package, 'composer' => $package];
+            $this->installPackage($packageData, [$providerPath]);
+
+            $this->updatePanelPackageComposerJson($selectedPanelKey, [$package]);
+        }
+
+        $this->info('🎉 Selected packages have been installed successfully!');
+    }
+
+    protected function displayPackageStatus(array $categories, array $installed): void
+    {
+        $all = collect($categories)->flatten()->toArray();
+        $installedList = array_values(array_intersect($all, $installed));
+        sort($installedList);
+
+        $notInstalledList = array_values(array_diff($all, $installed));
+        sort($notInstalledList);
+
+        $this->info("📦 Installed Moox packages (sorted):");
+        foreach ($installedList as $pkg) {
+            $this->line("  • {$pkg}");
+        }
+        $this->newLine();
+
+        $this->info("🧩 Available to install (sorted):");
+        foreach ($notInstalledList as $pkg) {
+            $this->line("  • {$pkg}");
+        }
+        $this->newLine();
+    }
+
+    protected function determinePanelForPackage(string $package): string
+    {
+        $existingPanels = $this->getExistingPanelsWithLogin();
+
+        if (!empty($existingPanels)) {
+            $panelChoice = select(
+                label: "Möchtest du das Package '{$package}' in ein bestehendes Panel registrieren oder ein neues Panel erstellen?",
+                options: [
+                    'existing' => 'Existierendes Panel',
+                    'new'      => 'Neues Panel erstellen',
+                ]
+            );
+
+            if ($panelChoice === 'existing') {
+                $panel = select(
+                    label: 'Wähle das bestehende Panel:',
+                    options: $existingPanels
+                );
+            } else {
+                $panel = $this->createNewPanelProvider();
+            }
+        } else {
+            $panel = $this->createNewPanelProvider();
+        }
+
+        return $panel;
     }
 
     protected function runPanelGenerationFlow(): void
     {
-        if (! $this->checkForFilament()) {
-            $this->error('❌ Filament installation required or aborted. Aborting installation.');
-            return;
-        }
-
         $existingPanels = $this->getExistingPanelsWithLogin();
-        if (count($existingPanels) > 0) {
-            $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
-        } else {
+
+        if (empty($existingPanels)) {
             $this->selectedPanels = $this->selectPanels();
-            if (empty($this->selectedPanels)) {
+            if (!empty($this->selectedPanels)) {
+                $this->installPackages($this->selectedPanels);
+            } else {
                 $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
                 return;
             }
-            $this->installPackages($this->selectedPanels);
+        } else {
+            $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
         }
 
         $this->checkOrCreateFilamentUser();
@@ -132,77 +207,23 @@ class MooxInstaller extends Command
 
     protected function getExistingPanelsWithLogin(): array
     {
-        $panelFiles = $this->getPanelProviderFiles();
-        $panelsWithLogin = $this->filterPanelsWithLogin($panelFiles);
-
-        return $panelsWithLogin->map(fn($file) => $file->getRelativePathname())->toArray();
+        return $this->filterPanelsWithLogin($this->getPanelProviderFiles())
+            ->map(fn($file) => $file->getRelativePathname())
+            ->toArray();
     }
 
     protected function getAllKnownMooxPackages(): array
     {
         return [
-            'Core & System' => [
-                'moox/core',
-                'moox/build',
-                'moox/skeleton',
-                'moox/packages',
-            ],
-            'Development Tools' => [
-                'moox/devops',
-                'moox/devtools',
-                'moox/devlink',
-            ],
-            'Content & Media' => [
-                'moox/content',
-                'moox/page',
-                'moox/news',
-                'moox/press',
-                'moox/press-trainings',
-                'moox/press-wiki',
-                'moox/media',
-            ],
-            'User & Authentication' => [
-                'moox/user',
-                'moox/user-device',
-                'moox/user-session',
-                'moox/login-link',
-                'moox/passkey',
-                'moox/security',
-            ],
-            'E-Commerce & Shop' => [
-                'moox/shop',
-                'moox/item',
-                'moox/category',
-            ],
-            'Collaboration & Productivity' => [
-                'moox/clipboard',
-                'moox/jobs',
-                'moox/trainings',
-                'moox/progress',
-            ],
-            'Data & Utilities' => [
-                'moox/data',
-                'moox/backup-server',
-                'moox/restore',
-                'moox/audit',
-                'moox/expiry',
-                'moox/draft',
-                'moox/slug',
-                'moox/tag',
-            ],
-            'UI Components & Icons' => [
-                'moox/components',
-                'moox/featherlight',
-                'moox/laravel-icons',
-                'moox/flag-icons-circle',
-                'moox/flag-icons-origin',
-                'moox/flag-icons-rect',
-                'moox/flag-icons-square',
-            ],
-            'Localization & Communication' => [
-                'moox/localization',
-                'moox/notifications',
-            ],
+            'Core & System' => ['moox/core','moox/build','moox/skeleton','moox/packages'],
+            'Development Tools' => ['moox/devops','moox/devtools','moox/devlink'],
+            'Content & Media' => ['moox/content','moox/page','moox/news','moox/press','moox/press-trainings','moox/press-wiki','moox/media'],
+            'User & Authentication' => ['moox/user','moox/user-device','moox/user-session','moox/login-link','moox/passkey','moox/security'],
+            'E-Commerce & Shop' => ['moox/shop','moox/item','moox/category'],
+            'Collaboration & Productivity' => ['moox/clipboard','moox/jobs','moox/trainings','moox/progress'],
+            'Data & Utilities' => ['moox/data','moox/backup-server','moox/restore','moox/audit','moox/expiry','moox/draft','moox/slug','moox/tag'],
+            'UI Components & Icons' => ['moox/components','moox/featherlight','moox/laravel-icons','moox/flag-icons-circle','moox/flag-icons-origin','moox/flag-icons-rect','moox/flag-icons-square'],
+            'Localization & Communication' => ['moox/localization','moox/notifications'],
         ];
     }
 }

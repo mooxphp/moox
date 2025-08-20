@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\warning;
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\confirm;
@@ -317,9 +318,7 @@ PHP;
         }
     }
 
-    /**
-     * Update composer dependencies for an existing panel
-     */
+  
     public function updatePanelDependencies(string $panel): void
     {
         if (!isset($this->panelMap[$panel])) {
@@ -361,7 +360,6 @@ PHP;
     {
         $plugins = [];
         
-        // Extract plugins from ->plugins([...]) call
         if (preg_match('/->plugins\(\[(.*?)\]\)/s', $content, $matches)) {
             $pluginLines = explode(',', $matches[1]);
             foreach ($pluginLines as $line) {
@@ -540,5 +538,93 @@ PHP;
         }
     }
 
+
+    protected function getPanelFromBootstrapProviders(): ?string
+    {
+        $bootstrapProvidersPath = base_path('bootstrap/providers.php');
+        if (!File::exists($bootstrapProvidersPath)) {
+            return null;
+        }
+
+        $content = File::get($bootstrapProvidersPath);
+
+        if (!preg_match_all('/([\\\\A-Za-z0-9_]+)::class/', $content, $matches)) {
+            return null;
+        }
+
+        foreach ($matches[1] as $class) {
+            $panel = $this->mapProviderClassToPanelKey($class);
+            if ($panel !== null) {
+                return $panel;
+            }
+        }
+
+        return null;
+    }
+
+   
+    protected function mapProviderClassToPanelKey(string $providerClass): ?string
+    {
+        foreach ($this->panelMap as $key => $cfg) {
+            $expected = $cfg['namespace'] . '\\' . ucfirst($key) . 'PanelProvider';
+            if ($providerClass === $expected) {
+                return $key;
+            }
+        }
+
+        if (preg_match('/^App\\\\Providers\\\\Filament\\\\([A-Za-z]+)PanelProvider$/', $providerClass, $m)) {
+            $panel = strtolower($m[1]);
+            return isset($this->panelMap[$panel]) ? $panel : null;
+        }
+
+        return null;
+    }
+
+   
+    protected function ensurePanelForKey(string $panel): void
+    {
+        if (!isset($this->panelMap[$panel])) {
+            error("❌ Unknown panel '{$panel}'.");
+            return;
+        }
+
+        if ($this->panelExists($panel)) {
+            return;
+        }
+
+        $panelId = $panel;
+        $this->call('make:filament-panel', [
+            'id' => $panelId,
+        ]);
+
+        $from = base_path('app/Providers/Filament/' . ucfirst($panel) . 'PanelProvider.php');
+        $toDir = base_path($this->panelMap[$panel]['path']);
+        $to = $toDir . '/' . ucfirst($panel) . 'PanelProvider.php';
+
+        if (!File::exists($from)) {
+            warning("⚠️ Expected file {$from} not found. Skipping panel move.");
+            return;
+        }
+
+        File::ensureDirectoryExists($toDir);
+        File::move($from, $to);
+        info("✅ Moved panel provider to: {$to}");
+
+        $content = File::get($to);
+        $content = str_replace(
+            'namespace App\\Providers\\Filament;',
+            'namespace ' . $this->panelMap[$panel]['namespace'] . ';',
+            $content
+        );
+        File::put($to, $content);
+        info('🧭 Updated namespace to: ' . $this->panelMap[$panel]['namespace']);
+
+        $this->registerDefaultPluginsForPanel($panel, $to);
+        $this->configureAuthUserModelForPanel($panel, $to);
+
+        $providerClass = $this->panelMap[$panel]['namespace'] . '\\' . ucfirst($panel) . 'PanelProvider';
+        $this->registerPanelProviderInBootstrapProviders($providerClass, $panel);
+        $this->cleanupPanelProviderInAppServiceProvider($panel);
+    }
 
 }
