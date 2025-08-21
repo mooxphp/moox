@@ -4,39 +4,35 @@ declare(strict_types=1);
 
 namespace Moox\Category\Moox\Entities\Categories\Category;
 
-use Override;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Moox\Category\Models\Category;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\RichEditor;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Tables\Filters\TernaryFilter;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Media\Tables\Columns\CustomImageColumn;
-use CodeWithDennis\FilamentSelectTree\SelectTree;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\EditCategory;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ViewCategory;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
+use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\CreateCategory;
+use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\EditCategory;
 use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ListCategories;
+use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ViewCategory;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Override;
 
 class CategoryResource extends BaseDraftResource
 {
@@ -94,13 +90,13 @@ class CategoryResource extends BaseDraftResource
                                         relationship: 'parent',
                                         titleAttribute: 'title',
                                         parentAttribute: 'parent_id',
-                                        modifyQueryUsing: fn(Builder $query, $get) => $query->where('id', '!=', $get('id'))
+                                        modifyQueryUsing: fn (Builder $query, $get) => $query->where('id', '!=', $get('id'))
                                     )
                                     ->label('Parent Category')
                                     ->searchable()
-                                    ->disabledOptions(fn($get): array => [$get('id')])
+                                    ->disabledOptions(fn ($get): array => [$get('id')])
                                     ->enableBranchNode()
-                                    ->visible(fn() => Category::count() > 0),
+                                    ->visible(fn () => Category::count() > 0),
                                 Grid::make(2)
                                     ->schema([
                                         static::getFooterActions()->columnSpan(1),
@@ -117,7 +113,7 @@ class CategoryResource extends BaseDraftResource
                                         TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                     ]),
                                 Section::make('')
                                     ->schema([
@@ -141,7 +137,7 @@ class CategoryResource extends BaseDraftResource
                                                 ...static::getStandardTimestampFields(),
                                             ]),
                                     ])
-                                    ->hidden(fn($record) => $record === null),
+                                    ->hidden(fn ($record) => $record === null),
                             ])
                             ->columnSpan(1)
                             ->columns(1),
@@ -155,7 +151,7 @@ class CategoryResource extends BaseDraftResource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => static::getEloquentQuery())
+            ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
             ->columns([
                 static::getTitleColumn(),
@@ -187,7 +183,7 @@ class CategoryResource extends BaseDraftResource
                 static::getStatusColumn(),
                 TextColumn::make('level')
                     ->label(__('category::fields.level'))
-                    ->getStateUsing(fn(Category $record): int => $record->ancestors->count() + 1)
+                    ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('children_count')
@@ -216,7 +212,7 @@ class CategoryResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('parent_id')
                     ->label(__('category::fields.parent'))
-                    ->relationship('parent', 'title', fn($query) => $query->has('children'))
+                    ->relationship('parent', 'title', fn ($query) => $query->has('children'))
                     ->searchable(),
                 SelectFilter::make('children_count')
                     ->label(__('category::fields.children_count'))
@@ -226,7 +222,7 @@ class CategoryResource extends BaseDraftResource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
                         switch ($option) {
                             case '0':
                                 return $query->doesntHave('children');
@@ -240,8 +236,8 @@ class CategoryResource extends BaseDraftResource
                     })),
                 SelectFilter::make('depth')
                     ->label(__('category::fields.level'))
-                    ->options(fn(): array => array_combine(range(1, 5), range(1, 5)))
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                    ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
                             $subquery->select('id')
                                 ->from('categories as c')

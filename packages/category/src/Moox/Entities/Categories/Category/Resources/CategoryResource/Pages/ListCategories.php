@@ -8,7 +8,6 @@ use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Override;
 
 class ListCategories extends BaseListDrafts
 {

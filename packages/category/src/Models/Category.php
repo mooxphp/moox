@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Kalnoy\Nestedset\NodeTrait;
+use Moox\Category\Database\Factories\CategoryFactory;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Media\Traits\HasMediaUsable;
 use Override;
 use Spatie\Image\Enums\Fit;
-use Illuminate\Support\Carbon;
-use Kalnoy\Nestedset\NodeTrait;
 use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\DB;
-use Moox\Media\Traits\HasMediaUsable;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Category\Database\Factories\CategoryFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property string $title

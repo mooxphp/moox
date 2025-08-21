@@ -6,7 +6,6 @@ namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryReso
 
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
-use Override;
 
 class EditCategory extends BaseEditDraft
 {

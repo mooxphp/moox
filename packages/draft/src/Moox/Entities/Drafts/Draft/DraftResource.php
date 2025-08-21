@@ -4,7 +4,6 @@ namespace Moox\Draft\Moox\Entities\Drafts\Draft;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Toggle;
@@ -143,7 +142,7 @@ class DraftResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -199,11 +198,11 @@ class DraftResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter') . ' Type')
+                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter') . ' Section')
+                    ->placeholder(__('core::core.filter').' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ])->deferFilters(false)
             ->persistFiltersInSession();
