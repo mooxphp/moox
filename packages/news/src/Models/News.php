@@ -4,9 +4,7 @@ namespace Moox\News\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
@@ -94,7 +92,6 @@ class News extends BaseDraftModel implements HasMedia
         'custom_properties' => 'json',
     ];
 
-
     public static function getResourceName(): string
     {
         return 'news';
@@ -116,7 +113,6 @@ class News extends BaseDraftModel implements HasMedia
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
-
 
     public function author(): BelongsTo
     {

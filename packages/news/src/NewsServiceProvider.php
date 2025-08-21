@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\News;
 
-use Illuminate\Support\Facades\Blade;
-use Spatie\LaravelPackageTools\Package;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Moox\News\Moox\Entities\News\News\Pages\ListNews;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class NewsServiceProvider extends PackageServiceProvider
@@ -27,7 +27,7 @@ class NewsServiceProvider extends PackageServiceProvider
     {
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
-            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListNews::class
         );
     }
