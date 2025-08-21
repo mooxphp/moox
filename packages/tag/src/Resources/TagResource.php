@@ -4,38 +4,32 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Override;
-use Moox\Tag\Models\Tag;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Tabs;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\RichEditor;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Tables\Filters\TernaryFilter;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Media\Tables\Columns\CustomImageColumn;
-use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
-use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\Tag\Models\Tag;
+use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends BaseDraftResource
 {
@@ -58,7 +52,6 @@ class TagResource extends BaseDraftResource
     #[Override]
     public static function form(Schema $schema): Schema
     {
-
         return $schema
             ->schema([
                 Grid::make()
@@ -132,7 +125,7 @@ class TagResource extends BaseDraftResource
                                             ->schema([
                                                 ...static::getStandardTimestampFields(),
                                             ]),
-                                    ])->hidden(fn($record) => $record === null),
+                                    ])->hidden(fn ($record) => $record === null),
                             ])
                             ->columns(1)
                             ->columnSpan(1),
@@ -145,7 +138,6 @@ class TagResource extends BaseDraftResource
     #[Override]
     public static function table(Table $table): Table
     {
-
         return $table
             ->columns([
                 static::getTitleColumn(),
@@ -185,7 +177,6 @@ class TagResource extends BaseDraftResource
             ])->deferFilters(false)
             ->persistFiltersInSession();
     }
-
 
     #[Override]
     public static function getRelations(): array

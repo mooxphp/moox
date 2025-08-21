@@ -35,13 +35,13 @@ class CategoryTranslation extends BaseDraftTranslationModel
         parent::boot();
 
         static::creating(function ($model) {
-            if ($model->author_id && !$model->author_type) {
+            if ($model->author_id && ! $model->author_type) {
                 $model->author_type = User::class;
             }
         });
 
         static::updating(function ($model) {
-            if ($model->author_id && !$model->author_type) {
+            if ($model->author_id && ! $model->author_type) {
                 $model->author_type = User::class;
             }
         });
