@@ -11,15 +11,4 @@ use Override;
 class CreateCategory extends BaseCreateDraft
 {
     protected static string $resource = CategoryResource::class;
-
-    protected function hasFormActionsInPanel(): bool
-    {
-        return false;
-    }
-
-    #[Override]
-    protected function getFormActions(): array
-    {
-        return [];
-    }
 }

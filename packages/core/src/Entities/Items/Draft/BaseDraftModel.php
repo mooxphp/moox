@@ -2,12 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 abstract class BaseDraftModel extends Model implements TranslatableContract
 {
@@ -89,6 +90,11 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     {
         parent::boot();
 
+        static::creating(function ($model) {
+            $model->uuid = (string) Str::uuid();
+            $model->ulid = (string) Str::ulid();
+        });
+
         static::deleted(function ($model) {
             if ($model->isForceDeleting()) {
                 $model->translations()->forceDelete();
@@ -107,12 +113,17 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         });
     }
 
-    public static function getResourceName(): string
+    public function getUlidAttribute(): string
     {
-        $className = class_basename(static::class);
-
-        return strtolower($className);
+        return $this->ulid ?? (string) Str::ulid();
     }
+
+    public function getUuidAttribute(): string
+    {
+        return $this->uuid ?? (string) Str::uuid();
+    }
+
+
 
     public function checkAndDeleteIfAllTranslationsDeleted(): void
     {

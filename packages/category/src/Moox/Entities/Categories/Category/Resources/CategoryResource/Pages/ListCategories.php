@@ -14,13 +14,7 @@ class ListCategories extends BaseListDrafts
 {
     use HasListPageTabs;
 
-    public static string $resource = CategoryResource::class;
-
-    #[Override]
-    public function getTitle(): string
-    {
-        return config('category.resources.category.plural');
-    }
+    protected static string $resource = CategoryResource::class;
 
     public function getTabs(): array
     {

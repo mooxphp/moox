@@ -107,8 +107,6 @@ class DraftResource extends BaseDraftResource
                                 ->label(__('core::core.description')),
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
-                            KeyValue::make('data')
-                                ->label(__('core::core.data').' (JSON)'),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -145,7 +143,7 @@ class DraftResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -163,13 +161,11 @@ class DraftResource extends BaseDraftResource
         return $table
             ->columns([
                 static::getTitleColumn(),
+                static::getSlugColumn(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
-                    ->sortable(),
-                TextColumn::make('slug')
-                    ->searchable()
                     ->sortable(),
                 TextColumn::make('description')
                     ->limit(50)
@@ -203,11 +199,11 @@ class DraftResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label('Type')
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->placeholder(__('core::core.filter') . ' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('section')
                     ->label('Section')
-                    ->placeholder(__('core::core.filter').' Section')
+                    ->placeholder(__('core::core.filter') . ' Section')
                     ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ])->deferFilters(false)
             ->persistFiltersInSession();

@@ -11,10 +11,4 @@ use Override;
 class EditCategory extends BaseEditDraft
 {
     protected static string $resource = CategoryResource::class;
-
-    #[Override]
-    protected function getFormActions(): array
-    {
-        return [];
-    }
 }

@@ -80,6 +80,7 @@ class Draft extends BaseDraftModel implements HasMedia
         'status',
         'uuid',
         'ulid',
+        'custom_properties',
     ];
 
     protected $casts = [
@@ -89,27 +90,8 @@ class Draft extends BaseDraftModel implements HasMedia
         'due_at' => 'datetime',
         'uuid' => 'string',
         'ulid' => 'string',
+        'custom_properties' => 'json',
     ];
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-            $model->ulid = (string) Str::ulid();
-        });
-    }
-
-    public function getUlidAttribute(): string
-    {
-        return $this->ulid ?? (string) Str::ulid();
-    }
-
-    public function getUuidAttribute(): string
-    {
-        return $this->uuid ?? (string) Str::uuid();
-    }
 
     public static function getResourceName(): string
     {
