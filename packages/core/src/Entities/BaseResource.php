@@ -2,25 +2,25 @@
 
 namespace Moox\Core\Entities;
 
+use Moox\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Clipboard\Forms\Components\CopyableField;
-use Moox\User\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 abstract class BaseResource extends Resource
 {
@@ -50,8 +50,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -80,8 +80,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -141,7 +141,7 @@ abstract class BaseResource extends Resource
 
                 return static::getUrl('edit', ['record' => $record, 'lang' => $currentLang]);
             })
-            ->hidden(fn ($livewire) => $livewire->activeTab === 'deleted');
+            ->hidden(fn($livewire) => $livewire->activeTab === 'deleted');
     }
 
     public static function getViewTableAction(): ViewAction
@@ -184,13 +184,13 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('index'));
             })
-            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->visible(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getRestoreBulkAction(): RestoreBulkAction
     {
         return RestoreBulkAction::make()
-            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
+            ->visible(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
             ->action(function ($records, $livewire): void {
                 foreach ($records as $record) {
                     \DB::table($record->getTable())
@@ -295,13 +295,16 @@ abstract class BaseResource extends Resource
             ->color('success')
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
+
+                $livewire->redirect(static::getUrl('edit', ['record' => $livewire->record, 'lang' => $livewire->lang]));
             })
-            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
-            ->hidden(fn ($livewire): bool => $livewire instanceof EditRecord
+            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
+            ->hidden(fn($livewire): bool => $livewire instanceof EditRecord
                 && $livewire->record
                 && method_exists($livewire->record, 'trashed')
                 && $livewire->record->trashed());
     }
+
 
     public static function getPublishAction(): Action
     {
@@ -327,8 +330,8 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
             })
-            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
-            ->hidden(fn ($get, $livewire) => $get('translation_status') === 'published'
+            ->visible(fn($livewire): bool => $livewire instanceof EditRecord)
+            ->hidden(fn($get, $livewire) => $get('translation_status') === 'published'
                 || ($livewire instanceof EditRecord
                     && $livewire->record
                     && method_exists($livewire->record, 'trashed')
@@ -347,7 +350,7 @@ abstract class BaseResource extends Resource
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('create'));
             })
-            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
+            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getCancelAction(): Action
@@ -489,10 +492,10 @@ abstract class BaseResource extends Resource
                     if (method_exists($livewire->record, 'translations')) {
                         $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                        return $translation && ! $translation->trashed();
+                        return $translation && !$translation->trashed();
                     }
 
-                    return ! $livewire->record->trashed();
+                    return !$livewire->record->trashed();
                 }
 
                 if ($livewire instanceof ViewRecord) {
@@ -524,7 +527,7 @@ abstract class BaseResource extends Resource
                 return static::getUrl('edit', ['record' => $livewire->record, 'lang' => $currentLang]);
             })
             ->visible(function ($livewire) {
-                if (! $livewire instanceof ViewRecord || ! $livewire->record) {
+                if (!$livewire instanceof ViewRecord || !$livewire->record) {
                     return false;
                 }
 
@@ -533,10 +536,10 @@ abstract class BaseResource extends Resource
                 if (method_exists($livewire->record, 'translations')) {
                     $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                    return $translation && ! $translation->trashed();
+                    return $translation && !$translation->trashed();
                 }
 
-                return ! $livewire->record->trashed();
+                return !$livewire->record->trashed();
             });
     }
 
@@ -552,7 +555,6 @@ abstract class BaseResource extends Resource
                     $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
                     if ($translation && $translation->trashed()) {
-                        // Restore the translation
                         $translation->restored_at = now();
                         $translation->deleted_by_id = null;
                         $translation->deleted_by_type = null;
@@ -582,7 +584,7 @@ abstract class BaseResource extends Resource
                 }
             })
             ->visible(function ($livewire) {
-                if (! $livewire instanceof ViewRecord || ! $livewire->record) {
+                if (!$livewire instanceof ViewRecord || !$livewire->record) {
                     return false;
                 }
 
@@ -617,7 +619,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('id')
             ->label('ID')
-            ->defaultValue(fn ($record): string => $record->id ?? '');
+            ->defaultValue(fn($record): string => $record->id ?? '');
     }
 
     /**
@@ -627,7 +629,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('uuid')
             ->label('UUID')
-            ->defaultValue(fn ($record): string => $record->uuid ?? '');
+            ->defaultValue(fn($record): string => $record->uuid ?? '');
     }
 
     /**
@@ -637,7 +639,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('ulid')
             ->label('ULID')
-            ->defaultValue(fn ($record): string => $record->ulid ?? '');
+            ->defaultValue(fn($record): string => $record->ulid ?? '');
     }
 
     /**
@@ -659,8 +661,8 @@ abstract class BaseResource extends Resource
     {
         return TextEntry::make('created_at')
             ->label(__('core::core.created_at'))
-            ->state(fn ($record): string => $record->created_at ?
-                $record->created_at.' - '.$record->created_at->diffForHumans() : '');
+            ->state(fn($record): string => $record->created_at ?
+                $record->created_at . ' - ' . $record->created_at->diffForHumans() : '');
     }
 
     /**
@@ -670,8 +672,8 @@ abstract class BaseResource extends Resource
     {
         return TextEntry::make('updated_at')
             ->label(__('core::core.updated_at'))
-            ->state(fn ($record): string => $record->updated_at ?
-                $record->updated_at.' - '.$record->updated_at->diffForHumans() : '');
+            ->state(fn($record): string => $record->updated_at ?
+                $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '');
     }
 
     /**
@@ -682,16 +684,10 @@ abstract class BaseResource extends Resource
         return TextColumn::make('translation_status')
             ->label('Status')
             ->sortable()
-            ->searchable(true, function ($query, $search) {
-                $currentLang = request()->get('lang', app()->getLocale());
-                $query->whereHas('translations', function ($query) use ($search, $currentLang) {
-                    $query->where('locale', $currentLang)
-                        ->where('translation_status', 'like', '%'.$search.'%');
-                });
-            })
+            ->searchable()
             ->toggleable()
             ->badge()
-            ->color(fn (string $state): string => match ($state) {
+            ->color(fn(string $state): string => match ($state) {
                 'Published' => 'success',
                 'Scheduled' => 'warning',
                 'Draft' => 'info',
@@ -706,7 +702,7 @@ abstract class BaseResource extends Resource
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                if (! $translation) {
+                if (!$translation) {
                     return static::getTranslationStatusOptions()['not_translated'];
                 }
 
