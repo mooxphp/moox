@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Media\Traits\HasMediaUsable;
@@ -20,13 +16,9 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Tag extends BaseDraftModel implements HasMedia, TranslatableContract
+class Tag extends BaseDraftModel implements HasMedia
 {
-    use HasFactory, HasMediaUsable, InteractsWithMedia, SoftDeletes, Translatable;
-
-    public $timestamps = false;
-
-    protected $table = 'tags';
+    use HasFactory, HasMediaUsable, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft
@@ -48,12 +40,21 @@ class Tag extends BaseDraftModel implements HasMedia, TranslatableContract
         'color',
         'weight',
         'count',
-        'featured_image_url',
+        'image',
+        'is_active',
+        'due_at',
+        'uuid',
+        'ulid',
+        'custom_properties',
     ];
 
     protected $casts = [
-        'weight' => 'integer',
-        'count' => 'integer',
+        'is_active' => 'boolean',
+        'due_at' => 'datetime',
+        'image' => 'json',
+        'uuid' => 'string',
+        'ulid' => 'string',
+        'custom_properties' => 'json',
     ];
 
     protected static function newFactory(): TagFactory
