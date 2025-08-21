@@ -27,15 +27,18 @@ trait RegisterFilamentPlugin
                 continue;
             }
 
-            $this->registerPlugins($fullPath, $package);
-            info("✅ Plugins registered for panel provider: {$panelProvider}");
+            $changed = $this->registerPlugins($fullPath, $package);
+            if ($changed) {
+                info("✅ Plugins registered for panel provider: {$panelProvider}");
+            }
         }
     }
 
-    protected function registerPlugins(string $providerPath, array $package): void
+    protected function registerPlugins(string $providerPath, array $package): bool
     {
         $content = file_get_contents($providerPath);
         $plugins = $this->packageService->getPlugins($package);
+        $changed = false;
 
         foreach ($plugins as $plugin) {
             if (!str_contains($content, $plugin)) {
@@ -44,9 +47,13 @@ trait RegisterFilamentPlugin
                     "        \$panel->plugin(new {$plugin}());\n        return \$panel;",
                     $content
                 );
+                $changed = true;
             }
         }
 
-        file_put_contents($providerPath, $content);
+        if ($changed) {
+            file_put_contents($providerPath, $content);
+        }
+        return $changed;
     }
 }

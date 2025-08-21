@@ -32,63 +32,60 @@ trait InstallPackage
         }
     }
 
-    protected function requirePackage(string $package): void
+    protected function requirePackage(string $package): string
     {
         $composerJson = json_decode(file_get_contents(base_path('composer.json')), true);
 
         if (! isset($composerJson['require'][$package])) {
-            info("📦 Adding package {$package} via composer require...");
-
-            $command = "composer require {$package}:* 2>&1";
+            $command = "composer require {$package}:* --no-scripts --quiet 2>&1";
             exec($command, $output, $returnVar);
-
-            foreach ($output as $line) {
-                info("    " . $line);
-            }
 
             if ($returnVar !== 0) {
                 warning("❌ Error running composer require {$package}.");
                 throw new \RuntimeException("Composer require for {$package} failed.");
             }
-
-            info("✅ Package {$package} installed successfully.");
+            return 'installed';
         } else {
-            info("✅ Package {$package} is already installed.");
+            return 'already';
         }
     }
 
-    public function installPackage(array $package, array $panelPaths = []): void
+    public function installPackage(array $package, array $panelPaths = []): bool
     {
         if (empty($package) || ! isset($package['name'])) {
             warning('⚠️ Empty or invalid package. Skipping installation.');
-            return;
+            return false;
         }
 
+        $didChange = false;
+
         if (isset($package['composer'])) {
-            $this->requirePackage($package['composer']);
+            $status = $this->requirePackage($package['composer']);
+            if ($status === 'installed') {
+                info("✅ Installed: {$package['name']}");
+                $didChange = true;
+            }
         }
 
         $this->ensurePackageServiceIsSet();
 
-        info("🚀 Installing package: {$package['name']}");
-
-        $this->runMigrations($package);
-        $this->publishConfig($package);
-        $this->runSeeders($package);
+        // Proceed with integration steps (migrations, config, seeders, plugins)
+        $didChange = $this->runMigrations($package) || $didChange;
+        $didChange = $this->publishConfig($package) || $didChange;
+        $didChange = $this->runSeeders($package) || $didChange;
 
         if (empty($panelPaths)) {
             $panelPaths = $this->determinePanelsForPackage($package);
+            // selecting/creating a panel implies a change to the project
+            if (! empty($panelPaths)) {
+                $didChange = true;
+            }
         }
 
         
-        $this->installPlugins($package, $panelPaths);
+        $didChange = $this->installPlugins($package, $panelPaths) || $didChange;
 
-
-        $this->checkOrCreateFilamentUser();
-
-        info("🛠️ Running filament:upgrade...");
-        Artisan::call('filament:upgrade');
-        info("✅ Upgrade completed.");
+        return $didChange;
     }
 
     protected function determinePanelsForPackage(array $package): array
@@ -120,19 +117,24 @@ trait InstallPackage
         return [$newPanel];
     }
 
-    public function installPlugins(array $package, array $panelPaths): void
+    public function installPlugins(array $package, array $panelPaths): bool
     {
         $plugins = $this->packageService->getPlugins($package);
 
         if (empty($plugins)) {
-            info("ℹ️ No plugins found in package '{$package['name']}'.");
-            return;
+            return false;
         }
 
+        $changedAny = false;
         foreach ($panelPaths as $panelPath) {
-            info("🔌 Registering plugins for panel: {$panelPath}");
-            $this->registerPlugins($panelPath, $package);
+            $changed = $this->registerPlugins($panelPath, $package);
+            if ($changed) {
+                info("🔌 Registered plugins for panel: {$panelPath}");
+                $changedAny = true;
+            }
         }
+
+        return $changedAny;
     }
 
     protected function createNewPanelProvider(): string
@@ -145,20 +147,18 @@ trait InstallPackage
         return $panelName;
     }
 
-    protected function runMigrations(array $package): void
+    protected function runMigrations(array $package): bool
     {
-        info('🔍 Checking migrations...');
+        // Migrations: only output when there is something to do
 
         $migrations = $this->packageService->getMigrations($package);
 
         if (empty($migrations)) {
-            info("ℹ️ No migrations found for {$package['name']}.");
-            return;
+            return false;
         }
 
+        $didRun = false;
         foreach ($migrations as $migration) {
-            info("➡️ Checking migration: {$migration}");
-
             $status = $this->packageService->checkMigrationStatus($migration);
 
             if ($status['hasChanges']) {
@@ -175,15 +175,17 @@ trait InstallPackage
                     '--force' => true,
                 ]);
                 info("✅ Migration completed (Exit Code: {$exitCode})");
-            } else {
-                info("⏭️ No changes in {$migration}, skipped.");
+                $didRun = true;
             }
         }
+
+        return $didRun;
     }
 
-    protected function publishConfig(array $package): void
+    protected function publishConfig(array $package): bool
     {
         $configs = $this->packageService->getConfig($package);
+        $updatedAny = false;
 
         foreach ($configs as $path => $content) {
             $publishPath = config_path(basename($path));
@@ -191,27 +193,31 @@ trait InstallPackage
             if (! file_exists($publishPath)) {
                 info("📄 Publishing new config: {$path}");
                 File::put($publishPath, $content);
+                $updatedAny = true;
                 continue;
             }
 
             $existingContent = File::get($publishPath);
             if ($existingContent === $content) {
-                info("✅ Config {$path} is up to date.");
                 continue;
             }
 
             if (confirm("⚠️ Config file {$path} has changes. Overwrite?", false)) {
                 info("🔄 Updating config file: {$path}");
                 File::put($publishPath, $content);
+                $updatedAny = true;
             } else {
                 warning("⏭️ Config {$path} was not overwritten.");
             }
         }
+
+        return $updatedAny;
     }
 
-    protected function runSeeders(array $package): void
+    protected function runSeeders(array $package): bool
     {
         $requiredSeeders = $this->packageService->getRequiredSeeders($package);
+        $didSeed = false;
 
         foreach ($requiredSeeders as $seeder) {
             $table = $this->getSeederTable($seeder);
@@ -227,6 +233,7 @@ trait InstallPackage
                     '--class' => $seeder,
                     '--force' => true,
                 ]);
+                $didSeed = true;
                 continue;
             }
 
@@ -236,10 +243,13 @@ trait InstallPackage
                     '--class' => $seeder,
                     '--force' => true,
                 ]);
+                $didSeed = true;
             } else {
                 warning("⏭️ Seeder for {$table} skipped.");
             }
         }
+
+        return $didSeed;
     }
 
     private function getSeederTable(string $seederClass): ?string

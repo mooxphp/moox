@@ -113,16 +113,19 @@ class MooxInstaller extends Command
 
         $providerPath = $this->panelMap[$selectedPanelKey]['path'] . '/' . ucfirst($selectedPanelKey) . 'PanelProvider.php';
 
+        $changedAny = false;
         foreach ($selection as $package) {
-            if (! $this->checkForMooxPackage($package)) {
-                $this->error("❌ Installation of {$package} failed or aborted.");
-                continue;
-            }
-
             $packageData = ['name' => $package, 'composer' => $package];
-            $this->installPackage($packageData, [$providerPath]);
+            $changed = $this->installPackage($packageData, [$providerPath]);
+            $changedAny = $changedAny || $changed;
 
             $this->updatePanelPackageComposerJson($selectedPanelKey, [$package]);
+        }
+
+        if ($changedAny) {
+            $this->info('⚙️ Finalizing (package discovery + Filament upgrade) ...');
+            $this->callSilent('package:discover');
+            $this->callSilent('filament:upgrade');
         }
 
         $this->info('🎉 Selected packages have been installed successfully!');
@@ -185,7 +188,7 @@ class MooxInstaller extends Command
         if (empty($existingPanels)) {
             $this->selectedPanels = $this->selectPanels();
             if (!empty($this->selectedPanels)) {
-                $this->installPackages($this->selectedPanels);
+                $changed = $this->installPackages($this->selectedPanels);
             } else {
                 $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
                 return;
@@ -195,8 +198,11 @@ class MooxInstaller extends Command
         }
 
         $this->checkOrCreateFilamentUser();
-
-        $this->info('⚙️ Running php artisan filament:upgrade ...');
+        if (isset($changed) && $changed) {
+            $this->info('⚙️ Finalizing (package discovery + Filament upgrade) ...');
+            $this->callSilent('package:discover');
+            $this->callSilent('filament:upgrade');
+        }
         $this->info('✅ Moox Panels installed successfully. Enjoy! 🎉');
     }
 
