@@ -18,38 +18,59 @@
 return [
     'readonly' => false,
 
-    'single' => 'trans//news::news.news_single',
-    'plural' => 'trans//news::news.news_plural',
-    'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
-        ],
-        '0' => [
-            'label' => 'Post',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Post',
+    'resources' => [
+        'news' => [
+            /*
+           |--------------------------------------------------------------------------
+           | Title
+           |--------------------------------------------------------------------------
+           |
+           | The translatable title of the Resource in singular and plural.
+           |
+           */
+
+            'single' => 'trans//news::news.news',
+            'plural' => 'trans//news::news.news',
+
+            /*
+           |--------------------------------------------------------------------------
+           | <Tabs></Tabs>
+           |--------------------------------------------------------------------------
+           |
+           | Define the tabs for the Resource table. They are optional, but
+           | pretty awesome to filter the table by certain values.
+           | You may simply do a 'tabs' => [], to disable them.
+           |
+           */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
-            ],
-        ],
-        '1' => [
-            'label' => 'Page',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Page',
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
+
             ],
         ],
     ],
+
     'relations' => [],
     'taxonomies' => [
         'category' => [
@@ -77,5 +98,5 @@ return [
     | and if the panel is enabled.
     |
     */
-    'navigation_group' => 'DEV',
+    'navigation_group' => 'CMS',
 ];

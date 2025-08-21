@@ -17,14 +17,17 @@ return new class extends Migration
             $table->string('locale')->index();
             $table->string('title');
             $table->string('slug');
+            $table->string('permalink', 512)->unique();
+            $table->text('description')->nullable();
             $table->text('content')->nullable();
+            $table->text('excerpt')->nullable();
+            $table->string('translation_status')->nullable();
 
             $table->nullableMorphs('created_by');
             $table->nullableMorphs('updated_by');
             $table->nullableMorphs('deleted_by');
 
-            $table->string('author_id')->nullable();
-            $table->text('excerpt')->nullable();
+            $table->nullableMorphs('author');
 
 
             $table->unique(['news_id', 'locale']);
@@ -44,6 +47,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamp('restored_at')->nullable();
             $table->nullableMorphs('restored_by');
+            $table->timestamps();
         });
     }
 

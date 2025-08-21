@@ -31,6 +31,8 @@ return [
             | The translatable title of the Resource in singular and plural.
             |
             */
+            'single' => 'trans//draft::draft.draft',
+            'plural' => 'trans//draft::draft.drafts',
 
             /*
             |--------------------------------------------------------------------------
@@ -65,38 +67,6 @@ return [
                             'value' => null,
                         ],
                     ],
-                ],
-            ],
-        ],
-    ],
-    'single' => 'trans//draft::draft.draft',
-    'plural' => 'trans//draft::draft.drafts',
-    'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
-        ],
-        '0' => [
-            'label' => 'Post',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Post',
-                ],
-            ],
-        ],
-        '1' => [
-            'label' => 'Page',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Page',
                 ],
             ],
         ],
