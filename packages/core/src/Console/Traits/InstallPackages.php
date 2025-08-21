@@ -6,7 +6,7 @@ trait InstallPackages
 {
     use InstallPackage;
 
-    public function installPackages(array $panelPaths): void
+    public function installPackages(array $panelPaths): bool
     {
         $packageNames = method_exists($this, 'getMooxPackages')
             ? $this->getMooxPackages()
@@ -28,9 +28,11 @@ trait InstallPackages
             array_filter($packageNames, fn($p) => is_string($p) && $p !== '')
         );
 
+        $changedAny = false;
         foreach ($packageDescriptors as $package) {
-            $this->installPackage($package, $normalizedPanelPaths);
+            $changedAny = $this->installPackage($package, $normalizedPanelPaths) || $changedAny;
         }
 
+        return $changedAny;
     }
 }
