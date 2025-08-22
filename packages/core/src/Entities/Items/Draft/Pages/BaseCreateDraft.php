@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
+use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 use Override;
 
 abstract class BaseCreateDraft extends CreateRecord
 {
-    use CanResolveResourceClass;
+    use CanResolveResourceClass, HasPagesTaxonomy;
 
     public ?string $lang = null;
 
@@ -56,6 +57,9 @@ abstract class BaseCreateDraft extends CreateRecord
 
         $record->translations()->save($translation);
 
+        // Save taxonomy data if available
+        $this->saveTaxonomyDataForRecord($record, $data);
+
         return $record;
     }
 
@@ -90,5 +94,13 @@ abstract class BaseCreateDraft extends CreateRecord
     public function getFormActions(): array
     {
         return [];
+    }
+
+    public function mutateFormDataBeforeFill(array $data): array
+    {
+
+        $this->handleTaxonomiesBeforeFill($data);
+
+        return $data;
     }
 }

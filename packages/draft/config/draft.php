@@ -1,8 +1,5 @@
 <?php
 
-use Moox\Category\Models\Category;
-use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -75,13 +72,23 @@ return [
     'taxonomies' => [
         'category' => [
             'label' => 'Categories',
-            'model' => Category::class,
+            'model' => \Moox\Category\Models\Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => TaxonomyCreateForm::class,
+            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
+        ],
+        'tag' => [
+            'label' => 'Tags',
+            'model' => \Moox\Tag\Models\Tag::class,
+            'table' => 'taggables',
+            'relationship' => 'taggable',
+            'foreignKey' => 'taggable_id',
+            'relatedKey' => 'tag_id',
+            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+            'hierarchical' => false,
         ],
     ],
 

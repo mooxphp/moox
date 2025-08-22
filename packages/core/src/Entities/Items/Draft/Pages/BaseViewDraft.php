@@ -6,11 +6,12 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
+use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 use Override;
 
 abstract class BaseViewDraft extends ViewRecord
 {
-    use CanResolveResourceClass;
+    use CanResolveResourceClass, HasPagesTaxonomy;
 
     public ?string $lang = null;
 
@@ -19,7 +20,7 @@ abstract class BaseViewDraft extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
+            $title = $title . ' - ' . __('core::core.deleted');
         }
 
         return $title;
@@ -27,7 +28,7 @@ abstract class BaseViewDraft extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (! $this->record) {
+        if (!$this->record) {
             return false;
         }
 
@@ -65,6 +66,8 @@ abstract class BaseViewDraft extends ViewRecord
                 $values[$attr] = $translation ? $translation->$attr : $record->$attr;
             }
         }
+
+        $this->handleTaxonomiesBeforeFill($values);
 
         return $values;
     }
