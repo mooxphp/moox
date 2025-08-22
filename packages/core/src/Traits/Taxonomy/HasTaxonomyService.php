@@ -12,7 +12,7 @@ trait HasTaxonomyService
     {
         $className = static::class;
 
-        if (! isset(static::$taxonomyServiceCache[$className])) {
+        if (!isset(static::$taxonomyServiceCache[$className])) {
             $service = app(TaxonomyService::class);
             $service->setCurrentResource($this->getResourceName());
             static::$taxonomyServiceCache[$className] = $service;
@@ -25,7 +25,7 @@ trait HasTaxonomyService
     {
         $className = static::class;
 
-        if (! isset(static::$taxonomyServiceCache[$className])) {
+        if (!isset(static::$taxonomyServiceCache[$className])) {
             $service = app(TaxonomyService::class);
             $resourceName = class_basename(static::class);
 
