@@ -2,10 +2,10 @@
 
 namespace Moox\News\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Moox\User\Models\User;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
-class NewsTranslation extends Model
+class NewsTranslation extends BaseDraftTranslationModel
 {
     /**
      * Get custom fillable for Draft translations
@@ -29,13 +29,13 @@ class NewsTranslation extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if ($model->author_id && ! $model->author_type) {
+            if ($model->author_id && !$model->author_type) {
                 $model->author_type = User::class;
             }
         });
 
         static::updating(function ($model) {
-            if ($model->author_id && ! $model->author_type) {
+            if ($model->author_id && !$model->author_type) {
                 $model->author_type = User::class;
             }
         });
