@@ -2,12 +2,12 @@
 
 namespace Moox\Tag\Forms;
 
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ColorPicker;
 use Moox\Media\Forms\Components\MediaPicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class TaxonomyCreateForm

@@ -32,7 +32,7 @@ trait HasPagesTaxonomy
 
         foreach ($this->getTaxonomies() as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
-                $tagIds = collect($data[$taxonomy])->map(fn($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
+                $tagIds = collect($data[$taxonomy])->map(fn ($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
                 $record->$taxonomy()->sync($tagIds);
             }
         }
@@ -92,7 +92,7 @@ trait HasPagesTaxonomy
     {
         $select = Arr::get($this->getCachedForms(), $statePath);
 
-        if (!$select instanceof Select) {
+        if (! $select instanceof Select) {
             return [];
         }
 
@@ -104,7 +104,7 @@ trait HasPagesTaxonomy
 
         $values = data_get($this->data, $statePath) ?? [];
 
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             $values = [$values];
         }
 
@@ -120,7 +120,7 @@ trait HasPagesTaxonomy
                 if ($label === null) {
                     $taxonomies = $this->getTaxonomies();
                     foreach ($taxonomies as $taxonomy => $settings) {
-                        if ($statePath === 'data.' . $taxonomy) {
+                        if ($statePath === 'data.'.$taxonomy) {
                             $modelClass = $this->getTaxonomyModel($taxonomy);
                             $model = app($modelClass)::find($value);
                             if ($model) {
@@ -241,13 +241,13 @@ trait HasPagesTaxonomy
      */
     protected function getRelatedTaxonomyIds(string $relationshipName): array
     {
-        if (!method_exists($this->record, $relationshipName)) {
+        if (! method_exists($this->record, $relationshipName)) {
             return [];
         }
 
         $relation = $this->record->$relationshipName();
 
-        if (!$relation instanceof MorphToMany) {
+        if (! $relation instanceof MorphToMany) {
             return [];
         }
 
@@ -297,7 +297,7 @@ trait HasPagesTaxonomy
     {
         $record = $this->getRecord();
 
-        if (!$record || !method_exists($record, 'getResourceName')) {
+        if (! $record || ! method_exists($record, 'getResourceName')) {
             return $data;
         }
 
@@ -308,8 +308,9 @@ trait HasPagesTaxonomy
 
             foreach ($taxonomies as $taxonomy => $settings) {
                 // Only load taxonomy data if the record has an ID (exists in database)
-                if (!$record->exists) {
+                if (! $record->exists) {
                     $data[$taxonomy] = [];
+
                     continue;
                 }
 
@@ -322,9 +323,9 @@ trait HasPagesTaxonomy
                 $modelTable = $model->getTable();
 
                 $tags = DB::table($table)
-                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable . '.id')
+                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
                     ->where(sprintf('%s.%s', $table, $foreignKey), $record->getKey())
-                    ->pluck($modelTable . '.id')
+                    ->pluck($modelTable.'.id')
                     ->toArray();
 
                 // Ensure we always have a valid array
@@ -344,7 +345,7 @@ trait HasPagesTaxonomy
     {
         $record = $this->getRecord();
 
-        if (!$record || !method_exists($record, 'getResourceName')) {
+        if (! $record || ! method_exists($record, 'getResourceName')) {
             return;
         }
 
@@ -355,7 +356,7 @@ trait HasPagesTaxonomy
 
             foreach ($taxonomies as $taxonomy => $settings) {
                 if (isset($data[$taxonomy])) {
-                    $tagIds = collect($data[$taxonomy])->map(fn($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
+                    $tagIds = collect($data[$taxonomy])->map(fn ($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
 
                     // Use the syncTaxonomy method from HasModelTaxonomy trait
                     if (method_exists($record, 'syncTaxonomy')) {
@@ -373,7 +374,7 @@ trait HasPagesTaxonomy
      */
     protected function saveTaxonomyDataForRecord(Model $record, array $data): void
     {
-        if (!$record || !method_exists($record, 'getResourceName')) {
+        if (! $record || ! method_exists($record, 'getResourceName')) {
             return;
         }
 
@@ -384,7 +385,7 @@ trait HasPagesTaxonomy
 
             foreach ($taxonomies as $taxonomy => $settings) {
                 if (isset($data[$taxonomy])) {
-                    $tagIds = collect($data[$taxonomy])->map(fn($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
+                    $tagIds = collect($data[$taxonomy])->map(fn ($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
 
                     // Use the syncTaxonomy method from HasModelTaxonomy trait
                     if (method_exists($record, 'syncTaxonomy')) {

@@ -44,7 +44,7 @@ abstract class BaseEditDraft extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
@@ -63,11 +63,11 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (!$this->lang) {
+        if (! $this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (!property_exists($record, 'translatedAttributes')) {
+        if (! property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -77,7 +77,7 @@ abstract class BaseEditDraft extends EditRecord
 
         $record->update($data);
 
-        if (!empty($translationData)) {
+        if (! empty($translationData)) {
             $relation = $record->translations();
             $translationModel = $relation->getRelated();
             $foreignKey = $relation->getForeignKeyName();
@@ -86,7 +86,7 @@ abstract class BaseEditDraft extends EditRecord
                 ->where('locale', $this->lang)
                 ->first();
 
-            if (!$translation) {
+            if (! $translation) {
                 $translation = $record->translations()->make([
                     $relation->getForeignKeyName() => $record->id,
                     'locale' => $this->lang,
@@ -109,7 +109,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (!property_exists($model, 'translatedAttributes')) {
+        if (! property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -163,7 +163,7 @@ abstract class BaseEditDraft extends EditRecord
         ];
 
         foreach ($translatedFields as $field) {
-            if (!isset($data[$field])) {
+            if (! isset($data[$field])) {
                 // Don't set protected fields to null automatically
                 if (in_array($field, $protectedFields)) {
                     continue;
@@ -197,10 +197,10 @@ abstract class BaseEditDraft extends EditRecord
 
         $translation = $this->record->translations()->where('locale', $this->lang)->first();
 
-        if (!$translation) {
-            return $entity . ' - ' . __('core::core.create');
+        if (! $translation) {
+            return $entity.' - '.__('core::core.create');
         }
 
-        return $entity . ' - ' . $translation->title;
+        return $entity.' - '.$translation->title;
     }
 }

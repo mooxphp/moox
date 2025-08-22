@@ -98,7 +98,6 @@ abstract class BaseCreateDraft extends CreateRecord
 
     public function mutateFormDataBeforeFill(array $data): array
     {
-
         $this->handleTaxonomiesBeforeFill($data);
 
         return $data;
