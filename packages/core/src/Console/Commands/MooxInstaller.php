@@ -133,24 +133,31 @@ class MooxInstaller extends Command
 
     protected function displayPackageStatus(array $categories, array $installed): void
     {
-        $all = collect($categories)->flatten()->toArray();
-        $installedList = array_values(array_intersect($all, $installed));
-        sort($installedList);
+        foreach ($categories as $category => $packages) {
+            $this->info("📂 {$category}:");
 
-        $notInstalledList = array_values(array_diff($all, $installed));
-        sort($notInstalledList);
+            $installedList = array_values(array_intersect($packages, $installed));
+            sort($installedList);
 
-        $this->info("📦 Installed Moox packages (sorted):");
-        foreach ($installedList as $pkg) {
-            $this->line("  • {$pkg}");
+            $notInstalledList = array_values(array_diff($packages, $installed));
+            sort($notInstalledList);
+
+            if (!empty($installedList)) {
+                $this->line("  ✅ Installed:");
+                foreach ($installedList as $pkg) {
+                    $this->line("    • {$pkg}");
+                }
+            }
+
+            if (!empty($notInstalledList)) {
+                $this->line("  ➕ Available:");
+                foreach ($notInstalledList as $pkg) {
+                    $this->line("    • {$pkg}");
+                }
+            }
+
+            $this->newLine();
         }
-        $this->newLine();
-
-        $this->info("🧩 Available to install (sorted):");
-        foreach ($notInstalledList as $pkg) {
-            $this->line("  • {$pkg}");
-        }
-        $this->newLine();
     }
 
     protected function determinePanelForPackage(string $package): string
