@@ -74,7 +74,7 @@ return [
     'relations' => [],
     'taxonomies' => [
         'category' => [
-            'label' => 'Categories',
+            'label' => 'trans//core::core.category',
             'model' => \Moox\Category\Models\Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
@@ -84,7 +84,7 @@ return [
             'hierarchical' => true,
         ],
         'tag' => [
-            'label' => 'Tags',
+            'label' => 'trans//core::core.tag',
             'model' => \Moox\Tag\Models\Tag::class,
             'table' => 'taggables',
             'relationship' => 'taggable',
