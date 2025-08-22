@@ -2,35 +2,28 @@
 
 namespace Moox\News\Moox\Entities\News\News;
 
-use Filament\Tables\Table;
-use Moox\News\Models\News;
-use Filament\Schemas\Schema;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Validation\Rules\Unique;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Forms\Components\RichEditor;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Tables\Filters\TernaryFilter;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Filament\Infolists\Components\TextEntry;
-use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Moox\Clipboard\Forms\Components\CopyableField;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\News\Models\News;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class NewsResource extends BaseDraftResource
 {
@@ -151,7 +144,7 @@ class NewsResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -219,7 +212,7 @@ class NewsResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label(__('news::fields.type'))
-                    ->placeholder(__('core::core.filter') . ' Type')
+                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
             ]);
     }
