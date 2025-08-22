@@ -97,16 +97,16 @@ class NewsResource extends BaseDraftResource
                             MediaPicker::make('image')
                                 ->label(__('core::core.image')),
                             Toggle::make('is_active')
-                                ->label(__('news::fields.is_active')),
+                                ->label(__('core::core.is_active')),
                             MarkdownEditor::make('excerpt')
-                                ->label(__('news::fields.excerpt'))
+                                ->label(__('core::core.excerpt'))
                                 ->rules(config('news.rules.excerpt')),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
                             MarkdownEditor::make('content')
-                                ->label(__('news::fields.content')),
+                                ->label(__('core::core.content')),
                             MediaPicker::make('gallery')
-                                ->label(__('news::fields.gallery')),
+                                ->label(__('core::core.gallery')),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -144,7 +144,7 @@ class NewsResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -165,11 +165,11 @@ class NewsResource extends BaseDraftResource
                 static::getSlugColumn(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
-                    ->label(__('news::fields.is_active'))
+                    ->label(__('core::core.is_active'))
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('excerpt')
-                    ->label(__('news::fields.excerpt'))
+                    ->label(__('core::core.excerpt'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('description')
@@ -177,30 +177,30 @@ class NewsResource extends BaseDraftResource
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
-                    ->label(__('news::fields.content'))
+                    ->label(__('core::core.content'))
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('author.name')
-                    ->label(__('news::fields.author_name'))
+                    ->label(__('core::core.author'))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('type')
-                    ->label(__('news::fields.type'))
+                    ->label(__('core::core.type'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('published_at')
-                    ->label(__('news::fields.published_at'))
+                    ->label(__('core::core.published_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
                 ColorColumn::make('color')
-                    ->label(__('news::fields.color'))
+                    ->label(__('core::core.color'))
                     ->toggleable(),
                 TextColumn::make('uuid')
-                    ->label(__('news::fields.uuid'))
+                    ->label(__('core::core.uuid'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ulid')
-                    ->label(__('news::fields.ulid'))
+                    ->label(__('core::core.ulid'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 static::getStatusColumn(),
             ])
@@ -208,11 +208,11 @@ class NewsResource extends BaseDraftResource
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label(__('news::fields.is_active')),
+                    ->label(__('core::core.is_active')),
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
-                    ->label(__('news::fields.type'))
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->label(__('core::core.type'))
+                    ->placeholder(__('core::core.filter') . ' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
             ]);
     }

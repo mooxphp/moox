@@ -146,4 +146,8 @@ return [
     'publish_modal_description' => 'Diese Aktion wird das Element veröffentlichen.',
     'taxonomy_created_successfully' => 'Taxonomie erfolgreich erstellt',
     'taxonomy_created_successfully_body' => 'Die Taxonomie wurde erfolgreich erstellt.',
+    'is_active' => 'Aktiv',
+    'excerpt' => 'Auszug',
+    'gallery' => 'Galerie',
+    'ulid' => 'ULID',
 ];
