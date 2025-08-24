@@ -1,8 +1,8 @@
 <?php
 return [
-    'notification' => '',
-    'notifications' => '',
+    'notification' => 'Уведомление',
+    'notifications' => 'Уведомления',
     'notifiable_type' => '',
     'notifiable_id' => '',
-    'hello' => '',
+    'hello' => 'Привет',
 ];
