@@ -25,7 +25,7 @@ return [
     'date_updated' => '',
     'set_new_expiry_date' => '',
     'previous_expiry_date' => '',
-    'save' => '',
+    'save' => 'Сохранить',
     'update_expiry_date' => '',
     'yearly' => '',
     'half_yearly' => '',
