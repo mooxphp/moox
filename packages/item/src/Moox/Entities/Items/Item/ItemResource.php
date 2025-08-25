@@ -4,25 +4,20 @@ namespace Moox\Item\Moox\Entities\Items\Item;
 
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Item\Models\Item;
 use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\EditItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\ListItems;
 use Moox\Item\Moox\Entities\Items\Item\Pages\ViewItem;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class ItemResource extends BaseItemResource
 {
-
     protected static ?string $model = Item::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -78,7 +73,7 @@ class ItemResource extends BaseItemResource
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardTimestampFields(),
-                                ])->hidden(fn($record) => $record === null),
+                                ])->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),

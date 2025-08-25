@@ -6,7 +6,6 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 
 class Item extends BaseItemModel
 {
-
     protected $fillable = [
         'title',
         'content',

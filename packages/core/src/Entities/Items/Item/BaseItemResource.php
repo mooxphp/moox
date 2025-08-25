@@ -2,11 +2,9 @@
 
 namespace Moox\Core\Entities\Items\Item;
 
-use Moox\Core\Entities\BaseResource;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Schemas\Components\Actions;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class BaseItemResource extends BaseResource
 {
@@ -94,7 +92,6 @@ class BaseItemResource extends BaseResource
         ]);
     }
 
-
     public static function getStandardTimestampFields(): array
     {
         return [
@@ -102,5 +99,4 @@ class BaseItemResource extends BaseResource
             static::getUpdatedAtTextEntry(),
         ];
     }
-
 }
