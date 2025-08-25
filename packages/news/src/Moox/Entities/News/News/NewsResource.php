@@ -144,7 +144,7 @@ class NewsResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -213,7 +213,6 @@ class NewsResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label(__('core::core.type'))
-                    ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
             ]);
     }
