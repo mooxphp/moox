@@ -126,7 +126,7 @@ jobs:
           name: clover-report-8.4
 
       - name: QLTY Coverage
-        uses: qltysh/qlty-action/coverage@v1
+        uses: qltysh/qlty-action/coverage@v2
         with:
           token: ${{ secrets.QLTY }}
           files: clover.xml
