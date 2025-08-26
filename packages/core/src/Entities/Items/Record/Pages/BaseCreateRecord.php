@@ -2,12 +2,12 @@
 
 namespace Moox\Core\Entities\Items\Record\Pages;
 
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 abstract class BaseCreateRecord extends CreateRecord
 {
