@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Entities\Items\Record\Enums;
+namespace Moox\Record\Enums;
 
 enum RecordStatus: string
 {

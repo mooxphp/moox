@@ -2,14 +2,18 @@
 
 namespace Moox\Core\Entities\Items\Record;
 
-use Filament\Schemas\Components\Actions;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Moox\Record\Enums\RecordStatus;
 use Moox\Core\Entities\BaseResource;
+use Filament\Forms\Components\Select;
+use Moox\Core\Traits\HasStatusColors;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Schemas\Components\Actions;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class BaseRecordResource extends BaseResource
 {
-    use HasResourceTabs;
+    use HasResourceTabs, HasStatusColors;
 
     protected static function getReadonlyConfig(): bool
     {
@@ -20,7 +24,7 @@ class BaseRecordResource extends BaseResource
 
     protected static function getEntityType(): string
     {
-        return 'draft';
+        return 'record';
     }
 
     public static function enableCreate(): bool
@@ -152,5 +156,22 @@ class BaseRecordResource extends BaseResource
             static::getCreatedAtTextEntry(),
             static::getUpdatedAtTextEntry(),
         ];
+    }
+
+    public static function getStatusColumn(): TextColumn
+    {
+        return TextColumn::make('status')
+            ->label(__('core::core.status'))
+            ->badge()
+            ->formatStateUsing(function ($state) {
+                if ($state instanceof \BackedEnum) {
+                    return $state->value;
+                }
+                return (string) $state;
+            })
+            ->color(function ($state): string {
+                $value = $state instanceof \BackedEnum ? $state->value : (string) $state;
+                return static::getStatusColor(strtolower($value));
+            });
     }
 }
