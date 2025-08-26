@@ -2,13 +2,16 @@
 
 namespace Moox\Record\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Entities\Items\Record\Enums\RecordStatus;
 use Moox\User\Models\User;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Core\Entities\Items\Record\Enums\RecordStatus;
 
 class Record extends BaseRecordModel
 {
+    use HasModelTaxonomy;
+
     protected $fillable = [
         'title',
         'content',
@@ -40,7 +43,7 @@ class Record extends BaseRecordModel
 
     public static function getResourceName(): string
     {
-        return 'item';
+        return 'record';
     }
 
     public function author(): BelongsTo
