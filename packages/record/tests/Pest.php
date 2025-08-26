@@ -1,7 +1,7 @@
 <?php
 
-use Moox\User\Models\User;
 use Moox\Record\Tests\TestCase;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------

@@ -2,10 +2,10 @@
 
 namespace Moox\Record\Models;
 
-use Moox\User\Models\User;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Entities\Items\Record\Enums\RecordStatus;
+use Moox\User\Models\User;
 
 class Record extends BaseRecordModel
 {
@@ -47,5 +47,4 @@ class Record extends BaseRecordModel
     {
         return $this->belongsTo(User::class, 'author_id');
     }
-
 }

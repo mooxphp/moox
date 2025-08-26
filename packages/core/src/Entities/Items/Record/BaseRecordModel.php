@@ -2,14 +2,15 @@
 
 namespace Moox\Core\Entities\Items\Record;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class BaseRecordModel extends Model
 {
     use SoftDeletes;
+
     /**
      * Boot method for common draft functionality
      */

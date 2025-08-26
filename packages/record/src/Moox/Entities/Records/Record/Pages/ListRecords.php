@@ -2,9 +2,9 @@
 
 namespace Moox\Record\Moox\Entities\Records\Record\Pages;
 
-use Moox\Record\Models\Record;
-use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Record\Models\Record;
 
 class ListRecords extends BaseListRecords
 {

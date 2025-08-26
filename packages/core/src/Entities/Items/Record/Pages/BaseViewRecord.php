@@ -18,7 +18,7 @@ abstract class BaseViewRecord extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title . ' - ' . __('core::core.deleted');
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;
@@ -26,7 +26,7 @@ abstract class BaseViewRecord extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (!$this->record) {
+        if (! $this->record) {
             return false;
         }
 

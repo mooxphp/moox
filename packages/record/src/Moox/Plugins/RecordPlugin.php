@@ -2,8 +2,8 @@
 
 namespace Moox\Record\Moox\Plugins;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Moox\Record\Moox\Entities\Records\Record\RecordResource;
 
 class RecordPlugin implements Plugin
