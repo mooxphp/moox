@@ -97,7 +97,7 @@ class NewsResource extends BaseDraftResource
                             MediaPicker::make('image')
                                 ->label(__('core::core.image')),
                             Toggle::make('is_active')
-                                ->label(__('core::core.is_active')),
+                                ->label(__('core::core.active')),
                             MarkdownEditor::make('excerpt')
                                 ->label(__('core::core.excerpt'))
                                 ->rules(config('news.rules.excerpt')),
@@ -144,7 +144,7 @@ class NewsResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -165,7 +165,7 @@ class NewsResource extends BaseDraftResource
                 static::getSlugColumn(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
-                    ->label(__('core::core.is_active'))
+                    ->label(__('core::core.active'))
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('excerpt')
@@ -209,7 +209,7 @@ class NewsResource extends BaseDraftResource
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label(__('core::core.is_active')),
+                    ->label(__('core::core.active')),
                 static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
                     ->label(__('core::core.type'))

@@ -8,4 +8,9 @@ use Moox\Core\Traits\CanResolveResourceClass;
 abstract class BaseEditRecord extends EditRecord
 {
     use CanResolveResourceClass;
+
+    protected function getFormActions(): array
+    {
+        return [];
+    }
 }

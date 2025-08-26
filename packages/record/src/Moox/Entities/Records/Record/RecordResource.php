@@ -1,66 +1,59 @@
 <?php
 
-namespace Moox\Draft\Moox\Entities\Drafts\Draft;
+namespace Moox\Record\Moox\Entities\Records\Record;
 
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Schemas\Schema;
+use Moox\Record\Models\Record;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\RichEditor;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Draft\Models\Draft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\CreateDraft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\EditDraft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ViewDraft;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Entities\Items\Record\Enums\RecordStatus;
+use Moox\Record\Moox\Entities\Records\Record\Pages\EditRecord;
+use Moox\Record\Moox\Entities\Records\Record\Pages\ViewRecord;
+use Moox\Record\Moox\Entities\Records\Record\Pages\ListRecords;
+use Moox\Record\Moox\Entities\Records\Record\Pages\CreateRecord;
 
-class DraftResource extends BaseDraftResource
+class RecordResource extends BaseRecordResource
 {
+
     use HasResourceTabs;
     use HasResourceTaxonomy;
 
-    protected static ?string $model = Draft::class;
+    protected static ?string $model = Record::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     public static function getModelLabel(): string
     {
-        return config('draft.resources.draft.single');
+        return config('record.resources.record.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('draft.resources.draft.plural');
+        return config('record.resources.record.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('draft.resources.draft.plural');
+        return config('record.resources.record.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('draft.resources.draft.single');
+        return config('record.resources.record.single');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return config('draft.navigation_group');
+        return config('record.navigation_group');
     }
 
     public static function form(Schema $form): Schema
@@ -76,7 +69,7 @@ class DraftResource extends BaseDraftResource
                                 fieldTitle: 'title',
                                 fieldSlug: 'slug',
                                 fieldPermalink: 'permalink',
-                                urlPathEntityType: 'drafts',
+                                urlPathEntityType: 'records',
                                 slugRuleUniqueParameters: [
                                     'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
                                         $locale = $livewire->lang;
@@ -94,18 +87,12 @@ class DraftResource extends BaseDraftResource
 
                                         return $rule;
                                     },
-                                    'table' => 'draft_translations',
+                                    'table' => 'records',
                                     'column' => 'slug',
                                 ]
                             ),
-                            MediaPicker::make('image')
-                                ->label(__('core::core.image')),
-                            Toggle::make('is_active')
-                                ->label(__('core::core.active')),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
-                            MarkdownEditor::make('content')
-                                ->label(__('core::core.content')),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -119,20 +106,19 @@ class DraftResource extends BaseDraftResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    static::getTypeSelect(),
-                                    static::getTranslationStatusSelect(),
-                                    static::getPublishDateField(),
-                                    static::getUnpublishDateField(),
+                                    Select::make('status')
+                                        ->label(__('core::core.status'))
+                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn($case) => [
+                                            $case->value => __('core::core.' . $case->value)
+                                        ]))
+                                        ->default(RecordStatus::INACTIVE->value)
+                                        ->required(),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
                                     static::getAuthorSelect(),
-                                    DateTimePicker::make('due_at')
-                                        ->label(__('core::core.due')),
-                                    ColorPicker::make('color')
-                                        ->label(__('core::core.color')),
                                 ]),
                             Section::make('')
                                 ->schema([
@@ -159,63 +145,33 @@ class DraftResource extends BaseDraftResource
     {
         return $table
             ->columns([
-                static::getTitleColumn(),
-                static::getSlugColumn(),
-                TranslationColumn::make('translations.locale'),
-                IconColumn::make('is_active')
-                    ->boolean()
-                    ->label('Active')
+                TextColumn::make('title')
+                    ->label(__('core::core.title'))
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('description')
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('author.name')
-                    ->label('Author')
+                    ->label(__('core::core.content'))
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('published_at')
+                TextColumn::make('custom_properties')
+                    ->limit(50),
+                TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
-                ColorColumn::make('color')
-                    ->toggleable(),
-                TextColumn::make('uuid')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('ulid')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                static::getStatusColumn(),
-                ...static::getTaxonomyColumns(),
+                    ->sortable(),
             ])
+            ->defaultSort('title', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
-            ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(__('core::core.active')),
-                static::getTranslationStatusFilter(),
-                SelectFilter::make('type')
-                    ->label(__('core::core.type'))
-                    ->options(['Post' => 'Post', 'Page' => 'Page']),
-            ])->deferFilters(false)
-            ->persistFiltersInSession();
+            ->filters([]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListDrafts::route('/'),
-            'create' => CreateDraft::route('/create'),
-            'edit' => EditDraft::route('/{record}/edit'),
-            'view' => ViewDraft::route('/{record}'),
+            'index' => ListRecords::route('/'),
+            'create' => CreateRecord::route('/create'),
+            'edit' => EditRecord::route('/{record}/edit'),
+            'view' => ViewRecord::route('/{record}'),
         ];
-    }
-
-    public static function setCurrentTab(?string $tab): void
-    {
-        static::$currentTab = $tab;
     }
 }

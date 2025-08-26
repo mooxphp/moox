@@ -24,4 +24,9 @@ abstract class BaseCreateRecord extends CreateRecord
 
         return $query->find($key) ?? $model::make();
     }
+
+    public function getFormActions(): array
+    {
+        return [];
+    }
 }

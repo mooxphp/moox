@@ -187,11 +187,11 @@ class BaseDraftResource extends BaseResource
                 $currentLang = $livewire->lang;
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('title', 'like', '%'.$search.'%');
+                        ->where('title', 'like', '%' . $search . '%');
                 });
             })
             ->sortable()
-            ->extraAttributes(fn ($record) => [
+            ->extraAttributes(fn($record) => [
                 'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
                     ? ''
                     : 'color: var(--gray-500);',
@@ -208,7 +208,7 @@ class BaseDraftResource extends BaseResource
                 $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title.' ('.app()->getLocale().')';
+                    return $fallbackTranslation->title . ' (' . app()->getLocale() . ')';
                 }
 
                 return 'No title available';
@@ -223,7 +223,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = request()->get('lang', app()->getLocale());
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('slug', 'like', '%'.$search.'%');
+                        ->where('slug', 'like', '%' . $search . '%');
                 });
             })
             ->sortable();
@@ -252,14 +252,14 @@ class BaseDraftResource extends BaseResource
 
     protected static function getCurrentTranslationStatus($record): string
     {
-        if (! $record) {
+        if (!$record) {
             return 'draft';
         }
 
         $currentLang = request()->get('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
-        if (! $translation) {
+        if (!$translation) {
             return 'not_translated';
         }
 
@@ -310,8 +310,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_publish_at'))
             ->placeholder(__('core::core.to_publish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
-            ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
+            ->hidden(fn($get) => $get('translation_status') !== 'scheduled')
+            ->dehydrateStateUsing(fn($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
     }
 
     /**
@@ -323,8 +323,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_unpublish_at'))
             ->placeholder(__('core::core.to_unpublish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
-            ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
+            ->hidden(fn($get) => !in_array($get('translation_status'), ['scheduled', 'published']))
+            ->dehydrateStateUsing(fn($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
     }
 
     /**
@@ -336,19 +336,19 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.published_at'))
             ->state(function ($record): string {
                 $translation = $record->translations()->withTrashed()->first();
-                if (! $translation || ! $translation->published_at) {
+                if (!$translation || !$translation->published_at) {
                     return '';
                 }
 
                 $publishedBy = '';
                 if ($translation->published_by_id && $translation->published_by_type) {
                     $user = app($translation->published_by_type)->find($translation->published_by_id);
-                    $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
+                    $publishedBy = $user ? ' ' . __('core::core.by') . ' ' . $user->name : '';
                 }
 
-                return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
+                return $translation->published_at . ' - ' . $translation->published_at->diffForHumans() . $publishedBy;
             })
-            ->hidden(fn ($record) => ! $record->published_at);
+            ->hidden(fn($record) => !$record->published_at);
     }
 
     /**
@@ -358,9 +358,9 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('to_unpublish_at')
             ->label(__('core::core.to_unpublish_at'))
-            ->state(fn ($record): string => $record->to_unpublish_at ?
-                $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
-            ->hidden(fn ($record) => ! $record->to_unpublish_at);
+            ->state(fn($record): string => $record->to_unpublish_at ?
+                $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
+            ->hidden(fn($record) => !$record->to_unpublish_at);
     }
 
     /**
@@ -387,7 +387,7 @@ class BaseDraftResource extends BaseResource
                     function (Builder $query, $value): Builder {
                         $currentLang = request()->query('lang') ?? request()->get('lang') ?? app()->getLocale();
 
-                        if (! $value) {
+                        if (!$value) {
                             return $query;
                         }
 
@@ -411,6 +411,46 @@ class BaseDraftResource extends BaseResource
                         });
                     }
                 );
+            });
+    }
+
+    /**
+     * Get status badge column for translation status
+     */
+    public static function getStatusColumn(): TextColumn
+    {
+        return TextColumn::make('translation_status')
+            ->label('Status')
+            ->sortable()
+            ->searchable()
+            ->toggleable()
+            ->badge()
+            ->color(fn(string $state): string => match ($state) {
+                'Published' => 'success',
+                'Scheduled' => 'warning',
+                'Draft' => 'info',
+                'Waiting' => 'primary',
+                'Private' => 'success',
+                'Deleted' => 'danger',
+                'Not Translated' => 'gray',
+                default => 'gray',
+            })
+            ->getStateUsing(function ($record) {
+                $currentLang = request()->get('lang', app()->getLocale());
+
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+                if (!$translation) {
+                    return static::getTranslationStatusOptions()['not_translated'];
+                }
+
+                if ($translation->trashed()) {
+                    return static::getTranslationStatusOptions()['deleted'];
+                }
+
+                $status = $translation->translation_status ?? static::getDefaultStatus();
+
+                return static::getTranslationStatusOptions()[$status];
             });
     }
 }

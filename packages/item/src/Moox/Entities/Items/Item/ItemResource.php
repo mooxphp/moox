@@ -56,8 +56,8 @@ class ItemResource extends BaseItemResource
                         ->schema([
                             TextInput::make('title')
                                 ->label(__('core::core.title')),
-                            MarkdownEditor::make('content')
-                                ->label(__('core::core.content')),
+                            MarkdownEditor::make('description')
+                                ->label(__('core::core.description')),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -73,7 +73,7 @@ class ItemResource extends BaseItemResource
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardTimestampFields(),
-                                ])->hidden(fn ($record) => $record === null),
+                                ])->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -91,8 +91,8 @@ class ItemResource extends BaseItemResource
                     ->label(__('core::core.title'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('content')
-                    ->label(__('core::core.content'))
+                TextColumn::make('description')
+                    ->label(__('core::core.description'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('custom_properties')

@@ -8,7 +8,7 @@ class Item extends BaseItemModel
 {
     protected $fillable = [
         'title',
-        'content',
+        'description',
         'custom_properties',
     ];
 
