@@ -2,14 +2,12 @@
 
 namespace Moox\Core\Entities\Items\Record;
 
-use Moox\Record\Enums\RecordStatus;
-use Moox\Core\Entities\BaseResource;
-use Filament\Forms\Components\Select;
-use Moox\Core\Traits\HasStatusColors;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Schemas\Components\Actions;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Moox\Core\Entities\BaseResource;
+use Moox\Core\Traits\HasStatusColors;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 
 class BaseRecordResource extends BaseResource
 {
@@ -167,10 +165,12 @@ class BaseRecordResource extends BaseResource
                 if ($state instanceof \BackedEnum) {
                     return $state->value;
                 }
+
                 return (string) $state;
             })
             ->color(function ($state): string {
                 $value = $state instanceof \BackedEnum ? $state->value : (string) $state;
+
                 return static::getStatusColor(strtolower($value));
             });
     }
