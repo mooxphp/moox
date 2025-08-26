@@ -20,7 +20,7 @@ class ItemResource extends BaseItemResource
 {
     protected static ?string $model = Item::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-offer';
 
     public static function getModelLabel(): string
     {
@@ -73,7 +73,7 @@ class ItemResource extends BaseItemResource
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardTimestampFields(),
-                                ])->hidden(fn ($record) => $record === null),
+                                ])->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),

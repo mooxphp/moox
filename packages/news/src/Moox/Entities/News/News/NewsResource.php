@@ -32,7 +32,7 @@ class NewsResource extends BaseDraftResource
 
     protected static ?string $model = News::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-newspaper';
 
     public static function getModelLabel(): string
     {
@@ -144,7 +144,7 @@ class NewsResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),

@@ -36,7 +36,7 @@ class DraftResource extends BaseDraftResource
 
     protected static ?string $model = Draft::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
 
     public static function getModelLabel(): string
     {
@@ -142,7 +142,7 @@ class DraftResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
