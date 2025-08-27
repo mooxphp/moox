@@ -20,8 +20,8 @@ abstract class BaseListRecords extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Model => $model::create($data))
-                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Model => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -39,7 +39,7 @@ abstract class BaseListRecords extends ListRecords
                     $this->redirect($this->getResource()::getUrl('index', ['tab' => 'all']));
                 })
                 ->requiresConfirmation()
-                ->visible(fn(): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
         ];
     }
 }
