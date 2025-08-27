@@ -4,10 +4,15 @@ namespace Moox\Draft\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\Draft\Enums\TranslationStatus;
 use Moox\User\Models\User;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {
+    protected $casts = [
+        'translation_status' => TranslationStatus::class,
+    ];
+
     /**
      * Get custom fillable for Draft translations
      */
@@ -35,13 +40,13 @@ class DraftTranslation extends BaseDraftTranslationModel
         parent::boot();
 
         static::creating(function ($model) {
-            if ($model->author_id && ! $model->author_type) {
+            if ($model->author_id && !$model->author_type) {
                 $model->author_type = User::class;
             }
         });
 
         static::updating(function ($model) {
-            if ($model->author_id && ! $model->author_type) {
+            if ($model->author_id && !$model->author_type) {
                 $model->author_type = User::class;
             }
         });

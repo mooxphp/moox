@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Draft\Enums\TranslationStatus;
 
 class BaseDraftResource extends BaseResource
 {
@@ -188,11 +189,11 @@ class BaseDraftResource extends BaseResource
                 $currentLang = $livewire->lang;
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('title', 'like', '%'.$search.'%');
+                        ->where('title', 'like', '%' . $search . '%');
                 });
             })
             ->sortable()
-            ->extraAttributes(fn ($record) => [
+            ->extraAttributes(fn($record) => [
                 'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
                     ? ''
                     : 'color: var(--gray-500);',
@@ -209,7 +210,7 @@ class BaseDraftResource extends BaseResource
                 $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title.' ('.app()->getLocale().')';
+                    return $fallbackTranslation->title . ' (' . app()->getLocale() . ')';
                 }
 
                 return 'No title available';
@@ -224,7 +225,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = request()->get('lang', app()->getLocale());
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('slug', 'like', '%'.$search.'%');
+                        ->where('slug', 'like', '%' . $search . '%');
                 });
             })
             ->sortable();
@@ -235,7 +236,7 @@ class BaseDraftResource extends BaseResource
         return Select::make('translation_status')
             ->label('Status')
             ->reactive()
-            ->default('draft')
+            ->default(TranslationStatus::DRAFT->value)
             ->selectablePlaceholder(false)
             ->options(static::getEditableTranslationStatusOptions());
     }
@@ -245,35 +246,35 @@ class BaseDraftResource extends BaseResource
      */
     public static function getEditableTranslationStatusOptions(): array
     {
-        $options = static::getTranslationStatusOptions();
-        unset($options['not_translated'], $options['deleted']);
-
-        return $options;
+        return collect(TranslationStatus::cases())
+            ->filter(fn($case) => !in_array($case, [TranslationStatus::NOT_TRANSLATED, TranslationStatus::DELETED]))
+            ->mapWithKeys(fn($case) => [$case->value => ucfirst($case->value)])
+            ->toArray();
     }
 
     protected static function getCurrentTranslationStatus($record): string
     {
-        if (! $record) {
-            return 'draft';
+        if (!$record) {
+            return TranslationStatus::DRAFT->value;
         }
 
         $currentLang = request()->get('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
-        if (! $translation) {
-            return 'not_translated';
+        if (!$translation) {
+            return TranslationStatus::NOT_TRANSLATED->value;
         }
 
         if ($translation->trashed()) {
-            return 'deleted';
+            return TranslationStatus::DELETED->value;
         }
 
-        return $translation->translation_status ?? 'draft';
+        return $translation->translation_status?->value ?? TranslationStatus::DRAFT->value;
     }
 
     protected static function getDefaultStatus(): string
     {
-        return 'draft';
+        return TranslationStatus::DRAFT->value;
     }
 
     /**
@@ -281,15 +282,9 @@ class BaseDraftResource extends BaseResource
      */
     public static function getTranslationStatusOptions(): array
     {
-        return [
-            'draft' => 'Draft',
-            'waiting' => 'Waiting',
-            'private' => 'Private',
-            'scheduled' => 'Scheduled',
-            'published' => 'Published',
-            'not_translated' => 'Not Translated',
-            'deleted' => 'Deleted',
-        ];
+        return collect(TranslationStatus::cases())
+            ->mapWithKeys(fn($case) => [$case->value => ucfirst($case->value)])
+            ->toArray();
     }
 
     /**
@@ -311,8 +306,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_publish_at'))
             ->placeholder(__('core::core.to_publish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
-            ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
+            ->hidden(fn($get) => $get('translation_status') !== 'scheduled')
+            ->dehydrateStateUsing(fn($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
     }
 
     /**
@@ -324,8 +319,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_unpublish_at'))
             ->placeholder(__('core::core.to_unpublish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
-            ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
+            ->hidden(fn($get) => !in_array($get('translation_status'), ['scheduled', 'published']))
+            ->dehydrateStateUsing(fn($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
     }
 
     /**
@@ -337,19 +332,19 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.published_at'))
             ->state(function ($record): string {
                 $translation = $record->translations()->withTrashed()->first();
-                if (! $translation || ! $translation->published_at) {
+                if (!$translation || !$translation->published_at) {
                     return '';
                 }
 
                 $publishedBy = '';
                 if ($translation->published_by_id && $translation->published_by_type) {
                     $user = app($translation->published_by_type)->find($translation->published_by_id);
-                    $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
+                    $publishedBy = $user ? ' ' . __('core::core.by') . ' ' . $user->name : '';
                 }
 
-                return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
+                return $translation->published_at . ' - ' . $translation->published_at->diffForHumans() . $publishedBy;
             })
-            ->hidden(fn ($record) => ! $record->published_at);
+            ->hidden(fn($record) => !$record->published_at);
     }
 
     /**
@@ -359,9 +354,9 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('to_unpublish_at')
             ->label(__('core::core.to_unpublish_at'))
-            ->state(fn ($record): string => $record->to_unpublish_at ?
-                $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
-            ->hidden(fn ($record) => ! $record->to_unpublish_at);
+            ->state(fn($record): string => $record->to_unpublish_at ?
+                $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
+            ->hidden(fn($record) => !$record->to_unpublish_at);
     }
 
     /**
@@ -388,7 +383,7 @@ class BaseDraftResource extends BaseResource
                     function (Builder $query, $value): Builder {
                         $currentLang = request()->query('lang') ?? request()->get('lang') ?? app()->getLocale();
 
-                        if (! $value) {
+                        if (!$value) {
                             return $query;
                         }
 
@@ -426,23 +421,30 @@ class BaseDraftResource extends BaseResource
             ->searchable()
             ->toggleable()
             ->badge()
-            ->color(fn (string $state): string => static::getStatusColor(strtolower($state)))
+            ->formatStateUsing(function ($state) {
+                if ($state instanceof \BackedEnum) {
+                    return ucfirst($state->value);
+                }
+                return ucfirst((string) $state);
+            })
+            ->color(function ($state): string {
+                $value = $state instanceof \BackedEnum ? $state->value : (string) $state;
+                return static::getStatusColor(strtolower($value));
+            })
             ->getStateUsing(function ($record) {
                 $currentLang = request()->get('lang', app()->getLocale());
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                if (! $translation) {
-                    return static::getTranslationStatusOptions()['not_translated'];
+                if (!$translation) {
+                    return TranslationStatus::NOT_TRANSLATED;
                 }
 
                 if ($translation->trashed()) {
-                    return static::getTranslationStatusOptions()['deleted'];
+                    return TranslationStatus::DELETED;
                 }
 
-                $status = $translation->translation_status ?? static::getDefaultStatus();
-
-                return static::getTranslationStatusOptions()[$status];
+                return $translation->translation_status ?? TranslationStatus::DRAFT;
             });
     }
 }
