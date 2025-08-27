@@ -51,10 +51,6 @@ abstract class BaseCreateDraft extends CreateRecord
             }
         }
 
-        if (property_exists($translation, 'author_id')) {
-            $translation->author_id = auth()->id();
-        }
-
         $record->translations()->save($translation);
 
         // Save taxonomy data if available

@@ -94,6 +94,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User Models
+    |--------------------------------------------------------------------------
+    |
+    | The User model classes available for author relationships.
+    | You can define multiple user types with their display attributes.
+    |
+    */
+    'user_models' => [
+        \App\Models\User::class => [
+            'title_attribute' => 'name',
+            'label' => 'App User',
+        ],
+        \Moox\User\Models\User::class => [
+            'title_attribute' => 'name',
+            'label' => 'Moox User',
+        ],
+        // Add more user models as needed:
+        // \My\Custom\AdminUser::class => [
+        //     'title_attribute' => 'full_name',
+        //     'label' => 'Admin User',
+        // ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Navigation
     |--------------------------------------------------------------------------
     |

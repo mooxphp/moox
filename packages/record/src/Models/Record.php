@@ -2,11 +2,12 @@
 
 namespace Moox\Record\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Record\Enums\RecordStatus;
 use Moox\User\Models\User;
+use Moox\Record\Enums\RecordStatus;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Record extends BaseRecordModel
 {
@@ -19,6 +20,7 @@ class Record extends BaseRecordModel
         'slug',
         'permalink',
         'author_id',
+        'author_type',
         'created_by_id',
         'updated_by_id',
         'deleted_by_id',
@@ -46,8 +48,8 @@ class Record extends BaseRecordModel
         return 'record';
     }
 
-    public function author(): BelongsTo
+    public function author(): MorphTo
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->morphTo();
     }
 }
