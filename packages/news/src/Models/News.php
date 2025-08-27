@@ -2,8 +2,6 @@
 
 namespace Moox\News\Models;
 
-use App\Models\User;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Media\Traits\HasMediaUsable;

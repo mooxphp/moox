@@ -2,9 +2,7 @@
 
 namespace Moox\Category\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
-use Moox\User\Models\User;
 
 class CategoryTranslation extends BaseDraftTranslationModel
 {

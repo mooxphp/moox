@@ -277,8 +277,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         });
     }
 
-
-
     /**
      * Translation helper methods
      */
@@ -389,5 +387,4 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     {
         return $this->morphTo();
     }
-
 }

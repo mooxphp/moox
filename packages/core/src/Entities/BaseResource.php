@@ -8,7 +8,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -50,8 +49,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -80,8 +79,8 @@ abstract class BaseResource extends Resource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
-            && !in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -146,7 +145,7 @@ abstract class BaseResource extends Resource
 
                 return static::getUrl('edit', $editParams);
             })
-            ->hidden(fn($livewire) => $livewire->activeTab === 'deleted');
+            ->hidden(fn ($livewire) => $livewire->activeTab === 'deleted');
     }
 
     public static function getViewTableAction(): ViewAction
@@ -211,13 +210,13 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('index'));
             })
-            ->visible(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getRestoreBulkAction(): RestoreBulkAction
     {
         return RestoreBulkAction::make()
-            ->visible(fn($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
+            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
             ->action(function ($records, $livewire): void {
                 foreach ($records as $record) {
                     if (method_exists($record, 'translations')) {
@@ -358,8 +357,8 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('edit', $redirectParams));
             })
-            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
-            ->hidden(fn($livewire): bool => $livewire instanceof EditRecord
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord)
+            ->hidden(fn ($livewire): bool => $livewire instanceof EditRecord
                 && $livewire->record
                 && method_exists($livewire->record, 'trashed')
                 && $livewire->record->trashed());
@@ -388,8 +387,8 @@ abstract class BaseResource extends Resource
 
                 $livewire->redirect(static::getUrl('view', ['record' => $livewire->record]));
             })
-            ->visible(fn($livewire): bool => $livewire instanceof EditRecord)
-            ->hidden(fn($get, $livewire) => $get('translation_status') === 'published'
+            ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)
+            ->hidden(fn ($get, $livewire) => $get('translation_status') === 'published'
                 || ($livewire instanceof EditRecord
                     && $livewire->record
                     && method_exists($livewire->record, 'trashed')
@@ -408,7 +407,7 @@ abstract class BaseResource extends Resource
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('create'));
             })
-            ->visible(fn($livewire): bool => $livewire instanceof CreateRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getCancelAction(): Action
@@ -558,10 +557,10 @@ abstract class BaseResource extends Resource
                     if (method_exists($livewire->record, 'translations')) {
                         $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                        return $translation && !$translation->trashed();
+                        return $translation && ! $translation->trashed();
                     }
 
-                    return method_exists($livewire->record, 'trashed') ? !$livewire->record->trashed() : true;
+                    return method_exists($livewire->record, 'trashed') ? ! $livewire->record->trashed() : true;
                 }
 
                 if ($livewire instanceof ViewRecord) {
@@ -598,7 +597,7 @@ abstract class BaseResource extends Resource
                 return static::getUrl('edit', $editParams);
             })
             ->visible(function ($livewire) {
-                if (!$livewire instanceof ViewRecord || !$livewire->record) {
+                if (! $livewire instanceof ViewRecord || ! $livewire->record) {
                     return false;
                 }
 
@@ -607,10 +606,10 @@ abstract class BaseResource extends Resource
                 if (method_exists($livewire->record, 'translations')) {
                     $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                    return $translation && !$translation->trashed();
+                    return $translation && ! $translation->trashed();
                 }
 
-                return method_exists($livewire->record, 'trashed') ? !$livewire->record->trashed() : true;
+                return method_exists($livewire->record, 'trashed') ? ! $livewire->record->trashed() : true;
             });
     }
 
@@ -669,7 +668,7 @@ abstract class BaseResource extends Resource
                 }
             })
             ->visible(function ($livewire) {
-                if (!$livewire instanceof ViewRecord || !$livewire->record) {
+                if (! $livewire instanceof ViewRecord || ! $livewire->record) {
                     return false;
                 }
 
@@ -714,10 +713,9 @@ abstract class BaseResource extends Resource
                     $types[] = MorphToSelect\Type::make($userModel)
                         ->titleAttribute($titleAttribute)
                         ->label($config['label'] ?? class_basename($userModel))
-                        ->getOptionLabelUsing(fn($record): string => (string) ($record->{$titleAttribute} ?? 'Unknown'))
+                        ->getOptionLabelUsing(fn ($record): string => (string) ($record->{$titleAttribute} ?? 'Unknown'))
                         ->getSearchResultsUsing(
-                            fn(string $search) =>
-                            $userModel::query()
+                            fn (string $search) => $userModel::query()
                                 ->where($titleAttribute, 'like', "%{$search}%")
                                 ->whereNotNull($titleAttribute)
                                 ->where($titleAttribute, '!=', '')
@@ -726,8 +724,7 @@ abstract class BaseResource extends Resource
                                 ->toArray()
                         )
                         ->getOptionsUsing(
-                            fn() =>
-                            $userModel::query()
+                            fn () => $userModel::query()
                                 ->whereNotNull($titleAttribute)
                                 ->where($titleAttribute, '!=', '')
                                 ->limit(50)
@@ -743,10 +740,9 @@ abstract class BaseResource extends Resource
             $types[] = MorphToSelect\Type::make(\App\Models\User::class)
                 ->titleAttribute('name')
                 ->label('User')
-                ->getOptionLabelUsing(fn($record): string => (string) ($record->name ?? 'Unknown'))
+                ->getOptionLabelUsing(fn ($record): string => (string) ($record->name ?? 'Unknown'))
                 ->getSearchResultsUsing(
-                    fn(string $search) =>
-                    \App\Models\User::query()
+                    fn (string $search) => \App\Models\User::query()
                         ->where('name', 'like', "%{$search}%")
                         ->whereNotNull('name')
                         ->where('name', '!=', '')
@@ -755,8 +751,7 @@ abstract class BaseResource extends Resource
                         ->toArray()
                 )
                 ->getOptionsUsing(
-                    fn() =>
-                    \App\Models\User::query()
+                    fn () => \App\Models\User::query()
                         ->whereNotNull('name')
                         ->where('name', '!=', '')
                         ->limit(50)
@@ -767,7 +762,6 @@ abstract class BaseResource extends Resource
 
         return $types;
     }
-
 
     /**
      * Get the User model class for this resource
@@ -792,7 +786,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('id')
             ->label('ID')
-            ->defaultValue(fn($record): string => $record->id ?? '');
+            ->defaultValue(fn ($record): string => $record->id ?? '');
     }
 
     /**
@@ -802,7 +796,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('uuid')
             ->label('UUID')
-            ->defaultValue(fn($record): string => $record->uuid ?? '');
+            ->defaultValue(fn ($record): string => $record->uuid ?? '');
     }
 
     /**
@@ -812,7 +806,7 @@ abstract class BaseResource extends Resource
     {
         return CopyableField::make('ulid')
             ->label('ULID')
-            ->defaultValue(fn($record): string => $record->ulid ?? '');
+            ->defaultValue(fn ($record): string => $record->ulid ?? '');
     }
 
     /**
@@ -834,8 +828,8 @@ abstract class BaseResource extends Resource
     {
         return TextEntry::make('created_at')
             ->label(__('core::core.created_at'))
-            ->state(fn($record): string => $record->created_at ?
-                $record->created_at . ' - ' . $record->created_at->diffForHumans() : '');
+            ->state(fn ($record): string => $record->created_at ?
+                $record->created_at.' - '.$record->created_at->diffForHumans() : '');
     }
 
     /**
@@ -845,7 +839,7 @@ abstract class BaseResource extends Resource
     {
         return TextEntry::make('updated_at')
             ->label(__('core::core.updated_at'))
-            ->state(fn($record): string => $record->updated_at ?
-                $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '');
+            ->state(fn ($record): string => $record->updated_at ?
+                $record->updated_at.' - '.$record->updated_at->diffForHumans() : '');
     }
 }
