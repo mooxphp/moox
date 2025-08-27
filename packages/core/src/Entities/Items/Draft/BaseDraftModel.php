@@ -277,38 +277,7 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         });
     }
 
-    /**
-     * Actor relationships for publishing
-     */
-    public function publishedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
 
-    public function updatedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function createdBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function unpublishedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function deletedBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function restoredBy(): MorphTo
-    {
-        return $this->morphTo();
-    }
 
     /**
      * Translation helper methods
@@ -412,4 +381,13 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
 
         return $attributes;
     }
+
+    /**
+     * Get the author (polymorphic relation)
+     */
+    public function author(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
 }

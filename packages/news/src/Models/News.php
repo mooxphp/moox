@@ -113,9 +113,4 @@ class News extends BaseDraftModel implements HasMedia
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
-
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'author_id');
-    }
 }

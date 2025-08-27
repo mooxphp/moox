@@ -4,6 +4,7 @@ namespace Moox\Core\Entities\Items\Draft;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 abstract class BaseDraftTranslationModel extends Model
 {
@@ -110,15 +111,13 @@ abstract class BaseDraftTranslationModel extends Model
 
         static::creating(function ($model) {
             if (auth()->check()) {
-                $model->created_by_id = auth()->id();
-                $model->created_by_type = auth()->user()::class;
+                $model->createdBy()->associate(auth()->user());
             }
         });
 
         static::updating(function ($model) {
             if (auth()->check()) {
-                $model->updated_by_id = auth()->id();
-                $model->updated_by_type = auth()->user()::class;
+                $model->updatedBy()->associate(auth()->user());
             }
         });
     }
@@ -147,30 +146,25 @@ abstract class BaseDraftTranslationModel extends Model
             case 'scheduled':
                 if ($this->published_at !== null) {
                     $this->unpublished_at = now();
-                    $this->unpublished_by_id = auth()->id();
-                    $this->unpublished_by_type = auth()->user()::class;
+                    $this->unpublishedBy()->associate(auth()->user());
                 }
 
                 $this->published_at = null;
-                $this->published_by_id = null;
-                $this->published_by_type = null;
+                $this->publishedBy()->dissociate();
                 break;
 
             case 'published':
                 $this->published_at = now();
-                $this->published_by_id = auth()->id();
-                $this->published_by_type = auth()->user()::class;
+                $this->publishedBy()->associate(auth()->user());
                 $this->to_publish_at = null;
                 $this->to_unpublish_at = null;
                 $this->unpublished_at = null;
-                $this->unpublished_by_id = null;
-                $this->unpublished_by_type = null;
+                $this->unpublishedBy()->dissociate();
                 break;
 
             case 'waiting':
                 $this->published_at = null;
-                $this->published_by_id = null;
-                $this->published_by_type = null;
+                $this->publishedBy()->dissociate();
                 $this->to_publish_at = null;
                 $this->unpublished_at = null;
                 $this->to_unpublish_at = null;
@@ -179,13 +173,11 @@ abstract class BaseDraftTranslationModel extends Model
             case 'privat':
                 if ($this->published_at !== null) {
                     $this->unpublished_at = now();
-                    $this->unpublished_by_id = auth()->id();
-                    $this->unpublished_by_type = auth()->user()::class;
+                    $this->unpublishedBy()->associate(auth()->user());
                 }
 
                 $this->published_at = null;
-                $this->published_by_id = null;
-                $this->published_by_type = null;
+                $this->publishedBy()->dissociate();
                 $this->to_publish_at = null;
                 $this->to_unpublish_at = null;
                 break;
@@ -194,13 +186,11 @@ abstract class BaseDraftTranslationModel extends Model
             default:
                 if ($this->published_at !== null) {
                     $this->unpublished_at = now();
-                    $this->unpublished_by_id = auth()->id();
-                    $this->unpublished_by_type = auth()->user()::class;
+                    $this->unpublishedBy()->associate(auth()->user());
                 }
 
                 $this->published_at = null;
-                $this->published_by_id = null;
-                $this->published_by_type = null;
+                $this->publishedBy()->dissociate();
                 $this->to_publish_at = null;
                 $this->to_unpublish_at = null;
                 break;
@@ -212,5 +202,38 @@ abstract class BaseDraftTranslationModel extends Model
         $className = class_basename(static::class);
 
         return strtolower($className);
+    }
+
+    /**
+     * Actor relationships for publishing
+     */
+    public function publishedBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function updatedBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function createdBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function unpublishedBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function deletedBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function restoredBy(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

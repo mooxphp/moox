@@ -23,15 +23,13 @@ class BaseRecordModel extends Model
             $model->ulid = (string) Str::ulid();
 
             if (auth()->check()) {
-                $model->created_by_id = auth()->id();
-                $model->created_by_type = auth()->user()::class;
+                $model->createdBy()->associate(auth()->user());
             }
         });
 
         static::updating(function ($model) {
             if (auth()->check()) {
-                $model->updated_by_id = auth()->id();
-                $model->updated_by_type = auth()->user()::class;
+                $model->updatedBy()->associate(auth()->user());
             }
         });
     }

@@ -30,23 +30,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $content
  * @property-read string $status
  * @property-read int $author_id
- * @property-read Carbon|null $to_publish_at
- * @property-read Carbon|null $published_at
- * @property-read Carbon|null $to_unpublish_at
- * @property-read Carbon|null $unpublished_at
- * @property-read int|null $published_by_id
- * @property-read int|null $unpublished_by_id
- * @property-read Carbon|null $deleted_at
- * @property-read int|null $deleted_by_id
- * @property-read Carbon|null $restored_at
- * @property-read int|null $restored_by_id
+ * @property-read string $author_type
  * @property-read User|null $author
- * @property-read Model|null $publishedBy
- * @property-read Model|null $updatedBy
- * @property-read Model|null $createdBy
- * @property-read Model|null $unpublishedBy
- * @property-read Model|null $deletedBy
- * @property-read Model|null $restoredBy
+
  * @property-read Collection<int, Media> $media
  */
 class Draft extends BaseDraftModel implements HasMedia
