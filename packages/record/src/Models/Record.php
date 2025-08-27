@@ -2,12 +2,10 @@
 
 namespace Moox\Record\Models;
 
-use Moox\User\Models\User;
-use Moox\Record\Enums\RecordStatus;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Record\Enums\RecordStatus;
 
 class Record extends BaseRecordModel
 {

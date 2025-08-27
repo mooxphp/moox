@@ -3,17 +3,16 @@
 namespace Moox\Draft\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Media\Traits\HasMediaUsable;
 use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Moox\Media\Traits\HasMediaUsable;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Collection;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -122,5 +121,4 @@ class Draft extends BaseDraftModel implements HasMedia
     {
         return $this->morphTo();
     }
-
 }

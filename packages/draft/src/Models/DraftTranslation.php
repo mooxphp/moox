@@ -2,18 +2,14 @@
 
 namespace Moox\Draft\Models;
 
-use Moox\User\Models\User;
-use Moox\Draft\Enums\TranslationStatus;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\Draft\Enums\TranslationStatus;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {
     protected $casts = [
         'translation_status' => TranslationStatus::class,
     ];
-
 
     /**
      * Get custom fillable for Draft translations
