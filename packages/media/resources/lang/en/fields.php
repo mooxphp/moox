@@ -48,6 +48,8 @@ return [
     'replace_file_success' => 'The file ":oldFileName" was successfully replaced with ":newFileName".',
     'replace_file_error' => 'The file ":fileName" could not be replaced.',
     'replace_error' => 'Error Replacing File',
+    'translation_saved' => 'Translation saved',
+    'translation_saved_message' => 'The translation for :lang was successfully saved.',
 
     // Linked Files
     'file_has_links' => 'This file is used in :count :links.',
