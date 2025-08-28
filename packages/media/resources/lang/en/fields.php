@@ -7,6 +7,7 @@ return [
     'link|links' => 'Link|Links',
     'no_title' => 'No Title',
     'upload' => 'Upload File',
+    'save_translation' => 'Save Translation',
 
     // File Information
     'mime_type' => 'File Type',

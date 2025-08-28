@@ -7,6 +7,7 @@ return [
     'link|links' => 'Verknüpfung|Verknüpfungen',
     'no_title' => 'Kein Titel',
     'upload' => 'Datei hochladen',
+    'save_translation' => 'Übersetzung speichern',
 
     // File Information
     'mime_type' => 'Dateityp',
