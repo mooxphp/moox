@@ -99,6 +99,6 @@ This rewrite establishes a solid foundation for monorepo management with clean a
 
 ## Monorepo
 
-- test
+- Completely rewrote the package 
 
 
