@@ -26,15 +26,67 @@ class ListMedia extends BaseListDrafts
 
     public bool $isGridView = true;
 
+    public string $lang;
+
     public function mount(): void
     {
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
+        $this->lang = request()->query('lang', app()->getLocale());
+    }
+
+    public function changeLanguage(string $language): void
+    {
+        $this->lang = $language;
+    }
+
+    public function saveTranslationFromForm($recordId)
+    {
+        $record = Media::find($recordId);
+
+        if ($record && method_exists($record, 'translateOrNew')) {
+            $lang = $this->lang ?? app()->getLocale();
+            $translation = $record->translateOrNew($lang);
+
+            $formData = [];
+            if (!empty($this->mountedActions)) {
+                foreach ($this->mountedActions as $action) {
+                    if (isset($action['data'])) {
+                        $formData = $action['data'];
+                        break;
+                    }
+                }
+            }
+
+            $translationMapping = [
+                'name' => 'name',
+                'title' => 'title',
+                'alt' => 'alt',
+                'description' => 'description',
+                'internal_note' => 'internal_note'
+            ];
+
+            foreach ($translationMapping as $formField => $dbField) {
+                if (isset($formData[$formField]) && !empty($formData[$formField])) {
+                    $translation->$dbField = $formData[$formField];
+                }
+            }
+
+            $translation->save();
+
+            Notification::make()
+                ->title('Translation gespeichert')
+                ->body("Translation für {$lang} wurde mit den eingegebenen Werten erstellt.")
+                ->success()
+                ->send();
+
+            $this->dispatch('$refresh');
+        }
     }
 
     public function toggleView(): void
     {
-        $this->isGridView = ! $this->isGridView;
+        $this->isGridView = !$this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
@@ -49,9 +101,9 @@ class ListMedia extends BaseListDrafts
     {
         return [
             Action::make('toggleView')
-                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn () => $this->toggleView())
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
@@ -59,7 +111,7 @@ class ListMedia extends BaseListDrafts
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => MediaCollection::whereHas('translations', function ($query) {
+                        ->options(fn() => MediaCollection::whereHas('translations', function ($query) {
                             $query->where('locale', app()->getLocale());
                         })->get()->pluck('name', 'id')->filter()->toArray())
                         ->default(MediaCollection::first()->id)
@@ -94,7 +146,7 @@ class ListMedia extends BaseListDrafts
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
