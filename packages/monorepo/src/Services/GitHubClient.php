@@ -26,7 +26,7 @@ class GitHubClient implements GitHubClientInterface
             'Authorization' => "Bearer {$token}",
             'X-GitHub-Api-Version' => config('monorepo.github.api_version', '2022-11-28'),
         ];
-        
+
         if ($token) {
             $this->headers['Authorization'] = "Bearer {$token}";
         }
@@ -41,7 +41,7 @@ class GitHubClient implements GitHubClientInterface
      */
     private function ensureToken(): void
     {
-        if (!isset($this->headers['Authorization'])) {
+        if (! isset($this->headers['Authorization'])) {
             throw new \RuntimeException('GitHub token not found. Please link your GitHub account.');
         }
     }
@@ -247,7 +247,7 @@ class GitHubClient implements GitHubClientInterface
     private function get(string $url, array $query = []): ?array
     {
         $this->ensureToken();
-        
+
         try {
             $response = Http::withHeaders($this->headers)->get($url, $query);
 
@@ -268,7 +268,7 @@ class GitHubClient implements GitHubClientInterface
     private function post(string $url, array $data = []): ?array
     {
         $this->ensureToken();
-        
+
         try {
             $response = Http::withHeaders($this->headers)->post($url, $data);
 

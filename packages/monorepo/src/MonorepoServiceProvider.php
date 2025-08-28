@@ -37,7 +37,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
         // Register GitHub client
         $this->app->bind(GitHubClientInterface::class, function ($app) {
             $token = $this->getGitHubToken();
-            
+
             // Always create client, even without token
             // Error will be thrown when actually using GitHub API
             return new GitHubClient($token);
@@ -55,6 +55,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
 
         $this->app->bind(ProcessChangelogAction::class, function ($app) {
             $changelogPath = config('monorepo.packages.devlog_path');
+
             return new ProcessChangelogAction($changelogPath);
         });
 
@@ -108,12 +109,12 @@ class MonorepoServiceProvider extends MooxServiceProvider
 
         try {
             // Only try database access if everything is available
-            if (class_exists(User::class) && 
+            if (class_exists(User::class) &&
                 \DB::connection()->getDatabaseName() &&
                 \Schema::hasTable('users') &&
                 \Schema::hasColumn('users', 'github_token')) {
-                
                 $user = User::first();
+
                 return $user?->github_token;
             }
         } catch (\Exception) {
