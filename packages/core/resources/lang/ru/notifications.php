@@ -1,7 +1,7 @@
 <?php
 
-return array (
-  'notification' => 'Уведомление',
-  'notifications' => 'Уведомления',
-  'hello' => 'Привет',
-);
+return [
+    'notification' => 'Уведомление',
+    'notifications' => 'Уведомления',
+    'hello' => 'Привет',
+];
