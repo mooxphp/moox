@@ -30,7 +30,7 @@ class MediaCollection extends Model implements TranslatableContract
             }
             if ($mediaCollection->media()->exists()) {
                 $uncategorized = static::whereTranslation('name', __('media::fields.uncategorized'))->first();
-                if (! $uncategorized) {
+                if (!$uncategorized) {
                     $uncategorized = static::create([
                         'name' => __('media::fields.uncategorized'),
                         'description' => __('media::fields.uncategorized_description'),

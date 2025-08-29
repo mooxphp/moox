@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Media;
 
+use Livewire\Livewire;
+use Moox\Media\Models\Media;
+use Illuminate\Support\Facades\Gate;
+use Moox\Media\Policies\MediaPolicy;
+use Illuminate\Support\Facades\Blade;
+use Spatie\LaravelPackageTools\Package;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Gate;
-use Livewire\Livewire;
-use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
-use Moox\Media\Models\Media;
-use Moox\Media\Policies\MediaPolicy;
-use Moox\Media\Resources\MediaResource\Pages\ListMedia;
-use Spatie\LaravelPackageTools\Package;
+use Moox\Media\Console\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 
 class MediaServiceProvider extends PackageServiceProvider
 {
@@ -37,17 +38,23 @@ class MediaServiceProvider extends PackageServiceProvider
 
         Gate::policy(Media::class, MediaPolicy::class);
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
 
         $this->publishes([
-            __DIR__.'/../resources/dist/icons' => public_path('vendor/media/icons'),
+            __DIR__ . '/../resources/dist/icons' => public_path('vendor/media/icons'),
         ], 'media-icons');
 
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
-            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            fn(): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            scopes: ListMediaCollections::class
         );
     }
 }
