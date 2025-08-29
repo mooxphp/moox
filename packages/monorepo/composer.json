@@ -19,7 +19,7 @@
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
         "mockery/mockery": "^1.6",
-        "orchestra/testbench": "^9.0"
+        "orchestra/testbench": "^10.0"
     },
     "autoload": {
         "psr-4": {
