@@ -1,5 +1,5 @@
 <?php
 
-return array (
-  'save' => 'Сохранить',
-);
+return [
+    'save' => 'Сохранить',
+];
