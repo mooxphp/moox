@@ -1,8 +1,5 @@
 <?php
 
-use Moox\Category\Models\Category;
-use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -20,34 +17,53 @@ use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
 return [
     'readonly' => false,
 
-    'single' => 'trans//draft::draft.draft',
-    'plural' => 'trans//draft::draft.drafts',
-    'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
-        ],
-        '0' => [
-            'label' => 'Post',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Post',
+    'resources' => [
+        'draft' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+            'single' => 'trans//draft::draft.draft',
+            'plural' => 'trans//draft::draft.drafts',
+
+            /*
+            |--------------------------------------------------------------------------
+            | <Tabs></Tabs>
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
-            ],
-        ],
-        '1' => [
-            'label' => 'Page',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Page',
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -55,15 +71,50 @@ return [
     'relations' => [],
     'taxonomies' => [
         'category' => [
-            'label' => 'Categories',
-            'model' => Category::class,
+            'label' => 'trans//core::core.category',
+            'model' => \Moox\Category\Models\Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => TaxonomyCreateForm::class,
+            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
+        'tag' => [
+            'label' => 'trans//core::core.tag',
+            'model' => \Moox\Tag\Models\Tag::class,
+            'table' => 'taggables',
+            'relationship' => 'taggable',
+            'foreignKey' => 'taggable_id',
+            'relatedKey' => 'tag_id',
+            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+            'hierarchical' => false,
+        ],
+    ],
+
+    /*
+   |--------------------------------------------------------------------------
+   | User Models
+   |--------------------------------------------------------------------------
+   |
+   | The User model classes available for author relationships.
+   | You can define multiple user types with their display attributes.
+   |
+   */
+    'user_models' => [
+        \App\Models\User::class => [
+            'title_attribute' => 'name',
+            'label' => 'App User',
+        ],
+        \Moox\User\Models\User::class => [
+            'title_attribute' => 'name',
+            'label' => 'Moox User',
+        ],
+        // Add more user models as needed:
+        // \My\Custom\AdminUser::class => [
+        //     'title_attribute' => 'full_name',
+        //     'label' => 'Admin User',
+        // ],
     ],
 
     /*

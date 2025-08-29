@@ -20,6 +20,15 @@ return new class extends Migration
             $table->string('permalink', 512)->unique();
             $table->text('description')->nullable();
             $table->text('content')->nullable();
+            $table->enum('translation_status', [
+                'draft',
+                'waiting',
+                'private',
+                'scheduled',
+                'published',
+                'not_translated',
+                'deleted',
+            ])->default('draft');
 
             $table->nullableMorphs('created_by');
             $table->nullableMorphs('updated_by');

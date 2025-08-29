@@ -61,7 +61,6 @@ class TitleWithSlugInput
         /** Input: "Title" */
         $textInput = TextInput::make($fieldTitle)
             ->disabled($titleIsReadonly)
-            ->autofocus($titleAutofocus)
             ->live(true)
             ->autocomplete(false)
             ->rules($titleRules)
@@ -135,6 +134,7 @@ class TitleWithSlugInput
             ->slugInputBaseUrl($urlHost)
             ->slugInputShowUrl($urlHostVisible)
             ->slugInputSlugLabelPostfix($slugLabelPostfix)
+            ->slugInputUrlPathEntityType($urlPathEntityType)
 
             // Default TextInput methods
             ->readOnly($slugIsReadonly)

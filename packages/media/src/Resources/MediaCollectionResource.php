@@ -4,7 +4,6 @@ namespace Moox\Media\Resources;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -50,34 +49,6 @@ class MediaCollectionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Select::make('extend_existing_collection')
-                ->label(__('media::fields.extend_existing_collection'))
-                ->placeholder(__('media::fields.create_new_collection'))
-                ->options(function () {
-                    $currentLocale = app()->getLocale();
-
-                    $collections = MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
-                        $query->where('locale', '!=', $currentLocale);
-                    })->get();
-
-                    $options = [];
-                    foreach ($collections as $collection) {
-                        $translation = $collection->translations->where('locale', '!=', $currentLocale)->first();
-                        if ($translation && is_string($translation->name) && $translation->name !== '') {
-                            $options[$collection->id] = $translation->name." ({$translation->locale})";
-                        }
-                    }
-
-                    return $options;
-                })
-                ->searchable()
-                ->hidden(function () {
-                    $currentLocale = app()->getLocale();
-
-                    return ! MediaCollection::whereHas('translations', function ($query) use ($currentLocale) {
-                        $query->where('locale', '!=', $currentLocale);
-                    })->exists();
-                }),
             TextInput::make('name')
                 ->label(__('media::fields.collection_name'))
                 ->required()
@@ -93,9 +64,20 @@ class MediaCollectionResource extends Resource
                         }
                     };
                 }),
+
             TextInput::make('description')
                 ->label(__('media::fields.collection_description'))
-                ->maxLength(255),
+                ->maxLength(255)
+                ->formatStateUsing(function ($state, $record, $livewire) {
+                    if (! $record || ! method_exists($record, 'getTranslation')) {
+                        return $state;
+                    }
+
+                    $lang = $livewire->lang ?? app()->getLocale();
+                    $translation = $record->getTranslation($lang, false);
+
+                    return $translation ? $translation->description : $state;
+                }),
         ]);
     }
 
@@ -106,10 +88,40 @@ class MediaCollectionResource extends Resource
                 TextColumn::make('name')
                     ->label(__('media::fields.collection_name'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+                        if ($translation && $translation->name) {
+                            return $translation->name;
+                        }
+
+                        $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
+                        if ($fallbackTranslation && $fallbackTranslation->name) {
+                            return $fallbackTranslation->name.' ('.app()->getLocale().')';
+                        }
+
+                        return 'No name available';
+                    })
+                    ->extraAttributes(fn ($record, $livewire) => [
+                        'style' => $record->translations()->where('locale', $livewire->lang ?? app()->getLocale())->whereNotNull('name')->exists()
+                            ? ''
+                            : 'color: var(--gray-500);',
+                    ]),
                 TextColumn::make('description')
                     ->label(__('media::fields.collection_description'))
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(function ($record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+                        if ($translation && $translation->description) {
+                            return $translation->description;
+                        }
+
+                        return '';
+                    }),
                 TextColumn::make('media_count')
                     ->label(__('media::fields.media_count'))
                     ->getStateUsing(function ($record) {
@@ -117,7 +129,30 @@ class MediaCollectionResource extends Resource
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label(function (MediaCollection $record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+
+                        return $translation ? __('filament-actions::edit.single.label') : __('core::core.create');
+                    })
+                    ->color(function (MediaCollection $record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+
+                        return $translation ? 'primary' : 'success';
+                    })
+                    ->icon(function (MediaCollection $record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+
+                        return $translation ? 'heroicon-m-pencil-square' : 'heroicon-m-plus';
+                    })
+                    ->url(function (MediaCollection $record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+
+                        return static::getUrl('edit', ['record' => $record, 'lang' => $currentLang]);
+                    }),
                 DeleteAction::make()
                     ->requiresConfirmation()
                     ->modalHeading(function (MediaCollection $record) {

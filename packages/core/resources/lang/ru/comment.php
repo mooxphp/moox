@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'comment' => 'Комментарий',
+    'comments' => 'Комментарии',
+    'no_comments' => 'Нет комментариев',
+    'no_comment' => 'Нет комментария',
+    'comment_id' => 'ИД комментария',
+    'comment_post_ID' => 'ИД записи комментария',
+    'comment_author' => 'Автор комментария',
+    'comment_author_email' => 'Электронная почта автора комментария',
+    'comment_author_url' => 'URL автора комментария',
+    'comment_author_IP' => 'IP-адрес автора комментария',
+    'comment_date' => 'Дата комментария',
+    'comment_date_gmt' => 'Дата комментария (GMT)',
+    'comment_content' => 'Содержание комментария',
+    'comment_karma' => 'Карма комментария',
+    'comment_approved' => 'Комментарий одобрен',
+    'comment_agent' => 'Агент комментария',
+    'comment_parent' => 'Родитель комментария',
+    'comment_type' => 'Тип комментария',
+    'comment_status' => 'Статус комментария',
+    'comment_count' => 'Количество комментариев',
+    'wp_comment_meta' => 'Метаданные комментария WP',
+    'wp_comment_metas' => 'Метаданные комментария WP',
+];

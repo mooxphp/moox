@@ -4,12 +4,8 @@ namespace Moox\Draft\Moox\Entities\Drafts\Draft;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -17,14 +13,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Draft\Models\Draft;
 use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\CreateDraft;
@@ -34,34 +28,34 @@ use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ViewDraft;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\User\Models\User;
 
 class DraftResource extends BaseDraftResource
 {
+    use HasResourceTabs;
     use HasResourceTaxonomy;
 
     protected static ?string $model = Draft::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
 
     public static function getModelLabel(): string
     {
-        return config('draft.single');
+        return config('draft.resources.draft.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('draft.plural');
+        return config('draft.resources.draft.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('draft.plural');
+        return config('draft.resources.draft.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('draft.single');
+        return config('draft.resources.draft.single');
     }
 
     public static function getNavigationGroup(): ?string
@@ -106,15 +100,12 @@ class DraftResource extends BaseDraftResource
                             ),
                             MediaPicker::make('image')
                                 ->label(__('core::core.image')),
-
                             Toggle::make('is_active')
-                                ->label('Active'),
+                                ->label(__('core::core.active')),
                             RichEditor::make('description')
-                                ->label('Description'),
+                                ->label(__('core::core.description')),
                             MarkdownEditor::make('content')
-                                ->label('Content'),
-                            KeyValue::make('data')
-                                ->label('Data (JSON)'),
+                                ->label(__('core::core.content')),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -128,74 +119,27 @@ class DraftResource extends BaseDraftResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    Select::make('type')
-                                        ->label('Type')
-                                        ->options(['Post' => 'Post', 'Page' => 'Page']),
-                                    Select::make('status')
-                                        ->label('Status')
-                                        ->placeholder(__('core::core.status'))
-                                        ->reactive()
-                                        ->options(['draft' => 'Draft', 'waiting' => 'Waiting', 'privat' => 'Privat', 'scheduled' => 'Scheduled', 'published' => 'Published'])
-                                        ->default('draft'),
-                                    DateTimePicker::make('to_publish_at')
-                                        ->label('To publish at')
-                                        ->placeholder(__('core::core.to_publish_at'))
-                                        ->hidden(fn ($get) => $get('status') !== 'scheduled')
-                                        ->dehydrateStateUsing(fn ($state, $get) => $get('status') === 'scheduled' ? $state : null),
-                                    DateTimePicker::make('to_unpublish_at')
-                                        ->label('To unpublish at')
-                                        ->placeholder(__('core::core.to_unpublish_at'))
-                                        ->hidden(fn ($get) => ! in_array($get('status'), ['scheduled', 'published']))
-                                        ->dehydrateStateUsing(fn ($state, $get) => in_array($get('status'), ['scheduled', 'published']) ? $state : null),
+                                    static::getTypeSelect(),
+                                    static::getTranslationStatusSelect(),
+                                    static::getPublishDateField(),
+                                    static::getUnpublishDateField(),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
-                                    Select::make('author_id')
-                                        ->label('Author')
-                                        ->options(User::all()->pluck('name', 'id')),
+                                    static::getAuthorSelect(),
                                     DateTimePicker::make('due_at')
-                                        ->label('Due'),
+                                        ->label(__('core::core.due')),
                                     ColorPicker::make('color')
-                                        ->label('Color'),
+                                        ->label(__('core::core.color')),
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    CopyableField::make('id')
-                                        ->label('ID')
-                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
-                                    CopyableField::make('uuid')
-                                        ->label('UUID')
-                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
-                                    CopyableField::make('ulid')
-                                        ->label('ULID')
-                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
+                                    ...static::getStandardCopyableFields(),
                                     Section::make('')
                                         ->schema([
-                                            Placeholder::make('created_at')
-                                                ->label('Created')
-                                                ->content(fn ($record): string => $record->created_at ?
-                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('updated_at')
-                                                ->label('Last Updated')
-                                                ->content(fn ($record): string => $record->updated_at ?
-                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('published_at')
-                                                ->label('Published')
-                                                ->content(fn ($record): string => $record->published_at ?
-                                                    $record->published_at.' - '.$record->published_at->diffForHumans().
-                                                    ($record->published_by_id ? ' by '.$record->published_by_id : '') : '')
-                                                ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->published_at),
-                                            Placeholder::make('to_unpublish_at')
-                                                ->label('To Unpublish')
-                                                ->content(fn ($record): string => $record->to_unpublish_at ?
-                                                    $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
-                                                ->extraAttributes(['class' => 'font-mono'])
-                                                ->hidden(fn ($record) => ! $record->to_unpublish_at),
+                                            ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
                                 ->hidden(fn ($record) => $record === null),
@@ -215,58 +159,22 @@ class DraftResource extends BaseDraftResource
     {
         return $table
             ->columns([
-                TextColumn::make('title')
-                    ->searchable()
-                    ->sortable()->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->title;
-                        }
-
-                        return $record->title;
-                    }),
+                static::getTitleColumn(),
+                static::getSlugColumn(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
-                TextColumn::make('slug')
-                    ->searchable()
-                    ->sortable()
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->slug;
-                        }
-
-                        return $record->slug;
-                    }),
                 TextColumn::make('description')
                     ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->description;
-                        }
-
-                        return $record->description;
-                    }),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
                     ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->state(function ($record) {
-                        $lang = request()->get('lang');
-                        if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->content;
-                        }
-
-                        return $record->content;
-                    }),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('author.name')
                     ->label('Author')
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
                 TextColumn::make('type')
                     ->sortable()
                     ->searchable(),
@@ -280,52 +188,20 @@ class DraftResource extends BaseDraftResource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ulid')
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('section')
-                    ->sortable()
-                    ->toggleable(),
+                static::getStatusColumn(),
                 ...static::getTaxonomyColumns(),
-                TextColumn::make('status')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
             ])
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label('Active'),
-                Filter::make('title')
-                    ->schema([
-                        TextInput::make('title')
-                            ->label('Title')
-                            ->placeholder(__('core::core.filter').' Title'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['title'],
-                            fn (Builder $query, $value): Builder => $query->where('title', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['title']) {
-                            return null;
-                        }
-
-                        return 'Title: '.$data['title'];
-                    }),
-                SelectFilter::make('status')
-                    ->label('Status')
-                    ->placeholder(__('core::core.filter').' Status')
-                    ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
+                    ->label(__('core::core.active')),
+                static::getTranslationStatusFilter(),
                 SelectFilter::make('type')
-                    ->label('Type')
-                    ->placeholder(__('core::core.filter').' Type')
+                    ->label(__('core::core.type'))
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
-                SelectFilter::make('section')
-                    ->label('Section')
-                    ->placeholder(__('core::core.filter').' Section')
-                    ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
-            ]);
+            ])->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     public static function getPages(): array
@@ -336,5 +212,10 @@ class DraftResource extends BaseDraftResource
             'edit' => EditDraft::route('/{record}/edit'),
             'view' => ViewDraft::route('/{record}'),
         ];
+    }
+
+    public static function setCurrentTab(?string $tab): void
+    {
+        static::$currentTab = $tab;
     }
 }

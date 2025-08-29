@@ -15,7 +15,6 @@ trait HasQueriesInConfig
             if ($value instanceof Closure) {
                 $value = $value();
             }
-
             if ($condition['field'] === 'deleted_at' && in_array(SoftDeletes::class, class_uses_recursive($query->getModel()))) {
                 $query = $query->withTrashed();
             }

@@ -2,24 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
-use Moox\Category\Resources\CategoryResource;
-use Override;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 
-class CreateCategory extends CreateRecord
+class CreateCategory extends BaseCreateDraft
 {
     protected static string $resource = CategoryResource::class;
-
-    protected function hasFormActionsInPanel(): bool
-    {
-        return false;
-    }
-
-    #[Override]
-    protected function getFormActions(): array
-    {
-        return [];
-    }
 }

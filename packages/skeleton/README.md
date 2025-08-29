@@ -1,59 +1,60 @@
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton.jpg)
+<div class="filament-hidden">
+
+![Moox Skeleton](banner.jpg)
+
+</div>
 
 # Moox Skeleton
 
-<!--shortdesc-->
+<!-- Description -->
 
 This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.
 
-<!--/shortdesc-->
+<!-- /Description -->
+
+The package is part of the **Moox ecosystem** — a suite of Filament packages that form a solid foundation for Laravel apps, websites, CMS, and eCommerce projects.
+
+Learn more about [Moox](https://moox.org).
 
 ## Features
 
-<!--features-->
+<!-- Features -->
 
--   Feature 1
--   Feature 2
--   Feature 3
+-   Skeleton Package
+-   Build Command
 
-<!--/features-->
-
-## Requirements
-
-See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
+<!-- /Features -->
 
 ## Installation
+
+To install this package, require it via Composer and run the Moox Installer:
 
 ```bash
 composer require moox/skeleton
 php artisan moox:install
 ```
 
-Curious what the install command does? See [Installation](https://github.com/mooxphp/moox/blob/main/docs/Installation.md).
+Learn more about the [Moox Installer or common requirements](https://moox.org/docs/getting-started/installation).
 
 ## Screenshot
 
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/screenshots/skeleton.jpg)
+![Moox Skeleton screenshot](screenshot/main.jpg)
 
-## Get Started
+## Usage
 
-See [Get Started](docs/GetStarted.md).
+<!-- Usage -->
 
-## User Guide
+The best way to use Moox Skeleton is by using the [Moox Build](https://github.com/mooxphp/build) command. Alternatively you can use the GitHub-template and the PHP-command that ships with the package.
 
-See [User Guide](docs/UserGuide.md).
+```php
+php build.php
+```
 
-## Integration
-
-See [Integration](docs/Integration.md).
+<!-- /Usage -->
 
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Roadmap
-
-Please see [ROADMAP](ROADMAP.md) for more information on what is planned for this package.
 
 ## Security
 
@@ -61,7 +62,11 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 ## Credits
 
-Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to this package.
+Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to Moox, special thanks to our sponsors.
+
+## Help Moox
+
+Want to help us to develop and grow Moox. Fortunately there are so many ways to do this, learn more about [helping Moox](https://moox.org/help-moox).
 
 ## License
 

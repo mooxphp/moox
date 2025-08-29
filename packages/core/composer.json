@@ -41,6 +41,9 @@
         },
         "moox-stability": "stable",
         "moox": {
+            "name": "Moox Core",
+            "stability": "stable",
+            "type": "moox-plugin",
             "require": {
                 "spatie/laravel-medialibrary": {
                     "auto_publish": "spatie-media-config"

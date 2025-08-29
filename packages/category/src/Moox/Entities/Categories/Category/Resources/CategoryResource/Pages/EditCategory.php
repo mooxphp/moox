@@ -2,27 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
-use Moox\Category\Resources\CategoryResource;
-use Override;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
 
-class EditCategory extends EditRecord
+class EditCategory extends BaseEditDraft
 {
     protected static string $resource = CategoryResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            // DeleteAction::make(),
-        ];
-    }
-
-    #[Override]
-    protected function getFormActions(): array
-    {
-        return [];
-    }
 }

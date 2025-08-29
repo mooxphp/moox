@@ -2,67 +2,20 @@
 
 namespace Moox\Item\Models;
 
-use App\Models\User;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
 class Item extends BaseItemModel
 {
-    use HasModelTaxonomy;
-
     protected $fillable = [
         'title',
-        'slug',
-        'is_active',
         'description',
-        'content',
-        'data',
-        'image',
-        'author_id',
-        'type',
-        'color',
-        'due_at',
-        'uuid',
-        'ulid',
-        'status',
+        'custom_properties',
     ];
 
     protected $casts = [
-        'slug' => 'string',
         'title' => 'string',
-        'is_active' => 'boolean',
-        'data' => 'json',
-        'due_at' => 'datetime',
-        'uuid' => 'string',
-        'ulid' => 'string',
+        'custom_properties' => 'json',
     ];
-
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'author_id');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-            $model->ulid = (string) Str::ulid();
-        });
-    }
-
-    public function getUlidAttribute(): string
-    {
-        return $this->ulid ?? (string) Str::ulid();
-    }
-
-    public function getUuidAttribute(): string
-    {
-        return $this->uuid ?? (string) Str::uuid();
-    }
 
     public static function getResourceName(): string
     {

@@ -5,10 +5,10 @@ namespace Moox\Packages\Moox\Entities\Packages\Package;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -27,7 +27,7 @@ class PackagesResource extends BaseItemResource
 {
     protected static ?string $model = Package::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-extension';
 
     public static function getModelLabel(): string
     {
@@ -139,29 +139,29 @@ class PackagesResource extends BaseItemResource
 
                                     Section::make('')
                                         ->schema([
-                                            Placeholder::make('created_at')
+                                            TextEntry::make('created_at')
                                                 ->label('Created')
-                                                ->content(fn ($record): string => $record->created_at ?
+                                                ->state(fn ($record): string => $record->created_at ?
                                                     $record->created_at.' - '.$record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('installed_at')
+                                            TextEntry::make('installed_at')
                                                 ->label('Installed At')
-                                                ->content(fn ($record): string => $record->installed_at ?
+                                                ->state(fn ($record): string => $record->installed_at ?
                                                     $record->installed_at.' - '.$record->installed_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('installed_by')
+                                            TextEntry::make('installed_by')
                                                 ->label('Installed By')
-                                                ->content(fn ($record): string => $record->installed_by ?
+                                                ->state(fn ($record): string => $record->installed_by ?
                                                     $record->installed_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('updated_at')
+                                            TextEntry::make('updated_at')
                                                 ->label('Updated At')
-                                                ->content(fn ($record): string => $record->updated_at ?
+                                                ->state(fn ($record): string => $record->updated_at ?
                                                     $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            Placeholder::make('updated_by')
+                                            TextEntry::make('updated_by')
                                                 ->label('Updated By')
-                                                ->content(fn ($record): string => $record->updated_by ?
+                                                ->state(fn ($record): string => $record->updated_by ?
                                                     $record->updated_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),

@@ -28,6 +28,10 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
             $mediaIds = is_array($state) ? $state : [$state];
 
+            $mediaIds = array_filter($mediaIds, function ($id) {
+                return $id !== null && $id !== '';
+            });
+
             MediaUsable::where('media_usable_id', $record->id)
                 ->where('media_usable_type', get_class($record))
                 ->whereNotIn('media_id', $mediaIds)

@@ -5,6 +5,7 @@ namespace Moox\Clipboard\Forms\Components;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Js;
 
 class CopyableField extends TextInput
 {
@@ -12,36 +13,66 @@ class CopyableField extends TextInput
     {
         parent::setUp();
 
+        $btnAttr = 'copy-btn-'.$this->getName();
+
         $this->disabled()
             ->suffix('')
             ->live()
             ->suffixAction(
                 Action::make('copy')
-                    ->icon('heroicon-s-clipboard')
-                    ->action(function ($livewire, $state) {
-                        $livewire->dispatch('copy-to-clipboard-'.$this->getName(), text: $state);
+                    ->icon('heroicon-m-clipboard')
+                    ->extraAttributes([
+                        'data-copy-button' => $btnAttr,
+                    ])
+                    ->action(function ($livewire, $state) use ($btnAttr) {
+                        $livewire->js(sprintf(
+                            'const doSwap = () => {
+                                const btn = document.querySelector(`[data-copy-button=%s]`);
+                                if (!btn) return;
+                                const svg = btn.querySelector("svg");
+                                if (!svg) return;
+                                const original = svg.outerHTML;
+
+                                const checkSvg = `<svg xmlns="http://www.w3.org/2000/svg" 
+                                    viewBox="0 0 20 20" fill="currentColor" 
+                                    style="width: 24px; height: 24px; color: #10b981">
+                                    <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 0 1.414l-7.5 7.5a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L8.5 12.086l6.793-6.793a1 1 0 0 1 1.414 0z" clip-rule="evenodd"/>
+                                    </svg>`;
+
+                                svg.outerHTML = checkSvg;
+                                setTimeout(() => {
+                                    const cur = btn.querySelector("svg");
+                                    if (cur) cur.outerHTML = original;
+                                }, 1200);
+                            };
+
+                            const text = %s;
+                            const copy = async () => {
+                                try {
+                                    if (navigator.clipboard && window.isSecureContext) {
+                                        await navigator.clipboard.writeText(text);
+                                    } else {
+                                        const ta = document.createElement("textarea");
+                                        ta.value = text;
+                                        ta.style.position = "fixed";
+                                        ta.style.opacity = "0";
+                                        document.body.appendChild(ta);
+                                        ta.select();
+                                        document.execCommand("copy");
+                                        document.body.removeChild(ta);
+                                    }
+                                    $dispatch("notify", { message: "Copied to clipboard", type: "success" });
+                                    doSwap();
+                                } catch (e) {
+                                    $dispatch("notify", { message: "Failed to copy", type: "error" });
+                                }
+                            };
+                            copy();',
+                            Js::from($btnAttr),
+                            Js::from($state)
+                        ));
                     })
-            )
-            ->extraAttributes([
-                'x-data' => '{
-                    copyToClipboard(text) {
-                            const textArea = document.createElement("textarea");
-                            textArea.value = text;
-                            textArea.style.position = "fixed";
-                            textArea.style.opacity = "0";
-                            document.body.appendChild(textArea);
-                            textArea.select();
-                            try {
-                                document.execCommand("copy");
-                                $tooltip("Copied to clipboard", { timeout: 1500 });
-                            } catch (err) {
-                                $tooltip("Failed to copy", { timeout: 1500 });
-                            }
-                            document.body.removeChild(textArea);
-                    }
-                }',
-                'x-on:copy-to-clipboard-'.$this->getName().'.window' => 'copyToClipboard($event.detail.text)',
-            ]);
+            );
     }
 
     public static function make(?string $name = null): static

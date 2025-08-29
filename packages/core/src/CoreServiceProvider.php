@@ -7,6 +7,7 @@ namespace Moox\Core;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
+use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Core\Traits\HasGoogleIcons;
@@ -49,8 +50,7 @@ class CoreServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommand(MooxInstaller::class)
-            ->hasCommand(PackageServiceCommand::class);
+            ->hasCommands([MooxInstaller::class, PublishScheduledContentCommand::class, PackageServiceCommand::class]);
     }
 
     protected function getPackageNames(): array

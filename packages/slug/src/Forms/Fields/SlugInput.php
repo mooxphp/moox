@@ -39,6 +39,8 @@ class SlugInput extends TextInput
 
     protected string|Closure|null $helperText = null;
 
+    protected ?string $urlPathEntityType = null;
+
     public function helperText(Htmlable|Closure|string|null $helperText): static
     {
         $this->helperText = $helperText;
@@ -173,9 +175,16 @@ class SlugInput extends TextInput
 
         $visitLinkRoute = $this->getVisitLinkRoute();
 
-        return $visitLinkRoute
-            ? $this->getVisitLinkRoute()
-            : $this->getBaseUrl().$this->getBasePath().$this->evaluate($this->recordSlug);
+        if ($visitLinkRoute) {
+            return $this->getVisitLinkRoute();
+        }
+
+        $baseUrl = $this->getBaseUrl();
+        $basePath = $this->getBasePath();
+        $entityPath = $this->getUrlPathEntityType() ? '/'.$this->getUrlPathEntityType() : '';
+        $slug = $this->evaluate($this->recordSlug);
+
+        return $baseUrl.$basePath.$entityPath.'/'.$slug;
     }
 
     public function slugInputBasePath(string|Closure|null $path): static
@@ -219,5 +228,17 @@ class SlugInput extends TextInput
     public function getBasePath(): string
     {
         return $this->evaluate($this->basePath);
+    }
+
+    public function slugInputUrlPathEntityType(?string $urlPathEntityType): static
+    {
+        $this->urlPathEntityType = $urlPathEntityType;
+
+        return $this;
+    }
+
+    public function getUrlPathEntityType(): ?string
+    {
+        return $this->urlPathEntityType;
     }
 }

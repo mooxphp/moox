@@ -13,6 +13,7 @@ use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Models\Media;
 use Moox\Media\Policies\MediaPolicy;
+use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -45,9 +46,15 @@ class MediaServiceProvider extends PackageServiceProvider
         ], 'media-icons');
 
         FilamentView::registerRenderHook(
-            TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            scopes: ListMediaCollections::class
         );
     }
 }
