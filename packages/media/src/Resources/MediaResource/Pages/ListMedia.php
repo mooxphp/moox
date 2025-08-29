@@ -6,13 +6,13 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-class ListMedia extends ListRecords
+class ListMedia extends BaseListDrafts
 {
     protected static string $resource = MediaResource::class;
 
@@ -26,10 +26,57 @@ class ListMedia extends ListRecords
 
     public bool $isGridView = true;
 
+    public string $lang;
+
     public function mount(): void
     {
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
+        $this->lang = request()->query('lang', app()->getLocale());
+    }
+
+    public function saveTranslationFromForm($recordId)
+    {
+        $record = Media::find($recordId);
+
+        if ($record && method_exists($record, 'translateOrNew')) {
+            $lang = $this->lang ?? app()->getLocale();
+            $translation = $record->translateOrNew($lang);
+
+            $formData = [];
+            if (! empty($this->mountedActions)) {
+                foreach ($this->mountedActions as $action) {
+                    if (isset($action['data'])) {
+                        $formData = $action['data'];
+                        break;
+                    }
+                }
+            }
+
+            $translationMapping = [
+                'name' => 'name',
+                'title' => 'title',
+                'alt' => 'alt',
+                'description' => 'description',
+                'internal_note' => 'internal_note',
+            ];
+
+            foreach ($translationMapping as $formField => $dbField) {
+                if (isset($formData[$formField]) && ! empty($formData[$formField])) {
+                    $translation->$dbField = $formData[$formField];
+                }
+            }
+
+            $translation->save();
+
+            Notification::make()
+                ->title(__('media::fields.translation_saved'))
+                ->body(__('media::fields.translation_saved_message', ['lang' => $lang]))
+                ->success()
+                ->send();
+
+            $this->dispatch('$refresh');
+        }
     }
 
     public function toggleView(): void

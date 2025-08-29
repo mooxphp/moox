@@ -26,7 +26,7 @@ class DraftServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentView::registerRenderHook(
-            TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListDrafts::class
         );

@@ -19,21 +19,31 @@ class GitHubClient implements GitHubClientInterface
 
     private string $cachePrefix;
 
-    public function __construct(string $token)
+    public function __construct(?string $token = null)
     {
-        if (empty($token)) {
-            throw new \InvalidArgumentException('GitHub token is required');
-        }
-
         $this->headers = [
             'Accept' => 'application/vnd.github+json',
             'Authorization' => "Bearer {$token}",
             'X-GitHub-Api-Version' => config('monorepo.github.api_version', '2022-11-28'),
         ];
 
+        if ($token) {
+            $this->headers['Authorization'] = "Bearer {$token}";
+        }
+
         $this->cacheEnabled = config('monorepo.cache.enabled', true);
         $this->cacheTtl = config('monorepo.cache.ttl', 300);
         $this->cachePrefix = config('monorepo.cache.prefix', 'monorepo_v2');
+    }
+
+    /**
+     * Ensure GitHub token is available before making API calls
+     */
+    private function ensureToken(): void
+    {
+        if (! isset($this->headers['Authorization'])) {
+            throw new \RuntimeException('GitHub token not found. Please link your GitHub account.');
+        }
     }
 
     /**
@@ -236,6 +246,8 @@ class GitHubClient implements GitHubClientInterface
      */
     private function get(string $url, array $query = []): ?array
     {
+        $this->ensureToken();
+
         try {
             $response = Http::withHeaders($this->headers)->get($url, $query);
 
@@ -255,6 +267,8 @@ class GitHubClient implements GitHubClientInterface
      */
     private function post(string $url, array $data = []): ?array
     {
+        $this->ensureToken();
+
         try {
             $response = Http::withHeaders($this->headers)->post($url, $data);
 

@@ -1,9 +1,63 @@
-<select onchange="if(this.value) window.location.href = window.location.pathname + '?lang=' + this.value"
-    class="fi-input block w-full rounded-lg border-gray-300 shadow-sm outline-none transition duration-75 focus:border-primary-500 focus:ring-1 focus:ring-inset focus:ring-primary-500 disabled:opacity-70 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary-500">
-    <option value="">{{ __('localization::localization.select_language') }}</option>
-    @foreach(\Moox\Localization\Models\Localization::all() as $locale)
-        <option value="{{ $locale->language->alpha2 }}" {{ request()->get('lang') == $locale->language->alpha2 ? 'selected' : '' }}>
-            {{ $locale->language->common_name }}
-        </option>
+@php
+    $currentLang = $this->lang ?: app()->getLocale();
+
+
+
+    $currentLocalization = \Moox\Localization\Models\Localization::with('language')
+        ->whereHas('language', fn($q) => $q->where('alpha2', $currentLang))
+        ->first();
+    $allLocalizations = \Moox\Localization\Models\Localization::with('language')->get();
+@endphp
+
+<x-filament::dropdown>
+    <x-slot name="trigger">
+        <x-filament::button color="gray" icon="flag-{{ $currentLang }}" size="md"
+            style="min-width: 225px; justify-content: flex-start; position: relative;">
+            {{ $currentLocalization?->language->common_name ?? $currentLang }}
+            <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%);">
+                <x-filament::icon-button icon="heroicon-o-chevron-down" size="xs" color="gray" tag="a" />
+            </div>
+        </x-filament::button>
+    </x-slot>
+
+    @foreach($allLocalizations as $locale)
+        @if($locale->language->alpha2 !== $currentLang)
+            @php
+                $targetUrl = request()->url() . '?' . http_build_query(array_merge(request()->query(), ['lang' => $locale->language->alpha2]));
+
+                if ($this instanceof \Filament\Resources\Pages\ListRecords) {
+                } elseif ($this instanceof \Filament\Resources\Pages\ViewRecord) {
+                    if ($this->record && method_exists($this->record, 'translations')) {
+                        $translation = $this->record->translations()->where('locale', $locale->language->alpha2)->first();
+
+                        if ($translation) {
+                            $targetUrl = $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $locale->language->alpha2]);
+                        } else {
+                            $targetUrl = $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $locale->language->alpha2]);
+                        }
+                    }
+                } elseif ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord) {
+                    if ($this->record && method_exists($this->record, 'translations')) {
+                        $translation = $this->record->translations()->where('locale', $locale->language->alpha2)->first();
+
+                        if ($translation) {
+                            $targetUrl = $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $locale->language->alpha2]);
+                        } else {
+                            $targetUrl = $this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $locale->language->alpha2]);
+                        }
+                    }
+                }
+            @endphp
+            @if ($this instanceof \Filament\Resources\Pages\ListRecords)
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2"
+                    wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
+                    {{ $locale->language->common_name }}
+                </x-filament::dropdown.list.item>
+            @else
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2" tag="a">
+                    {{ $locale->language->common_name }}
+                </x-filament::dropdown.list.item>
+            @endif
+        @endif
     @endforeach
-</select>
+</x-filament::dropdown>

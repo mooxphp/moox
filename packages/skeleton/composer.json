@@ -30,6 +30,13 @@
             "providers": [
                 "Moox\\Skeleton\\SkeletonServiceProvider"
             ]
+        },
+        "moox": {
+            "title": "Moox Skeleton",
+            "info": "No entity, just an empty package.",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "template": true
         }
     },
     "minimum-stability": "stable",

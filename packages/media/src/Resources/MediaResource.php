@@ -6,11 +6,11 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -39,7 +39,7 @@ class MediaResource extends Resource
 
     protected static ?string $model = Media::class;
 
-    protected static \BackedEnum|string|null $navigationIcon = 'gmdi-view-timeline-o';
+    protected static \BackedEnum|string|null $navigationIcon = 'gmdi-collections';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -263,17 +263,17 @@ class MediaResource extends Resource
                 ->schema([
                     Grid::make(4)
                         ->schema([
-                            Placeholder::make('file_name')
+                            TextEntry::make('file_name')
                                 ->label(__('media::fields.file_name'))
-                                ->content(fn ($record) => $record->file_name),
+                                ->state(fn ($record) => $record->file_name),
 
-                            Placeholder::make('mime_type')
+                            TextEntry::make('mime_type')
                                 ->label(__('media::fields.mime_type'))
-                                ->content(fn ($record) => $record->getReadableMimeType()),
+                                ->state(fn ($record) => $record->getReadableMimeType()),
 
-                            Placeholder::make('size')
+                            TextEntry::make('size')
                                 ->label(__('media::fields.size'))
-                                ->content(function ($record) {
+                                ->state(function ($record) {
                                     $bytes = $record->size;
                                     $units = ['B', 'KB', 'MB', 'GB'];
                                     $i = 0;
@@ -286,9 +286,9 @@ class MediaResource extends Resource
                                     return number_format($bytes, 2).' '.$units[$i];
                                 }),
 
-                            Placeholder::make('dimensions')
+                            TextEntry::make('dimensions')
                                 ->label(__('media::fields.dimensions'))
-                                ->content(function ($record) {
+                                ->state(function ($record) {
                                     $dimensions = $record->getCustomProperty('dimensions');
                                     if (! $dimensions) {
                                         return '-';
@@ -296,19 +296,19 @@ class MediaResource extends Resource
 
                                     return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                                 })
-                                ->visible(fn ($record) => str_starts_with($record->mime_type, 'image/')),
+                                ->visible(fn ($record) => str_starts_with($record->mime_type ?? '', 'image/')),
 
-                            Placeholder::make('created_at')
+                            TextEntry::make('created_at')
                                 ->label(__('media::fields.created_at'))
-                                ->content(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
+                                ->state(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
 
-                            Placeholder::make('updated_at')
+                            TextEntry::make('updated_at')
                                 ->label(__('media::fields.updated_at'))
-                                ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
+                                ->state(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
 
-                            Placeholder::make('uploaded_by')
+                            TextEntry::make('uploaded_by')
                                 ->label(__('media::fields.uploaded_by'))
-                                ->content(function ($record) {
+                                ->state(function ($record) {
                                     if (! $record->uploader) {
                                         return '-';
                                     }
@@ -316,9 +316,9 @@ class MediaResource extends Resource
                                     return $record->uploader->name;
                                 }),
 
-                            Placeholder::make('usage')
+                            TextEntry::make('usage')
                                 ->label(__('media::fields.usage'))
-                                ->content(function ($record) {
+                                ->state(function ($record) {
                                     $usages = \DB::table('media_usables')
                                         ->where('media_id', $record->id)
                                         ->get();
@@ -358,25 +358,89 @@ class MediaResource extends Resource
                         ->label(__('media::fields.name'))
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord)
+                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                $component->state($translation?->name ?? '');
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                if ($translation) {
+                                    $translation->name = $state;
+                                    $translation->save();
+                                }
+                            }
+                        })
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
                         ->label(__('media::fields.title'))
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord)
+                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                $component->state($translation?->title ?? '');
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                if ($translation) {
+                                    $translation->title = $state;
+                                    $translation->save();
+                                }
+                            }
+                        })
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
                         ->label(__('media::fields.alt_text'))
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord)
+                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                $component->state($translation?->alt ?? '');
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                if ($translation) {
+                                    $translation->alt = $state;
+                                    $translation->save();
+                                }
+                            }
+                        })
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
                         ->label(__('media::fields.description'))
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord)
+                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                $component->state($translation?->description ?? '');
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                if ($translation) {
+                                    $translation->description = $state;
+                                    $translation->save();
+                                }
+                            }
+                        })
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -387,7 +451,24 @@ class MediaResource extends Resource
                 ->schema([
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
-                        ->afterStateUpdated($saveRecord)
+                        ->dehydrated(false)
+                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                $component->state($translation?->internal_note ?? '');
+                            }
+                        })
+                        ->afterStateUpdated(function ($state, $record, $livewire) {
+                            if ($record && method_exists($record, 'translations')) {
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+                                if ($translation) {
+                                    $translation->internal_note = $state;
+                                    $translation->save();
+                                }
+                            }
+                        })
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -503,7 +584,24 @@ class MediaResource extends Resource
 
             $columns[] = TextColumn::make('name')
                 ->label(__('media::fields.name'))
-                ->searchable();
+                ->searchable()
+                ->formatStateUsing(function ($record, $livewire) {
+                    $lang = $livewire->lang ?? app()->getLocale();
+
+                    if (method_exists($record, 'translations')) {
+                        $translation = $record->translations()->where('locale', $lang)->first();
+                        if ($translation && ! empty($translation->name)) {
+                            return $translation->name;
+                        }
+                    }
+
+                    return $record->name ?: '-';
+                })
+                ->extraAttributes(fn ($record) => [
+                    'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->whereNotNull('name')->exists()
+                        ? ''
+                        : 'color: var(--gray-500);',
+                ]);
 
             $columns[] = TextColumn::make('collection.name')
                 ->label(__('media::fields.collection'))
@@ -726,10 +824,38 @@ class MediaResource extends Resource
                     ->icon('')
                     ->label('')
                     ->slideOver()
+                    ->modalHeading(function ($record, $livewire) {
+                        $lang = $livewire->lang ?? app()->getLocale();
+
+                        if (method_exists($record, 'translations')) {
+                            $translation = $record->translations()->where('locale', $lang)->first();
+                            if ($translation && ! empty($translation->name)) {
+                                return $translation->name;
+                            }
+                        }
+
+                        return $record->name ?: 'No name';
+                    })
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->authorize('view')
                     ->extraModalFooterActions([
+                        Action::make('save_translation')
+                            ->label(__('media::fields.save_translation'))
+                            ->color('success')
+                            ->icon('heroicon-m-language')
+                            ->visible(function ($record, $livewire) {
+                                if (! $record || ! method_exists($record, 'translations')) {
+                                    return false;
+                                }
+                                $lang = $livewire->lang ?? app()->getLocale();
+                                $translation = $record->translations()->where('locale', $lang)->first();
+
+                                return ! $translation;
+                            })
+                            ->action(function ($record, $livewire) {
+                                $livewire->saveTranslationFromForm($record->id);
+                            }),
                         DeleteAction::make()
                             ->label(__('media::fields.delete_file'))
                             ->color('danger')

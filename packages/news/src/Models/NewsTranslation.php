@@ -2,99 +2,41 @@
 
 namespace Moox\News\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\User\Models\User;
 
-class NewsTranslation extends Model
+class NewsTranslation extends BaseDraftTranslationModel
 {
-    use SoftDeletes;
-
-    public $timestamps = true;
-
-    protected $fillable = [
-        // Translation fields
-        'locale',
-        'news_id',
-        'title',
-        'slug',
-        'status',
-        'excerpt',
-        'content',
-        'author_id',
-        'created_by_id',
-        'created_by_type',
-        'updated_by_id',
-        'updated_by_type',
-        'deleted_by_id',
-        'deleted_by_type',
-
-        // Publishing schedule fields
-        'to_publish_at',
-        'published_at',
-        'to_unpublish_at',
-        'unpublished_at',
-
-        // Actor fields
-        'published_by_id',
-        'published_by_type',
-        'unpublished_by_id',
-        'unpublished_by_type',
-
-        // Soft delete and restoration fields
-        'deleted_at',
-        'deleted_by_id',
-        'deleted_by_type',
-        'restored_at',
-        'restored_by_id',
-        'restored_by_type',
-    ];
-
-    protected $casts = [
-        // DateTime casts
-        'to_publish_at' => 'datetime',
-        'published_at' => 'datetime',
-        'to_unpublish_at' => 'datetime',
-        'unpublished_at' => 'datetime',
-        'deleted_at' => 'datetime',
-        'restored_at' => 'datetime',
-    ];
-
-    public function createdBy()
+    /**
+     * Get custom fillable for Draft translations
+     */
+    protected function getCustomFillable(): array
     {
-        return $this->morphTo(null, 'created_by_type', 'created_by_id');
+        return [
+            'news_id',
+            'title',
+            'slug',
+            'permalink',
+            'description',
+            'content',
+            'author_id',
+            'author_type',
+        ];
     }
 
-    public function updatedBy()
-    {
-        return $this->morphTo(null, 'updated_by_type', 'updated_by_id');
-    }
-
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
         static::creating(function ($model) {
-            if (Auth::check()) {
-                $userId = Auth::id();
-
-                $model->created_by_id = $userId;
-                $model->created_by_type = 'App\\Models\\User';
-                $model->updated_by_id = $userId;
-                $model->updated_by_type = 'App\\Models\\User';
-
-                if (empty($model->author_id)) {
-                    $model->author_id = $userId;
-                }
+            if ($model->author_id && ! $model->author_type) {
+                $model->author_type = User::class;
             }
         });
 
         static::updating(function ($model) {
-            if (Auth::check()) {
-                $userId = Auth::id();
-
-                $model->updated_by_id = $userId;
-                $model->updated_by_type = 'App\\Models\\User';
+            if ($model->author_id && ! $model->author_type) {
+                $model->author_type = User::class;
             }
         });
     }

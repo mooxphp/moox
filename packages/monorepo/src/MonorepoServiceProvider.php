@@ -25,6 +25,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
             ->name('monorepo')
             ->hasCommands([
                 ReleaseCommand::class,
+                ListPackagesCommand::class,
             ])
             ->hasConfigFile('monorepo');
     }
@@ -37,10 +38,8 @@ class MonorepoServiceProvider extends MooxServiceProvider
         $this->app->bind(GitHubClientInterface::class, function ($app) {
             $token = $this->getGitHubToken();
 
-            if (! $token) {
-                throw new \RuntimeException('GitHub token not found. Please link your GitHub account.');
-            }
-
+            // Always create client, even without token
+            // Error will be thrown when actually using GitHub API
             return new GitHubClient($token);
         });
 
@@ -67,7 +66,6 @@ class MonorepoServiceProvider extends MooxServiceProvider
             );
         });
 
-        // Register RepositoryCreationService
         $this->app->bind(RepositoryCreationService::class, function ($app) {
             return new RepositoryCreationService(
                 $app->make(GitHubClientInterface::class),
@@ -110,14 +108,17 @@ class MonorepoServiceProvider extends MooxServiceProvider
         }
 
         try {
-            // Try to get token from first user (simplified approach)
-            if (class_exists(User::class)) {
+            // Only try database access if everything is available
+            if (class_exists(User::class) &&
+                \DB::connection()->getDatabaseName() &&
+                \Schema::hasTable('users') &&
+                \Schema::hasColumn('users', 'github_token')) {
                 $user = User::first();
 
                 return $user?->github_token;
             }
         } catch (\Exception) {
-            // If User model doesn't exist or table doesn't exist
+            // Gracefully handle any database/schema issues
         }
 
         return null;

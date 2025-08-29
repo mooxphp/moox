@@ -3,17 +3,45 @@
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
-use Moox\Localization\Models\Localization;
+use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
+use Override;
 
 abstract class BaseViewDraft extends ViewRecord
 {
-    use CanResolveResourceClass;
+    use CanResolveResourceClass, HasPagesTaxonomy;
 
     public ?string $lang = null;
+
+    #[Override]
+    public function getTitle(): string
+    {
+        $title = parent::getTitle();
+        if ($this->isRecordTrashed()) {
+            $title = $title.' - '.__('core::core.deleted');
+        }
+
+        return $title;
+    }
+
+    protected function isRecordTrashed(): bool
+    {
+        if (! $this->record) {
+            return false;
+        }
+
+        $currentLang = $this->lang ?? request()->query('lang') ?? app()->getLocale();
+
+        if (method_exists($this->record, 'translations')) {
+            $translation = $this->record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+            return $translation && $translation->trashed();
+        }
+
+        return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
+    }
 
     public function getFormActions(): array
     {
@@ -39,32 +67,17 @@ abstract class BaseViewDraft extends ViewRecord
             }
         }
 
+        $this->handleTaxonomiesBeforeFill($values);
+
         return $values;
     }
 
     public function getHeaderActions(): array
     {
-        $localizations = Localization::with('language')->get();
-
         return [
-            ActionGroup::make(
-                $localizations->map(
-                    fn ($localization) => Action::make('language_'.$localization->language->alpha2)
-                        ->icon('flag-'.$localization->language->alpha2)
-                        ->label('')
-                        ->color('transparent')
-                        ->extraAttributes(['class' => 'bg-transparent hover:bg-transparent flex items-center gap-1'])
-                        ->url(fn () => $this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $localization->language->alpha2]))
-                )
-                    ->all()
-            )
-                ->color('transparent')
-                ->label('Language')
-                ->icon('flag-'.$this->lang)
-                ->extraAttributes(['class' => '']),
-
-            RestoreAction::make(),
-
+            Action::make('language_selector')
+                ->view('localization::lang-selector')
+                ->extraAttributes(['style' => 'margin-left: -8px;']),
         ];
     }
 }

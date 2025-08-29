@@ -7,6 +7,7 @@ use Astrotomic\Translatable\Translatable;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
+use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -14,7 +15,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
-    use InteractsWithMedia, Translatable;
+    use HasMediaUsable, InteractsWithMedia, Translatable;
 
     public $translatedAttributes = ['name', 'title', 'alt', 'description', 'internal_note'];
 
