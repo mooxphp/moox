@@ -45,7 +45,7 @@ class CreateMediaCollection extends CreateRecord
 
         unset($data['extend_existing_collection']);
 
-        $collection = new MediaCollection();
+        $collection = new MediaCollection;
         $collection->translateOrNew($this->lang)->name = $data['name'];
         $collection->translateOrNew($this->lang)->description = $data['description'] ?? '';
         $collection->save();

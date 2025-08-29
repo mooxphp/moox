@@ -2,7 +2,6 @@
 
 namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,8 +31,8 @@ class ListMediaCollections extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Model => $model::create($data))
-                ->url(fn(): string => static::$resource::getUrl('create', ['lang' => $this->lang])),
+                ->using(fn (array $data, string $model): Model => $model::create($data))
+                ->url(fn (): string => static::$resource::getUrl('create', ['lang' => $this->lang])),
         ];
     }
 

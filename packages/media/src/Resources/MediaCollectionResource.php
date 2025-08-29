@@ -2,21 +2,19 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Moox\Media\Models\Media;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
-use Filament\Forms\Components\Select;
-use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -59,20 +57,19 @@ class MediaCollectionResource extends Resource
                     return function ($attribute, $value, $fail) use ($record) {
                         $locale = app()->getLocale();
                         $exists = MediaCollection::whereTranslation('name', $value, $locale)
-                            ->when($record, fn($q) => $q->where('id', '!=', $record->id))
+                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
                             ->exists();
                         if ($exists) {
                             $fail(__('media::fields.collection_name_already_exists'));
                         }
                     };
-
                 }),
 
             TextInput::make('description')
                 ->label(__('media::fields.collection_description'))
                 ->maxLength(255)
                 ->formatStateUsing(function ($state, $record, $livewire) {
-                    if (!$record || !method_exists($record, 'getTranslation')) {
+                    if (! $record || ! method_exists($record, 'getTranslation')) {
                         return $state;
                     }
 
@@ -102,12 +99,12 @@ class MediaCollectionResource extends Resource
 
                         $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
                         if ($fallbackTranslation && $fallbackTranslation->name) {
-                            return $fallbackTranslation->name . ' (' . app()->getLocale() . ')';
+                            return $fallbackTranslation->name.' ('.app()->getLocale().')';
                         }
 
                         return 'No name available';
                     })
-                    ->extraAttributes(fn($record, $livewire) => [
+                    ->extraAttributes(fn ($record, $livewire) => [
                         'style' => $record->translations()->where('locale', $livewire->lang ?? app()->getLocale())->whereNotNull('name')->exists()
                             ? ''
                             : 'color: var(--gray-500);',
@@ -153,6 +150,7 @@ class MediaCollectionResource extends Resource
                     })
                     ->url(function (MediaCollection $record, $livewire) {
                         $currentLang = $livewire->lang ?? app()->getLocale();
+
                         return static::getUrl('edit', ['record' => $record, 'lang' => $currentLang]);
                     }),
                 DeleteAction::make()

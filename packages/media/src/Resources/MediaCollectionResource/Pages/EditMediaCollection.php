@@ -23,16 +23,17 @@ class EditMediaCollection extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
+        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
         $translation = $record->getTranslation($this->lang, false);
 
-        if (!$translation) {
+        if (! $translation) {
             foreach ($record->translatedAttributes as $attribute) {
                 $values[$attribute] = null;
             }
+
             return $values;
         }
 
@@ -47,7 +48,7 @@ class EditMediaCollection extends EditRecord
     {
         $record = $this->getRecord();
 
-        if (!method_exists($record, 'translateOrNew') || !property_exists($record, 'translatedAttributes')) {
+        if (! method_exists($record, 'translateOrNew') || ! property_exists($record, 'translatedAttributes')) {
             return $data;
         }
 
