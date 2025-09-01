@@ -39,7 +39,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
-        "moox-stability": "stable"
+        "moox": {
+            "stability": "stable"
+        }
     },
     "config": {
         "allow-plugins": {
