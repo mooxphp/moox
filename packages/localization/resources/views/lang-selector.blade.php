@@ -1,12 +1,21 @@
 @php
     $currentLang = $this->lang ?: app()->getLocale();
 
-
-
     $currentLocalization = \Moox\Localization\Models\Localization::with('language')
         ->whereHas('language', fn($q) => $q->where('alpha2', $currentLang))
         ->first();
-    $allLocalizations = \Moox\Localization\Models\Localization::with('language')->get();
+
+    $isAdminContext = request()->is('admin/*') || request()->is('filament/*') ||
+        (isset($this) && method_exists($this, 'getResource'));
+
+    $allLocalizations = \Moox\Localization\Models\Localization::with('language')
+        ->when($isAdminContext, function ($query) {
+            $query->where('is_active_admin', true);
+        })
+        ->when(!$isAdminContext, function ($query) {
+            $query->where('is_active_frontend', true);
+        })
+        ->get();
 @endphp
 
 <x-filament::dropdown>

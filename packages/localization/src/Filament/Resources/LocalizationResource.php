@@ -16,14 +16,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
 use Moox\Localization\Models\Localization;
 
-class LocalizationResource extends BaseDraftResource
+class LocalizationResource extends BaseRecordResource
 {
     protected static ?string $model = Localization::class;
 
@@ -69,7 +69,7 @@ class LocalizationResource extends BaseDraftResource
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')
