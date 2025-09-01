@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticLocaleResource\Pages;
 
+use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\Simple\SingleSimpleInListPage;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticLocaleResource;
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Data\Models\StaticLocale;
 
 class ListStaticLocales extends BaseListRecords
