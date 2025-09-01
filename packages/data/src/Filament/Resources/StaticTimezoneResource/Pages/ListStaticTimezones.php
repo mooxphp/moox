@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticTimezoneResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\Simple\SingleSimpleInListPage;
 use Moox\Data\Filament\Resources\StaticTimezoneResource;
 
-class ListStaticTimezones extends ListRecords
+class ListStaticTimezones extends BaseListRecords
 {
     use BaseInListPage, SingleSimpleInListPage;
 

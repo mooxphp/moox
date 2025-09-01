@@ -4,31 +4,32 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\CreateStaticCountriesStaticCurrencies;
+use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Data\Models\StaticCountriesStaticCurrencies;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\EditStaticCountriesStaticCurrencies;
 use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ListStaticCountriesStaticCurrencies;
 use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ViewStaticCountriesStaticCurrencies;
-use Moox\Data\Models\StaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\CreateStaticCountriesStaticCurrencies;
 
-class StaticCountriesStaticCurrenciesResource extends Resource
+class StaticCountriesStaticCurrenciesResource extends BaseRecordResource
 {
-    use BaseInResource, HasResourceTabs, SingleSimpleInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = StaticCountriesStaticCurrencies::class;
 
@@ -123,15 +124,15 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['id']) {
+                        if (!$data['id']) {
                             return null;
                         }
 
-                        return 'ID: '.$data['id'];
+                        return 'ID: ' . $data['id'];
                     }),
                 Filter::make('country_id')
                     ->schema([
@@ -142,15 +143,15 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['country_id'],
-                            fn (Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['country_id']) {
+                        if (!$data['country_id']) {
                             return null;
                         }
 
-                        return 'Country ID: '.$data['country_id'];
+                        return 'Country ID: ' . $data['country_id'];
                     }),
                 Filter::make('currency_id')
                     ->schema([
@@ -161,15 +162,15 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['currency_id'],
-                            fn (Builder $query, $value): Builder => $query->where('currency_id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('currency_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['currency_id']) {
+                        if (!$data['currency_id']) {
                             return null;
                         }
 
-                        return 'Currency ID: '.$data['currency_id'];
+                        return 'Currency ID: ' . $data['currency_id'];
                     }),
                 SelectFilter::make('currency')
                     ->label(__('data::fields.currency_name'))

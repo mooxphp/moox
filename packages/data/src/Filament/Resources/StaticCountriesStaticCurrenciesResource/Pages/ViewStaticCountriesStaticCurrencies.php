@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
+use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
 use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource;
 
-class ViewStaticCountriesStaticCurrencies extends ViewRecord
+class ViewStaticCountriesStaticCurrencies extends BaseViewRecord
 {
     use BaseInViewPage, SingleSimpleInViewPage;
 

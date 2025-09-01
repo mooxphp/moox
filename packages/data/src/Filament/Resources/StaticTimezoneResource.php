@@ -15,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\CreateStaticTimezone;
 use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\EditStaticTimezone;
 use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ListStaticTimezones;
@@ -23,7 +23,7 @@ use Moox\Data\Filament\Resources\StaticTimezoneResource\Pages\ViewStaticTimezone
 use Moox\Data\Filament\Resources\StaticTimezoneResource\RelationManagers\StaticCountriesRelationManager;
 use Moox\Data\Models\StaticTimezone;
 
-class StaticTimezoneResource extends BaseDraftResource
+class StaticTimezoneResource extends BaseRecordResource
 {
     protected static ?string $model = StaticTimezone::class;
 
@@ -123,15 +123,15 @@ class StaticTimezoneResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['name']) {
+                        if (!$data['name']) {
                             return null;
                         }
 
-                        return 'name: '.$data['name'];
+                        return 'name: ' . $data['name'];
                     }),
                 Filter::make('offset_standart')
                     ->schema([
@@ -142,15 +142,15 @@ class StaticTimezoneResource extends BaseDraftResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['offset_standart'],
-                            fn (Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['offset_standart']) {
+                        if (!$data['offset_standart']) {
                             return null;
                         }
 
-                        return 'name: '.$data['offset_standart'];
+                        return 'name: ' . $data['offset_standart'];
                     }),
             ]);
     }
