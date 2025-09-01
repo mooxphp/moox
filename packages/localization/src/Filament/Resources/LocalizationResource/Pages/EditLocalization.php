@@ -11,7 +11,5 @@ use Moox\Localization\Filament\Resources\LocalizationResource;
 
 class EditLocalization extends BaseEditRecord
 {
-    use BaseInEditPage, SingleSimpleInEditPage;
-
     protected static string $resource = LocalizationResource::class;
 }

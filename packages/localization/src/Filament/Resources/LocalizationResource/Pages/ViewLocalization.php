@@ -11,7 +11,5 @@ use Moox\Localization\Filament\Resources\LocalizationResource;
 
 class ViewLocalization extends BaseViewRecord
 {
-    use BaseInViewPage, SingleSimpleInViewPage;
-
     protected static string $resource = LocalizationResource::class;
 }

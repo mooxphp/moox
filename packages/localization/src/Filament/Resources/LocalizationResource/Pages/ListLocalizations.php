@@ -11,7 +11,5 @@ use Moox\Localization\Filament\Resources\LocalizationResource;
 
 class ListLocalizations extends BaseListRecords
 {
-    use BaseInListPage, SingleSimpleInListPage;
-
     protected static string $resource = LocalizationResource::class;
 }

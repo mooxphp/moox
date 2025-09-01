@@ -11,7 +11,5 @@ use Moox\Localization\Filament\Resources\LocalizationResource;
 
 class CreateLocalization extends BaseCreateRecord
 {
-    use BaseInCreatePage, SingleSimpleInCreatePage;
-
     protected static string $resource = LocalizationResource::class;
 }
