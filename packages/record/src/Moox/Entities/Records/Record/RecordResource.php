@@ -9,7 +9,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -91,8 +90,8 @@ class RecordResource extends BaseRecordResource
                                 ->schema([
                                     Select::make('status')
                                         ->label(__('core::core.status'))
-                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn($case) => [
-                                            $case->value => __('core::core.' . $case->value),
+                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn ($case) => [
+                                            $case->value => __('core::core.'.$case->value),
                                         ]))
                                         ->default(RecordStatus::INACTIVE->value)
                                         ->required(),
@@ -111,7 +110,7 @@ class RecordResource extends BaseRecordResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
