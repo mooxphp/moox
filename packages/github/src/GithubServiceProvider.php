@@ -18,6 +18,7 @@ class GithubServiceProvider extends MooxServiceProvider
             ->hasCommands([
                 Commands\GitHubTokenCommand::class,
             ])
+            ->hasMigration('add_github_token_to_user')
             ->hasConfigFile();
     }
 }
