@@ -35,6 +35,9 @@
         "sort-packages": true
     },
     "extra": {
+        "moox": {
+            "stability": "stable"
+        },
         "laravel": {
             "providers": [
                 "Moox\\Jobs\\JobsServiceProvider",

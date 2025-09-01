@@ -39,7 +39,6 @@
                 "Moox\\Core\\CoreServiceProvider"
             ]
         },
-        "moox-stability": "stable",
         "moox": {
             "name": "Moox Core",
             "stability": "stable",

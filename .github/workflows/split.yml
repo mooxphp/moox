@@ -80,8 +80,8 @@ jobs:
         id: version
         run: |
           if [ -f composer.json ]; then
-            # Extract moox-stability from composer.json
-            STABILITY=$(jq -r '.extra."moox-stability" // "dev"' composer.json)
+            # Extract stability from composer.json
+            STABILITY=$(jq -r '.extra.moox.stability // "dev"' composer.json)
             BASE_VERSION="${{ needs.prepare.outputs.core-version }}"
             
             echo "Package: ${{ matrix.package }}"
