@@ -38,6 +38,9 @@
             "providers": [
                 "Moox\\Clipboard\\ClipboardServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     }
 }

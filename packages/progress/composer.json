@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\Progress\\ProgressServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",
