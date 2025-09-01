@@ -69,7 +69,7 @@ class LocalizationResource extends BaseRecordResource
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')
