@@ -70,22 +70,6 @@ class RecordResource extends BaseRecordResource
                                 fieldPermalink: 'permalink',
                                 urlPathEntityType: 'records',
                                 slugRuleUniqueParameters: [
-                                    'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
-                                        $locale = $livewire->lang;
-                                        if ($record) {
-                                            $rule->where('locale', $locale);
-                                            $existingTranslation = $record->translations()
-                                                ->where('locale', $locale)
-                                                ->first();
-                                            if ($existingTranslation) {
-                                                $rule->ignore($existingTranslation->id);
-                                            }
-                                        } else {
-                                            $rule->where('locale', $locale);
-                                        }
-
-                                        return $rule;
-                                    },
                                     'table' => 'records',
                                     'column' => 'slug',
                                 ]
@@ -107,8 +91,8 @@ class RecordResource extends BaseRecordResource
                                 ->schema([
                                     Select::make('status')
                                         ->label(__('core::core.status'))
-                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn ($case) => [
-                                            $case->value => __('core::core.'.$case->value),
+                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn($case) => [
+                                            $case->value => __('core::core.' . $case->value),
                                         ]))
                                         ->default(RecordStatus::INACTIVE->value)
                                         ->required(),
@@ -127,7 +111,7 @@ class RecordResource extends BaseRecordResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),

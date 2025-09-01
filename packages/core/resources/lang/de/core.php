@@ -151,4 +151,5 @@ return [
     'excerpt' => 'Auszug',
     'gallery' => 'Galerie',
     'ulid' => 'ULID',
+    'slug_unique' => 'Dieser Slug ist bereits vergeben.',
 ];

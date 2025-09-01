@@ -9,6 +9,6 @@ enum TranslationStatus: string
     case PRIVATE = 'private';
     case SCHEDULED = 'scheduled';
     case PUBLISHED = 'published';
-    case NOT_TRANSLATED = 'not_translated';
+    case NOT_TRANSLATED = 'not translated';
     case DELETED = 'deleted';
 }
