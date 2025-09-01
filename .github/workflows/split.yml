@@ -154,17 +154,18 @@ jobs:
           echo "Version: $VERSION" 
           echo "Is prerelease: $IS_PRERELEASE"
           echo "Stability: $STABILITY"
-      # - name: Split package to separate repository
-      #   uses: symplify/monorepo-split-github-action@v2.3.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
-      #   with:
-      #     tag: "${{ steps.version.outputs.final-version }}"
-      #     package_directory: "packages/${{ matrix.package }}"
-      #     repository_organization: "mooxphp"
-      #     repository_name: "${{ matrix.package }}"
-      #     user_name: "Moox Bot"
-      #     user_email: "bot@moox.org"
+          
+      - name: Split package to separate repository
+        uses: symplify/monorepo-split-github-action@v2.3.0
+        env:
+          GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
+        with:
+          tag: "${{ steps.version.outputs.final-version }}"
+          package_directory: "packages/${{ matrix.package }}"
+          repository_organization: "mooxphp"
+          repository_name: "${{ matrix.package }}"
+          user_name: "Moox Bot"
+          user_email: "bot@moox.org"
 
       # - name: Create GitHub Release for split package
       #   run: |
