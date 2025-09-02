@@ -69,7 +69,7 @@ class LocalizationResource extends BaseRecordResource
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')
@@ -84,7 +84,16 @@ class LocalizationResource extends BaseRecordResource
                                     ->default(false),
                                 Toggle::make('is_default')
                                     ->label(__('localization::fields.is_default'))
-                                    ->default(false),
+                                    ->default(false)
+                                    ->afterStateUpdated(function ($state, $set, $get, $livewire) {
+                                        if ($state) {
+                                            $currentRecordId = $livewire->record?->id;
+
+                                            Localization::when($currentRecordId, function ($query) use ($currentRecordId) {
+                                                $query->where('id', '!=', $currentRecordId);
+                                            })->update(['is_default' => false]);
+                                        }
+                                    }),
                                 TextInput::make('routing_path')
                                     ->label(__('localization::fields.routing_path'))
                                     ->nullable(),
@@ -149,7 +158,13 @@ class LocalizationResource extends BaseRecordResource
                 ToggleColumn::make('is_active_frontend')
                     ->label(__('localization::fields.is_activ_frontend')),
                 ToggleColumn::make('is_default')
-                    ->label(__('localization::fields.is_default')),
+                    ->label(__('localization::fields.is_default'))
+                    ->afterStateUpdated(function ($state, $record) {
+                        if ($state) {
+                            static::getModel()::where('id', '!=', $record->id)
+                                ->update(['is_default' => false]);
+                        }
+                    }),
                 TextColumn::make('fallback_behaviour')
                     ->label(__('localization::fields.fallback_behaviour')),
                 TextColumn::make('language_routing')
