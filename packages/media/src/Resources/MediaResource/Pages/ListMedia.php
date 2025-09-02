@@ -3,15 +3,15 @@
 namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
-use Moox\Media\Models\Media;
-use Moox\Data\Models\StaticLanguage;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
-use Filament\Notifications\Notification;
-use Filament\Forms\Components\FileUpload;
-use Moox\Localization\Models\Localization;
-use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends BaseListDrafts
@@ -50,7 +50,7 @@ class ListMedia extends BaseListDrafts
             $translation = $record->translateOrNew($lang);
 
             $formData = [];
-            if (!empty($this->mountedActions)) {
+            if (! empty($this->mountedActions)) {
                 foreach ($this->mountedActions as $action) {
                     if (isset($action['data'])) {
                         $formData = $action['data'];
@@ -73,6 +73,7 @@ class ListMedia extends BaseListDrafts
                     ->body(__('media::fields.name_required'))
                     ->danger()
                     ->send();
+
                 return;
             }
 
@@ -96,7 +97,7 @@ class ListMedia extends BaseListDrafts
 
     public function toggleView(): void
     {
-        $this->isGridView = !$this->isGridView;
+        $this->isGridView = ! $this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
@@ -111,9 +112,9 @@ class ListMedia extends BaseListDrafts
     {
         return [
             Action::make('toggleView')
-                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn() => $this->toggleView())
+                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn () => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
@@ -121,7 +122,7 @@ class ListMedia extends BaseListDrafts
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn() => (function () {
+                        ->options(fn () => (function () {
                             $defaultLang = Localization::where('is_default', true)
                                 ->value('language_id');
 
@@ -130,8 +131,8 @@ class ListMedia extends BaseListDrafts
                                 : config('app.locale');
 
                             return MediaCollection::query()
-                                ->with(['translations' => fn($q) => $q->where('locale', $alpha2)])
-                                ->whereHas('translations', fn($q) => $q->where('locale', $alpha2))
+                                ->with(['translations' => fn ($q) => $q->where('locale', $alpha2)])
+                                ->whereHas('translations', fn ($q) => $q->where('locale', $alpha2))
                                 ->get()
                                 ->mapWithKeys(function ($item) use ($alpha2) {
                                     $translation = method_exists($item, 'translate')
@@ -177,7 +178,7 @@ class ListMedia extends BaseListDrafts
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
