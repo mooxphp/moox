@@ -9,6 +9,5 @@ use Moox\Data\Filament\Resources\StaticLocaleResource;
 
 class ViewStaticLocale extends BaseViewRecord
 {
-
     protected static string $resource = StaticLocaleResource::class;
 }
