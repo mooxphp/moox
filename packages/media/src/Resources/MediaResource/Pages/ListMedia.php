@@ -3,14 +3,15 @@
 namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Notifications\Notification;
-use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
-use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
+use Moox\Data\Models\StaticLanguage;
+use Filament\Forms\Components\Select;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\FileUpload;
+use Moox\Localization\Models\Localization;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends BaseListDrafts
@@ -49,7 +50,7 @@ class ListMedia extends BaseListDrafts
             $translation = $record->translateOrNew($lang);
 
             $formData = [];
-            if (! empty($this->mountedActions)) {
+            if (!empty($this->mountedActions)) {
                 foreach ($this->mountedActions as $action) {
                     if (isset($action['data'])) {
                         $formData = $action['data'];
@@ -66,8 +67,17 @@ class ListMedia extends BaseListDrafts
                 'internal_note' => 'internal_note',
             ];
 
+            if (empty($formData['name'])) {
+                Notification::make()
+                    ->title(__('media::fields.validation_error'))
+                    ->body(__('media::fields.name_required'))
+                    ->danger()
+                    ->send();
+                return;
+            }
+
             foreach ($translationMapping as $formField => $dbField) {
-                if (isset($formData[$formField]) && ! empty($formData[$formField])) {
+                if (isset($formData[$formField])) {
                     $translation->$dbField = $formData[$formField];
                 }
             }
@@ -86,7 +96,7 @@ class ListMedia extends BaseListDrafts
 
     public function toggleView(): void
     {
-        $this->isGridView = ! $this->isGridView;
+        $this->isGridView = !$this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
@@ -101,9 +111,9 @@ class ListMedia extends BaseListDrafts
     {
         return [
             Action::make('toggleView')
-                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn () => $this->toggleView())
+                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn() => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
@@ -111,9 +121,30 @@ class ListMedia extends BaseListDrafts
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => MediaCollection::whereHas('translations', function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        })->get()->pluck('name', 'id')->filter()->toArray())
+                        ->options(fn() => (function () {
+                            $defaultLang = Localization::where('is_default', true)
+                                ->value('language_id');
+
+                            $alpha2 = $defaultLang
+                                ? StaticLanguage::whereKey($defaultLang)->value('alpha2')
+                                : config('app.locale');
+
+                            return MediaCollection::query()
+                                ->with(['translations' => fn($q) => $q->where('locale', $alpha2)])
+                                ->whereHas('translations', fn($q) => $q->where('locale', $alpha2))
+                                ->get()
+                                ->mapWithKeys(function ($item) use ($alpha2) {
+                                    $translation = method_exists($item, 'translate')
+                                        ? $item->translate($alpha2)
+                                        : ($item->translations->first() ?? null);
+
+                                    $name = $translation?->name ?? $item->name;
+
+                                    return [$item->id => $name];
+                                })
+                                ->filter()
+                                ->toArray();
+                        })())
                         ->default(MediaCollection::first()->id)
                         ->searchable()
                         ->required()
@@ -146,13 +177,16 @@ class ListMedia extends BaseListDrafts
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
                             $collectionId = $get('media_collection_id');
                             $collection = MediaCollection::find($collectionId);
                             $collectionName = $collection?->name ?? __('media::fields.uncategorized');
+
+                            $defaultLang = optional(Localization::where('is_default', true)
+                                ->first()?->language)->alpha2 ?? config('app.locale');
 
                             foreach ($state as $tempFile) {
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -182,6 +216,9 @@ class ListMedia extends BaseListDrafts
                                     continue;
                                 }
 
+                                $previousLocale = app()->getLocale();
+                                app()->setLocale($defaultLang);
+
                                 $model = new Media;
                                 $model->exists = true;
 
@@ -202,12 +239,7 @@ class ListMedia extends BaseListDrafts
                                 $media->model_id = $media->id;
                                 $media->model_type = Media::class;
 
-                                // Get default language from database or fallback to APP_LOCALE
-                                $defaultLocalization = Localization::where('is_default', true)->first();
-                                $defaultLang = $defaultLocalization ? $defaultLocalization->language->alpha2 : config('app.locale');
-
                                 $media->setCustomProperty('file_hash', $fileHash);
-                                $media->setCustomProperty('locale', $defaultLang);
 
                                 if (str_starts_with($media->mime_type, 'image/')) {
                                     [$width, $height] = getimagesize($media->getPath());
@@ -219,6 +251,7 @@ class ListMedia extends BaseListDrafts
 
                                 $media->save();
                                 $this->processedHashes[] = $fileHash;
+                                app()->setLocale($previousLocale);
                             }
                         }),
                 ])

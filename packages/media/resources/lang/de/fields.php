@@ -50,6 +50,8 @@ return [
     'replace_error' => 'Fehler beim Ersetzen der Datei',
     'translation_saved' => 'Übersetzung gespeichert',
     'translation_saved_message' => 'Die Übersetzung für :lang wurde erfolgreich gespeichert.',
+    'name_required' => 'Der Name ist erforderlich.',
+    'validation_error' => 'Fehler',
 
     // Linked Files
     'file_has_links' => 'Diese Datei wird in :count :links verwendet.',
