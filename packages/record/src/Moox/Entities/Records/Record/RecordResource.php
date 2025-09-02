@@ -90,8 +90,8 @@ class RecordResource extends BaseRecordResource
                                 ->schema([
                                     Select::make('status')
                                         ->label(__('core::core.status'))
-                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn ($case) => [
-                                            $case->value => __('core::core.'.$case->value),
+                                        ->options(collect(RecordStatus::cases())->mapWithKeys(fn($case) => [
+                                            $case->value => __('core::core.' . $case->value),
                                         ]))
                                         ->default(RecordStatus::INACTIVE->value)
                                         ->required(),
@@ -110,7 +110,7 @@ class RecordResource extends BaseRecordResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn ($record) => $record === null),
+                                ->hidden(fn($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -150,7 +150,10 @@ class RecordResource extends BaseRecordResource
             ->defaultSort('title', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
-            ->filters([]);
+            ->filters([
+                ...static::getTaxonomyFilters(),
+            ])->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     public static function getPages(): array
