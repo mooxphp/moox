@@ -6,12 +6,11 @@ namespace Moox\Data\Filament\Resources\StaticLanguageResource\Pages;
 
 use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
 use Moox\Data\Filament\Resources\StaticLanguageResource;
 
 class ListStaticLanguages extends BaseListRecords
 {
-    use BaseInListPage, SingleSimpleInListPage;
+    use BaseInListPage;
 
     protected static string $resource = StaticLanguageResource::class;
 }

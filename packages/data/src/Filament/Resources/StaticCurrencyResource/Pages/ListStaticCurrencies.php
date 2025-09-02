@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Moox\Data\Filament\Resources\StaticCurrencyResource\Pages;
 
 use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
-use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticCurrencyResource;
 use Moox\Data\Models\StaticCurrency;
 
 class ListStaticCurrencies extends BaseListRecords
 {
-    use BaseInListPage, HasListPageTabs, SingleSimpleInListPage;
+    use HasListPageTabs;
 
     protected static string $resource = StaticCurrencyResource::class;
 
