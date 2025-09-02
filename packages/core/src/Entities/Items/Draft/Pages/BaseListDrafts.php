@@ -4,9 +4,10 @@ namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Model;
+use Moox\Localization\Models\Localization;
 use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseListDrafts extends ListRecords
@@ -22,13 +23,16 @@ abstract class BaseListDrafts extends ListRecords
     public function mount(): void
     {
         parent::mount();
-        $this->lang = request()->get('lang', app()->getLocale());
+        $defaultLang = Localization::where('is_default', true)
+            ->first()?->language?->alpha2 ?? config('app.locale');
+
+        $this->lang = request()->get('lang', $defaultLang);
     }
 
     public function getTitle(): string
     {
         if ($this->activeTab === 'deleted') {
-            return parent::getTitle().' - '.__('core::core.trash');
+            return parent::getTitle() . ' - ' . __('core::core.trash');
         }
 
         return parent::getTitle();
@@ -41,8 +45,8 @@ abstract class BaseListDrafts extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn (array $data, string $model): Model => $model::create($data))
-                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Model => $model::create($data))
+                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -60,7 +64,7 @@ abstract class BaseListDrafts extends ListRecords
                     $this->redirect($this->getResource()::getUrl('index', ['lang' => $this->lang, 'tab' => 'all']));
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(fn(): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
         ];
     }
 

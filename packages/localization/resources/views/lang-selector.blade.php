@@ -2,8 +2,7 @@
     $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
     $defaultLang = $defaultLocalization ? $defaultLocalization->language->alpha2 : config('app.locale');
 
-    $explicitLang = request()->get('lang');
-    $currentLang = $explicitLang ?: $defaultLang;
+    $currentLang = $this->lang ?? request()->get('lang') ?? $defaultLang;
 
     $currentLocalization = \Moox\Localization\Models\Localization::with('language')
         ->whereHas('language', fn($q) => $q->where('alpha2', $currentLang))
