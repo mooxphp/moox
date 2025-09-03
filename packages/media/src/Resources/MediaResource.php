@@ -4,7 +4,6 @@ namespace Moox\Media\Resources;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -80,9 +79,9 @@ class MediaResource extends Resource
 
                     return $mediaCollection;
                 })
-                ->imageEditor(fn($record) => !$record->write_protected)
-                ->downloadable(fn($record) => !$record->write_protected)
-                ->deletable(fn($record) => !$record->write_protected)
+                ->imageEditor(fn ($record) => ! $record->write_protected)
+                ->downloadable(fn ($record) => ! $record->write_protected)
+                ->deletable(fn ($record) => ! $record->write_protected)
                 ->openable()
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
@@ -126,7 +125,7 @@ class MediaResource extends Resource
                             $isEdit = preg_match('/-v\d+$/', $newFileName);
 
                             $usables = [];
-                            if ($oldMediaId && !$isEdit) {
+                            if ($oldMediaId && ! $isEdit) {
                                 $usables = \DB::table('media_usables')
                                     ->where('media_id', $oldMediaId)
                                     ->get()
@@ -136,7 +135,7 @@ class MediaResource extends Resource
                                     ->toArray();
                             }
 
-                            if ($oldMediaId && !$isEdit) {
+                            if ($oldMediaId && ! $isEdit) {
                                 \DB::table('media')->where('id', $oldMediaId)->delete();
                             }
 
@@ -176,7 +175,7 @@ class MediaResource extends Resource
 
                             $media->save();
 
-                            if (!$isEdit) {
+                            if (! $isEdit) {
                                 foreach ($usables as $usable) {
                                     \DB::table('media_usables')->insert([
                                         'media_id' => $media->id,
@@ -192,7 +191,7 @@ class MediaResource extends Resource
                                         foreach ($model->getAttributes() as $field => $value) {
                                             $jsonData = json_decode($value, true);
 
-                                            if (!is_array($jsonData)) {
+                                            if (! is_array($jsonData)) {
                                                 continue;
                                             }
 
@@ -265,11 +264,11 @@ class MediaResource extends Resource
                         ->schema([
                             TextEntry::make('file_name')
                                 ->label(__('media::fields.file_name'))
-                                ->state(fn($record) => $record->file_name),
+                                ->state(fn ($record) => $record->file_name),
 
                             TextEntry::make('mime_type')
                                 ->label(__('media::fields.mime_type'))
-                                ->state(fn($record) => $record->getReadableMimeType()),
+                                ->state(fn ($record) => $record->getReadableMimeType()),
 
                             TextEntry::make('size')
                                 ->label(__('media::fields.size'))
@@ -283,33 +282,33 @@ class MediaResource extends Resource
                                         $i++;
                                     }
 
-                                    return number_format($bytes, 2) . ' ' . $units[$i];
+                                    return number_format($bytes, 2).' '.$units[$i];
                                 }),
 
                             TextEntry::make('dimensions')
                                 ->label(__('media::fields.dimensions'))
                                 ->state(function ($record) {
                                     $dimensions = $record->getCustomProperty('dimensions');
-                                    if (!$dimensions) {
+                                    if (! $dimensions) {
                                         return '-';
                                     }
 
                                     return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                                 })
-                                ->visible(fn($record) => str_starts_with($record->mime_type ?? '', 'image/')),
+                                ->visible(fn ($record) => str_starts_with($record->mime_type ?? '', 'image/')),
 
                             TextEntry::make('created_at')
                                 ->label(__('media::fields.created_at'))
-                                ->state(fn($record) => $record->created_at?->format('d.m.Y H:i')),
+                                ->state(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
 
                             TextEntry::make('updated_at')
                                 ->label(__('media::fields.updated_at'))
-                                ->state(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
+                                ->state(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
 
                             TextEntry::make('uploaded_by')
                                 ->label(__('media::fields.uploaded_by'))
                                 ->state(function ($record) {
-                                    if (!$record->uploader) {
+                                    if (! $record->uploader) {
                                         return '-';
                                     }
 
@@ -335,13 +334,13 @@ class MediaResource extends Resource
 
                             Select::make('media_collection_id')
                                 ->label(__('media::fields.collection'))
-                                ->disabled(fn($record) => $record?->getOriginal('write_protected'))
+                                ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
                                 ->options(
                                     MediaCollection::whereHas('translations', function ($query) {
                                         $query->where('locale', app()->getLocale());
                                     })->get()->pluck('name', 'id')->filter()->toArray()
                                 )
-                                ->default(fn($record) => $record->media_collection_id)
+                                ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
                                     if ($state !== $record->media_collection_id) {
                                         $record->media_collection_id = $state;
@@ -375,7 +374,7 @@ class MediaResource extends Resource
                                 }
                             }
                         })
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
                         ->label(__('media::fields.title'))
@@ -397,7 +396,7 @@ class MediaResource extends Resource
                                 }
                             }
                         })
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
                         ->label(__('media::fields.alt_text'))
@@ -419,7 +418,7 @@ class MediaResource extends Resource
                                 }
                             }
                         })
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
                         ->label(__('media::fields.description'))
@@ -441,7 +440,7 @@ class MediaResource extends Resource
                                 }
                             }
                         })
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
                 ->columns(2)
@@ -469,7 +468,7 @@ class MediaResource extends Resource
                                 }
                             }
                         })
-                        ->disabled(fn($record) => $record?->getOriginal('write_protected')),
+                        ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
                 ->collapsed(),
@@ -492,24 +491,24 @@ class MediaResource extends Resource
                             : 'width: 60px; height: auto; margin-top: 20px;';
 
                         if ($livewire->isSelecting) {
-                            $style = $baseStyle . 'opacity: 0.5;';
+                            $style = $baseStyle.'opacity: 0.5;';
                             if (in_array($record->id, $livewire->selected)) {
-                                $style = $baseStyle . 'outline: 4px solid rgb(59 130 246); opacity: 1;';
+                                $style = $baseStyle.'outline: 4px solid rgb(59 130 246); opacity: 1;';
                             }
 
                             return [
-                                'style' => $style . '; border-radius: 0.5rem; cursor: pointer;',
-                                'wire:click.stop' => "\$set('selected', " .
+                                'style' => $style.'; border-radius: 0.5rem; cursor: pointer;',
+                                'wire:click.stop' => "\$set('selected', ".
                                     (in_array($record->id, $livewire->selected)
                                         ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
                                         : json_encode(array_merge($livewire->selected, [$record->id]))
-                                    ) . ')',
+                                    ).')',
                             ];
                         }
 
                         return [
-                            'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
-                            'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                            'style' => $baseStyle.'; border-radius: 0.5rem; cursor: pointer;',
+                            'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
                         ];
                     })
                     ->tooltip(function ($record, $livewire) {
@@ -547,23 +546,23 @@ class MediaResource extends Resource
                     ->wrap()
                     ->limit(50)
                     ->searchable()
-                    ->visible(fn($record) => $record && !str_starts_with($record->mime_type ?? '', 'image/'))
+                    ->visible(fn ($record) => $record && ! str_starts_with($record->mime_type ?? '', 'image/'))
                     ->extraAttributes(function ($record, $livewire) {
                         $baseStyle = 'margin-top: 10px; word-break: break-all;';
                         if ($livewire->isSelecting) {
                             return [
-                                'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
-                                'wire:click.stop' => "\$set('selected', " .
+                                'style' => $baseStyle.'; border-radius: 0.5rem; cursor: pointer;',
+                                'wire:click.stop' => "\$set('selected', ".
                                     (in_array($record->id, $livewire->selected)
                                         ? json_encode(array_values(array_diff($livewire->selected, [$record->id])))
                                         : json_encode(array_merge($livewire->selected, [$record->id]))
-                                    ) . ')',
+                                    ).')',
                             ];
                         }
 
                         return [
-                            'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
-                            'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                            'style' => $baseStyle.'; border-radius: 0.5rem; cursor: pointer;',
+                            'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
                         ];
                     }),
             ]);
@@ -576,8 +575,8 @@ class MediaResource extends Resource
                         : 'width: 50px; height: 50px; margin-top: 10px;';
 
                     return [
-                        'style' => $baseStyle . '; border-radius: 0.5rem; cursor: pointer;',
-                        'x-on:click' => '$wire.call("mountAction", "edit", { record: ' . $record->id . ' })',
+                        'style' => $baseStyle.'; border-radius: 0.5rem; cursor: pointer;',
+                        'x-on:click' => '$wire.call("mountAction", "edit", { record: '.$record->id.' })',
                     ];
                 })
                 ->tooltip(function ($record, $livewire) {
@@ -622,14 +621,14 @@ class MediaResource extends Resource
 
                     if (method_exists($record, 'translations')) {
                         $translation = $record->translations()->where('locale', $lang)->first();
-                        if ($translation && !empty($translation->name)) {
+                        if ($translation && ! empty($translation->name)) {
                             return $translation->name;
                         }
                     }
 
                     return $record->name ?: '-';
                 })
-                ->extraAttributes(fn($record) => [
+                ->extraAttributes(fn ($record) => [
                     'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->whereNotNull('name')->exists()
                         ? ''
                         : 'color: var(--gray-500);',
@@ -642,11 +641,11 @@ class MediaResource extends Resource
             $columns[] = TextColumn::make('mime_type')
                 ->label(__('media::fields.mime_type'))
                 ->searchable()
-                ->formatStateUsing(fn($record) => $record->getReadableMimeType());
+                ->formatStateUsing(fn ($record) => $record->getReadableMimeType());
 
             $columns[] = TextColumn::make('uploader_type')
                 ->label(__('media::fields.uploaded_by'))
-                ->formatStateUsing(fn($record) => $record->uploader?->name);
+                ->formatStateUsing(fn ($record) => $record->uploader?->name);
 
             $columns[] = TextColumn::make('created_at')
                 ->label(__('media::fields.created_at'))
@@ -661,13 +660,13 @@ class MediaResource extends Resource
 
                     return $count === 0
                         ? __('media::fields.not_used')
-                        : $count . ' ' . trans_choice('media::fields.link|links', $count);
+                        : $count.' '.trans_choice('media::fields.link|links', $count);
                 });
         }
 
         return $table
             ->columns($columns)
-            ->contentGrid(fn($livewire) => $livewire->isGridView ? [
+            ->contentGrid(fn ($livewire) => $livewire->isGridView ? [
                 'md' => 2,
                 'lg' => 3,
                 'xl' => 4,
@@ -681,14 +680,14 @@ class MediaResource extends Resource
                             ? __('media::fields.end_selection')
                             : __('media::fields.select_multiple');
                     })
-                    ->icon(fn($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-square-2-stack')
-                    ->color(fn($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
-                    ->visible(fn($livewire) => $livewire->isGridView)
+                    ->icon(fn ($livewire) => $livewire->isSelecting ? 'heroicon-m-x-mark' : 'heroicon-m-square-2-stack')
+                    ->color(fn ($livewire) => $livewire->isSelecting ? 'gray' : 'primary')
+                    ->visible(fn ($livewire) => $livewire->isGridView)
                     ->action(function ($livewire) {
-                        $livewire->isSelecting = !$livewire->isSelecting;
+                        $livewire->isSelecting = ! $livewire->isSelecting;
                         $livewire->selected = [];
 
-                        if (!$livewire->isSelecting) {
+                        if (! $livewire->isSelecting) {
                             return redirect(static::getUrl('index'));
                         }
                     }),
@@ -698,7 +697,7 @@ class MediaResource extends Resource
                         $count = count($livewire->selected);
 
                         return $count > 0
-                            ? __('media::fields.delete_selected') . " ({$count} " . trans_choice('media::fields.file|files', $count) . ')'
+                            ? __('media::fields.delete_selected')." ({$count} ".trans_choice('media::fields.file|files', $count).')'
                             : __('media::fields.delete_selected');
                     })
                     ->icon('heroicon-m-trash')
@@ -707,12 +706,12 @@ class MediaResource extends Resource
                     ->modalHeading(function ($livewire) {
                         $count = count($livewire->selected);
 
-                        return __('media::fields.delete_selected') . " ({$count} " . trans_choice('media::fields.file|files', $count) . ')';
+                        return __('media::fields.delete_selected')." ({$count} ".trans_choice('media::fields.file|files', $count).')';
                     })
                     ->modalDescription(__('media::fields.delete_confirmation'))
                     ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))
-                    ->visible(fn($livewire) => $livewire->isGridView && $livewire->isSelecting && !empty($livewire->selected))
+                    ->visible(fn ($livewire) => $livewire->isGridView && $livewire->isSelecting && ! empty($livewire->selected))
                     ->action(function ($livewire) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -721,11 +720,11 @@ class MediaResource extends Resource
                         foreach ($livewire->selected as $id) {
                             try {
                                 $media = Media::find($id);
-                                if (!$media) {
+                                if (! $media) {
                                     continue;
                                 }
 
-                                if (!auth()->user()->can('delete', $media)) {
+                                if (! auth()->user()->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -741,7 +740,7 @@ class MediaResource extends Resource
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
-                                Log::error('Media deletion failed: ' . $e->getMessage(), [
+                                Log::error('Media deletion failed: '.$e->getMessage(), [
                                     'media_id' => $id,
                                 ]);
                                 $errorCount++;
@@ -751,7 +750,7 @@ class MediaResource extends Resource
                         if ($successCount > 0) {
                             Notification::make()
                                 ->success()
-                                ->title($successCount . ' ' . trans_choice('media::fields.file_deleted|files_deleted', $successCount))
+                                ->title($successCount.' '.trans_choice('media::fields.file_deleted|files_deleted', $successCount))
                                 ->send();
                         }
 
@@ -759,7 +758,7 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->warning()
                                 ->title(__('media::fields.protected_skipped'))
-                                ->body($protectedCount . ' ' . trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
+                                ->body($protectedCount.' '.trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
                                 ->persistent()
                                 ->send();
                         }
@@ -768,15 +767,15 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->danger()
                                 ->title(__('media::fields.delete_error'))
-                                ->body($errorCount . ' ' . trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
+                                ->body($errorCount.' '.trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
                                 ->persistent()
                                 ->send();
                         }
 
-                        $livewire->isSelecting = !$livewire->isSelecting;
+                        $livewire->isSelecting = ! $livewire->isSelecting;
                         $livewire->selected = [];
 
-                        if (!$livewire->isSelecting) {
+                        if (! $livewire->isSelecting) {
                             return redirect(static::getUrl('index'));
                         }
                     }),
@@ -788,12 +787,12 @@ class MediaResource extends Resource
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalHeading(function (Collection $records) {
-                        return __('media::fields.delete_selected') . ' (' . $records->count() . ' ' . trans_choice('media::fields.file|files', $records->count()) . ')';
+                        return __('media::fields.delete_selected').' ('.$records->count().' '.trans_choice('media::fields.file|files', $records->count()).')';
                     })
                     ->modalDescription(__('media::fields.delete_confirmation'))
                     ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))
-                    ->visible(fn($livewire) => !$livewire->isGridView)
+                    ->visible(fn ($livewire) => ! $livewire->isGridView)
                     ->action(function (Collection $records) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -801,7 +800,7 @@ class MediaResource extends Resource
 
                         foreach ($records as $media) {
                             try {
-                                if (!auth()->user()->can('delete', $media)) {
+                                if (! auth()->user()->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -817,7 +816,7 @@ class MediaResource extends Resource
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
-                                Log::error('Media deletion failed: ' . $e->getMessage(), [
+                                Log::error('Media deletion failed: '.$e->getMessage(), [
                                     'media_id' => $media->id,
                                 ]);
                                 $errorCount++;
@@ -827,7 +826,7 @@ class MediaResource extends Resource
                         if ($successCount > 0) {
                             Notification::make()
                                 ->success()
-                                ->title($successCount . ' ' . trans_choice('media::fields.file_deleted|files_deleted', $successCount))
+                                ->title($successCount.' '.trans_choice('media::fields.file_deleted|files_deleted', $successCount))
                                 ->send();
                         }
 
@@ -835,7 +834,7 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->warning()
                                 ->title(__('media::fields.protected_skipped'))
-                                ->body($protectedCount . ' ' . trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
+                                ->body($protectedCount.' '.trans_choice('media::fields.protected_file_skipped|protected_files_skipped', $protectedCount))
                                 ->persistent()
                                 ->send();
                         }
@@ -844,13 +843,13 @@ class MediaResource extends Resource
                             Notification::make()
                                 ->danger()
                                 ->title(__('media::fields.delete_error'))
-                                ->body($errorCount . ' ' . trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
+                                ->body($errorCount.' '.trans_choice('media::fields.file_could_not_be_deleted|files_could_not_be_deleted', $errorCount))
                                 ->persistent()
                                 ->send();
                         }
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn($record) => !$record->getOriginal('write_protected'))
+            ->checkIfRecordIsSelectableUsing(fn ($record) => ! $record->getOriginal('write_protected'))
             ->actions([
                 EditAction::make()
                     ->icon('')
@@ -861,7 +860,7 @@ class MediaResource extends Resource
 
                         if (method_exists($record, 'translations')) {
                             $translation = $record->translations()->where('locale', $lang)->first();
-                            if ($translation && !empty($translation->name)) {
+                            if ($translation && ! empty($translation->name)) {
                                 return $translation->name;
                             }
                         }
@@ -877,13 +876,13 @@ class MediaResource extends Resource
                             ->color('success')
                             ->icon('heroicon-m-language')
                             ->visible(function ($record, $livewire) {
-                                if (!$record || !method_exists($record, 'translations')) {
+                                if (! $record || ! method_exists($record, 'translations')) {
                                     return false;
                                 }
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
 
-                                return !$translation;
+                                return ! $translation;
                             })
                             ->action(function ($record, $livewire) {
                                 $livewire->saveTranslationFromForm($record->id);
@@ -917,15 +916,15 @@ class MediaResource extends Resource
                                 $description = [];
 
                                 if ($usages > 0) {
-                                    $description[] = '<div style="color: #9f1239;  font-weight: 500; font-size: 1.125rem; margin-bottom: 0.5rem;">' .
+                                    $description[] = '<div style="color: #9f1239;  font-weight: 500; font-size: 1.125rem; margin-bottom: 0.5rem;">'.
                                         __('media::fields.warning_file_has_links', [
                                             'count' => $usages,
                                             'links' => trans_choice('media::fields.link|links', $usages),
-                                        ]) .
+                                        ]).
                                         '</div>';
 
-                                    $description[] = '<div style="background-color: #f8d4da; color: #9f1239; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">' .
-                                        __('media::fields.delete_linked_warning') .
+                                    $description[] = '<div style="background-color: #f8d4da; color: #9f1239; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">'.
+                                        __('media::fields.delete_linked_warning').
                                         '</div>';
                                 }
 
@@ -935,7 +934,7 @@ class MediaResource extends Resource
                             })
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
-                            ->hidden(fn(Media $record) => !auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
+                            ->hidden(fn (Media $record) => ! auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
                             ->before(function ($record) {
                                 try {
                                     if ($record->getOriginal('write_protected')) {
@@ -972,7 +971,7 @@ class MediaResource extends Resource
 
                                     return redirect(static::getUrl('index'));
                                 } catch (\Exception $e) {
-                                    Log::error('Media deletion failed: ' . $e->getMessage(), [
+                                    Log::error('Media deletion failed: '.$e->getMessage(), [
                                         'media_id' => $record->id,
                                         'file_name' => $record->file_name,
                                     ]);
@@ -989,7 +988,7 @@ class MediaResource extends Resource
                         Action::make('download')
                             ->label(__('media::fields.download_file'))
                             ->icon('heroicon-m-arrow-down-tray')
-                            ->visible(fn() => config('media.modal.resource.show_download_button', true))
+                            ->visible(fn () => config('media.modal.resource.show_download_button', true))
                             ->action(function (Media $record) {
                                 return response()->download(
                                     $record->getPath(),
@@ -1010,7 +1009,7 @@ class MediaResource extends Resource
                         'document' => __('media::fields.documents'),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
@@ -1019,9 +1018,9 @@ class MediaResource extends Resource
                             'video' => $query->where('mime_type', 'like', 'video/%'),
                             'audio' => $query->where('mime_type', 'like', 'audio/%'),
                             'document' => $query->where(function ($query) {
-                                    $query->where('mime_type', 'like', 'application/%')
+                                $query->where('mime_type', 'like', 'application/%')
                                     ->orWhere('mime_type', 'like', 'text/%');
-                                }),
+                            }),
                             default => $query,
                         };
                     }),
@@ -1051,13 +1050,13 @@ class MediaResource extends Resource
                                     $uploader = $media->uploader;
                                     if ($uploader && method_exists($uploader, 'getName')) {
                                         return [
-                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
+                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
                                             'name' => $uploader->getName(),
                                         ];
                                     }
                                     if ($uploader && isset($uploader->name)) {
                                         return [
-                                            'id' => $media->uploader_type . '::' . $media->uploader_id,
+                                            'id' => $media->uploader_type.'::'.$media->uploader_id,
                                             'name' => $uploader->name,
                                         ];
                                     }
@@ -1065,11 +1064,11 @@ class MediaResource extends Resource
                                     return null;
                                 })
                                 ->filter()
-                                ->unique(fn(array $item): string => $item['id'])
+                                ->unique(fn (array $item): string => $item['id'])
                                 ->pluck('name', 'id')
                                 ->toArray();
 
-                            if (!empty($uploaders)) {
+                            if (! empty($uploaders)) {
                                 $typeName = class_basename($type);
                                 $options[$typeName] = $uploaders;
                             }
@@ -1078,7 +1077,7 @@ class MediaResource extends Resource
                         return $options;
                     })
                     ->query(function (Builder $query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
@@ -1103,7 +1102,7 @@ class MediaResource extends Resource
                         'year' => __('media::fields.year'),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
@@ -1134,7 +1133,7 @@ class MediaResource extends Resource
                             ->toArray();
                     })
                     ->query(function (Builder $query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
