@@ -62,4 +62,40 @@ class StaticLanguage extends Model
     {
         return $this->hasMany(Localization::class);
     }
+
+    /**
+     * Returns the appropriate flag for the language
+     * Uses the languageToFlagMap for consistent flags
+     */
+    public function getFlagIconAttribute(): string
+    {
+        $languageToFlagMap = [
+            'ar' => 'sa', // Arabic -> Saudi Arabia
+            'en' => 'gb', // English -> United Kingdom
+            'es' => 'es', // Spanish -> Spain
+            'fr' => 'fr', // French -> France
+            'pt' => 'pt', // Portuguese -> Portugal
+            'ru' => 'ru', // Russian -> Russia
+            'zh' => 'cn', // Chinese -> China
+            'de' => 'de', // German -> Germany
+            'hi' => 'in', // Hindi -> India
+            'ja' => 'jp', // Japanese -> Japan
+            'ko' => 'kr', // Korean -> South Korea
+            'fa' => 'ir', // Persian -> Iran
+            'tr' => 'tr', // Turkish -> Turkey
+            'it' => 'it', // Italian -> Italy
+            'pl' => 'pl', // Polish -> Poland
+            'uk' => 'ua', // Ukrainian -> Ukraine
+            'vi' => 'vn', // Vietnamese -> Vietnam
+            'th' => 'th', // Thai -> Thailand
+            'nl' => 'nl', // Dutch -> Netherlands
+            'el' => 'gr', // Greek -> Greece
+            'cs' => 'cz', // Czech -> Czech Republic
+            'ta' => 'in', // Tamil -> India
+        ];
+
+        $code = strtolower($this->alpha2);
+
+        return 'flag-' . ($languageToFlagMap[$code] ?? $code);
+    }
 }

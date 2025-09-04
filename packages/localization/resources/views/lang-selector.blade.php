@@ -23,8 +23,9 @@
 
 <x-filament::dropdown>
     <x-slot name="trigger">
-        <x-filament::button color="gray" icon="flag-{{ $currentLang }}" size="md"
-            style="min-width: 225px; justify-content: flex-start; position: relative;">
+        <x-filament::button color="gray"
+            icon="{{ \Moox\Data\Models\StaticLanguage::where('alpha2', $currentLang)->first()?->flag_icon ?? 'flag-' . $currentLang }}"
+            size="md" style="min-width: 225px; justify-content: flex-start; position: relative;">
             {{ $currentLocalization?->language->common_name ?? $currentLang }}
             <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%);">
                 <x-filament::icon-button icon="heroicon-o-chevron-down" size="xs" color="gray" tag="a" />
@@ -61,12 +62,12 @@
                 }
             @endphp
             @if ($this instanceof \Filament\Resources\Pages\ListRecords)
-                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2"
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon"
                     wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
                     {{ $locale->language->common_name }}
                 </x-filament::dropdown.list.item>
             @else
-                <x-filament::dropdown.list.item :href="$targetUrl" :icon="'flag-' . $locale->language->alpha2" tag="a">
+                <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon" tag="a">
                     {{ $locale->language->common_name }}
                 </x-filament::dropdown.list.item>
             @endif

@@ -64,12 +64,12 @@ class LocalizationResource extends BaseRecordResource
                             ->schema([
                                 Select::make('language_id')
                                     ->label(__('localization::fields.language'))
-                                    ->relationship('language', 'alpha2')
+                                    ->relationship('language', 'common_name')
                                     ->required()
                                     ->live(),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug')),
                                 Select::make('fallback_language_id')
