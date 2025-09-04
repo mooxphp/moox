@@ -67,26 +67,30 @@ class StaticCountryResource extends BaseRecordResource
                             ->schema([
                                 TextInput::make('alpha2')
                                     ->label(__('data::fields.alpha2'))
-                                    ->maxLength(3)->required(),
+                                    ->maxLength(3)
+                                    ->required(),
                                 TextInput::make('alpha3_b')
                                     ->label(__('data::fields.alpha3_b'))
-                                    ->maxLength(3)->nullable(),
+                                    ->maxLength(3)
+                                    ->nullable(),
                                 TextInput::make('alpha3_t')
                                     ->label(__('data::fields.alpha3_t'))
-                                    ->maxLength(3)->nullable(),
+                                    ->maxLength(3)
+                                    ->nullable(),
                                 TextInput::make('common_name')
                                     ->label(__('data::fields.common_name'))
-                                    ->maxLength(255)->required(),
+                                    ->maxLength(255)
+                                    ->required(),
                                 TextInput::make('native_name')
                                     ->label(__('data::fields.native_name'))
-                                    ->maxLength(255)->nullable(),
+                                    ->maxLength(255)
+                                    ->nullable(),
                                 Textarea::make('exonyms')
                                     ->label(__('data::fields.exonyms'))
                                     ->afterStateHydrated(function (Textarea $component, $state) {
                                         if (is_array($state) || is_object($state)) {
                                             $state = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                                         }
-
                                         $component->state($state);
                                     })
                                     ->rule('json'),
@@ -169,7 +173,7 @@ class StaticCountryResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn (string $state): string => $state),
+                    ->icon(fn(string $state): string => $state),
                 TextColumn::make('alpha2')
                     ->label('Alpha-2')
                     ->searchable()
@@ -183,7 +187,20 @@ class StaticCountryResource extends BaseRecordResource
                 TextColumn::make('common_name')->label(__('data::fields.common_name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('native_name')->label(__('data::fields.native_name'))
+                TextColumn::make('native_name')
+                    ->label(__('data::fields.native_name'))
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            $values = array_filter($state, function ($value) {
+                                return is_string($value) && !empty($value);
+                            });
+                            return !empty($values) ? implode(', ', $values) : '-';
+                        }
+                        if (is_string($state) && !empty($state)) {
+                            return $state;
+                        }
+                        return '-';
+                    })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('region')
@@ -199,18 +216,32 @@ class StaticCountryResource extends BaseRecordResource
                     ->toggleable()
                     ->badge(),
                 TextColumn::make('capital')
-                    ->label(__('data::fields.capital')),
+                    ->label(__('data::fields.capital'))
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            $values = array_filter($state, function ($value) {
+                                return is_string($value) && !empty($value);
+                            });
+                            return !empty($values) ? implode(', ', $values) : '-';
+                        }
+                        if (is_string($state) && !empty($state)) {
+                            return $state;
+                        }
+                        return '-';
+                    })
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('population')
                     ->label(__('data::fields.population'))
                     ->sortable()
                     ->toggleable()
                     ->numeric()
-                    ->formatStateUsing(fn ($state) => number_format($state, 0, ',', '.').' '.__('data::fields.people')),
+                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.') . ' ' . __('data::fields.people')),
                 TextColumn::make('area')
                     ->label(__('data::fields.area'))
                     ->sortable()
                     ->numeric()
-                    ->formatStateUsing(fn ($state) => $state ? number_format((float) $state, 2, ',', '.').' km²' : '-'),
+                    ->formatStateUsing(fn($state) => $state ? number_format((float) $state, 2, ',', '.') . ' km²' : '-'),
                 TextColumn::make('embargo')
                     ->label(__('data::fields.embargo'))
                     ->sortable()
@@ -226,7 +257,7 @@ class StaticCountryResource extends BaseRecordResource
                     ->label(__('data::fields.calling_code'))
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn ($state) => $state ? '+'.$state : '-')
+                    ->formatStateUsing(fn($state) => $state ? '+' . $state : '-')
                     ->toggleable(),
             ])
             ->defaultSort('id', 'desc')

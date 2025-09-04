@@ -41,6 +41,8 @@ class StaticCountry extends Model
     ];
 
     protected $casts = [
+        'capital' => 'array',
+        'native_name' => 'array',
         'exonyms' => 'array',
         'links' => 'array',
         'tlds' => 'array',
