@@ -4,28 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Tables\Filters\Filter;
-use Moox\Data\Models\StaticCountry;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\CreateStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ListStaticCountries;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\LocalesRelationManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticCurrencyRealtionManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticTimezoneRealtionManager;
+use Moox\Data\Models\StaticCountry;
 
 class StaticCountryResource extends BaseRecordResource
 {
@@ -218,7 +217,7 @@ class StaticCountryResource extends BaseRecordResource
                     ->searchable()
                     ->toggleable()
                     ->badge()
-                    ->color(fn($state) => match ($state) {
+                    ->color(fn ($state) => match ($state) {
                         'none' => 'info',
                         'partial' => 'warning',
                         'full' => 'danger',
@@ -254,8 +253,8 @@ class StaticCountryResource extends BaseRecordResource
                     ->trueLabel('Mit Einwohnerzahl')
                     ->falseLabel('Ohne Einwohnerzahl')
                     ->queries(
-                        true: fn($query) => $query->whereNotNull('population')->where('population', '>', 0),
-                        false: fn($query) => $query->where(function ($q) {
+                        true: fn ($query) => $query->whereNotNull('population')->where('population', '>', 0),
+                        false: fn ($query) => $query->where(function ($q) {
                             $q->whereNull('population')->orWhere('population', 0);
                         }),
                     ),
@@ -265,8 +264,8 @@ class StaticCountryResource extends BaseRecordResource
                     ->trueLabel('Mit Vorwahl')
                     ->falseLabel('Ohne Vorwahl')
                     ->queries(
-                        true: fn($query) => $query->whereNotNull('calling_code'),
-                        false: fn($query) => $query->whereNull('calling_code'),
+                        true: fn ($query) => $query->whereNotNull('calling_code'),
+                        false: fn ($query) => $query->whereNull('calling_code'),
                     ),
                 SelectFilter::make('population_size')
                     ->label('Bevölkerungsgröße')
