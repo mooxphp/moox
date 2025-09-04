@@ -92,10 +92,81 @@ class StaticLanguage extends Model
             'el' => 'gr', // Greek -> Greece
             'cs' => 'cz', // Czech -> Czech Republic
             'ta' => 'in', // Tamil -> India
+            'sw' => 'tz', // Swahili -> Tanzania
+            'kk' => 'kz', // Kazakh -> Kazakhstan
+            'rn' => 'bi', // Rundi -> Burundi
+            'sq' => 'al', // Albanian -> Albania
+            'tpi' => 'pg', // Tok Pisin -> Papua New Guinea
+            'ho' => 'pg', // Hiri Motu -> Papua New Guinea
+            'pap' => 'aw', // Papiamento -> Aruba
+            'glc' => 'es', // Galician -> Spain
+            'eu' => 'es', // Basque -> Spain
+            'ca' => 'es', // Catalan -> Spain
+            'pih' => 'gb', // Pitkern -> United Kingdom
+            'ch' => 'gu', // Chamorro -> Guam
+            'ln' => 'cd', // Lingala -> Democratic Republic of Congo
+            'roh' => 'ch', // Romansh -> Switzerland
+            'ka' => 'ge', // Georgian -> Georgia
+            'mi' => 'nz', // Maori -> New Zealand
+            'gv' => 'im', // Manx -> Isle of Man
+            'ny' => 'mw', // Chichewa -> Malawi
+            'ku' => 'iq', // Kurdish -> Iraq
+            'zu' => 'za', // Zulu -> South Africa
+            'xh' => 'za', // Xhosa -> South Africa
+            'ts' => 'za', // Tsonga -> South Africa
+            'ns' => 'za', // Northern Sotho -> South Africa
+            'nb' => 'no', // Norwegian Bokmål -> Norway
+            'nn' => 'no', // Norwegian Nynorsk -> Norway
+            'qu' => 'pe', // Quechua -> Peru
+            'ay' => 'bo', // Aymara -> Bolivia
+            'tet' => 'tl', // Tetum -> East Timor
+            'da' => 'dk', // Danish -> Denmark
+            'cal' => 'mp', // Carolinian -> Northern Mariana Islands
+            'he' => 'il', // Hebrew -> Israel
+            'gil' => 'ki', // Gilbertese -> Kiribati
+            'ti' => 'er', // Tigrinya -> Eritrea
+            'nfr' => 'nf', // Norfuk -> Norfolk Island
+            'loz' => 'zm', // Lozi -> Zambia
+            'kwn' => 'na', // Kwangali -> Namibia
+            'ha' => 'na', // Hausa -> Namibia
+            'hz' => 'na', // Herero -> Namibia
+            'dv' => 'mv', // Dhivehi -> Maldives
+            'ber' => 'ma', // Berber -> Morocco
+            'kl' => 'gl', // Greenlandic -> Greenland
+            'pau' => 'pw', // Palauan -> Palau
+            'hy' => 'am', // Armenian -> Armenia
+            'ur' => 'pk', // Urdu -> Pakistan
+            'tn' => 'bw', // Tswana -> Botswana
+            'sr' => 'rs', // Serbian -> Serbia
+            'et' => 'ee', // Estonian -> Estonia
+            'bs' => 'ba', // Bosnian -> Bosnia and Herzegovina
+            'fil' => 'ph', // Filipino -> Philippines
+            'lb' => 'lu', // Luxembourgish -> Luxembourg
+            'st' => 'ls', // Southern Sotho -> Lesotho
+            'lo' => 'la', // Lao -> Laos
+            'zib' => 'zw', // Zimbabwe Sign Language -> Zimbabwe
+            'tg' => 'tj', // Tajik -> Tajikistan
+            'nd' => 'zw', // Northern Ndebele -> Zimbabwe
+            'khi' => 'na', // Khoekhoe -> Namibia
+            'sn' => 'zw', // Shona -> Zimbabwe
+            've' => 'za', // Venda -> South Africa
+            'kck' => 'na', // Khoekhoe -> Namibia
+            'bwg' => 'zw', // Chibarwe -> Zimbabwe
+            'dz' => 'bt', // Dzongkha -> Bhutan
+            'gn' => 'py', // Guarani -> Paraguay
+            'be' => 'by', // Belarusian -> Belarus
+            'ps' => 'af', // Pashto -> Afghanistan
+            'ky' => 'kg', // Kyrgyz -> Kyrgyzstan
+            'kg' => 'cd', // Kongo -> Democratic Republic of Congo
+            'se' => 'no', // Northern Sami -> Norway
+            'sv' => 'se', // Swedish -> Sweden
+            'sl' => 'si', // Slovenian -> Slovenia
+            'ng' => 'na', // Ndonga -> Namibia
+            'ga' => 'ie', // Irish -> Ireland
         ];
 
         $code = strtolower($this->alpha2);
 
-        return 'flag-'.($languageToFlagMap[$code] ?? $code);
+        return 'flag-' . ($languageToFlagMap[$code] ?? $code);
     }
 }
