@@ -173,7 +173,7 @@ class StaticCountryResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('alpha2')
                     ->label('Alpha-2')
                     ->searchable()
@@ -192,13 +192,15 @@ class StaticCountryResource extends BaseRecordResource
                     ->formatStateUsing(function ($state) {
                         if (is_array($state)) {
                             $values = array_filter($state, function ($value) {
-                                return is_string($value) && !empty($value);
+                                return is_string($value) && ! empty($value);
                             });
-                            return !empty($values) ? implode(', ', $values) : '-';
+
+                            return ! empty($values) ? implode(', ', $values) : '-';
                         }
-                        if (is_string($state) && !empty($state)) {
+                        if (is_string($state) && ! empty($state)) {
                             return $state;
                         }
+
                         return '-';
                     })
                     ->searchable()
@@ -220,13 +222,15 @@ class StaticCountryResource extends BaseRecordResource
                     ->formatStateUsing(function ($state) {
                         if (is_array($state)) {
                             $values = array_filter($state, function ($value) {
-                                return is_string($value) && !empty($value);
+                                return is_string($value) && ! empty($value);
                             });
-                            return !empty($values) ? implode(', ', $values) : '-';
+
+                            return ! empty($values) ? implode(', ', $values) : '-';
                         }
-                        if (is_string($state) && !empty($state)) {
+                        if (is_string($state) && ! empty($state)) {
                             return $state;
                         }
+
                         return '-';
                     })
                     ->searchable()
@@ -236,12 +240,12 @@ class StaticCountryResource extends BaseRecordResource
                     ->sortable()
                     ->toggleable()
                     ->numeric()
-                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.') . ' ' . __('data::fields.people')),
+                    ->formatStateUsing(fn ($state) => number_format($state, 0, ',', '.').' '.__('data::fields.people')),
                 TextColumn::make('area')
                     ->label(__('data::fields.area'))
                     ->sortable()
                     ->numeric()
-                    ->formatStateUsing(fn($state) => $state ? number_format((float) $state, 2, ',', '.') . ' km²' : '-'),
+                    ->formatStateUsing(fn ($state) => $state ? number_format((float) $state, 2, ',', '.').' km²' : '-'),
                 TextColumn::make('embargo')
                     ->label(__('data::fields.embargo'))
                     ->sortable()
@@ -257,7 +261,7 @@ class StaticCountryResource extends BaseRecordResource
                     ->label(__('data::fields.calling_code'))
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn($state) => $state ? '+' . $state : '-')
+                    ->formatStateUsing(fn ($state) => $state ? '+'.$state : '-')
                     ->toggleable(),
             ])
             ->defaultSort('id', 'desc')
