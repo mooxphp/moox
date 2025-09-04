@@ -26,7 +26,7 @@ return new class extends Migration
             $table->json('links')->nullable();
             $table->json('tlds')->nullable();
             $table->json('membership')->nullable();
-            $table->boolean('embargo');
+            $table->enum('embargo', ['none', 'partial', 'full'])->default('none');
             $table->json('embargo_data')->nullable();
             $table->json('address_format')->nullable();
             $table->string('postal_code_regex')->nullable();

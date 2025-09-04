@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use Filament\Tables\Filters\Filter;
+use Moox\Data\Models\StaticCountry;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Grid;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\CreateStaticCountry;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\EditStaticCountry;
-use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ListStaticCountries;
 use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ViewStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\CreateStaticCountry;
+use Moox\Data\Filament\Resources\StaticCountryResource\Pages\ListStaticCountries;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\LocalesRelationManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticCurrencyRealtionManager;
 use Moox\Data\Filament\Resources\StaticCountryResource\RelationManagers\StaticTimezoneRealtionManager;
-use Moox\Data\Models\StaticCountry;
 
 class StaticCountryResource extends BaseRecordResource
 {
@@ -212,7 +216,13 @@ class StaticCountryResource extends BaseRecordResource
                     ->label(__('data::fields.embargo'))
                     ->sortable()
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->badge()
+                    ->color(fn($state) => match ($state) {
+                        'none' => 'info',
+                        'partial' => 'warning',
+                        'full' => 'danger',
+                    }),
                 TextColumn::make('calling_code')
                     ->label(__('data::fields.calling_code'))
                     ->badge()
@@ -223,7 +233,59 @@ class StaticCountryResource extends BaseRecordResource
             ->defaultSort('id', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
-            ->filters([]);
+            ->filters([
+                SelectFilter::make('region')
+                    ->label(__('data::fields.region'))
+                    ->options(__('data::enums/country-region'))
+                    ->multiple()
+                    ->searchable(),
+                SelectFilter::make('subregion')
+                    ->label(__('data::fields.subregion'))
+                    ->options(__('data::enums/country-subregion'))
+                    ->multiple()
+                    ->searchable(),
+                SelectFilter::make('embargo')
+                    ->label(__('data::fields.embargo'))
+                    ->options(__('data::enums/country-embargo'))
+                    ->multiple(),
+                TernaryFilter::make('has_population')
+                    ->label('Hat Einwohnerzahl')
+                    ->placeholder('Alle Länder')
+                    ->trueLabel('Mit Einwohnerzahl')
+                    ->falseLabel('Ohne Einwohnerzahl')
+                    ->queries(
+                        true: fn($query) => $query->whereNotNull('population')->where('population', '>', 0),
+                        false: fn($query) => $query->where(function ($q) {
+                            $q->whereNull('population')->orWhere('population', 0);
+                        }),
+                    ),
+                TernaryFilter::make('has_calling_code')
+                    ->label('Hat Vorwahl')
+                    ->placeholder('Alle Länder')
+                    ->trueLabel('Mit Vorwahl')
+                    ->falseLabel('Ohne Vorwahl')
+                    ->queries(
+                        true: fn($query) => $query->whereNotNull('calling_code'),
+                        false: fn($query) => $query->whereNull('calling_code'),
+                    ),
+                SelectFilter::make('population_size')
+                    ->label('Bevölkerungsgröße')
+                    ->options([
+                        'small' => 'Klein (< 1M)',
+                        'medium' => 'Mittel (1M - 50M)',
+                        'large' => 'Groß (50M - 200M)',
+                        'huge' => 'Sehr groß (> 200M)',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return match ($data['value']) {
+                            'small' => $query->where('population', '<', 1000000),
+                            'medium' => $query->whereBetween('population', [1000000, 50000000]),
+                            'large' => $query->whereBetween('population', [50000000, 200000000]),
+                            'huge' => $query->where('population', '>', 200000000),
+                            default => $query,
+                        };
+                    }),
+            ])->deferFilters(false);
     }
 
     public static function getRelations(): array
