@@ -166,24 +166,59 @@ class StaticCountryResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn (string $state): string => $state),
+                    ->icon(fn(string $state): string => $state),
                 TextColumn::make('alpha2')
                     ->label('Alpha-2')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('alpha3_b')->label(__('data::fields.alpha3_b'))->searchable()->sortable(),
-                TextColumn::make('alpha3_t')->label(__('data::fields.alpha3_t'))->searchable()->sortable(),
-                TextColumn::make('common_name')->label(__('data::fields.common_name'))->searchable()->sortable(),
-                TextColumn::make('native_name')->label(__('data::fields.native_name'))->searchable()->sortable(),
-                TextColumn::make('region')->sortable()->searchable()->toggleable()->label(__('data::fields.region')),
-                TextColumn::make('subregion')->sortable()->searchable()->toggleable()->label(__('data::fields.subregion')),
-                TextColumn::make('capital')->label(__('data::fields.capital')),
-                TextColumn::make('population')->label(__('data::fields.population')),
-                TextColumn::make('area')->label(__('data::fields.area')),
-                TextColumn::make('embargo')->sortable()->searchable()->toggleable()->label(__('data::fields.embargo')),
-                TextColumn::make('postal_code_regex')->label(__('data::fields.postal_code_regex')),
-                TextColumn::make('dialing_prefix')->label(__('data::fields.dialing_prefix')),
-                TextColumn::make('date_format')->label(__('data::fields.date_format')),
+                TextColumn::make('alpha3_b')->label(__('data::fields.alpha3_b'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('alpha3_t')->label(__('data::fields.alpha3_t'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('common_name')->label(__('data::fields.common_name'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('native_name')->label(__('data::fields.native_name'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('region')
+                    ->label(__('data::fields.region'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->badge(),
+                TextColumn::make('subregion')
+                    ->label(__('data::fields.subregion'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->badge(),
+                TextColumn::make('capital')
+                    ->label(__('data::fields.capital')),
+                TextColumn::make('population')
+                    ->label(__('data::fields.population'))
+                    ->sortable()
+                    ->toggleable()
+                    ->numeric()
+                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.') . ' ' . __('data::fields.people')),
+                TextColumn::make('area')
+                    ->label(__('data::fields.area'))
+                    ->sortable()
+                    ->numeric()
+                    ->formatStateUsing(fn($state) => $state ? number_format((float) $state, 2, ',', '.') . ' km²' : '-'),
+                TextColumn::make('embargo')
+                    ->label(__('data::fields.embargo'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('calling_code')
+                    ->label(__('data::fields.calling_code'))
+                    ->badge()
+                    ->color('info')
+                    ->formatStateUsing(fn($state) => $state ? '+' . $state : '-')
+                    ->toggleable(),
             ])
             ->defaultSort('id', 'desc')
             ->recordActions([...static::getTableActions()])

@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'northern_africa' => 'Nördliches Afrika',
+    'eastern_africa' => 'Ostliches Afrika',
+    'middle_africa' => 'Mittleres Afrika',
+    'southern_africa' => 'Südliches Afrika',
+    'western_africa' => 'Westliches Afrika',
+    'caribbean' => 'Karibik',
+    'central_america' => 'Zentralamerika',
+    'south_america' => 'Südamerika',
+    'northern_america' => 'Nordamerika',
+    'central_asia' => 'Zentralasien',
+    'eastern_asia' => 'Ostasiatische Staaten',
+    'southern_asia' => 'Südasiatische Staaten',
+    'south_eastern_asia' => 'Südostasiatische Staaten',
+    'western_asia' => 'Westasiatische Staaten',
+    'eastern_europe' => 'Ostliche Staaten',
+    'northern_europe' => 'Nordliche Staaten',
+    'southern_europe' => 'Südliche Staaten',
+    'western_europe' => 'Westliche Staaten',
+    'australia_new_zealand' => 'Australien und Neuseeland',
+    'melanesia' => 'Melanesien',
+    'micronesia' => 'Micronesien',
+    'polynesia' => 'Polynesien',
+];
