@@ -40,7 +40,6 @@ class StaticLocale extends Model
 
     protected $casts = [];
 
-
     protected array $territoryToCountryMap = [
         'sh' => 'gb',
         'um' => 'us',
@@ -57,7 +56,7 @@ class StaticLocale extends Model
 
     public function getLanguageFlagIconAttribute(): ?string
     {
-        if (!$this->language?->alpha2) {
+        if (! $this->language?->alpha2) {
             return $this->getCountryFlagIconAttribute();
         }
 
@@ -67,16 +66,16 @@ class StaticLocale extends Model
 
     public function getCountryFlagIconAttribute(): ?string
     {
-        if (!$this->country?->alpha2) {
+        if (! $this->country?->alpha2) {
             return null;
         }
 
         $countryCode = strtolower($this->country->alpha2);
 
         if (isset($this->territoryToCountryMap[$countryCode])) {
-            return 'flag-' . $this->territoryToCountryMap[$countryCode];
+            return 'flag-'.$this->territoryToCountryMap[$countryCode];
         }
 
-        return 'flag-' . $countryCode;
+        return 'flag-'.$countryCode;
     }
 }
