@@ -27,7 +27,11 @@ class TranslationColumn extends TextColumn
                     $languageCode = explode('_', $translation->locale)[0];
                     $locale = StaticLanguage::where('alpha2', $languageCode)->first();
 
-                    $flagClass = 'flag-'.strtolower($locale->alpha2);
+                    if ($locale) {
+                        $flagClass = $locale->flag_icon;
+                    } else {
+                        $flagClass = 'heroicon-o-flag';
+                    }
 
                     if ($translation->trashed()) {
                         $flagClass .= ' trashed';
