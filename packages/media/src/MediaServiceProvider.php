@@ -38,18 +38,18 @@ class MediaServiceProvider extends PackageServiceProvider
 
         Gate::policy(Media::class, MediaPolicy::class);
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
 
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
-            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
         );
 
         FilamentView::registerRenderHook(
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
-            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMediaCollections::class
         );
     }

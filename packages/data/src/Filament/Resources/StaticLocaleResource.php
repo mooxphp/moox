@@ -116,14 +116,14 @@ class StaticLocaleResource extends BaseRecordResource
                     ->toggleable(),
                 IconColumn::make('language_flag_icon')
                     ->label('Language')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('language.common_name')
                     ->label(__('data::fields.common_language_name'))
                     ->sortable()
                     ->searchable(),
                 IconColumn::make('country_flag_icon')
                     ->label('')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('country.common_name')
                     ->label(__('data::fields.common_country_name'))
                     ->sortable()
@@ -145,15 +145,15 @@ class StaticLocaleResource extends BaseRecordResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['id']) {
+                        if (! $data['id']) {
                             return null;
                         }
 
-                        return 'ID: ' . $data['id'];
+                        return 'ID: '.$data['id'];
                     }),
                 Filter::make('language_id')
                     ->schema([
@@ -164,15 +164,15 @@ class StaticLocaleResource extends BaseRecordResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['language_id'],
-                            fn(Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['language_id']) {
+                        if (! $data['language_id']) {
                             return null;
                         }
 
-                        return 'Language ID: ' . $data['language_id'];
+                        return 'Language ID: '.$data['language_id'];
                     }),
                 Filter::make('country_id')
                     ->schema([
@@ -183,15 +183,15 @@ class StaticLocaleResource extends BaseRecordResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['country_id'],
-                            fn(Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['country_id']) {
+                        if (! $data['country_id']) {
                             return null;
                         }
 
-                        return 'Country ID: ' . $data['country_id'];
+                        return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('locale')
                     ->schema([
@@ -202,15 +202,15 @@ class StaticLocaleResource extends BaseRecordResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['locale'],
-                            fn(Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['locale']) {
+                        if (! $data['locale']) {
                             return null;
                         }
 
-                        return 'Locale: ' . $data['locale'];
+                        return 'Locale: '.$data['locale'];
                     }),
                 Filter::make('name')
                     ->schema([
@@ -221,15 +221,15 @@ class StaticLocaleResource extends BaseRecordResource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (!$data['name']) {
+                        if (! $data['name']) {
                             return null;
                         }
 
-                        return 'Name: ' . $data['name'];
+                        return 'Name: '.$data['name'];
                     }),
                 SelectFilter::make('language')
                     ->label(__('data::fields.language'))
