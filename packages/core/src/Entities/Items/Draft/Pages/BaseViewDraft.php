@@ -20,7 +20,7 @@ abstract class BaseViewDraft extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title . ' - ' . __('core::core.deleted');
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;
@@ -28,7 +28,7 @@ abstract class BaseViewDraft extends ViewRecord
 
     protected function isRecordTrashed(): bool
     {
-        if (!$this->record) {
+        if (! $this->record) {
             return false;
         }
 
@@ -50,7 +50,6 @@ abstract class BaseViewDraft extends ViewRecord
 
     public function mount($record): void
     {
-
         $this->lang = request()->query('lang', app()->getLocale());
         parent::mount($record);
 
@@ -63,7 +62,7 @@ abstract class BaseViewDraft extends ViewRecord
                     $q->where('alpha2', $this->lang);
                 })->where('is_active_admin', true)->first();
 
-                if (!$localization) {
+                if (! $localization) {
                     $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
                     if ($defaultLocalization) {
                         $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $defaultLocalization->language->alpha2]));
@@ -80,7 +79,7 @@ abstract class BaseViewDraft extends ViewRecord
                 return $trans->trashed();
             });
 
-            if ($allTranslationsDeleted && !$translation) {
+            if ($allTranslationsDeleted && ! $translation) {
                 $firstAvailableTranslation = $this->record->translations()->withTrashed()->first();
                 if ($firstAvailableTranslation) {
                     $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $firstAvailableTranslation->locale]));
