@@ -38,7 +38,7 @@ class MooxInstaller extends Command
     public function handle(): void
     {
         $this->art();
-        $this->info('✨ Welcome to the Moox installer');
+        $this->info('✨ Welcome to the Moox Installer!');
 
         $choice = select(
             label: 'What would you like to do?',
@@ -49,7 +49,7 @@ class MooxInstaller extends Command
         );
 
         if (! $this->checkForFilament()) {
-            $this->error('❌ Filament installation required or aborted.');
+            $this->error('❌ Filament installation is required or was aborted.');
             return;
         }
 
@@ -74,7 +74,7 @@ class MooxInstaller extends Command
         }
 
         $selection = multiselect(
-            label: 'Which of the not yet installed packages do you want to install?',
+            label: 'Which of the not yet installed packages would you like to install?',
             options: array_combine($notInstalled, $notInstalled),
             required: true
         );
@@ -84,30 +84,7 @@ class MooxInstaller extends Command
             return;
         }
 
-        $existingPanel = $this->getPanelFromBootstrapProviders();
-
-        $selectedPanelKey = null;
-        if ($existingPanel !== null) {
-            $panelChoice = select(
-                label: 'A panel is already registered. Where should we register the selected packages?',
-                options: [
-                    'existing' => "Use existing panel ({$existingPanel})",
-                    'choose'   => 'Choose one of Moox panels',
-                ]
-            );
-
-            if ($panelChoice === 'existing') {
-                $selectedPanelKey = $existingPanel;
-            }
-        }
-
-        if ($selectedPanelKey === null) {
-            $panelOptions = array_keys($this->panelMap);
-            $selectedPanelKey = select(
-                label: 'Select a panel to register the packages into',
-                options: $panelOptions
-            );
-        }
+        $selectedPanelKey = $this->determinePanelForPackage(implode(', ', $selection));
 
         $this->ensurePanelForKey($selectedPanelKey);
 
@@ -123,7 +100,7 @@ class MooxInstaller extends Command
         }
 
         if ($changedAny) {
-            $this->info('⚙️ Finalizing (package discovery + Filament upgrade) ...');
+            $this->info('⚙️ Finalizing (package discovery + Filament upgrade)...');
             $this->callSilent('package:discover');
             $this->callSilent('filament:upgrade');
         }
@@ -162,54 +139,109 @@ class MooxInstaller extends Command
 
     protected function determinePanelForPackage(string $package): string
     {
-        $existingPanels = $this->getExistingPanelsWithLogin();
+        $existingPanels = $this->getAllPanelsFromBootstrap(); // Array von Provider-Pfaden
 
-        if (!empty($existingPanels)) {
-            $panelChoice = select(
-                label: "Möchtest du das Package '{$package}' in ein bestehendes Panel registrieren oder ein neues Panel erstellen?",
-                options: [
-                    'existing' => 'Existierendes Panel',
-                    'new'      => 'Neues Panel erstellen',
-                ]
-            );
-
-            if ($panelChoice === 'existing') {
-                $panel = select(
-                    label: 'Wähle das bestehende Panel:',
-                    options: $existingPanels
-                );
-            } else {
-                $panel = $this->createNewPanelProvider();
-            }
-        } else {
-            $panel = $this->createNewPanelProvider();
+        // Key => Label für die Auswahl
+        $panelOptions = [];
+        foreach ($existingPanels as $index => $path) {
+            $key = $this->panelKeyFromPath($path);
+            if (!$key) continue;
+            $uniqueKey = $key . '_' . $index; // eindeutiger Key
+            $panelOptions[$uniqueKey] = $key . ' (' . $path . ')';
         }
 
-        return $panel;
+        $panelChoice = select(
+            label: "Would you like to register the package '{$package}' into an existing panel or create a new panel?",
+            options: [
+                'existing' => 'Existing Panel',
+                'new'      => 'Create New Panel',
+            ]
+        );
+
+        if ($panelChoice === 'existing') {
+            if (empty($panelOptions)) {
+                $this->warn('⚠️ No existing panels found. Creating a new panel instead.');
+                return $this->selectNewPanel([]);
+            }
+
+            $selectedUniqueKey = select(
+                label: 'Select an existing panel:',
+                options: $panelOptions
+            );
+
+            return explode('_', $selectedUniqueKey)[0];
+        } else {
+            $existingKeys = array_map(fn($path) => $this->panelKeyFromPath($path), $existingPanels);
+            return $this->selectNewPanel($existingKeys);
+        }
+    }
+
+    // ✅ Korrektur: sauber alle Keys aus panelMap zurückgeben
+    protected function panelKeyFromPath(string $path): ?string
+    {
+        $filename = pathinfo($path, PATHINFO_FILENAME); // z.B. CmsPanelProvider
+        $key = strtolower(str_replace('PanelProvider', '', $filename));
+
+        return in_array($key, array_keys($this->panelMap)) ? $key : null;
+    }
+
+    protected function selectNewPanel(array $existingPanels): string
+    {
+        $allPanels = array_keys($this->panelMap);
+        $availablePanels = array_diff($allPanels, $existingPanels);
+
+        if (empty($availablePanels)) {
+            $this->warn('⚠️ No new panels available, using default.');
+            return reset($allPanels);
+        }
+
+        $panelOptions = array_combine($availablePanels, $availablePanels);
+
+        return select(
+            label: 'Select a new panel:',
+            options: $panelOptions
+        );
+    }
+
+    protected function getAllPanelsFromBootstrap(): array
+    {
+        $providers = $this->getPanelProviderFiles();
+        $panels = [];
+
+        foreach ($providers as $providerFile) {
+            $panels[] = $providerFile->getRelativePathname();
+        }
+
+        return array_values($panels);
     }
 
     protected function runPanelGenerationFlow(): void
     {
+        // Nur eigene Panels mit login() prüfen, nicht Filament Standardprovider
         $existingPanels = $this->getExistingPanelsWithLogin();
 
-        if (empty($existingPanels)) {
-            $this->selectedPanels = $this->selectPanels();
-            if (!empty($this->selectedPanels)) {
-                $changed = $this->installPackages($this->selectedPanels);
-            } else {
-                $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
-                return;
-            }
+        if (!empty($existingPanels)) {
+            $this->info('ℹ️ Existing panels with login detected. Panel creation is skipped.');
+            return;
+        }
+
+        // Wenn keine Panels existieren, Auswahl anzeigen
+        $this->selectedPanels = $this->selectPanels();
+        if (!empty($this->selectedPanels)) {
+            $changed = $this->installPackages($this->selectedPanels);
         } else {
-            $this->info('ℹ️ Existing panels with login found. Skipping panel selection.');
+            $this->warn('⚠️ No panel bundle selected. Skipping package installation.');
+            return;
         }
 
         $this->checkOrCreateFilamentUser();
+
         if (isset($changed) && $changed) {
-            $this->info('⚙️ Finalizing (package discovery + Filament upgrade) ...');
+            $this->info('⚙️ Finalizing (package discovery + Filament upgrade)...');
             $this->callSilent('package:discover');
             $this->callSilent('filament:upgrade');
         }
+
         $this->info('✅ Moox Panels installed successfully. Enjoy! 🎉');
     }
 

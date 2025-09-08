@@ -33,7 +33,6 @@
             ]
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
         "moox/devtools": "self.version"
