@@ -3,6 +3,7 @@
 namespace Moox\Core\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\CheckForMooxPackages;
@@ -84,6 +85,9 @@ class MooxInstaller extends Command
             return;
         }
 
+        // Warn if any selected package is already registered in panel package composer.json
+        $this->warnIfPackagesAlreadyRegistered($selection);
+
         $selectedPanelKey = $this->determinePanelForPackage(implode(', ', $selection));
 
         $this->ensurePanelForKey($selectedPanelKey);
@@ -139,15 +143,18 @@ class MooxInstaller extends Command
 
     protected function determinePanelForPackage(string $package): string
     {
-        $existingPanels = $this->getAllPanelsFromBootstrap(); // Array von Provider-Pfaden
+        // Parse existing provider classes from bootstrap/providers.php
+        $providerClasses = $this->getProviderClassesFromBootstrap();
 
-        // Key => Label für die Auswahl
+        // Build options: unique key per occurrence, human label shows key + class
         $panelOptions = [];
-        foreach ($existingPanels as $index => $path) {
-            $key = $this->panelKeyFromPath($path);
-            if (!$key) continue;
-            $uniqueKey = $key . '_' . $index; // eindeutiger Key
-            $panelOptions[$uniqueKey] = $key . ' (' . $path . ')';
+        foreach ($providerClasses as $index => $class) {
+            $key = $this->mapProviderClassToPanelKey($class);
+            if (!$key) {
+                continue;
+            }
+            $uniqueKey = $key . '_' . $index;
+            $panelOptions[$uniqueKey] = $key . ' (' . $class . ')';
         }
 
         $panelChoice = select(
@@ -171,7 +178,10 @@ class MooxInstaller extends Command
 
             return explode('_', $selectedUniqueKey)[0];
         } else {
-            $existingKeys = array_map(fn($path) => $this->panelKeyFromPath($path), $existingPanels);
+            // Determine which predefined panels already exist in providers.php
+            $existingKeys = array_values(array_filter(array_map(function ($class) {
+                return $this->mapProviderClassToPanelKey($class);
+            }, $providerClasses)));
             return $this->selectNewPanel($existingKeys);
         }
     }
@@ -205,14 +215,27 @@ class MooxInstaller extends Command
 
     protected function getAllPanelsFromBootstrap(): array
     {
-        $providers = $this->getPanelProviderFiles();
-        $panels = [];
+        // Deprecated internal helper (kept for BC if referenced elsewhere)
+        return $this->getProviderClassesFromBootstrap();
+    }
 
-        foreach ($providers as $providerFile) {
-            $panels[] = $providerFile->getRelativePathname();
+    protected function getProviderClassesFromBootstrap(): array
+    {
+        $bootstrapProvidersPath = base_path('bootstrap/providers.php');
+        if (!file_exists($bootstrapProvidersPath)) {
+            return [];
         }
 
-        return array_values($panels);
+        $content = file_get_contents($bootstrapProvidersPath);
+        if ($content === false) {
+            return [];
+        }
+
+        if (!preg_match_all('/([\\\\A-Za-z0-9_]+)::class/', $content, $matches)) {
+            return [];
+        }
+
+        return $matches[1] ?? [];
     }
 
     protected function runPanelGenerationFlow(): void
@@ -252,9 +275,9 @@ class MooxInstaller extends Command
 
     protected function getExistingPanelsWithLogin(): array
     {
-        return $this->filterPanelsWithLogin($this->getPanelProviderFiles())
-            ->map(fn($file) => $file->getRelativePathname())
-            ->toArray();
+        // Consider any provider registered in bootstrap/providers.php as an existing panel
+        // regardless of whether it already has ->login() configured.
+        return $this->getProviderClassesFromBootstrap();
     }
 
     protected function getAllKnownMooxPackages(): array
@@ -270,5 +293,43 @@ class MooxInstaller extends Command
             'UI Components & Icons' => ['moox/components','moox/featherlight','moox/laravel-icons','moox/flag-icons-circle','moox/flag-icons-origin','moox/flag-icons-rect','moox/flag-icons-square'],
             'Localization & Communication' => ['moox/localization','moox/notifications'],
         ];
+    }
+
+    protected function warnIfPackagesAlreadyRegistered(array $packages): void
+    {
+        $already = [];
+        foreach ($packages as $pkg) {
+            $panels = $this->findPanelsContainingPackage($pkg);
+            if (!empty($panels)) {
+                $already[$pkg] = $panels;
+            }
+        }
+
+        if (!empty($already)) {
+            $this->warn('⚠️ Selected packages are already registered in panels:');
+            foreach ($already as $pkg => $panels) {
+                $this->line('  • ' . $pkg . ' → ' . implode(', ', $panels));
+            }
+        }
+    }
+
+    protected function findPanelsContainingPackage(string $package): array
+    {
+        $panels = [];
+        foreach ($this->panelMap as $key => $cfg) {
+            $panelPath = $cfg['path'] ?? null;
+            if (!$panelPath) {
+                continue;
+            }
+            $composerJsonPath = base_path($panelPath . '/../../composer.json');
+            if (!File::exists($composerJsonPath)) {
+                continue;
+            }
+            $composerJson = json_decode(File::get($composerJsonPath), true);
+            if (isset($composerJson['require']) && array_key_exists($package, $composerJson['require'])) {
+                $panels[] = $key;
+            }
+        }
+        return $panels;
     }
 }
