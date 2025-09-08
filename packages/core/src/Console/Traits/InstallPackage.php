@@ -5,6 +5,7 @@ namespace Moox\Core\Console\Traits;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Services\PackageService;
 
@@ -73,6 +74,9 @@ trait InstallPackage
         $didChange = $this->runMigrations($package) || $didChange;
         $didChange = $this->publishConfig($package) || $didChange;
         $didChange = $this->runSeeders($package) || $didChange;
+
+        // Optional post-install commands
+        $didChange = $this->runAutoCommands($package) || $didChange;
 
         if (empty($panelPaths)) {
             $panelPaths = $this->determinePanelsForPackage($package);
@@ -188,6 +192,18 @@ trait InstallPackage
         $updatedAny = false;
 
         foreach ($configs as $path => $content) {
+            // Handle vendor:publish tags declared by the package API (key format: 'tag:<tagname>')
+            if (is_string($path) && str_starts_with($path, 'tag:')) {
+                $tag = substr($path, 4);
+                info("📦 Publishing vendor tag: {$tag}");
+                Artisan::call('vendor:publish', [
+                    '--tag' => $tag,
+                    '--force' => true,
+                ]);
+                $updatedAny = true;
+                continue;
+            }
+
             $publishPath = config_path(basename($path));
 
             if (! file_exists($publishPath)) {
@@ -250,6 +266,48 @@ trait InstallPackage
         }
 
         return $didSeed;
+    }
+
+    protected function runAutoCommands(array $package): bool
+    {
+        $rootCmds = $this->packageService->getAutoRunCommands($package);
+        $hereCmds = $this->packageService->getAutoRunHereCommands($package);
+
+        if (empty($rootCmds) && empty($hereCmds)) {
+            return false;
+        }
+
+        if (! confirm('🚀 Post-Install Befehle ausführen (auto_run/auto_runhere)?', true)) {
+            warning('⏭️ Post-Install Befehle übersprungen.');
+            return false;
+        }
+
+        $ranAny = false;
+        foreach ($rootCmds as $cmd) {
+            info("▶️  {$cmd}");
+            $this->execInCwd($cmd, base_path());
+            $ranAny = true;
+        }
+        foreach ($hereCmds as $entry) {
+            $cmd = $entry['cmd'];
+            $cwd = $entry['cwd'];
+            info("▶️  (in {$cwd}) {$cmd}");
+            $this->execInCwd($cmd, $cwd);
+            $ranAny = true;
+        }
+
+        return $ranAny;
+    }
+
+    protected function execInCwd(string $command, string $cwd): void
+    {
+        $process = Process::fromShellCommandline($command, $cwd);
+        $process->setTimeout(null);
+        $process->run(function ($type, $buffer) {
+            foreach (explode("\n", rtrim($buffer)) as $line) {
+                if ($line !== '') info('    ' . $line);
+            }
+        });
     }
 
     private function getSeederTable(string $seederClass): ?string
