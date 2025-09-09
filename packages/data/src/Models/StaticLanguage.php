@@ -70,21 +70,21 @@ class StaticLanguage extends Model
     public function getFlagIconAttribute(): string
     {
         $languageToFlagMap = [
-            'ar' => 'sa', // Arabic -> Saudi Arabia
+            'ar' => 'ar_arab', // Arabic -> Arabic flag (special case)
             'en' => 'gb', // English -> United Kingdom
             'es' => 'es', // Spanish -> Spain
             'fr' => 'fr', // French -> France
+            'it' => 'it', // Italian -> Italy
             'pt' => 'pt', // Portuguese -> Portugal
             'ru' => 'ru', // Russian -> Russia
+            'pl' => 'pl', // Polish -> Poland
             'zh' => 'cn', // Chinese -> China
             'de' => 'de', // German -> Germany
             'hi' => 'in', // Hindi -> India
             'ja' => 'jp', // Japanese -> Japan
             'ko' => 'kr', // Korean -> South Korea
-            'fa' => 'ir', // Persian -> Iran
             'tr' => 'tr', // Turkish -> Turkey
-            'it' => 'it', // Italian -> Italy
-            'pl' => 'pl', // Polish -> Poland
+            'fa' => 'ir', // Persian -> Iran
             'uk' => 'ua', // Ukrainian -> Ukraine
             'vi' => 'vn', // Vietnamese -> Vietnam
             'th' => 'th', // Thai -> Thailand
@@ -100,8 +100,6 @@ class StaticLanguage extends Model
             'ho' => 'pg', // Hiri Motu -> Papua New Guinea
             'pap' => 'aw', // Papiamento -> Aruba
             'glc' => 'es', // Galician -> Spain
-            'eu' => 'es', // Basque -> Spain
-            'ca' => 'es', // Catalan -> Spain
             'pih' => 'gb', // Pitkern -> United Kingdom
             'ch' => 'gu', // Chamorro -> Guam
             'ln' => 'cd', // Lingala -> Democratic Republic of Congo
@@ -110,7 +108,6 @@ class StaticLanguage extends Model
             'mi' => 'nz', // Maori -> New Zealand
             'gv' => 'im', // Manx -> Isle of Man
             'ny' => 'mw', // Chichewa -> Malawi
-            'ku' => 'iq', // Kurdish -> Iraq
             'zu' => 'za', // Zulu -> South Africa
             'xh' => 'za', // Xhosa -> South Africa
             'ts' => 'za', // Tsonga -> South Africa
@@ -163,10 +160,28 @@ class StaticLanguage extends Model
             'sl' => 'si', // Slovenian -> Slovenia
             'ng' => 'na', // Ndonga -> Namibia
             'ga' => 'ie', // Irish -> Ireland
+            'aa' => 'afar', // Afar -> Afar flag (special case)
+            'ff' => 'gn', // Fula -> Guinea
+            'ca' => 'ad', // Catalan -> Andorra (Estelada alternative)
+            'eu' => 'eu', // Basque -> Basque Country (Ikurriña)
+            'gl' => 'gl', // Galician -> Galicia
+            'ku' => 'kurdistan', // Kurdish -> Kurdistan flag
+            'bo' => 'tibet', // Tibetan -> Tibet flag
+            'eo' => 'eo', // Esperanto -> Esperanto flag (fallback to eo if not available)
+            'yue' => 'hk', // Cantonese -> Hong Kong
+            'nan' => 'tw', // Hokkien -> Taiwan
+            'tzm' => 'ma', // Berber/Tamazight -> Morocco (Amazigh flag fallback)
+            'cy' => 'cy', // Welsh -> Wales flag
+            'br' => 'fr-bre', // Breton -> Brittany flag (Gwenn-ha-du)
+            'co' => 'co', // Corsican -> Corsica flag
+            'rom' => 'rom', // Romanes -> Roma flag (MISSING - using code as fallback)
+            'yi' => 'yi', // Yiddish -> Yiddish flag (MISSING - using code as fallback)
+            'hak' => 'cn', // Hakka -> China flag (MISSING - using China as fallback)
+            'wuu' => 'cn', // Wu -> China flag (MISSING - using China as fallback)
         ];
 
         $code = strtolower($this->alpha2);
 
-        return 'flag-'.($languageToFlagMap[$code] ?? $code);
+        return 'flag-' . ($languageToFlagMap[$code] ?? $code);
     }
 }
