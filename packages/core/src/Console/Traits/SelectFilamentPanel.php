@@ -516,7 +516,22 @@ PHP;
             File::put($bootstrapProvidersPath, $updated);
             info("✅ Registered {$providerClass} in bootstrap/providers.php");
         } else {
-            warning("⚠️ Could not update bootstrap/providers.php to register {$providerClass}");
+            // Fallback: simple append before closing array, for non-matching formats
+            $pos = strrpos($content, '];');
+            if ($pos !== false) {
+                $before = substr($content, 0, $pos);
+                $after = substr($content, $pos);
+                $line = "    {$desiredClass}::class,\n";
+                // Ensure trailing comma before appending if needed
+                if (!preg_match('/,\s*$/', trim($before))) {
+                    $before = rtrim($before) . ",\n";
+                }
+                $newContent = $before . $line . $after;
+                File::put($bootstrapProvidersPath, $newContent);
+                info("✅ Registered {$providerClass} in bootstrap/providers.php (fallback)");
+            } else {
+                warning("⚠️ Could not update bootstrap/providers.php to register {$providerClass}");
+            }
         }
     }
     
