@@ -182,6 +182,6 @@ class StaticLanguage extends Model
 
         $code = strtolower($this->alpha2);
 
-        return 'flag-' . ($languageToFlagMap[$code] ?? $code);
+        return 'flag-'.($languageToFlagMap[$code] ?? $code);
     }
 }
