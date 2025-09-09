@@ -182,7 +182,7 @@ class StaticLanguage extends Model
 
         $code = strtolower($this->alpha2);
 
-        return 'flag-' . ($languageToFlagMap[$code] ?? $code);
+        return 'flag-'.($languageToFlagMap[$code] ?? $code);
     }
 
     /**
@@ -193,11 +193,11 @@ class StaticLanguage extends Model
         $useNativeNames = config('localization.language_selector.use_native_names', true);
         $fallbackToEnglish = config('localization.language_selector.fallback_to_english', true);
 
-        if (!$useNativeNames) {
+        if (! $useNativeNames) {
             return $this->common_name;
         }
 
-        if (is_string($this->native_name) && !empty($this->native_name)) {
+        if (is_string($this->native_name) && ! empty($this->native_name)) {
             return $this->native_name;
         }
 
