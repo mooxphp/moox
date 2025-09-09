@@ -39,7 +39,7 @@
         <x-filament::button color="gray"
             icon="{{ \Moox\Data\Models\StaticLanguage::where('alpha2', $currentLang)->first()?->flag_icon ?? 'flag-' . $currentLang }}"
             size="md" style="min-width: 225px; justify-content: flex-start; position: relative;">
-            {{ $currentLocalization?->language->common_name ?? $currentLang }}
+            {{ $currentLocalization?->language->display_name ?? $currentLang }}
             <div style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%);">
                 <x-filament::icon-button icon="heroicon-o-chevron-down" size="xs" color="gray" tag="a" />
             </div>
@@ -119,13 +119,13 @@
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon"
                         wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
                         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->language->common_name }}</span>
+                            <span>{{ $locale->language->display_name }}</span>
                         </div>
                     </x-filament::dropdown.list.item>
                 @else
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon" tag="a">
                         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->language->common_name }}</span>
+                            <span>{{ $locale->language->display_name }}</span>
                         </div>
                     </x-filament::dropdown.list.item>
                 @endif
@@ -134,7 +134,7 @@
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon"
                         wire:click="changeLanguage('{{ $locale->language->alpha2 }}')">
                         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->language->common_name }}</span>
+                            <span>{{ $locale->language->display_name }}</span>
                             @if(isset($translationStatus) && $translationStatus === 'deleted')
                                 <x-filament::icon-button icon="heroicon-o-trash" size="md" color="danger" tooltip="Übersetzung gelöscht"
                                     style="margin-left: 8px;" />
@@ -147,7 +147,7 @@
                 @else
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->language->flag_icon" tag="a">
                         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->language->common_name }}</span>
+                            <span>{{ $locale->language->display_name }}</span>
                             @if(isset($translationStatus) && $translationStatus === 'deleted')
                                 <x-filament::icon-button icon="heroicon-o-trash" size="xs" color="danger" tooltip="Übersetzung gelöscht"
                                     style="margin-left: 8px;" />

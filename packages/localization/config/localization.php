@@ -77,4 +77,17 @@ return [
     'navigation_group' => 'trans//core::core.system',
     'enable-panel' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Language Selector
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the language selector component.
+    |
+    */
+    'language_selector' => [
+        'use_native_names' => true, // Use native language names instead of English names
+        'fallback_to_english' => true, // Fallback to English name if native name is not available
+    ],
+
 ];
