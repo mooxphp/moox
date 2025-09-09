@@ -89,6 +89,12 @@ trait InstallPackage
         
         $didChange = $this->installPlugins($package, $panelPaths) || $didChange;
 
+        if ($didChange) {
+            info('🎉 Installation completed.');
+        } else {
+            info('ℹ️ No changes required.');
+        }
+
         return $didChange;
     }
 
@@ -163,6 +169,12 @@ trait InstallPackage
 
         $didRun = false;
         foreach ($migrations as $migration) {
+            $absolutePath = base_path($migration);
+            if (!$this->hasMigrationsAtPath($absolutePath)) {
+                info("ℹ️ No migrations found at: {$migration}. Skipping.");
+                continue;
+            }
+
             $status = $this->packageService->checkMigrationStatus($migration);
 
             if ($status['hasChanges']) {
@@ -177,6 +189,7 @@ trait InstallPackage
                 $exitCode = Artisan::call('migrate', [
                     '--path' => $migration,
                     '--force' => true,
+                    '--no-interaction' => true,
                 ]);
                 info("✅ Migration completed (Exit Code: {$exitCode})");
                 $didRun = true;
@@ -184,6 +197,19 @@ trait InstallPackage
         }
 
         return $didRun;
+    }
+
+    private function hasMigrationsAtPath(string $absolutePath): bool
+    {
+        if (File::isFile($absolutePath)) {
+            return str_ends_with($absolutePath, '.php');
+        }
+        if (File::isDirectory($absolutePath)) {
+            $files = collect(File::files($absolutePath))
+                ->filter(fn($f) => str_ends_with($f->getFilename(), '.php'));
+            return $files->isNotEmpty();
+        }
+        return false;
     }
 
     protected function publishConfig(array $package): bool
@@ -196,10 +222,12 @@ trait InstallPackage
             if (is_string($path) && str_starts_with($path, 'tag:')) {
                 $tag = substr($path, 4);
                 info("📦 Publishing vendor tag: {$tag}");
-                Artisan::call('vendor:publish', [
+                $exit = Artisan::call('vendor:publish', [
                     '--tag' => $tag,
                     '--force' => true,
+                    '--no-interaction' => true,
                 ]);
+                info("✅ Vendor tag '{$tag}' published (Exit Code: {$exit})");
                 $updatedAny = true;
                 continue;
             }
@@ -277,8 +305,8 @@ trait InstallPackage
             return false;
         }
 
-        if (! confirm('🚀 Post-Install Befehle ausführen (auto_run/auto_runhere)?', true)) {
-            warning('⏭️ Post-Install Befehle übersprungen.');
+        if (! confirm('🚀 Run post-install commands (auto_run/auto_runhere)?', true)) {
+            warning('⏭️ Post-install commands skipped.');
             return false;
         }
 
