@@ -94,7 +94,7 @@ jobs:
               IS_PRERELEASE=false
               echo "✅ Using stable version: $FINAL_VERSION"
             elif [ "$STABILITY" = "dev" ]; then
-              FINAL_VERSION="${BASE_VERSION}-dev"
+              FINAL_VERSION="${BASE_VERSION}-beta"
               IS_PRERELEASE=true
               echo "🔧 Using dev version: $FINAL_VERSION"
             else
