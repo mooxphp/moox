@@ -16,12 +16,16 @@ class GitHubTokenCommand extends Command
 
     public function handle(): int
     {
-        $user = User::first();
+        // If env token exists, we don't need a user
+        if (!env('GITHUB_TOKEN')) {
+            $user = User::first();
 
-        if (! $user) {
-            $this->error('No user found in database. Please create a user first.');
-
-            return 1;
+            if (! $user) {
+                $this->error('No GitHub token in environment and no user found in database. Please add a token to .env or create a user first.');
+                return 1;
+            }
+        } else {
+            $user = null;
         }
 
         if ($this->option('check')) {
@@ -40,14 +44,14 @@ class GitHubTokenCommand extends Command
         return $this->showStatus($user);
     }
 
-    private function checkToken(User $user): int
+    private function checkToken(?User $user): int
     {
         // Check environment variable first (like monorepo v2 does)
         $token = env('GITHUB_TOKEN');
         $source = 'environment';
 
         // Fallback to user model
-        if (! $token) {
+        if (! $token && $user) {
             $token = $user->github_token;
             $source = 'user model';
         }
@@ -115,8 +119,18 @@ class GitHubTokenCommand extends Command
         }
     }
 
-    private function clearToken(User $user): int
+    private function clearToken(?User $user): int
     {
+        if (env('GITHUB_TOKEN')) {
+            $this->error('Cannot clear environment token. Remove GITHUB_TOKEN from .env file manually.');
+            return 1;
+        }
+
+        if (!$user) {
+            $this->error('No user found to clear token from.');
+            return 1;
+        }
+
         $user->update([
             'github_id' => null,
             'github_token' => null,
@@ -127,14 +141,14 @@ class GitHubTokenCommand extends Command
         return 0;
     }
 
-    private function showTokenInfo(User $user): int
+    private function showTokenInfo(?User $user): int
     {
         // Check environment variable first
         $token = env('GITHUB_TOKEN');
         $source = 'environment';
 
         // Fallback to user model
-        if (! $token) {
+        if (! $token && $user) {
             $token = $user->github_token;
             $source = 'user model';
         }
@@ -147,15 +161,22 @@ class GitHubTokenCommand extends Command
 
         $this->info('GitHub Token Information:');
         $this->line("Source: {$source}");
-        $this->line("User ID: {$user->id}");
-        $this->line("GitHub ID: {$user->github_id}");
+        
+        if ($user) {
+            $this->line("User ID: {$user->id}");
+            $this->line("GitHub ID: {$user->github_id}");
+        } else {
+            $this->line("User ID: N/A (using environment token)");
+            $this->line("GitHub ID: N/A (using environment token)");
+        }
+        
         $this->line('Token: '.substr($token, 0, 10).'...'.substr($token, -4));
         $this->line('Token Type: '.(str_starts_with($token, 'gho_') ? 'OAuth Token' : 'Personal Access Token'));
 
         return 0;
     }
 
-    private function showStatus(User $user): int
+    private function showStatus(?User $user): int
     {
         $this->info('🔑 GitHub Token Manager');
         $this->line('');
@@ -165,13 +186,17 @@ class GitHubTokenCommand extends Command
         $source = 'environment';
 
         // Fallback to user model
-        if (! $token) {
+        if (! $token && $user) {
             $token = $user->github_token;
             $source = 'user model';
         }
 
         if ($token) {
-            $this->info("✅ Token found in {$source} for user: {$user->name}");
+            if ($user) {
+                $this->info("✅ Token found in {$source} for user: {$user->name}");
+            } else {
+                $this->info("✅ Token found in {$source}");
+            }
             $this->line('Token: '.substr($token, 0, 10).'...');
             $this->line('');
             $this->line('Use --check to validate the token');

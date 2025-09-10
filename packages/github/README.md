@@ -2,115 +2,61 @@
 
 ## Overview
 
-The **Moox GitHub** package is a Laravel package that provides seamless GitHub OAuth integration for Filament-based applications. It acts as a wrapper around the GitHub API and enables users to connect their GitHub accounts to your application, storing GitHub authentication tokens for subsequent API interactions.
+The **Moox GitHub** package provides GitHub integration for Laravel applications with Filament. It supports both simple token-based access and full OAuth user authentication, adapting to your development needs.
 
-## Purpose and Features
+## Installation
 
-This package is designed to:
-
-- **OAuth Integration**: Provide secure GitHub OAuth2 authentication flow
-- **User Account Linking**: Connect existing user accounts with their GitHub profiles
-- **Token Management**: Store and manage GitHub access tokens for API calls
-- **Filament Integration**: Seamlessly integrate with Filament admin panels
-- **Database Extensions**: Extend user models with GitHub-specific fields
-
-### Key Features
-
-1. **GitHub OAuth Flow**: Complete OAuth2 implementation with connect/disconnect functionality
-2. **Filament UI Integration**: Ready-to-use buttons in Filament panels for GitHub connection
-3. **User Token Storage**: Secure storage of GitHub tokens for API access
-4. **Database Migration**: Automatic database schema updates for GitHub fields
-5. **Error Handling**: Comprehensive error handling with user-friendly messages
-
-## Installation Steps
-
-### 1. Add Package Dependency
-
-Add the package to your `composer.json`:
-
-```json
-{
-    "require": {
-        "moox/github": "*"
-    }
-}
-```
-
-### 2. Database Migration
-
-Publish the migration and 
-Run the migration to add GitHub fields to your users table:
+### Step 1: Install the Package
 
 ```bash
+composer require moox/github
+```
+
+That's it for the basic installation! The package is now ready to use.
+
+## Step 2: Choose Your Implementation Path
+
+At this point, your implementation splits into two paths depending on your needs:
+
+### Path A: Developer/CLI Usage (Simple Token)
+
+**Perfect for**: Development, CLI tools, automation, API testing
+
+**What you need**: Just a GitHub Personal Access Token
+
+#### A1. Get a GitHub Token
+1. Go to [GitHub Settings → Developer Settings → Personal Access Tokens](https://github.com/settings/tokens)
+2. Click "Generate new token (classic)"
+3. Select required scopes:
+   - `repo` - Repository access
+   - `read:org` - Organization membership
+   - `workflow` - GitHub Actions access
+4. Copy the generated token
+
+#### A2. Add Token to Environment
+```env
+GITHUB_TOKEN=ghp_your_personal_access_token
+```
+
+**You're done!** No database setup, no OAuth configuration needed.
+
+### Path B: Application with User Authentication
+
+**Perfect for**: Web applications where users connect their own GitHub accounts
+
+**What you need**: Database setup + GitHub OAuth App + User interface
+
+#### B1. Database Setup
+```bash
+php artisan vendor:publish --github-migrations
 php artisan migrate
 ```
 
-This adds the following fields to the `users` table:
-- `github_id` (string, nullable) - GitHub user ID
-- `github_token` (string, nullable) - GitHub access token
+This adds GitHub fields to your users table:
+- `github_id` (string, nullable)
+- `github_token` (string, nullable)
 
-### 3. GitHub OAuth App Setup
-
-1. Go to GitHub Settings → Developer settings → OAuth Apps
-2. Create a new OAuth App with:
-   - **Application name**: Your app name
-   - **Homepage URL**: Your application URL
-   - **Authorization callback URL**: `{YOUR_APP_URL}/auth/github/callback`
-
-### 4. Environment Configuration
-
-Add the following environment variables to your `.env` file:
-
-```env
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-```
-
-### 5. Service Provider Registration
-
-The package auto-registers its service provider. Ensure it's loaded by checking your `config/app.php` or letting Laravel's auto-discovery handle it.
-
-## Package Interfaces and API
-
-### Web Routes
-
-The package provides three main routes:
-
-#### 1. GitHub Connect Route
-- **URL**: `/auth/github/connect`
-- **Method**: GET
-- **Middleware**: `auth`
-- **Purpose**: Initiates GitHub OAuth flow
-- **Route Name**: `github.connect`
-
-#### 2. GitHub Callback Route
-- **URL**: `/auth/github/callback`
-- **Method**: GET
-- **Purpose**: Handles GitHub OAuth callback
-- **Route Name**: `github.callback`
-
-#### 3. GitHub Disconnect Route
-- **URL**: `/auth/github/disconnect`
-- **Method**: GET
-- **Middleware**: `auth`
-- **Purpose**: Removes GitHub connection from user account
-- **Route Name**: `github.disconnect`
-
-### Database Schema
-
-The package extends the `users` table with:
-
-```php
-Schema::table('users', function (Blueprint $table) {
-    $table->string('github_id')->nullable();
-    $table->string('github_token')->nullable();
-});
-```
-
-### User Model Integration
-
-Update your User model to include the GitHub fields in the fillable array:
-
+#### B2. Update User Model
 ```php
 class User extends Authenticatable
 {
@@ -122,20 +68,30 @@ class User extends Authenticatable
 }
 ```
 
-## Usage Examples
+#### B3. Create GitHub OAuth App
+1. Go to [GitHub Settings → Developer Settings → OAuth Apps](https://github.com/settings/developers)
+2. Click "New OAuth App"
+3. Configure:
+   - **Application name**: Your app name
+   - **Homepage URL**: Your application URL
+   - **Authorization callback URL**: `{YOUR_APP_URL}/auth/github/callback`
+4. Save and copy the Client ID and Client Secret
 
-### 1. Filament Panel Integration
+#### B4. Add OAuth Configuration
+```env
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+```
 
-The package integrates with Filament panels through the `MooxPanelProvider`. Users see:
-
-- **Connect Button**: When GitHub is not connected
-- **Disconnect Button**: When GitHub is already connected
-
+#### B5. Add Filament Panel Menu Items
 ```php
-// In your Filament panel provider
+// In your Filament PanelProvider
+use Filament\Navigation\MenuItem;
+use Illuminate\Support\Facades\Auth;
+
 ->userMenuItems([
     MenuItem::make()
-        ->label('GitHub verbinden')
+        ->label('Connect GitHub')
         ->icon('heroicon-o-link')
         ->url('/auth/github/connect')
         ->visible(function () {
@@ -143,7 +99,7 @@ The package integrates with Filament panels through the `MooxPanelProvider`. Use
             return $user && !$user->github_id;
         }),
     MenuItem::make()
-        ->label('GitHub trennen')
+        ->label('Disconnect GitHub')
         ->icon('heroicon-o-x-mark')
         ->url('/auth/github/disconnect')
         ->visible(function () {
@@ -153,44 +109,105 @@ The package integrates with Filament panels through the `MooxPanelProvider`. Use
 ])
 ```
 
-### 2. Programmatic Usage
+## Step 3: Test Your Setup
 
-Check if a user has GitHub connected:
+Regardless of which path you chose, you can test your setup:
 
-```php
-// Check if user has GitHub connected
-if ($user->github_id) {
-    // User has GitHub connected
-    $githubToken = $user->github_token;
-    // Use token for GitHub API calls
-}
+### Check Token Status
+```bash
+php artisan github:token --check
 ```
 
-### 3. GitHub API Integration
+This will:
+- ✅ Validate your token
+- 📋 Show available scopes
+- 🔍 Test API connectivity
+- ⚠️ Report any issues
 
-Once a user has connected their GitHub account, you can use their token for API calls:
+### Show Token Information
+```bash
+php artisan github:token --info
+```
+
+This displays:
+- Token source (environment vs user database)
+- Token type (OAuth vs Personal Access Token)
+- Associated user information
+- Token preview (first 10 + last 4 characters)
+
+### Other Useful Commands
+```bash
+# Show current status and help
+php artisan github:token
+
+# Clear user token (doesn't affect environment tokens)
+php artisan github:token --clear
+```
+
+## Available Routes (Path B Only)
+
+If you chose Path B (user authentication), these routes are available:
+
+- **`/auth/github/connect`** - Start OAuth flow
+- **`/auth/github/callback`** - OAuth callback handler
+- **`/auth/github/disconnect`** - Remove user's GitHub connection
+
+## Token Priority
+
+The package uses this priority system:
+
+1. **Environment Token** (`GITHUB_TOKEN`) - Always takes precedence
+2. **User Token** (database) - Used when no environment token exists
+3. **No Token** - Shows setup instructions
+
+This means you can have both:
+- An environment token for system operations
+- User tokens for user-specific features
+
+## Usage Examples
+
+### Simple API Access (Works with Both Paths)
 
 ```php
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 
-$client = new Client();
-$response = $client->get('https://api.github.com/user', [
-    'headers' => [
-        'Authorization' => 'token ' . $user->github_token,
-        'Accept' => 'application/vnd.github.v3+json',
-    ],
-]);
+// Get token (environment or user token)
+$token = env('GITHUB_TOKEN') ?: Auth::user()->github_token;
 
-$githubUser = json_decode($response->getBody(), true);
+$response = Http::withHeaders([
+    'Authorization' => "Bearer {$token}",
+    'Accept' => 'application/vnd.github+json',
+])->get('https://api.github.com/user');
+
+$userData = $response->json();
+```
+
+### Check User Connection (Path B)
+
+```php
+$user = Auth::user();
+
+if ($user->github_id) {
+    // User has GitHub connected
+    echo "Connected as: " . $user->github_id;
+    
+    // Use their token for API calls
+    $response = Http::withHeaders([
+        'Authorization' => "Bearer {$user->github_token}",
+        'Accept' => 'application/vnd.github+json',
+    ])->get('https://api.github.com/user/repos');
+} else {
+    // Show connect button
+    echo "Please connect your GitHub account";
+}
 ```
 
 ## Configuration
 
-### Services Configuration
-
-The package uses Laravel Socialite for OAuth. Configuration is handled in `config/services.php`:
+### Services Configuration (Path B Only)
 
 ```php
+// config/services.php
 'github' => [
     'client_id' => env('GITHUB_CLIENT_ID'),
     'client_secret' => env('GITHUB_CLIENT_SECRET'),
@@ -198,39 +215,92 @@ The package uses Laravel Socialite for OAuth. Configuration is handled in `confi
 ],
 ```
 
-### Dependencies
+## Required GitHub Scopes
 
-The package requires:
-- PHP ^8.3
-- Laravel Socialite ^5.21
-- Filament (through Moox Core)
+For full functionality, ensure your GitHub token has these scopes:
+
+- **`repo`** - Repository access
+- **`read:org`** - Organization membership
+- **`workflow`** - GitHub Actions workflow access
+
+## Troubleshooting
+
+### Common Issues
+
+**"No GitHub token found"**
+```bash
+# Check what's configured
+php artisan github:token --info
+
+# Solution: Add GITHUB_TOKEN to .env or set up user OAuth
+```
+
+**"Token is invalid or expired"**
+```bash
+# Test current token
+php artisan github:token --check
+
+# Solution: Generate new token on GitHub
+```
+
+**"Missing required scopes"**
+```bash
+# Check current scopes
+php artisan github:token --check
+
+# Solution: Recreate token with repo, read:org, workflow scopes
+```
+
+**OAuth callback errors**
+- Verify callback URL in GitHub OAuth app matches exactly
+- Check GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET in .env
 
 ## Security Considerations
 
-1. **Token Storage**: GitHub tokens are stored in the database and should be encrypted in production
-2. **Environment Variables**: Keep GitHub client secrets secure and never commit them to version control
-3. **HTTPS**: Always use HTTPS in production for OAuth flows
-4. **Token Scope**: Consider implementing token scope management for limiting API access
+1. **Never commit tokens** to version control
+2. **Use HTTPS** in production for OAuth flows
+3. **Rotate tokens** regularly
+4. **Limit scopes** to what you actually need
+5. **Encrypt database tokens** in production environments
 
-## Error Handling
+## Quick Reference
 
-The package includes comprehensive error handling:
+### Path A (Developer/CLI)
+```bash
+# 1. Install
+composer require moox/github
 
-- **OAuth Errors**: Logged and user-friendly messages displayed
-- **Route Errors**: Graceful fallbacks to main application
-- **Authentication Errors**: Proper redirects to login pages
+# 2. Add token to .env
+GITHUB_TOKEN=your_token
 
-## Future Development
+# 3. Test
+php artisan github:token --check
+```
 
-Based on the `IDEA.md`, the package may expand to include:
-- Full GitHub API wrapper (inspired by GrahamCampbell/Laravel-GitHub)
-- GitHub resource management through Filament
-- Repository and organization management interfaces
+### Path B (User OAuth)
+```bash
+# 1. Install
+composer require moox/github
+
+# 2. Migrate
+php artisan migrate
+
+# 3. Setup OAuth app on GitHub
+
+# 4. Add credentials to .env
+GITHUB_CLIENT_ID=your_id
+GITHUB_CLIENT_SECRET=your_secret
+
+# 5. Add Filament menu items
+
+# 6. Test
+php artisan github:token --info
+```
 
 ## Dependencies
 
-- **moox/core**: Core Moox functionality
-- **laravel/socialite**: OAuth2 provider for GitHub
-- **symplify/monorepo-builder**: Monorepo management
+- PHP ^8.3
+- Laravel Socialite ^5.21 (for OAuth functionality)
+- Filament (through Moox Core)
 
-This package provides a solid foundation for GitHub integration in Laravel applications with Filament, offering both OAuth authentication and the groundwork for future GitHub API integrations.
+This package grows with your needs - start simple with a token, add user authentication when you're ready!
