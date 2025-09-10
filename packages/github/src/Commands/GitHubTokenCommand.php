@@ -17,11 +17,12 @@ class GitHubTokenCommand extends Command
     public function handle(): int
     {
         // If env token exists, we don't need a user
-        if (!env('GITHUB_TOKEN')) {
+        if (! env('GITHUB_TOKEN')) {
             $user = User::first();
 
             if (! $user) {
                 $this->error('No GitHub token in environment and no user found in database. Please add a token to .env or create a user first.');
+
                 return 1;
             }
         } else {
@@ -123,11 +124,13 @@ class GitHubTokenCommand extends Command
     {
         if (env('GITHUB_TOKEN')) {
             $this->error('Cannot clear environment token. Remove GITHUB_TOKEN from .env file manually.');
+
             return 1;
         }
 
-        if (!$user) {
+        if (! $user) {
             $this->error('No user found to clear token from.');
+
             return 1;
         }
 
@@ -161,15 +164,15 @@ class GitHubTokenCommand extends Command
 
         $this->info('GitHub Token Information:');
         $this->line("Source: {$source}");
-        
+
         if ($user) {
             $this->line("User ID: {$user->id}");
             $this->line("GitHub ID: {$user->github_id}");
         } else {
-            $this->line("User ID: N/A (using environment token)");
-            $this->line("GitHub ID: N/A (using environment token)");
+            $this->line('User ID: N/A (using environment token)');
+            $this->line('GitHub ID: N/A (using environment token)');
         }
-        
+
         $this->line('Token: '.substr($token, 0, 10).'...'.substr($token, -4));
         $this->line('Token Type: '.(str_starts_with($token, 'gho_') ? 'OAuth Token' : 'Personal Access Token'));
 
