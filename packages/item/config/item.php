@@ -49,5 +49,8 @@ return [
     | and if the panel is enabled.
     |
     */
+    'auth' => [
+        'user' => 'Orchestra\\Models\\User',
+    ],
     'navigation_group' => 'DEV',
 ];

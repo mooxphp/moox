@@ -2,19 +2,22 @@
 
 namespace Moox\Item\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Moox\Item\ItemServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Orchestra\Testbench\Attributes\WithMigration;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
+
+#[WithMigration('laravel', 'cache', 'queue')] 
+#[WithMigration('session')]
 class TestCase extends Orchestra
 {
+    use RefreshDatabase;
     protected function setUp(): void
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName): string => 'VendorName\\Item\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
     }
 
     protected function getPackageProviders($app)
@@ -24,36 +27,40 @@ class TestCase extends Orchestra
         ];
     }
 
-    public function getEnvironmentSetUp($app): void
+
+
+    protected function setUpTestUser(): array
     {
-        config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_item_table.php.stub';
-        $migration->up();
-        */
-    }
-
-    protected function setUpTestUser(): void
-    {
-        /*
-        $this->app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->timestamps();
-        });
-
-        $user = new class extends User {
-            protected $table = 'users';
-        };
-
-        $user::create([
+        // Create users table (included in Laravel migrations via WithMigration attribute)
+        // Orchestra Testbench automatically creates users table with #[WithMigration('laravel')]
+        
+        return [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => bcrypt('password'),
+            'password' => 'password',
+        ];
+    }
+
+    protected function createTestUser(): object
+    {
+        $userData = $this->setUpTestUser();
+        
+        // Use Laravel's built-in User model for testing
+        $userClass = config('item.auth.user', 'Testbench\\Models\\User');
+        
+        if (!class_exists($userClass)) {
+            // Fallback to a simple test user
+            $userClass = new class extends \Illuminate\Foundation\Auth\User {
+                protected $table = 'users';
+                protected $fillable = ['name', 'email', 'password'];
+                protected $hidden = ['password'];
+            };
+        }
+
+        return $userClass::create([
+            'name' => $userData['name'],
+            'email' => $userData['email'],
+            'password' => bcrypt($userData['password']),
         ]);
-        */
     }
 }
