@@ -46,8 +46,43 @@
             "aliases": {
                 "JobMonitor": "Moox\\Jobs\\JobManagerProvider\\Facade"
             }
+        },
+        "moox": {
+            "require": {
+                "spatie/laravel-medialibrary": {
+                    "auto_publish": "spatie-jobs-config"
+                }
+            },
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/JobsSeeder.php",
+                "auto_publish": "moox-jobs-config",
+                "auto_entities": {
+                    "Some Resource": true,
+                    "Another Resource": null
+                },
+                "auto_class": {
+                    "Some Class": "Moox\\Jobs\\SomeClass",
+                    "Another Class": "Moox\\Jobs\\AnotherClass"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-jobs-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-jobs-config"
+            }
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true
 }

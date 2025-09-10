@@ -36,7 +36,6 @@
         "prepare": "vendor/bin/testbench package:discover",
         "clear": "vendor/bin/testbench package:purge-clipboard"
     },
-    "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
         "moox": {

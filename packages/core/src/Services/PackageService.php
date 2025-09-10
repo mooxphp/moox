@@ -2,199 +2,239 @@
 
 namespace Moox\Core\Services;
 
-use Composer\InstalledVersions;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Moox\Core\MooxServiceProvider;
-use RuntimeException;
-use Spatie\LaravelPackageTools\Package;
+use Illuminate\Support\Facades\File;
 
 class PackageService
 {
-    public function getInstalledComposerPackages(): array
-    {
-        return InstalledVersions::getInstalledPackages();
-    }
-
-    public function getInstalledLaravelPackages(): array
-    {
-        $packages = [];
-
-        foreach ($this->getInstalledComposerPackages() as $packageName) {
-            $composerFilePath = base_path("vendor/{$packageName}/composer.json");
-
-            if (file_exists($composerFilePath)) {
-                $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-                if (isset($composerData['extra']['laravel']['providers'])) {
-                    $packages[] = $packageName;
-                }
-            }
-        }
-
-        return $packages;
-    }
-
-    public function getInstalledMooxPackages(): array
-    {
-        $packages = [];
-
-        foreach ($this->getInstalledLaravelPackages() as $packageName) {
-            $composerFilePath = base_path("vendor/{$packageName}/composer.json");
-            $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-            if (isset($composerData['extra']['laravel']['providers'])) {
-                foreach ($composerData['extra']['laravel']['providers'] as $provider) {
-                    if (class_exists($provider) && is_subclass_of($provider, MooxServiceProvider::class)) {
-                        $packages[] = $packageName;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $packages;
-    }
-
-    public function getInstalledMooxPackagesInfo(): array
-    {
-        $packages = [];
-
-        foreach ($this->getInstalledMooxPackages() as $packageName) {
-            $composerFilePath = base_path("vendor/{$packageName}/composer.json");
-            $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-            foreach ($composerData['extra']['laravel']['providers'] as $provider) {
-                if (class_exists($provider) && is_subclass_of($provider, MooxServiceProvider::class)) {
-                    $providerInstance = app()->resolveProvider($provider);
-                    if ($providerInstance instanceof MooxServiceProvider) {
-                        $package = new Package;
-                        $providerInstance->configurePackage($package);
-
-                        $packages[$packageName] = [
-                            'name' => $packageName,
-                            'provider' => $provider,
-                            'info' => $providerInstance->mooxInfo(),
-                        ];
-                    }
-                    break;
-                }
-            }
-        }
-
-        return $packages;
-    }
-
+    /**
+     * Return migration paths (relative to project base) declared by the package API.
+     * Supports extra.moox.install.auto_migrate as string or array.
+     *
+     * @param  array{name?:string}  $package
+     * @return array<int,string>
+     */
     public function getMigrations(array $package): array
     {
-        $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
-        $composerData = json_decode(file_get_contents($composerFilePath), true);
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $auto = $meta['extra']['moox']['install']['auto_migrate'] ?? null;
+        $paths = [];
 
-        return $composerData['extra']['laravel']['migrations'] ?? [];
-    }
-
-    public function getConfig(array $package): array
-    {
-        $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
-        $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-        return $composerData['extra']['laravel']['config'] ?? [];
-    }
-
-    public function getSeeders(array $package): array
-    {
-        $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
-        $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-        return $composerData['extra']['laravel']['seeders'];
-    }
-
-    public function getPlugins(array $package): array
-    {
-        $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
-        $composerData = json_decode(file_get_contents($composerFilePath), true);
-
-        return $composerData['extra']['laravel']['plugins'];
-    }
-
-    public function checkMigrationStatus(string $migrationPath): array
-    {
-        $table = $this->getMigrationTable($migrationPath);
-        if (! Schema::hasTable($table)) {
-            return [
-                'hasChanges' => true,
-                'hasDataInDeletedFields' => false,
-            ];
-        }
-
-        $pendingColumns = $this->getPendingColumns($migrationPath, $table);
-        $droppingColumns = $this->getDroppingColumns($migrationPath);
-
-        $hasDataInDroppedColumns = false;
-        if (! empty($droppingColumns)) {
-            foreach ($droppingColumns as $column) {
-                $hasData = DB::table($table)
-                    ->whereNotNull($column)
-                    ->limit(1)
-                    ->count() > 0;
-
-                if ($hasData) {
-                    $hasDataInDroppedColumns = true;
-                    break;
-                }
+        foreach ($this->normalizeToArray($auto) as $rel) {
+            $full = $this->toProjectRelativePath($meta['baseDir'], $rel);
+            if ($full) {
+                $paths[] = $full;
             }
         }
 
+        return $paths;
+    }
+
+    /**
+     * Very light migration status; let Laravel handle idempotency.
+     */
+    public function checkMigrationStatus(string $migrationPath): array
+    {
         return [
-            'hasChanges' => ! empty($pendingColumns) || ! empty($droppingColumns),
-            'hasDataInDeletedFields' => $hasDataInDroppedColumns,
+            'hasChanges' => true,
+            'hasDataInDeletedFields' => false,
         ];
     }
 
-    private function getMigrationTable(string $migrationPath): string
+    /**
+     * Return config publish instructions. If the package exposes vendor publish tags
+     * via extra.moox.install.auto_publish, encode as special keys 'tag:<name>' => true.
+     *
+     * @param  array{name?:string}  $package
+     * @return array<string,string|true>
+     */
+    public function getConfig(array $package): array
     {
-        $migrationContent = file_get_contents(base_path($migrationPath));
-        preg_match('/Schema::create\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $auto = $meta['extra']['moox']['install']['auto_publish'] ?? [];
+        $result = [];
 
-        if (empty($matches[1])) {
-            preg_match('/Schema::table\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
+        foreach ($this->normalizeToArray($auto) as $tagOrPath) {
+            if (is_string($tagOrPath) && $tagOrPath !== '') {
+                // Treat as vendor publish tag
+                $result['tag:'.$tagOrPath] = true;
+            }
         }
 
-        return $matches[1] ?? throw new RuntimeException('Could not determine table name from migration');
+        return $result;
     }
 
-    private function getPendingColumns(string $migrationPath, string $table): array
+    /**
+     * Return seeder classes from extra.moox.install.seed.
+     * Accepts class names or file paths; file paths will be parsed for FQCN.
+     *
+     * @param  array{name?:string}  $package
+     * @return array<int,string> Fully-qualified class names
+     */
+    public function getRequiredSeeders(array $package): array
     {
-        $migrationContent = file_get_contents(base_path($migrationPath));
-        preg_match_all('/\$table->([a-zA-Z]+)\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $seed = $meta['extra']['moox']['install']['seed'] ?? [];
+        $classes = [];
 
-        if (empty($matches[1]) || empty($matches[2])) {
+        foreach ($this->normalizeToArray($seed) as $entry) {
+            if (! is_string($entry) || $entry === '') {
+                continue;
+            }
+
+            if (str_ends_with($entry, '.php')) {
+                $abs = $this->toAbsolutePath($meta['baseDir'], $entry);
+                $fqcn = $this->extractClassFromFile($abs) ?? null;
+                if ($fqcn) {
+                    $classes[] = $fqcn;
+                }
+            } else {
+                $classes[] = $entry; // assume already FQCN
+            }
+        }
+
+        return array_values(array_unique($classes));
+    }
+
+    /**
+     * Optional: plugins read from package API in future. Return empty for now.
+     */
+    public function getPlugins(array $package): array
+    {
+        return [];
+    }
+
+    /**
+     * Return shell commands to run after install (project root).
+     * Uses extra.moox.install.auto_run.
+     *
+     * @param  array{name?:string}  $package
+     * @return array<int,string>
+     */
+    public function getAutoRunCommands(array $package): array
+    {
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $cmds = $meta['extra']['moox']['install']['auto_run'] ?? [];
+
+        return array_values(array_filter($this->normalizeToArray($cmds), fn ($c) => is_string($c) && $c !== ''));
+    }
+
+    /**
+     * Return shell commands to run after install (package dir).
+     * Uses extra.moox.install.auto_runhere.
+     *
+     * @param  array{name?:string}  $package
+     * @return array<int,array{cmd:string,cwd:string}>
+     */
+    public function getAutoRunHereCommands(array $package): array
+    {
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $baseDir = $meta['baseDir'];
+        $cmds = $meta['extra']['moox']['install']['auto_runhere'] ?? [];
+        $list = [];
+        foreach ($this->normalizeToArray($cmds) as $cmd) {
+            if (is_string($cmd) && $cmd !== '') {
+                $list[] = ['cmd' => $cmd, 'cwd' => $baseDir];
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * Helpers
+     */
+    private function normalizeToArray(mixed $value): array
+    {
+        if ($value === null || $value === false) {
             return [];
         }
 
-        $definedColumns = array_combine($matches[2], $matches[1]);
-        $existingColumns = Schema::getColumnListing($table);
-
-        return array_diff_key($definedColumns, array_flip($existingColumns));
+        return is_array($value) ? $value : [$value];
     }
 
-    private function getDroppingColumns(string $migrationPath): array
+    /**
+     * @return array{baseDir:string,extra:array}
+     */
+    private function readPackageMeta(string $composerName): array
     {
-        $migrationContent = file_get_contents(base_path($migrationPath));
-        preg_match_all('/dropColumn\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
+        $baseDir = $this->resolvePackageBaseDir($composerName);
+        $composerJson = $baseDir ? $baseDir.'/composer.json' : null;
+        $extra = [];
 
-        return $matches[1];
-    }
-
-    public function getRequiredSeeders(array $package): array
-    {
-        $providerClass = $package['provider'];
-        $provider = app()->resolveProvider($providerClass);
-
-        if ($provider instanceof MooxServiceProvider) {
-            return $provider->mooxInfo()['requiredSeeders'] ?? [];
+        if ($composerJson && File::exists($composerJson)) {
+            $json = json_decode(File::get($composerJson), true) ?: [];
+            $extra = $json['extra'] ?? [];
         }
 
-        return [];
+        return [
+            'baseDir' => $baseDir ?: base_path(),
+            'extra' => $extra,
+        ];
+    }
+
+    private function resolvePackageBaseDir(string $composerName): ?string
+    {
+        if ($composerName === '') {
+            return null;
+        }
+
+        // Prefer local path repo under packages/<name>
+        $short = str_contains($composerName, '/') ? explode('/', $composerName)[1] : $composerName;
+        $local = base_path('packages/'.$short);
+        if (\Illuminate\Support\Facades\File::isDirectory($local)) {
+            return $local;
+        }
+
+        // Fallback to vendor path
+        $vendor = base_path('vendor/'.$composerName);
+        if (\Illuminate\Support\Facades\File::isDirectory($vendor)) {
+            return $vendor;
+        }
+
+        return null;
+    }
+
+    private function toProjectRelativePath(?string $baseDir, string $relative): ?string
+    {
+        if (! $baseDir) {
+            return null;
+        }
+        $abs = $this->toAbsolutePath($baseDir, $relative);
+        if (! $abs) {
+            return null;
+        }
+        $base = rtrim(base_path(), '/');
+
+        return ltrim(str_replace($base, '', $abs), '/');
+    }
+
+    private function toAbsolutePath(string $baseDir, string $relative): ?string
+    {
+        $path = rtrim($baseDir, '/').'/'.ltrim($relative, '/');
+
+        return $path;
+    }
+
+    private function extractClassFromFile(string $filePath): ?string
+    {
+        if (! File::exists($filePath)) {
+            return null;
+        }
+        $content = File::get($filePath);
+        $namespace = null;
+        $class = null;
+
+        if (preg_match('/^\s*namespace\s+([^;]+);/m', $content, $m)) {
+            $namespace = trim($m[1]);
+        }
+        if (preg_match('/^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)/m', $content, $m)) {
+            $class = trim($m[1]);
+        }
+
+        if ($class) {
+            return $namespace ? ($namespace.'\\'.$class) : $class;
+        }
+
+        return null;
     }
 }
