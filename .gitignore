@@ -10,6 +10,7 @@ composer.lock
 # NPM / Node
 /node_modules
 package-lock.json
+node_modules/
 
 # Laravel
 /public/hot
