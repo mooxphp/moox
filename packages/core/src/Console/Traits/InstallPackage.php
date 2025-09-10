@@ -5,9 +5,9 @@ namespace Moox\Core\Console\Traits;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Services\PackageService;
+use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
@@ -15,9 +15,9 @@ use function Laravel\Prompts\warning;
 
 trait InstallPackage
 {
+    use CheckOrCreateFilamentUser;
     use RegisterFilamentPlugin;
     use SelectFilamentPanel;
-    use CheckOrCreateFilamentUser;
 
     protected PackageService $packageService;
 
@@ -56,6 +56,7 @@ trait InstallPackage
         if ($isPathRepo) {
             info("ℹ️ Local path repo detected for {$package}, adding to composer.json...");
             $this->addPackageToComposerJson($package);
+
             return 'already';
         }
 
@@ -72,6 +73,7 @@ trait InstallPackage
         $this->addPackageToComposerJson($package);
 
         info("✅ Installed package: {$package}");
+
         return 'installed';
     }
 
@@ -95,6 +97,7 @@ trait InstallPackage
     {
         if (empty($package) || ! isset($package['name'])) {
             warning('⚠️ Empty or invalid package. Skipping installation.');
+
             return false;
         }
 
@@ -136,12 +139,13 @@ trait InstallPackage
         $existingPanels = $this->getExistingPanelsWithLogin();
 
         if (empty($existingPanels)) {
-            info("ℹ️ No existing panels found. Creating a new panel...");
+            info('ℹ️ No existing panels found. Creating a new panel...');
             $newPanel = $this->createNewPanelProvider();
+
             return [$newPanel];
         }
 
-        info("🔹 Existing panels found:");
+        info('🔹 Existing panels found:');
         foreach ($existingPanels as $key => $panel) {
             info("  [{$key}] {$panel}");
         }
@@ -152,11 +156,13 @@ trait InstallPackage
             $selectedKey = $this->selectFromList($existingPanels, "Select panel for '{$package['name']}'");
             $selectedPanel = $existingPanels[$selectedKey];
             info("✅ Installing in existing panel: {$selectedPanel}");
+
             return [$selectedPanel];
         }
 
         info("ℹ️ Creating a new panel for '{$package['name']}'...");
         $newPanel = $this->createNewPanelProvider();
+
         return [$newPanel];
     }
 
@@ -182,7 +188,7 @@ trait InstallPackage
 
     protected function createNewPanelProvider(): string
     {
-        $panelName = 'Panel' . time();
+        $panelName = 'Panel'.time();
         info("Creating new panel provider: {$panelName} ...");
 
         Artisan::call('make:filament-panel', ['name' => $panelName]);
@@ -200,8 +206,9 @@ trait InstallPackage
         $didRun = false;
         foreach ($migrations as $migration) {
             $absolutePath = base_path($migration);
-            if (!$this->hasMigrationsAtPath($absolutePath)) {
+            if (! $this->hasMigrationsAtPath($absolutePath)) {
                 info("ℹ️ No migrations found at: {$migration}. Skipping.");
+
                 continue;
             }
 
@@ -210,6 +217,7 @@ trait InstallPackage
             if ($status['hasChanges']) {
                 if ($status['hasDataInDeletedFields'] && ! confirm("❗ Migration '{$migration}' removes columns with data. Continue anyway?", false)) {
                     warning("⏭️ Skipped migration '{$migration}'.");
+
                     continue;
                 }
 
@@ -234,9 +242,11 @@ trait InstallPackage
         }
         if (File::isDirectory($absolutePath)) {
             $files = collect(File::files($absolutePath))
-                ->filter(fn($f) => str_ends_with($f->getFilename(), '.php'));
+                ->filter(fn ($f) => str_ends_with($f->getFilename(), '.php'));
+
             return $files->isNotEmpty();
         }
+
         return false;
     }
 
@@ -255,6 +265,7 @@ trait InstallPackage
                     '--no-interaction' => true,
                 ]);
                 $updatedAny = true;
+
                 continue;
             }
 
@@ -263,6 +274,7 @@ trait InstallPackage
                 info("📄 Publishing new config: {$path}");
                 File::put($publishPath, $content);
                 $updatedAny = true;
+
                 continue;
             }
 
@@ -293,6 +305,7 @@ trait InstallPackage
 
             if (! $table || ! Schema::hasTable($table)) {
                 warning("⚠️ Table for seeder {$seeder} not found. Skipping.");
+
                 continue;
             }
 
@@ -322,6 +335,7 @@ trait InstallPackage
 
         if (! confirm('🚀 Run post-install commands (auto_run/auto_runhere)?', true)) {
             warning('⏭️ Post-install commands skipped.');
+
             return false;
         }
 
@@ -348,7 +362,9 @@ trait InstallPackage
         $process->setTimeout(null);
         $process->run(function ($type, $buffer) {
             foreach (explode("\n", rtrim($buffer)) as $line) {
-                if ($line !== '') info('    ' . $line);
+                if ($line !== '') {
+                    info('    '.$line);
+                }
             }
         });
     }
@@ -356,6 +372,7 @@ trait InstallPackage
     private function getSeederTable(string $seederClass): ?string
     {
         $seeder = new $seederClass;
+
         return property_exists($seeder, 'table') ? $seeder->table : null;
     }
 
@@ -386,9 +403,10 @@ trait InstallPackage
             info("  [{$key}] {$item}");
         }
 
-        $choice = (int) readline("Enter number: ");
+        $choice = (int) readline('Enter number: ');
         if (! isset($items[$choice])) {
-            warning("Invalid selection, defaulting to first item.");
+            warning('Invalid selection, defaulting to first item.');
+
             return 0;
         }
 

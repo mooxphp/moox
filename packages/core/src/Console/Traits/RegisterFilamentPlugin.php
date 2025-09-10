@@ -56,6 +56,7 @@ trait RegisterFilamentPlugin
         if ($changed) {
             file_put_contents($providerPath, $content);
         }
+
         return $changed;
     }
 }
