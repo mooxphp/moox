@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Moox\Item\Models\Item;
 
@@ -18,5 +18,3 @@ it('can create an ite with a factory', function () {
     $item = Item::factory()->create();
     expect($item)->toBeInstanceOf(Item::class);
 });
-
-

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Moox\Item\Database\Factories;
 

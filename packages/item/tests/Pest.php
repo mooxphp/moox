@@ -6,4 +6,3 @@ if (class_exists('\Tests\TestCase')) {
 } else {
     uses(Moox\Item\Tests\TestCase::class)->in('Feature', 'Unit');
 }
-
