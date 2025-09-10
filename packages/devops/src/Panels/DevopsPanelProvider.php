@@ -3,7 +3,6 @@
 namespace Moox\Devops\Panels;
 
 use Filament\Facades\Filament;
-
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,9 +28,9 @@ class DevopsPanelProvider extends PanelProvider
             ->default()
             ->id('devops')
             ->path('devops')
-    ->login(
-    fn () => Filament::auth(\Moox\User\Models\User::class),
-)
+            ->login(
+                fn () => Filament::auth(\Moox\User\Models\User::class),
+            )
             ->login()
             ->colors([
                 'primary' => Color::Amber,

@@ -2,16 +2,16 @@
 
 namespace Moox\Core\Console\Traits;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Database\Eloquent\Model;
 
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\warning;
-use function Laravel\Prompts\text;
 use function Laravel\Prompts\password;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\warning;
 
 trait CheckOrCreateFilamentUser
 {
@@ -22,6 +22,7 @@ trait CheckOrCreateFilamentUser
 
         if (! class_exists($userModel)) {
             warning("⚠️ User model '{$userModel}' does not exist.");
+
             return;
         }
 
@@ -31,11 +32,13 @@ trait CheckOrCreateFilamentUser
 
         if (! Schema::hasTable($table)) {
             warning("⚠️ Table '{$table}' not found. Did you run migrations?");
+
             return;
         }
 
         if ($userModel::count() > 0) {
             info("✅ Found existing users in '{$table}'. Skipping user creation.");
+
             return;
         }
 

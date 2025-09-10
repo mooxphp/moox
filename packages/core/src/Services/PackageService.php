@@ -10,7 +10,7 @@ class PackageService
      * Return migration paths (relative to project base) declared by the package API.
      * Supports extra.moox.install.auto_migrate as string or array.
      *
-     * @param array{name?:string} $package
+     * @param  array{name?:string}  $package
      * @return array<int,string>
      */
     public function getMigrations(array $package): array
@@ -44,7 +44,7 @@ class PackageService
      * Return config publish instructions. If the package exposes vendor publish tags
      * via extra.moox.install.auto_publish, encode as special keys 'tag:<name>' => true.
      *
-     * @param array{name?:string} $package
+     * @param  array{name?:string}  $package
      * @return array<string,string|true>
      */
     public function getConfig(array $package): array
@@ -56,7 +56,7 @@ class PackageService
         foreach ($this->normalizeToArray($auto) as $tagOrPath) {
             if (is_string($tagOrPath) && $tagOrPath !== '') {
                 // Treat as vendor publish tag
-                $result['tag:' . $tagOrPath] = true;
+                $result['tag:'.$tagOrPath] = true;
             }
         }
 
@@ -67,7 +67,7 @@ class PackageService
      * Return seeder classes from extra.moox.install.seed.
      * Accepts class names or file paths; file paths will be parsed for FQCN.
      *
-     * @param array{name?:string} $package
+     * @param  array{name?:string}  $package
      * @return array<int,string> Fully-qualified class names
      */
     public function getRequiredSeeders(array $package): array
@@ -77,7 +77,7 @@ class PackageService
         $classes = [];
 
         foreach ($this->normalizeToArray($seed) as $entry) {
-            if (!is_string($entry) || $entry === '') {
+            if (! is_string($entry) || $entry === '') {
                 continue;
             }
 
@@ -107,21 +107,22 @@ class PackageService
      * Return shell commands to run after install (project root).
      * Uses extra.moox.install.auto_run.
      *
-     * @param array{name?:string} $package
+     * @param  array{name?:string}  $package
      * @return array<int,string>
      */
     public function getAutoRunCommands(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
         $cmds = $meta['extra']['moox']['install']['auto_run'] ?? [];
-        return array_values(array_filter($this->normalizeToArray($cmds), fn($c) => is_string($c) && $c !== ''));
+
+        return array_values(array_filter($this->normalizeToArray($cmds), fn ($c) => is_string($c) && $c !== ''));
     }
 
     /**
      * Return shell commands to run after install (package dir).
      * Uses extra.moox.install.auto_runhere.
      *
-     * @param array{name?:string} $package
+     * @param  array{name?:string}  $package
      * @return array<int,array{cmd:string,cwd:string}>
      */
     public function getAutoRunHereCommands(array $package): array
@@ -135,6 +136,7 @@ class PackageService
                 $list[] = ['cmd' => $cmd, 'cwd' => $baseDir];
             }
         }
+
         return $list;
     }
 
@@ -146,6 +148,7 @@ class PackageService
         if ($value === null || $value === false) {
             return [];
         }
+
         return is_array($value) ? $value : [$value];
     }
 
@@ -155,7 +158,7 @@ class PackageService
     private function readPackageMeta(string $composerName): array
     {
         $baseDir = $this->resolvePackageBaseDir($composerName);
-        $composerJson = $baseDir ? $baseDir . '/composer.json' : null;
+        $composerJson = $baseDir ? $baseDir.'/composer.json' : null;
         $extra = [];
 
         if ($composerJson && File::exists($composerJson)) {
@@ -177,13 +180,13 @@ class PackageService
 
         // Prefer local path repo under packages/<name>
         $short = str_contains($composerName, '/') ? explode('/', $composerName)[1] : $composerName;
-        $local = base_path('packages/' . $short);
+        $local = base_path('packages/'.$short);
         if (\Illuminate\Support\Facades\File::isDirectory($local)) {
             return $local;
         }
 
         // Fallback to vendor path
-        $vendor = base_path('vendor/' . $composerName);
+        $vendor = base_path('vendor/'.$composerName);
         if (\Illuminate\Support\Facades\File::isDirectory($vendor)) {
             return $vendor;
         }
@@ -193,26 +196,28 @@ class PackageService
 
     private function toProjectRelativePath(?string $baseDir, string $relative): ?string
     {
-        if (!$baseDir) {
+        if (! $baseDir) {
             return null;
         }
         $abs = $this->toAbsolutePath($baseDir, $relative);
-        if (!$abs) {
+        if (! $abs) {
             return null;
         }
         $base = rtrim(base_path(), '/');
+
         return ltrim(str_replace($base, '', $abs), '/');
     }
 
     private function toAbsolutePath(string $baseDir, string $relative): ?string
     {
-        $path = rtrim($baseDir, '/') . '/' . ltrim($relative, '/');
+        $path = rtrim($baseDir, '/').'/'.ltrim($relative, '/');
+
         return $path;
     }
 
     private function extractClassFromFile(string $filePath): ?string
     {
-        if (!File::exists($filePath)) {
+        if (! File::exists($filePath)) {
             return null;
         }
         $content = File::get($filePath);
@@ -227,8 +232,9 @@ class PackageService
         }
 
         if ($class) {
-            return $namespace ? ($namespace . '\\' . $class) : $class;
+            return $namespace ? ($namespace.'\\'.$class) : $class;
         }
+
         return null;
     }
 }
