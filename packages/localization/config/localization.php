@@ -87,7 +87,8 @@ return [
     */
     'language_selector' => [
         'use_native_names' => true, // Use native language names instead of English names
-        'fallback_to_english' => true, // Fallback to English name if native name is not available
+        'show_regional_variants' => true, // Show regional variants (e.g., de_CH, en_US)
+        'use_country_translations' => true, // Use translated country names (e.g., Österreich for German, Austria for English)
     ],
 
 ];

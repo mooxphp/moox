@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\TextColumn;
+use Moox\Localization\Models\Localization;
 use Moox\Data\Models\StaticLanguage;
 
 class TranslationColumn extends TextColumn
@@ -24,13 +25,14 @@ class TranslationColumn extends TextColumn
                 $translations = $record->translations()->withTrashed()->get();
 
                 $flags = $translations->map(function ($translation) {
-                    $languageCode = explode('_', $translation->locale)[0];
-                    $locale = StaticLanguage::where('alpha2', $languageCode)->first();
+                    $localization = Localization::where('locale_variant', $translation->locale)->first();
 
-                    if ($locale) {
-                        $flagClass = $locale->flag_icon;
+                    if ($localization) {
+                        $flagClass = $localization->display_flag;
                     } else {
-                        $flagClass = 'heroicon-o-flag';
+                        $languageCode = explode('_', $translation->locale)[0];
+                        $locale = StaticLanguage::where('alpha2', $languageCode)->first();
+                        $flagClass = $locale ? $locale->flag_icon : 'heroicon-o-flag';
                     }
 
                     if ($translation->trashed()) {

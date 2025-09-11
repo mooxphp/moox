@@ -34,6 +34,7 @@ return new class extends Migration
             $table->json('phone_number_formatting')->nullable();
             $table->string('date_format', 10)->default('YYYY-MM-DD');
             $table->json('currency_format')->nullable();
+            $table->json('translations')->nullable();
         });
     }
 

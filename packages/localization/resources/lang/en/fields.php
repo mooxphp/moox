@@ -15,5 +15,8 @@ return [
     'language_settings' => 'Language Settings',
     'fallback_behaviour' => 'Fallback Behavior',
     'language_routing' => 'Language Routing',
+    'use_native_names' => 'Show Native Names',
+    'show_regional_variants' => 'Show Flag by Region',
+    'use_country_translations' => 'Show Country Translations',
 
 ];

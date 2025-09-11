@@ -198,8 +198,8 @@ class ImportStaticDataJob implements ShouldQueue
             ]);
 
             if ($response1->failed()) {
-                Log::channel('daily')->error('Failed to fetch basic data from REST Countries API. Status: '.$response1->status());
-                Log::channel('daily')->error('Response body: '.$response1->body());
+                Log::channel('daily')->error('Failed to fetch basic data from REST Countries API. Status: ' . $response1->status());
+                Log::channel('daily')->error('Response body: ' . $response1->body());
 
                 return;
             }
@@ -210,8 +210,8 @@ class ImportStaticDataJob implements ShouldQueue
             ]);
 
             if ($response2->failed()) {
-                Log::channel('daily')->error('Failed to fetch additional data from REST Countries API. Status: '.$response2->status());
-                Log::channel('daily')->error('Response body: '.$response2->body());
+                Log::channel('daily')->error('Failed to fetch additional data from REST Countries API. Status: ' . $response2->status());
+                Log::channel('daily')->error('Response body: ' . $response2->body());
 
                 return;
             }
@@ -232,34 +232,44 @@ class ImportStaticDataJob implements ShouldQueue
                 }
             }
 
-            Log::channel('daily')->info('Fetched and merged '.count($countries).' countries from API');
+            Log::channel('daily')->info('Fetched and merged ' . count($countries) . ' countries from API');
 
             // Fetch native names from ApiCountries API
             Log::channel('daily')->info('Fetching native names from ApiCountries API...');
             $apiCountriesResponse = Http::timeout(60)->get('https://www.apicountries.com/countries');
 
             $nativeNamesMap = [];
+            $translationsMap = [];
             if ($apiCountriesResponse->successful()) {
                 $apiCountries = $apiCountriesResponse->json();
                 foreach ($apiCountries as $country) {
-                    if (isset($country['alpha2Code']) && isset($country['languages'])) {
-                        foreach ($country['languages'] as $lang) {
-                            if (isset($lang['iso639_1']) && isset($lang['nativeName'])) {
-                                $nativeNamesMap[$lang['iso639_1']] = $lang['nativeName'];
+                    if (isset($country['alpha2Code'])) {
+                        // Collect language native names
+                        if (isset($country['languages'])) {
+                            foreach ($country['languages'] as $lang) {
+                                if (isset($lang['iso639_1']) && isset($lang['nativeName'])) {
+                                    $nativeNamesMap[$lang['iso639_1']] = $lang['nativeName'];
+                                }
                             }
+                        }
+
+                        // Collect country translations
+                        if (isset($country['translations'])) {
+                            $translationsMap[$country['alpha2Code']] = $country['translations'];
                         }
                     }
                 }
-                Log::channel('daily')->info('Fetched native names for '.count($nativeNamesMap).' languages from ApiCountries API');
+                Log::channel('daily')->info('Fetched native names for ' . count($nativeNamesMap) . ' languages from ApiCountries API');
+                Log::channel('daily')->info('Fetched translations for ' . count($translationsMap) . ' countries from ApiCountries API');
             } else {
                 Log::channel('daily')->warning('Failed to fetch native names from ApiCountries API, continuing without them');
             }
 
             foreach ($countries as $countryData) {
                 try {
-                    Log::channel('daily')->info('Processing country: '.($countryData['cca2'] ?? 'unknown'));
+                    Log::channel('daily')->info('Processing country: ' . ($countryData['cca2'] ?? 'unknown'));
 
-                    if (! isset($countryData['cca2'])) {
+                    if (!isset($countryData['cca2'])) {
                         Log::channel('daily')->warning('Skipping country - missing cca2 code');
 
                         continue;
@@ -267,6 +277,7 @@ class ImportStaticDataJob implements ShouldQueue
 
                     $subregion = $countryData['subregion'] ?? null;
                     $nativeName = $countryData['name']['nativeName'] ?? [];
+                    $translations = $translationsMap[$countryData['cca2']] ?? [];
 
                     $country = StaticCountry::updateOrCreate(
                         ['alpha2' => $countryData['cca2']],
@@ -274,24 +285,25 @@ class ImportStaticDataJob implements ShouldQueue
                             'alpha3_b' => $countryData['cca3'] ?? null,
                             'common_name' => $countryData['name']['common'] ?? null,
                             'native_name' => $nativeName,
-                            'exonyms' => $countryData['translations'] ?? [],
+                            'exonyms' => $countryData['altSpellings'] ?? [],
+                            'translations' => $translations,
                             'region' => $countryData['region'] ?? null,
                             'subregion' => $subregion,
-                            'calling_code' => ! empty($countryData['idd']['root']) ? $countryData['idd']['root'] : null,
+                            'calling_code' => !empty($countryData['idd']['root']) ? $countryData['idd']['root'] : null,
                             'capital' => $countryData['capital'] ?? [],
                             'population' => $countryData['population'] ?? null,
                             'area' => $countryData['area'] ?? null,
                             'tlds' => $countryData['tld'] ?? [],
                             'membership' => $countryData['regionalBlocs'] ?? [],
                             'postal_code_regex' => $countryData['postalCode']['format'] ?? null,
-                            'dialing_prefix' => ! empty($countryData['idd']['root']) ? $countryData['idd']['root'] : null,
+                            'dialing_prefix' => !empty($countryData['idd']['root']) ? $countryData['idd']['root'] : null,
                             'date_format' => 'YYYY-MM-DD',
                             'embargo' => 'none',
                         ]
                     );
-                    Log::channel('daily')->info('Created/Updated country: '.$country->alpha2);
+                    Log::channel('daily')->info('Created/Updated country: ' . $country->alpha2);
 
-                    if (! empty($countryData['currencies'])) {
+                    if (!empty($countryData['currencies'])) {
                         foreach ($countryData['currencies'] as $code => $currencyData) {
                             try {
                                 $currency = StaticCurrency::updateOrCreate(
@@ -308,12 +320,12 @@ class ImportStaticDataJob implements ShouldQueue
                                 ]);
                                 Log::channel('daily')->info("Added currency {$code} for country {$country->alpha2}");
                             } catch (Exception $e) {
-                                Log::channel('daily')->error("Error processing currency {$code} for country {$country->alpha2}: ".$e->getMessage());
+                                Log::channel('daily')->error("Error processing currency {$code} for country {$country->alpha2}: " . $e->getMessage());
                             }
                         }
                     }
 
-                    if (! empty($countryData['languages'])) {
+                    if (!empty($countryData['languages'])) {
                         foreach ($countryData['languages'] as $code => $name) {
                             try {
                                 $alpha2 = $alpha3ToAlpha2[$code] ?? $code;
@@ -327,7 +339,7 @@ class ImportStaticDataJob implements ShouldQueue
                                     ]
                                 );
 
-                                $locale = $alpha2.'_'.strtolower($country->alpha2);
+                                $locale = $alpha2 . '_' . strtolower($country->alpha2);
                                 StaticLocale::updateOrCreate(
                                     [
                                         'country_id' => $country->id,
@@ -341,12 +353,12 @@ class ImportStaticDataJob implements ShouldQueue
                                 );
                                 Log::channel('daily')->info("Added language {$code} for country {$country->alpha2}");
                             } catch (Exception $e) {
-                                Log::channel('daily')->error("Error processing language {$code} for country {$country->alpha2}: ".$e->getMessage());
+                                Log::channel('daily')->error("Error processing language {$code} for country {$country->alpha2}: " . $e->getMessage());
                             }
                         }
                     }
 
-                    if (! empty($countryData['timezones'])) {
+                    if (!empty($countryData['timezones'])) {
                         foreach ($countryData['timezones'] as $timezoneName) {
                             try {
                                 $timezone = StaticTimezone::updateOrCreate(
@@ -359,19 +371,19 @@ class ImportStaticDataJob implements ShouldQueue
                                 ]);
                                 Log::channel('daily')->info("Added timezone {$timezoneName} for country {$country->alpha2}");
                             } catch (Exception $e) {
-                                Log::channel('daily')->error("Error processing timezone {$timezoneName} for country {$country->alpha2}: ".$e->getMessage());
+                                Log::channel('daily')->error("Error processing timezone {$timezoneName} for country {$country->alpha2}: " . $e->getMessage());
                             }
                         }
                     }
                 } catch (Exception $e) {
-                    Log::channel('daily')->error("Error processing country {$countryData['cca2']}: ".$e->getMessage());
+                    Log::channel('daily')->error("Error processing country {$countryData['cca2']}: " . $e->getMessage());
                 }
             }
 
             Log::channel('daily')->info('Finished importing static data from REST Countries API.');
         } catch (Exception $e) {
-            Log::channel('daily')->error('Error during import: '.$e->getMessage());
-            Log::channel('daily')->error('Stack trace: '.$e->getTraceAsString());
+            Log::channel('daily')->error('Error during import: ' . $e->getMessage());
+            Log::channel('daily')->error('Stack trace: ' . $e->getTraceAsString());
             throw $e;
         }
     }

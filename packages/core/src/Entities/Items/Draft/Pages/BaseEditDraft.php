@@ -27,7 +27,10 @@ abstract class BaseEditDraft extends EditRecord
 
     public function mount($record): void
     {
-        $this->lang = request()->query('lang', app()->getLocale());
+        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+
+        $this->lang = request()->query('lang', $defaultLang);
         parent::mount($record);
 
         if ($this->record && method_exists($this->record, 'translations')) {
@@ -35,14 +38,13 @@ abstract class BaseEditDraft extends EditRecord
                 (isset($this) && method_exists($this, 'getResource'));
 
             if ($isAdminContext) {
-                $localization = \Moox\Localization\Models\Localization::whereHas('language', function ($q) {
-                    $q->where('alpha2', $this->lang);
-                })->where('is_active_admin', true)->first();
+                $localization = \Moox\Localization\Models\Localization::where('locale_variant', $this->lang)
+                    ->where('is_active_admin', true)->first();
 
-                if (! $localization) {
-                    $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first() ?? app()->getLocale();
+                if (!$localization) {
+                    $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
                     if ($defaultLocalization) {
-                        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->language->alpha2]));
+                        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->locale_variant]));
                     } else {
                         $this->redirect($this->getResource()::getUrl('index'));
                     }
@@ -51,10 +53,10 @@ abstract class BaseEditDraft extends EditRecord
 
             $translation = $this->record->translations()->withTrashed()->where('locale', $this->lang)->first();
 
-            if ($this->record->trashed() && ! $translation) {
+            if ($this->record->trashed() && !$translation) {
                 $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
                 if ($defaultLocalization) {
-                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->language->alpha2]));
+                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->locale_variant]));
                 } else {
                     $this->redirect($this->getResource()::getUrl('index'));
                 }
@@ -71,7 +73,7 @@ abstract class BaseEditDraft extends EditRecord
         $record = $this->getRecord();
         $values = $data;
 
-        if (! method_exists($record, 'getTranslation') || ! property_exists($record, 'translatedAttributes')) {
+        if (!method_exists($record, 'getTranslation') || !property_exists($record, 'translatedAttributes')) {
             return $values;
         }
 
@@ -90,11 +92,11 @@ abstract class BaseEditDraft extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         /** @var Model&TranslatableContract $record */
-        if (! $this->lang) {
+        if (!$this->lang) {
             return parent::handleRecordUpdate($record, $data);
         }
 
-        if (! property_exists($record, 'translatedAttributes')) {
+        if (!property_exists($record, 'translatedAttributes')) {
             return parent::handleRecordUpdate($record, $data);
         }
 
@@ -104,7 +106,7 @@ abstract class BaseEditDraft extends EditRecord
 
         $record->update($data);
 
-        if (! empty($translationData)) {
+        if (!empty($translationData)) {
             $relation = $record->translations();
             $translationModel = $relation->getRelated();
             $foreignKey = $relation->getForeignKeyName();
@@ -113,7 +115,7 @@ abstract class BaseEditDraft extends EditRecord
                 ->where('locale', $this->lang)
                 ->first();
 
-            if (! $translation) {
+            if (!$translation) {
                 $translation = $record->translations()->make([
                     $relation->getForeignKeyName() => $record->id,
                     'locale' => $this->lang,
@@ -136,7 +138,7 @@ abstract class BaseEditDraft extends EditRecord
         /** @var Model&TranslatableContract $model */
         $model = $this->getRecord();
 
-        if (! property_exists($model, 'translatedAttributes')) {
+        if (!property_exists($model, 'translatedAttributes')) {
             return $data;
         }
 
@@ -190,7 +192,7 @@ abstract class BaseEditDraft extends EditRecord
         ];
 
         foreach ($translatedFields as $field) {
-            if (! isset($data[$field])) {
+            if (!isset($data[$field])) {
                 // Don't set protected fields to null automatically
                 if (in_array($field, $protectedFields)) {
                     continue;
@@ -224,10 +226,10 @@ abstract class BaseEditDraft extends EditRecord
 
         $translation = $this->record->translations()->where('locale', $this->lang)->first();
 
-        if (! $translation) {
-            return $entity.' - '.__('core::core.create');
+        if (!$translation) {
+            return $entity . ' - ' . __('core::core.create');
         }
 
-        return $entity.' - '.$translation->title;
+        return $entity . ' - ' . $translation->title;
     }
 }

@@ -20,7 +20,10 @@ abstract class BaseCreateDraft extends CreateRecord
 
     public function mount(): void
     {
-        $this->lang = request()->query('lang', app()->getLocale());
+        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+
+        $this->lang = request()->query('lang', $defaultLang);
         parent::mount();
     }
 

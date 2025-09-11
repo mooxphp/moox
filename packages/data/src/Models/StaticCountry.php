@@ -20,6 +20,7 @@ class StaticCountry extends Model
         'alpha3_t',
         'common_name',
         'native_name',
+        'translations',
         'exonyms',
         'region',
         'subregion',
@@ -44,6 +45,7 @@ class StaticCountry extends Model
         'capital' => 'array',
         'native_name' => 'array',
         'exonyms' => 'array',
+        'translations' => 'array',
         'links' => 'array',
         'tlds' => 'array',
         'membership' => 'array',
@@ -85,6 +87,6 @@ class StaticCountry extends Model
         $alpha2 = strtolower($this->alpha2);
         $flagCode = $territoryToCountryMap[$alpha2] ?? $alpha2;
 
-        return 'flag-'.$flagCode;
+        return 'flag-' . $flagCode;
     }
 }
