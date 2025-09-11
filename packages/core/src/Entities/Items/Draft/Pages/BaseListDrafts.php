@@ -32,7 +32,7 @@ abstract class BaseListDrafts extends ListRecords
     public function getTitle(): string
     {
         if ($this->activeTab === 'deleted') {
-            return parent::getTitle() . ' - ' . __('core::core.trash');
+            return parent::getTitle().' - '.__('core::core.trash');
         }
 
         return parent::getTitle();
@@ -45,8 +45,8 @@ abstract class BaseListDrafts extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Model => $model::create($data))
-                ->hidden(fn(): bool => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Model => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -64,7 +64,7 @@ abstract class BaseListDrafts extends ListRecords
                     $this->redirect($this->getResource()::getUrl('index', ['lang' => $this->lang, 'tab' => 'all']));
                 })
                 ->requiresConfirmation()
-                ->visible(fn(): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
         ];
     }
 

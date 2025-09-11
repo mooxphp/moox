@@ -142,7 +142,7 @@ class DraftResource extends BaseDraftResource
                                             ...static::getStandardTimestampFields(),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -199,8 +199,7 @@ class DraftResource extends BaseDraftResource
                 SelectFilter::make('type')
                     ->label(__('core::core.type'))
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
-                ...static::getTaxonomyFilters()
-                ,
+                ...static::getTaxonomyFilters(),
                 static::getLocaleFilter(),
             ])->deferFilters(false)
             ->persistFiltersInSession();

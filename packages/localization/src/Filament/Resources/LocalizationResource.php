@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources;
 
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Moox\Data\Models\StaticLocale;
-use Filament\Tables\Grouping\Group;
-use Moox\Data\Models\StaticLanguage;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\ToggleColumn;
-use Moox\Localization\Models\Localization;
-use Filament\Schemas\Components\Utilities\Set;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
-use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Data\Models\StaticLocale;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\EditLocalization;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ListLocalizations;
+use Moox\Localization\Filament\Resources\LocalizationResource\Pages\ViewLocalization;
+use Moox\Localization\Models\Localization;
 
 class LocalizationResource extends BaseRecordResource
 {
@@ -83,7 +82,7 @@ class LocalizationResource extends BaseRecordResource
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
                                     ->required()
-                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug'))
                                     ->required(),
@@ -91,12 +90,12 @@ class LocalizationResource extends BaseRecordResource
                                     ->label('Locale Variant')
                                     ->options(function ($get) {
                                         $languageId = $get('language_id');
-                                        if (!$languageId) {
+                                        if (! $languageId) {
                                             return [];
                                         }
 
                                         $language = StaticLanguage::find($languageId);
-                                        if (!$language) {
+                                        if (! $language) {
                                             return [];
                                         }
 
@@ -105,14 +104,13 @@ class LocalizationResource extends BaseRecordResource
                                         $locales = StaticLocale::where('language_id', $languageId)->with('country')->get();
 
                                         $options = [
-                                            $baseLanguage => $language->common_name . ' (' . $baseLanguage . ')'
+                                            $baseLanguage => $language->common_name.' ('.$baseLanguage.')',
                                         ];
 
                                         foreach ($locales as $locale) {
                                             $countryName = $locale->country ? $locale->country->common_name : 'Unknown';
-                                            $options[$locale->locale] = $language->common_name . ' (' . $countryName . ')';
+                                            $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
                                         }
-
 
                                         return $options;
                                     })
@@ -197,7 +195,7 @@ class LocalizationResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('table_flag')
                     ->label('Flag')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('display_name')
                     ->label(__('localization::fields.language'))
                     ->searchable(),
@@ -217,7 +215,7 @@ class LocalizationResource extends BaseRecordResource
 
                         if ($state && str_contains($record->locale, '_')) {
                             $settings['show_regional_variants'] = true;
-                        } elseif (!$state) {
+                        } elseif (! $state) {
                             $settings['use_native_names'] = false;
                             $settings['show_regional_variants'] = false;
                             $settings['use_country_translations'] = false;
@@ -232,7 +230,7 @@ class LocalizationResource extends BaseRecordResource
 
                         if ($state && str_contains($record->locale, '_')) {
                             $settings['show_regional_variants'] = true;
-                        } elseif (!$state) {
+                        } elseif (! $state) {
                             $settings['use_native_names'] = false;
                             $settings['show_regional_variants'] = false;
                             $settings['use_country_translations'] = false;
@@ -288,7 +286,7 @@ class LocalizationResource extends BaseRecordResource
             ->groups([
                 Group::make('language.common_name')
                     ->label(__('localization::fields.language'))
-                    ->getTitleFromRecordUsing(fn(Localization $record): string => $record->language->common_name)
+                    ->getTitleFromRecordUsing(fn (Localization $record): string => $record->language->common_name)
                     ->collapsible(),
             ])
             ->defaultGroup('language.common_name')
@@ -306,5 +304,4 @@ class LocalizationResource extends BaseRecordResource
             'view' => ViewLocalization::route('/{record}'),
         ];
     }
-
 }

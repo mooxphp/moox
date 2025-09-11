@@ -87,6 +87,6 @@ class StaticCountry extends Model
         $alpha2 = strtolower($this->alpha2);
         $flagCode = $territoryToCountryMap[$alpha2] ?? $alpha2;
 
-        return 'flag-' . $flagCode;
+        return 'flag-'.$flagCode;
     }
 }
