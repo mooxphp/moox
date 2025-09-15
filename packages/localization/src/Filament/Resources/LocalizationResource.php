@@ -75,7 +75,7 @@ class LocalizationResource extends BaseRecordResource
                                         if ($state) {
                                             $language = StaticLanguage::find($state);
                                             if ($language) {
-                                                $mainLocale = $language->alpha2 . '_' . strtoupper($language->alpha2);
+                                                $mainLocale = $language->alpha2.'_'.strtoupper($language->alpha2);
                                                 $set('locale_variant', $mainLocale);
                                             }
                                         }
@@ -83,7 +83,7 @@ class LocalizationResource extends BaseRecordResource
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
                                     ->required()
-                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug'))
                                     ->required(),
@@ -91,17 +91,17 @@ class LocalizationResource extends BaseRecordResource
                                     ->label('Locale Variant')
                                     ->options(function ($get) {
                                         $languageId = $get('language_id');
-                                        if (!$languageId) {
+                                        if (! $languageId) {
                                             return [];
                                         }
 
                                         $language = StaticLanguage::find($languageId);
-                                        if (!$language) {
+                                        if (! $language) {
                                             return [];
                                         }
 
                                         $baseLanguage = $language->alpha2;
-                                        $mainLocale = $baseLanguage . '_' . strtoupper($baseLanguage);
+                                        $mainLocale = $baseLanguage.'_'.strtoupper($baseLanguage);
 
                                         $locales = StaticLocale::where('language_id', $languageId)->with('country')->get();
 
@@ -112,15 +112,15 @@ class LocalizationResource extends BaseRecordResource
 
                                             // Wenn es der Haupt-Locale ist (z.B. de_DE), zeige "Standard"
                                             if ($locale->locale === $mainLocale) {
-                                                $options[$locale->locale] = $language->common_name . ' (Standard)';
+                                                $options[$locale->locale] = $language->common_name.' (Standard)';
                                             } else {
-                                                $options[$locale->locale] = $language->common_name . ' (' . $countryName . ')';
+                                                $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
                                             }
                                         }
 
                                         // Falls kein Locale in der DB existiert, füge den Haupt-Locale hinzu
                                         if (empty($options)) {
-                                            $options[$mainLocale] = $language->common_name . ' (Standard)';
+                                            $options[$mainLocale] = $language->common_name.' (Standard)';
                                         }
 
                                         return $options;
@@ -207,7 +207,7 @@ class LocalizationResource extends BaseRecordResource
                 // Basic Info Group
                 IconColumn::make('table_flag')
                     ->label('Flag')
-                    ->icon(fn(string $state): string => $state),
+                    ->icon(fn (string $state): string => $state),
                 TextColumn::make('display_name')
                     ->label(__('localization::fields.language'))
                     ->searchable()
@@ -278,7 +278,7 @@ class LocalizationResource extends BaseRecordResource
             ->groups([
                 Group::make('language.common_name')
                     ->label(__('localization::fields.language'))
-                    ->getTitleFromRecordUsing(fn(Localization $record): string => $record->language->common_name)
+                    ->getTitleFromRecordUsing(fn (Localization $record): string => $record->language->common_name)
                     ->collapsible(),
             ])
             ->defaultGroup('language.common_name')
