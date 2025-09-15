@@ -79,7 +79,7 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             if (count($parts) === 2) {
-                $locale = $parts[0].'_'.strtoupper($parts[1]);
+                $locale = $parts[0] . '_' . strtoupper($parts[1]);
             }
         }
 
@@ -93,7 +93,7 @@ class Localization extends Model
     {
         $settings = $this->language_settings ?? [];
 
-        if (! isset($settings[$key])) {
+        if (!isset($settings[$key])) {
             return config("localization.language_selector.{$key}", true);
         }
 
@@ -111,7 +111,7 @@ class Localization extends Model
 
         $baseName = $useNativeNames ? $this->language->native_name : $this->language->common_name;
 
-        if (! $showRegionalVariants) {
+        if (!$showRegionalVariants) {
             return $baseName;
         }
 
@@ -121,8 +121,8 @@ class Localization extends Model
             $countryCode = strtolower($parts[1] ?? '');
 
             $country = StaticCountry::where('alpha2', $countryCode)->first();
-            if (! $country) {
-                return $baseName.' ('.strtoupper($countryCode).')';
+            if (!$country) {
+                return $baseName . ' (' . strtoupper($countryCode) . ')';
             }
 
             $countryName = $country->common_name; // Default fallback
@@ -134,7 +134,7 @@ class Localization extends Model
                 }
             }
 
-            return $baseName.' ('.$countryName.')';
+            return $baseName . ' (' . $countryName . ')';
         }
 
         return $baseName;
@@ -147,7 +147,7 @@ class Localization extends Model
     {
         $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
 
-        if (! $showRegionalVariants) {
+        if (!$showRegionalVariants) {
             return $this->language->flag_icon;
         }
 
@@ -157,7 +157,25 @@ class Localization extends Model
             $countryCode = strtolower($parts[1] ?? '');
 
             if ($countryCode && $this->flagExists($countryCode)) {
-                return 'flag-'.$countryCode;
+                return 'flag-' . $countryCode;
+            }
+        }
+
+        return $this->language->flag_icon;
+    }
+
+    /**
+     * Get the table flag for this localization (always shows regional variant)
+     */
+    public function getTableFlagAttribute(): string
+    {
+        $locale = $this->locale;
+        if (str_contains($locale, '_')) {
+            $parts = explode('_', $locale, 2);
+            $countryCode = strtolower($parts[1] ?? '');
+
+            if ($countryCode && $this->flagExists($countryCode)) {
+                return 'flag-' . $countryCode;
             }
         }
 
@@ -169,12 +187,12 @@ class Localization extends Model
      */
     public function flagExists(string $flagCode): bool
     {
-        $packagePath = base_path('packages/flag-icons-circle/resources/svg/'.$flagCode.'.svg');
+        $packagePath = base_path('packages/flag-icons-circle/resources/svg/' . $flagCode . '.svg');
         if (file_exists($packagePath)) {
             return true;
         }
 
-        $publicPath = public_path('vendor/flag-icons-circle/'.$flagCode.'.svg');
+        $publicPath = public_path('vendor/flag-icons-circle/' . $flagCode . '.svg');
 
         return file_exists($publicPath);
     }
@@ -227,10 +245,9 @@ class Localization extends Model
         $countryCode = $languageToCountry[$this->language->alpha2] ?? $this->language->alpha2;
 
         if ($this->flagExists($countryCode)) {
-            return 'flag-'.$countryCode;
+            return 'flag-' . $countryCode;
         }
 
-        // Last resort: return original language flag
         return $this->language->flag_icon;
     }
 }

@@ -75,14 +75,15 @@ class LocalizationResource extends BaseRecordResource
                                         if ($state) {
                                             $language = StaticLanguage::find($state);
                                             if ($language) {
-                                                $set('locale_variant', $language->alpha2);
+                                                $mainLocale = $language->alpha2 . '_' . strtoupper($language->alpha2);
+                                                $set('locale_variant', $mainLocale);
                                             }
                                         }
                                     }),
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
                                     ->required()
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug'))
                                     ->required(),
@@ -90,26 +91,36 @@ class LocalizationResource extends BaseRecordResource
                                     ->label('Locale Variant')
                                     ->options(function ($get) {
                                         $languageId = $get('language_id');
-                                        if (! $languageId) {
+                                        if (!$languageId) {
                                             return [];
                                         }
 
                                         $language = StaticLanguage::find($languageId);
-                                        if (! $language) {
+                                        if (!$language) {
                                             return [];
                                         }
 
                                         $baseLanguage = $language->alpha2;
+                                        $mainLocale = $baseLanguage . '_' . strtoupper($baseLanguage);
 
                                         $locales = StaticLocale::where('language_id', $languageId)->with('country')->get();
 
-                                        $options = [
-                                            $baseLanguage => $language->common_name.' ('.$baseLanguage.')',
-                                        ];
+                                        $options = [];
 
                                         foreach ($locales as $locale) {
                                             $countryName = $locale->country ? $locale->country->common_name : 'Unknown';
-                                            $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
+
+                                            // Wenn es der Haupt-Locale ist (z.B. de_DE), zeige "Standard"
+                                            if ($locale->locale === $mainLocale) {
+                                                $options[$locale->locale] = $language->common_name . ' (Standard)';
+                                            } else {
+                                                $options[$locale->locale] = $language->common_name . ' (' . $countryName . ')';
+                                            }
+                                        }
+
+                                        // Falls kein Locale in der DB existiert, füge den Haupt-Locale hinzu
+                                        if (empty($options)) {
+                                            $options[$mainLocale] = $language->common_name . ' (Standard)';
                                         }
 
                                         return $options;
@@ -193,35 +204,40 @@ class LocalizationResource extends BaseRecordResource
     {
         return $table
             ->columns([
+                // Basic Info Group
                 IconColumn::make('table_flag')
                     ->label('Flag')
-                    ->icon(fn (string $state): string => $state),
+                    ->icon(fn(string $state): string => $state),
                 TextColumn::make('display_name')
                     ->label(__('localization::fields.language'))
-                    ->searchable(),
+                    ->searchable()
+                    ->width(150),
                 TextColumn::make('locale_variant')
-                    ->label('Locale Variant'),
-                TextColumn::make('display_name')
-                    ->label(__('localization::fields.title'))
-                    ->searchable(),
+                    ->label('Locale')
+                    ->width(100),
                 TextColumn::make('slug')
-                    ->label(__('localization::fields.slug')),
-                TextColumn::make('fallbackLanguage.title')
-                    ->label(__('localization::fields.fallback_language')),
+                    ->label(__('localization::fields.slug'))
+                    ->width(120),
+                // Status Toggles Group
                 ToggleColumn::make('is_active_admin')
-                    ->label(__('localization::fields.is_activ_admin')),
+                    ->label('Admin')
+                    ->width(80),
                 ToggleColumn::make('is_active_frontend')
-                    ->label(__('localization::fields.is_activ_frontend')),
+                    ->label('Frontend')
+                    ->width(80),
                 ToggleColumn::make('is_default')
-                    ->label(__('localization::fields.is_default'))
+                    ->label('Default')
+                    ->width(80)
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state) {
                             static::getModel()::where('id', '!=', $record->id)
                                 ->update(['is_default' => false]);
                         }
                     }),
+                // Config Toggles Group
                 ToggleColumn::make('language_settings->use_native_names')
-                    ->label(__('localization::fields.use_native_names'))
+                    ->label('Native')
+                    ->width(80)
                     ->getStateUsing(function ($record) {
                         return $record->getLanguageSetting('use_native_names');
                     })
@@ -231,7 +247,8 @@ class LocalizationResource extends BaseRecordResource
                         $record->update(['language_settings' => $settings]);
                     }),
                 ToggleColumn::make('language_settings->show_regional_variants')
-                    ->label(__('localization::fields.show_regional_variants'))
+                    ->label('Regional')
+                    ->width(80)
                     ->getStateUsing(function ($record) {
                         return $record->getLanguageSetting('show_regional_variants');
                     })
@@ -241,7 +258,8 @@ class LocalizationResource extends BaseRecordResource
                         $record->update(['language_settings' => $settings]);
                     }),
                 ToggleColumn::make('language_settings->use_country_translations')
-                    ->label(__('localization::fields.use_country_translations'))
+                    ->label('Country')
+                    ->width(80)
                     ->getStateUsing(function ($record) {
                         return $record->getLanguageSetting('use_country_translations');
                     })
@@ -260,7 +278,7 @@ class LocalizationResource extends BaseRecordResource
             ->groups([
                 Group::make('language.common_name')
                     ->label(__('localization::fields.language'))
-                    ->getTitleFromRecordUsing(fn (Localization $record): string => $record->language->common_name)
+                    ->getTitleFromRecordUsing(fn(Localization $record): string => $record->language->common_name)
                     ->collapsible(),
             ])
             ->defaultGroup('language.common_name')
