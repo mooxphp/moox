@@ -82,7 +82,7 @@ class LocalizationResource extends BaseRecordResource
                                 TextInput::make('title')
                                     ->label(__('localization::fields.title'))
                                     ->required()
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('slug')
                                     ->label(__('localization::fields.slug'))
                                     ->required(),
@@ -90,12 +90,12 @@ class LocalizationResource extends BaseRecordResource
                                     ->label('Locale Variant')
                                     ->options(function ($get) {
                                         $languageId = $get('language_id');
-                                        if (! $languageId) {
+                                        if (!$languageId) {
                                             return [];
                                         }
 
                                         $language = StaticLanguage::find($languageId);
-                                        if (! $language) {
+                                        if (!$language) {
                                             return [];
                                         }
 
@@ -104,12 +104,12 @@ class LocalizationResource extends BaseRecordResource
                                         $locales = StaticLocale::where('language_id', $languageId)->with('country')->get();
 
                                         $options = [
-                                            $baseLanguage => $language->common_name.' ('.$baseLanguage.')',
+                                            $baseLanguage => $language->common_name . ' (' . $baseLanguage . ')',
                                         ];
 
                                         foreach ($locales as $locale) {
                                             $countryName = $locale->country ? $locale->country->common_name : 'Unknown';
-                                            $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
+                                            $options[$locale->locale] = $language->common_name . ' (' . $countryName . ')';
                                         }
 
                                         return $options;
@@ -195,7 +195,7 @@ class LocalizationResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('table_flag')
                     ->label('Flag')
-                    ->icon(fn (string $state): string => $state),
+                    ->icon(fn(string $state): string => $state),
                 TextColumn::make('display_name')
                     ->label(__('localization::fields.language'))
                     ->searchable(),
@@ -209,35 +209,9 @@ class LocalizationResource extends BaseRecordResource
                 TextColumn::make('fallbackLanguage.title')
                     ->label(__('localization::fields.fallback_language')),
                 ToggleColumn::make('is_active_admin')
-                    ->label(__('localization::fields.is_activ_admin'))
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-
-                        if ($state && str_contains($record->locale, '_')) {
-                            $settings['show_regional_variants'] = true;
-                        } elseif (! $state) {
-                            $settings['use_native_names'] = false;
-                            $settings['show_regional_variants'] = false;
-                            $settings['use_country_translations'] = false;
-                        }
-
-                        $record->update(['language_settings' => $settings]);
-                    }),
+                    ->label(__('localization::fields.is_activ_admin')),
                 ToggleColumn::make('is_active_frontend')
-                    ->label(__('localization::fields.is_activ_frontend'))
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-
-                        if ($state && str_contains($record->locale, '_')) {
-                            $settings['show_regional_variants'] = true;
-                        } elseif (! $state) {
-                            $settings['use_native_names'] = false;
-                            $settings['show_regional_variants'] = false;
-                            $settings['use_country_translations'] = false;
-                        }
-
-                        $record->update(['language_settings' => $settings]);
-                    }),
+                    ->label(__('localization::fields.is_activ_frontend')),
                 ToggleColumn::make('is_default')
                     ->label(__('localization::fields.is_default'))
                     ->afterStateUpdated(function ($state, $record) {
@@ -286,7 +260,7 @@ class LocalizationResource extends BaseRecordResource
             ->groups([
                 Group::make('language.common_name')
                     ->label(__('localization::fields.language'))
-                    ->getTitleFromRecordUsing(fn (Localization $record): string => $record->language->common_name)
+                    ->getTitleFromRecordUsing(fn(Localization $record): string => $record->language->common_name)
                     ->collapsible(),
             ])
             ->defaultGroup('language.common_name')

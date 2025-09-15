@@ -79,7 +79,7 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             if (count($parts) === 2) {
-                $locale = $parts[0].'_'.strtoupper($parts[1]);
+                $locale = $parts[0] . '_' . strtoupper($parts[1]);
             }
         }
 
@@ -87,17 +87,31 @@ class Localization extends Model
     }
 
     /**
+     * Get a language setting from this localization's language_settings
+     */
+    public function getLanguageSetting(string $key): bool
+    {
+        $settings = $this->language_settings ?? [];
+
+        if (!isset($settings[$key])) {
+            return config("localization.language_selector.{$key}", true);
+        }
+
+        return $settings[$key];
+    }
+
+    /**
      * Get the display name for this localization
      */
     public function getDisplayNameAttribute(): string
     {
-        $useNativeNames = config('localization.language_selector.use_native_names', true);
-        $showRegionalVariants = config('localization.language_selector.show_regional_variants', true);
-        $useCountryTranslations = config('localization.language_selector.use_country_translations', true);
+        $useNativeNames = $this->getLanguageSetting('use_native_names');
+        $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
+        $useCountryTranslations = $this->getLanguageSetting('use_country_translations');
 
         $baseName = $useNativeNames ? $this->language->native_name : $this->language->common_name;
 
-        if (! $showRegionalVariants) {
+        if (!$showRegionalVariants) {
             return $baseName;
         }
 
@@ -107,8 +121,8 @@ class Localization extends Model
             $countryCode = strtolower($parts[1] ?? '');
 
             $country = StaticCountry::where('alpha2', $countryCode)->first();
-            if (! $country) {
-                return $baseName.' ('.strtoupper($countryCode).')';
+            if (!$country) {
+                return $baseName . ' (' . strtoupper($countryCode) . ')';
             }
 
             $countryName = $country->common_name; // Default fallback
@@ -120,7 +134,7 @@ class Localization extends Model
                 }
             }
 
-            return $baseName.' ('.$countryName.')';
+            return $baseName . ' (' . $countryName . ')';
         }
 
         return $baseName;
@@ -131,9 +145,9 @@ class Localization extends Model
      */
     public function getDisplayFlagAttribute(): string
     {
-        $showRegionalVariants = config('localization.language_selector.show_regional_variants', true);
+        $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
 
-        if (! $showRegionalVariants) {
+        if (!$showRegionalVariants) {
             return $this->language->flag_icon;
         }
 
@@ -143,7 +157,7 @@ class Localization extends Model
             $countryCode = strtolower($parts[1] ?? '');
 
             if ($countryCode && $this->flagExists($countryCode)) {
-                return 'flag-'.$countryCode;
+                return 'flag-' . $countryCode;
             }
         }
 
@@ -155,12 +169,12 @@ class Localization extends Model
      */
     public function flagExists(string $flagCode): bool
     {
-        $packagePath = base_path('packages/flag-icons-circle/resources/svg/'.$flagCode.'.svg');
+        $packagePath = base_path('packages/flag-icons-circle/resources/svg/' . $flagCode . '.svg');
         if (file_exists($packagePath)) {
             return true;
         }
 
-        $publicPath = public_path('vendor/flag-icons-circle/'.$flagCode.'.svg');
+        $publicPath = public_path('vendor/flag-icons-circle/' . $flagCode . '.svg');
 
         return file_exists($publicPath);
     }
@@ -213,7 +227,7 @@ class Localization extends Model
         $countryCode = $languageToCountry[$this->language->alpha2] ?? $this->language->alpha2;
 
         if ($this->flagExists($countryCode)) {
-            return 'flag-'.$countryCode;
+            return 'flag-' . $countryCode;
         }
 
         // Last resort: return original language flag
