@@ -195,7 +195,7 @@ class BaseDraftResource extends BaseResource
             ->sortable()
             ->extraAttributes(function ($record, $livewire) {
                 $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
-                
+
                 return [
                     'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('title')->exists()
                         ? ''
@@ -242,7 +242,7 @@ class BaseDraftResource extends BaseResource
                 $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
                 $currentLang = request()->get('lang', $defaultLang);
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
-                
+
                 return $translation?->slug ?? '';
             });
     }
