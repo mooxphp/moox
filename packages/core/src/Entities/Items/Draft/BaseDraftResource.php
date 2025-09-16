@@ -186,20 +186,24 @@ class BaseDraftResource extends BaseResource
         return TextColumn::make('title')
             ->label('Title')
             ->searchable(true, function ($query, $search, $livewire) {
-                $currentLang = $livewire->lang;
+                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
                         ->where('title', 'like', '%'.$search.'%');
                 });
             })
             ->sortable()
-            ->extraAttributes(fn ($record) => [
-                'style' => $record->translations()->where('locale', request()->get('lang', app()->getLocale()))->withTrashed()->whereNotNull('title')->exists()
-                    ? ''
-                    : 'color: var(--gray-500);',
-            ])
+            ->extraAttributes(function ($record, $livewire) {
+                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
+                
+                return [
+                    'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('title')->exists()
+                        ? ''
+                        : 'color: var(--gray-500);',
+                ];
+            })
             ->getStateUsing(function ($record, $livewire) {
-                $currentLang = $livewire->lang;
+                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
@@ -232,7 +236,15 @@ class BaseDraftResource extends BaseResource
                         ->where('slug', 'like', '%'.$search.'%');
                 });
             })
-            ->sortable();
+            ->sortable()
+            ->getStateUsing(function ($record) {
+                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+                $currentLang = request()->get('lang', $defaultLang);
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+                
+                return $translation?->slug ?? '';
+            });
     }
 
     public static function getTranslationStatusSelect(): Select
