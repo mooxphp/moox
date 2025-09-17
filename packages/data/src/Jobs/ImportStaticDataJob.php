@@ -204,9 +204,9 @@ class ImportStaticDataJob implements ShouldQueue
                 return;
             }
 
-            // Second call: Additional country info
+            // Second call: Additional country info including translations
             $response2 = Http::timeout(60)->get('https://restcountries.com/v3.1/all', [
-                'fields' => 'cca2,idd,tld,regionalBlocs,postalCode,languages,timezones',
+                'fields' => 'cca2,idd,tld,regionalBlocs,postalCode,languages,timezones,translations',
             ]);
 
             if ($response2->failed()) {
@@ -232,14 +232,13 @@ class ImportStaticDataJob implements ShouldQueue
                 }
             }
 
-            Log::channel('daily')->info('Fetched and merged '.count($countries).' countries from API');
+            Log::channel('daily')->info('Fetched and merged '.count($countries).' countries from REST Countries API');
 
             // Fetch native names from ApiCountries API
             Log::channel('daily')->info('Fetching native names from ApiCountries API...');
             $apiCountriesResponse = Http::timeout(60)->get('https://www.apicountries.com/countries');
 
             $nativeNamesMap = [];
-            $translationsMap = [];
             if ($apiCountriesResponse->successful()) {
                 $apiCountries = $apiCountriesResponse->json();
                 foreach ($apiCountries as $country) {
@@ -252,15 +251,9 @@ class ImportStaticDataJob implements ShouldQueue
                                 }
                             }
                         }
-
-                        // Collect country translations
-                        if (isset($country['translations'])) {
-                            $translationsMap[$country['alpha2Code']] = $country['translations'];
-                        }
                     }
                 }
                 Log::channel('daily')->info('Fetched native names for '.count($nativeNamesMap).' languages from ApiCountries API');
-                Log::channel('daily')->info('Fetched translations for '.count($translationsMap).' countries from ApiCountries API');
             } else {
                 Log::channel('daily')->warning('Failed to fetch native names from ApiCountries API, continuing without them');
             }
@@ -277,7 +270,7 @@ class ImportStaticDataJob implements ShouldQueue
 
                     $subregion = $countryData['subregion'] ?? null;
                     $nativeName = $countryData['name']['nativeName'] ?? [];
-                    $translations = $translationsMap[$countryData['cca2']] ?? [];
+                    $translations = $countryData['translations'] ?? [];
 
                     $country = StaticCountry::updateOrCreate(
                         ['alpha2' => $countryData['cca2']],
@@ -334,6 +327,7 @@ class ImportStaticDataJob implements ShouldQueue
                                 $language = StaticLanguage::updateOrCreate(
                                     ['alpha2' => $alpha2],
                                     [
+                                        'alpha3_b' => $code, // Store the original alpha3_b code
                                         'common_name' => $name,
                                         'native_name' => $nativeName,
                                     ]
