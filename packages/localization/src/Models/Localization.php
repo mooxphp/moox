@@ -128,11 +128,11 @@ class Localization extends Model
             $countryName = $country->common_name; // Default fallback
 
             if ($useCountryTranslations && $country->translations) {
-                $currentLanguageAlpha3 = request()->get('lang') ? 
-                    StaticLanguage::where('alpha2', substr(request()->get('lang'), 0, 2))->first()?->alpha3_b : 
+                $currentLanguageAlpha3 = request()->get('lang') ?
+                    StaticLanguage::where('alpha2', substr(request()->get('lang'), 0, 2))->first()?->alpha3_b :
                     null;
-                
-                if (!$currentLanguageAlpha3) {
+
+                if (! $currentLanguageAlpha3) {
                     $currentLanguageAlpha3 = $this->language->alpha3_b;
                 }
 

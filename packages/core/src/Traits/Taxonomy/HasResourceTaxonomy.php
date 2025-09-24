@@ -10,9 +10,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Moox\Localization\Models\Localization;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
+use Moox\Localization\Models\Localization;
 
 trait HasResourceTaxonomy
 {
@@ -335,6 +335,7 @@ trait HasResourceTaxonomy
                         $translation = $entity->translations->firstWhere('locale', $currentLocale);
                         if ($translation && $translation->title) {
                             $labels[] = $translation->title;
+
                             continue;
                         }
 
