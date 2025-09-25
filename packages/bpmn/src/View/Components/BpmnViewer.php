@@ -99,9 +99,15 @@ class BpmnViewer extends Component
     private function validateProps(): void
     {
         $sourceCount = 0;
-        if ($this->mediaId) $sourceCount++;
-        if ($this->wpMediaId) $sourceCount++;
-        if ($this->filePath) $sourceCount++;
+        if ($this->mediaId) {
+            $sourceCount++;
+        }
+        if ($this->wpMediaId) {
+            $sourceCount++;
+        }
+        if ($this->filePath) {
+            $sourceCount++;
+        }
 
         if ($sourceCount === 0) {
             throw new \InvalidArgumentException('At least one of media-id, wp-media-id, or file-path must be provided.');
@@ -111,7 +117,7 @@ class BpmnViewer extends Component
             throw new \InvalidArgumentException('Only one of media-id, wp-media-id, or file-path can be provided.');
         }
 
-        if (!in_array($this->mode, ['view', 'edit'])) {
+        if (! in_array($this->mode, ['view', 'edit'])) {
             throw new \InvalidArgumentException('Mode must be either "view" or "edit".');
         }
     }

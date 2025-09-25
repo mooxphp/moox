@@ -41,7 +41,7 @@ class BpmnServiceProvider extends MooxServiceProvider
         Blade::component('bpmn-viewer', \Moox\Bpmn\View\Components\BpmnViewer::class);
 
         $this->app->singleton('bpmn-viewer', function () {
-            return new BpmnViewer();
+            return new BpmnViewer;
         });
     }
 

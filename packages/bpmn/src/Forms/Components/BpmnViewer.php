@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Bpmn\Forms\Components;
 
-use Closure;
 use Filament\Forms\Components\Field;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Storage;
 use Moox\Media\Models\Media;
 use Moox\Press\Models\WpMedia;
@@ -177,7 +175,7 @@ class BpmnViewer extends Field
         $state = $this->getState();
         $filename = $state ?: 'default.bpmn';
 
-        return $this->fileDirectory . '/' . $filename;
+        return $this->fileDirectory.'/'.$filename;
     }
 
     public function getBpmnContent(): ?string
@@ -225,12 +223,14 @@ class BpmnViewer extends Field
             $wpMedia = WpMedia::find($state);
             if ($wpMedia && $wpMedia->asset) {
                 $filePath = public_path($wpMedia->asset);
+
                 return file_put_contents($filePath, $content) !== false;
             }
         }
 
         if ($this->mediaIntegration === 'file') {
             $filePath = $this->getFullFilePath();
+
             return Storage::disk('public')->put($filePath, $content) !== false;
         }
 
