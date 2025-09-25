@@ -1,0 +1,56 @@
+{
+    "name": "moox/bpmn",
+    "description": "Moox BPMN provides a BPMN Viewer and Editor using bpmn-js.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "WordPress",
+        "Gutenberg",
+        "Camunda",
+        "BPMN",
+        "bpmn-js",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Skeleton\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Skeleton\\SkeletonServiceProvider"
+            ]
+        },
+        "moox": {
+            "title": "Moox BPMN",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "category": "content",
+            "template": false
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "self.version"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
