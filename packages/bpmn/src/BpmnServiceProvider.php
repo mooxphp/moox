@@ -33,4 +33,28 @@ class BpmnServiceProvider extends MooxServiceProvider
     {
         return json_decode(file_get_contents('composer.json'), true)['extra']['moox'];
     }
+
+    /*
+    After testing , move everything from here to the base MooxServiceProvider:
+
+    public function configureFromComposer(): void
+    {
+        $mooxConfig = $this->getMooxConfig();
+        $mooxPackage = $this->getMooxPackage();
+
+        $configurableMethods = [
+            'title',
+            'stability',
+            'type',
+            'category',
+            'template',
+        ];
+
+        foreach ($configurableMethods as $method) {
+            if (isset($mooxConfig[$method])) {
+                $mooxPackage->$method($mooxConfig[$method]);
+            }
+        }
+    }
+    */
 }

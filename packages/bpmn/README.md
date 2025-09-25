@@ -42,7 +42,6 @@ Learn more about the [Moox Installer or common requirements](https://moox.org/in
 -   No-Code UX using Filament with BPMN editing fields.
 -   Blade component to render the BPMN viewer in the frontend.
 -   Filament field for uploading & editing .bpmn files directly in the backend.
--   Routes/Helpers: serve .bpmn files as XML, handle save via API.
 -   Works standalone in Laravel or integrated with Moox Press Media (configurable).
 
 **WordPress Plugin: Moox BPMN (moox-bpmn)**

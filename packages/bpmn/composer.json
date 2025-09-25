@@ -27,13 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Skeleton\\": "src"
+            "Moox\\Bpmn\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Skeleton\\SkeletonServiceProvider"
+                "Moox\\Bpmn\\BpmnServiceProvider"
             ]
         },
         "moox": {
