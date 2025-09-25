@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Bpmn;
 
+use Illuminate\Support\Facades\Blade;
+use Moox\Bpmn\Forms\Components\BpmnViewer;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -17,7 +19,8 @@ class BpmnServiceProvider extends MooxServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasMigrations()
-            ->hasCommands();
+            ->hasCommands()
+            ->hasAssets();
 
         $mooxConfig = $this->getMooxConfig();
 
@@ -27,6 +30,19 @@ class BpmnServiceProvider extends MooxServiceProvider
             ->type($mooxConfig['type'])
             ->category($mooxConfig['category'])
             ->template($mooxConfig['template']);
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'bpmn');
+
+        Blade::component('bpmn-viewer', \Moox\Bpmn\View\Components\BpmnViewer::class);
+
+        $this->app->singleton('bpmn-viewer', function () {
+            return new BpmnViewer();
+        });
     }
 
     private function getMooxConfig(): array

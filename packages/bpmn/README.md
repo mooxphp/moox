@@ -60,19 +60,46 @@ Learn more about the [Moox Installer or common requirements](https://moox.org/in
 
 <!-- Usage -->
 
-Frontend:
+### Output the BPMN viewer
 
 ```php
-<x-bpmn-viewer file-id="123" mode="view|edit|both" />
+<x-bpmn-viewer media-id="123" mode="edit" />
+<x-bpmn-viewer wp-media-id="456" mode="view" />
+<x-bpmn-viewer file-path="/path/to/file.bpmn" mode="both" />
 ```
 
-Filament:
+-   `media_id` works with Moox Media as well as Spatie Media Library
+-   `wp_media_id` works with Moox Press, means WordPress Media Library
+-   `file_path` works with all other files
+
+The `mode` attribute can be
+
+-   `edit` what means the BPMN file can be viewed and edited
+-   `view` what means the BPMN file can be viewed
+
+### Use the Filament field
 
 ```php
 BpmnViewer::make('bpmn')
-    ->label(__('BPMN'))
+    ->label(__('BPMN Process'))
+    ->mediaIntegration('moox')
+    ->mode('edit')
     ->required(),
 ```
+
+The `mediaIntegration` can be
+
+-   `moox` works with Moox Media as well as Spatie Media Library
+-   `press` works with Moox Press, means WordPress Media Library
+-   `file` is the default setting, means it saves it directly to the default disk
+
+and `filePath`can set a specific path only used for the `file`-integration.
+
+The `mode` can be
+
+-   `edit` what means the BPMN file can be edited in Filament
+-   `upload` what means the BPMN file can just be uploaded and previewed
+-   `full` is the default setting, what means upload or create and edit
 
 <!-- /Usage -->
 
