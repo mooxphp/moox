@@ -16,16 +16,27 @@ The package is part of the **Moox ecosystem** — a suite of Filament packages t
 
 Learn more about [Moox](https://moox.org).
 
+## Warning!
+
+This package is under hard development.
+
+## Todo
+
+-   [ ] Test the package and plugin
+-   [ ] Catch all bugs and fix them
+-   [ ] Installer, WP installer
+-   [ ] Polish, add Translations
+-   [ ] Publish on Packagist, Release
+
 ## Installation
 
-To install this package, require it via Composer and run the Moox Installer:
+To install the Laravel package, require it via Composer and run the Moox Installer:
 
 ```bash
 composer require moox/skeleton
-php artisan moox:install
 ```
 
-Learn more about the [Moox Installer or common requirements](https://moox.org/installer).
+To install the WordPress Plugin copy the complete folder /wordpress/plugins/moox-bpmn into your WP plugins folder and activate the plugin afterwards.
 
 ## Screenshot
 
