@@ -12,7 +12,7 @@
  */
 
 // Prevent direct access
-if (!defined('ABSPATH')) {
+if (! defined('ABSPATH')) {
     exit;
 }
 
@@ -26,8 +26,8 @@ define('MOOX_BPMN_PLUGIN_BASENAME', plugin_basename(__FILE__));
 /**
  * Main plugin class
  */
-class MooxBpmn {
-
+class MooxBpmn
+{
     /**
      * Plugin instance
      */
@@ -36,17 +36,20 @@ class MooxBpmn {
     /**
      * Get plugin instance
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
+
         return self::$instance;
     }
 
     /**
      * Constructor
      */
-    private function __construct() {
+    private function __construct()
+    {
         add_action('init', [$this, 'init']);
         add_action('wp_enqueue_scripts', [$this, 'enqueueFrontendScripts']);
         add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorAssets']);
@@ -61,9 +64,10 @@ class MooxBpmn {
     /**
      * Initialize plugin
      */
-    public function init() {
+    public function init()
+    {
         // Load text domain
-        load_plugin_textdomain('moox-bpmn', false, dirname(plugin_basename(__FILE__)) . '/languages');
+        load_plugin_textdomain('moox-bpmn', false, dirname(plugin_basename(__FILE__)).'/languages');
 
         // Register Gutenberg block
         register_block_type('moox/bpmn-viewer', [
@@ -88,11 +92,12 @@ class MooxBpmn {
     /**
      * Enqueue frontend scripts
      */
-    public function enqueueFrontendScripts() {
+    public function enqueueFrontendScripts()
+    {
         if (has_block('moox/bpmn-viewer')) {
             wp_enqueue_script(
                 'moox-bpmn-viewer',
-                MOOX_BPMN_PLUGIN_URL . 'js/bpmn-viewer.js',
+                MOOX_BPMN_PLUGIN_URL.'js/bpmn-viewer.js',
                 ['jquery'],
                 MOOX_BPMN_VERSION,
                 true
@@ -100,7 +105,7 @@ class MooxBpmn {
 
             wp_enqueue_style(
                 'moox-bpmn-viewer',
-                MOOX_BPMN_PLUGIN_URL . 'css/bpmn-viewer.css',
+                MOOX_BPMN_PLUGIN_URL.'css/bpmn-viewer.css',
                 [],
                 MOOX_BPMN_VERSION
             );
@@ -115,10 +120,11 @@ class MooxBpmn {
     /**
      * Enqueue block editor assets
      */
-    public function enqueueBlockEditorAssets() {
+    public function enqueueBlockEditorAssets()
+    {
         wp_enqueue_script(
             'moox-bpmn-block',
-            MOOX_BPMN_PLUGIN_URL . 'js/bpmn-block.js',
+            MOOX_BPMN_PLUGIN_URL.'js/bpmn-block.js',
             ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'],
             MOOX_BPMN_VERSION,
             true
@@ -126,7 +132,7 @@ class MooxBpmn {
 
         wp_enqueue_style(
             'moox-bpmn-block',
-            MOOX_BPMN_PLUGIN_URL . 'css/bpmn-block.css',
+            MOOX_BPMN_PLUGIN_URL.'css/bpmn-block.css',
             ['wp-edit-blocks'],
             MOOX_BPMN_VERSION
         );
@@ -145,23 +151,24 @@ class MooxBpmn {
     /**
      * Render BPMN block
      */
-    public function renderBpmnBlock($attributes) {
+    public function renderBpmnBlock($attributes)
+    {
         $mediaId = $attributes['mediaId'] ?? 0;
         $mode = $attributes['mode'] ?? 'view';
         $height = $attributes['height'] ?? '500px';
 
-        if (!$mediaId) {
-            return '<div class="moox-bpmn-error">' . __('No BPMN file selected', 'moox-bpmn') . '</div>';
+        if (! $mediaId) {
+            return '<div class="moox-bpmn-error">'.__('No BPMN file selected', 'moox-bpmn').'</div>';
         }
 
         $attachment = get_post($mediaId);
-        if (!$attachment || $attachment->post_type !== 'attachment') {
-            return '<div class="moox-bpmn-error">' . __('Invalid BPMN file', 'moox-bpmn') . '</div>';
+        if (! $attachment || $attachment->post_type !== 'attachment') {
+            return '<div class="moox-bpmn-error">'.__('Invalid BPMN file', 'moox-bpmn').'</div>';
         }
 
         $fileUrl = wp_get_attachment_url($mediaId);
-        if (!$fileUrl) {
-            return '<div class="moox-bpmn-error">' . __('BPMN file not found', 'moox-bpmn') . '</div>';
+        if (! $fileUrl) {
+            return '<div class="moox-bpmn-error">'.__('BPMN file not found', 'moox-bpmn').'</div>';
         }
 
         ob_start();
@@ -176,13 +183,13 @@ class MooxBpmn {
                     <?php _e('Loading BPMN diagram...', 'moox-bpmn'); ?>
                 </div>
             </div>
-            <?php if ($mode === 'edit'): ?>
+            <?php if ($mode === 'edit') { ?>
                 <div class="moox-bpmn-toolbar">
                     <button type="button" class="moox-bpmn-save">
                         <?php _e('Save Changes', 'moox-bpmn'); ?>
                     </button>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();
@@ -191,26 +198,27 @@ class MooxBpmn {
     /**
      * Handle BPMN save
      */
-    public function handleBpmnSave() {
+    public function handleBpmnSave()
+    {
         // Verify nonce
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'moox_bpmn_nonce')) {
+        if (! wp_verify_nonce($_POST['nonce'] ?? '', 'moox_bpmn_nonce')) {
             wp_die(__('Security check failed', 'moox-bpmn'));
         }
 
         $mediaId = intval($_POST['mediaId'] ?? 0);
         $bpmnContent = $_POST['bpmnContent'] ?? '';
 
-        if (!$mediaId || !$bpmnContent) {
+        if (! $mediaId || ! $bpmnContent) {
             wp_send_json_error(__('Invalid data', 'moox-bpmn'));
         }
 
         // Check if user can edit the attachment
-        if (!current_user_can('edit_post', $mediaId)) {
+        if (! current_user_can('edit_post', $mediaId)) {
             wp_send_json_error(__('Permission denied', 'moox-bpmn'));
         }
 
         $filePath = get_attached_file($mediaId);
-        if (!$filePath || !file_exists($filePath)) {
+        if (! $filePath || ! file_exists($filePath)) {
             wp_send_json_error(__('File not found', 'moox-bpmn'));
         }
 
@@ -225,15 +233,18 @@ class MooxBpmn {
     /**
      * Add BPMN MIME type
      */
-    public function addBpmnMimeType($mimes) {
+    public function addBpmnMimeType($mimes)
+    {
         $mimes['bpmn'] = 'application/xml';
+
         return $mimes;
     }
 
     /**
      * Add BPMN file type
      */
-    public function addBpmnFileType($data, $file, $filename, $mimes) {
+    public function addBpmnFileType($data, $file, $filename, $mimes)
+    {
         $filetype = wp_check_filetype($filename, $mimes);
 
         if ($filetype['type'] === false && preg_match('/\.bpmn$/i', $filename)) {
