@@ -219,7 +219,12 @@ class BaseDraftResource extends BaseResource
                     return $fallbackTranslation->title.' ('.$defaultLang.')';
                 }
 
-                return 'No title available';
+                $anyTranslation = $record->translations()->whereNotNull('title')->first();
+                if ($anyTranslation && $anyTranslation->title) {
+                    return $anyTranslation->title.' ('.$anyTranslation->locale.')';
+                }
+
+                return __('core::core.no_title_available');
             });
     }
 

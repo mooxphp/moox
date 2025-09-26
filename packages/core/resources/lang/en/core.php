@@ -152,4 +152,6 @@ return [
     'gallery' => 'Gallery',
     'ulid' => 'ULID',
     'slug_unique' => 'This slug is already taken.',
+    'no_title_available' => 'No title available',
+    'translation_create' => 'Create translation',
 ];

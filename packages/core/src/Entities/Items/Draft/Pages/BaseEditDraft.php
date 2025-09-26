@@ -2,12 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Resources\Pages\EditRecord;
+use Moox\Localization\Models\Localization;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 /**
  * @phpstan-type TranslatableModel = Model&TranslatableContract
@@ -226,10 +227,38 @@ abstract class BaseEditDraft extends EditRecord
 
         $translation = $this->record->translations()->where('locale', $this->lang)->first();
 
-        if (! $translation) {
-            return $entity.' - '.__('core::core.create');
+        if ($translation && $translation->title) {
+            return $entity.' - '.$translation->title;
         }
 
-        return $entity.' - '.$translation->title;
+        return $entity.' - '.__('core::core.translation_create');
+    }
+
+    public function getHeading(): string
+    {
+        $entity = $this->getResource()::getModelLabel();
+
+        $translation = $this->record->translations()->where('locale', $this->lang)->first();
+
+        if ($translation && $translation->title) {
+            return $entity.' - '.$translation->title;
+        }
+
+        $title = $entity.' - '.__('core::core.translation_create');
+
+        $defaultLocalization = Localization::where('is_default', true)->first();
+        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+        $fallbackTranslation = $this->record->translations()->where('locale', $defaultLang)->first();
+
+        if ($fallbackTranslation && $fallbackTranslation->title) {
+            $title .= ' ('.$fallbackTranslation->title.' - '.$defaultLang.')';
+        } else {
+            $anyTranslation = $this->record->translations()->whereNotNull('title')->first();
+            if ($anyTranslation && $anyTranslation->title) {
+                $title .= ' ('.$anyTranslation->title.' - '.$anyTranslation->locale.')';
+            }
+        }
+
+        return $title;
     }
 }
