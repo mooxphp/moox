@@ -50,7 +50,7 @@ return [
     |
     */
     'auth' => [
-        'user' => 'Orchestra\\Models\\User',
+        'user' => 'Moox\\DevTools\\Models\\TestUser',
     ],
     'navigation_group' => 'DEV',
 ];
