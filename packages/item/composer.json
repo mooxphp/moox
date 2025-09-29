@@ -39,11 +39,43 @@
             "providers": [
                 "Moox\\Item\\ItemServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Item",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "auto_entities": {
+                    "Item": true
+                },
+                "auto_class": {
+                    "Item": "Moox\\Item\\Item"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-item-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-item-config"
+            }
         }
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "^4.0",
+        "pestphp/pest-plugin-browser": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0"
     },
     "config": {
         "allow-plugins": {
