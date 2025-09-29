@@ -1,11 +1,13 @@
-<?php 
+<?php
+
 /** @var \Moox\Item\Tests\TestCase $this */
 
 use Moox\Item\Models\Item;
-use function Pest\Livewire\livewire;
+use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\EditItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\ListItems;
-use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     $user = $this->createTestUser();

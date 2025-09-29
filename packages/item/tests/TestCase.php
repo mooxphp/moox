@@ -2,47 +2,46 @@
 
 namespace Moox\Item\Tests;
 
-use Filament\Panel;
-use Filament\Pages\Dashboard;
 use Filament\Facades\Filament;
-use Filament\Support\Colors\Color;
-use Moox\Core\CoreServiceProvider;
-use Moox\Item\ItemServiceProvider;
-use Filament\Widgets\AccountWidget;
-use Illuminate\Support\ViewErrorBag;
 use Filament\FilamentServiceProvider;
-use Livewire\LivewireServiceProvider;
-use Moox\Item\Moox\Plugins\ItemPlugin;
-use Filament\Widgets\FilamentInfoWidget;
-use Pest\Livewire\InteractsWithLivewire;
 use Filament\Http\Middleware\Authenticate;
-use Orchestra\Testbench\TestCase as Orchestra;
-use Illuminate\Session\Middleware\StartSession;
-use Orchestra\Testbench\Concerns\WithWorkbench;
-use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
-use Orchestra\Testbench\Attributes\WithMigration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Filament\Support\Colors\Color;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Livewire\LivewireServiceProvider;
+use Moox\Core\CoreServiceProvider;
+use Moox\Item\ItemServiceProvider;
+use Moox\Item\Moox\Plugins\ItemPlugin;
+use Orchestra\Testbench\Attributes\WithMigration;
+use Orchestra\Testbench\Concerns\WithWorkbench;
+use Orchestra\Testbench\TestCase as Orchestra;
+use Pest\Livewire\InteractsWithLivewire;
 
 #[WithMigration('laravel', 'cache', 'queue')]
 #[WithMigration('session')]
 class TestCase extends Orchestra
 {
-    use RefreshDatabase, WithWorkbench, InteractsWithLivewire;
+    use InteractsWithLivewire, RefreshDatabase, WithWorkbench;
 
     protected function setUp(): void
     {
         parent::setUp();
     }
-  
-    
+
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
@@ -51,13 +50,13 @@ class TestCase extends Orchestra
         $app['config']->set('session.driver', 'array');
 
         // Ensure a non-null errors bag is always shared with views for Livewire.
-        $viewErrorBag = new ViewErrorBag();
-        $viewErrorBag->put('default', new MessageBag());
+        $viewErrorBag = new ViewErrorBag;
+        $viewErrorBag->put('default', new MessageBag);
         $app['view']->share('errors', $viewErrorBag);
 
         $this->setUpFilamentPanel();
     }
-    
+
     protected function setUpFilamentPanel(): void
     {
         $panel = Panel::make()
@@ -99,7 +98,7 @@ class TestCase extends Orchestra
             ->plugins([
                 ItemPlugin::make(),
             ]);
-            
+
         Filament::registerPanel($panel);
     }
 
@@ -109,7 +108,7 @@ class TestCase extends Orchestra
             LivewireServiceProvider::class,
             FilamentServiceProvider::class,
             // Laravel Kernel essentials
-           // Basis-Laravel Provider, die Testbench sonst nicht lädt
+            // Basis-Laravel Provider, die Testbench sonst nicht lädt
             \Illuminate\Auth\AuthServiceProvider::class,
             \Illuminate\Cookie\CookieServiceProvider::class,
             \Illuminate\Database\DatabaseServiceProvider::class,
@@ -120,23 +119,22 @@ class TestCase extends Orchestra
             \Illuminate\Pagination\PaginationServiceProvider::class,
             \Illuminate\Translation\TranslationServiceProvider::class,
             \Illuminate\Filesystem\FilesystemServiceProvider::class,
-            
+
             \Filament\Support\SupportServiceProvider::class,
 
-            // Filament Components  
+            // Filament Components
             \Filament\Forms\FormsServiceProvider::class,
             \Filament\Tables\TablesServiceProvider::class,
             \Filament\Notifications\NotificationsServiceProvider::class,
             \Filament\Actions\ActionsServiceProvider::class,
             \Filament\Infolists\InfolistsServiceProvider::class,
             \Filament\Widgets\WidgetsServiceProvider::class,
-            
+
             // Moox packages
             CoreServiceProvider::class,
             ItemServiceProvider::class,
         ];
     }
-
 
     protected function setUpTestUser(): array
     {
@@ -175,6 +173,4 @@ class TestCase extends Orchestra
             'password' => bcrypt($userData['password']),
         ]);
     }
-
-   
 }
