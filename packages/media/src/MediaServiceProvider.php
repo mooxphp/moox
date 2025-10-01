@@ -27,7 +27,7 @@ class MediaServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews('media-picker')
             ->hasTranslations()
-            ->hasMigrations('create_media_collections_table', 'create_media_table', 'create_media_translations_table', 'create_media_usables_table')
+            ->hasMigrations('create_media_collections_table', 'create_media_collection_translations', 'create_media_table', 'create_media_translations_table', 'create_media_usables_table')
             ->hasCommands(InstallCommand::class)
             ->hasAssets();
     }
