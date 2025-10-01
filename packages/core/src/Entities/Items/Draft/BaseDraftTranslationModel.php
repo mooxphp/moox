@@ -35,7 +35,6 @@ abstract class BaseDraftTranslationModel extends Model
             'unpublished_by_type',
 
             // Soft delete and restoration fields
-            'deleted_at',
             'deleted_by_id',
             'deleted_by_type',
             'restored_at',
@@ -63,7 +62,6 @@ abstract class BaseDraftTranslationModel extends Model
             'published_at' => 'datetime',
             'to_unpublish_at' => 'datetime',
             'unpublished_at' => 'datetime',
-            'deleted_at' => 'datetime',
             'restored_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -114,11 +112,14 @@ abstract class BaseDraftTranslationModel extends Model
                 $model->createdBy()->associate(auth()->user());
             }
         });
+        
+        static::deleted(function ($model) {
+            $model->deleted_by_id = auth()->user()->id;
+            $model->deleted_by_type = auth()->user()->getMorphClass();
+        });
 
         static::updating(function ($model) {
-            if (auth()->check()) {
-                $model->updatedBy()->associate(auth()->user());
-            }
+            $model->updatedBy()->associate(auth()->user());
         });
     }
 
