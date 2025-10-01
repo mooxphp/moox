@@ -112,7 +112,7 @@ abstract class BaseDraftTranslationModel extends Model
                 $model->createdBy()->associate(auth()->user());
             }
         });
-        
+
         static::deleted(function ($model) {
             $model->deleted_by_id = auth()->user()->id;
             $model->deleted_by_type = auth()->user()->getMorphClass();

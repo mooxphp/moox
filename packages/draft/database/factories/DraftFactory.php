@@ -2,8 +2,8 @@
 
 namespace Moox\Draft\Database\Factories;
 
-use Moox\Draft\Models\Draft;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Moox\Draft\Models\Draft;
 
 class DraftFactory extends Factory
 {
@@ -14,11 +14,11 @@ class DraftFactory extends Factory
         return [
             // Base model attributes (non-translated)
             'is_active' => $this->faker->boolean(80),
-           
+
             'image' => [
                 'url' => $this->faker->imageUrl(800, 600, 'business'),
                 'alt' => $this->faker->sentence(4),
-                'caption' => $this->faker->optional()->sentence()
+                'caption' => $this->faker->optional()->sentence(),
             ],
             'type' => $this->faker->randomElement(['article', 'page', 'post', 'news', 'tutorial']),
             'color' => $this->faker->hexColor(),
@@ -28,8 +28,8 @@ class DraftFactory extends Factory
                 'theme' => $this->faker->randomElement(['light', 'dark', 'auto']),
                 'layout' => $this->faker->randomElement(['grid', 'list', 'masonry']),
                 'show_author' => $this->faker->boolean(),
-                'allow_comments' => $this->faker->boolean(70)
-            ]
+                'allow_comments' => $this->faker->boolean(70),
+            ],
         ];
     }
 
@@ -50,7 +50,7 @@ class DraftFactory extends Factory
     private function setTranslatedAttributes(Draft $draft): void
     {
         $locales = $this->getLocales();
-        
+
         foreach ($locales as $locale) {
             $draft->translateOrNew($locale)->fill([
                 'title' => $this->getLocalizedTitle($locale),
@@ -60,7 +60,7 @@ class DraftFactory extends Factory
                 'content' => $this->getLocalizedContent($locale),
                 'author_id' => $this->faker->numberBetween(1, 10),
                 'author_type' => 'Moox\\User\\Models\\User',
-                'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted'])
+                'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
 
             ]);
         }
@@ -72,11 +72,11 @@ class DraftFactory extends Factory
     private function getLocales(): array
     {
         $locales = ['en']; // Always create English
-        
-            $locales[] = 'de';
-            $locales[] = 'fr';
-            $locales[] = 'es';
-        
+
+        $locales[] = 'de';
+        $locales[] = 'fr';
+        $locales[] = 'es';
+
         return $locales;
     }
 
@@ -87,9 +87,9 @@ class DraftFactory extends Factory
     {
         $titles = [
             'en' => $this->faker->sentence(rand(3, 8)),
-            'de' => $this->faker->sentence(rand(3, 8)) . ' (Deutsch)',
-            'fr' => $this->faker->sentence(rand(3, 8)) . ' (Français)',
-            'es' => $this->faker->sentence(rand(3, 8)) . ' (Español)',
+            'de' => $this->faker->sentence(rand(3, 8)).' (Deutsch)',
+            'fr' => $this->faker->sentence(rand(3, 8)).' (Français)',
+            'es' => $this->faker->sentence(rand(3, 8)).' (Español)',
         ];
 
         return $titles[$locale] ?? $titles['en'];
@@ -101,7 +101,8 @@ class DraftFactory extends Factory
     private function getLocalizedSlug(string $locale): string
     {
         $baseSlug = $this->faker->slug(3);
-        return $baseSlug . '-' . $locale;
+
+        return $baseSlug.'-'.$locale;
     }
 
     /**
@@ -111,9 +112,9 @@ class DraftFactory extends Factory
     {
         $descriptions = [
             'en' => $this->faker->paragraph(2),
-            'de' => $this->faker->paragraph(2) . ' (Deutsche Beschreibung)',
-            'fr' => $this->faker->paragraph(2) . ' (Description française)',
-            'es' => $this->faker->paragraph(2) . ' (Descripción española)',
+            'de' => $this->faker->paragraph(2).' (Deutsche Beschreibung)',
+            'fr' => $this->faker->paragraph(2).' (Description française)',
+            'es' => $this->faker->paragraph(2).' (Descripción española)',
         ];
 
         return $descriptions[$locale] ?? $descriptions['en'];
@@ -125,14 +126,14 @@ class DraftFactory extends Factory
     private function getLocalizedContent(string $locale): string
     {
         $content = $this->faker->paragraphs(rand(3, 8), true);
-        
+
         $localizedSuffix = [
             'de' => ' (Deutscher Inhalt)',
             'fr' => ' (Contenu français)',
             'es' => ' (Contenido español)',
         ];
 
-        return $content . ($localizedSuffix[$locale] ?? '');
+        return $content.($localizedSuffix[$locale] ?? '');
     }
 
     /**
@@ -179,7 +180,7 @@ class DraftFactory extends Factory
         return $this->afterMaking(function (Draft $draft) use ($locales) {
             // Clear existing translations
             $draft->deleteTranslations();
-            
+
             // Create only specified locales
             foreach ($locales as $locale) {
                 $draft->translateOrNew($locale)->fill([
@@ -190,7 +191,7 @@ class DraftFactory extends Factory
                     'content' => $this->getLocalizedContent($locale),
                     'author_id' => $this->faker->numberBetween(1, 10),
                     'author_type' => 'Moox\\User\\Models\\User',
-                    'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted'])
+                    'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
                 ]);
             }
         });

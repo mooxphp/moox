@@ -225,7 +225,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         return $translation && $translation->restored_at !== null;
     }
 
-
     /**
      * Query scopes for publishing status
      */
@@ -288,7 +287,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     {
         return $this->translations->pluck('locale')->toArray();
     }
-
 
     public function createTranslation(string $locale, array $attributes = []): void
     {

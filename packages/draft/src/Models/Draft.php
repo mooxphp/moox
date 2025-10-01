@@ -3,16 +3,16 @@
 namespace Moox\Draft\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Draft\Database\Factories\DraftFactory;
+use Moox\Media\Traits\HasMediaUsable;
 use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Moox\Media\Traits\HasMediaUsable;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Collection;
-use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Draft\Database\Factories\DraftFactory;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -37,7 +37,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasMediaUsable, HasModelTaxonomy, InteractsWithMedia, HasFactory;
+    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft

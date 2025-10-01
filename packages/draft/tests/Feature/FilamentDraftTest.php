@@ -1,8 +1,9 @@
 <?php
 
 use Moox\Draft\Models\Draft;
-use function Pest\Livewire\livewire;
 use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
+
+use function Pest\Livewire\livewire;
 
 it('can load the page', function () {
     $user = $this->createTestUser();

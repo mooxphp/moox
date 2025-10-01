@@ -45,7 +45,7 @@ test('draft can be created with real data in different languages', function () {
         'author_id' => 1,
         'author_type' => $user::class,
     ]);
-    
+
     expect($draft)->toBeInstanceOf(Draft::class);
     expect($draft->is_active)->toBeTrue();
     expect($draft->type)->toBe('article');
@@ -92,7 +92,7 @@ test('draft can be updated', function () {
     $draft = Draft::factory()->create([
         'type' => 'article',
         'color' => '#ff0000',
-        'status' => 'draft'
+        'status' => 'draft',
     ]);
 
     $draft->update([
@@ -102,7 +102,7 @@ test('draft can be updated', function () {
     ]);
 
     $draft->refresh();
-    
+
     expect($draft->type)->toBe('page');
     expect($draft->color)->toBe('#00ff00');
     expect($draft->status)->toBe('published');
@@ -127,23 +127,22 @@ test('draft translations can be soft deleted', function () {
 
     $draft->deleteTranslations('en');
     expect($draft->getTranslationsArray())->toHaveCount(0);
-    expect($draft->hasTranslation('en'))->toBeFalse(); 
+    expect($draft->hasTranslation('en'))->toBeFalse();
 
     $draft->checkAndDeleteIfAllTranslationsDeleted();
     expect($draft->trashed())->toBeTrue();
 });
 
-
 // test('draft can be restored from soft delete', function () {
 //     $draft = Draft::factory()->create();
 //     $draftId = $draft->id;
-    
+
 //     $draft->delete();
 //     expect($draft->trashed())->toBeTrue();
-    
+
 //     $draft->restore();
 //     $draft->refresh();
-    
+
 //     expect($draft->trashed())->toBeFalse();
 //     expect(Draft::find($draftId))->not->toBeNull();
 // });
@@ -151,27 +150,27 @@ test('draft translations can be soft deleted', function () {
 // test('draft can be force deleted', function () {
 //     $draft = Draft::factory()->create();
 //     $draftId = $draft->id;
-    
+
 //     $draft->forceDelete();
-    
+
 //     expect(Draft::withTrashed()->find($draftId))->toBeNull();
 // });
 
 // test('draft can store real media file', function () {
 //     Storage::fake('public');
-    
+
 //     $draft = Draft::factory()->create();
 //     $file = UploadedFile::fake()->image('test-image.jpg', 800, 600);
-    
+
 //     $media = $draft->addMediaFromRequest('file')
 //         ->usingName('Test Image')
 //         ->usingFileName('test-image.jpg')
 //         ->toMediaCollection('images');
-    
+
 //     expect($draft->media)->toHaveCount(1);
 //     expect($media->name)->toBe('Test Image');
 //     expect($media->collection_name)->toBe('images');
-    
+
 //     // Test media conversion
 //     $draft->registerMediaConversions($media);
 //     expect($media->getUrl('preview'))->toBeString();
@@ -179,7 +178,7 @@ test('draft translations can be soft deleted', function () {
 
 // test('draft can create translation', function () {
 //     $draft = Draft::factory()->create();
-    
+
 //     // Create English translation
 //     $draft->createTranslation('en', [
 //         'title' => 'English Title',
@@ -189,7 +188,7 @@ test('draft translations can be soft deleted', function () {
 //         'author_id' => 1,
 //         'author_type' => User::class
 //     ]);
-    
+
 //     // Create German translation
 //     $draft->createTranslation('de', [
 //         'title' => 'Deutscher Titel',
@@ -199,7 +198,7 @@ test('draft translations can be soft deleted', function () {
 //         'author_id' => 1,
 //         'author_type' => User::class
 //     ]);
-    
+
 //     expect($draft->hasTranslation('en'))->toBeTrue();
 //     expect($draft->hasTranslation('de'))->toBeTrue();
 //     expect($draft->getAvailableTranslations())->toContain('en', 'de');
@@ -207,19 +206,19 @@ test('draft translations can be soft deleted', function () {
 
 // test('draft translation can be updated', function () {
 //     $draft = Draft::factory()->create();
-    
+
 //     $draft->createTranslation('en', [
 //         'title' => 'Original Title',
 //         'content' => 'Original content'
 //     ]);
-    
+
 //     // Update translation
 //     $draft->createTranslation('en', [
 //         'title' => 'Updated Title',
 //         'content' => 'Updated content',
 //         'description' => 'New description'
 //     ]);
-    
+
 //     $translation = $draft->translate('en');
 //     expect($translation->title)->toBe('Updated Title');
 //     expect($translation->content)->toBe('Updated content');
@@ -228,22 +227,22 @@ test('draft translations can be soft deleted', function () {
 
 // test('draft translation can be deleted', function () {
 //     $draft = Draft::factory()->create();
-    
+
 //     $draft->createTranslation('en', ['title' => 'English Title']);
 //     $draft->createTranslation('de', ['title' => 'Deutscher Titel']);
-    
+
 //     expect($draft->hasTranslation('en'))->toBeTrue();
 //     expect($draft->hasTranslation('de'))->toBeTrue();
-    
+
 //     $draft->deleteTranslation('en');
-    
+
 //     expect($draft->hasTranslation('en'))->toBeFalse();
 //     expect($draft->hasTranslation('de'))->toBeTrue();
 // });
 
 // test('draft with media and translations complete workflow', function () {
 //     Storage::fake('public');
-    
+
 //     // Create draft with real data
 //     $draft = Draft::create([
 //         'is_active' => true,
@@ -252,13 +251,13 @@ test('draft translations can be soft deleted', function () {
 //         'data' => ['category' => 'technology'],
 //         'color' => '#3498db'
 //     ]);
-    
+
 //     // Add media
 //     $file = UploadedFile::fake()->image('article-image.jpg');
 //     $media = $draft->addMediaFromRequest('file')
 //         ->usingName('Article Image')
 //         ->toMediaCollection('images');
-    
+
 //     // Create translations
 //     $draft->createTranslation('en', [
 //         'title' => 'How to Build APIs',
@@ -267,7 +266,7 @@ test('draft translations can be soft deleted', function () {
 //         'author_id' => 1,
 //         'author_type' => $this->createTestUser()::class
 //     ]);
-    
+
 //     $draft->createTranslation('de', [
 //         'title' => 'Wie man APIs baut',
 //         'slug' => 'wie-man-apis-baut',
@@ -275,19 +274,19 @@ test('draft translations can be soft deleted', function () {
 //         'author_id' => 1,
 //         'author_type' => $this->createTestUser()::class
 //     ]);
-    
+
 //     // Update draft
 //     $draft->update([
 //         'status' => 'published',
 //         'data' => ['category' => 'technology', 'featured' => true]
 //     ]);
-    
+
 //     // Soft delete
 //     $draft->delete();
-    
+
 //     // Restore
 //     $draft->restore();
-    
+
 //     // Verify everything works
 //     expect($draft->status)->toBe('published');
 //     expect($draft->data)->toBe(['category' => 'technology', 'featured' => true]);
