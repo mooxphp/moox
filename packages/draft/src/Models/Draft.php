@@ -8,6 +8,8 @@ use Spatie\MediaLibrary\HasMedia;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Draft\Database\Factories\DraftFactory;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
