@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Clipboard\Forms\Components\CopyableField;
-use Moox\User\Models\User;
 
 abstract class BaseResource extends Resource
 {
