@@ -4,7 +4,7 @@ namespace Moox\Data\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class DataSeeder extends Seeder
 {
     /**
      * Seed the application's database.
