@@ -59,7 +59,7 @@ class DraftFactory extends Factory
                 'description' => $this->getLocalizedDescription($locale),
                 'content' => $this->getLocalizedContent($locale),
                 'author_id' => $this->faker->numberBetween(1, 10),
-                'author_type' => 'Moox\\User\\Models\\User',
+                'author_type' => config('draft.user_models')[0],
                 'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
 
             ]);
