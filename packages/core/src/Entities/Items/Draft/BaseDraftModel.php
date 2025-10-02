@@ -94,8 +94,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
 
-            $model->created_by_id = auth()->user()->id;
-            $model->created_by_type = auth()->user()->getMorphClass();
         });
 
         static::deleted(function ($model) {
