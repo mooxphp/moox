@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
-use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Spatie\LaravelPackageTools\Package;
+use Moox\Data\Filament\Providers\DataPanelProvider;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Data\Console\Commands\ImportStaticDataCommand;
 
 class DataServiceProvider extends PackageServiceProvider
 {
@@ -17,7 +18,7 @@ class DataServiceProvider extends PackageServiceProvider
         $this->mergeConfigFiles();
 
         if (config('data.enable-panel')) {
-            $this->app->register(Moox\Data\Filament\Providers\DataPanelProvider::class);
+            $this->app->register(DataPanelProvider::class);
         }
     }
 
