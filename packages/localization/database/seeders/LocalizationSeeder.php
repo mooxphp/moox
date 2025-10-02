@@ -26,6 +26,7 @@ class LocalizationSeeder extends Seeder
             [
                 'title' => 'English',
                 'slug' => 'english',
+                'locale_variant' => 'en_US',
                 'language_id' => $languages->get('en'), // Replace 'en' with the code in your `static_languages` table
                 'fallback_language_id' => null,
                 'is_active_admin' => true,
@@ -44,6 +45,7 @@ class LocalizationSeeder extends Seeder
             [
                 'title' => 'Spanish',
                 'slug' => 'spanish',
+                'locale_variant' => 'es_ES',
                 'language_id' => $languages->get('es'),
                 'fallback_language_id' => null, // Fallback to English
                 'is_active_admin' => true,
@@ -62,6 +64,7 @@ class LocalizationSeeder extends Seeder
             [
                 'title' => 'German',
                 'slug' => 'german',
+                'locale_variant' => 'de_DE',
                 'language_id' => $languages->get('de'),
                 'fallback_language_id' => null, // Fallback to English
                 'is_active_admin' => false,
