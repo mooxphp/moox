@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
-use Spatie\LaravelPackageTools\Package;
-use Moox\Data\Filament\Providers\DataPanelProvider;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
+use Moox\Data\Filament\Providers\DataPanelProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class DataServiceProvider extends PackageServiceProvider
 {
