@@ -1,12 +1,11 @@
 {
     "name": "moox/press",
-    "description": "Moox Press is a Laravel package, Filament plugin and WordPress MU plugin that allows to integrate and smoothly migrate from WordPress to Laravel.",
+    "description": "This is my package press",
     "keywords": [
         "Laravel",
         "Filament",
         "Filament plugin",
-        "Laravel package",
-        "WordPress plugin"
+        "Laravel package"
     ],
     "homepage": "https://moox.org/",
     "license": "MIT",
@@ -18,13 +17,12 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "moox/wordpress-core-installer": "*",
-        "roots/wordpress-full": "^6.8",
-        "vlucas/phpdotenv": "^5.6"
+        "moox/core": "self.version",
+        "adrolli/eloquent-mutators": "*",
+        "moox/press": "*"
     },
     "require-dev": {
-        "moox/devtools": "*"
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -37,13 +35,7 @@
             "providers": [
                 "Moox\\Press\\PressServiceProvider"
             ]
-        },
-        "wordpress-install-dir": "public/wp"
-    },
-    "prefer-stable": true,
-    "config": {
-        "allow-plugins": {
-            "moox/wordpress-core-installer": true
         }
-    }
+    },
+    "prefer-stable": true
 }

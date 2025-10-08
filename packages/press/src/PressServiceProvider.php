@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Press;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
+use Illuminate\Foundation\Http\Kernel as BaseHttpKernel;
 use Moox\Press\Commands\InstallCommand;
-use Moox\Press\Commands\InstallWordPress;
-use Moox\Press\Commands\UpdateWordPressPlugin;
-use Moox\Press\Commands\UpdateWordPressURL;
-use Moox\Press\Providers\WordPressUserProvider;
 use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -22,20 +19,28 @@ class PressServiceProvider extends PackageServiceProvider
             ->name('press')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasRoutes(['api', 'web'])
             ->hasCommands(
                 InstallCommand::class,
-                InstallWordPress::class,
-                UpdateWordPressURL::class,
-                UpdateWordPressPlugin::class,
-            );
+            )
+            ->hasRoutes(['web']);
     }
 
-    #[Override]
-    public function boot(): void
+    public function register(): void
     {
-        parent::boot();
+        parent::register();
 
-        Auth::provider('wpuser-provider', fn ($app, array $config): WordPressUserProvider => new WordPressUserProvider($app['hash'], $config['model']));
+        $this->app->singleton(HttpKernel::class, function ($app) {
+            return new class($app, $app['router']) extends BaseHttpKernel {
+                public function handle($request)
+                {
+                    if (preg_match('#^/wp(-admin|-[^/]*\.php|/.*|$)#', $request->getRequestUri())) {
+                        require_once base_path('public/wp/index.php');
+                        exit;
+                    }
+
+                    return parent::handle($request);
+                }
+            };
+        });
     }
 }
