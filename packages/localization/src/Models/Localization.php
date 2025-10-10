@@ -156,7 +156,7 @@ class Localization extends Model
     public function getDisplayFlagAttribute(): string
     {
         $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
-        
+
         if (in_array($this->language->alpha2, $languagesWithOwnFlag)) {
             return $this->language->flag_icon;
         }
@@ -186,7 +186,7 @@ class Localization extends Model
     public function getTableFlagAttribute(): string
     {
         $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
-        
+
         if (in_array($this->language->alpha2, $languagesWithOwnFlag)) {
             return $this->language->flag_icon;
         }
