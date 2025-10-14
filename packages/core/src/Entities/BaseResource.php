@@ -382,20 +382,20 @@ abstract class BaseResource extends Resource
                 $livewire->data['translation_status'] = 'published';
                 $livewire->save();
 
-            if (method_exists($livewire->record, 'translateOrNew')) {
-                $locale = $livewire->lang ?? app()->getLocale();
-                $translation = $livewire->record->translateOrNew($locale);
-                $translation->published_at = now();
-                $translation->publishedBy()->associate(auth()->user());
-                $translation->to_publish_at = null;
-                $translation->unpublished_at = null;
-                $translation->to_unpublish_at = null;
-                $translation->save();
-            }
+                if (method_exists($livewire->record, 'translateOrNew')) {
+                    $locale = $livewire->lang ?? app()->getLocale();
+                    $translation = $livewire->record->translateOrNew($locale);
+                    $translation->published_at = now();
+                    $translation->publishedBy()->associate(auth()->user());
+                    $translation->to_publish_at = null;
+                    $translation->unpublished_at = null;
+                    $translation->to_unpublish_at = null;
+                    $translation->save();
+                }
 
                 $url = static::getUrl('view', ['record' => $livewire->record]);
                 if (isset($livewire->lang)) {
-                    $url .= '?lang=' . $livewire->lang;
+                    $url .= '?lang='.$livewire->lang;
                 }
                 $livewire->redirect($url);
             })
@@ -417,10 +417,10 @@ abstract class BaseResource extends Resource
             ->button()
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
-                
+
                 $url = static::getUrl('create');
                 if (isset($livewire->lang)) {
-                    $url .= '?lang=' . $livewire->lang;
+                    $url .= '?lang='.$livewire->lang;
                 }
                 $livewire->redirect($url);
             })
