@@ -1,10 +1,10 @@
 <?php
 
 use Moox\Draft\Models\Draft;
-use function Pest\Livewire\livewire;
-
 use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\EditDraft;
 use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     $user = $this->createTestUser();
@@ -12,14 +12,11 @@ beforeEach(function () {
 });
 
 it('can list the drafts', function () {
-
     $drafts = Draft::factory()->count(5)->create();
 
     livewire(ListDrafts::class)
         ->assertOk()
         ->assertCanSeeTableRecords($drafts);
-
-
 });
 it('can sort by columns and show correct translations', function () {
     $drafts = Draft::factory()->count(10)->create();
@@ -31,14 +28,13 @@ it('can sort by columns and show correct translations', function () {
         ->assertCanSeeTableRecords(records: $drafts, inOrder: true)
         ->assertSee($drafts[0]->title);
 
-    // Test sorting with French locale 
+    // Test sorting with French locale
     livewire(ListDrafts::class, ['lang' => 'fr'])
         ->assertCanSeeTableRecords($drafts)
         ->sortTable('title')
         ->assertCanSeeTableRecords(records: $drafts, inOrder: true)
         ->assertSee($drafts[0]->title);
 });
-
 
 // it('can load the edit draft page', function () {
 //     $draft = Draft::factory()->create();
@@ -48,7 +44,7 @@ it('can sort by columns and show correct translations', function () {
 //     ])
 //         ->assertOk()
 //         ->assertSchemaStateSet([
-          
+
 //         ]);
 // });
 
@@ -59,7 +55,7 @@ it('can sort by columns and show correct translations', function () {
 //         'record' => $draft->id,
 //     ])
 //         ->fillForm([
-            
+
 //         ])
 //         ->call('save')
 //         ->assertNotified();

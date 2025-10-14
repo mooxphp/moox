@@ -242,6 +242,7 @@ class BaseDraftResource extends BaseResource
             ->getStateUsing(function ($record, $livewire) {
                 $currentLang = static::resolveCurrentLang($livewire);
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
                 return $translation?->slug ?? '';
             });
     }
@@ -513,6 +514,7 @@ class BaseDraftResource extends BaseResource
 
         // 4) Fallback to configured default localization or app locale
         $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+
         return $defaultLocalization?->locale_variant ?? app()->getLocale();
     }
 }
