@@ -51,6 +51,8 @@ class DraftFactory extends Factory
     {
         $locales = $this->getLocales();
 
+        $userModel = array_key_first(config('draft.user_models'));
+
         foreach ($locales as $locale) {
             $draft->translateOrNew($locale)->fill([
                 'title' => $this->getLocalizedTitle($locale),
@@ -59,7 +61,7 @@ class DraftFactory extends Factory
                 'description' => $this->getLocalizedDescription($locale),
                 'content' => $this->getLocalizedContent($locale),
                 'author_id' => $this->faker->numberBetween(1, 10),
-                'author_type' => config('draft.user_models')[0],
+                'author_type' => $userModel,
                 'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
 
             ]);
@@ -71,11 +73,11 @@ class DraftFactory extends Factory
      */
     private function getLocales(): array
     {
-        $locales = ['en']; // Always create English
+        $locales = ['en_us']; // Always create English
 
-        $locales[] = 'de';
-        $locales[] = 'fr';
-        $locales[] = 'es';
+        $locales[] = 'de_de';
+        $locales[] = 'fr_fr';
+        $locales[] = 'es_es';
 
         return $locales;
     }
@@ -191,7 +193,7 @@ class DraftFactory extends Factory
                     'content' => $this->getLocalizedContent($locale),
                     'author_id' => $this->faker->numberBetween(1, 10),
                     'author_type' => 'Moox\\User\\Models\\User',
-                    'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
+                    'translation_status' => 'draft',
                 ]);
             }
         });

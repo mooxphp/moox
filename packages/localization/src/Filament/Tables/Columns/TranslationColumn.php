@@ -17,7 +17,6 @@ class TranslationColumn extends TextColumn
         parent::setUp();
 
         $this->label(__('localization::fields.language'))
-            ->sortable()
             ->toggleable()
             ->alignCenter()
             ->searchable()
