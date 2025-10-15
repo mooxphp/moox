@@ -536,7 +536,7 @@ abstract class BaseResource extends Resource
 
                     if ($translation && $translation->trashed()) {
                         $remainingTranslations = $livewire->record->translations()->withTrashed()->where('locale', '!=', $currentLang)->count();
-                        
+
                         if ($remainingTranslations === 0) {
                             $livewire->record->forceDelete();
                         } else {
