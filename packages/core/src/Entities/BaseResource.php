@@ -535,9 +535,13 @@ abstract class BaseResource extends Resource
                     $translation = $livewire->record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
                     if ($translation && $translation->trashed()) {
-                        $translation->forceDelete();
-
-                        $livewire->record->checkAndDeleteIfAllTranslationsDeleted();
+                        $remainingTranslations = $livewire->record->translations()->withTrashed()->where('locale', '!=', $currentLang)->count();
+                        
+                        if ($remainingTranslations === 0) {
+                            $livewire->record->forceDelete();
+                        } else {
+                            $translation->forceDelete();
+                        }
 
                         Notification::make()
                             ->title(__('core::core.record_permanently_deleted'))
