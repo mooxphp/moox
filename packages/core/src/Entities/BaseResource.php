@@ -5,21 +5,21 @@ namespace Moox\Core\Entities;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
-use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
-use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Clipboard\Forms\Components\CopyableField;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Moox\Clipboard\Forms\Components\CopyableField;
 
 abstract class BaseResource extends Resource
 {
@@ -389,26 +389,26 @@ abstract class BaseResource extends Resource
 
                     $allTranslations = $livewire->record->translations()->get();
                     $translationCount = $allTranslations->count();
-                    
+
                     if ($translationCount > 1) {
                         $currentLocale = $livewire->lang ?? app()->getLocale();
                         $publishedCount = $allTranslations->where('translation_status', 'published')->count();
-                        
+
                         $currentTranslation = $allTranslations->where('locale', $currentLocale)->first();
                         if ($currentTranslation && $currentTranslation->translation_status !== 'published') {
                             $publishedCount++; // This one will be published
                         }
-                        
+
                         $shouldAsk = false;
-                        
+
                         if ($config['prompt_when_all_published'] && $publishedCount === $translationCount && $livewire->record->status !== 'published') {
                             $shouldAsk = true;
                         }
-                        
+
                         if ($config['prompt_when_any_published'] && $publishedCount > 0 && $livewire->record->status !== 'published') {
                             $shouldAsk = true;
                         }
-                        
+
                         if ($shouldAsk) {
                             return [
                                 Checkbox::make('publish_main_entry')
@@ -419,7 +419,7 @@ abstract class BaseResource extends Resource
                         }
                     }
                 }
-                
+
                 return [];
             })
             ->action(function ($livewire, array $data): void {
