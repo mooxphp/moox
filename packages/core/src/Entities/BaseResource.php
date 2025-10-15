@@ -5,20 +5,21 @@ namespace Moox\Core\Entities;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Forms\Components\MorphToSelect;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Clipboard\Forms\Components\CopyableField;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 abstract class BaseResource extends Resource
 {
@@ -378,7 +379,50 @@ abstract class BaseResource extends Resource
             ->label(__('core::core.publish'))
             ->keyBindings(['command+p', 'ctrl+p'])
             ->color('secondary')
-            ->action(function ($livewire): void {
+            ->form(function ($livewire) {
+                if ($livewire->record && method_exists($livewire->record, 'translations')) {
+                    $config = config('core.draft_publish_logic', [
+                        'auto_publish_single' => true,
+                        'prompt_when_all_published' => true,
+                        'prompt_when_any_published' => false,
+                    ]);
+
+                    $allTranslations = $livewire->record->translations()->get();
+                    $translationCount = $allTranslations->count();
+                    
+                    if ($translationCount > 1) {
+                        $currentLocale = $livewire->lang ?? app()->getLocale();
+                        $publishedCount = $allTranslations->where('translation_status', 'published')->count();
+                        
+                        $currentTranslation = $allTranslations->where('locale', $currentLocale)->first();
+                        if ($currentTranslation && $currentTranslation->translation_status !== 'published') {
+                            $publishedCount++; // This one will be published
+                        }
+                        
+                        $shouldAsk = false;
+                        
+                        if ($config['prompt_when_all_published'] && $publishedCount === $translationCount && $livewire->record->status !== 'published') {
+                            $shouldAsk = true;
+                        }
+                        
+                        if ($config['prompt_when_any_published'] && $publishedCount > 0 && $livewire->record->status !== 'published') {
+                            $shouldAsk = true;
+                        }
+                        
+                        if ($shouldAsk) {
+                            return [
+                                Checkbox::make('publish_main_entry')
+                                    ->label(__('core::core.publish_main_entry'))
+                                    ->helperText(__('core::core.publish_main_entry_description'))
+                                    ->default(true),
+                            ];
+                        }
+                    }
+                }
+                
+                return [];
+            })
+            ->action(function ($livewire, array $data): void {
                 $livewire->data['translation_status'] = 'published';
                 $livewire->save();
 
@@ -391,6 +435,11 @@ abstract class BaseResource extends Resource
                     $translation->unpublished_at = null;
                     $translation->to_unpublish_at = null;
                     $translation->save();
+                }
+
+                if (isset($data['publish_main_entry']) && $data['publish_main_entry'] && $livewire->record) {
+                    $livewire->record->status = 'published';
+                    $livewire->record->save();
                 }
 
                 $url = static::getUrl('view', ['record' => $livewire->record]);

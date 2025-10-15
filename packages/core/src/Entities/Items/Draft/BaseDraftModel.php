@@ -93,6 +93,10 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
+            
+            if (empty($model->status)) {
+                $model->status = 'draft';
+            }
         });
 
         static::deleted(function ($model) {
