@@ -38,7 +38,10 @@ class TranslationColumn extends TextColumn
                         $flagClass .= ' trashed';
                     }
 
-                    return $flagClass;
+                    return [
+                        'flag' => $flagClass,
+                        'locale' => $translation->locale,
+                    ];
                 })->toArray();
 
                 return $flags;
