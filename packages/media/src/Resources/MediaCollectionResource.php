@@ -2,20 +2,20 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Moox\Media\Models\Media;
-use Filament\Actions\EditAction;
-use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
-use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Localization\Models\Localization;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -107,7 +107,7 @@ class MediaCollectionResource extends Resource
                                 ->where('is_active_admin', true)
                                 ->with('language')
                                 ->first();
-                            
+
                             if ($defaultLocale && $defaultLocale->language) {
                                 $defaultLang = $defaultLocale->language->alpha2;
                                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
@@ -127,11 +127,11 @@ class MediaCollectionResource extends Resource
                     ->extraAttributes(function ($record, $livewire) {
                         $currentLang = $livewire->lang ?? app()->getLocale();
                         $translation = $record->translations()->where('locale', $currentLang)->first();
-                        
+
                         if ($translation && $translation->name) {
                             return [];
                         }
-                        
+
                         return ['style' => 'color: var(--gray-500);'];
                     }),
                 TextColumn::make('description')
