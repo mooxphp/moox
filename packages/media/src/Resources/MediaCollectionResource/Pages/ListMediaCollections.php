@@ -3,13 +3,13 @@
 namespace Moox\Media\Resources\MediaCollectionResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Media\Models\MediaCollection;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Localization\Models\Localization;
-use Moox\Media\Resources\MediaCollectionResource;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaCollectionResource;
 
 class ListMediaCollections extends ListRecords
 {
@@ -25,9 +25,9 @@ class ListMediaCollections extends ListRecords
     {
         parent::mount();
         $this->lang = request()->get('lang', $this->getDefaultLocale());
-        
+
         app()->setLocale($this->lang);
-        
+
         MediaCollection::ensureUncategorizedExists();
     }
 
@@ -38,7 +38,7 @@ class ListMediaCollections extends ListRecords
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();
-            
+
             if ($defaultLocale && $defaultLocale->language) {
                 return $defaultLocale->language->alpha2;
             }
@@ -46,7 +46,7 @@ class ListMediaCollections extends ListRecords
             $firstActiveLocale = Localization::where('is_active_admin', true)
                 ->with('language')
                 ->first();
-            
+
             if ($firstActiveLocale && $firstActiveLocale->language) {
                 return $firstActiveLocale->language->alpha2;
             }
