@@ -2,19 +2,20 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Schemas\Schema;
 use Moox\Media\Models\Media;
+use Filament\Actions\EditAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Localization\Models\Localization;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
+use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 
 class MediaCollectionResource extends Resource
 {
@@ -85,11 +86,15 @@ class MediaCollectionResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('id')
                     ->label(__('media::fields.collection_name'))
-                    ->searchable()
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('translations', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable()
-                    ->formatStateUsing(function ($record, $livewire) {
+                    ->state(function ($record, $livewire) {
                         $currentLang = $livewire->lang ?? app()->getLocale();
 
                         $translation = $record->translations()->where('locale', $currentLang)->first();
@@ -97,18 +102,38 @@ class MediaCollectionResource extends Resource
                             return $translation->name;
                         }
 
-                        $fallbackTranslation = $record->translations()->where('locale', app()->getLocale())->first();
-                        if ($fallbackTranslation && $fallbackTranslation->name) {
-                            return $fallbackTranslation->name.' ('.app()->getLocale().')';
+                        if (class_exists(Localization::class)) {
+                            $defaultLocale = Localization::where('is_default', true)
+                                ->where('is_active_admin', true)
+                                ->with('language')
+                                ->first();
+                            
+                            if ($defaultLocale && $defaultLocale->language) {
+                                $defaultLang = $defaultLocale->language->alpha2;
+                                $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
+                                if ($fallbackTranslation && $fallbackTranslation->name) {
+                                    return $fallbackTranslation->name.' ('.$defaultLang.')';
+                                }
+                            }
+                        }
+
+                        $anyTranslation = $record->translations()->whereNotNull('name')->first();
+                        if ($anyTranslation && $anyTranslation->name) {
+                            return $anyTranslation->name.' ('.$anyTranslation->locale.')';
                         }
 
                         return 'No name available';
                     })
-                    ->extraAttributes(fn ($record, $livewire) => [
-                        'style' => $record->translations()->where('locale', $livewire->lang ?? app()->getLocale())->whereNotNull('name')->exists()
-                            ? ''
-                            : 'color: var(--gray-500);',
-                    ]),
+                    ->extraAttributes(function ($record, $livewire) {
+                        $currentLang = $livewire->lang ?? app()->getLocale();
+                        $translation = $record->translations()->where('locale', $currentLang)->first();
+                        
+                        if ($translation && $translation->name) {
+                            return [];
+                        }
+                        
+                        return ['style' => 'color: var(--gray-500);'];
+                    }),
                 TextColumn::make('description')
                     ->label(__('media::fields.collection_description'))
                     ->searchable()
