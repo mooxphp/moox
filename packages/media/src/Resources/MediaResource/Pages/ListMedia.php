@@ -38,8 +38,8 @@ class ListMedia extends BaseListDrafts
         $defaultLocale = Localization::where('is_default', true)
             ->where('is_active_admin', true)
             ->first();
-        
-        $defaultLang = $defaultLocale 
+
+        $defaultLang = $defaultLocale
             ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
             : config('app.locale');
 
