@@ -153,27 +153,29 @@
                 @if ($this instanceof \Filament\Resources\Pages\ListRecords)
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->display_flag"
                         wire:click="changeLanguage('{{ $locale->locale_variant }}')">
-                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->display_name }}</span>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+                            <span
+                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">{{ $locale->display_name }}</span>
                             @if(isset($translationStatus) && $translationStatus === 'deleted')
                                 <x-filament::icon-button icon="heroicon-o-trash" size="md" color="danger" tooltip="Übersetzung gelöscht"
-                                    style="margin-left: 8px;" />
+                                    style="flex-shrink: 0;" />
                             @else
                                 <x-filament::icon-button icon="heroicon-o-plus-circle" size="md" color="success"
-                                    tooltip="Übersetzung hinzufügen" style="margin-left: 8px;" />
+                                    tooltip="Übersetzung hinzufügen" style="flex-shrink: 0;" />
                             @endif
                         </div>
                     </x-filament::dropdown.list.item>
                 @else
                     <x-filament::dropdown.list.item :href="$targetUrl" :icon="$locale->display_flag" tag="a">
-                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                            <span>{{ $locale->display_name }}</span>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+                            <span
+                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">{{ $locale->display_name }}</span>
                             @if(isset($translationStatus) && $translationStatus === 'deleted')
                                 <x-filament::icon-button icon="heroicon-o-trash" size="xs" color="danger" tooltip="Übersetzung gelöscht"
-                                    style="margin-left: 8px;" />
+                                    style="flex-shrink: 0;" />
                             @else
                                 <x-filament::icon-button icon="heroicon-o-plus-circle" size="xs" color="success"
-                                    tooltip="Übersetzung hinzufügen" style="margin-left: 8px;" />
+                                    tooltip="Übersetzung hinzufügen" style="flex-shrink: 0;" />
                             @endif
                         </div>
                     </x-filament::dropdown.list.item>
