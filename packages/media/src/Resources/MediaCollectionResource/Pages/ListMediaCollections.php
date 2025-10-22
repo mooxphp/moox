@@ -27,8 +27,6 @@ class ListMediaCollections extends ListRecords
         $this->lang = request()->get('lang', $this->getDefaultLocale());
 
         app()->setLocale($this->lang);
-
-        MediaCollection::ensureUncategorizedExists();
     }
 
     protected function getDefaultLocale(): string
