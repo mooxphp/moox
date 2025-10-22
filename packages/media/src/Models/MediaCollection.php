@@ -2,11 +2,11 @@
 
 namespace Moox\Media\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Astrotomic\Translatable\Translatable;
-use Moox\Localization\Models\Localization;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Moox\Localization\Models\Localization;
 
 class MediaCollection extends Model implements TranslatableContract
 {
@@ -57,31 +57,31 @@ class MediaCollection extends Model implements TranslatableContract
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();
-            
+
             if ($localization && $localization->language) {
                 $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
             }
         }
 
         $locale = $defaultLocale ?: config('app.locale');
-        
-        $collection = new static();
+
+        $collection = new static;
         $translation = $collection->translateOrNew($locale);
-        
+
         $previousLocale = app()->getLocale();
         app()->setLocale($locale);
-        
+
         $translation->name = __('media::fields.uncategorized');
         $translation->description = __('media::fields.uncategorized_description');
-        
+
         if ($translation->name === 'media::fields.uncategorized') {
             app()->setLocale('en');
             $translation->name = __('media::fields.uncategorized');
             $translation->description = __('media::fields.uncategorized_description');
         }
-        
+
         app()->setLocale($previousLocale);
-        
+
         $collection->save();
     }
 }

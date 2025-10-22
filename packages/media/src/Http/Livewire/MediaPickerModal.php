@@ -3,19 +3,19 @@
 namespace Moox\Media\Http\Livewire;
 
 use Exception;
-use Livewire\Component;
-use Filament\Schemas\Schema;
-use Livewire\WithPagination;
-use Moox\Media\Models\Media;
-use Livewire\WithFileUploads;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Contracts\HasForms;
-use Moox\Media\Models\MediaCollection;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
-use Moox\Localization\Models\Localization;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property \Filament\Schemas\Schema $form */
@@ -114,19 +114,19 @@ class MediaPickerModal extends Component implements HasForms
             ->label(__('media::fields.collection'))
             ->options(function () {
                 $currentLang = app()->getLocale();
-                
+
                 $defaultLocale = null;
                 if (class_exists(Localization::class)) {
                     $localization = Localization::where('is_default', true)
                         ->where('is_active_admin', true)
                         ->with('language')
                         ->first();
-                    
+
                     if ($localization && $localization->language) {
                         $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
                     }
                 }
-                
+
                 return MediaCollection::with('translations')
                     ->get()
                     ->mapWithKeys(function ($item) use ($currentLang, $defaultLocale) {
@@ -134,7 +134,7 @@ class MediaPickerModal extends Component implements HasForms
                             $item->translate($currentLang)?->name
                             ?? ($defaultLocale ? $item->translate($defaultLocale)?->name : null)
                             ?? $item->translations->first()?->name
-                            ?? ('ID: ' . $item->id);
+                            ?? ('ID: '.$item->id);
 
                         return [$item->id => $name];
                     })
@@ -498,19 +498,19 @@ class MediaPickerModal extends Component implements HasForms
             ->paginate(18);
 
         $currentLang = app()->getLocale();
-        
+
         $defaultLocale = null;
         if (class_exists(\Moox\Localization\Models\Localization::class)) {
             $localization = \Moox\Localization\Models\Localization::where('is_default', true)
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();
-            
+
             if ($localization && $localization->language) {
                 $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
             }
         }
-        
+
         $collectionOptions = MediaCollection::with('translations')
             ->get()
             ->mapWithKeys(function ($item) use ($currentLang, $defaultLocale) {
@@ -518,7 +518,7 @@ class MediaPickerModal extends Component implements HasForms
                     $item->translate($currentLang)?->name
                     ?? ($defaultLocale ? $item->translate($defaultLocale)?->name : null)
                     ?? $item->translations->first()?->name
-                    ?? ('ID: ' . $item->id);
+                    ?? ('ID: '.$item->id);
 
                 return [$item->id => $name];
             })

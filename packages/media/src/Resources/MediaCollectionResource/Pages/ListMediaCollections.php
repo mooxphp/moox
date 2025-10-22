@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Moox\Localization\Models\Localization;
-use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaCollectionResource;
 
 class ListMediaCollections extends ListRecords
