@@ -5,9 +5,9 @@ namespace Moox\Core\Console\Traits;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Services\PackageService;
+use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
@@ -15,9 +15,9 @@ use function Laravel\Prompts\warning;
 
 trait InstallPackage
 {
+    use CheckOrCreateFilamentUser;
     use RegisterFilamentPlugin;
     use SelectFilamentPanel;
-    use CheckOrCreateFilamentUser;
 
     protected PackageService $packageService;
 
@@ -28,15 +28,16 @@ trait InstallPackage
 
     protected function ensurePackageServiceIsSet(): void
     {
-        if (!isset($this->packageService)) {
+        if (! isset($this->packageService)) {
             throw new \RuntimeException('PackageService is not set on InstallPackage trait.');
         }
     }
 
     public function installPackage(array $package, array $panelPaths = []): bool
     {
-        if (empty($package) || !isset($package['name'])) {
+        if (empty($package) || ! isset($package['name'])) {
             warning('⚠️ Empty or invalid package. Skipping installation.');
+
             return false;
         }
 
@@ -54,8 +55,8 @@ trait InstallPackage
 
         // --- Migrations publish & run ---
         $migrations = $this->packageService->getMigrations($package);
-        if (!empty($migrations)) {
-            if (confirm("📥 New migrations have been published. Would you like to run them now?", true)) {
+        if (! empty($migrations)) {
+            if (confirm('📥 New migrations have been published. Would you like to run them now?', true)) {
                 // --- Config publish ---
                 if (confirm("📄 Would you like to publish configs for '{$package['name']}'?", true)) {
                     $didChange = $this->packageService->publishConfigs($package) || $didChange;
@@ -63,24 +64,26 @@ trait InstallPackage
 
                 $didChange = $this->runMigrations($migrations) || $didChange;
             } else {
-                info("⏩ Migrations were published but not executed.");
+                info('⏩ Migrations were published but not executed.');
             }
         }
 
         // --- Seeders ---
         $seeders = $this->packageService->getRequiredSeeders($package);
-        if (!empty($seeders)) {
+        if (! empty($seeders)) {
             if (confirm("🌱 Run seeders for '{$package['name']}'?", false)) {
                 $didChange = $this->runSeeders($package) || $didChange;
             } else {
-                info("⏩ Skipped seeders by user.");
+                info('⏩ Skipped seeders by user.');
             }
         }
 
         // --- Panels & plugins ---
         if (empty($panelPaths)) {
             $panelPaths = $this->determinePanelsForPackage($package);
-            if (!empty($panelPaths)) $didChange = true;
+            if (! empty($panelPaths)) {
+                $didChange = true;
+            }
         }
         $didChange = $this->installPlugins($package, $panelPaths) || $didChange;
 
@@ -104,6 +107,7 @@ trait InstallPackage
         $composerJson = json_decode(file_get_contents(base_path('composer.json')), true);
         if (isset($composerJson['require'][$packageName])) {
             info("ℹ️ Package '{$packageName}' is already required in composer.json.");
+
             return 'already';
         }
 
@@ -112,7 +116,9 @@ trait InstallPackage
         $process->setTimeout(null);
         $process->run(function ($type, $buffer) {
             foreach (explode("\n", rtrim($buffer)) as $line) {
-                if ($line !== '') info('    ' . $line);
+                if ($line !== '') {
+                    info('    '.$line);
+                }
             }
         });
 
@@ -121,6 +127,7 @@ trait InstallPackage
         }
 
         warning("⚠️ Failed to install {$packageName}");
+
         return 'failed';
     }
 
@@ -129,20 +136,25 @@ trait InstallPackage
         $existingPanels = $this->getExistingPanelsWithLogin();
 
         if (empty($existingPanels)) {
-            info("ℹ️ No existing panels found. Creating a new panel...");
+            info('ℹ️ No existing panels found. Creating a new panel...');
+
             return [$this->createNewPanelProvider()];
         }
 
-        info("🔹 Existing panels found:");
-        foreach ($existingPanels as $key => $panel) info("  [{$key}] {$panel}");
+        info('🔹 Existing panels found:');
+        foreach ($existingPanels as $key => $panel) {
+            info("  [{$key}] {$panel}");
+        }
 
         $useExisting = confirm("Do you want to install '{$package['name']}' in an existing panel?", true);
         if ($useExisting) {
             $selectedKey = $this->selectFromList($existingPanels, "Select panel for '{$package['name']}'");
+
             return [$existingPanels[$selectedKey]];
         }
 
         info("ℹ️ Creating a new panel for '{$package['name']}'...");
+
         return [$this->createNewPanelProvider()];
     }
 
@@ -151,6 +163,7 @@ trait InstallPackage
         $plugins = $this->packageService->getPlugins($package);
         if (empty($plugins)) {
             info("ℹ️ No plugins found for '{$package['name']}'. Skipping.");
+
             return false;
         }
 
@@ -162,14 +175,16 @@ trait InstallPackage
                 $changedAny = true;
             }
         }
+
         return $changedAny;
     }
 
     protected function createNewPanelProvider(): string
     {
-        $panelName = 'Panel' . time();
+        $panelName = 'Panel'.time();
         info("Creating new panel provider: {$panelName} ...");
         Artisan::call('make:filament-panel', ['name' => $panelName]);
+
         return $panelName;
     }
 
@@ -178,12 +193,13 @@ trait InstallPackage
         $didRun = false;
         foreach ($migrations as $migration) {
             $absolutePath = base_path($migration);
-            if (!$this->hasMigrationsAtPath($absolutePath)) {
+            if (! $this->hasMigrationsAtPath($absolutePath)) {
                 info("ℹ️ No migrations found at: {$migration}. Skipping.");
+
                 continue;
             }
 
-            $relativePath = str_replace(base_path() . '/', '', $absolutePath);
+            $relativePath = str_replace(base_path().'/', '', $absolutePath);
             Artisan::call('migrate', [
                 '--path' => $relativePath,
                 '--force' => true,
@@ -192,16 +208,21 @@ trait InstallPackage
             info("✅ Migration completed for {$relativePath}");
             $didRun = true;
         }
+
         return $didRun;
     }
 
     private function hasMigrationsAtPath(string $absolutePath): bool
     {
-        if (File::isFile($absolutePath)) return str_ends_with($absolutePath, '.php');
+        if (File::isFile($absolutePath)) {
+            return str_ends_with($absolutePath, '.php');
+        }
         if (File::isDirectory($absolutePath)) {
-            $files = collect(File::files($absolutePath))->filter(fn($f) => str_ends_with($f->getFilename(), '.php'));
+            $files = collect(File::files($absolutePath))->filter(fn ($f) => str_ends_with($f->getFilename(), '.php'));
+
             return $files->isNotEmpty();
         }
+
         return false;
     }
 
@@ -212,8 +233,9 @@ trait InstallPackage
 
         foreach ($requiredSeeders as $seeder) {
             $table = $this->getSeederTable($seeder);
-            if (!$table || !Schema::hasTable($table)) {
+            if (! $table || ! Schema::hasTable($table)) {
                 warning("⚠️ Table for seeder {$seeder} not found. Skipping.");
+
                 continue;
             }
 
@@ -256,7 +278,9 @@ trait InstallPackage
         $process->setTimeout(null);
         $process->run(function ($type, $buffer) {
             foreach (explode("\n", rtrim($buffer)) as $line) {
-                if ($line !== '') info('    ' . $line);
+                if ($line !== '') {
+                    info('    '.$line);
+                }
             }
         });
     }
@@ -264,6 +288,7 @@ trait InstallPackage
     private function getSeederTable(string $seederClass): ?string
     {
         $seeder = new $seederClass;
+
         return property_exists($seeder, 'table') ? $seeder->table : null;
     }
 
@@ -272,10 +297,14 @@ trait InstallPackage
         $panels = [];
         $panelPath = app_path('Filament/Pages');
 
-        if (!is_dir($panelPath)) return [];
+        if (! is_dir($panelPath)) {
+            return [];
+        }
 
         foreach (scandir($panelPath) as $file) {
-            if (str_ends_with($file, '.php')) $panels[] = pathinfo($file, PATHINFO_FILENAME);
+            if (str_ends_with($file, '.php')) {
+                $panels[] = pathinfo($file, PATHINFO_FILENAME);
+            }
         }
 
         return $panels;
@@ -284,9 +313,12 @@ trait InstallPackage
     protected function selectFromList(array $items, string $prompt): int
     {
         info($prompt);
-        foreach ($items as $key => $item) info("  [{$key}] {$item}");
+        foreach ($items as $key => $item) {
+            info("  [{$key}] {$item}");
+        }
 
-        $choice = (int)readline("Enter number: ");
+        $choice = (int) readline('Enter number: ');
+
         return $items[$choice] ?? 0;
     }
 }

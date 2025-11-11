@@ -13,14 +13,8 @@ use Moox\Core\Console\Traits\InstallPackages;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 use Moox\Core\Services\PackageService;
 
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\alert;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\warning;
-use function Laravel\Prompts\text;
-use function Laravel\Prompts\password;
-
+use function Laravel\Prompts\select;
 
 class MooxInstaller extends Command
 {
@@ -33,7 +27,9 @@ class MooxInstaller extends Command
         SelectFilamentPanel;
 
     protected $signature = 'moox:install';
+
     protected $description = 'Install Moox Packages or generate Filament Panels.';
+
     protected array $selectedPanels = [];
 
     public function __construct(protected PackageService $packageService)
@@ -51,18 +47,19 @@ class MooxInstaller extends Command
             label: 'What would you like to do?',
             options: [
                 'packages' => '📦 Install Moox Packages',
-                'panels'   => '🖼️ Generate Filament Panels',
+                'panels' => '🖼️ Generate Filament Panels',
             ]
         );
 
         if (! $this->checkForFilament(silent: true)) {
             $this->error('❌ Filament installation is required or was aborted.');
+
             return;
         }
 
         match ($choice) {
             'packages' => $this->runPackageInstallFlow(),
-            'panels'   => $this->runPanelGenerationFlow(),
+            'panels' => $this->runPanelGenerationFlow(),
         };
     }
 
@@ -73,6 +70,7 @@ class MooxInstaller extends Command
                 return true;
             }
         }
+
         return false;
     }
 
@@ -81,6 +79,7 @@ class MooxInstaller extends Command
         $available = $this->getPackagesFromComposerRequire();
         if (empty($available)) {
             $this->warn('⚠️ No Moox packages found in composer.json require.');
+
             return;
         }
 
@@ -96,6 +95,7 @@ class MooxInstaller extends Command
 
         if (empty($selection)) {
             $this->warn('⚠️ No selection made. Aborting.');
+
             return;
         }
 
@@ -104,7 +104,7 @@ class MooxInstaller extends Command
         $selectedPanelKey = $this->determinePanelForPackage(implode(', ', $selection));
         $this->ensurePanelForKey($selectedPanelKey, $selectedPanelKey, false);
 
-        $providerPath = $this->panelMap[$selectedPanelKey]['path'] . '/' . ucfirst($selectedPanelKey) . 'PanelProvider.php';
+        $providerPath = $this->panelMap[$selectedPanelKey]['path'].'/'.ucfirst($selectedPanelKey).'PanelProvider.php';
 
         $changedAny = false;
         foreach ($selection as $package) {
@@ -120,19 +120,20 @@ class MooxInstaller extends Command
             $this->callSilent('package:discover');
             $this->callSilent('filament:upgrade');
         }
-        
-        $this->info('🎉 Selected packages have been installed successfully: ' . implode(', ', $selection));
+
+        $this->info('🎉 Selected packages have been installed successfully: '.implode(', ', $selection));
     }
 
     protected function getPackagesFromComposerRequire(): array
     {
         $composerPath = base_path('composer.json');
-        if (!file_exists($composerPath)) {
+        if (! file_exists($composerPath)) {
             return [];
         }
 
         $json = json_decode(file_get_contents($composerPath), true);
         $require = $json['require'] ?? [];
+
         return array_values(array_filter(array_keys($require), function ($pkg) {
             return is_string($pkg) && str_starts_with($pkg, 'moox/');
         }));
@@ -144,7 +145,7 @@ class MooxInstaller extends Command
 
         $existingPanels = $this->getExistingPanelsWithLogin();
 
-        if (!empty($existingPanels)) {
+        if (! empty($existingPanels)) {
             $this->info('➡️ You can still create additional panels.');
             $this->error('❌ A panel with login already exists:');
             foreach ($existingPanels as $panelClass) {
@@ -156,6 +157,7 @@ class MooxInstaller extends Command
 
         if (empty($this->selectedPanels)) {
             $this->warn('⚠️ No panel selection made. Operation aborted.');
+
             return;
         }
 
@@ -174,7 +176,6 @@ class MooxInstaller extends Command
         $this->info('✅ Moox Panels installed successfully. Enjoy! 🎉');
     }
 
-
     protected function determinePanelForPackage(string $package): string
     {
         $providerClasses = $this->getProviderClassesFromBootstrap();
@@ -182,24 +183,25 @@ class MooxInstaller extends Command
         $panelOptions = [];
         foreach ($providerClasses as $index => $class) {
             $key = $this->mapProviderClassToPanelKey($class);
-            if (!$key) {
+            if (! $key) {
                 continue;
             }
-            $uniqueKey = $key . '_' . $index;
-            $panelOptions[$uniqueKey] = $key . ' (' . $class . ')';
+            $uniqueKey = $key.'_'.$index;
+            $panelOptions[$uniqueKey] = $key.' ('.$class.')';
         }
 
         $panelChoice = select(
             label: "Would you like to register the package '{$package}' into an existing panel or create a new panel?",
             options: [
                 'existing' => 'Existing Panel',
-                'new'      => 'Create New Panel',
+                'new' => 'Create New Panel',
             ]
         );
 
         if ($panelChoice === 'existing') {
             if (empty($panelOptions)) {
                 $this->warn('⚠️ No existing panels found. Creating a new panel instead.');
+
                 return $this->selectNewPanel([]);
             }
 
@@ -213,6 +215,7 @@ class MooxInstaller extends Command
             $existingKeys = array_values(array_filter(array_map(function ($class) {
                 return $this->mapProviderClassToPanelKey($class);
             }, $providerClasses)));
+
             return $this->selectNewPanel($existingKeys);
         }
     }
@@ -224,6 +227,7 @@ class MooxInstaller extends Command
 
         if (empty($availablePanels)) {
             $this->warn('⚠️ No new panels available, using default.');
+
             return reset($allPanels);
         }
 
@@ -260,15 +264,15 @@ class MooxInstaller extends Command
         $already = [];
         foreach ($packages as $pkg) {
             $panels = $this->findPanelsContainingPackage($pkg);
-            if (!empty($panels)) {
+            if (! empty($panels)) {
                 $already[$pkg] = $panels;
             }
         }
 
-        if (!empty($already)) {
+        if (! empty($already)) {
             $this->warn('⚠️ Selected packages are already registered in panels:');
             foreach ($already as $pkg => $panels) {
-                $this->line('  • ' . $pkg . ' → ' . implode(', ', $panels));
+                $this->line('  • '.$pkg.' → '.implode(', ', $panels));
             }
         }
     }
@@ -278,11 +282,11 @@ class MooxInstaller extends Command
         $panels = [];
         foreach ($this->panelMap as $key => $cfg) {
             $panelPath = $cfg['path'] ?? null;
-            if (!$panelPath) {
+            if (! $panelPath) {
                 continue;
             }
-            $composerJsonPath = base_path($panelPath . '/../../composer.json');
-            if (!File::exists($composerJsonPath)) {
+            $composerJsonPath = base_path($panelPath.'/../../composer.json');
+            if (! File::exists($composerJsonPath)) {
                 continue;
             }
             $composerJson = json_decode(File::get($composerJsonPath), true);
@@ -290,14 +294,16 @@ class MooxInstaller extends Command
                 $panels[] = $key;
             }
         }
+
         return $panels;
     }
 
     protected function updatePanelPackageComposerJson(string $panelKey, array $packages): void
     {
-        $panelPath = base_path($this->panelMap[$panelKey]['path'] . '/../../composer.json');
-        if (!file_exists($panelPath)) {
+        $panelPath = base_path($this->panelMap[$panelKey]['path'].'/../../composer.json');
+        if (! file_exists($panelPath)) {
             $this->warn("⚠️ Panel composer.json not found for {$panelKey}, skipping update.");
+
             return;
         }
 
@@ -307,7 +313,7 @@ class MooxInstaller extends Command
         }
 
         file_put_contents($panelPath, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        $this->info("✅ Updated composer.json for panel '{$panelKey}' with package(s): " . implode(', ', $packages));
+        $this->info("✅ Updated composer.json for panel '{$panelKey}' with package(s): ".implode(', ', $packages));
     }
 
     protected function installPluginsFromGeneratedPanels(): void
@@ -316,6 +322,7 @@ class MooxInstaller extends Command
 
         if (empty($this->selectedPanels)) {
             $this->warn('⚠️ No panels selected. Skipping plugin installation.');
+
             return;
         }
 
@@ -324,35 +331,38 @@ class MooxInstaller extends Command
         foreach ($this->selectedPanels as $i => $panelKey) {
             $panelInfo = $this->panelMap[$panelKey] ?? null;
 
-            if (!$panelInfo) {
+            if (! $panelInfo) {
                 $this->warn("⚠️ Unknown panel key '{$panelKey}'. Skipping plugin scan.");
+
                 continue;
             }
 
             $panelClass = ($panelInfo['namespace'] ?? null)
-                ? $panelInfo['namespace'] . '\\' . ucfirst($panelKey) . 'PanelProvider'
+                ? $panelInfo['namespace'].'\\'.ucfirst($panelKey).'PanelProvider'
                 : null;
 
-            if (!$panelClass || !class_exists($panelClass)) {
+            if (! $panelClass || ! class_exists($panelClass)) {
                 $this->warn("⚠️ Panel provider class '{$panelClass}' does not exist. Skipping plugin scan.");
+
                 continue;
             }
 
             $this->newLine();
             $this->line(str_repeat('═', 60));
-            $this->info("🧩 [".($i+1)."/{$panelCount}] Processing panel: {$panelKey}");
+            $this->info('🧩 ['.($i + 1)."/{$panelCount}] Processing panel: {$panelKey}");
             $this->line(str_repeat('═', 60));
             $this->newLine();
 
             $providerInstance = new $panelClass(app());
 
-            $panel = new \Filament\Panel();
+            $panel = new \Filament\Panel;
             $configuredPanel = $providerInstance->panel($panel);
 
             $plugins = $configuredPanel->getPlugins() ?? [];
 
             if (empty($plugins)) {
                 $this->info("ℹ️ No plugins found in panel '{$panelKey}'.");
+
                 continue;
             }
 
@@ -373,15 +383,16 @@ class MooxInstaller extends Command
 
             if (empty($packagesToInstall)) {
                 $this->info("ℹ️ No composer packages detected for panel '{$panelKey}'.");
+
                 continue;
             }
 
-            $this->info("📦 Detected plugin packages:");
+            $this->info('📦 Detected plugin packages:');
             foreach ($packagesToInstall as $pkg) {
                 $this->line("   • {$pkg}");
             }
 
-            $providerPath = $panelInfo['path'] . '/' . ucfirst($panelKey) . 'PanelProvider.php';
+            $providerPath = $panelInfo['path'].'/'.ucfirst($panelKey).'PanelProvider.php';
 
             // --- Pakete installieren ---
             foreach ($packagesToInstall as $pkg) {
@@ -405,8 +416,8 @@ class MooxInstaller extends Command
 
         $this->newLine(2);
         $this->line(str_repeat('═', 60));
-        $this->info("🎉 All selected panels processed successfully!");
-        $this->info("✨ Moox Panels installed successfully. Enjoy!");
+        $this->info('🎉 All selected panels processed successfully!');
+        $this->info('✨ Moox Panels installed successfully. Enjoy!');
         $this->line(str_repeat('═', 60));
         $this->newLine();
     }
@@ -414,7 +425,7 @@ class MooxInstaller extends Command
     protected function getProviderClassesFromBootstrap(): array
     {
         $bootstrapProvidersPath = base_path('bootstrap/providers.php');
-        if (!file_exists($bootstrapProvidersPath)) {
+        if (! file_exists($bootstrapProvidersPath)) {
             return [];
         }
 
@@ -423,7 +434,7 @@ class MooxInstaller extends Command
             return [];
         }
 
-        if (!preg_match_all('/([\\\\A-Za-z0-9_]+)::class/', $content, $matches)) {
+        if (! preg_match_all('/([\\\\A-Za-z0-9_]+)::class/', $content, $matches)) {
             return [];
         }
 
@@ -434,6 +445,7 @@ class MooxInstaller extends Command
     {
         $classParts = explode('\\', $class);
         $name = end($classParts);
+
         return strtolower(str_replace('PanelProvider', '', $name));
     }
 }

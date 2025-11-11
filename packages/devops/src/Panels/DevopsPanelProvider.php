@@ -2,7 +2,6 @@
 
 namespace Moox\Devops\Panels;
 
-use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -61,5 +60,3 @@ class DevopsPanelProvider extends PanelProvider
             ]);
     }
 }
-
-
