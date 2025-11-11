@@ -17,17 +17,15 @@ trait InstallPackages
                 return $panel;
             }
             if (is_string($panel) && isset($this->panelMap[$panel]['path'])) {
-                $provider = $this->panelMap[$panel]['path'].'/'.ucfirst($panel).'PanelProvider.php';
-
+                $provider = $this->panelMap[$panel]['path'] . '/' . ucfirst($panel) . 'PanelProvider.php';
                 return $provider;
             }
-
             return null;
         }, $panelPaths)));
 
         $packageDescriptors = array_map(
-            fn (string $name) => ['name' => $name, 'composer' => $name],
-            array_filter($packageNames, fn ($p) => is_string($p) && $p !== '')
+            fn(string $name) => ['name' => $name, 'composer' => $name],
+            array_filter($packageNames, fn($p) => is_string($p) && $p !== '')
         );
 
         $changedAny = false;

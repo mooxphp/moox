@@ -3,27 +3,67 @@
 namespace Moox\Core\Services;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
+use function Laravel\Prompts\info;
 
 class PackageService
 {
     /**
      * Return migration paths (relative to project base) declared by the package API.
-     * Supports extra.moox.install.auto_migrate as string or array.
-     *
-     * @param  array{name?:string}  $package
-     * @return array<int,string>
      */
     public function getMigrations(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
         $auto = $meta['extra']['moox']['install']['auto_migrate'] ?? null;
         $paths = [];
+        $allSkipped = true;
+        $anyFound = false;
 
         foreach ($this->normalizeToArray($auto) as $rel) {
-            $full = $this->toProjectRelativePath($meta['baseDir'], $rel);
-            if ($full) {
-                $paths[] = $full;
+            $full = $this->toAbsolutePath($meta['baseDir'], $rel);
+            if (!$full || !File::isDirectory($full)) continue;
+
+            foreach (File::files($full) as $file) {
+                $anyFound = true;
+                $filename = $file->getFilename();
+
+                if (str_ends_with($filename, '.stub')) {
+                    $baseName = str_replace('.php.stub', '.php', $filename);
+                    $existing = collect(File::files(database_path('migrations')))
+                        ->first(fn($f) => str_ends_with($f->getFilename(), $baseName));
+
+                    if ($existing) {
+                        info("ℹ️ Migration '{$baseName}' already exists, skipped.");
+                        $paths[] = 'database/migrations/' . $existing->getFilename();
+                        continue;
+                    }
+
+                    $allSkipped = false;
+                    $newName = date('Y_m_d_His') . '_' . $baseName;
+                    $target = database_path('migrations/' . $newName);
+
+                    File::copy($file->getRealPath(), $target);
+                    $content = File::get($target);
+                    $content = str_replace(['{{ timestamp }}'], [date('Y_m_d_His')], $content);
+                    File::put($target, $content);
+
+                    $paths[] = 'database/migrations/' . $newName;
+                    info("✅ Migration '{$baseName}' was created.");
+                } elseif (str_ends_with($filename, '.php')) {
+                    $paths[] = $file->getRealPath();
+                    $allSkipped = false;
+                }
             }
+        }
+
+        if (!$anyFound) {
+            info("ℹ️ No migrations found.");
+            return [];
+        }
+
+        if ($allSkipped) {
+            info("ℹ️ All migrations already exist.");
+            return [];
         }
 
         return $paths;
@@ -41,12 +81,63 @@ class PackageService
     }
 
     /**
-     * Return config publish instructions. If the package exposes vendor publish tags
-     * via extra.moox.install.auto_publish, encode as special keys 'tag:<name>' => true.
-     *
-     * @param  array{name?:string}  $package
-     * @return array<string,string|true>
+     * Publish package configs only if they do not exist yet.
      */
+    public function publishConfigs(array $package): bool
+    {
+        $configs = $this->getConfig($package);
+        $updatedAny = false;
+
+        foreach ($configs as $path => $contentOrTrue) {
+            if (is_string($path) && str_starts_with($path, 'tag:')) {
+                $tag = substr($path, 4);
+                $meta = $this->readPackageMeta($package['name'] ?? '');
+                $packageConfigDir = rtrim($meta['baseDir'], '/') . '/config';
+                $filesInPackage = File::isDirectory($packageConfigDir) ? File::files($packageConfigDir) : [];
+
+                $allExist = true;
+                foreach ($filesInPackage as $file) {
+                    $targetPath = config_path($file->getFilename());
+                    if (!File::exists($targetPath)) {
+                        $allExist = false;
+                        break;
+                    }
+                }
+
+                if ($allExist) {
+                    info("ℹ️ Configs for package '{$package['name']}' already exist. Skipping tag '{$tag}'.");
+                    continue;
+                }
+
+                info("📦 Publishing vendor tag: {$tag}");
+                Artisan::call('vendor:publish', [
+                    '--tag' => $tag,
+                    '--force' => false,
+                    '--no-interaction' => true,
+                ]);
+                $updatedAny = true;
+                continue;
+            }
+
+            $publishPath = config_path(basename($path));
+            if (!File::exists($publishPath)) {
+                info("📄 Publishing new config: {$path}");
+                File::put($publishPath, $contentOrTrue);
+                $updatedAny = true;
+                continue;
+            }
+
+            $existingContent = File::get($publishPath);
+            if ($existingContent !== $contentOrTrue && confirm("⚠️ Config file {$path} has changes. Overwrite?", false)) {
+                info("🔄 Updating config file: {$path}");
+                File::put($publishPath, $contentOrTrue);
+                $updatedAny = true;
+            }
+        }
+
+        return $updatedAny;
+    }
+
     public function getConfig(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
@@ -55,21 +146,13 @@ class PackageService
 
         foreach ($this->normalizeToArray($auto) as $tagOrPath) {
             if (is_string($tagOrPath) && $tagOrPath !== '') {
-                // Treat as vendor publish tag
-                $result['tag:'.$tagOrPath] = true;
+                $result['tag:' . $tagOrPath] = true;
             }
         }
 
         return $result;
     }
 
-    /**
-     * Return seeder classes from extra.moox.install.seed.
-     * Accepts class names or file paths; file paths will be parsed for FQCN.
-     *
-     * @param  array{name?:string}  $package
-     * @return array<int,string> Fully-qualified class names
-     */
     public function getRequiredSeeders(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
@@ -77,54 +160,59 @@ class PackageService
         $classes = [];
 
         foreach ($this->normalizeToArray($seed) as $entry) {
-            if (! is_string($entry) || $entry === '') {
-                continue;
-            }
+            if (!is_string($entry) || $entry === '') continue;
 
             if (str_ends_with($entry, '.php')) {
                 $abs = $this->toAbsolutePath($meta['baseDir'], $entry);
                 $fqcn = $this->extractClassFromFile($abs) ?? null;
-                if ($fqcn) {
-                    $classes[] = $fqcn;
-                }
+                if ($fqcn) $classes[] = $fqcn;
             } else {
-                $classes[] = $entry; // assume already FQCN
+                $classes[] = $entry;
             }
         }
 
         return array_values(array_unique($classes));
     }
 
-    /**
-     * Optional: plugins read from package API in future. Return empty for now.
-     */
     public function getPlugins(array $package): array
     {
-        return [];
+        $meta = $this->readPackageMeta($package['name'] ?? '');
+        $baseDir = $meta['baseDir'];
+        $psr4 = $meta['autoload']['psr-4'] ?? [];
+
+        if (empty($psr4) || !is_array($psr4)) return [];
+
+        $baseNamespace = array_key_first($psr4);
+        $nsPath = rtrim($psr4[$baseNamespace] ?? 'src', '/');
+        $scanDir = rtrim($baseDir, '/') . '/' . $nsPath;
+
+        if (!File::isDirectory($scanDir)) return [];
+
+        $plugins = [];
+        $files = File::allFiles($scanDir);
+        foreach ($files as $file) {
+            $filename = $file->getFilename();
+            if (!str_ends_with($filename, 'Plugin.php')) continue;
+
+            $relativePath = str_replace($scanDir . '/', '', $file->getPathname());
+            $relativeClass = str_replace(['/', '.php'], ['\\', ''], $relativePath);
+            $fqcn = rtrim($baseNamespace, '\\') . '\\' . $relativeClass;
+
+            if (str_contains($fqcn, ' ')) continue;
+
+            $plugins[] = $fqcn;
+        }
+
+        return array_values(array_unique($plugins));
     }
 
-    /**
-     * Return shell commands to run after install (project root).
-     * Uses extra.moox.install.auto_run.
-     *
-     * @param  array{name?:string}  $package
-     * @return array<int,string>
-     */
     public function getAutoRunCommands(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
         $cmds = $meta['extra']['moox']['install']['auto_run'] ?? [];
-
-        return array_values(array_filter($this->normalizeToArray($cmds), fn ($c) => is_string($c) && $c !== ''));
+        return array_values(array_filter($this->normalizeToArray($cmds), fn($c) => is_string($c) && $c !== ''));
     }
 
-    /**
-     * Return shell commands to run after install (package dir).
-     * Uses extra.moox.install.auto_runhere.
-     *
-     * @param  array{name?:string}  $package
-     * @return array<int,array{cmd:string,cwd:string}>
-     */
     public function getAutoRunHereCommands(array $package): array
     {
         $meta = $this->readPackageMeta($package['name'] ?? '');
@@ -136,105 +224,75 @@ class PackageService
                 $list[] = ['cmd' => $cmd, 'cwd' => $baseDir];
             }
         }
-
         return $list;
     }
 
-    /**
-     * Helpers
-     */
     private function normalizeToArray(mixed $value): array
     {
-        if ($value === null || $value === false) {
-            return [];
-        }
-
+        if ($value === null || $value === false) return [];
         return is_array($value) ? $value : [$value];
     }
 
-    /**
-     * @return array{baseDir:string,extra:array}
-     */
     private function readPackageMeta(string $composerName): array
     {
         $baseDir = $this->resolvePackageBaseDir($composerName);
-        $composerJson = $baseDir ? $baseDir.'/composer.json' : null;
+        $composerJson = $baseDir ? $baseDir . '/composer.json' : null;
         $extra = [];
+        $autoload = [];
 
         if ($composerJson && File::exists($composerJson)) {
             $json = json_decode(File::get($composerJson), true) ?: [];
             $extra = $json['extra'] ?? [];
+            $autoload = $json['autoload'] ?? [];
         }
 
         return [
             'baseDir' => $baseDir ?: base_path(),
             'extra' => $extra,
+            'autoload' => $autoload,
         ];
     }
 
     private function resolvePackageBaseDir(string $composerName): ?string
     {
-        if ($composerName === '') {
-            return null;
-        }
+        if ($composerName === '') return null;
 
-        // Prefer local path repo under packages/<name>
         $short = str_contains($composerName, '/') ? explode('/', $composerName)[1] : $composerName;
-        $local = base_path('packages/'.$short);
-        if (\Illuminate\Support\Facades\File::isDirectory($local)) {
-            return $local;
-        }
+        $local = base_path('packages/' . $short);
+        if (File::isDirectory($local)) return $local;
 
-        // Fallback to vendor path
-        $vendor = base_path('vendor/'.$composerName);
-        if (\Illuminate\Support\Facades\File::isDirectory($vendor)) {
-            return $vendor;
-        }
+        $vendor = base_path('vendor/' . $composerName);
+        if (File::isDirectory($vendor)) return $vendor;
 
         return null;
     }
 
     private function toProjectRelativePath(?string $baseDir, string $relative): ?string
     {
-        if (! $baseDir) {
-            return null;
-        }
+        if (!$baseDir) return null;
         $abs = $this->toAbsolutePath($baseDir, $relative);
-        if (! $abs) {
-            return null;
-        }
+        if (!$abs) return null;
         $base = rtrim(base_path(), '/');
-
         return ltrim(str_replace($base, '', $abs), '/');
     }
 
     private function toAbsolutePath(string $baseDir, string $relative): ?string
     {
-        $path = rtrim($baseDir, '/').'/'.ltrim($relative, '/');
-
-        return $path;
+        return rtrim($baseDir, '/') . '/' . ltrim($relative, '/');
     }
 
     private function extractClassFromFile(string $filePath): ?string
     {
-        if (! File::exists($filePath)) {
-            return null;
-        }
+        if (!File::exists($filePath)) return null;
+
         $content = File::get($filePath);
         $namespace = null;
         $class = null;
 
-        if (preg_match('/^\s*namespace\s+([^;]+);/m', $content, $m)) {
-            $namespace = trim($m[1]);
-        }
-        if (preg_match('/^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)/m', $content, $m)) {
-            $class = trim($m[1]);
-        }
+        if (preg_match('/^\s*namespace\s+([^;]+);/m', $content, $m)) $namespace = trim($m[1]);
+        if (preg_match('/^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)/m', $content, $m)) $class = trim($m[1]);
 
-        if ($class) {
-            return $namespace ? ($namespace.'\\'.$class) : $class;
-        }
-
+        if ($class) return $namespace ? ($namespace . '\\' . $class) : $class;
         return null;
     }
 }

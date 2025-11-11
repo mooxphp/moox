@@ -20,15 +20,13 @@ trait CheckForMooxPackages
 
         if (array_key_exists($package, $packages)) {
             info("\n✅ Package '{$package}' is already installed. Skipping installation.\n");
-
             return true;
         }
 
         error("❌ {$package} is not installed. Please run: composer require {$package}");
 
-        if (! confirm("📦 Do you want to install {$package} now?", true)) {
+        if (!confirm("📦 Do you want to install {$package} now?", true)) {
             info('⛔ Installation cancelled.');
-
             return false;
         }
 
@@ -37,17 +35,15 @@ trait CheckForMooxPackages
         info("📦 Running: composer require {$package}:* ...");
         exec("composer require {$package}:* 2>&1", $output, $returnVar);
         foreach ($output as $line) {
-            info('    '.$line);
+            info("    " . $line);
         }
 
         if ($returnVar !== 0) {
             error("❌ Composer installation of {$package} failed. Please check your setup.");
-
             return false;
         }
 
         info("✅ {$package} successfully installed.");
-
         return true;
     }
 
