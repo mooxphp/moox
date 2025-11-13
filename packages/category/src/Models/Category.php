@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Localization\Models\Localization;
 use Moox\Media\Traits\HasMediaUsable;
 use Override;
 use Spatie\Image\Enums\Fit;
@@ -137,5 +138,26 @@ class Category extends BaseDraftModel implements HasMedia
             'media_usable_id',
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
+    }
+
+    public function getDisplayTitleAttribute(): string
+    {
+        $defaultLocalization = Localization::where('is_default', true)->first();
+        $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+        $currentLocale = request()->query('lang') ?? $mainLocale;
+
+        if (method_exists($this, 'translate')) {
+            $translation = $this->translate($currentLocale);
+            if ($translation && ! empty($translation->title)) {
+                return $translation->title;
+            }
+
+            $mainTranslation = $this->translate($mainLocale);
+            if ($mainTranslation && ! empty($mainTranslation->title)) {
+                return $mainTranslation->title.' ('.$mainLocale.')';
+            }
+        }
+
+        return $this->attributes['title'] ?? ('ID: '.$this->id);
     }
 }

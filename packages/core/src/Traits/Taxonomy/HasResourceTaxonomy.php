@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
+use Moox\Localization\Models\Localization;
 
 trait HasResourceTaxonomy
 {
@@ -49,8 +50,11 @@ trait HasResourceTaxonomy
             'searchable' => true,
             'createOptionForm' => $createFormClass::getSchema(),
             'createOptionUsing' => function (array $data, $livewire) use ($modelClass) {
-                $currentLocale = $livewire->lang ?? app()->getLocale();
-                $mainLocale = config('app.locale', 'en');
+                $defaultLocalization = Localization::where('is_default', true)->first();
+                $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+                $currentLocale = $livewire->lang
+                    ?? request()->query('lang')
+                    ?? $mainLocale;
 
                 if ($currentLocale !== $mainLocale) {
                     return __('core::core.taxonomy_creation_only_in_main_language');
@@ -67,7 +71,9 @@ trait HasResourceTaxonomy
                 $model = app($modelClass);
 
                 if (method_exists($model, 'createTranslation')) {
-                    $locale = $livewire->lang ?? app()->getLocale();
+                    $locale = $livewire->lang
+                        ?? request()->query('lang')
+                        ?? $mainLocale;
 
                     $translatableAttributes = property_exists($model, 'translatedAttributes') ? $model->translatedAttributes : [];
                     $translationData = array_intersect_key($data, array_flip($translatableAttributes));
@@ -98,15 +104,16 @@ trait HasResourceTaxonomy
             },
         ];
 
-        $currentLocale = request()->query('lang') ?? app()->getLocale();
-        $mainLocale = config('app.locale', 'en');
+        $defaultLocalization = Localization::where('is_default', true)->first();
+        $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+        $currentLocale = request()->query('lang') ?? $mainLocale;
         $canCreate = $currentLocale === $mainLocale;
 
         if ($isHierarchical) {
             $selectTree = SelectTree::make($taxonomy)
                 ->relationship(
                     relationship: $taxonomy,
-                    titleAttribute: 'title',
+                    titleAttribute: 'display_title',
                     parentAttribute: 'parent_id'
                 )
                 ->enableBranchNode()
@@ -124,18 +131,24 @@ trait HasResourceTaxonomy
         $select = Select::make($taxonomy)
             ->multiple()
             ->options(function () use ($modelClass) {
-                $locale = request()->query('lang') ?? app()->getLocale();
+                $defaultLocalization = Localization::where('is_default', true)->first();
+                $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+                $locale = request()->query('lang') ?? $mainLocale;
 
-                return app($modelClass)::with('translations')->get()->mapWithKeys(function ($item) use ($locale) {
+                return app($modelClass)::with('translations')->get()->mapWithKeys(function ($item) use ($locale, $mainLocale) {
                     if (method_exists($item, 'translations')) {
                         $translation = $item->translations()->where('locale', $locale)->first();
-
+                        $isFallback = false;
                         if (! $translation || ! $translation->title) {
-                            $mainLocale = config('app.locale', 'en');
                             $mainTranslation = $item->translations()->where('locale', $mainLocale)->first();
                             $title = $mainTranslation && $mainTranslation->title ? $mainTranslation->title : 'ID: '.$item->id;
+                            $isFallback = true;
                         } else {
                             $title = $translation->title;
+                        }
+
+                        if ($isFallback) {
+                            $title = $title.' ('.$mainLocale.')';
                         }
 
                         return [$item->id => $title];
@@ -146,7 +159,9 @@ trait HasResourceTaxonomy
             })
             ->getSearchResultsUsing(
                 function (string $search) use ($modelClass) {
-                    $locale = request()->query('lang') ?? app()->getLocale();
+                    $defaultLocalization = Localization::where('is_default', true)->first();
+                    $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+                    $locale = request()->query('lang') ?? $mainLocale;
 
                     return app($modelClass)::query()
                         ->when(method_exists($modelClass, 'with'), fn ($query) => $query->with('translations'))
@@ -160,16 +175,20 @@ trait HasResourceTaxonomy
                         })
                         ->limit(50)
                         ->get()
-                        ->mapWithKeys(function ($item) use ($locale) {
+                        ->mapWithKeys(function ($item) use ($locale, $mainLocale) {
                             if (method_exists($item, 'translate')) {
                                 $translation = $item->translate($locale);
-
+                                $isFallback = false;
                                 if (! $translation || ! $translation->title) {
-                                    $mainLocale = config('app.locale', 'en');
                                     $mainTranslation = $item->translate($mainLocale);
                                     $title = $mainTranslation && $mainTranslation->title ? $mainTranslation->title : 'ID: '.$item->id;
+                                    $isFallback = true;
                                 } else {
                                     $title = $translation->title;
+                                }
+
+                                if ($isFallback) {
+                                    $title = $title.' ('.$mainLocale.')';
                                 }
 
                                 return [$item->id => $title];
@@ -211,7 +230,9 @@ trait HasResourceTaxonomy
                 ->multiple()
                 ->options(
                     function () use ($taxonomyModel, $pivotTable, $foreignKey, $relatedKey, $resourceTable) {
-                        $locale = request()->query('lang') ?? app()->getLocale();
+                        $defaultLocalization = Localization::where('is_default', true)->first();
+                        $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+                        $locale = request()->query('lang') ?? $mainLocale;
 
                         $usedTaxonomyIds = DB::table($pivotTable)
                             ->join($resourceTable, $pivotTable.'.'.$foreignKey, '=', $resourceTable.'.id')
@@ -228,16 +249,20 @@ trait HasResourceTaxonomy
                             ->whereIn('id', $usedTaxonomyIds)
                             ->when(method_exists($taxonomyModel, 'with'), fn ($query) => $query->with('translations'))
                             ->get()
-                            ->mapWithKeys(function ($item) use ($locale) {
+                            ->mapWithKeys(function ($item) use ($locale, $mainLocale) {
                                 if (method_exists($item, 'translate')) {
                                     $translation = $item->translate($locale);
-
+                                    $isFallback = false;
                                     if (! $translation || ! $translation->title) {
-                                        $mainLocale = config('app.locale', 'en');
                                         $mainTranslation = $item->translate($mainLocale);
                                         $title = $mainTranslation && $mainTranslation->title ? $mainTranslation->title : 'ID: '.$item->id;
+                                        $isFallback = true;
                                     } else {
                                         $title = $translation->title;
+                                    }
+
+                                    if ($isFallback) {
+                                        $title = $title.' ('.$mainLocale.')';
                                     }
 
                                     return [$item->id => $title];
@@ -280,23 +305,46 @@ trait HasResourceTaxonomy
                     $model = app($modelClass);
                     $modelTable = $model->getTable();
 
-                    $currentLocale = request()->get('lang') ?? app()->getLocale();
+                    $defaultLocalization = Localization::where('is_default', true)->first();
+                    $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+                    $currentLocale = request()->get('lang') ?? $mainLocale;
 
-                    return DB::table($table)
+                    $items = DB::table($table)
                         ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
                         ->where(sprintf('%s.%s', $table, $foreignKey), $record->id)
-                        ->when(method_exists($model, 'translations'), function ($query) use ($modelTable, $modelClass, $currentLocale) {
-                            $translationTable = strtolower(class_basename($modelClass)).'_translations';
-
-                            return $query->leftJoin($translationTable, function ($join) use ($modelTable, $translationTable, $currentLocale, $modelClass) {
-                                $foreignKeyColumn = strtolower(class_basename($modelClass)).'_id';
-                                $join->on($translationTable.'.'.$foreignKeyColumn, '=', $modelTable.'.id')
-                                    ->where($translationTable.'.locale', '=', $currentLocale);
-                            })->pluck($translationTable.'.title');
-                        }, function ($query) use ($modelTable) {
-                            return $query->pluck($modelTable.'.title');
-                        })
+                        ->select($modelTable.'.id')
+                        ->pluck('id')
                         ->toArray();
+
+                    if (! method_exists($model, 'translations')) {
+                        return DB::table($table)
+                            ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
+                            ->where(sprintf('%s.%s', $table, $foreignKey), $record->id)
+                            ->pluck($modelTable.'.title')
+                            ->toArray();
+                    }
+
+                    // For translatable models, build labels with fallback and (locale) suffix when needed
+                    $labels = [];
+                    foreach ($items as $itemId) {
+                        $entity = app($modelClass)::with('translations')->find($itemId);
+                        if (! $entity) {
+                            continue;
+                        }
+
+                        $translation = $entity->translations->firstWhere('locale', $currentLocale);
+                        if ($translation && $translation->title) {
+                            $labels[] = $translation->title;
+
+                            continue;
+                        }
+
+                        $mainTranslation = $entity->translations->firstWhere('locale', $mainLocale);
+                        $title = $mainTranslation && $mainTranslation->title ? $mainTranslation->title : 'ID: '.$entity->id;
+                        $labels[] = $title.' ('.$mainLocale.')';
+                    }
+
+                    return $labels;
                 })
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->separator(',')

@@ -28,7 +28,7 @@ jobs:
           touch database/database.sqlite
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-artifact
           path: app-artifact.tar.gz
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Download App Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: app-artifact
           path: .
@@ -94,7 +94,7 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: Upload Clover
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: clover-report-${{ matrix.php }}
           path: clover.xml
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Coverage Report
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: clover-report-8.4
 
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Coverage Report
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: clover-report-8.4
 

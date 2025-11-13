@@ -49,7 +49,7 @@ class TaxonomyCreateForm
             SelectTree::make('parent_id')
                 ->relationship(
                     relationship: 'parent',
-                    titleAttribute: 'title',
+                    titleAttribute: 'display_title',
                     parentAttribute: 'parent_id',
                     modifyQueryUsing: fn (Builder $query, $get) => $query->where('id', '!=', $get('id'))
                 )

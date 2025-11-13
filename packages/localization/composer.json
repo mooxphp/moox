@@ -17,13 +17,15 @@
         }
     ],
     "require": {
-        "moox/core": "self.version",
+        "moox/core": "*",
         "moox/data": "*",
-        "astrotomic/laravel-translatable": "*"
+        "astrotomic/laravel-translatable": "^11.16"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Localization\\": "src"
+            "Moox\\Localization\\": "src",
+            "Moox\\Localization\\Database\\Factories\\": "database/factories",
+            "Moox\\Localization\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {

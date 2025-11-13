@@ -48,9 +48,9 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
             'unpublished_by_type',
 
             // Soft delete and restoration fields
-            'deleted_at',
             'deleted_by_id',
             'deleted_by_type',
+
             'restored_at',
             'restored_by_id',
             'restored_by_type',
@@ -93,6 +93,10 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
             $model->ulid = (string) Str::ulid();
+
+            if (empty($model->status)) {
+                $model->status = 'draft';
+            }
         });
 
         static::deleted(function ($model) {
@@ -285,15 +289,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         return $this->translations->pluck('locale')->toArray();
     }
 
-    public function hasTranslation(?string $locale = null): bool
-    {
-        if ($locale === null) {
-            $locale = request()->query('lang') ?? app()->getLocale();
-        }
-
-        return $this->translations->contains('locale', $locale);
-    }
-
     public function createTranslation(string $locale, array $attributes = []): void
     {
         $translation = $this->translateOrNew($locale);
@@ -305,11 +300,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         }
 
         $this->translations()->save($translation);
-    }
-
-    public function deleteTranslation(string $locale): bool
-    {
-        return $this->translations()->where('locale', $locale)->delete();
     }
 
     /**

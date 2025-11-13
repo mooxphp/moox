@@ -20,7 +20,7 @@ return new class extends Migration {
 
             $table->string('title');
             $table->string('slug')->unique();
-            $table->string('locale_variant')->nullable();
+            $table->string('locale_variant')->required();
             $table->boolean('is_active_admin')->default(false);
             $table->boolean('is_active_frontend')->default(false);
             $table->boolean('is_default')->default(false);

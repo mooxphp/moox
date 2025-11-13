@@ -152,4 +152,8 @@ return [
     'gallery' => 'Galerie',
     'ulid' => 'ULID',
     'slug_unique' => 'Dieser Slug ist bereits vergeben.',
+    'no_title_available' => 'Kein Titel verfügbar',
+    'translation_create' => 'Übersetzung erstellen',
+    'publish_main_entry' => 'Haupteintrag veröffentlichen',
+    'publish_main_entry_description' => 'Diese Aktion veröffentlicht den Haupteintrag.',
 ];

@@ -3,11 +3,11 @@
 namespace Moox\Draft\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Draft\Database\Factories\DraftFactory;
 use Moox\Media\Traits\HasMediaUsable;
-use Moox\User\Models\User;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -35,7 +35,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
+    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft
@@ -55,7 +55,6 @@ class Draft extends BaseDraftModel implements HasMedia
 
     protected $fillable = [
         'is_active',
-        'data',
         'image',
         'type',
         'color',
@@ -68,7 +67,6 @@ class Draft extends BaseDraftModel implements HasMedia
 
     protected $casts = [
         'is_active' => 'boolean',
-        'data' => 'json',
         'image' => 'json',
         'due_at' => 'datetime',
         'uuid' => 'string',
@@ -96,5 +94,10 @@ class Draft extends BaseDraftModel implements HasMedia
             'media_usable_id',
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
+    }
+
+    protected static function newFactory()
+    {
+        return DraftFactory::new();
     }
 }

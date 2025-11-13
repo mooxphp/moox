@@ -35,8 +35,13 @@ class ListMedia extends BaseListDrafts
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
 
-        $defaultLang = Localization::where('is_default', true)
-            ->first()?->language?->alpha2 ?? config('app.locale');
+        $defaultLocale = Localization::where('is_default', true)
+            ->where('is_active_admin', true)
+            ->first();
+
+        $defaultLang = $defaultLocale
+            ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
+            : config('app.locale');
 
         $this->lang = request()->query('lang', $defaultLang);
     }

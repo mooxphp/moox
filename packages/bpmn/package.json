@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "bpmn-js": "^18.7.0"
+  },
+  "devDependencies": {
+    "laravel-vite-plugin": "^2.0.1",
+    "vite": "^7.1.7"
+  }
+}

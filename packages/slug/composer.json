@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "moox/core": "self.version"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
@@ -29,11 +29,43 @@
             "providers": [
                 "Moox\\Slug\\SlugServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Slug",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/SlugSeeder.php",
+                "auto_publish": "moox-slug-config",
+                "auto_entities": {
+                    "Category": true
+                },
+                "auto_class": {
+                    "Category": "Moox\\Slug\\Slug"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-slug-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-slug-config"
+            }
         }
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {

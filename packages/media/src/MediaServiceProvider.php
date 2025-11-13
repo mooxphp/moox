@@ -8,10 +8,12 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
 use Moox\Media\Policies\MediaPolicy;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
@@ -27,7 +29,7 @@ class MediaServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews('media-picker')
             ->hasTranslations()
-            ->hasMigrations('create_media_table', 'create_media_translations_table', 'create_media_collections_table', 'create_media_usables_table')
+            ->hasMigrations('create_media_collections_table', 'create_media_collection_translations', 'create_media_table', 'create_media_translations_table', 'create_media_usables_table')
             ->hasCommands(InstallCommand::class)
             ->hasAssets();
     }
@@ -52,5 +54,19 @@ class MediaServiceProvider extends PackageServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMediaCollections::class
         );
+
+        $this->app->booted(function () {
+            if (app()->runningInConsole()) {
+                return;
+            }
+
+            try {
+                if (Schema::hasTable('media_collections')) {
+                    MediaCollection::ensureUncategorizedExists();
+                }
+            } catch (\Exception $e) {
+                // Silently ignore - table might not exist yet
+            }
+        });
     }
 }
