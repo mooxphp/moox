@@ -69,13 +69,13 @@ class PackagesResource extends BaseItemResource
                             Section::make()
                                 ->schema([
                                     TextInput::make('title')
-                                        ->label('Title'),
+                                        ->label(__('packages::fields.title')),
                                     TextInput::make('name')
-                                        ->label('Name'),
+                                        ->label(__('packages::fields.name')),
                                     TextInput::make('vendor')
-                                        ->label('Vendor'),
+                                        ->label(__('packages::fields.vendor')),
                                     Select::make('package_type')
-                                        ->label('Package Type')
+                                        ->label(__('packages::fields.package_type'))
                                         ->options([
                                             'moox_package' => 'Moox Package',
                                             'moox_compatible' => 'Moox Compatible',
@@ -85,18 +85,18 @@ class PackagesResource extends BaseItemResource
                                             'php_package' => 'PHP Package',
                                         ]),
                                     Toggle::make('is_theme')
-                                        ->label('Is Theme'),
+                                        ->label(__('packages::fields.is_theme')),
                                     TextInput::make('version_installed')
-                                        ->label('Version Installed'),
+                                        ->label(__('packages::fields.version_installed')),
                                     Select::make('install_status')
-                                        ->label('Install Status')
+                                        ->label(__('packages::fields.install_status'))
                                         ->options([
                                             'available' => 'Available',
                                             'installed' => 'Installed',
                                             'active' => 'Active',
                                         ]),
                                     Select::make('update_status')
-                                        ->label('Update Status')
+                                        ->label(__('packages::fields.update_status'))
                                         ->options([
                                             'up-to-date' => 'Up to Date',
                                             'update-available' => 'Update Available',
@@ -104,13 +104,13 @@ class PackagesResource extends BaseItemResource
                                             'update-failed' => 'Update Failed',
                                         ]),
                                     Toggle::make('auto_update')
-                                        ->label('Auto Update'),
+                                        ->label(__('packages::fields.auto_update')),
                                     DateTimePicker::make('update_scheduled_at')
-                                        ->label('Update Scheduled At'),
+                                        ->label(__('packages::fields.update_scheduled_at')),
                                     TextInput::make('installed_by_type')
-                                        ->label('Installed By Type'),
+                                        ->label(__('packages::fields.installed_by_type')),
                                     KeyValue::make('activation_steps')
-                                        ->label('Activation Steps')
+                                        ->label(__('packages::fields.activation_steps'))
                                         ->keyLabel('Step')
                                         ->valueLabel('Description')
                                         ->addActionLabel('Add Step')
@@ -134,34 +134,35 @@ class PackagesResource extends BaseItemResource
                             Section::make('')
                                 ->schema([
                                     CopyableField::make('id')
-                                        ->label('ID')
-                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
+                                        ->label(__('packages::fields.id'))
+                                        ->defaultValue(fn($record): string => $record->id ?? ''),
+
 
                                     Section::make('')
                                         ->schema([
-                                            TextEntry::make('created_at')
-                                                ->label('Created')
-                                                ->state(fn ($record): string => $record->created_at ?
-                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
+                                            Placeholder::make('created_at')
+                                                ->label(__('packages::fields.created_at'))
+                                                ->content(fn($record): string => $record->created_at ?
+                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('installed_at')
-                                                ->label('Installed At')
-                                                ->state(fn ($record): string => $record->installed_at ?
-                                                    $record->installed_at.' - '.$record->installed_at->diffForHumans() : '')
+                                            Placeholder::make('installed_at')
+                                                ->label(__('packages::fields.installed_at'))
+                                                ->content(fn($record): string => $record->installed_at ?
+                                                    $record->installed_at . ' - ' . $record->installed_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('installed_by')
-                                                ->label('Installed By')
-                                                ->state(fn ($record): string => $record->installed_by ?
+                                            Placeholder::make('installed_by')
+                                                ->label(__('packages::fields.installed_by'))
+                                                ->content(fn($record): string => $record->installed_by ?
                                                     $record->installed_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('updated_at')
-                                                ->label('Updated At')
-                                                ->state(fn ($record): string => $record->updated_at ?
-                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
+                                            Placeholder::make('updated_at')
+                                                ->label(__('packages::fields.updated_at'))
+                                                ->content(fn($record): string => $record->updated_at ?
+                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
-                                            TextEntry::make('updated_by')
-                                                ->label('Updated By')
-                                                ->state(fn ($record): string => $record->updated_by ?
+                                            Placeholder::make('updated_by')
+                                                ->label(__('packages::fields.updated_by'))
+                                                ->content(fn($record): string => $record->updated_by ?
                                                     $record->updated_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),
@@ -182,33 +183,40 @@ class PackagesResource extends BaseItemResource
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label(__('packages::fields.title'))
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('name')
-                    ->label('Packagist')
-                    ->formatStateUsing(fn ($record) => "{$record->vendor}/{$record->name}")
+                    ->label(__('packages::fields.packagist'))
+                    ->formatStateUsing(fn($record) => "{$record->vendor}/{$record->name}")
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('package_type')
+                    ->label(__('packages::fields.package_type'))
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state): string => ucwords(str_replace('_', ' ', $state))),
                 TextColumn::make('version_installed')
+                    ->label(__('packages::fields.version_installed'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('install_status')
+                    ->label(__('packages::fields.install_status'))
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('update_status')
+                    ->label(__('packages::fields.update_status'))
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn ($state): string => ucwords(str_replace('-', ' ', $state))),
                 ToggleColumn::make('auto_update')
+                    ->label(__('packages::fields.auto_update'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('updated_at')
+                    ->label(__('packages::fields.updated_at'))
                     ->searchable()
                     ->sortable(),
             ])
@@ -218,16 +226,16 @@ class PackagesResource extends BaseItemResource
             ])
             ->filters([
                 SelectFilter::make('install_status')
-                    ->label('Install Status')
-                    ->placeholder(__('core::core.filter').' Install Status')
+                    ->label(__('packages::fields.install_status'))
+                    ->placeholder(__('core::core.filter') . ' Install Status')
                     ->options(['available' => 'Available', 'installed' => 'Installed', 'active' => 'Active']),
                 SelectFilter::make('package_type')
-                    ->label('Package Type')
-                    ->placeholder(__('core::core.filter').' Package Type')
+                    ->label(__('packages::fields.package_type'))
+                    ->placeholder(__('core::core.filter') . ' Package Type')
                     ->options(['moox_package' => 'Moox Package', 'moox_compatible' => 'Moox Compatible', 'moox_dependency' => 'Moox Dependency', 'filament_plugin' => 'Filament Plugin', 'laravel_package' => 'Laravel Package', 'php_package' => 'PHP Package']),
                 SelectFilter::make('update_status')
-                    ->label('Update Status')
-                    ->placeholder(__('core::core.filter').' Update Status')
+                    ->label(__('packages::fields.update_status'))
+                    ->placeholder(__('core::core.filter') . ' Update Status')
                     ->options(['up-to-date' => 'Up to Date', 'update-available' => 'Update Available', 'update-scheduled' => 'Update Scheduled', 'update-failed' => 'Update Failed']),
             ]);
     }
