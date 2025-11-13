@@ -14,7 +14,7 @@ trait CheckForFilament
 {
     protected string $providerPath = 'app/Providers/Filament/AdminPanelProvider.php';
 
-    public function checkForFilament(): bool
+    public function checkForFilament(bool $silent = false): bool
     {
         if (! class_exists(\Filament\PanelProvider::class, false)) {
             $panelProviderPath = base_path('vendor/filament/filament/src/PanelProvider.php');
@@ -28,10 +28,14 @@ trait CheckForFilament
                     return false;
                 }
 
-                info('📦 Running: composer require filament/filament...');
+                if (! $silent) {
+                    info('📦 Running: composer require filament/filament...');
+                }
                 exec('composer require filament/filament:* 2>&1', $output, $returnVar);
                 foreach ($output as $line) {
-                    info('    '.$line);
+                    if (! $silent) {
+                        info('    '.$line);
+                    }
                 }
 
                 if ($returnVar !== 0) {
@@ -40,15 +44,24 @@ trait CheckForFilament
                     return false;
                 }
 
-                info('✅ filament/filament successfully installed.');
+                if (! $silent) {
+                    info('✅ filament/filament successfully installed.');
+                }
             } else {
-                info('✅ Filament is already installed.');
+                if (! $silent) {
+                    info('✅ Filament is already installed.');
+                }
             }
         } else {
-            info('✅ Filament is already installed.');
+            if (! $silent) {
+                info('✅ Filament is already installed.');
+            }
         }
 
-        $this->analyzeFilamentEnvironment();
+        // Only analyze in panel generation flow. The packages flow should stay clean.
+        if (! $silent && method_exists($this, 'isPanelGenerationMode') && $this->isPanelGenerationMode()) {
+            $this->analyzeFilamentEnvironment();
+        }
 
         return true;
     }

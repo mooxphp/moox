@@ -42,26 +42,8 @@ trait CheckOrCreateFilamentUser
             return;
         }
 
-        alert("🚨 No users found in '{$table}'. Let's create the first Filament user.");
+        alert("🚨 No users found. Let's create the first user");
         $this->createFilamentUser($userModel);
-    }
-
-    public function hasFilamentUsers(): bool
-    {
-        /** @var class-string<Model> $userModel */
-        $userModel = Config::get('filament.auth.providers.users.model') ?? \App\Models\User::class;
-
-        if (! class_exists($userModel)) {
-            return false;
-        }
-
-        $table = (new $userModel)->getTable();
-
-        if (! Schema::hasTable($table)) {
-            return false;
-        }
-
-        return $userModel::count() > 0;
     }
 
     protected function createFilamentUser(string $userModel): void
@@ -79,5 +61,55 @@ trait CheckOrCreateFilamentUser
         ]);
 
         info("✅ User '{$user->email}' created successfully.");
+    }
+
+    public function checkOrCreateWpUser(): void
+    {
+        $wpUserModel = \Moox\Press\Models\WpUser::class;
+
+        if (! class_exists($wpUserModel)) {
+            warning("⚠️ WP User model '{$wpUserModel}' does not exist.");
+
+            return;
+        }
+
+        $table = (new $wpUserModel)->getTable();
+
+        info("🔍 Checking WP user setup for Press Panel [Model: {$wpUserModel}]...");
+
+        if (! Schema::hasTable($table)) {
+            warning("⚠️ Table '{$table}' not found. Did you run migrations?");
+
+            return;
+        }
+
+        if ($wpUserModel::count() > 0) {
+            info("✅ Found existing WP users in '{$table}'. Skipping user creation.");
+
+            return;
+        }
+
+        alert("🚨 No WP users found. Let's create the first WP user");
+        $this->createWpUser($wpUserModel);
+    }
+
+    protected function createWpUser(string $wpUserModel): void
+    {
+        info("🧑 Creating new WP user for model '{$wpUserModel}'...");
+
+        $login = text('Enter login', default: 'wpadmin');
+        $email = text('Enter email', default: 'wpadmin@example.com');
+        $password = password('Enter password', required: true);
+        $displayName = text('Enter display name', default: $login);
+
+        $user = $wpUserModel::create([
+            'user_login' => $login,
+            'user_email' => $email,
+            'user_pass' => $password,
+            'display_name' => $displayName,
+            'user_registered' => now(),
+        ]);
+
+        info("✅ WP user '{$user->user_login}' created successfully.");
     }
 }
