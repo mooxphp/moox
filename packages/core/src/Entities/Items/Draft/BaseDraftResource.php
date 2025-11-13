@@ -186,15 +186,15 @@ class BaseDraftResource extends BaseResource
         return TextColumn::make('title')
             ->label('Title')
             ->searchable(true, function ($query, $search, $livewire) {
-                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
+                $currentLang = static::resolveCurrentLang($livewire);
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
                         ->where('title', 'like', '%'.$search.'%');
                 });
             })
-            ->sortable()
+            // ->sortable()
             ->extraAttributes(function ($record, $livewire) {
-                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
+                $currentLang = static::resolveCurrentLang($livewire);
 
                 return [
                     'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('title')->exists()
@@ -203,10 +203,9 @@ class BaseDraftResource extends BaseResource
                 ];
             })
             ->getStateUsing(function ($record, $livewire) {
-                $currentLang = $livewire->lang ?? request()->get('lang', app()->getLocale());
+                $currentLang = static::resolveCurrentLang($livewire);
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
-
                 if ($translation && $translation->title) {
                     return $translation->title;
                 }
@@ -232,20 +231,16 @@ class BaseDraftResource extends BaseResource
     {
         return TextColumn::make('slug')
             ->label('Slug')
-            ->searchable(true, function ($query, $search) {
-                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
-                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
-                $currentLang = request()->get('lang', $defaultLang);
+            ->searchable(true, function ($query, $search, $livewire) {
+                $currentLang = static::resolveCurrentLang($livewire);
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
                         ->where('slug', 'like', '%'.$search.'%');
                 });
             })
-            ->sortable()
-            ->getStateUsing(function ($record) {
-                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
-                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
-                $currentLang = request()->get('lang', $defaultLang);
+            // ->sortable()
+            ->getStateUsing(function ($record, $livewire) {
+                $currentLang = static::resolveCurrentLang($livewire);
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
                 return $translation?->slug ?? '';
@@ -482,10 +477,8 @@ class BaseDraftResource extends BaseResource
 
                 return static::getStatusColor(strtolower($value));
             })
-            ->getStateUsing(function ($record) {
-                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
-                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
-                $currentLang = request()->get('lang', $defaultLang);
+            ->getStateUsing(function ($record, $livewire) {
+                $currentLang = static::resolveCurrentLang($livewire);
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
@@ -499,5 +492,29 @@ class BaseDraftResource extends BaseResource
 
                 return $translation->translation_status ?? TranslationStatus::DRAFT;
             });
+    }
+
+    protected static function resolveCurrentLang($livewire = null): string
+    {
+        // 1) Livewire property on page/resource (e.g., forms)
+        if ($livewire && property_exists($livewire, 'lang') && $livewire->lang) {
+            return $livewire->lang;
+        }
+
+        // 2) Filament table filter value for locale, if present
+        if ($livewire && property_exists($livewire, 'tableFilters') && ! empty($livewire->tableFilters['locale']['value'] ?? null)) {
+            return (string) $livewire->tableFilters['locale']['value'];
+        }
+
+        // 3) Request parameter 'lang' (URL switcher)
+        $requestLang = request()->query('lang') ?? request()->get('lang');
+        if ($requestLang) {
+            return (string) $requestLang;
+        }
+
+        // 4) Fallback to configured default localization or app locale
+        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+
+        return $defaultLocalization?->locale_variant ?? app()->getLocale();
     }
 }

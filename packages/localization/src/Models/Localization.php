@@ -155,6 +155,12 @@ class Localization extends Model
      */
     public function getDisplayFlagAttribute(): string
     {
+        $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
+
+        if (in_array($this->language->alpha2, $languagesWithOwnFlag)) {
+            return $this->language->flag_icon;
+        }
+
         $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
 
         if (! $showRegionalVariants) {
@@ -179,6 +185,12 @@ class Localization extends Model
      */
     public function getTableFlagAttribute(): string
     {
+        $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
+
+        if (in_array($this->language->alpha2, $languagesWithOwnFlag)) {
+            return $this->language->flag_icon;
+        }
+
         $locale = $this->locale;
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
@@ -205,59 +217,5 @@ class Localization extends Model
         $publicPath = public_path('vendor/flag-icons-circle/'.$flagCode.'.svg');
 
         return file_exists($publicPath);
-    }
-
-    /**
-     * Get country flag for the language
-     */
-    private function getCountryFlag(): string
-    {
-        // Extended mapping for languages to their primary country
-        $languageToCountry = [
-            'de' => 'de',
-            'en' => 'gb',
-            'fr' => 'fr',
-            'es' => 'es',
-            'it' => 'it',
-            'pt' => 'pt',
-            'ru' => 'ru',
-            'zh' => 'cn',
-            'ja' => 'jp',
-            'ko' => 'kr',
-            'ar' => 'sa',
-            'cs' => 'cz', // Czech -> Czech Republic
-            'sk' => 'sk', // Slovak -> Slovakia
-            'sl' => 'si', // Slovenian -> Slovenia
-            'hr' => 'hr', // Croatian -> Croatia
-            'sr' => 'rs', // Serbian -> Serbia
-            'bs' => 'ba', // Bosnian -> Bosnia and Herzegovina
-            'mk' => 'mk', // Macedonian -> North Macedonia
-            'bg' => 'bg', // Bulgarian -> Bulgaria
-            'ro' => 'ro', // Romanian -> Romania
-            'hu' => 'hu', // Hungarian -> Hungary
-            'pl' => 'pl', // Polish -> Poland
-            'ca' => 'es', // Catalan -> Spain
-            'eu' => 'es', // Basque -> Spain
-            'gl' => 'es', // Galician -> Spain
-            'cy' => 'gb', // Welsh -> United Kingdom
-            'br' => 'fr', // Breton -> France
-            'co' => 'fr', // Corsican -> France
-            'ku' => 'iq', // Kurdish -> Iraq
-            'bo' => 'cn', // Tibetan -> China
-            'yue' => 'cn', // Cantonese -> China
-            'nan' => 'tw', // Hokkien -> Taiwan
-            'hak' => 'cn', // Hakka -> China
-            'wuu' => 'cn', // Wu -> China
-            'tzm' => 'ma', // Berber -> Morocco
-            'ber' => 'ma', // Berber -> Morocco
-        ];
-
-        $countryCode = $languageToCountry[$this->language->alpha2] ?? $this->language->alpha2;
-
-        if ($this->flagExists($countryCode)) {
-            return 'flag-'.$countryCode;
-        }
-
-        return $this->language->flag_icon;
     }
 }

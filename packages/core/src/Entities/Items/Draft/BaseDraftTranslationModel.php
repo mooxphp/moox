@@ -5,6 +5,7 @@ namespace Moox\Core\Entities\Items\Draft;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 abstract class BaseDraftTranslationModel extends Model
 {
@@ -35,7 +36,6 @@ abstract class BaseDraftTranslationModel extends Model
             'unpublished_by_type',
 
             // Soft delete and restoration fields
-            'deleted_at',
             'deleted_by_id',
             'deleted_by_type',
             'restored_at',
@@ -63,7 +63,6 @@ abstract class BaseDraftTranslationModel extends Model
             'published_at' => 'datetime',
             'to_unpublish_at' => 'datetime',
             'unpublished_at' => 'datetime',
-            'deleted_at' => 'datetime',
             'restored_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -110,16 +109,117 @@ abstract class BaseDraftTranslationModel extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            if (empty($model->translation_status)) {
+                $model->translation_status = 'draft';
+            }
+
             if (auth()->check()) {
                 $model->createdBy()->associate(auth()->user());
             }
         });
 
-        static::updating(function ($model) {
-            if (auth()->check()) {
-                $model->updatedBy()->associate(auth()->user());
-            }
+        static::deleted(function ($model) {
+            $model->deleted_by_id = auth()->user()->id;
+            $model->deleted_by_type = auth()->user()->getMorphClass();
         });
+
+        static::updating(function ($model) {
+            $model->updatedBy()->associate(auth()->user());
+        });
+
+        static::saved(function ($model) {
+            DB::afterCommit(function () use ($model) {
+                $model->checkAndUpdateMainEntryStatus();
+            });
+        });
+    }
+
+    /**
+     * Check and update main entry status based on translation statuses
+     */
+    protected function checkAndUpdateMainEntryStatus(): void
+    {
+        $mainEntry = $this->getMainEntry();
+
+        if (! $mainEntry) {
+            return;
+        }
+
+        $config = config('core.draft_publish_logic', [
+            'auto_publish_single' => true,
+            'prompt_when_all_published' => true,
+            'prompt_when_any_published' => false,
+        ]);
+
+        $mainEntry->load('translations');
+        $allTranslations = $mainEntry->translations;
+        $translationCount = $allTranslations->count();
+
+        $publishedCount = $allTranslations->where('translation_status', 'published')->count();
+
+        if ($translationCount === 1 && $config['auto_publish_single']) {
+            $singleTranslation = $allTranslations->first();
+            $newStatus = null;
+
+            if ($singleTranslation->translation_status === 'published') {
+                $newStatus = 'published';
+            } elseif (in_array($singleTranslation->translation_status, ['draft', 'waiting', 'private', 'scheduled'])) {
+                $newStatus = $singleTranslation->translation_status;
+            }
+
+            if ($newStatus && $mainEntry->status !== $newStatus) {
+                $mainEntry->status = $newStatus;
+                $mainEntry->timestamps = false; // Prevent updated_at from changing
+                $mainEntry->save();
+                $mainEntry->timestamps = true;
+            }
+        }
+
+        if ($translationCount > 1) {
+            if ($publishedCount === 0 && $mainEntry->status === 'published') {
+                $mainEntry->status = 'draft';
+                $mainEntry->timestamps = false;
+                $mainEntry->save();
+                $mainEntry->timestamps = true;
+            }
+
+            if ($mainEntry->status === 'published' && $publishedCount < $translationCount) {
+                $unpublishedStatuses = $allTranslations
+                    ->where('translation_status', '!=', 'published')
+                    ->pluck('translation_status')
+                    ->countBy()
+                    ->sortDesc();
+
+                $newStatus = $unpublishedStatuses->keys()->first() ?? 'draft';
+                if ($mainEntry->status !== $newStatus) {
+                    $mainEntry->status = $newStatus;
+                    $mainEntry->timestamps = false;
+                    $mainEntry->save();
+                    $mainEntry->timestamps = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the main entry (parent model) for this translation
+     * Uses the translatable relation that already exists
+     */
+    protected function getMainEntry()
+    {
+        $tableName = $this->getTable();
+        $foreignKey = str_replace('_translations', '_id', $tableName);
+
+        if (isset($this->attributes[$foreignKey]) && $this->attributes[$foreignKey]) {
+            $parentClass = get_class($this);
+            $parentClass = str_replace('Translation', '', $parentClass);
+
+            if (class_exists($parentClass)) {
+                return $parentClass::find($this->attributes[$foreignKey]);
+            }
+        }
+
+        return null;
     }
 
     /**

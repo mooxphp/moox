@@ -35,11 +35,43 @@
             "providers": [
                 "Moox\\Category\\CategoryServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Category",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/CategorySeeder.php",
+                "auto_publish": "moox-category-config",
+                "auto_entities": {
+                    "Category": true
+                },
+                "auto_class": {
+                    "Category": "Moox\\Category\\Category"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-category-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-category-config"
+            }
         }
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {

@@ -17,7 +17,6 @@ class TranslationColumn extends TextColumn
         parent::setUp();
 
         $this->label(__('localization::fields.language'))
-            ->sortable()
             ->toggleable()
             ->alignCenter()
             ->searchable()
@@ -39,7 +38,10 @@ class TranslationColumn extends TextColumn
                         $flagClass .= ' trashed';
                     }
 
-                    return $flagClass;
+                    return [
+                        'flag' => $flagClass,
+                        'locale' => $translation->locale,
+                    ];
                 })->toArray();
 
                 return $flags;

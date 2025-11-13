@@ -34,9 +34,8 @@ class TestCase extends Orchestra
         */
     }
 
-    protected function setUpTestUser(): void
+    protected function createTestUser(): void
     {
-        /*
         $this->app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -45,7 +44,8 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        $user = new class extends User {
+        $user = new class extends User
+        {
             protected $table = 'users';
         };
 
@@ -54,6 +54,5 @@ class TestCase extends Orchestra
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
-        */
     }
 }
