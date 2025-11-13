@@ -8,7 +8,6 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -135,34 +134,33 @@ class PackagesResource extends BaseItemResource
                                 ->schema([
                                     CopyableField::make('id')
                                         ->label(__('packages::fields.id'))
-                                        ->defaultValue(fn($record): string => $record->id ?? ''),
-
+                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
 
                                     Section::make('')
                                         ->schema([
                                             Placeholder::make('created_at')
                                                 ->label(__('packages::fields.created_at'))
-                                                ->content(fn($record): string => $record->created_at ?
-                                                    $record->created_at . ' - ' . $record->created_at->diffForHumans() : '')
+                                                ->content(fn ($record): string => $record->created_at ?
+                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('installed_at')
                                                 ->label(__('packages::fields.installed_at'))
-                                                ->content(fn($record): string => $record->installed_at ?
-                                                    $record->installed_at . ' - ' . $record->installed_at->diffForHumans() : '')
+                                                ->content(fn ($record): string => $record->installed_at ?
+                                                    $record->installed_at.' - '.$record->installed_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('installed_by')
                                                 ->label(__('packages::fields.installed_by'))
-                                                ->content(fn($record): string => $record->installed_by ?
+                                                ->content(fn ($record): string => $record->installed_by ?
                                                     $record->installed_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('updated_at')
                                                 ->label(__('packages::fields.updated_at'))
-                                                ->content(fn($record): string => $record->updated_at ?
-                                                    $record->updated_at . ' - ' . $record->updated_at->diffForHumans() : '')
+                                                ->content(fn ($record): string => $record->updated_at ?
+                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                             Placeholder::make('updated_by')
                                                 ->label(__('packages::fields.updated_by'))
-                                                ->content(fn($record): string => $record->updated_by ?
+                                                ->content(fn ($record): string => $record->updated_by ?
                                                     $record->updated_by->name : '')
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),
@@ -189,7 +187,7 @@ class PackagesResource extends BaseItemResource
                     ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('name')
                     ->label(__('packages::fields.packagist'))
-                    ->formatStateUsing(fn($record) => "{$record->vendor}/{$record->name}")
+                    ->formatStateUsing(fn ($record) => "{$record->vendor}/{$record->name}")
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('package_type')
@@ -227,15 +225,15 @@ class PackagesResource extends BaseItemResource
             ->filters([
                 SelectFilter::make('install_status')
                     ->label(__('packages::fields.install_status'))
-                    ->placeholder(__('core::core.filter') . ' Install Status')
+                    ->placeholder(__('core::core.filter').' Install Status')
                     ->options(['available' => 'Available', 'installed' => 'Installed', 'active' => 'Active']),
                 SelectFilter::make('package_type')
                     ->label(__('packages::fields.package_type'))
-                    ->placeholder(__('core::core.filter') . ' Package Type')
+                    ->placeholder(__('core::core.filter').' Package Type')
                     ->options(['moox_package' => 'Moox Package', 'moox_compatible' => 'Moox Compatible', 'moox_dependency' => 'Moox Dependency', 'filament_plugin' => 'Filament Plugin', 'laravel_package' => 'Laravel Package', 'php_package' => 'PHP Package']),
                 SelectFilter::make('update_status')
                     ->label(__('packages::fields.update_status'))
-                    ->placeholder(__('core::core.filter') . ' Update Status')
+                    ->placeholder(__('core::core.filter').' Update Status')
                     ->options(['up-to-date' => 'Up to Date', 'update-available' => 'Update Available', 'update-scheduled' => 'Update Scheduled', 'update-failed' => 'Update Failed']),
             ]);
     }
