@@ -15,10 +15,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@blocknote/core": "^0.37.0",
-        "@blocknote/react": "^0.37.0",
-        "@blocknote/shadcn": "^0.37.0",
-        "axios": "^1.11.0",
+        "@blocknote/core": "^0.42.0",
+        "@blocknote/react": "^0.42.0",
+        "@blocknote/shadcn": "^0.42.0",
+        "axios": "^1.12.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "zod": "^4.0.15"
