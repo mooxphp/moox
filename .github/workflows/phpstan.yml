@@ -28,7 +28,7 @@ jobs:
           touch database/database.sqlite
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-artifact
           path: app-artifact.tar.gz
