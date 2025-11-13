@@ -16,7 +16,7 @@
         "symfony/process": "^6.0|^7.0"
     },
     "require-dev": {
-        "pestphp/pest": "^2.0",
+        "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^10.0"
