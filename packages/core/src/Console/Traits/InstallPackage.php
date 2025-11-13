@@ -33,66 +33,6 @@ trait InstallPackage
         }
     }
 
-    protected function requirePackage(string $package): string
-    {
-        $composerJson = json_decode(file_get_contents(base_path('composer.json')), true);
-
-        if (isset($composerJson['require'][$package])) {
-            return 'already';
-        }
-
-        $isPathRepo = false;
-        if (isset($composerJson['repositories'])) {
-            foreach ($composerJson['repositories'] as $repo) {
-                if (($repo['type'] ?? null) === 'path' &&
-                    str_contains($repo['url'], str_replace('moox/', '', $package))) {
-                    $isPathRepo = true;
-                    break;
-                }
-            }
-        }
-
-        // Path-Repo: nur Composer.json updaten, kein "composer require"
-        if ($isPathRepo) {
-            info("ℹ️ Local path repo detected for {$package}, adding to composer.json...");
-            $this->addPackageToComposerJson($package);
-
-            return 'already';
-        }
-
-        $version = '*';
-        $command = "composer require {$package}:{$version} --no-scripts --quiet 2>&1";
-        exec($command, $output, $returnVar);
-
-        if ($returnVar !== 0) {
-            warning("❌ Error running composer require {$package}.");
-            throw new \RuntimeException("Composer require for {$package} failed.");
-        }
-
-        // Immer Composer.json updaten
-        $this->addPackageToComposerJson($package);
-
-        info("✅ Installed package: {$package}");
-
-        return 'installed';
-    }
-
-    protected function addPackageToComposerJson(string $package, string $version = '*'): void
-    {
-        $composerPath = base_path('composer.json');
-        $composerJson = json_decode(file_get_contents($composerPath), true);
-
-        if (! isset($composerJson['require'][$package])) {
-            $composerJson['require'][$package] = $version;
-
-            // Alphabetisch sortieren
-            ksort($composerJson['require']);
-
-            file_put_contents($composerPath, json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            info("✅ Added {$package} to global composer.json require");
-        }
-    }
-
     public function installPackage(array $package, array $panelPaths = []): bool
     {
         if (empty($package) || ! isset($package['name'])) {
@@ -102,36 +42,93 @@ trait InstallPackage
         }
 
         $didChange = false;
+        $this->ensurePackageServiceIsSet();
 
+        // --- Composer require ---
         if (isset($package['composer'])) {
             $status = $this->requirePackage($package['composer']);
             if ($status === 'installed') {
-                info("✅ Installed: {$package['name']}");
+                info("✅ Installed '{$package['name']}' via composer.");
                 $didChange = true;
             }
         }
 
-        $this->ensurePackageServiceIsSet();
+        // --- Migrations publish & run ---
+        $migrations = $this->packageService->getMigrations($package);
+        if (! empty($migrations)) {
+            if (confirm('📥 New migrations have been published. Would you like to run them now?', true)) {
+                // --- Config publish ---
+                if (confirm("📄 Would you like to publish configs for '{$package['name']}'?", true)) {
+                    $didChange = $this->packageService->publishConfigs($package) || $didChange;
+                }
 
-        $didChange = $this->runMigrations($package) || $didChange;
-        $didChange = $this->publishConfig($package) || $didChange;
-        $didChange = $this->runSeeders($package) || $didChange;
-        $didChange = $this->runAutoCommands($package) || $didChange;
+                $didChange = $this->runMigrations($migrations) || $didChange;
+            } else {
+                info('⏩ Migrations were published but not executed.');
+            }
+        }
 
+        // --- Seeders ---
+        $seeders = $this->packageService->getRequiredSeeders($package);
+        if (! empty($seeders)) {
+            if (confirm("🌱 Run seeders for '{$package['name']}'?", false)) {
+                $didChange = $this->runSeeders($package) || $didChange;
+            } else {
+                info('⏩ Skipped seeders by user.');
+            }
+        }
+
+        // --- Panels & plugins ---
         if (empty($panelPaths)) {
             $panelPaths = $this->determinePanelsForPackage($package);
             if (! empty($panelPaths)) {
                 $didChange = true;
             }
         }
-
         $didChange = $this->installPlugins($package, $panelPaths) || $didChange;
 
+        // --- Post-install commands ---
+        $didChange = $this->runAutoCommands($package) || $didChange;
+
         if ($didChange) {
-            info('🎉 Installation completed.');
+            info("🎉 Installation for '{$package['name']}' completed!");
+        } else {
+            info("ℹ️ Nothing was changed for '{$package['name']}'.");
         }
 
         return $didChange;
+    }
+
+    /**
+     * Install a composer package if not already installed.
+     */
+    protected function requirePackage(string $packageName): string
+    {
+        $composerJson = json_decode(file_get_contents(base_path('composer.json')), true);
+        if (isset($composerJson['require'][$packageName])) {
+            info("ℹ️ Package '{$packageName}' is already required in composer.json.");
+
+            return 'already';
+        }
+
+        info("📦 Installing composer package: {$packageName}");
+        $process = Process::fromShellCommandline("composer require {$packageName} --no-scripts --quiet");
+        $process->setTimeout(null);
+        $process->run(function ($type, $buffer) {
+            foreach (explode("\n", rtrim($buffer)) as $line) {
+                if ($line !== '') {
+                    info('    '.$line);
+                }
+            }
+        });
+
+        if ($process->isSuccessful()) {
+            return 'installed';
+        }
+
+        warning("⚠️ Failed to install {$packageName}");
+
+        return 'failed';
     }
 
     protected function determinePanelsForPackage(array $package): array
@@ -140,9 +137,8 @@ trait InstallPackage
 
         if (empty($existingPanels)) {
             info('ℹ️ No existing panels found. Creating a new panel...');
-            $newPanel = $this->createNewPanelProvider();
 
-            return [$newPanel];
+            return [$this->createNewPanelProvider()];
         }
 
         info('🔹 Existing panels found:');
@@ -151,26 +147,23 @@ trait InstallPackage
         }
 
         $useExisting = confirm("Do you want to install '{$package['name']}' in an existing panel?", true);
-
         if ($useExisting) {
             $selectedKey = $this->selectFromList($existingPanels, "Select panel for '{$package['name']}'");
-            $selectedPanel = $existingPanels[$selectedKey];
-            info("✅ Installing in existing panel: {$selectedPanel}");
 
-            return [$selectedPanel];
+            return [$existingPanels[$selectedKey]];
         }
 
         info("ℹ️ Creating a new panel for '{$package['name']}'...");
-        $newPanel = $this->createNewPanelProvider();
 
-        return [$newPanel];
+        return [$this->createNewPanelProvider()];
     }
 
     public function installPlugins(array $package, array $panelPaths): bool
     {
         $plugins = $this->packageService->getPlugins($package);
-
         if (empty($plugins)) {
+            info("ℹ️ No plugins found for '{$package['name']}'. Skipping.");
+
             return false;
         }
 
@@ -190,19 +183,13 @@ trait InstallPackage
     {
         $panelName = 'Panel'.time();
         info("Creating new panel provider: {$panelName} ...");
-
         Artisan::call('make:filament-panel', ['name' => $panelName]);
 
         return $panelName;
     }
 
-    protected function runMigrations(array $package): bool
+    protected function runMigrations(array $migrations): bool
     {
-        $migrations = $this->packageService->getMigrations($package);
-        if (empty($migrations)) {
-            return false;
-        }
-
         $didRun = false;
         foreach ($migrations as $migration) {
             $absolutePath = base_path($migration);
@@ -212,24 +199,14 @@ trait InstallPackage
                 continue;
             }
 
-            $status = $this->packageService->checkMigrationStatus($migration);
-
-            if ($status['hasChanges']) {
-                if ($status['hasDataInDeletedFields'] && ! confirm("❗ Migration '{$migration}' removes columns with data. Continue anyway?", false)) {
-                    warning("⏭️ Skipped migration '{$migration}'.");
-
-                    continue;
-                }
-
-                info("📥 Running migration {$migration}...");
-                $exitCode = Artisan::call('migrate', [
-                    '--path' => $migration,
-                    '--force' => true,
-                    '--no-interaction' => true,
-                ]);
-                info("✅ Migration completed (Exit Code: {$exitCode})");
-                $didRun = true;
-            }
+            $relativePath = str_replace(base_path().'/', '', $absolutePath);
+            Artisan::call('migrate', [
+                '--path' => $relativePath,
+                '--force' => true,
+                '--no-interaction' => true,
+            ]);
+            info("✅ Migration completed for {$relativePath}");
+            $didRun = true;
         }
 
         return $didRun;
@@ -241,58 +218,12 @@ trait InstallPackage
             return str_ends_with($absolutePath, '.php');
         }
         if (File::isDirectory($absolutePath)) {
-            $files = collect(File::files($absolutePath))
-                ->filter(fn ($f) => str_ends_with($f->getFilename(), '.php'));
+            $files = collect(File::files($absolutePath))->filter(fn ($f) => str_ends_with($f->getFilename(), '.php'));
 
             return $files->isNotEmpty();
         }
 
         return false;
-    }
-
-    protected function publishConfig(array $package): bool
-    {
-        $configs = $this->packageService->getConfig($package);
-        $updatedAny = false;
-
-        foreach ($configs as $path => $content) {
-            if (is_string($path) && str_starts_with($path, 'tag:')) {
-                $tag = substr($path, 4);
-                info("📦 Publishing vendor tag: {$tag}");
-                Artisan::call('vendor:publish', [
-                    '--tag' => $tag,
-                    '--force' => true,
-                    '--no-interaction' => true,
-                ]);
-                $updatedAny = true;
-
-                continue;
-            }
-
-            $publishPath = config_path(basename($path));
-            if (! file_exists($publishPath)) {
-                info("📄 Publishing new config: {$path}");
-                File::put($publishPath, $content);
-                $updatedAny = true;
-
-                continue;
-            }
-
-            $existingContent = File::get($publishPath);
-            if ($existingContent === $content) {
-                continue;
-            }
-
-            if (confirm("⚠️ Config file {$path} has changes. Overwrite?", false)) {
-                info("🔄 Updating config file: {$path}");
-                File::put($publishPath, $content);
-                $updatedAny = true;
-            } else {
-                warning("⏭️ Config {$path} was not overwritten.");
-            }
-        }
-
-        return $updatedAny;
     }
 
     protected function runSeeders(array $package): bool
@@ -302,7 +233,6 @@ trait InstallPackage
 
         foreach ($requiredSeeders as $seeder) {
             $table = $this->getSeederTable($seeder);
-
             if (! $table || ! Schema::hasTable($table)) {
                 warning("⚠️ Table for seeder {$seeder} not found. Skipping.");
 
@@ -311,13 +241,10 @@ trait InstallPackage
 
             if (DB::table($table)->count() === 0 || confirm("📂 Table '{$table}' already contains data. Seed again anyway?", false)) {
                 info("🌱 Seeding data into {$table}...");
-                Artisan::call('db:seed', [
-                    '--class' => $seeder,
-                    '--force' => true,
-                ]);
+                Artisan::call('db:seed', ['--class' => $seeder, '--force' => true]);
                 $didSeed = true;
             } else {
-                warning("⏭️ Seeder for {$table} skipped.");
+                warning("⏩ Seeder for {$table} skipped.");
             }
         }
 
@@ -328,28 +255,17 @@ trait InstallPackage
     {
         $rootCmds = $this->packageService->getAutoRunCommands($package);
         $hereCmds = $this->packageService->getAutoRunHereCommands($package);
-
-        if (empty($rootCmds) && empty($hereCmds)) {
-            return false;
-        }
-
-        if (! confirm('🚀 Run post-install commands (auto_run/auto_runhere)?', true)) {
-            warning('⏭️ Post-install commands skipped.');
-
-            return false;
-        }
-
         $ranAny = false;
+
         foreach ($rootCmds as $cmd) {
             info("▶️  {$cmd}");
             $this->execInCwd($cmd, base_path());
             $ranAny = true;
         }
+
         foreach ($hereCmds as $entry) {
-            $cmd = $entry['cmd'];
-            $cwd = $entry['cwd'];
-            info("▶️  (in {$cwd}) {$cmd}");
-            $this->execInCwd($cmd, $cwd);
+            info("▶️  (in {$entry['cwd']}) {$entry['cmd']}");
+            $this->execInCwd($entry['cmd'], $entry['cwd']);
             $ranAny = true;
         }
 
@@ -385,8 +301,7 @@ trait InstallPackage
             return [];
         }
 
-        $files = scandir($panelPath);
-        foreach ($files as $file) {
+        foreach (scandir($panelPath) as $file) {
             if (str_ends_with($file, '.php')) {
                 $panels[] = pathinfo($file, PATHINFO_FILENAME);
             }
@@ -398,18 +313,12 @@ trait InstallPackage
     protected function selectFromList(array $items, string $prompt): int
     {
         info($prompt);
-
         foreach ($items as $key => $item) {
             info("  [{$key}] {$item}");
         }
 
         $choice = (int) readline('Enter number: ');
-        if (! isset($items[$choice])) {
-            warning('Invalid selection, defaulting to first item.');
 
-            return 0;
-        }
-
-        return $choice;
+        return $items[$choice] ?? 0;
     }
 }
