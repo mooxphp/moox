@@ -1,12 +1,20 @@
-/** @type {import('tailwindcss').Config} */
+const path = require("path");
+
 module.exports = {
     content: [
-        "./resources/views/**/*.blade.php",
+        path.resolve(__dirname, "resources/views/**/*.blade.php"),
         "../../packages/components/resources/views/**/*.blade.php",
-        "../../app/**/*.blade.php",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                primary: "rgb(var(--color-primary) / <alpha-value>)",
+                secondary: "rgb(var(--color-secondary) / <alpha-value>)",
+            },
+            fontFamily: {
+                sans: "var(--font-base)",
+            },
+        },
     },
     plugins: [require("daisyui")],
 };

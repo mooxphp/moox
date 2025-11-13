@@ -75,6 +75,20 @@ return [
     |
     */
     'navigation_group' => 'trans//core::core.system',
-    'enable-panel' => true,
+    'enable-panel' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Language Selector
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for the language selector component.
+    |
+    */
+    'language_selector' => [
+        'use_native_names' => true, // Use native language names instead of English names
+        'show_regional_variants' => true, // Show regional variants (e.g., de_CH, en_US)
+        'use_country_translations' => true, // Use translated country names (e.g., Österreich for German, Austria for English)
+    ],
 
 ];

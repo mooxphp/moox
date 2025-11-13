@@ -3,7 +3,6 @@
 namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Core\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Link;
@@ -12,9 +11,9 @@ use function Laravel\Prompts\info;
 
 class LinkCommand extends Command
 {
-    use Art, Check, Finalize, Link;
+    use Check, Finalize, Link;
 
-    protected $signature = 'devlink:link';
+    protected $signature = 'moox:devlink';
 
     protected $description = 'Symlink Moox packages into the project from multiple base paths and ensure composer.json is updated';
 
@@ -39,9 +38,11 @@ class LinkCommand extends Command
 
     public function handle(): void
     {
-        $this->art();
+        // $this->art();
         info('Hello, I will link the configured packages for you.');
         $this->check();
+        // create a symlink for the DEVLOG.md file
+
         $this->link();
         $this->finalize();
         info('Packages linked! Have a nice dev!');

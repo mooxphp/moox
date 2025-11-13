@@ -18,7 +18,11 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "*",
+        "moox/localization": "*",
+        "moox/media": "*",
+        "moox/category": "*",
+        "moox/tag": "*"
     },
     "autoload": {
         "psr-4": {
@@ -26,50 +30,53 @@
             "Moox\\Draft\\Database\\Factories\\": "database/factories"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Draft\\Tests\\": "tests"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "Moox\\Draft\\DraftServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Draft",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/DraftSeeder.php",
+                "auto_publish": "moox-draft-config",
+                "auto_entities": {
+                    "Draft": true
+                },
+                "auto_class": {
+                    "Draft": "Moox\\Draft\\Draft"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-draft-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-draft-config"
+            }
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "orchestra/testbench": "^9.5",
-        "pestphp/pest": "^3.2",
-        "pestphp/pest-plugin-livewire": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
-        "ryangjchandler/blade-capture-directive": "^1.0"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Moox\\Draft\\Tests\\": "tests",
-            "Moox\\Draft\\Database\\Factories\\": "database/factories",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-draft --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/phpstan analyse --verbose --ansi"
-        ],
-        "test": [
-            "@php vendor/bin/phpunit"
-        ]
+        "moox/devtools": "^4.0"
     },
     "config": {
         "allow-plugins": {

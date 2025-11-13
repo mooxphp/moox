@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
-use Moox\Core\Traits\Base\BaseInViewPage;
-use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource;
 
-class ViewStaticCountriesStaticTimezones extends ViewRecord
+class ViewStaticCountriesStaticTimezones extends BaseViewRecord
 {
-    use BaseInViewPage, SingleSimpleInViewPage;
-
-    protected static string $resource = \Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource::class;
+    protected static string $resource = StaticCountriesStaticTimezonesResource::class;
 }

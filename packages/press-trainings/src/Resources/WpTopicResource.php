@@ -2,14 +2,14 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -26,14 +26,14 @@ class WpTopicResource extends Resource
 
     protected static ?string $model = WpTopic::class;
 
-    protected static ?string $navigationIcon = 'gmdi-category';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-category';
 
     protected static ?string $recordTitleAttribute = 'name';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
@@ -93,8 +93,8 @@ class WpTopicResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     #[Override]

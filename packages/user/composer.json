@@ -17,8 +17,10 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "stechstudio/filament-impersonate": "^3.5"
+        "moox/core": "self.version"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -30,8 +32,17 @@
             "providers": [
                 "Moox\\User\\UserServiceProvider"
             ]
+        },
+        "moox": {
+            "package": {
+                "title": "Moox User",
+                "info": "User management package for Moox.",
+                "website": "https://moox.org/docs/user",
+                "stability": "stable",
+                "type": "moox-plugin",
+                "template": true
+            }
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true
 }

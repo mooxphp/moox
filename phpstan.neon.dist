@@ -4,17 +4,9 @@ includes:
 parameters:
     level: 5
     paths:
-        - _custom
         - packages
-        - app
     excludePaths:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
         - 'packages/*/tests/*'
-        - 'packages/expiry/*'
-        - 'packages/restore/*'
     tmpDir: build/phpstan
-    ignoreErrors:
-        -
-            message: "#Called 'env' outside of the config directory which returns null when the config is cached, use 'config'#"
-            path: packages/*/config/*

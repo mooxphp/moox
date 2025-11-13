@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\CreateStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\EditStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ListStaticCountriesStaticTimezones;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages\ViewStaticCountriesStaticTimezones;
+use Moox\Data\Models\StaticCountriesStaticTimezones;
 
-class StaticCountriesStaticTimezonesResource extends Resource
+class StaticCountriesStaticTimezonesResource extends BaseRecordResource
 {
-    use BaseInResource, SingleSimpleInResource;
+    protected static ?string $model = StaticCountriesStaticTimezones::class;
 
-    protected static ?string $model = \Moox\Data\Models\StaticCountriesStaticTimezones::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -49,9 +49,9 @@ class StaticCountriesStaticTimezonesResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -96,8 +96,8 @@ class StaticCountriesStaticTimezonesResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 SelectFilter::make('country')
                     ->label(__('data::fields.country_name'))
@@ -111,10 +111,15 @@ class StaticCountriesStaticTimezonesResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticCountriesStaticTimezones::route('/'),
-            'create' => Pages\CreateStaticCountriesStaticTimezones::route('/create'),
-            'edit' => Pages\EditStaticCountriesStaticTimezones::route('/{record}/edit'),
-            'view' => Pages\ViewStaticCountriesStaticTimezones::route('/{record}'),
+            'index' => ListStaticCountriesStaticTimezones::route('/'),
+            'create' => CreateStaticCountriesStaticTimezones::route('/create'),
+            'edit' => EditStaticCountriesStaticTimezones::route('/{record}/edit'),
+            'view' => ViewStaticCountriesStaticTimezones::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
     }
 }

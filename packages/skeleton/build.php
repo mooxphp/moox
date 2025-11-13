@@ -94,14 +94,20 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-function replace_readme_paragraphs(string $file, string $content): void
+function replace_readme_sections(string $file, array $sections): void
 {
     $contents = file_get_contents($file);
 
-    file_put_contents(
-        $file,
-        preg_replace('/<!--shortdesc-->.*<!--\/shortdesc-->/s', $content, $contents) ?: $contents
-    );
+    foreach ($sections as $sectionName => $content) {
+        $startComment = '<!-- '.$sectionName.' -->';
+        $endComment = '<!-- /'.$sectionName.' -->';
+
+        $pattern = '/'.preg_quote($startComment, '/').'.*?'.preg_quote($endComment, '/').'/s';
+
+        $contents = preg_replace($pattern, $startComment.PHP_EOL.PHP_EOL.$content.PHP_EOL.PHP_EOL.$endComment, $contents) ?: $contents;
+    }
+
+    file_put_contents($file, $contents);
 }
 
 function safeUnlink(string $filename): void
@@ -170,7 +176,11 @@ $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
-$description = ask('Package description', 'This is my package '.$packageSlug);
+$description = ask('Package description', ucfirst($packageName).' is a new package made with Moox.');
+
+$features = ask('Package features comma separated', 'New Moox Package, Does awesome stuff');
+
+$usage = ask('Package usage instructions', 'Install the package and see what it does.');
 
 writeln('------');
 writeln('Author : '.$authorName);
@@ -190,23 +200,27 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
-        'skeleton.jpg' => 'made-with-moox.jpg',
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
         'skeleton' => $packageSlug,
-        'This template is used for generating Laravel packages, all Moox packages are built with this template.' => $description,
-        'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
-        'creating simple Laravel packages' => 'we do not know yet',
     ]);
 
     match (true) {
         str_contains((string) $file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains((string) $file, 'README.md') => replace_readme_paragraphs($file, $description),
+        str_contains((string) $file, 'README.md') => replace_readme_sections($file, [
+            'Description' => $description,
+            'Features' => '- '.implode(PHP_EOL.'- ', array_map('trim', explode(',', $features))),
+            'Usage' => $usage,
+        ]),
         default => [],
     };
 }
 
+unlink(determineSeparator('banner.jpg'));
+rename(determineSeparator('banner_build.jpg'), determineSeparator('banner.jpg'));
+unlink(determineSeparator('screenshot/main.jpg'));
+rename(determineSeparator('screenshot/main_build.jpg'), determineSeparator('screenshot/main.jpg'));
 rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
 
 if (confirm('Execute `composer install` and run tests?')) {
@@ -218,4 +232,4 @@ if (confirm('Let this script delete itself?', true)) {
 }
 
 writeln(' ');
-writeln('Moox Builder is finished. Have fun!');
+writeln('Moox Builder has finished. Have fun!');

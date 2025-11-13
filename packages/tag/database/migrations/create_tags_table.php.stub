@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->string('featured_image_url')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->string('image')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('count')->nullable();
+            $table->dateTime('due_at')->nullable();
             $table->string('color')->nullable();
-            $table->timestamp('deleted_at')->nullable()->index();
-            $table->timestamps();
+            $table->uuid('uuid')->unique();
+            $table->ulid('ulid')->unique();                     
+            $table->string('status')->nullable();
+            $table->json('custom_properties')->nullable();
+            $table->softDeletes();
         });
     }
 

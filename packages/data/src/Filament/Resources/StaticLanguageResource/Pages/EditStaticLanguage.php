@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticLanguageResource\Pages;
 
-use Filament\Resources\Pages\EditRecord;
-use Moox\Core\Traits\Base\BaseInEditPage;
-use Moox\Core\Traits\Simple\SingleSimpleInEditPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseEditRecord;
+use Moox\Data\Filament\Resources\StaticLanguageResource;
 
-class EditStaticLanguage extends EditRecord
+class EditStaticLanguage extends BaseEditRecord
 {
-    use BaseInEditPage, SingleSimpleInEditPage;
-
-    protected static string $resource = \Moox\Data\Filament\Resources\StaticLanguageResource::class;
+    protected static string $resource = StaticLanguageResource::class;
 }

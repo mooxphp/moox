@@ -17,22 +17,37 @@ return new class extends Migration
             $table->string('locale')->index();
             $table->string('title');
             $table->string('slug');
+            $table->string('permalink', 512);
+            $table->text('description')->nullable();
             $table->text('content')->nullable();
+            $table->string('translation_status')->nullable();
 
-            // Ensure slug is unique per locale
-            $table->unique(['slug', 'locale']);
-            
-            // Ensure one translation per locale per tag
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by'); 
+
+            $table->nullableMorphs('author');
+
             $table->unique(['tag_id', 'locale']);
+            $table->unique(['slug', 'locale']);
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
+
+             // Schedule fields
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            // Actor fields
+            $table->nullableMorphs('published_by');
+            $table->nullableMorphs('unpublished_by');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
             
-            // Foreign key constraint
-            $table->foreign('tag_id')
-                ->references('id')
-                ->on('tags')
-                ->onDelete('cascade');
-                
-            // Add index for faster slug lookups
-            $table->index(['slug'], 'tag_translations_slug_index');
+            $table->timestamps();
         });
     }
 

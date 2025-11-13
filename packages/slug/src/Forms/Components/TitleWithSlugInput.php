@@ -3,11 +3,11 @@
 namespace Moox\Slug\Forms\Components;
 
 use Closure;
-use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Moox\Slug\Forms\Fields\SlugInput;
@@ -19,9 +19,11 @@ class TitleWithSlugInput
         // Model fields
         ?string $fieldTitle = null,
         ?string $fieldSlug = null,
+        ?string $fieldPermalink = null,
 
         // Url
         string|Closure|null $urlPath = '/',
+        ?string $urlPathEntityType = null,
         string|Closure|null $urlHost = null,
         bool $urlHostVisible = true,
         bool|Closure $urlVisitLinkVisible = true,
@@ -52,40 +54,35 @@ class TitleWithSlugInput
         string|Closure|null $slugRuleRegex = '/^[a-z0-9\-\_]*$/',
         string|Closure|null $slugLabelPostfix = null,
     ): Group {
-        $fieldTitle = $fieldTitle ?? config('filament-title-with-slug.field_title');
-        $fieldSlug = $fieldSlug ?? config('filament-title-with-slug.field_slug');
-        $urlHost = $urlHost ?? config('filament-title-with-slug.url_host');
+        $fieldTitle = $fieldTitle ?? config('slug.field_title');
+        $fieldSlug = $fieldSlug ?? config('slug.field_slug');
+        $urlHost = $urlHost ?? config('slug.url_host');
 
         /** Input: "Title" */
         $textInput = TextInput::make($fieldTitle)
             ->disabled($titleIsReadonly)
-            ->autofocus($titleAutofocus)
             ->live(true)
             ->autocomplete(false)
             ->rules($titleRules)
             ->extraInputAttributes($titleExtraInputAttributes ?? ['class' => 'text-xl font-semibold'])
             ->beforeStateDehydrated(fn (TextInput $component, $state) => $component->state(trim($state)))
             ->afterStateUpdated(
-                function (
-                    $state,
-                    Set $set,
-                    Get $get,
-                    string $context,
-                    ?Model $record,
-                    TextInput $component
-                ) use (
-                    $slugSlugifier,
-                    $fieldSlug,
-                    $titleAfterStateUpdated,
-                ) {
+                function ($state, Set $set, Get $get, string $context, ?Model $record, TextInput $component) use ($slugSlugifier, $fieldSlug, $fieldPermalink, $urlPathEntityType, $titleAfterStateUpdated) {
                     $slugAutoUpdateDisabled = $get($fieldSlug.'_slug_auto_update_disabled');
 
                     if ($context === 'edit' && filled($record)) {
-                        $slugAutoUpdateDisabled = true;
+                        $slugAutoUpdateDisabled = ! empty($get($fieldSlug));
                     }
 
                     if (! $slugAutoUpdateDisabled && filled($state)) {
-                        $set($fieldSlug, self::slugify($slugSlugifier, $state));
+                        $slug = self::slugify($slugSlugifier, $state);
+                        $set($fieldSlug, $slug);
+
+                        if ($fieldPermalink && filled($slug)) {
+                            $entityPath = $urlPathEntityType ? '/'.$urlPathEntityType : '';
+                            $permalink = $entityPath.'/'.$slug;
+                            $set($fieldPermalink, $permalink);
+                        }
                     }
 
                     if ($titleAfterStateUpdated) {
@@ -111,12 +108,29 @@ class TitleWithSlugInput
         }
 
         if ($titleRuleUniqueParameters) {
-            $textInput->unique(...$titleRuleUniqueParameters);
+            if (is_array($titleRuleUniqueParameters)) {
+                $table = $titleRuleUniqueParameters['table'] ?? null;
+                $column = $titleRuleUniqueParameters['column'] ?? null;
+                $ignorable = $titleRuleUniqueParameters['ignorable'] ?? null;
+                $ignoreRecord = $titleRuleUniqueParameters['ignoreRecord'] ?? false;
+                $modifyRuleUsing = $titleRuleUniqueParameters['modifyRuleUsing'] ?? null;
+
+                $textInput->unique(
+                    table: $table,
+                    column: $column,
+                    ignorable: $ignorable,
+                    ignoreRecord: $ignoreRecord,
+                    modifyRuleUsing: $modifyRuleUsing,
+                );
+            } else {
+                // Fallback for non-array usage
+                $textInput->unique($titleRuleUniqueParameters);
+            }
         }
 
         /** Input: "Slug" (+ view) */
         $slugInput = SlugInput::make($fieldSlug)
-
+            ->extraAttributes(['style' => 'margin-top: -15px;'])
             // Custom SlugInput methods
             ->slugInputVisitLinkRoute($urlVisitLinkRoute)
             ->slugInputVisitLinkLabel($urlVisitLinkLabel)
@@ -125,14 +139,15 @@ class TitleWithSlugInput
             ->slugInputRecordSlug(fn (?Model $record) => data_get($record?->attributesToArray(), $fieldSlug))
             ->slugInputModelName(
                 fn (?Model $record) => $record
-                    ? Str::of(class_basename($record))->headline()
-                    : ''
+                ? Str::of(class_basename($record))->headline()
+                : ''
             )
             ->slugInputLabelPrefix($slugLabel)
             ->slugInputBasePath($urlPath)
             ->slugInputBaseUrl($urlHost)
             ->slugInputShowUrl($urlHostVisible)
             ->slugInputSlugLabelPostfix($slugLabelPostfix)
+            ->slugInputUrlPathEntityType($urlPathEntityType)
 
             // Default TextInput methods
             ->readOnly($slugIsReadonly)
@@ -141,23 +156,23 @@ class TitleWithSlugInput
             ->hiddenLabel()
             ->regex($slugRuleRegex)
             ->rules($slugRules)
+            ->validationMessages([
+                'unique' => __('core::core.slug_unique'),
+            ])
             ->afterStateUpdated(
-                function (
-                    $state,
-                    Set $set,
-                    Get $get,
-                    TextInput $component
-                ) use (
-                    $slugSlugifier,
-                    $fieldTitle,
-                    $fieldSlug,
-                    $slugAfterStateUpdated,
-                ) {
+                function ($state, Set $set, Get $get, TextInput $component) use ($slugSlugifier, $fieldTitle, $fieldSlug, $fieldPermalink, $urlPathEntityType, $slugAfterStateUpdated) {
                     $text = trim($state) === ''
                         ? $get($fieldTitle)
                         : $get($fieldSlug);
 
-                    $set($fieldSlug, self::slugify($slugSlugifier, $text));
+                    $slug = self::slugify($slugSlugifier, $text);
+                    $set($fieldSlug, $slug);
+
+                    if ($fieldPermalink && filled($slug)) {
+                        $entityPath = $urlPathEntityType ? '/'.$urlPathEntityType : '';
+                        $permalink = $entityPath.'/'.$slug;
+                        $set($fieldPermalink, $permalink);
+                    }
 
                     $set($fieldSlug.'_slug_auto_update_disabled', true);
 
@@ -167,17 +182,33 @@ class TitleWithSlugInput
                 }
             );
 
-        if (in_array('required', $slugRules, true)) {
-            $slugInput->required();
-        }
+        if ($slugRuleUniqueParameters) {
+            if (is_array($slugRuleUniqueParameters)) {
+                $table = $slugRuleUniqueParameters['table'] ?? null;
+                $column = $slugRuleUniqueParameters['column'] ?? null;
+                $ignorable = $slugRuleUniqueParameters['ignorable'] ?? null;
+                $ignoreRecord = $slugRuleUniqueParameters['ignoreRecord'] ?? false;
+                $modifyRuleUsing = $slugRuleUniqueParameters['modifyRuleUsing'] ?? null;
 
-        $slugRuleUniqueParameters
-            ? $slugInput->unique(...$slugRuleUniqueParameters)
-            : $slugInput->unique(ignorable: fn (?Model $record) => $record);
+                $slugInput->unique(
+                    table: $table,
+                    column: $column,
+                    ignorable: $ignorable,
+                    ignoreRecord: $ignoreRecord,
+                    modifyRuleUsing: $modifyRuleUsing,
+                );
+            } else {
+                // Fallback for non-array usage
+                $slugInput->unique($slugRuleUniqueParameters);
+            }
+        }
 
         /** Input: "Slug Auto Update Disabled" (Hidden) */
         $hiddenInputSlugAutoUpdateDisabled = Hidden::make($fieldSlug.'_slug_auto_update_disabled')
             ->dehydrated(false);
+
+        /** Input: "Permalink" (Hidden) */
+        $hiddenInputPermalink = $fieldPermalink ? Hidden::make($fieldPermalink) : null;
 
         /** Group */
 
@@ -186,6 +217,7 @@ class TitleWithSlugInput
                 $textInput,
                 $slugInput,
                 $hiddenInputSlugAutoUpdateDisabled,
+                $hiddenInputPermalink,
             ]);
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Moox\Restore\Jobs\ProcessRestoreDestinationJob;
 use Moox\Restore\Models\RestoreDestination;
+use Throwable;
 
 class DispatchRestoreCommand extends Command
 {
@@ -42,7 +43,7 @@ class DispatchRestoreCommand extends Command
 
         Bus::batch($jobs)
             ->then(function (Batch $batch) {})
-            ->catch(function (Batch $batch, \Throwable $e) {
+            ->catch(function (Batch $batch, Throwable $e) {
                 Log::error('Restore batch failed.', ['error' => $e->getMessage()]);
             })
             ->finally(function (Batch $batch) {

@@ -17,8 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "codewithdennis/filament-select-tree": "^3.1",
+        "codewithdennis/filament-select-tree": "4.x",
+        "moox/core": "self.version",
         "moox/localization": "*",
         "kalnoy/nestedset": "^6.0",
         "moox/flag-icons-circle": "*",
@@ -35,45 +35,43 @@
             "providers": [
                 "Moox\\Category\\CategoryServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Category",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/CategorySeeder.php",
+                "auto_publish": "moox-category-config",
+                "auto_entities": {
+                    "Category": true
+                },
+                "auto_class": {
+                    "Category": "Moox\\Category\\Category"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-category-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-category-config"
+            }
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "orchestra/testbench": "^9.5",
-        "pestphp/pest": "^3.2",
-        "pestphp/pest-plugin-livewire": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
-        "ryangjchandler/blade-capture-directive": "^1.0"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Moox\\Category\\Tests\\": "tests",
-            "Moox\\Category\\Database\\Factories\\": "database/factories",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/phpstan analyse --verbose --ansi"
-        ],
-        "test": [
-            "@php vendor/bin/phpunit"
-        ]
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {

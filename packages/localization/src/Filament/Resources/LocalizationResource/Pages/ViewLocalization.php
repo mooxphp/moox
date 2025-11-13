@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Filament\Resources\LocalizationResource\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
-use Moox\Core\Traits\Base\BaseInViewPage;
-use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
+use Moox\Localization\Filament\Resources\LocalizationResource;
 
-class ViewLocalization extends ViewRecord
+class ViewLocalization extends BaseViewRecord
 {
-    use BaseInViewPage, SingleSimpleInViewPage;
-
-    protected static string $resource = \Moox\Localization\Filament\Resources\LocalizationResource::class;
+    protected static string $resource = LocalizationResource::class;
 }

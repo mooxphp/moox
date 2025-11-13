@@ -16,34 +16,41 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('locale')->index();
             $table->string('title');
-            $table->string('status')->default('draft');
             $table->string('slug');
+            $table->string('permalink', 512);
+            $table->text('description')->nullable();
             $table->text('content')->nullable();
-            $table->json('data')->nullable();
+            $table->string('translation_status')->nullable();
+
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->nullableMorphs('author');
+
+            $table->unique(['category_id', 'locale']);
+            $table->unique(['slug', 'locale']);
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
 
             // Schedule fields
-            $table->timestamp(column: 'to_publish_at')->nullable();
+            $table->timestamp('to_publish_at')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamp('to_unpublish_at')->nullable();
             $table->timestamp('unpublished_at')->nullable();
+            
 
             // Actor fields
             $table->nullableMorphs('published_by', 'cat_trans_pub_idx');
             $table->nullableMorphs('unpublished_by', 'cat_trans_unpub_idx');
 
-            $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
 
             // Soft delete fields
             $table->softDeletes();
-            $table->nullableMorphs('deleted_by');
             $table->timestamp('restored_at')->nullable();
             $table->nullableMorphs('restored_by');
-
-            // Timestamps
-            $table->timestamps();
             
-            $table->unique(['category_id', 'locale']);
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->timestamps();
+
         });
     }
 

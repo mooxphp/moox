@@ -1,4 +1,8 @@
-![Moox Core](https://github.com/mooxphp/moox/raw/main/art/banner/core.jpg)
+<div class="filament-hidden">
+
+![Moox Core](banner.jpg)
+
+</div>
 
 # Moox Core
 

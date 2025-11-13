@@ -1,0 +1,46 @@
+{
+    "name": "moox/record",
+    "description": "Record is a simple Moox Entity, that can be used to create and manage simple entries, like settings.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/record",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Record\\": "src",
+            "Moox\\Record\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Record\\RecordServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "self.version"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource;
 
-class ListStaticCountriesStaticTimezones extends ListRecords
+class ListStaticCountriesStaticTimezones extends BaseListRecords
 {
-    use BaseInListPage, SingleSimpleInListPage;
-
-    protected static string $resource = \Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource::class;
+    protected static string $resource = StaticCountriesStaticTimezonesResource::class;
 }

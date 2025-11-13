@@ -1,0 +1,46 @@
+{
+    "name": "moox/block-editor",
+    "description": "Moox Block Editor",
+    "keywords": [
+        "Moox",
+        "React",
+        "Laravel",
+        "BlockNote",
+        "Block Editor",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/block-editor",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\BlockEditor\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\BlockEditor\\BlockEditorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "self.version"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

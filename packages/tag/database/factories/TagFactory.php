@@ -4,6 +4,7 @@ namespace Moox\Tag\Database\Factories;
 
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use InvalidArgumentException;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
 
@@ -116,7 +117,7 @@ class TagFactory extends Factory
     public function withTranslation(string $locale): self
     {
         if (! isset($this->availableLocales[$locale])) {
-            throw new \InvalidArgumentException("Locale {$locale} is not supported");
+            throw new InvalidArgumentException("Locale {$locale} is not supported");
         }
 
         return $this->afterCreating(function (Tag $tag) use ($locale) {

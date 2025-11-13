@@ -9,8 +9,8 @@ use Moox\Core\Traits\Base\BaseInModel;
 use Moox\Core\Traits\Simple\SingleSimpleInModel;
 
 /**
- * @property-read \Moox\Data\Models\StaticLanguage|null $language
- * @property-read \Moox\Data\Models\StaticCountry|null $country
+ * @property-read StaticLanguage|null $language
+ * @property-read StaticCountry|null $country
  * @property string $flag_country_code
  */
 class StaticLocale extends Model
@@ -40,33 +40,18 @@ class StaticLocale extends Model
 
     protected $casts = [];
 
-    protected array $languageToFlagMap = [
-        'ar' => 'sa', // Arabic -> Saudi Arabia
-        'en' => 'gb', // English -> United Kingdom
-        'es' => 'es', // Spanish -> Spain
-        'fr' => 'fr', // French -> France
-        'pt' => 'pt', // Portuguese -> Portugal
-        'ru' => 'ru', // Russian -> Russia
-        'zh' => 'cn', // Chinese -> China
-        'de' => 'de', // German -> Germany
-        'hi' => 'in', // Hindi -> India
-        'ja' => 'jp', // Japanese -> Japan
-        'ko' => 'kr', // Korean -> South Korea
-        'fa' => 'ir', // Persian -> Iran
-        'tr' => 'tr', // Turkish -> Turkey
-        'it' => 'it', // Italian -> Italy
-        'pl' => 'pl', // Polish -> Poland
-        'uk' => 'ua', // Ukrainian -> Ukraine
-        'vi' => 'vn', // Vietnamese -> Vietnam
-        'th' => 'th', // Thai -> Thailand
-        'nl' => 'nl', // Dutch -> Netherlands
-        'el' => 'gr', // Greek -> Greece
-    ];
-
     protected array $territoryToCountryMap = [
         'sh' => 'gb',
         'um' => 'us',
         'bq' => 'nl',
+        'hm' => 'au',
+        'aq' => 'gb',
+        'bv' => 'no',
+        'gs' => 'gb',
+        'io' => 'gb',
+        'pn' => 'gb',
+        'sj' => 'no',
+        'tf' => 'fr',
     ];
 
     public function getLanguageFlagIconAttribute(): ?string
@@ -75,11 +60,8 @@ class StaticLocale extends Model
             return $this->getCountryFlagIconAttribute();
         }
 
-        if (! $this->is_official_language && isset($this->languageToFlagMap[$this->language->alpha2])) {
-            return 'flag-'.$this->languageToFlagMap[$this->language->alpha2];
-        }
-
-        return $this->getCountryFlagIconAttribute();
+        // Use the flag_icon from the StaticLanguage model
+        return $this->language->flag_icon;
     }
 
     public function getCountryFlagIconAttribute(): ?string

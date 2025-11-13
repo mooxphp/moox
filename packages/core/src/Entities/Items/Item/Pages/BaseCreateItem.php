@@ -3,25 +3,16 @@
 namespace Moox\Core\Entities\Items\Item\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseCreateItem extends CreateRecord
 {
     use CanResolveResourceClass;
 
-    protected function resolveRecord($key): Model
+    public function getFormActions(): array
     {
-        $model = static::getModel();
+        return [
 
-        $query = $model::query();
-
-        if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-            $query->withoutGlobalScope(SoftDeletingScope::class);
-        }
-
-        return $query->find($key) ?? $model::make();
+        ];
     }
 }

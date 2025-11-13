@@ -2,41 +2,42 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Forms\Components\Grid;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\BackupServerUi\Models\BackupLogItem;
-use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages;
+use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ListBackupLogItems;
+use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ViewBackupLogItem;
 
 class BackupLogItemResource extends Resource
 {
     protected static ?string $model = BackupLogItem::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-bars-4';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-bars-4';
 
     protected static ?string $navigationLabel = 'Backup Log';
 
     protected static ?string $pluralNavigationLabel = 'Backup Logs';
 
-    protected static ?string $navigationGroup = 'Backup server';
+    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
 
     protected static ?string $recordTitleAttribute = 'Log Entry';
 
     protected static ?int $priority = 4;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     Select::make('source_id')
@@ -198,8 +199,8 @@ class BackupLogItemResource extends Resource
                     ])
                     ->label('Level'),
             ])
-            ->actions([ViewAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([ViewAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     public static function getRelations(): array
@@ -210,8 +211,8 @@ class BackupLogItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBackupLogItems::route('/'),
-            'view' => Pages\ViewBackupLogItem::route('/{record}'),
+            'index' => ListBackupLogItems::route('/'),
+            'view' => ViewBackupLogItem::route('/{record}'),
         ];
     }
 }

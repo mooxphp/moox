@@ -2,20 +2,20 @@
 
 namespace Moox\Media\Models;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
+use Exception;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\DB;
+use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\DB;
-use Moox\Media\Models\MediaCollection;
-use Astrotomic\Translatable\Translatable;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
-    use InteractsWithMedia, Translatable;
+    use HasMediaUsable, InteractsWithMedia, Translatable;
 
     public $translatedAttributes = ['name', 'title', 'alt', 'description', 'internal_note'];
 
@@ -29,6 +29,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         'model_id',
         'model_type',
         'collection_name',
+        'media_collection_id',
         'original_model_id',
         'original_model_type',
         'write_protected',
@@ -48,7 +49,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
     public function collection()
     {
-        return $this->belongsTo(MediaCollection::class, 'collection_name', 'name');
+        return $this->belongsTo(MediaCollection::class, 'media_collection_id');
     }
 
     public function registerMediaConversions(?BaseMedia $media = null): void
@@ -77,13 +78,13 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
         static::saving(function ($media) {
             if ($media->exists && $media->getOriginal('write_protected')) {
-                throw new \Exception('This media item is write-protected.');
+                throw new Exception('This media item is write-protected.');
             }
         });
 
         static::deleting(function ($media) {
             if ($media->getOriginal('write_protected')) {
-                throw new \Exception('Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.');
+                throw new Exception('Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.');
             }
         });
 
@@ -96,14 +97,14 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                 $modelClass = $usable->media_usable_type;
                 $model = $modelClass::find($usable->media_usable_id);
 
-                if (!$model) {
+                if (! $model) {
                     continue;
                 }
 
                 foreach ($model->getAttributes() as $field => $value) {
                     $jsonData = json_decode($value, true);
 
-                    if (!is_array($jsonData)) {
+                    if (! is_array($jsonData)) {
                         continue;
                     }
 
@@ -128,6 +129,13 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                 }
 
                 $model->save();
+            }
+        });
+
+        static::saving(function ($media) {
+            if ($media->media_collection_id) {
+                $collection = MediaCollection::find($media->media_collection_id);
+                $media->collection_name = $collection?->name ?? null;
             }
         });
     }

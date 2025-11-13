@@ -3,15 +3,14 @@
 namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Core\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Show;
 
 class StatusCommand extends Command
 {
-    use Art, Check, Show;
+    use Check, Show;
 
-    protected $signature = 'devlink:status';
+    protected $signature = 'moox:devstatus';
 
     protected $description = 'Show the status of your devlinked packages';
 
@@ -37,7 +36,7 @@ class StatusCommand extends Command
 
     public function handle(): void
     {
-        $this->art();
+        // $this->art();
         $this->check();
         $this->show();
     }

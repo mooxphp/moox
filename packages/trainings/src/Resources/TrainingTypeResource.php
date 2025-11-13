@@ -2,16 +2,15 @@
 
 namespace Moox\Training\Resources;
 
-use Filament\Forms\Components\Grid;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
@@ -31,50 +30,32 @@ class TrainingTypeResource extends Resource
 
     protected static ?string $model = TrainingType::class;
 
-    protected static ?string $navigationIcon = 'gmdi-assignment';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-assignment';
 
-    protected static ?string $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    TextInput::make('title')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Title')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('title')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Title'),
+                TextInput::make('slug')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Slug'),
 
-                    TextInput::make('slug')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Slug')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    RichEditor::make('description')
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->placeholder('Description')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
+                RichEditor::make('description')
+                    ->rules(['max:255', 'string'])
+                    ->nullable()
+                    ->placeholder('Description'),
             ]),
-        ]);
+        ])->columns(1);
     }
 
     #[Override]
@@ -97,8 +78,8 @@ class TrainingTypeResource extends Resource
                     ->limit(50),
             ])
             ->filters([DateRangeFilter::make('created_at')])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([
                 DeleteBulkAction::make()
                     ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {

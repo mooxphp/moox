@@ -3,7 +3,6 @@
 namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Core\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Deploy;
 use Moox\Devlink\Console\Traits\Finalize;
@@ -13,9 +12,9 @@ use function Laravel\Prompts\info;
 
 class DeployCommand extends Command
 {
-    use Art, Check, Deploy, Finalize;
+    use Check, Deploy, Finalize;
 
-    protected $signature = 'devlink:deploy';
+    protected $signature = 'moox:deploy';
 
     protected $description = 'Prepare a devlinked project for deployment';
 
@@ -40,7 +39,7 @@ class DeployCommand extends Command
 
     public function handle(): void
     {
-        $this->art();
+        // $this->art();
         info('Hello, I will prepare your project and composer.json for deployment.');
         $this->check();
         $this->deploy();

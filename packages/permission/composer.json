@@ -17,8 +17,11 @@
         }
     ],
     "require": {
-        "moox/core": "*",
+        "moox/core": "self.version",
         "spatie/laravel-permission": "^6.9"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {

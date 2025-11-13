@@ -7,6 +7,7 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Contracts\Support\Arrayable;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
+use Schema;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -26,6 +27,10 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             }
 
             $mediaIds = is_array($state) ? $state : [$state];
+
+            $mediaIds = array_filter($mediaIds, function ($id) {
+                return $id !== null && $id !== '';
+            });
 
             MediaUsable::where('media_usable_id', $record->id)
                 ->where('media_usable_type', get_class($record))
@@ -62,7 +67,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
 
-            $columnType = \Schema::getColumnType($record->getTable(), $fieldName);
+            $columnType = Schema::getColumnType($record->getTable(), $fieldName);
 
             if ($columnType === 'json') {
                 $record->{$fieldName} = $component->isMultiple() ? $attachments : ($attachments[1] ?? null);

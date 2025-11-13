@@ -3,20 +3,24 @@
 namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
-use Moox\Media\Models\Media;
-use Filament\Forms\Components\Select;
-use Moox\Media\Models\MediaCollection;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Media\Resources\MediaResource;
 use Filament\Forms\Components\FileUpload;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Resources\MediaResource;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-class ListMedia extends ListRecords
+class ListMedia extends BaseListDrafts
 {
     protected static string $resource = MediaResource::class;
 
     protected array $processedFiles = [];
+
+    public array $processedHashes = [];
 
     public bool $isSelecting = false;
 
@@ -24,47 +28,131 @@ class ListMedia extends ListRecords
 
     public bool $isGridView = true;
 
+    public string $lang;
+
     public function mount(): void
     {
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
+
+        $defaultLocale = Localization::where('is_default', true)
+            ->where('is_active_admin', true)
+            ->first();
+
+        $defaultLang = $defaultLocale
+            ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
+            : config('app.locale');
+
+        $this->lang = request()->query('lang', $defaultLang);
+    }
+
+    public function saveTranslationFromForm($recordId)
+    {
+        $record = Media::find($recordId);
+
+        if ($record && method_exists($record, 'translateOrNew')) {
+            $lang = $this->lang ?? app()->getLocale();
+            $translation = $record->translateOrNew($lang);
+
+            $formData = [];
+            if (! empty($this->mountedActions)) {
+                foreach ($this->mountedActions as $action) {
+                    if (isset($action['data'])) {
+                        $formData = $action['data'];
+                        break;
+                    }
+                }
+            }
+
+            $translationMapping = [
+                'name' => 'name',
+                'title' => 'title',
+                'alt' => 'alt',
+                'description' => 'description',
+                'internal_note' => 'internal_note',
+            ];
+
+            if (empty($formData['name'])) {
+                Notification::make()
+                    ->title(__('media::fields.validation_error'))
+                    ->body(__('media::fields.name_required'))
+                    ->danger()
+                    ->send();
+
+                return;
+            }
+
+            foreach ($translationMapping as $formField => $dbField) {
+                if (isset($formData[$formField])) {
+                    $translation->$dbField = $formData[$formField];
+                }
+            }
+
+            $translation->save();
+
+            Notification::make()
+                ->title(__('media::fields.translation_saved'))
+                ->body(__('media::fields.translation_saved_message', ['lang' => $lang]))
+                ->success()
+                ->send();
+
+            $this->dispatch('$refresh');
+        }
     }
 
     public function toggleView(): void
     {
-        $this->isGridView = !$this->isGridView;
+        $this->isGridView = ! $this->isGridView;
         session(['media_grid_view' => $this->isGridView]);
 
         $this->resetTable();
+    }
+
+    public function openUsageModal(int $mediaId): void
+    {
+        $this->dispatch('open-modal', id: "usage-modal-{$mediaId}");
     }
 
     public function getHeaderActions(): array
     {
         return [
             Action::make('toggleView')
-                ->label(fn() => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
-                ->icon(fn() => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
-                ->action(fn() => $this->toggleView())
+                ->label(fn () => $this->isGridView ? __('media::fields.table_view') : __('media::fields.grid_view'))
+                ->icon(fn () => $this->isGridView ? 'heroicon-m-table-cells' : 'heroicon-m-squares-2x2')
+                ->action(fn () => $this->toggleView())
                 ->color('gray'),
             Action::make('upload')
                 ->label(__('media::fields.upload_file'))
                 ->icon(config('media.upload.resource.icon'))
-                ->form([
-                    Select::make('collection_name')
+                ->schema([
+                    Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(function () {
+                        ->options(fn () => (function () {
+                            $defaultLang = Localization::where('is_default', true)
+                                ->value('language_id');
+
+                            $alpha2 = $defaultLang
+                                ? StaticLanguage::whereKey($defaultLang)->value('alpha2')
+                                : config('app.locale');
+
                             return MediaCollection::query()
-                                ->pluck('name', 'name')
+                                ->with(['translations' => fn ($q) => $q->where('locale', $alpha2)])
+                                ->whereHas('translations', fn ($q) => $q->where('locale', $alpha2))
+                                ->get()
+                                ->mapWithKeys(function ($item) use ($alpha2) {
+                                    $translation = method_exists($item, 'translate')
+                                        ? $item->translate($alpha2)
+                                        : ($item->translations->first() ?? null);
+
+                                    $name = $translation?->name ?? $item->name;
+
+                                    return [$item->id => $name];
+                                })
+                                ->filter()
                                 ->toArray();
-                        })
+                        })())
+                        ->default(MediaCollection::first()->id)
                         ->searchable()
-                        ->default(function () {
-                            $collection = MediaCollection::firstOrCreate(
-                                ['name' => __('media::fields.uncategorized')],
-                                ['description' => __('media::fields.uncategorized_description')]
-                            );
-                            return $collection->name;
-                        })
                         ->required()
                         ->live(),
                     FileUpload::make('file')
@@ -95,19 +183,24 @@ class ListMedia extends ListRecords
                         ->reorderable(config('media.upload.resource.reorderable'))
                         ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state, $get) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
-                            $processedFiles = session('processed_files', []);
-                            $collectionName = $get('collection_name') ?? __('media::fields.uncategorized');
+                            $collectionId = $get('media_collection_id');
+                            $collection = MediaCollection::find($collectionId);
+                            $collectionName = $collection?->name ?? __('media::fields.uncategorized');
 
-                            foreach ($state as $key => $tempFile) {
-                                if (in_array($key, $processedFiles)) {
+                            $defaultLang = optional(Localization::where('is_default', true)
+                                ->first()?->language)->alpha2 ?? config('app.locale');
+
+                            foreach ($state as $tempFile) {
+                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
+
+                                if (in_array($fileHash, $this->processedHashes)) {
                                     continue;
                                 }
 
-                                $fileHash = hash_file('sha256', $tempFile->getRealPath());
                                 $fileName = $tempFile->getClientOriginalName();
 
                                 $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
@@ -117,7 +210,7 @@ class ListMedia extends ListRecords
                                 })->first();
 
                                 if ($existingMedia) {
-                                    \Filament\Notifications\Notification::make()
+                                    Notification::make()
                                         ->warning()
                                         ->title(__('media::fields.duplicate_file'))
                                         ->body(__('media::fields.duplicate_file_message', [
@@ -129,16 +222,22 @@ class ListMedia extends ListRecords
                                     continue;
                                 }
 
+                                $previousLocale = app()->getLocale();
+                                app()->setLocale($defaultLang);
+
                                 $model = new Media;
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
+                                $media->media_collection_id = $collectionId;
+                                $media->save();
+
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->setAttribute('title', $title);
-                                $media->setAttribute('alt', $title);
+                                $media->title = $title;
+                                $media->alt = $title;
                                 $media->uploader_type = get_class(auth()->user());
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
@@ -157,14 +256,12 @@ class ListMedia extends ListRecords
                                 }
 
                                 $media->save();
-                                $processedFiles[] = $key;
+                                $this->processedHashes[] = $fileHash;
+                                app()->setLocale($previousLocale);
                             }
-
-                            session(['processed_files' => $processedFiles]);
                         }),
                 ])
                 ->modalSubmitAction(false),
         ];
     }
-
 }

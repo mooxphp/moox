@@ -5,9 +5,9 @@ namespace Moox\Security\FilamentActions\Passwords;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
+use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Notifications\Notification;
-use Filament\Tables\Actions\BulkAction;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Collection;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
@@ -70,5 +70,10 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     ->success()
                     ->send();
             });
+    }
+
+    public function rateLimit(int|\Closure|null $maxAttempts): static
+    {
+        return parent::rateLimit($maxAttempts);
     }
 }

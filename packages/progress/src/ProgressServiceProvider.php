@@ -4,54 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\Progress;
 
-use Moox\Core\MooxServiceProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class ProgressServiceProvider extends MooxServiceProvider
+class ProgressServiceProvider extends PackageServiceProvider
 {
-    public function configureMoox(Package $package): void
+    public function configurePackage(Package $package): void
     {
         $package
             ->name('progress')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations()
-            ->hasCommands();
+            ->hasCommands()
+            ->hasAssets();
+    }
 
-        $this->getMooxPackage()
-            ->title('Moox Progress')
-            ->released(true)
-            ->stability('stable')
-            ->category('development')
-            ->usedFor([
-                'building new Moox packages, not used as installed package',
-            ])
-            ->alternatePackages([
-                'moox/builder', // optional alternative package (e.g. moox/post)
-            ])
-            ->templateFor([
-                'we do not know yet',
-            ])
-            ->templateReplace([
-                'Progress' => '%%PackageName%%',
-                'progress' => '%%PackageSlug%%',
-                'This is my package progress' => '%%Description%%',
-                'building new Moox packages, not used as installed package' => '%%UsedFor%%',
-                'released(true)' => 'released(false)',
-                'stability(stable)' => 'stability(dev)',
-                'category(development)' => 'category(unknown)',
-                'moox/builder' => '',
-            ])
-            ->templateRename([
-                'Progress' => '%%PackageName%%',
-                'progress' => '%%PackageSlug%%',
-            ])
-            ->templateSectionReplace([
-                "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',
-            ])
-            ->templateRemove([
-                'build.php',
-            ]);
+    public function packageBooted(): void
+    {
+        FilamentAsset::register([
+            Css::make('core-progress', __DIR__.'/../resources/css/progress.css'),
+        ], 'moox/progress');
     }
 }

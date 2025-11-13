@@ -15,7 +15,6 @@ class PressTrainingServiceProvider extends PackageServiceProvider
         $package
             ->name('press-trainings')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasCommand(InstallCommand::class);
     }

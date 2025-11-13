@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Media\Traits\HasMediaUsable;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
 use Spatie\Image\Enums\Fit;
@@ -19,126 +16,50 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Tag extends Model implements HasMedia, TranslatableContract
+class Tag extends BaseDraftModel implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
+    use HasFactory, HasMediaUsable, InteractsWithMedia;
 
-    protected $table = 'tags';
-
-    public $translatedAttributes = ['title', 'slug', 'content'];
+    /**
+     * Get custom translated attributes for Draft
+     */
+    protected function getCustomTranslatedAttributes(): array
+    {
+        return [
+            'title',
+            'slug',
+            'permalink',
+            'description',
+            'content',
+            'author_id',
+            'author_type',
+        ];
+    }
 
     protected $fillable = [
         'color',
         'weight',
         'count',
-        'featured_image_url',
+        'image',
+        'is_active',
+        'due_at',
+        'uuid',
+        'ulid',
+        'custom_properties',
     ];
 
     protected $casts = [
-        'weight' => 'integer',
-        'count' => 'integer',
+        'is_active' => 'boolean',
+        'due_at' => 'datetime',
+        'image' => 'json',
+        'uuid' => 'string',
+        'ulid' => 'string',
+        'custom_properties' => 'json',
     ];
-
-    /**
-     * Handle filling translations from form data
-     */
-    public function fillTranslations(array $translations): self
-    {
-        foreach ($translations as $locale => $data) {
-            if (! empty($data['title'])) {
-                // Get the translation for this locale (or create a new one)
-                $translation = $this->translateOrNew($locale);
-
-                // Check if title has changed
-                if ($translation->title !== $data['title']) {
-                    $translation->title = $data['title'];
-                }
-
-                // Handle the slug only if it has changed
-                $slug = $data['slug'] ?? Str::slug($data['title']);
-                if ($translation->slug !== $slug) {
-                    $slug = $this->generateUniqueSlug($slug, $locale);
-                    $translation->slug = $slug;
-                }
-
-                // Handle content only if it has changed
-                if ($translation->content !== ($data['content'] ?? null)) {
-                    $translation->content = $data['content'] ?? null;
-                }
-
-                $translation->save();
-            }
-        }
-
-        return $this;
-    }
-
-    public function generateUniqueSlug(string $slug, string $locale, int $counter = 0): string
-    {
-        // Append counter if needed
-        $uniqueSlug = $counter > 0 ? "{$slug}-{$counter}" : $slug;
-
-        // Check if the slug exists for this locale
-        $exists = static::whereHas('translations', function ($query) use ($uniqueSlug, $locale) {
-            $query->where('slug', $uniqueSlug)->where('locale', $locale);
-        })->exists();
-
-        // If exists, try again with an incremented counter
-        return $exists ? $this->generateUniqueSlug($slug, $locale, $counter + 1) : $uniqueSlug;
-    }
-
-    /**
-     * Get all translations as a formatted array
-     */
-    public function getTranslationsArray(): array
-    {
-        $translations = [];
-
-        foreach ($this->translations as $translation) {
-            $translations[$translation->locale] = [
-                'title' => $translation->title,
-                'slug' => $translation->slug,
-                'content' => $translation->content,
-            ];
-        }
-
-        return $translations;
-    }
-
-    /**
-     * Create a new tag with translations
-     */
-    public static function createWithTranslations(array $attributes, array $translations): self
-    {
-        $tag = new static;
-        $tag->fill($attributes);
-        $tag->save();
-
-        $tag->fillTranslations($translations)->save();
-
-        return $tag;
-    }
-
-    /**
-     * Update tag with translations
-     */
-    public function updateWithTranslations(array $attributes, array $translations): self
-    {
-        $this->fill($attributes);
-        $this->fillTranslations($translations);
-        $this->save();
-
-        return $this;
-    }
 
     protected static function newFactory(): TagFactory
     {
         return TagFactory::new();
-    }
-
-    public function getStatusAttribute(): string
-    {
-        return $this->trashed() ? 'deleted' : 'active';
     }
 
     public function taggables(string $type): MorphToMany

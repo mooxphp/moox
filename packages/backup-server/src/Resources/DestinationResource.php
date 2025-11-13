@@ -2,18 +2,21 @@
 
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Forms\Components\Grid;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\BackupServerUi\Resources\DestinationResource\Pages;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\CreateDestination;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\EditDestination;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\ListDestinations;
+use Moox\BackupServerUi\Resources\DestinationResource\Pages\ViewDestination;
 use Moox\BackupServerUi\Resources\DestinationResource\RelationManagers\BackupsRelationManager;
 use Spatie\BackupServer\Models\Destination;
 
@@ -21,21 +24,21 @@ class DestinationResource extends Resource
 {
     protected static ?string $model = Destination::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-arrow-right-end-on-rectangle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-arrow-right-end-on-rectangle';
 
     protected static ?string $navigationLabel = 'Destination';
 
     protected static ?string $pluralNavigationLabel = 'Destinations';
 
-    protected static ?string $navigationGroup = 'Backup server';
+    protected static string|\UnitEnum|null $navigationGroup = 'Backup server';
 
     protected static ?int $priority = 3;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     Hidden::make('status')
@@ -217,8 +220,8 @@ class DestinationResource extends Resource
                     ->label('Keep years')
                     ->toggleable(),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([DeleteBulkAction::make()]);
     }
 
     public static function getRelations(): array
@@ -232,10 +235,10 @@ class DestinationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDestinations::route('/'),
-            'create' => Pages\CreateDestination::route('/create'),
-            'view' => Pages\ViewDestination::route('/{record}'),
-            'edit' => Pages\EditDestination::route('/{record}/edit'),
+            'index' => ListDestinations::route('/'),
+            'create' => CreateDestination::route('/create'),
+            'view' => ViewDestination::route('/{record}'),
+            'edit' => EditDestination::route('/{record}/edit'),
         ];
     }
 }

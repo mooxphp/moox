@@ -5,13 +5,16 @@ namespace Moox\Press\Resources\WpUserResource\Pages;
 use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpBasePost;
+use Moox\Press\Models\WpMedia;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Models\WpUser;
+use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserResource;
 use Override;
 use Symfony\Component\Mime\MimeTypes;
@@ -32,13 +35,13 @@ class EditWpUser extends EditRecord
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
-                /** @var \Moox\Press\Models\WpUserMeta $meta */
+                /** @var WpUserMeta $meta */
                 $data[$meta->meta_key] = $meta->meta_value;
             }
         }
 
         if ($user->attachment) {
-            /** @var \Moox\Press\Models\WpMedia $user->attachment */
+            /** @var WpMedia $user ->attachment */
             $data['image_url'] = $user->attachment->image_url;
         }
 
@@ -81,7 +84,7 @@ class EditWpUser extends EditRecord
             Log::error('User record is not an instance of WpUser in EditWpUser::afterSave');
         }
 
-        /** @var \Illuminate\Database\Eloquent\Model $record */
+        /** @var Model $record */
         $record = $this->record;
         Event::dispatch('eloquent.updated: '.$record::class, $record);
     }

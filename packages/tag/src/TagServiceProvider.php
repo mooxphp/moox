@@ -19,7 +19,6 @@ class TagServiceProvider extends PackageServiceProvider
         $package
             ->name('tag')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_tags_table', 'create_taggables_table', 'create_tag_translations'])
             ->hasCommand(InstallCommand::class);
@@ -28,7 +27,7 @@ class TagServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentView::registerRenderHook(
-            TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListTags::class
         );

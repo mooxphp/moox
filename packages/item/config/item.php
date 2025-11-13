@@ -14,63 +14,31 @@
 | outputs 'All'
 |
 */
-
 return [
-    'single' => 'trans//item::item.item',
-    'plural' => 'trans//item::item.items',
-    'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
-        ],
-        '0' => [
-            'label' => 'Post',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Post',
-                ],
-            ],
-        ],
-        '1' => [
-            'label' => 'Page',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'Page',
+
+    'readonly' => false,
+
+    'resources' => [
+        'item' => [
+            'single' => 'trans//item::item.item',
+            'plural' => 'trans//item::item.items',
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'title',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
             ],
         ],
     ],
+
     'relations' => [],
-    'taxonomies' => [
-        'category' => [
-            'label' => 'Categories',
-            'model' => \Moox\Category\Models\Category::class,
-            'table' => 'categorizables',
-            'relationship' => 'categorizable',
-            'foreignKey' => 'categorizable_id',
-            'relatedKey' => 'category_id',
-            'createForm' => \Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
-            'hierarchical' => true,
-        ],
-        'tag' => [
-            'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
-            'table' => 'taggables',
-            'relationship' => 'taggable',
-            'foreignKey' => 'taggable_id',
-            'relatedKey' => 'tag_id',
-            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-            'hierarchical' => false,
-        ],
-    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -81,5 +49,8 @@ return [
     | and if the panel is enabled.
     |
     */
+    'auth' => [
+        'user' => 'Moox\\DevTools\\Models\\TestUser',
+    ],
     'navigation_group' => 'DEV',
 ];

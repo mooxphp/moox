@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\CreateStaticCurrency;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\EditStaticCurrency;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\ListStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages\ViewStaticCurrency;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\RelationManagers\StaticCountryRelationManager;
+use Moox\Data\Models\StaticCurrency;
 
-class StaticCurrencyResource extends Resource
+class StaticCurrencyResource extends BaseRecordResource
 {
-    use BaseInResource, HasResourceTabs, SingleSimpleInResource;
+    protected static ?string $model = StaticCurrency::class;
 
-    protected static ?string $model = \Moox\Data\Models\StaticCurrency::class;
-
-    protected static ?string $navigationIcon = 'gmdi-euro';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-euro';
 
     public static function getModelLabel(): string
     {
@@ -53,43 +52,43 @@ class StaticCurrencyResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
-            Grid::make(2)
-                ->schema([
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    TextInput::make('code')
-                                        ->label(__('data::fields.code'))
-                                        ->maxLength(3)
-                                        ->required(),
-                                    TextInput::make('common_name')
-                                        ->label(__('data::fields.common_name'))
-                                        ->required(),
-                                    TextInput::make('symbol')
-                                        ->label(__('data::fields.symbol'))
-                                        ->maxLength(10)
-                                        ->nullable(),
-                                    KeyValue::make('exonyms')
-                                        ->label(__('data::fields.exonyms'))
-                                        ->required(),
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 2]),
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 1]),
-                ])
-                ->columns(['lg' => 3]),
-        ]);
+        return $schema
+            ->schema([
+                Grid::make()
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                TextInput::make('code')
+                                    ->label(__('data::fields.code'))
+                                    ->maxLength(3)
+                                    ->required(),
+                                TextInput::make('common_name')
+                                    ->label(__('data::fields.common_name'))
+                                    ->required(),
+                                TextInput::make('symbol')
+                                    ->label(__('data::fields.symbol'))
+                                    ->maxLength(10)
+                                    ->nullable(),
+                                KeyValue::make('exonyms')
+                                    ->label(__('data::fields.exonyms'))
+                                    ->required(),
+                            ])
+                            ->columnSpan(2),
+                        Grid::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpan(1),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -102,11 +101,11 @@ class StaticCurrencyResource extends Resource
                 TextColumn::make('exonyms')->label(__('data::fields.exonyms')),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('id')
-                    ->form([
+                    ->schema([
                         TextInput::make('id')
                             ->label(__('data::fields.id'))
                             ->placeholder(__('core::core.search')),
@@ -125,7 +124,7 @@ class StaticCurrencyResource extends Resource
                         return 'ID: '.$data['id'];
                     }),
                 Filter::make('code')
-                    ->form([
+                    ->schema([
                         TextInput::make('code')
                             ->label(__('data::fields.code'))
                             ->placeholder(__('core::core.search')),
@@ -144,7 +143,7 @@ class StaticCurrencyResource extends Resource
                         return 'Code: '.$data['code'];
                     }),
                 Filter::make('common_name')
-                    ->form([
+                    ->schema([
                         TextInput::make('common_name')
                             ->label(__('data::fields.common_name'))
                             ->placeholder(__('core::core.search')),
@@ -163,7 +162,7 @@ class StaticCurrencyResource extends Resource
                         return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('symbol')
-                    ->form([
+                    ->schema([
                         TextInput::make('symbol')
                             ->label(__('data::fields.symbol'))
                             ->placeholder(__('core::core.search')),
@@ -182,7 +181,7 @@ class StaticCurrencyResource extends Resource
                         return 'Symbol: '.$data['symbol'];
                     }),
                 Filter::make('exonyms')
-                    ->form([
+                    ->schema([
                         TextInput::make('exonyms')
                             ->label(__('data::fields.exonyms'))
                             ->placeholder(__('core::core.search')),
@@ -211,10 +210,15 @@ class StaticCurrencyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticCurrencies::route('/'),
-            'create' => Pages\CreateStaticCurrency::route('/create'),
-            'edit' => Pages\EditStaticCurrency::route('/{record}/edit'),
-            'view' => Pages\ViewStaticCurrency::route('/{record}'),
+            'index' => ListStaticCurrencies::route('/'),
+            'create' => CreateStaticCurrency::route('/create'),
+            'edit' => EditStaticCurrency::route('/{record}/edit'),
+            'view' => ViewStaticCurrency::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
     }
 }

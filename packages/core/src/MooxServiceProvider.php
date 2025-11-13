@@ -2,6 +2,7 @@
 
 namespace Moox\Core;
 
+use ReflectionClass;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,7 +18,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
     public function getMooxPackage(): object
     {
         if ($this->mooxPackage === null) {
-            $packagePath = dirname((new \ReflectionClass(static::class))->getFileName());
+            $packagePath = dirname((new ReflectionClass(static::class))->getFileName());
 
             $this->mooxPackage = new class($packagePath)
             {
@@ -278,7 +279,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
         $plugins = $this->getMooxPackage()->getMooxPlugins();
         $firstPlugin = $this->getMooxPackage()->isFirstPlugin();
 
-        $packagePath = dirname((new \ReflectionClass(static::class))->getFileName());
+        $packagePath = dirname((new ReflectionClass(static::class))->getFileName());
 
         $migrations = glob($packagePath.'/database/migrations/*.php');
         $migrations = is_array($migrations) ? array_map(

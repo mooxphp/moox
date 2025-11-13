@@ -2,36 +2,63 @@ name: PHPStan
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
   push:
-    branches:
-      - main
-      - "feature/**"
+    branches: [main, "feature/**"]
 
 jobs:
-  phpstan:
-    name: phpstan
+  build:
+    name: Build Laravel App
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: app-artifact
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
-          coverage: none
+          php-version: 8.3
 
-      - name: Remove PHP-PSR Extension
+      - name: Bootstrap Laravel App
         run: |
-          sudo apt remove php8.2-psr
+          php ci.php
+          mkdir -p storage/app storage/framework storage/logs
+          touch storage/.gitkeep
+          touch database/database.sqlite
 
-      - name: Install dependencies
-        run: |
-          composer update
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: app-artifact
+          path: app-artifact.tar.gz
 
-      - name: List Installed Dependencies
-        run: composer show -D
+  phpstan:
+    name: PHPStan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download App Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: app-artifact
+          path: .
+
+      - name: Extract Artifact
+        run: tar -xzf app-artifact.tar.gz
+
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Fix bin permissions
+        run: chmod +x vendor/bin/phpstan || true
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan --error-format=github
+        run: vendor/bin/phpstan analyse

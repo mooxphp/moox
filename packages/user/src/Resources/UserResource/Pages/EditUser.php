@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 use Override;
-use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
 {
@@ -18,7 +17,7 @@ class EditUser extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [DeleteAction::make(), Impersonate::make()->record($this->getRecord())];
+        return [DeleteAction::make()];
     }
 
     #[Override]
@@ -36,7 +35,7 @@ class EditUser extends EditRecord
 
     public function afterSave()
     {
-        session()->forget('password_hash_'.Filament::getCurrentPanel()->getAuthGuard());
+        session()->forget('password_hash_'.Filament::getCurrentOrDefaultPanel()->getAuthGuard());
         $this->refreshFormData(['new_password', 'current_password', 'new_password_confirmation']);
 
         return redirect('moox/users');

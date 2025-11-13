@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\Components;
 
 use Moox\Core\MooxServiceProvider;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Spatie\LaravelPackageTools\Package;
 
 class ComponentsServiceProvider extends MooxServiceProvider
@@ -63,8 +65,8 @@ class ComponentsServiceProvider extends MooxServiceProvider
     {
         $files = [];
 
-        foreach (new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
+        foreach (new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
         ) as $file) {
             if ($file->isFile() && $file->getExtension() === 'php') {
                 $files[] = $file->getRealPath();

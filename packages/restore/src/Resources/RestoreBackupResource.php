@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Resources;
 
-use Filament\Forms\Form;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Restore\Models\RestoreBackup;
-use Moox\Restore\Resources\RestoreBackupResource\Pages;
+use Moox\Restore\Resources\RestoreBackupResource\Pages\ListRestoreBackups;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
@@ -26,7 +26,7 @@ class RestoreBackupResource extends Resource
 
     protected static ?string $currentTab = null;
 
-    protected static ?string $navigationIcon = 'gmdi-restore-page';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-restore-page';
 
     protected static ?string $authorModel = null;
 
@@ -35,11 +35,11 @@ class RestoreBackupResource extends Resource
         return parent::getEloquentQuery()->withoutGlobalScopes();
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         static::initAuthorModel();
 
-        return $form->schema([]);
+        return $schema->components([]);
     }
 
     public static function table(Table $table): Table
@@ -96,7 +96,7 @@ class RestoreBackupResource extends Resource
                     ->label(__('restore::translations.created-at'))
                     ->dateTime(),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('retry')
                     ->label(__('jobs::translations.retry'))
                     ->requiresConfirmation()
@@ -106,7 +106,7 @@ class RestoreBackupResource extends Resource
                         ]);
                     }),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make()->hidden(function () use ($currentTab) {
                     $isHidden = in_array($currentTab, ['trash', 'deleted']);
 
@@ -135,7 +135,7 @@ class RestoreBackupResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRestoreBackups::route('/'),
+            'index' => ListRestoreBackups::route('/'),
         ];
     }
 

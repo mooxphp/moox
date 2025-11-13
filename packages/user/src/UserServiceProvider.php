@@ -15,7 +15,6 @@ class UserServiceProvider extends PackageServiceProvider
         $package
             ->name('user')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['update_user_table'])
             ->hasCommand(InstallCommand::class);

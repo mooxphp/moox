@@ -17,8 +17,12 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "adrolli/eloquent-mutators": "*"
+        "moox/core": "self.version",
+        "adrolli/eloquent-mutators": "*",
+        "moox/press": "*"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -33,6 +37,5 @@
             ]
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true
 }

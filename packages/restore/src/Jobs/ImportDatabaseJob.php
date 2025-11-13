@@ -85,7 +85,7 @@ class ImportDatabaseJob implements ShouldQueue
                 Log::info($command);
             }
             RestoreCompletedEvent::dispatch($this->restoreBackup->id);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             RestoreFailedEvent::dispatch($this->restoreBackup->id, $e);
             throw new Exception($e->getMessage());
         }

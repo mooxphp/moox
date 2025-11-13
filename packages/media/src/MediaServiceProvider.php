@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\Media;
 
-use Livewire\Livewire;
-use Moox\Media\Models\Media;
-use Filament\Support\Assets\Js;
-use Filament\Support\Assets\Css;
-use Illuminate\Support\Facades\Gate;
-use Moox\Media\Policies\MediaPolicy;
-use Illuminate\Support\Facades\Blade;
-use Moox\Media\Console\Commands\InstallCommand;
-use Spatie\LaravelPackageTools\Package;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
-use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
+use Livewire\Livewire;
+use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Policies\MediaPolicy;
+use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class MediaServiceProvider extends PackageServiceProvider
 {
@@ -29,7 +29,7 @@ class MediaServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews('media-picker')
             ->hasTranslations()
-            ->hasMigrations('create_media_table', 'create_media_translations_table', 'create_media_collections_table', 'create_media_usables_table')
+            ->hasMigrations('create_media_collections_table', 'create_media_collection_translations', 'create_media_table', 'create_media_translations_table', 'create_media_usables_table')
             ->hasCommands(InstallCommand::class)
             ->hasAssets();
     }
@@ -40,22 +40,33 @@ class MediaServiceProvider extends PackageServiceProvider
 
         Gate::policy(Media::class, MediaPolicy::class);
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
 
-        $this->publishes([
-            __DIR__ . '/../resources/dist/icons' => public_path('vendor/media/icons'),
-        ], 'media-icons');
-
-        FilamentAsset::register([
-            Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
-            // Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
-        ]);
-
         FilamentView::registerRenderHook(
-            TablesRenderHook::TOOLBAR_TOGGLE_COLUMN_TRIGGER_BEFORE,
-            fn(): string => Blade::render('@include("localization::lang-selector")'),
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMedia::class
         );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            scopes: ListMediaCollections::class
+        );
+
+        $this->app->booted(function () {
+            if (app()->runningInConsole()) {
+                return;
+            }
+
+            try {
+                if (Schema::hasTable('media_collections')) {
+                    MediaCollection::ensureUncategorizedExists();
+                }
+            } catch (\Exception $e) {
+                // Silently ignore - table might not exist yet
+            }
+        });
     }
 }

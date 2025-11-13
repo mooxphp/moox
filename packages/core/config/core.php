@@ -462,4 +462,24 @@ return [
         'enabled' => env('SHARED_HOSTING_ENABLED', false),
         'token' => env('SHARED_HOSTING_TOKEN', 'secret'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Draft Publishing Logic
+    |--------------------------------------------------------------------------
+    |
+    | Configure how the main entry status is handled based on translation statuses.
+    |
+    | Options:
+    | - 'auto_publish_single': Auto-publish main entry if only one translation exists and is published
+    | - 'prompt_when_all_published': Prompt user to publish main entry when all translations are published
+    | - 'prompt_when_any_published': Prompt user to publish main entry when any translation is published
+    |
+    */
+
+    'draft_publish_logic' => [
+        'auto_publish_single' => true,
+        'prompt_when_all_published' => true,
+        'prompt_when_any_published' => false,
+    ],
 ];

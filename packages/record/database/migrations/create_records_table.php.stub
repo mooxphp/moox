@@ -1,0 +1,50 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('records', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->ulid('ulid')->unique();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('permalink', 512)->unique()->nullable();
+            $table->enum('status', [
+                'active', 
+                'inactive',
+                'archived',
+            ])->default('inactive');
+            $table->json('custom_properties')->nullable();
+
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->nullableMorphs('author');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('records');
+    }
+};

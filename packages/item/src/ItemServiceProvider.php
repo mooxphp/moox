@@ -14,9 +14,8 @@ class ItemServiceProvider extends MooxServiceProvider
         $package
             ->name('item')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
-            ->hasMigrations()
+            ->hasMigrations('create_items_table')
             ->hasCommands();
 
         $this->getMooxPackage()

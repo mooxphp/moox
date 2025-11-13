@@ -1,0 +1,39 @@
+{
+    "name": "moox/news",
+    "description": "News is a simple Moox Entity, that can be used to create and manage news posts.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/news",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "self.version"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\News\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\News\\NewsServiceProvider"
+            ]
+        }
+    },
+    "prefer-stable": true
+}

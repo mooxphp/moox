@@ -40,6 +40,7 @@ return [
     'region' => 'Region',
     'subregion' => 'Subregion',
     'embargo' => 'Embargo',
+    'people' => 'People',
 
     // Static Currency
     'code' => 'Code',

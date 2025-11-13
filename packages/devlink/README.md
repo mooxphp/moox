@@ -46,42 +46,42 @@ composer.json-deploy
 
 3. When running `php init.php`
 
-    - Creates a `.env` file from `.env.example`
-    - Copies `composer.json-linked` to `composer.json`
-    - Runs `composer update`
+   - Creates a `.env` file from `.env.example`
+   - Copies `composer.json-linked` to `composer.json`
+   - Runs `composer update`
 
-4. When running `devlink:status`:
+4. When running `moox:devstatus`:
 
-    - Shows the configuration and status of each package
-    - Shows the link status (Linked, Unlinked, Deployed)
-    - Shows the update status (Up-to-date, Outdated)
-    - Has a verbose mode `-v` to show more information
+   - Shows the configuration and status of each package
+   - Shows the link status (Linked, Unlinked, Deployed)
+   - Shows the update status (Up-to-date, Outdated)
+   - Has a verbose mode `-v` to show more information
 
-5. When running `devlink:link`:
+5. When running `moox:devlink`:
 
-    - Creates the packages folder, if it does not exist
-    - Creates symlinks for all configured packages
-    - Updates composer.json with development configuration
-    - Creates composer.json-linked for production use
-    - Asks to run `composer install`
-    - Asks to run `php artisan optimize:clear`
-    - Asks to run `php artisan queue:restart`
+   - Creates the packages folder, if it does not exist
+   - Creates symlinks for all configured packages
+   - Updates composer.json with development configuration
+   - Creates composer.json-linked for production use
+   - Asks to run `composer install`
+   - Asks to run `php artisan optimize:clear`
+   - Asks to run `php artisan queue:restart`
 
-6. When running `devlink:deploy`:
+6. When running `moox:deploy`:
 
-    - Removes all symlinks
-    - Deletes the packages folder, if empty
-    - Restores production-ready composer.json from composer.json-linked
-    - Asks to run `composer install`
-    - Asks to run `php artisan optimize:clear`
-    - Asks to run `php artisan queue:restart`
+   - Removes all symlinks
+   - Deletes the packages folder, if empty
+   - Restores production-ready composer.json from composer.json-linked
+   - Asks to run `composer install`
+   - Asks to run `php artisan optimize:clear`
+   - Asks to run `php artisan queue:restart`
 
 7. CI Safety Net - `deploy.sh`:
 
-    - If composer.json-linked exists in the repository:
-        - Remove all symlinks from /packages
-        - rename composer.json-linked to composer.json
-    - Commit and push the change in your GitHub Action
+   - If composer.json-linked exists in the repository:
+     - Remove all symlinks from /packages
+     - rename composer.json-linked to composer.json
+   - Commit and push the change in your GitHub Action
 
 Mac and Linux work out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
 
@@ -115,7 +115,7 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 ## Credits
 
--   [All Contributors](../../contributors)
+- [All Contributors](../../contributors)
 
 ## License
 

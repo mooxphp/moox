@@ -8,11 +8,27 @@ Developers notes:
 
 -   in main composer.json you must allow the plugin for the wordpress installer
 -   add the contents of deploy.sh to your deployment (e.g. on Forge) to create the symlink
+-   for Herd, Valet use one of the files from the wsconfig folder
+-   for Forge (or Nginx) add the following:
 
-```json
-        "allow-plugins": {
-            "roots/wordpress-core-installer": true
-```
+    ```config
+        // after this
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        // add this
+        location /wp/ {
+            try_files $uri $uri/ /wp/index.php?$query_string;
+        }
+    ```
+
+-   in composer.json add the plugin for the core installer
+
+    ```json
+            "allow-plugins": {
+                "roots/wordpress-core-installer": true
+    ```
 
 ## Quick Installation
 

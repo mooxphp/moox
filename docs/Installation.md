@@ -1,3 +1,0 @@
-# Installation
-
-In this section, we will cover the installation of Moox. The new Moox Installer will handle the installation of all Moox packages, soon ...

@@ -2,37 +2,45 @@
 
 namespace Moox\Data\Filament\Resources\StaticLanguageResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class StaticLocalesRelationManager extends RelationManager
 {
     protected static string $relationship = 'locales';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('language_id')
+        return $schema
+            ->components([
+                Select::make('language_id')
                     ->label(__('data::fields.language'))
                     ->relationship('language', 'common_name')
                     ->searchable()
                     ->preload()->required(),
-                Forms\Components\Select::make('country_id')
+                Select::make('country_id')
                     ->label(__('data::fields.country'))
                     ->relationship('country', 'common_name')
                     ->searchable()
                     ->preload()->required(),
-                Forms\Components\Toggle::make('is_official_language')
+                Toggle::make('is_official_language')
                     ->label(__('data::fields.is_official_language'))
                     ->default(false),
-                Forms\Components\TextInput::make('locale')
+                TextInput::make('locale')
                     ->label(__('data::fields.locale'))
                     ->maxLength(255)->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label(__('data::fields.name'))
                     ->maxLength(255)->required(),
             ]);
@@ -43,15 +51,15 @@ class StaticLocalesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('locale')->label(__('data::fields.locale')),
-                Tables\Columns\TextColumn::make('name')->label(__('data::fields.name'))->sortable()->searchable()->toggleable(),
-                Tables\Columns\IconColumn::make('is_official_language')
+                TextColumn::make('locale')->label(__('data::fields.locale')),
+                TextColumn::make('name')->label(__('data::fields.name'))->sortable()->searchable()->toggleable(),
+                IconColumn::make('is_official_language')
                     ->label(__('data::fields.is_official_language'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('language.common_name')
+                TextColumn::make('language.common_name')
                     ->label(__('data::fields.common_language_name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('country.common_name')
+                TextColumn::make('country.common_name')
                     ->label(__('data::fields.common_country_name'))
                     ->sortable(),
             ])
@@ -59,15 +67,15 @@ class StaticLocalesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -2,34 +2,51 @@ name: Pest
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
   push:
-    branches:
-      - main
-      - "feature/**"
+    branches: [main, "feature/**"]
 
 jobs:
-  test:
+  build:
+    name: Build Laravel App
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: app-artifact
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Bootstrap Laravel App
+        run: |
+          php ci.php
+          mkdir -p storage/app storage/framework storage/logs
+          touch storage/.gitkeep
+          touch database/database.sqlite
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: app-artifact
+          path: app-artifact.tar.gz
+
+  pest:
+    name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
+    needs: build
     runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        php: [8.3, 8.4]
+        os: [ubuntu-latest]
+      fail-fast: false
     env:
       DB_DATABASE: testing
       DB_PASSWORD: secretroot
+      DB_USER: root
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest]
-        php: [8.2]
-        laravel: [10.*, 11.*]
-        stability: [prefer-lowest, prefer-stable]
-        include:
-          - laravel: 10.*
-            testbench: 8.*
-          - laravel: 11.*
-            testbench: 9.*
-
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     services:
       mysql:
@@ -42,39 +59,74 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
+      - uses: actions/checkout@v5
 
-      - name: Verfify MySQL connection
-        run: |
-          mysql --version
-          sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -p$DB_PASSWORD -e "SHOW DATABASES"
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Download App Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: app-artifact
+          path: .
+
+      - name: Extract Artifact
+        run: tar -xzf app-artifact.tar.gz
+
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: pcov
+          tools: composer
 
-      - name: Setup problem matchers
+      - name: Fix Permissions (Linux only)
+        if: runner.os == 'Linux'
         run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-      - name: Remove PHP-PSR Extension
-        run: |
-          sudo apt remove php8.2-psr
-      - name: Install dependencies
-        run: |
-          composer update
-      - name: List Installed Dependencies
-        run: composer show -D
+          [ -d storage ] && chmod -R 755 storage || echo "⚠️  storage not found"
+          [ -d bootstrap ] && chmod -R 755 bootstrap || echo "⚠️  bootstrap not found"
+          chmod +x vendor/bin/pest || true
 
-      - name: Execute tests
-        run: vendor/bin/pest --coverage-clover clover.xml
+      - name: Run Pest
+        run: vendor/bin/pest --coverage-clover=clover.xml
         env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: secretroot
+
+      - name: Upload Clover
+        uses: actions/upload-artifact@v5
+        with:
+          name: clover-report-${{ matrix.php }}
+          path: clover.xml
+
+  codacy:
+    name: Codacy Coverage
+    needs: pest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v6
+        with:
+          name: clover-report-8.4
+
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          api-token: ${{ secrets.CODACY }}
+          coverage-reports: clover.xml
+
+  qlty:
+    name: Qlty Coverage
+    needs: pest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v6
+        with:
+          name: clover-report-8.4
+
+      - name: QLTY Coverage
+        uses: qltysh/qlty-action/coverage@v2
+        with:
+          token: ${{ secrets.QLTY }}
+          files: clover.xml

@@ -20,6 +20,7 @@ class StaticCountry extends Model
         'alpha3_t',
         'common_name',
         'native_name',
+        'translations',
         'exonyms',
         'region',
         'subregion',
@@ -41,7 +42,10 @@ class StaticCountry extends Model
     ];
 
     protected $casts = [
+        'capital' => 'array',
+        'native_name' => 'array',
         'exonyms' => 'array',
+        'translations' => 'array',
         'links' => 'array',
         'tlds' => 'array',
         'membership' => 'array',
@@ -71,6 +75,18 @@ class StaticCountry extends Model
 
     public function getFlagIconAttribute(): ?string
     {
-        return 'flag-'.strtolower($this->alpha2);
+        $territoryToCountryMap = [
+            'hm' => 'au', // Heard Island and McDonald Islands -> Australia
+            'um' => 'us', // US Minor Outlying Islands -> United States
+            'bq' => 'nl', // Caribbean Netherlands -> Netherlands
+            'bv' => 'no', // Bouvet Island -> Norway
+            'sh' => 'gb', // Saint Helena -> United Kingdom
+            'sj' => 'no', // Svalbard and Jan Mayen -> Norway
+        ];
+
+        $alpha2 = strtolower($this->alpha2);
+        $flagCode = $territoryToCountryMap[$alpha2] ?? $alpha2;
+
+        return 'flag-'.$flagCode;
     }
 }

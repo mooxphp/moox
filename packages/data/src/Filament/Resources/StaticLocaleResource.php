@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticLocaleResource\Pages;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\CreateStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\EditStaticLocale;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ListStaticLocales;
+use Moox\Data\Filament\Resources\StaticLocaleResource\Pages\ViewStaticLocale;
+use Moox\Data\Models\StaticLocale;
 
-class StaticLocaleResource extends Resource
+class StaticLocaleResource extends BaseRecordResource
 {
-    use BaseInResource, HasResourceTabs, SingleSimpleInResource;
+    protected static ?string $model = StaticLocale::class;
 
-    protected static ?string $model = \Moox\Data\Models\StaticLocale::class;
-
-    protected static ?string $navigationIcon = 'gmdi-fmd-good-s';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-fmd-good-s';
 
     public static function getModelLabel(): string
     {
@@ -55,49 +54,52 @@ class StaticLocaleResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
-            Grid::make(2)
-                ->schema([
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    Select::make('language_id')
-                                        ->label(__('data::fields.language'))
-                                        ->relationship('language', 'common_name')
-                                        ->searchable()
-                                        ->preload()->required(),
-                                    Select::make('country_id')
-                                        ->label(__('data::fields.country'))
-                                        ->relationship('country', 'common_name')
-                                        ->searchable()
-                                        ->preload()->required(),
-                                    Toggle::make('is_official_language')
-                                        ->label(__('data::fields.is_official_language'))
-                                        ->default(false),
-                                    TextInput::make('locale')
-                                        ->label(__('data::fields.locale'))
-                                        ->maxLength(255)->required(),
-                                    TextInput::make('name')
-                                        ->label(__('data::fields.name'))
-                                        ->maxLength(255)->required(),
-
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 2]),
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                        ])
-                        ->columnSpan(['lg' => 1]),
-                ])
-                ->columns(['lg' => 3]),
-        ]);
+        return $schema
+            ->schema([
+                Grid::make()
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                Select::make('language_id')
+                                    ->label(__('data::fields.language'))
+                                    ->relationship('language', 'common_name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Select::make('country_id')
+                                    ->label(__('data::fields.country'))
+                                    ->relationship('country', 'common_name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                Toggle::make('is_official_language')
+                                    ->label(__('data::fields.is_official_language'))
+                                    ->default(false),
+                                TextInput::make('locale')
+                                    ->label(__('data::fields.locale'))
+                                    ->maxLength(255)
+                                    ->required(),
+                                TextInput::make('name')
+                                    ->label(__('data::fields.name'))
+                                    ->maxLength(255)
+                                    ->required(),
+                            ])
+                            ->columnSpan(2),
+                        Grid::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpan(1),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -105,30 +107,37 @@ class StaticLocaleResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('locale')
-                    ->label(__('data::fields.locale'))->sortable()->searchable(),
-                TextColumn::make('name')->label(__('data::fields.name'))->sortable()->searchable()->toggleable(),
+                    ->label(__('data::fields.locale'))
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('name')->label(__('data::fields.name'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 IconColumn::make('language_flag_icon')
-                    ->label('')
+                    ->label('Language')
                     ->icon(fn (string $state): string => $state),
                 TextColumn::make('language.common_name')
                     ->label(__('data::fields.common_language_name'))
-                    ->sortable()->searchable(),
+                    ->sortable()
+                    ->searchable(),
                 IconColumn::make('country_flag_icon')
                     ->label('')
                     ->icon(fn (string $state): string => $state),
                 TextColumn::make('country.common_name')
                     ->label(__('data::fields.common_country_name'))
-                    ->sortable()->searchable(),
+                    ->sortable()
+                    ->searchable(),
                 IconColumn::make('is_official_language')
                     ->label(__('data::fields.is_official_language'))
                     ->boolean(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('id')
-                    ->form([
+                    ->schema([
                         TextInput::make('id')
                             ->label(__('data::fields.id'))
                             ->placeholder(__('core::core.search')),
@@ -147,7 +156,7 @@ class StaticLocaleResource extends Resource
                         return 'ID: '.$data['id'];
                     }),
                 Filter::make('language_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('language_id')
                             ->label(__('data::fields.language_id'))
                             ->placeholder(__('core::core.search')),
@@ -166,7 +175,7 @@ class StaticLocaleResource extends Resource
                         return 'Language ID: '.$data['language_id'];
                     }),
                 Filter::make('country_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('country_id')
                             ->label(__('data::fields.country_id'))
                             ->placeholder(__('core::core.search')),
@@ -185,7 +194,7 @@ class StaticLocaleResource extends Resource
                         return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('locale')
-                    ->form([
+                    ->schema([
                         TextInput::make('locale')
                             ->label(__('data::fields.locale'))
                             ->placeholder(__('core::core.search')),
@@ -204,7 +213,7 @@ class StaticLocaleResource extends Resource
                         return 'Locale: '.$data['locale'];
                     }),
                 Filter::make('name')
-                    ->form([
+                    ->schema([
                         TextInput::make('name')
                             ->label(__('data::fields.name'))
                             ->placeholder(__('core::core.search')),
@@ -224,20 +233,28 @@ class StaticLocaleResource extends Resource
                     }),
                 SelectFilter::make('language')
                     ->label(__('data::fields.language'))
-                    ->relationship('language', 'common_name'),
+                    ->relationship('language', 'common_name')
+                    ->searchable(),
                 SelectFilter::make('country')
                     ->label(__('data::fields.country'))
-                    ->relationship('country', 'common_name'),
-            ]);
+                    ->relationship('country', 'common_name')
+                    ->searchable(),
+            ])
+            ->deferFilters(false);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticLocales::route('/'),
-            'create' => Pages\CreateStaticLocale::route('/create'),
-            'edit' => Pages\EditStaticLocale::route('/{record}/edit'),
-            'view' => Pages\ViewStaticLocale::route('/{record}'),
+            'index' => ListStaticLocales::route('/'),
+            'create' => CreateStaticLocale::route('/create'),
+            'edit' => EditStaticLocale::route('/{record}/edit'),
+            'view' => ViewStaticLocale::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
     }
 }

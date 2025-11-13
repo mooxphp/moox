@@ -17,7 +17,10 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "self.version"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -31,6 +34,5 @@
             ]
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true
 }

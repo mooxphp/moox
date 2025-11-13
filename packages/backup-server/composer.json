@@ -17,8 +17,11 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "adrolli/laravel-backup-server": "*"
+        "moox/core": "self.version",
+        "spatie/laravel-backup-server": "^4.1"
+    },
+    "require-dev": {
+        "moox/devtools": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -32,6 +35,5 @@
             ]
         }
     },
-    "minimum-stability": "stable",
     "prefer-stable": true
 }

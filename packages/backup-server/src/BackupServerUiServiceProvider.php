@@ -15,7 +15,6 @@ class BackupServerUiServiceProvider extends PackageServiceProvider
         $package
             ->name('backup-server-ui')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasCommand(InstallCommand::class);
     }

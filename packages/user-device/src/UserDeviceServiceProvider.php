@@ -18,7 +18,6 @@ class UserDeviceServiceProvider extends PackageServiceProvider
         $package
             ->name('user-device')
             ->hasConfigFile()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_user_devices_table'])
             ->hasCommand(InstallCommand::class);

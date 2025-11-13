@@ -4,31 +4,33 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\CreateStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\EditStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ListStaticCountriesStaticCurrencies;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages\ViewStaticCountriesStaticCurrencies;
+use Moox\Data\Models\StaticCountriesStaticCurrencies;
 
-class StaticCountriesStaticCurrenciesResource extends Resource
+class StaticCountriesStaticCurrenciesResource extends BaseRecordResource
 {
-    use BaseInResource, HasResourceTabs, SingleSimpleInResource;
+    use HasResourceTabs;
 
-    protected static ?string $model = \Moox\Data\Models\StaticCountriesStaticCurrencies::class;
+    protected static ?string $model = StaticCountriesStaticCurrencies::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -55,9 +57,9 @@ class StaticCountriesStaticCurrenciesResource extends Resource
         return config('data.navigation-group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -107,11 +109,11 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('id', 'desc')
-            ->actions([...static::getTableActions()])
-            ->bulkActions([...static::getBulkActions()])
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 Filter::make('id')
-                    ->form([
+                    ->schema([
                         TextInput::make('id')
                             ->label(__('data::fields.id'))
                             ->placeholder(__('core::core.search')),
@@ -130,7 +132,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                         return 'ID: '.$data['id'];
                     }),
                 Filter::make('country_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('country_id')
                             ->label(__('data::fields.country_id'))
                             ->placeholder(__('core::core.search')),
@@ -149,7 +151,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                         return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('currency_id')
-                    ->form([
+                    ->schema([
                         TextInput::make('currency_id')
                             ->label(__('data::fields.currency_id'))
                             ->placeholder(__('core::core.search')),
@@ -179,10 +181,15 @@ class StaticCountriesStaticCurrenciesResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStaticCountriesStaticCurrencies::route('/'),
-            'create' => Pages\CreateStaticCountriesStaticCurrencies::route('/create'),
-            'edit' => Pages\EditStaticCountriesStaticCurrencies::route('/{record}/edit'),
-            'view' => Pages\ViewStaticCountriesStaticCurrencies::route('/{record}'),
+            'index' => ListStaticCountriesStaticCurrencies::route('/'),
+            'create' => CreateStaticCountriesStaticCurrencies::route('/create'),
+            'edit' => EditStaticCountriesStaticCurrencies::route('/{record}/edit'),
+            'view' => ViewStaticCountriesStaticCurrencies::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::getModel()::count();
     }
 }

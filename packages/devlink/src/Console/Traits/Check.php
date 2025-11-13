@@ -7,7 +7,7 @@ trait Check
     private function check(): array
     {
         $status = 'unknown';
-        $message = 'Devlink is in unknown status, run `php artisan devlink:link` to update';
+        $message = 'Devlink is in unknown status, run `php artisan moox:devlink` to update';
         $hasDevlink = file_exists(base_path('composer.json-devlink'));
         $hasDeploy = file_exists(base_path('composer.json-deploy'));
 
@@ -31,6 +31,13 @@ trait Check
         }
 
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
+
+        if (! isset($composerJson['minimum-stability']) || $composerJson['minimum-stability'] !== 'dev') {
+            $composerJson['minimum-stability'] = 'dev';
+            info('Setting minimum stability to dev');
+            file_put_contents($this->composerJsonPath, json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
+
         $repositories = $composerJson['repositories'] ?? [];
 
         foreach ($config['packages'] as $name => $package) {

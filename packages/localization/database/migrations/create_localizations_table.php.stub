@@ -19,7 +19,8 @@ return new class extends Migration {
                 ->nullOnDelete();
 
             $table->string('title');
-            $table->string('slug')->unique;
+            $table->string('slug')->unique();
+            $table->string('locale_variant')->required();
             $table->boolean('is_active_admin')->default(false);
             $table->boolean('is_active_frontend')->default(false);
             $table->boolean('is_default')->default(false);
@@ -45,7 +46,7 @@ return new class extends Migration {
             $table->unsignedInteger('translation_status')->nullable();
             $table->json('language_settings')->nullable();
 
-            $table->unique(['is_default', 'language_id'], 'unique_default_localization');
+            $table->unique(['language_id', 'locale_variant'], 'unique_language_locale');
             $table->timestamps();
         });
     }

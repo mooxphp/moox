@@ -2,35 +2,32 @@
 
 namespace Moox\Packages\Moox\Entities\Packages\Package;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Packages\Models\Package;
-use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\DateTimePicker;
-use Moox\Core\Forms\Components\CopyableField;
+use Filament\Tables\Table;
+use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
-use Moox\Packages\Moox\Entities\Packages\Package\Pages\ViewPackage;
-use Moox\Packages\Moox\Entities\Packages\Package\Pages\ListPackages;
+use Moox\Packages\Models\Package;
 use Moox\Packages\Moox\Entities\Packages\Package\Pages\CreatePackage;
+use Moox\Packages\Moox\Entities\Packages\Package\Pages\ListPackages;
+use Moox\Packages\Moox\Entities\Packages\Package\Pages\ViewPackage;
 
 class PackagesResource extends BaseItemResource
 {
-
     protected static ?string $model = Package::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-extension';
 
     public static function getModelLabel(): string
     {
@@ -62,9 +59,8 @@ class PackagesResource extends BaseItemResource
         return false;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
-
         $schema = [
             Grid::make(2)
                 ->schema([
@@ -171,7 +167,7 @@ class PackagesResource extends BaseItemResource
                                                 ->extraAttributes(['class' => 'font-mono']),
                                         ]),
                                 ])
-                                ->hidden(fn($record) => $record === null),
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -179,7 +175,7 @@ class PackagesResource extends BaseItemResource
         ];
 
         return $form
-            ->schema($schema);
+            ->components($schema);
     }
 
     public static function table(Table $table): Table
@@ -190,7 +186,7 @@ class PackagesResource extends BaseItemResource
                     ->label(__('packages::fields.title'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucfirst($state)),
+                    ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('name')
                     ->label(__('packages::fields.packagist'))
                     ->formatStateUsing(fn($record) => "{$record->vendor}/{$record->name}")
@@ -200,7 +196,7 @@ class PackagesResource extends BaseItemResource
                     ->label(__('packages::fields.package_type'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucwords(str_replace('_', ' ', $state))),
+                    ->formatStateUsing(fn ($state): string => ucwords(str_replace('_', ' ', $state))),
                 TextColumn::make('version_installed')
                     ->label(__('packages::fields.version_installed'))
                     ->searchable()
@@ -209,12 +205,12 @@ class PackagesResource extends BaseItemResource
                     ->label(__('packages::fields.install_status'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucfirst($state)),
+                    ->formatStateUsing(fn ($state): string => ucfirst($state)),
                 TextColumn::make('update_status')
                     ->label(__('packages::fields.update_status'))
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn($state): string => ucwords(str_replace('-', ' ', $state))),
+                    ->formatStateUsing(fn ($state): string => ucwords(str_replace('-', ' ', $state))),
                 ToggleColumn::make('auto_update')
                     ->label(__('packages::fields.auto_update'))
                     ->searchable()
@@ -225,7 +221,7 @@ class PackagesResource extends BaseItemResource
                     ->sortable(),
             ])
             ->defaultSort('title', 'desc')
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
             ])
             ->filters([

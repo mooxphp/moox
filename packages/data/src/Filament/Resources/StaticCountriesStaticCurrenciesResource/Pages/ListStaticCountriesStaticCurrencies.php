@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource;
+use Moox\Data\Models\StaticCountriesStaticCurrencies;
 
-class ListStaticCountriesStaticCurrencies extends ListRecords
+class ListStaticCountriesStaticCurrencies extends BaseListRecords
 {
-    use BaseInListPage, HasListPageTabs, SingleSimpleInListPage;
+    use HasListPageTabs;
 
-    protected static string $resource = \Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource::class;
+    protected static string $resource = StaticCountriesStaticCurrenciesResource::class;
 
     public function mount(): void
     {
@@ -23,6 +23,6 @@ class ListStaticCountriesStaticCurrencies extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('entities.static-countries-static-currencies.tabs', \Moox\Data\Models\StaticCountriesStaticCurrencies::class);
+        return $this->getDynamicTabs('entities.static-countries-static-currencies.tabs', StaticCountriesStaticCurrencies::class);
     }
 }

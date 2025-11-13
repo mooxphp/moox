@@ -3,6 +3,7 @@
 namespace Moox\Data\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Moox\Data\Models\StaticTimezone;
 
 class StaticTimezoneSeeder extends Seeder
 {
@@ -11,7 +12,7 @@ class StaticTimezoneSeeder extends Seeder
      */
     public function run(): void
     {
-        \Moox\Data\Models\StaticTimezone::insert([
+        StaticTimezone::insert([
             [
                 'name' => 'UTC',
                 'offset_standard' => 'UTC',

@@ -6,18 +6,20 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
+use Filament\View\PanelsRenderHook;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Moox\Localization\Http\Middleware\LanguageMiddleware;
 
 class LocalizationPanelProvider extends PanelProvider
 {
@@ -36,10 +38,10 @@ class LocalizationPanelProvider extends PanelProvider
             ->discoverPages(in: __DIR__.'/../Pages', for: 'Moox\\Localization\\Filament\\Pages')
             ->discoverWidgets(in: __DIR__.'/../Widgets', for: 'Moox\\Localization\\Filament\\Widgets')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -55,8 +57,8 @@ class LocalizationPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->renderHook(
-                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): string => Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
             )
             ->plugins([
             ]);

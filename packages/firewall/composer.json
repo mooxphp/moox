@@ -1,0 +1,47 @@
+{
+    "name": "moox/firewall",
+    "description": "Moox Firewall is a simple application level firewall for Laravel and Filament.",
+    "keywords": [
+        "Moox",
+        "Firewall",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/firewall",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Firewall\\": "src",
+            "Moox\\Firewall\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Firewall\\FirewallServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

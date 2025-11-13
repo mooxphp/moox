@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticLocaleResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Data\Filament\Resources\StaticLocaleResource;
+use Moox\Data\Models\StaticLocale;
 
-class ListStaticLocales extends ListRecords
+class ListStaticLocales extends BaseListRecords
 {
-    use BaseInListPage, HasListPageTabs, SingleSimpleInListPage;
+    use HasListPageTabs;
 
-    protected static string $resource = \Moox\Data\Filament\Resources\StaticLocaleResource::class;
+    protected static string $resource = StaticLocaleResource::class;
 
     public function mount(): void
     {
@@ -23,6 +23,6 @@ class ListStaticLocales extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('entities.static-locale.tabs', \Moox\Data\Models\StaticLocale::class);
+        return $this->getDynamicTabs('entities.static-locale.tabs', StaticLocale::class);
     }
 }

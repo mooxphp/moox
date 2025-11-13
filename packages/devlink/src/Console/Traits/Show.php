@@ -79,7 +79,7 @@ trait Show
         }
 
         info('  '.$icon.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
-        info('  '.$updateIcon.$updateBadge.'UPDATE </> '.($isInSync ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
+        info('  '.$updateIcon.$updateBadge.'UPDATE </> '.($isInSync ? 'All packages are in sync with composer.json' : 'You need to run `php artisan moox:devlink` to update the packages'));
 
         if (! $isInSync && $this->getOutput()->isVerbose()) {
             info(' ');

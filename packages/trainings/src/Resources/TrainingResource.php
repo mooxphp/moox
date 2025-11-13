@@ -2,18 +2,17 @@
 
 namespace Moox\Training\Resources;
 
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -34,146 +33,89 @@ class TrainingResource extends Resource
 
     protected static ?string $model = Training::class;
 
-    protected static ?string $navigationIcon = 'gmdi-school';
+    protected static string|\BackedEnum|null $navigationIcon = 'gmdi-school';
 
-    protected static ?string $navigationGroup = 'Trainings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    TextInput::make('title')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Title')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('title')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Title'),
 
-                    TextInput::make('slug')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Slug')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('slug')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Slug'),
 
-                    RichEditor::make('description')
-                        ->rules(['max:255', 'string'])
-                        ->nullable()
-                        ->placeholder('Description')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                RichEditor::make('description')
+                    ->rules(['max:255', 'string'])
+                    ->nullable()
+                    ->placeholder('Description'),
 
-                    TextInput::make('duration')
-                        ->rules(['numeric'])
-                        ->required()
-                        ->numeric()
-                        ->placeholder('Duration')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('duration')
+                    ->rules(['numeric'])
+                    ->required()
+                    ->numeric()
+                    ->placeholder('Duration'),
 
-                    TextInput::make('link')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Link')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('link')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Link'),
 
-                    DateTimePicker::make('due_at')
-                        ->rules(['date'])
-                        ->required()
-                        ->placeholder('Due At')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                DateTimePicker::make('due_at')
+                    ->rules(['date'])
+                    ->required()
+                    ->placeholder('Due At'),
 
-                    Select::make('cycle')
-                        ->rules([
-                            'in:annually,half-yearly,quarterly,monthly,every 2 years,every 3 years,every 4 years,every 5 years',
-                        ])
-                        ->required()
-                        ->searchable()
-                        ->options([
-                            'annually' => 'Annually',
-                            'half-yearly' => 'Half yearly',
-                            'quarterly' => 'Quarterly',
-                            'monthly' => 'Monthly',
-                            'every 2 years' => 'Every 2 years',
-                            'every 3 years' => 'Every 3 years',
-                            'every 4 years' => 'Every 4 years',
-                            'every 5 years' => 'Every 5 years',
-                        ])
-                        ->placeholder('Cycle')
-                        ->default('annually')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                Select::make('cycle')
+                    ->rules([
+                        'in:annually,half-yearly,quarterly,monthly,every 2 years,every 3 years,every 4 years,every 5 years',
+                    ])
+                    ->required()
+                    ->searchable()
+                    ->options([
+                        'annually' => 'Annually',
+                        'half-yearly' => 'Half yearly',
+                        'quarterly' => 'Quarterly',
+                        'monthly' => 'Monthly',
+                        'every 2 years' => 'Every 2 years',
+                        'every 3 years' => 'Every 3 years',
+                        'every 4 years' => 'Every 4 years',
+                        'every 5 years' => 'Every 5 years',
+                    ])
+                    ->placeholder('Cycle')
+                    ->default('annually'),
 
-                    TextInput::make('source_id')
-                        ->rules(['max:255'])
-                        ->required()
-                        ->placeholder('Source Id')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('source_id')
+                    ->rules(['max:255'])
+                    ->required()
+                    ->placeholder('Source Id'),
 
-                    Select::make('training_type_id')
-                        ->rules(['exists:training_types,id'])
-                        ->required()
-                        ->relationship('trainingType', 'title')
-                        ->placeholder('Training Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                Select::make('training_type_id')
+                    ->rules(['exists:training_types,id'])
+                    ->required()
+                    ->relationship('trainingType', 'title')
+                    ->placeholder('Training Type'),
 
-                    TextInput::make('trainingable_id')
-                        ->rules(['max:255'])
-                        ->required()
-                        ->placeholder('Trainingable Id')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                TextInput::make('trainingable_id')
+                    ->rules(['max:255'])
+                    ->required()
+                    ->placeholder('Trainingable Id'),
 
-                    TextInput::make('trainingable_type')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Trainingable Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
+                TextInput::make('trainingable_type')
+                    ->rules(['max:255', 'string'])
+                    ->required()
+                    ->placeholder('Trainingable Type'),
             ]),
-        ]);
+        ])->columns(1);
     }
 
     #[Override]
@@ -232,8 +174,8 @@ class TrainingResource extends Resource
                     ->multiple()
                     ->label('TrainingType'),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([
+            ->recordActions([ViewAction::make(), EditAction::make()])
+            ->toolbarActions([
                 DeleteBulkAction::make()
                     ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {

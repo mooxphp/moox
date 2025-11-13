@@ -7,6 +7,7 @@ return [
     'link|links' => 'Link|Links',
     'no_title' => 'No Title',
     'upload' => 'Upload File',
+    'save_translation' => 'Save Translation',
 
     // File Information
     'mime_type' => 'File Type',
@@ -47,6 +48,10 @@ return [
     'replace_file_success' => 'The file ":oldFileName" was successfully replaced with ":newFileName".',
     'replace_file_error' => 'The file ":fileName" could not be replaced.',
     'replace_error' => 'Error Replacing File',
+    'translation_saved' => 'Translation saved',
+    'translation_saved_message' => 'The translation for :lang was successfully saved.',
+    'name_required' => 'The name is required.',
+    'validation_error' => 'Error',
 
     // Linked Files
     'file_has_links' => 'This file is used in :count :links.',
@@ -82,7 +87,7 @@ return [
     'month' => 'This Month',
     'year' => 'This Year',
 
-    // Collection Filters
+    // Collections
     'all_collections' => 'All Collections',
     'collection_name' => 'Collection Name',
     'collection_description' => 'Collection Description',
@@ -94,6 +99,8 @@ return [
     'delete_collection_with_media_warning' => 'This collection contains :count :files. These files will be moved to the collection ":uncategorized".',
     'uncategorized' => 'Not Assigned',
     'uncategorized_description' => 'Not Assigned Media',
+    'extend_existing_collection' => 'Translate Existing Collection',
+    'create_new_collection' => 'New Collection',
 
     // Media Types
     'uploaded' => 'Uploaded',
@@ -104,6 +111,7 @@ return [
 
     // Errors
     'class_not_found' => 'The class ":class" does not exist.',
+    'collection_name_already_exists' => 'A collection with this name already exists.',
 
     // Media Picker
     'upload_and_select_media' => 'Upload & Select Media',

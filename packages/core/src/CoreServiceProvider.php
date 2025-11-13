@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
-use Filament\Support\Assets\Css;
-use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
+use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Core\Traits\HasGoogleIcons;
@@ -42,12 +41,7 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
-    public function packageBooted(): void
-    {
-        FilamentAsset::register([
-            Css::make('core-progress', __DIR__.'/../resources/dist/progress.css'),
-        ], 'moox/core');
-    }
+    public function packageBooted(): void {}
 
     public function configurePackage(Package $package): void
     {
@@ -55,10 +49,8 @@ class CoreServiceProvider extends PackageServiceProvider
             ->name('core')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasViews()
             ->hasRoutes(['api', 'web'])
-            ->hasCommand(MooxInstaller::class)
-            ->hasCommand(PackageServiceCommand::class);
+            ->hasCommands([MooxInstaller::class, PublishScheduledContentCommand::class, PackageServiceCommand::class]);
     }
 
     protected function getPackageNames(): array

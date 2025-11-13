@@ -2,40 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\RestoreAction;
-use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Database\Eloquent\Model;
-use Moox\Category\Resources\CategoryResource;
-use Override;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Entities\Items\Draft\Pages\BaseViewDraft;
 
-class ViewCategory extends ViewRecord
+class ViewCategory extends BaseViewDraft
 {
     protected static string $resource = CategoryResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            // EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
-            // RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
-        ];
-    }
-
-    #[Override]
-    public function getTitle(): string
-    {
-        $title = parent::getTitle();
-        if ($this->isRecordTrashed()) {
-            $title = $title.' - '.__('core::core.deleted');
-        }
-
-        return $title;
-    }
-
-    private function isRecordTrashed(): bool
-    {
-        return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
-    }
 }
