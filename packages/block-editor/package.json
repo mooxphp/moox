@@ -15,7 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@blocknote/core": "^0.37.0",
+        "@blocknote/core": "^0.42.0",
         "@blocknote/react": "^0.37.0",
         "@blocknote/shadcn": "^0.37.0",
         "axios": "^1.11.0",
