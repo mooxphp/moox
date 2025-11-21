@@ -1,0 +1,24 @@
+{
+    "name": "moox/template-minimal",
+    "autoload": {
+        "psr-4": {
+            "Moox\\TemplateMinimal\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\TemplateMinimal\\TemplateServiceProvider"
+            ]
+        }
+    }
+}
