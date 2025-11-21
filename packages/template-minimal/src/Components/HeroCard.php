@@ -9,10 +9,11 @@ use Illuminate\View\Component;
 class HeroCard extends Component
 {
     public ?array $item = null;
+
     /**
      * Create a new component instance.
      */
-    public function __construct(array $item = null)
+    public function __construct(?array $item = null)
     {
         $this->item = $item;
     }

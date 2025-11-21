@@ -9,7 +9,6 @@ use Spatie\LaravelPackageTools\Package;
 
 class TemplateServiceProvider extends MooxServiceProvider
 {
-    
     public function configureMoox(Package $package): void
     {
         $package
@@ -20,6 +19,7 @@ class TemplateServiceProvider extends MooxServiceProvider
             ->hasMigrations()
             ->hasCommands();
     }
+
     public function bootingPackage(): void
     {
         $componentPath = __DIR__.DIRECTORY_SEPARATOR.'Components';
@@ -27,7 +27,6 @@ class TemplateServiceProvider extends MooxServiceProvider
 
         $components = [];
 
-       
         foreach ($this->scanDirectory($componentPath) as $file) {
             $relativePath = $this->getRelativePath($file, $componentPath);
             $className = $this->convertPathToClassName($relativePath);

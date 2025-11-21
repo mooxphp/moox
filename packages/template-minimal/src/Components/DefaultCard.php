@@ -9,6 +9,7 @@ use Illuminate\View\Component;
 class DefaultCard extends Component
 {
     public ?array $item = null;
+
     /**
      * Create a new component instance.
      */

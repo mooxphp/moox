@@ -16,6 +16,7 @@ class TemplateServiceProvider extends ServiceProvider
             ->hasMigrations()
             ->hasCommands();
     }
+
     public function bootingPackage(): void
     {
         $componentPath = __DIR__.DIRECTORY_SEPARATOR.'Components';
@@ -23,7 +24,6 @@ class TemplateServiceProvider extends ServiceProvider
 
         $components = [];
 
-       
         foreach ($this->scanDirectory($componentPath) as $file) {
             $relativePath = $this->getRelativePath($file, $componentPath);
             $className = $this->convertPathToClassName($relativePath);
