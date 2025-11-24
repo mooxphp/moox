@@ -1,0 +1,35 @@
+# Dependencies
+/node_modules
+/package-lock.json
+
+# Build assets
+/public/build
+/public/hot
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# IDE files
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+.phpactor.json
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache
+.phpunit.cache
+.phpunit.result.cache
+
+# Composer
+/vendor
+

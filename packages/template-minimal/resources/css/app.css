@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+@source '../views/**/*.blade.php';
+@source '../**/*.js';
+@source '../../src/**/*.php';
+@source '../../../../packages/components/resources/views/**/*.blade.php';
+
+
+@theme {
+    
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+        --color-primary-50: oklch(0.969 0.015 12.422);
+        --color-primary-100: oklch(0.941 0.03 12.58);
+        --color-primary-200: oklch(0.892 0.058 10.001);
+        --color-primary-300: oklch(0.81 0.117 11.638);
+        --color-primary-400: oklch(0.712 0.194 13.428);
+        --color-primary-500: oklch(0.645 0.246 16.439);
+        --color-primary-600: oklch(0.586 0.253 17.585);
+        --color-primary-700: oklch(0.514 0.222 16.935);
+        --color-primary-800: oklch(0.455 0.188 13.697);
+        --color-primary-900: oklch(0.41 0.159 10.272);
+        --color-primary-950: oklch(0.271 0.105 12.094);
+    
+}
+
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@plugin "daisyui";
+

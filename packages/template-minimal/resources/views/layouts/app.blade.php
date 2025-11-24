@@ -11,11 +11,26 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
+    {{-- Alpine.js is required for dropdowns and theme switching --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.2/dist/cdn.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Package CSS and JS --}}
+     {{--  
+    @if(isset($templateMinimalAssets))
+   
+        @foreach($templateMinimalAssets['css'] ?? [] as $css)
+            <link rel="stylesheet" href="{{ $css }}">
+        @endforeach
+        @foreach($templateMinimalAssets['js'] ?? [] as $js)
+            <script type="module" src="{{ $js }}"></script>
+        @endforeach
+        
+    @else
+    --}}
+        {{-- Fallback: Try to use @vite if assets are not available --}}
+        @vite(['resources/css/app.css'], $templateMinimalBuildPath ?? '../packages/template-minimal/public/build')
+    {{-- @endif --}}
 
     <script>
         (function() {
@@ -62,7 +77,7 @@
       -->
                 <li>
                     <x-moox-dropdown>
-                        <div tabindex="0" role="button" class="flex items-center gap-1">
+                        <div tabindex="0" role="button"class="flex items-center gap-1 cursor-pointer">
                             Neu
                             <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24">
@@ -70,23 +85,23 @@
                             </svg>
                         </div>
                         <x-moox-dropdown-liste tabindex="-1">
-                <li><a href="#"
-                        class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Beitrag</a>
-                </li>
-                <li><a href="#"
-                        class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Seite</a>
-                </li>
-                <li><a href="#"
-                        class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Schulung</a>
-                </li>
-                </x-moox-dropdown-liste>
-                </x-moox-dropdown>
+                            <li><a href="#"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Beitrag</a>
+                            </li>
+                            <li><a href="#"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Seite</a>
+                            </li>
+                            <li><a href="#"
+                                    class="flex items-center px-3 py-2 text-sm rounded-lg gap-x-3 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-slate-100 dark:text-neutral-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">Schulung</a>
+                            </li>
+                        </x-moox-dropdown-liste>
+                    </x-moox-dropdown>
                 </li>
             </ul>
 
 
             <x-moox-dropdown class="relative">
-                <button type="button" role="button" class="flex items-center gap-2">
+                <button type="button" role="button"  class="flex items-center gap-2 cursor-pointer">
                     <img class="rounded-full shrink-0 size-7"
                         src="https://heco.in/wp/wp-content/uploads/2023/03/Jesse_Reinhold_03_web_243x243.jpg"
                         alt="Avatar"><span>Reinhold Jesse</span>
@@ -202,7 +217,7 @@
     </div>
     <!--auth nav top end-->
 
-    
+
     <div class="container mx-auto">
         <!-- header navigation start -->
         <div class="">
@@ -311,7 +326,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <!-- footer start -->
     <div class="bg-slate-300">
