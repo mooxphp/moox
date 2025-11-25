@@ -338,6 +338,11 @@ return [
             'path' => $public_base_path.'/progress',
             'type' => 'public',
         ],
+        'prompts' => [
+            'active' => true,
+            'path' => $public_base_path.'/prompts',
+            'type' => 'public',
+        ],
         'record' => [
             'active' => false,
             'path' => $public_base_path.'/record',
