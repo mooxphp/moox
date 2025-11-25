@@ -172,11 +172,11 @@ class CliPromptRuntime implements PromptRuntime
             'hint' => $hint,
             'transform' => $transform,
         ];
-        
+
         if ($required !== false) {
             $params['required'] = $required;
         }
-        
+
         return Prompts\search(...$params);
     }
 
@@ -202,7 +202,6 @@ class CliPromptRuntime implements PromptRuntime
         );
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | Auxiliary Prompts
@@ -213,7 +212,6 @@ class CliPromptRuntime implements PromptRuntime
     {
         Prompts\pause($message);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -256,7 +254,6 @@ class CliPromptRuntime implements PromptRuntime
         Prompts\outro($message);
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | Table Output
@@ -267,7 +264,6 @@ class CliPromptRuntime implements PromptRuntime
     {
         Prompts\table($headers, $rows);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -281,7 +277,6 @@ class CliPromptRuntime implements PromptRuntime
     ): mixed {
         return Prompts\spin($callback, $message);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -303,7 +298,6 @@ class CliPromptRuntime implements PromptRuntime
         );
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | Clear Terminal
@@ -314,7 +308,6 @@ class CliPromptRuntime implements PromptRuntime
     {
         Prompts\clear();
     }
-
 
     /*
     |--------------------------------------------------------------------------

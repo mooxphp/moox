@@ -101,7 +101,6 @@ interface PromptRuntime
 
     public function pause(string $message = 'Press ENTER to continue'): void;
 
-
     /*
     |--------------------------------------------------------------------------
     | Informational Messages
@@ -122,7 +121,6 @@ interface PromptRuntime
 
     public function outro(string $message): void;
 
-
     /*
     |--------------------------------------------------------------------------
     | Table Output
@@ -130,7 +128,6 @@ interface PromptRuntime
     */
 
     public function table(array $headers, array $rows): void;
-
 
     /*
     |--------------------------------------------------------------------------
@@ -142,7 +139,6 @@ interface PromptRuntime
         Closure $callback,
         string $message = '',
     ): mixed;
-
 
     /*
     |--------------------------------------------------------------------------
@@ -157,7 +153,6 @@ interface PromptRuntime
         string $hint = '',
     ): Progress|array;
 
-
     /*
     |--------------------------------------------------------------------------
     | Clear Terminal
@@ -165,7 +160,6 @@ interface PromptRuntime
     */
 
     public function clear(): void;
-
 
     /*
     |--------------------------------------------------------------------------
