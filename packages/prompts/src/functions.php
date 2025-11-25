@@ -7,7 +7,6 @@ use Laravel\Prompts\FormBuilder;
 use Laravel\Prompts\Progress;
 use Moox\Prompts\Support\PromptRuntime;
 
-
 /*
 |--------------------------------------------------------------------------
 | Input Prompts
@@ -147,7 +146,6 @@ function multisearch(
     );
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Auxiliary Prompts
@@ -158,7 +156,6 @@ function pause(string $message = 'Press ENTER to continue'): void
 {
     app(PromptRuntime::class)->pause($message);
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -201,7 +198,6 @@ function outro(string $message): void
     app(PromptRuntime::class)->outro($message);
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Table
@@ -213,7 +209,6 @@ function table(array $headers, array $rows): void
     app(PromptRuntime::class)->table($headers, $rows);
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Spinner
@@ -224,7 +219,6 @@ function spin(Closure $callback, string $message = ''): mixed
 {
     return app(PromptRuntime::class)->spin($callback, $message);
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -243,7 +237,6 @@ function progress(
     );
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Clear
@@ -254,7 +247,6 @@ function clear(): void
 {
     app(PromptRuntime::class)->clear();
 }
-
 
 /*
 |--------------------------------------------------------------------------

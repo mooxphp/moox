@@ -3,10 +3,9 @@
 namespace Moox\Prompts;
 
 use Moox\Core\MooxServiceProvider;
-use Spatie\LaravelPackageTools\Package;
-
-use Moox\Prompts\Support\PromptRuntime;
 use Moox\Prompts\Support\CliPromptRuntime;
+use Moox\Prompts\Support\PromptRuntime;
+use Spatie\LaravelPackageTools\Package;
 
 class PromptsServiceProvider extends MooxServiceProvider
 {
@@ -22,7 +21,7 @@ class PromptsServiceProvider extends MooxServiceProvider
         parent::register();
 
         $this->app->singleton(PromptRuntime::class, function ($app) {
-            return new CliPromptRuntime();
+            return new CliPromptRuntime;
         });
     }
 
