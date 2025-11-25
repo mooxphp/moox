@@ -1,6 +1,6 @@
 {
     "name": "moox/prompts",
-    "description": "Prompts is a simple Moox Entity, that can be used to create and manage simple entries, like logs.",
+    "description": " Prompts is a package that provides CLI-compatible prompts for Laravel Artisan Commands with identical API to Laravel Prompts. Supports all prompt types",
     "keywords": [
         "Moox",
         "Laravel",
