@@ -8,6 +8,7 @@ use Moox\Monorepo\Actions\DiscoverPackagesAction;
 use Moox\Monorepo\Contracts\GitHubClientInterface;
 use Moox\Monorepo\DataTransferObjects\PackageInfo;
 use Moox\Monorepo\Services\DevlinkService;
+
 use function Moox\Prompts\multiselect;
 use function Moox\Prompts\progress;
 use function Moox\Prompts\table;
@@ -80,7 +81,7 @@ class CreateMissingRepositoriesCommand extends Command
         // Let user select which repositories to create
         if (! $this->option('force')) {
             $selectedPackages = $this->selectPackagesToCreate($missingPackages);
-            
+
             if ($selectedPackages->isEmpty()) {
                 $this->info('No repositories selected. Operation cancelled.');
 
@@ -187,12 +188,12 @@ class CreateMissingRepositoriesCommand extends Command
         $choiceToPackage = [];
         $choices = $missingPackages->map(function ($package) use (&$choiceToPackage) {
             $type = $package->visibility === 'public' ? '🔓' : '🔒';
-            $description = $package->description ? ' - ' . substr($package->description, 0, 50) : '';
+            $description = $package->description ? ' - '.substr($package->description, 0, 50) : '';
             $choice = "{$type} {$package->name} ({$package->visibility}){$description}";
-            
+
             // Store mapping for easy lookup
             $choiceToPackage[$choice] = $package;
-            
+
             return $choice;
         })->toArray();
 
