@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
-use Override;
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Traits\HasGoogleIcons;
+use Moox\Core\Console\Commands\MooxInstallCommand;
+use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
-use Spatie\LaravelPackageTools\Package;
+use Moox\Core\Traits\HasGoogleIcons;
 use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
-use Moox\Core\Console\Commands\MooxInstallCommand;
+use Override;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
