@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
+use Override;
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Console\Commands\MooxInstaller;
-use Moox\Core\Console\Commands\PackageServiceCommand;
-use Moox\Core\Console\Commands\PublishScheduledContentCommand;
+use Moox\Core\Traits\HasGoogleIcons;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
-use Moox\Core\Traits\HasGoogleIcons;
+use Spatie\LaravelPackageTools\Package;
 use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
-use Override;
-use Spatie\LaravelPackageTools\Package;
+use Moox\Core\Console\Commands\MooxInstallCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
@@ -50,7 +49,7 @@ class CoreServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommands([MooxInstaller::class, PublishScheduledContentCommand::class, PackageServiceCommand::class]);
+            ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class]);
     }
 
     protected function getPackageNames(): array
