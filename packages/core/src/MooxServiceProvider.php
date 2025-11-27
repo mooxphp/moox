@@ -127,6 +127,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                                         $plugins[] = $nsMatch[1].'\\'.$classMatch[1];
                                     }
                                 }
+
                                 return $plugins;
                             }
                         }
@@ -318,6 +319,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
             );
             $migrations = array_map(function (string $migration): string {
                 $name = basename($migration);
+
                 return str_replace(['.php', '.stub'], '', $name);
             }, $migrationFiles);
         }

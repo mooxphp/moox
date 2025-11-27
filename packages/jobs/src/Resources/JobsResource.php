@@ -111,7 +111,7 @@ class JobsResource extends Resource
                         // $b = round($gray[2] + ($green[2] - $gray[2]) * $f);
 
                         // return "rgb({$r}, {$g}, {$b})";
-                        return "var(--success-500)";
+                        return 'var(--success-500)';
                     }),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))

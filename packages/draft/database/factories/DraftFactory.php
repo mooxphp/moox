@@ -14,9 +14,9 @@ class DraftFactory extends Factory
      */
     private const LOCALES = [
         'en_us' => 'English',
-        'de_de' => 'Deutsch', 
+        'de_de' => 'Deutsch',
         'fr_fr' => 'Français',
-        'es_es' => 'Español'
+        'es_es' => 'Español',
     ];
 
     public function definition(): array
@@ -118,7 +118,7 @@ class DraftFactory extends Factory
     {
         $baseDescription = $this->faker->paragraph(2);
         $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
-        
+
         return $baseDescription.$suffix;
     }
 
@@ -130,7 +130,7 @@ class DraftFactory extends Factory
         $content = $this->faker->paragraphs(rand(3, 8), true);
 
         $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
-        
+
         return $content.$suffix;
     }
 

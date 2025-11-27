@@ -176,7 +176,6 @@ class Localization extends Model
             }
         }
 
-
         return $this->language->flag_icon;
     }
 
@@ -211,6 +210,7 @@ class Localization extends Model
         try {
             $factory = app(\BladeUI\Icons\Factory::class);
             $factory->svg("flag-icons-circle-{$flagCode}");
+
             return true;
         } catch (\BladeUI\Icons\Exceptions\SvgNotFound $e) {
             return false;

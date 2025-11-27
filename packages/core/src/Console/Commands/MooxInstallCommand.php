@@ -9,13 +9,12 @@ use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\select;
-use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\text;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\warning;
-use function Laravel\Prompts\error;
 
 class MooxInstallCommand extends Command
 {
@@ -26,6 +25,7 @@ class MooxInstallCommand extends Command
     protected $description = 'Install Moox packages that extend MooxServiceProvider';
 
     protected array $mooxProviders = []; // packageName => providerClass
+
     protected array $packagePlugins = []; // packageName => ['plugins' => [], 'provider' => '']
 
     public function handle(): int
@@ -37,6 +37,7 @@ class MooxInstallCommand extends Command
         // Step 1: Check for Filament
         if (! $this->checkForFilament(silent: true)) {
             $this->error('❌ Filament installation is required.');
+
             return self::FAILURE;
         }
 
@@ -46,6 +47,7 @@ class MooxInstallCommand extends Command
 
         if (empty($this->mooxProviders)) {
             $this->warn('⚠️ No packages extending MooxServiceProvider found.');
+
             return self::SUCCESS;
         }
 
@@ -57,6 +59,7 @@ class MooxInstallCommand extends Command
 
         if (empty($assets)) {
             $this->warn('⚠️ No assets found to install.');
+
             return self::SUCCESS;
         }
 
@@ -153,9 +156,10 @@ class MooxInstallCommand extends Command
     protected function installAssetType(string $type, array $assets): void
     {
         $installer = $this->getAssetInstaller($type);
-        
+
         if (! $installer) {
             $this->warn("⚠️ No installer found for asset type: {$type}");
+
             return;
         }
 
@@ -163,11 +167,11 @@ class MooxInstallCommand extends Command
         $allData = [];
         $packages = [];
         $packageDetails = [];
-        
+
         foreach ($assets as $asset) {
             $packageName = $asset['package'];
             $data = $asset['data'] ?? [];
-            
+
             $allData = array_merge($allData, $data);
             $packages[] = $packageName;
             $packageDetails[$packageName] = $data;
@@ -180,18 +184,18 @@ class MooxInstallCommand extends Command
         // Show summary
         $this->newLine();
         $this->info("📦 {$type} found:");
-        $this->line("  Total: ".count($allData)." item(s) from ".count(array_unique($packages))." package(s)");
-        
+        $this->line('  Total: '.count($allData).' item(s) from '.count(array_unique($packages)).' package(s)');
+
         // List details per package
         foreach ($packageDetails as $packageName => $items) {
             if (! empty($items)) {
-                $this->line("  • {$packageName}: ".count($items)." item(s)");
+                $this->line("  • {$packageName}: ".count($items).' item(s)');
                 if ($this->option('debug') || count($items) <= 5) {
                     foreach ($items as $item) {
                         $this->line("    - {$item}");
                     }
                 } else {
-                    $this->line("    (".implode(', ', array_slice($items, 0, 3)).", ... and ".(count($items) - 3)." more)");
+                    $this->line('    ('.implode(', ', array_slice($items, 0, 3)).', ... and '.(count($items) - 3).' more)');
                 }
             }
         }
@@ -253,7 +257,7 @@ class MooxInstallCommand extends Command
             'seeders' => false,
             default => true,
         };
-        
+
         // Force interactive confirmation - always ask explicitly
         if ($this->option('no-interaction')) {
             // In non-interactive mode, use default
@@ -262,7 +266,7 @@ class MooxInstallCommand extends Command
             // In interactive mode, always ask - ensure each confirmation is separate
             // Add newline and ensure we're in interactive mode
             $this->newLine();
-            
+
             // Check if we're actually in interactive mode
             if (! $this->input->isInteractive()) {
                 // Fallback if not interactive - but warn about it
@@ -274,35 +278,37 @@ class MooxInstallCommand extends Command
                 // Solution: Use Laravel's built-in confirm() method instead of Prompts
                 // This ensures proper input handling
                 $question = "Install {$type} for all packages?";
-                
+
                 // Use Laravel Command's confirm() method which handles input correctly
                 $shouldInstall = $this->confirm($question, $defaultConfirm);
             }
         }
-        
+
         if (! $shouldInstall) {
             $this->line("⏩ Skipped {$type}");
+
             return;
         }
-        
+
         $published = false;
         $publishedPackages = [];
         $skippedPackages = [];
         $failedPackages = [];
-        
+
         foreach ($assets as $asset) {
             $packageName = $asset['package'];
             $itemNames = $asset['data'] ?? [];
-            
+
             // Check if assets are already published/exist
             $alreadyExists = $this->checkAssetsExist($type, $packageName, $itemNames);
-            
+
             if ($alreadyExists) {
                 $skippedPackages[] = $packageName;
                 $this->line("  ℹ️ {$packageName}: {$type} already exist, skipping");
+
                 continue;
             }
-            
+
             // Try to publish
             if ($this->publishPackageAssets($packageName, $type)) {
                 $published = true;
@@ -311,20 +317,20 @@ class MooxInstallCommand extends Command
                 $failedPackages[] = $packageName;
             }
         }
-        
+
         // Show summary
         if ($published) {
             $this->info('✅ '.ucfirst($type).' published for: '.implode(', ', $publishedPackages));
         }
-        
+
         if (! empty($skippedPackages)) {
             $this->line('ℹ️ Skipped (already exist): '.implode(', ', $skippedPackages));
         }
-        
+
         if (! empty($failedPackages) && ! $published) {
             $this->line('ℹ️ No '.$type.' were published (no publish tags found)');
         }
-        
+
         // Run post-publish action if provided (e.g., migrate for migrations)
         // Only run if there are assets to process (published or already exist)
         if ($afterPublish && ($published || ! empty($skippedPackages) || ! empty($failedPackages))) {
@@ -350,28 +356,28 @@ class MooxInstallCommand extends Command
         if (empty($migrationNames)) {
             return false;
         }
-        
+
         $migrationPath = database_path('migrations');
-        
+
         if (! File::isDirectory($migrationPath)) {
             return false;
         }
-        
+
         $existingFiles = File::files($migrationPath);
-        
+
         foreach ($migrationNames as $migrationName) {
             foreach ($existingFiles as $file) {
                 $filename = $file->getFilename();
                 // Remove timestamp prefix if exists (format: YYYY_MM_DD_HHMMSS_name.php)
                 $nameWithoutTimestamp = preg_replace('/^\d{4}_\d{2}_\d{2}_\d{6}_/', '', $filename);
                 $nameWithoutExtension = str_replace('.php', '', $nameWithoutTimestamp);
-                
+
                 if ($nameWithoutExtension === $migrationName || str_ends_with($nameWithoutExtension, '_'.$migrationName)) {
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -379,15 +385,16 @@ class MooxInstallCommand extends Command
     {
         // Ask for confirmation
         $this->newLine();
-        if (! $this->confirm("Run seeders for all packages?", false)) {
+        if (! $this->confirm('Run seeders for all packages?', false)) {
             $this->line("⏩ Skipped {$type}");
+
             return;
         }
-        
+
         $executed = 0;
         $failed = 0;
         $skipped = 0;
-        
+
         foreach ($assets as $asset) {
             $packageName = $asset['package'];
             foreach ($asset['data'] as $seeder) {
@@ -417,7 +424,7 @@ class MooxInstallCommand extends Command
                 }
             }
         }
-        
+
         if ($executed > 0) {
             $this->info("✅ Executed {$executed} seeder(s)");
         }
@@ -441,7 +448,7 @@ class MooxInstallCommand extends Command
         // Collect all available plugins from all packages
         $allPlugins = [];
         $packagePluginMap = []; // Map plugin class to package name for display
-        
+
         foreach ($this->packagePlugins as $packageName => $pluginInfo) {
             foreach ($pluginInfo['plugins'] as $plugin) {
                 $resolved = $this->resolvePluginClass($packageName, $plugin);
@@ -456,23 +463,24 @@ class MooxInstallCommand extends Command
 
         if (empty($allPlugins)) {
             $this->warn('⚠️ No valid plugin classes found');
+
             return;
         }
 
         // Show summary
         $this->newLine();
-        $this->info("📦 Found ".count($allPlugins)." plugin(s) from ".count($this->packagePlugins)." package(s)");
+        $this->info('📦 Found '.count($allPlugins).' plugin(s) from '.count($this->packagePlugins).' package(s)');
 
         // Loop: Install plugins in panels until user says no
         do {
             // Flush output buffer to ensure clean display
             $this->output->write('', true);
             $this->newLine();
-            
+
             // Step 1: Select panel
             $this->info('📋 In welches Panel sollen Plugins installiert werden?');
             $panelPath = $this->selectOrCreatePanel('plugins');
-            
+
             if (! $panelPath) {
                 $this->warn('⚠️ Kein Panel ausgewählt, überspringe...');
                 break;
@@ -481,8 +489,8 @@ class MooxInstallCommand extends Command
             // Flush and show selected panel
             $this->output->write('', true);
             $this->newLine();
-            $this->info("✅ Ausgewähltes Panel: ".basename($panelPath, '.php'));
-            
+            $this->info('✅ Ausgewähltes Panel: '.basename($panelPath, '.php'));
+
             // Step 2: Select plugins to install
             if (empty($allPlugins)) {
                 $this->newLine();
@@ -492,33 +500,33 @@ class MooxInstallCommand extends Command
 
             // Show available plugins count
             $this->newLine();
-            $this->info("📦 Verfügbare Plugins: ".count($allPlugins));
-            
+            $this->info('📦 Verfügbare Plugins: '.count($allPlugins));
+
             // Prepare plugin options for multiselect
             $pluginOptions = array_values($allPlugins);
-            
+
             if (empty($pluginOptions)) {
                 $this->warn('⚠️ Keine Plugins verfügbar');
                 break;
             }
-            
+
             // Flush output buffer multiple times to ensure clean display
             $this->output->write('', true);
             $this->output->write('', true);
             $this->newLine();
-            
+
             // Ensure we're in interactive mode
             if (! $this->input->isInteractive()) {
                 $this->warn('⚠️ Nicht im interaktiven Modus, überspringe Plugin-Auswahl');
                 break;
             }
-            
+
             // Show that we're about to show the multiselect
             $this->line('🔽 Plugin-Auswahl wird angezeigt...');
             $this->output->write('', true);
-            
+
             $selectedPlugins = multiselect(
-                label: "Welche Plugins sollen in diesem Panel installiert werden?",
+                label: 'Welche Plugins sollen in diesem Panel installiert werden?',
                 options: $pluginOptions,
                 default: [], // Default: none selected (user must choose)
                 required: false
@@ -533,7 +541,7 @@ class MooxInstallCommand extends Command
             } else {
                 // Install selected plugins
                 $this->installResolvedPlugins($selectedPlugins, $panelPath);
-                
+
                 // Remove installed plugins from available list
                 foreach ($selectedPlugins as $pluginClass) {
                     unset($allPlugins[$pluginClass]);
@@ -554,10 +562,9 @@ class MooxInstallCommand extends Command
                 'Weitere Plugins in ein anderes Panel installieren?',
                 false
             );
-            
+
             // Flush after confirm
             $this->output->write('', true);
-
         } while ($installMore);
     }
 
@@ -578,7 +585,7 @@ class MooxInstallCommand extends Command
         // Filter Moox packages
         $mooxPackages = array_filter(
             array_keys($allPackages),
-            fn($pkg) => str_starts_with($pkg, 'moox/')
+            fn ($pkg) => str_starts_with($pkg, 'moox/')
         );
 
         if (empty($mooxPackages)) {
@@ -588,11 +595,12 @@ class MooxInstallCommand extends Command
         // Get provider classes directly from packages
         foreach ($mooxPackages as $packageName) {
             $providerClass = $this->getProviderClassFromPackage($packageName);
-            
+
             if (! $providerClass) {
                 if ($this->option('debug')) {
                     $this->line("  ⚠️ {$packageName}: No service provider found");
                 }
+
                 continue;
             }
 
@@ -623,7 +631,7 @@ class MooxInstallCommand extends Command
             if (File::exists($composerPath)) {
                 $composer = json_decode(File::get($composerPath), true);
                 $providerClasses = $composer['extra']['laravel']['providers'] ?? [];
-                
+
                 if (! empty($providerClasses)) {
                     return $providerClasses[0]; // Use first provider
                 }
@@ -641,6 +649,7 @@ class MooxInstallCommand extends Command
 
         try {
             $reflection = new \ReflectionClass($providerClass);
+
             return $reflection->isSubclassOf(\Moox\Core\MooxServiceProvider::class);
         } catch (\Exception $e) {
             return false;
@@ -652,7 +661,7 @@ class MooxInstallCommand extends Command
         // Check if migrations directory exists in package
         $packageParts = explode('/', $packageName);
         $packageDir = $packageParts[1] ?? '';
-        
+
         $possiblePaths = [
             base_path("packages/{$packageDir}/database/migrations"),
             base_path("vendor/{$packageName}/database/migrations"),
@@ -671,7 +680,7 @@ class MooxInstallCommand extends Command
     {
         // Check if translations are published in lang directory
         $packageTag = str_replace('moox/', '', $packageName);
-        
+
         // Check common translation paths
         $langPath = lang_path($packageTag);
         if (File::isDirectory($langPath) && ! empty(File::allFiles($langPath))) {
@@ -697,7 +706,7 @@ class MooxInstallCommand extends Command
     protected function publishPackageAssets(string $packageName, string $type): bool
     {
         $packageTag = str_replace('moox/', '', $packageName);
-        
+
         // Try common tag patterns
         $tags = [
             $packageTag.'-'.$type,
@@ -714,7 +723,7 @@ class MooxInstallCommand extends Command
                     '--force' => false,
                     '--no-interaction' => true,
                 ]);
-                
+
                 if ($result === 0) {
                     // Silent success - parent method will show summary
                     $published = true;
@@ -739,7 +748,7 @@ class MooxInstallCommand extends Command
         // Try to resolve from package namespace
         $packageParts = explode('/', $packageName);
         $packageNamespace = 'Moox\\'.ucfirst($packageParts[1] ?? '');
-        
+
         $possibleClasses = [
             $packageNamespace.'\\Database\\Seeders\\'.ucfirst($seeder),
             $packageNamespace.'\\Database\\Seeders\\'.$seeder,
@@ -763,17 +772,19 @@ class MooxInstallCommand extends Command
         if (empty($existingPanels)) {
             $this->newLine();
             $this->info('ℹ️ Keine existierenden Panels gefunden.');
-            
+
             // Flush before confirm
             $this->output->write('', true);
-            
+
             if ($this->confirm("Neues Filament Panel für {$packageName} erstellen?", true)) {
                 $this->output->write('', true);
                 $this->newLine();
+
                 return $this->createNewPanel();
             }
-            
+
             $this->output->write('', true);
+
             return null;
         }
 
@@ -783,7 +794,7 @@ class MooxInstallCommand extends Command
         foreach ($existingPanels as $panel) {
             $this->line("  • {$panel}");
         }
-        
+
         // Flush output buffer before showing prompt
         $this->output->write('', true);
         $this->newLine();
@@ -795,9 +806,9 @@ class MooxInstallCommand extends Command
         }
         $options['__new__'] = '✨ Neues Panel erstellen';
         $options['__skip__'] = '⏩ Überspringen';
-        
+
         $selected = select(
-            label: "Panel auswählen:",
+            label: 'Panel auswählen:',
             options: $options,
             default: $existingPanels[0] ?? '__new__'
         );
@@ -811,6 +822,7 @@ class MooxInstallCommand extends Command
 
         if ($selected === '__new__') {
             $this->newLine();
+
             return $this->createNewPanel();
         }
 
@@ -855,7 +867,7 @@ class MooxInstallCommand extends Command
         // Try to resolve class to file path
         $parts = explode('\\', $panelClass);
         $className = end($parts);
-        
+
         // Check app/Providers/Filament first
         $appPath = app_path('Providers/Filament/'.$className.'.php');
         if (File::exists($appPath)) {
@@ -867,7 +879,7 @@ class MooxInstallCommand extends Command
         if (File::exists($composerPath)) {
             $composer = json_decode(File::get($composerPath), true);
             $psr4 = $composer['autoload']['psr-4'] ?? [];
-            
+
             foreach ($psr4 as $namespace => $dir) {
                 if (str_starts_with($panelClass, rtrim($namespace, '\\'))) {
                     $relative = str_replace('\\', '/', substr($panelClass, strlen($namespace)));
@@ -886,40 +898,41 @@ class MooxInstallCommand extends Command
     {
         // Flush before text input
         $this->output->write('', true);
-        
+
         $panelName = text(
             label: 'Panel-Name (z.B. admin, cms):',
             default: 'admin',
             required: true
         );
-        
+
         // Flush after text input
         $this->output->write('', true);
-        
+
         // Get list of files before creation
         $filesBefore = collect(File::files(app_path('Providers/Filament')))
-            ->map(fn($file) => $file->getFilename())
+            ->map(fn ($file) => $file->getFilename())
             ->toArray();
-        
+
         try {
             // Filament panel command uses 'id' as argument (not 'name')
             Artisan::call('make:filament-panel', [
                 'id' => $panelName,
             ]);
-            
+
             // Find the newly created file
             $filesAfter = File::files(app_path('Providers/Filament'));
             foreach ($filesAfter as $file) {
-                if (! in_array($file->getFilename(), $filesBefore) && 
+                if (! in_array($file->getFilename(), $filesBefore) &&
                     str_ends_with($file->getFilename(), 'PanelProvider.php')) {
                     $this->newLine();
                     $this->info("✅ Panel erstellt: {$panelName}");
                     $this->output->write('', true);
+
                     return $file->getPathname();
                 }
             }
-            
-            throw new \RuntimeException("Panel file was not created");
+
+            throw new \RuntimeException('Panel file was not created');
         } catch (\Exception $e) {
             $this->error("❌ Panel konnte nicht erstellt werden: {$e->getMessage()}");
             throw $e;
@@ -932,7 +945,7 @@ class MooxInstallCommand extends Command
             return;
         }
 
-        $this->info("🧩 Found ".count($plugins).' plugin(s)');
+        $this->info('🧩 Found '.count($plugins).' plugin(s)');
 
         // Resolve plugin class names
         $resolvedPlugins = [];
@@ -947,6 +960,7 @@ class MooxInstallCommand extends Command
 
         if (empty($resolvedPlugins)) {
             $this->warn('⚠️ No valid plugin classes found');
+
             return;
         }
 
@@ -960,6 +974,7 @@ class MooxInstallCommand extends Command
 
         if (empty($selectedPlugins)) {
             $this->line('⏩ No plugins selected');
+
             return;
         }
 
@@ -987,6 +1002,7 @@ class MooxInstallCommand extends Command
             if (str_contains($content, $pluginClass) ||
                 preg_match('/->plugin\([^)]*'.$escapedPluginClass.'[^)]*\)/', $content)) {
                 $this->line("ℹ️ Plugin already registered: {$pluginClass}");
+
                 continue;
             }
 
@@ -997,12 +1013,13 @@ class MooxInstallCommand extends Command
 
         if (empty($pluginsToAdd)) {
             $this->line('ℹ️ All plugins are already registered');
+
             return;
         }
 
         // Ensure plugin class has leading backslash for absolute namespace
         $pluginsList = implode("::make(),\n                ", $pluginsToAdd).'::make()';
-        
+
         if (preg_match('/->plugins\(\s*\[/', $content)) {
             // Add to existing plugins array - find the opening bracket and add after it
             $content = preg_replace(
@@ -1019,19 +1036,19 @@ class MooxInstallCommand extends Command
             // No ->plugins() section exists - we need to create it
             // Find the last semicolon before the closing brace of the panel() method
             // and insert ->plugins() before it
-            
+
             $pluginsSection = "\n            ->plugins([\n                {$pluginsList},\n            ])";
-            
+
             // Strategy: Find the last `);` or `];` that's followed by newline, whitespace, and closing brace
             // The structure is: return $panel->...->method();\n    }
             // We want to replace `]);` with `])` + `->plugins([...])` + `;`
-            
+
             // Find the position of the last `];` or `);` before the closing `}` of the method
             // Look for pattern: ]); or ); followed by newline, spaces/tabs, and }
             $lastPos = -1;
             $patternToMatch = '';
             $isArrayPattern = false;
-            
+
             // Try to find ]); pattern first (for array parameters like ->method([...]);)
             if (preg_match_all('/\]\s*;\s*\n\s*\}/', $content, $matches, PREG_OFFSET_CAPTURE)) {
                 $lastMatch = end($matches[0]);
@@ -1046,13 +1063,13 @@ class MooxInstallCommand extends Command
                 $patternToMatch = $lastMatch[0];
                 $isArrayPattern = false;
             }
-            
+
             if ($lastPos !== -1) {
                 // The pattern matched `];\n    }` or `);\n    }`
                 // We need to replace `];` with `])` + `->plugins([...])` + `;` and keep `\n    }`
                 $beforeLast = substr($content, 0, $lastPos);
                 $afterLast = substr($content, $lastPos + strlen($patternToMatch));
-                
+
                 // Extract the closing part from pattern (the `\n    }` part after the semicolon)
                 // Pattern is like `];\n    }` - extract everything after `];` or `);`
                 if (preg_match('/[\]\)]\s*;(.*)/s', $patternToMatch, $closingMatch)) {
@@ -1061,19 +1078,20 @@ class MooxInstallCommand extends Command
                     // Fallback: assume standard format
                     $closingPart = "\n    }";
                 }
-                
+
                 // Build the replacement: close the previous method's array/param, add plugins, then semicolon and closing brace
                 $closingBracket = $isArrayPattern ? ']' : ')';
-                $replacement = $closingBracket.$pluginsSection.";".$closingPart;
-                
+                $replacement = $closingBracket.$pluginsSection.';'.$closingPart;
+
                 $content = $beforeLast.$replacement.$afterLast;
                 $changed = true;
                 foreach ($pluginsToAdd as $pluginClass) {
                     $this->info("✅ Registered plugin: {$pluginClass}");
                 }
             } else {
-                $this->warn("⚠️ Could not find plugin registration point in panel file");
-                $this->line("   Panel file structure may be different than expected");
+                $this->warn('⚠️ Could not find plugin registration point in panel file');
+                $this->line('   Panel file structure may be different than expected');
+
                 return;
             }
         }
@@ -1094,7 +1112,7 @@ class MooxInstallCommand extends Command
         // Try to resolve from package namespace
         $packageParts = explode('/', $packageName);
         $packageShortName = ucfirst($packageParts[1] ?? '');
-        
+
         // Common plugin namespace patterns
         $possibleNamespaces = [
             'Moox\\'.$packageShortName.'\\Filament\\Plugins\\',
@@ -1118,4 +1136,3 @@ class MooxInstallCommand extends Command
         return null;
     }
 }
-
