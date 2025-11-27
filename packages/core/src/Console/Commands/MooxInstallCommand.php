@@ -9,13 +9,6 @@ use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\text;
-
 class MooxInstallCommand extends Command
 {
     use Art, CheckForFilament, SelectFilamentPanel;
@@ -447,7 +440,7 @@ class MooxInstallCommand extends Command
 
         // Collect all available plugins from all packages
         $allPlugins = [];
-        $packagePluginMap = []; // Map plugin class to package name for display
+        $packagePluginMap = [];
 
         foreach ($this->packagePlugins as $packageName => $pluginInfo) {
             foreach ($pluginInfo['plugins'] as $plugin) {
@@ -455,93 +448,64 @@ class MooxInstallCommand extends Command
                 if ($resolved) {
                     $allPlugins[$resolved] = $resolved;
                     $packagePluginMap[$resolved] = $packageName;
-                } else {
-                    $this->warn("⚠️ Could not resolve plugin class: {$plugin} from {$packageName}");
                 }
             }
         }
 
         if (empty($allPlugins)) {
             $this->warn('⚠️ No valid plugin classes found');
-
             return;
         }
 
-        // Show summary
         $this->newLine();
-        $this->info('📦 Found '.count($allPlugins).' plugin(s) from '.count($this->packagePlugins).' package(s)');
+        $this->info('📦 Found '.count($allPlugins).' plugin(s)');
 
         // Loop: Install plugins in panels until user says no
         do {
-            // Flush output buffer to ensure clean display
-            $this->output->write('', true);
             $this->newLine();
 
             // Step 1: Select panel
-            $this->info('📋 In welches Panel sollen Plugins installiert werden?');
-            $panelPath = $this->selectOrCreatePanel('plugins');
+            $panelPath = $this->selectOrCreatePanel();
 
             if (! $panelPath) {
-                $this->warn('⚠️ Kein Panel ausgewählt, überspringe...');
                 break;
             }
 
-            // Flush and show selected panel
-            $this->output->write('', true);
             $this->newLine();
-            $this->info('✅ Ausgewähltes Panel: '.basename($panelPath, '.php'));
+            $this->info('✅ Selected Panel: '.basename($panelPath, '.php'));
 
-            // Step 2: Select plugins to install
-            if (empty($allPlugins)) {
-                $this->newLine();
-                $this->info('✅ Alle Plugins wurden bereits installiert');
-                break;
-            }
-
-            // Show available plugins count
-            $this->newLine();
-            $this->info('📦 Verfügbare Plugins: '.count($allPlugins));
-
-            // Prepare plugin options for multiselect
+            // Step 2: Ask if all plugins should be installed
             $pluginOptions = array_values($allPlugins);
-
+            
             if (empty($pluginOptions)) {
-                $this->warn('⚠️ Keine Plugins verfügbar');
+                $this->info('✅ All plugins have been installed');
                 break;
             }
 
-            // Flush output buffer multiple times to ensure clean display
-            $this->output->write('', true);
-            $this->output->write('', true);
             $this->newLine();
+            $installAll = $this->confirm('Install all plugins?', true);
 
-            // Ensure we're in interactive mode
-            if (! $this->input->isInteractive()) {
-                $this->warn('⚠️ Nicht im interaktiven Modus, überspringe Plugin-Auswahl');
-                break;
+            $selectedPlugins = [];
+            if ($installAll) {
+                // Install all plugins
+                $selectedPlugins = $pluginOptions;
+            } else {
+                // Let user select individual plugins
+                $this->newLine();
+                $this->line('Select plugins to install:');
+                foreach ($pluginOptions as $plugin) {
+                    $displayName = basename(str_replace('\\', '/', $plugin));
+                    $packageName = $packagePluginMap[$plugin] ?? 'unknown';
+                    if ($this->confirm("  Install '{$displayName}' ({$packageName})?", false)) {
+                        $selectedPlugins[] = $plugin;
+                    }
+                }
             }
 
-            // Show that we're about to show the multiselect
-            $this->line('🔽 Plugin-Auswahl wird angezeigt...');
-            $this->output->write('', true);
-
-            $selectedPlugins = multiselect(
-                label: 'Welche Plugins sollen in diesem Panel installiert werden?',
-                options: $pluginOptions,
-                default: [], // Default: none selected (user must choose)
-                required: false
-            );
-
-            // Flush after multiselect
-            $this->output->write('', true);
-
-            if (empty($selectedPlugins)) {
-                $this->newLine();
-                $this->line('⏩ Keine Plugins für dieses Panel ausgewählt');
-            } else {
-                // Install selected plugins
+            // Install selected plugins
+            if (! empty($selectedPlugins)) {
                 $this->installResolvedPlugins($selectedPlugins, $panelPath);
-
+                
                 // Remove installed plugins from available list
                 foreach ($selectedPlugins as $pluginClass) {
                     unset($allPlugins[$pluginClass]);
@@ -551,20 +515,12 @@ class MooxInstallCommand extends Command
             // Ask if user wants to install more plugins in another panel
             if (empty($allPlugins)) {
                 $this->newLine();
-                $this->info('✅ Alle Plugins wurden installiert');
+                $this->info('✅ All plugins have been installed');
                 break;
             }
 
-            // Flush before confirm
-            $this->output->write('', true);
             $this->newLine();
-            $installMore = $this->confirm(
-                'Weitere Plugins in ein anderes Panel installieren?',
-                false
-            );
-
-            // Flush after confirm
-            $this->output->write('', true);
+            $installMore = $this->confirm('Install plugins in another panel?', false);
         } while ($installMore);
     }
 
@@ -765,64 +721,46 @@ class MooxInstallCommand extends Command
         return null;
     }
 
-    protected function selectOrCreatePanel(string $packageName): ?string
+    protected function selectOrCreatePanel(): ?string
     {
         $existingPanels = $this->getExistingPanels();
 
         if (empty($existingPanels)) {
             $this->newLine();
-            $this->info('ℹ️ Keine existierenden Panels gefunden.');
-
-            // Flush before confirm
-            $this->output->write('', true);
-
-            if ($this->confirm("Neues Filament Panel für {$packageName} erstellen?", true)) {
-                $this->output->write('', true);
-                $this->newLine();
-
+            if ($this->confirm('No panels found. Create a new panel?', true)) {
                 return $this->createNewPanel();
             }
-
-            $this->output->write('', true);
-
             return null;
         }
 
-        // Show panel list first
-        $this->newLine();
-        $this->info('📋 Verfügbare Panels:');
-        foreach ($existingPanels as $panel) {
-            $this->line("  • {$panel}");
-        }
-
-        // Flush output buffer before showing prompt
-        $this->output->write('', true);
-        $this->newLine();
-
-        // Build options with 'new' and 'skip' options
+        // Build options
         $options = [];
         foreach ($existingPanels as $panel) {
-            $options[$panel] = $panel;
+            $displayName = basename(str_replace('\\', '/', $panel));
+            $options[$panel] = $displayName;
         }
-        $options['__new__'] = '✨ Neues Panel erstellen';
-        $options['__skip__'] = '⏩ Überspringen';
+        $options['__new__'] = '✨ Create new panel';
+        $options['__skip__'] = '⏩ Skip';
 
-        $selected = select(
-            label: 'Panel auswählen:',
-            options: $options,
-            default: $existingPanels[0] ?? '__new__'
+        $choiceOptions = array_values($options);
+        $defaultIndex = 0;
+
+        $selectedDisplay = $this->choice(
+            'Which panel should be used?',
+            $choiceOptions,
+            $defaultIndex
         );
 
-        // Flush after select
-        $this->output->write('', true);
+        $selected = array_search($selectedDisplay, $options, true);
+        if ($selected === false) {
+            $selected = $selectedDisplay;
+        }
 
         if ($selected === '__skip__') {
             return null;
         }
 
         if ($selected === '__new__') {
-            $this->newLine();
-
             return $this->createNewPanel();
         }
 
@@ -896,17 +834,7 @@ class MooxInstallCommand extends Command
 
     protected function createNewPanel(): string
     {
-        // Flush before text input
-        $this->output->write('', true);
-
-        $panelName = text(
-            label: 'Panel-Name (z.B. admin, cms):',
-            default: 'admin',
-            required: true
-        );
-
-        // Flush after text input
-        $this->output->write('', true);
+        $panelName = $this->ask('Panel name (e.g. admin, cms):', 'admin');
 
         // Get list of files before creation
         $filesBefore = collect(File::files(app_path('Providers/Filament')))
@@ -914,7 +842,6 @@ class MooxInstallCommand extends Command
             ->toArray();
 
         try {
-            // Filament panel command uses 'id' as argument (not 'name')
             Artisan::call('make:filament-panel', [
                 'id' => $panelName,
             ]);
@@ -924,63 +851,18 @@ class MooxInstallCommand extends Command
             foreach ($filesAfter as $file) {
                 if (! in_array($file->getFilename(), $filesBefore) &&
                     str_ends_with($file->getFilename(), 'PanelProvider.php')) {
-                    $this->newLine();
-                    $this->info("✅ Panel erstellt: {$panelName}");
-                    $this->output->write('', true);
-
+                    $this->info("✅ Panel created: {$panelName}");
                     return $file->getPathname();
                 }
             }
 
             throw new \RuntimeException('Panel file was not created');
         } catch (\Exception $e) {
-            $this->error("❌ Panel konnte nicht erstellt werden: {$e->getMessage()}");
+            $this->error("❌ Could not create panel: {$e->getMessage()}");
             throw $e;
         }
     }
 
-    protected function installPlugins(string $packageName, array $plugins, ?string $panelPath): void
-    {
-        if (empty($plugins) || ! $panelPath || ! File::exists($panelPath)) {
-            return;
-        }
-
-        $this->info('🧩 Found '.count($plugins).' plugin(s)');
-
-        // Resolve plugin class names
-        $resolvedPlugins = [];
-        foreach ($plugins as $plugin) {
-            $resolved = $this->resolvePluginClass($packageName, $plugin);
-            if ($resolved) {
-                $resolvedPlugins[$resolved] = $resolved;
-            } else {
-                $this->warn("⚠️ Could not resolve plugin class: {$plugin}");
-            }
-        }
-
-        if (empty($resolvedPlugins)) {
-            $this->warn('⚠️ No valid plugin classes found');
-
-            return;
-        }
-
-        // Ask which plugins to install (default: all)
-        $selectedPlugins = multiselect(
-            label: "Select plugins to install for {$packageName}:",
-            options: array_values($resolvedPlugins),
-            default: array_values($resolvedPlugins), // Default: all selected
-            required: false
-        );
-
-        if (empty($selectedPlugins)) {
-            $this->line('⏩ No plugins selected');
-
-            return;
-        }
-
-        // Register plugins using the shared method
-        $this->installResolvedPlugins($selectedPlugins, $panelPath);
-    }
 
     /**
      * Install already-resolved plugin classes into a panel file.
