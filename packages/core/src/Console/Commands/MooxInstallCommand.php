@@ -454,6 +454,7 @@ class MooxInstallCommand extends Command
 
         if (empty($allPlugins)) {
             $this->warn('⚠️ No valid plugin classes found');
+
             return;
         }
 
@@ -476,7 +477,7 @@ class MooxInstallCommand extends Command
 
             // Step 2: Ask if all plugins should be installed
             $pluginOptions = array_values($allPlugins);
-            
+
             if (empty($pluginOptions)) {
                 $this->info('✅ All plugins have been installed');
                 break;
@@ -505,7 +506,7 @@ class MooxInstallCommand extends Command
             // Install selected plugins
             if (! empty($selectedPlugins)) {
                 $this->installResolvedPlugins($selectedPlugins, $panelPath);
-                
+
                 // Remove installed plugins from available list
                 foreach ($selectedPlugins as $pluginClass) {
                     unset($allPlugins[$pluginClass]);
@@ -730,6 +731,7 @@ class MooxInstallCommand extends Command
             if ($this->confirm('No panels found. Create a new panel?', true)) {
                 return $this->createNewPanel();
             }
+
             return null;
         }
 
@@ -852,6 +854,7 @@ class MooxInstallCommand extends Command
                 if (! in_array($file->getFilename(), $filesBefore) &&
                     str_ends_with($file->getFilename(), 'PanelProvider.php')) {
                     $this->info("✅ Panel created: {$panelName}");
+
                     return $file->getPathname();
                 }
             }
@@ -862,7 +865,6 @@ class MooxInstallCommand extends Command
             throw $e;
         }
     }
-
 
     /**
      * Install already-resolved plugin classes into a panel file.
