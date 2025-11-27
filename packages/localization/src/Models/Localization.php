@@ -171,11 +171,11 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             $countryCode = strtolower($parts[1] ?? '');
-
             if ($countryCode && $this->flagExists($countryCode)) {
                 return 'flag-'.$countryCode;
             }
         }
+
 
         return $this->language->flag_icon;
     }
@@ -195,7 +195,6 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             $countryCode = strtolower($parts[1] ?? '');
-
             if ($countryCode && $this->flagExists($countryCode)) {
                 return 'flag-'.$countryCode;
             }
@@ -205,17 +204,16 @@ class Localization extends Model
     }
 
     /**
-     * Check if a flag file exists
+     * Check if a flag file exists using Blade Icons Factory
      */
     public function flagExists(string $flagCode): bool
     {
-        $packagePath = base_path('packages/flag-icons-circle/resources/svg/'.$flagCode.'.svg');
-        if (file_exists($packagePath)) {
+        try {
+            $factory = app(\BladeUI\Icons\Factory::class);
+            $factory->svg("flag-icons-circle-{$flagCode}");
             return true;
+        } catch (\BladeUI\Icons\Exceptions\SvgNotFound $e) {
+            return false;
         }
-
-        $publicPath = public_path('vendor/flag-icons-circle/'.$flagCode.'.svg');
-
-        return file_exists($publicPath);
     }
 }
