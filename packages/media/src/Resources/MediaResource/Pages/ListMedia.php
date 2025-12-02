@@ -7,7 +7,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
-use Moox\Data\Models\StaticLanguage;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -129,16 +128,16 @@ class ListMedia extends BaseListDrafts
                         ->label(__('media::fields.collection'))
                         ->options(function () {
                             $currentLang = $this->lang ?? app()->getLocale();
-                            
+
                             $collections = MediaCollection::query()
                                 ->with('translations')
                                 ->get();
-                            
+
                             $options = [];
                             foreach ($collections as $collection) {
                                 $translation = $collection->translations()->where('locale', $currentLang)->first();
-                                
-                                if ($translation && !empty($translation->name)) {
+
+                                if ($translation && ! empty($translation->name)) {
                                     $name = $translation->name;
                                 } else {
                                     if (class_exists(Localization::class)) {
@@ -146,30 +145,30 @@ class ListMedia extends BaseListDrafts
                                             ->where('is_active_admin', true)
                                             ->with('language')
                                             ->first();
-                                        
+
                                         if ($defaultLocale && $defaultLocale->language) {
                                             $defaultLang = $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
                                             $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
-                                            if ($fallbackTranslation && !empty($fallbackTranslation->name)) {
+                                            if ($fallbackTranslation && ! empty($fallbackTranslation->name)) {
                                                 $name = $fallbackTranslation->name;
                                             }
                                         }
                                     }
-                                    
+
                                     if (empty($name)) {
                                         $anyTranslation = $collection->translations()->whereNotNull('name')->first();
                                         $name = $anyTranslation?->name;
                                     }
-                                    
+
                                     if (empty($name)) {
                                         $name = __('media::fields.uncategorized');
                                     }
                                 }
-                                
+
                                 $options[$collection->id] = trim((string) $name);
                             }
-                            
-                            return array_filter($options, fn($value) => !empty($value));
+
+                            return array_filter($options, fn ($value) => ! empty($value));
                         })
                         ->default(MediaCollection::first()?->id)
                         ->searchable()
@@ -209,23 +208,23 @@ class ListMedia extends BaseListDrafts
 
                             $collectionId = $get('media_collection_id');
                             $collection = MediaCollection::with('translations')->find($collectionId);
-                            
+
                             $collectionName = __('media::fields.uncategorized');
                             if ($collection) {
                                 $defaultLang = config('app.locale');
-                                
+
                                 $localization = Localization::where('is_default', true)
                                     ->where('is_active_admin', true)
                                     ->with('language')
                                     ->first();
-                                
+
                                 if ($localization && $localization->language) {
                                     $defaultLang = $localization->locale_variant ?: $localization->language->alpha2;
                                 }
-                                
+
                                 $translation = $collection->translations->firstWhere('locale', $defaultLang);
-                                
-                                if ($translation && !empty($translation->name)) {
+
+                                if ($translation && ! empty($translation->name)) {
                                     $collectionName = $translation->name;
                                 } elseif ($collection->translations->isNotEmpty()) {
                                     $collectionName = $collection->translations->first()->name;

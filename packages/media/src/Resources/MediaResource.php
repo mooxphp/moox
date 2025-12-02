@@ -338,49 +338,48 @@ class MediaResource extends Resource
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
                                 ->options(function ($record, $livewire) {
                                     $currentLang = $livewire->lang ?? app()->getLocale();
-                                    
+
                                     $collections = MediaCollection::query()
                                         ->with('translations')
                                         ->get();
-                                    
+
                                     $options = [];
                                     foreach ($collections as $collection) {
                                         $name = null;
-                                        
+
                                         $translation = $collection->translations()->where('locale', $currentLang)->first();
-                                        
-                                        if ($translation && !empty($translation->name)) {
+
+                                        if ($translation && ! empty($translation->name)) {
                                             $name = $translation->name;
                                         } else {
                                             if (class_exists(\Moox\Localization\Models\Localization::class)) {
                                                 $defaultLocale = optional(\Moox\Localization\Models\Localization::where('is_default', true)
                                                     ->first()?->language)->alpha2 ?? config('app.locale');
-                                                
+
                                                 $translation = $collection->translations()->where('locale', $defaultLocale)->first();
-                                                if ($translation && !empty($translation->name)) {
+                                                if ($translation && ! empty($translation->name)) {
                                                     $name = $translation->name;
                                                 }
                                             }
-                                            
+
                                             if (empty($name)) {
                                                 $anyTranslation = $collection->translations()->whereNotNull('name')->first();
-                                                $name = $anyTranslation?->name ?? 'Collection #' . $collection->id;
+                                                $name = $anyTranslation?->name ?? 'Collection #'.$collection->id;
                                             }
                                         }
-                                        
+
                                         $options[$collection->id] = $name;
                                     }
-                                    
+
                                     return $options;
                                 })
                                 ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
                                     if ($state !== $record->media_collection_id) {
                                         $record->media_collection_id = $state;
-                                        
-                                       
+
                                         $record->collection_name = null;
-                                        
+
                                         $record->save();
                                     }
                                 }),
