@@ -127,31 +127,51 @@ class ListMedia extends BaseListDrafts
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => (function () {
-                            $defaultLang = Localization::where('is_default', true)
-                                ->value('language_id');
-
-                            $alpha2 = $defaultLang
-                                ? StaticLanguage::whereKey($defaultLang)->value('alpha2')
-                                : config('app.locale');
-
-                            return MediaCollection::query()
-                                ->with(['translations' => fn ($q) => $q->where('locale', $alpha2)])
-                                ->whereHas('translations', fn ($q) => $q->where('locale', $alpha2))
-                                ->get()
-                                ->mapWithKeys(function ($item) use ($alpha2) {
-                                    $translation = method_exists($item, 'translate')
-                                        ? $item->translate($alpha2)
-                                        : ($item->translations->first() ?? null);
-
-                                    $name = $translation?->name ?? $item->name;
-
-                                    return [$item->id => $name];
-                                })
-                                ->filter()
-                                ->toArray();
-                        })())
-                        ->default(MediaCollection::first()->id)
+                        ->options(function () {
+                            $currentLang = $this->lang ?? app()->getLocale();
+                            
+                            $collections = MediaCollection::query()
+                                ->with('translations')
+                                ->get();
+                            
+                            $options = [];
+                            foreach ($collections as $collection) {
+                                $translation = $collection->translations()->where('locale', $currentLang)->first();
+                                
+                                if ($translation && !empty($translation->name)) {
+                                    $name = $translation->name;
+                                } else {
+                                    if (class_exists(Localization::class)) {
+                                        $defaultLocale = Localization::where('is_default', true)
+                                            ->where('is_active_admin', true)
+                                            ->with('language')
+                                            ->first();
+                                        
+                                        if ($defaultLocale && $defaultLocale->language) {
+                                            $defaultLang = $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
+                                            $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
+                                            if ($fallbackTranslation && !empty($fallbackTranslation->name)) {
+                                                $name = $fallbackTranslation->name;
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (empty($name)) {
+                                        $anyTranslation = $collection->translations()->whereNotNull('name')->first();
+                                        $name = $anyTranslation?->name;
+                                    }
+                                    
+                                    if (empty($name)) {
+                                        $name = __('media::fields.uncategorized');
+                                    }
+                                }
+                                
+                                $options[$collection->id] = trim((string) $name);
+                            }
+                            
+                            return array_filter($options, fn($value) => !empty($value));
+                        })
+                        ->default(MediaCollection::first()?->id)
                         ->searchable()
                         ->required()
                         ->live(),
@@ -188,8 +208,32 @@ class ListMedia extends BaseListDrafts
                             }
 
                             $collectionId = $get('media_collection_id');
-                            $collection = MediaCollection::find($collectionId);
-                            $collectionName = $collection?->name ?? __('media::fields.uncategorized');
+                            $collection = MediaCollection::with('translations')->find($collectionId);
+                            
+                            $collectionName = __('media::fields.uncategorized');
+                            if ($collection) {
+                                $defaultLang = config('app.locale');
+                                
+                                $localization = Localization::where('is_default', true)
+                                    ->where('is_active_admin', true)
+                                    ->with('language')
+                                    ->first();
+                                
+                                if ($localization && $localization->language) {
+                                    $defaultLang = $localization->locale_variant ?: $localization->language->alpha2;
+                                }
+                                
+                                $translation = $collection->translations->firstWhere('locale', $defaultLang);
+                                
+                                if ($translation && !empty($translation->name)) {
+                                    $collectionName = $translation->name;
+                                } elseif ($collection->translations->isNotEmpty()) {
+                                    $collectionName = $collection->translations->first()->name;
+                                } elseif (method_exists($collection, 'translate')) {
+                                    $translation = $collection->translate($defaultLang);
+                                    $collectionName = $translation?->name ?? __('media::fields.uncategorized');
+                                }
+                            }
 
                             $defaultLang = optional(Localization::where('is_default', true)
                                 ->first()?->language)->alpha2 ?? config('app.locale');
@@ -232,6 +276,7 @@ class ListMedia extends BaseListDrafts
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                                 $media->media_collection_id = $collectionId;
+                                $media->collection_name = $collectionName;
                                 $media->save();
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);

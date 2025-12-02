@@ -216,8 +216,6 @@ class MediaCollectionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::whereHas('translations', function ($query) {
-            $query->where('locale', app()->getLocale());
-        })->count();
+        return static::getModel()::count();
     }
 }

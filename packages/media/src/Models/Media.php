@@ -2,16 +2,17 @@
 
 namespace Moox\Media\Models;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Exception;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\DB;
-use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Facades\DB;
+use Moox\Media\Traits\HasMediaUsable;
+use Astrotomic\Translatable\Translatable;
+use Moox\Localization\Models\Localization;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
@@ -144,8 +145,56 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
         static::saving(function ($media) {
             if ($media->media_collection_id) {
-                $collection = MediaCollection::find($media->media_collection_id);
-                $media->collection_name = $collection?->name ?? null;
+                $collectionChanged = false;
+                if ($media->exists) {
+                    if ($media->isDirty('media_collection_id')) {
+                        $originalCollectionId = $media->getOriginal('media_collection_id');
+                        $newCollectionId = $media->media_collection_id;
+                        $collectionChanged = $originalCollectionId != $newCollectionId;
+                    }
+                } else {
+                    $collectionChanged = true;
+                }
+                
+                if (!$media->exists || $collectionChanged || empty($media->collection_name)) {
+                    $collection = MediaCollection::with('translations')->find($media->media_collection_id);
+                    
+                    if ($collection) {
+                        $defaultLocale = config('app.locale');
+                        
+                        if (class_exists(Localization::class)) {
+                            $localization = Localization::where('is_default', true)
+                                ->where('is_active_admin', true)
+                                ->with('language')
+                                ->first();
+                            
+                            if ($localization && $localization->language) {
+                                $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
+                            }
+                        }
+                        
+                        $translation = $collection->translations->firstWhere('locale', $defaultLocale);
+                        $newCollectionName = null;
+                        
+                        if ($translation && !empty($translation->name)) {
+                            $newCollectionName = $translation->name;
+                        } else {
+                            if ($collection->translations->isNotEmpty()) {
+                                $newCollectionName = $collection->translations->first()->name;
+                            } else {
+                                $newCollectionName = $collection->name ?? null;
+                            }
+                        }
+                        
+                        if ($collectionChanged || !empty($newCollectionName)) {
+                            $media->collection_name = $newCollectionName;
+                        }
+                    } else {
+                        $media->collection_name = null;
+                    }
+                }
+            } elseif ($media->isDirty('media_collection_id') && !$media->media_collection_id) {
+                $media->collection_name = null;
             }
         });
     }
