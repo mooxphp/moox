@@ -69,7 +69,7 @@ class CustomImageColumn extends ImageColumn
         }
 
         if ($record instanceof Media) {
-            return $this->conversion 
+            return $this->conversion
                 ? $record->getUrl($this->conversion)
                 : $record->getUrl();
         }
@@ -97,7 +97,7 @@ class CustomImageColumn extends ImageColumn
 
         if ($record instanceof Media) {
             if (str_starts_with($record->mime_type, 'image/')) {
-                return $this->conversion 
+                return $this->conversion
                     ? $record->getUrl($this->conversion)
                     : $record->getUrl();
             }
@@ -122,7 +122,7 @@ class CustomImageColumn extends ImageColumn
         }
 
         if (str_starts_with($media->mime_type, 'image/')) {
-            return $this->conversion 
+            return $this->conversion
                 ? $media->getUrl($this->conversion)
                 : $media->getUrl();
         }
