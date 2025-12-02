@@ -70,6 +70,7 @@ class MediaResource extends Resource
         return $schema->schema([
             SpatieMediaLibraryFileUpload::make('image')
                 ->columnSpanFull()
+                ->conversion('thumbnail')
                 ->collection(function ($record) {
                     $mediaCollection = $record->collection_name;
 

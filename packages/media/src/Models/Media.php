@@ -54,21 +54,31 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
-        $this->addMediaConversion('preview')
-            ->nonQueued()
-            ->fit(Fit::Contain, 300, 300);
-
-        $this->addMediaConversion('thumb')
+        $this->addMediaConversion('thumbnail')
             ->nonQueued()
             ->fit(Fit::Contain, 150, 150);
 
-        $this->addMediaConversion('medium')
+        $this->addMediaConversion('preview')
             ->nonQueued()
-            ->fit(Fit::Contain, 800, 600);
+            ->width(300);
+
+        $this->addMediaConversion('medium_large')
+            ->nonQueued()
+            ->width(768);
 
         $this->addMediaConversion('large')
             ->nonQueued()
-            ->fit(Fit::Contain, 1200, 900)
+            ->width(1024)
+            ->quality(80);
+
+        $this->addMediaConversion('1536')
+            ->nonQueued()
+            ->width(1536)
+            ->quality(80);
+
+        $this->addMediaConversion('2048')
+            ->nonQueued()
+            ->width(2048)
             ->quality(80);
     }
 

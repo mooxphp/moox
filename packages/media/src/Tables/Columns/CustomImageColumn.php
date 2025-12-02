@@ -9,6 +9,8 @@ use Moox\Media\Models\MediaUsable;
 
 class CustomImageColumn extends ImageColumn
 {
+    protected ?string $conversion = null;
+
     private array $iconMap = [
         'application/pdf' => '/vendor/file-icons/pdf.svg',
         'application/msword' => '/vendor/file-icons/doc.svg',
@@ -67,7 +69,9 @@ class CustomImageColumn extends ImageColumn
         }
 
         if ($record instanceof Media) {
-            return $record->getUrl();
+            return $this->conversion 
+                ? $record->getUrl($this->conversion)
+                : $record->getUrl();
         }
 
         $mediaIds = MediaUsable::where('media_usable_id', $record->getKey())
@@ -93,7 +97,9 @@ class CustomImageColumn extends ImageColumn
 
         if ($record instanceof Media) {
             if (str_starts_with($record->mime_type, 'image/')) {
-                return $record->getUrl();
+                return $this->conversion 
+                    ? $record->getUrl($this->conversion)
+                    : $record->getUrl();
             }
 
             return $this->iconMap[$record->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
@@ -116,9 +122,18 @@ class CustomImageColumn extends ImageColumn
         }
 
         if (str_starts_with($media->mime_type, 'image/')) {
-            return $media->getUrl();
+            return $this->conversion 
+                ? $media->getUrl($this->conversion)
+                : $media->getUrl();
         }
 
         return $this->iconMap[$media->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
+    }
+
+    public function conversion(?string $conversion): static
+    {
+        $this->conversion = $conversion;
+
+        return $this;
     }
 }
