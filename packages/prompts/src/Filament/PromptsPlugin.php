@@ -35,4 +35,3 @@ class PromptsPlugin implements Plugin
         return filament(app(static::class)->getId());
     }
 }
-

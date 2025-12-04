@@ -2,32 +2,39 @@
 
 namespace Moox\Prompts\Filament\Components;
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Illuminate\Console\OutputStyle;
 use Livewire\Component;
 use Moox\Prompts\Support\PendingPromptsException;
 use Moox\Prompts\Support\PromptResponseStore;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Illuminate\Console\OutputStyle;
 
 class RunCommandComponent extends Component implements HasForms
 {
     use InteractsWithForms;
 
     public string $command = '';
+
     public array $commandInput = [];
+
     public ?array $currentPrompt = null;
+
     public string $output = '';
+
     public bool $isComplete = false;
+
     public ?string $error = null;
+
     public array $answers = [];
+
     public array $data = [];
 
     protected PromptResponseStore $responseStore;
@@ -47,9 +54,9 @@ class RunCommandComponent extends Component implements HasForms
         $this->currentPrompt = null;
         $this->output = '';
         $this->error = null;
-        
+
         $this->responseStore->resetCounter();
-        
+
         if ($command) {
             $this->runCommand();
         }
@@ -62,23 +69,24 @@ class RunCommandComponent extends Component implements HasForms
 
         try {
             $this->responseStore->resetCounter();
-            
+
             foreach ($this->answers as $promptId => $answer) {
                 $this->responseStore->set($promptId, $answer);
             }
-            
+
             app()->instance('moox.prompts.response_store', $this->responseStore);
 
             $commandInstance = app(\Illuminate\Contracts\Console\Kernel::class)
                 ->all()[$this->command] ?? null;
 
-            if (!$commandInstance) {
+            if (! $commandInstance) {
                 $this->error = "Command nicht gefunden: {$this->command}";
+
                 return;
             }
 
             $commandInstance->setLaravel(app());
-            $output = new BufferedOutput();
+            $output = new BufferedOutput;
 
             $outputStyle = new OutputStyle(
                 new ArrayInput($this->commandInput),
@@ -103,7 +111,7 @@ class RunCommandComponent extends Component implements HasForms
                 if ($promptId && isset($this->answers[$promptId])) {
                     $value = $this->answers[$promptId];
                     if ($prompt['method'] === 'multiselect') {
-                        if (!is_array($value)) {
+                        if (! is_array($value)) {
                             if ($value === true) {
                                 $params = $prompt['params'] ?? [];
                                 $options = $params[1] ?? [];
@@ -124,12 +132,12 @@ class RunCommandComponent extends Component implements HasForms
 
     public function submitPrompt(): void
     {
-        if (!$this->currentPrompt) {
+        if (! $this->currentPrompt) {
             return;
         }
 
         $promptId = $this->currentPrompt['id'] ?? null;
-        if (!$promptId) {
+        if (! $promptId) {
             return;
         }
 
@@ -138,9 +146,9 @@ class RunCommandComponent extends Component implements HasForms
                 $params = $this->currentPrompt['params'] ?? [];
                 $options = $params[1] ?? [];
                 $answer = [];
-                
+
                 foreach (array_keys($options) as $key) {
-                    $checkboxId = $promptId . '_' . $key;
+                    $checkboxId = $promptId.'_'.$key;
                     if (isset($this->data[$checkboxId]) && $this->data[$checkboxId] === true) {
                         $answer[] = $key;
                     }
@@ -152,9 +160,9 @@ class RunCommandComponent extends Component implements HasForms
             if ($this->currentPrompt['method'] !== 'multiselect' && ($answer === null || ($answer === '' && $this->currentPrompt['method'] !== 'confirm'))) {
                 $allRequestData = request()->all();
                 $updates = data_get($allRequestData, 'components.0.updates', []);
-                
+
                 if (is_array($updates) || is_object($updates)) {
-                    $updateKey = 'data.' . $promptId;
+                    $updateKey = 'data.'.$promptId;
                     if (isset($updates[$updateKey])) {
                         $answer = $updates[$updateKey];
                     }
@@ -163,7 +171,7 @@ class RunCommandComponent extends Component implements HasForms
                     }
                     if ($answer === null) {
                         foreach ($updates as $key => $value) {
-                            if (str_ends_with($key, '.' . $promptId) || $key === $promptId) {
+                            if (str_ends_with($key, '.'.$promptId) || $key === $promptId) {
                                 $answer = $value;
                                 break;
                             }
@@ -181,13 +189,13 @@ class RunCommandComponent extends Component implements HasForms
                 $answer = false;
             }
 
-            if (($answer === null || $answer === '' || ($this->currentPrompt['method'] === 'multiselect' && !is_array($answer))) && $this->currentPrompt['method'] !== 'confirm') {
+            if (($answer === null || $answer === '' || ($this->currentPrompt['method'] === 'multiselect' && ! is_array($answer))) && $this->currentPrompt['method'] !== 'confirm') {
                 try {
                     $data = $this->form->getState();
                     $answer = $data[$promptId] ?? null;
-                    
+
                     if ($this->currentPrompt['method'] === 'multiselect') {
-                        if (!is_array($answer)) {
+                        if (! is_array($answer)) {
                             if ($answer === true) {
                                 $params = $this->currentPrompt['params'] ?? [];
                                 $options = $params[1] ?? [];
@@ -201,15 +209,15 @@ class RunCommandComponent extends Component implements HasForms
                     return;
                 }
             }
-            
+
             if (($answer === null || $answer === '') && $this->currentPrompt['method'] === 'select') {
                 $params = $this->currentPrompt['params'] ?? [];
                 $options = $params[1] ?? [];
-                if (!empty($options)) {
+                if (! empty($options)) {
                     $answer = array_key_first($options);
                 }
             }
-            
+
             if ($this->currentPrompt['method'] === 'confirm') {
                 if ($answer === null) {
                     return;
@@ -217,9 +225,9 @@ class RunCommandComponent extends Component implements HasForms
             } elseif ($answer === null || $answer === '') {
                 return;
             }
-            
+
             if ($this->currentPrompt['method'] === 'multiselect') {
-                if (!is_array($answer)) {
+                if (! is_array($answer)) {
                     if ($answer === true) {
                         $params = $this->currentPrompt['params'] ?? [];
                         $options = $params[1] ?? [];
@@ -230,18 +238,18 @@ class RunCommandComponent extends Component implements HasForms
                         $answer = [];
                     }
                 }
-                
-                if (!is_array($answer)) {
+
+                if (! is_array($answer)) {
                     $answer = [];
                 }
             }
-            
+
             if ($this->currentPrompt['method'] === 'confirm') {
-                if (!is_bool($answer)) {
+                if (! is_bool($answer)) {
                     $answer = (bool) $answer;
                 }
             }
-            
+
             $this->answers[$promptId] = $answer;
             $this->currentPrompt = null;
             $this->runCommand();
@@ -264,7 +272,7 @@ class RunCommandComponent extends Component implements HasForms
 
     protected function getFormSchema(): array
     {
-        if ($this->isComplete || !$this->currentPrompt) {
+        if ($this->isComplete || ! $this->currentPrompt) {
             return [];
         }
 
@@ -278,7 +286,7 @@ class RunCommandComponent extends Component implements HasForms
 
         $field = $this->createFieldFromPrompt($promptId, $method, $params);
 
-        if (!$field) {
+        if (! $field) {
             return [];
         }
 
@@ -291,23 +299,23 @@ class RunCommandComponent extends Component implements HasForms
         $required = ($params[3] ?? false) !== false;
         $defaultValue = $this->answers[$promptId] ?? null;
         $options = $params[1] ?? [];
-        
+
         $fields = [];
-        
-        $fields[] = Placeholder::make($promptId . '_label')
+
+        $fields[] = Placeholder::make($promptId.'_label')
             ->label($label)
             ->content('');
-        
+
         foreach ($options as $key => $optionLabel) {
-            $checkboxId = $promptId . '_' . $key;
+            $checkboxId = $promptId.'_'.$key;
             $isChecked = is_array($defaultValue) && in_array($key, $defaultValue);
-            
+
             $fields[] = Checkbox::make($checkboxId)
                 ->label($optionLabel)
                 ->default($isChecked)
                 ->live(onBlur: false);
         }
-        
+
         return $fields;
     }
 
@@ -317,7 +325,7 @@ class RunCommandComponent extends Component implements HasForms
         $required = ($params[3] ?? false) !== false;
         $defaultValue = $this->answers[$promptId] ?? null;
 
-        return match($method) {
+        return match ($method) {
             'text' => TextInput::make($promptId)
                 ->label($label)
                 ->placeholder($params[1] ?? '')

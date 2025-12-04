@@ -4,8 +4,8 @@ namespace Moox\Prompts;
 
 use Moox\Core\MooxServiceProvider;
 use Moox\Prompts\Support\CliPromptRuntime;
-use Moox\Prompts\Support\PromptRuntime;
 use Moox\Prompts\Support\PromptResponseStore;
+use Moox\Prompts\Support\PromptRuntime;
 use Moox\Prompts\Support\WebPromptRuntime;
 use Spatie\LaravelPackageTools\Package;
 
