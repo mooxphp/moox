@@ -24,4 +24,3 @@ class PendingPromptsException extends Exception
         return $this->prompts[0] ?? null;
     }
 }
-

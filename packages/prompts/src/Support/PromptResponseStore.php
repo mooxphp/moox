@@ -5,6 +5,7 @@ namespace Moox\Prompts\Support;
 class PromptResponseStore
 {
     protected array $responses = [];
+
     protected int $promptCounter = 0;
 
     public function set(string $promptId, mixed $value): void
@@ -35,7 +36,7 @@ class PromptResponseStore
 
     public function getNextPromptId(string $method): string
     {
-        return 'prompt_' . (++$this->promptCounter);
+        return 'prompt_'.(++$this->promptCounter);
     }
 
     public function resetCounter(): void

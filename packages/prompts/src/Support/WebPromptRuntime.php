@@ -24,21 +24,24 @@ class WebPromptRuntime implements PromptRuntime
     {
         if ($this->responseStore->has($promptId)) {
             $value = $this->responseStore->get($promptId);
-            
+
             if ($promptData['method'] === 'multiselect') {
-                if (!is_array($value)) {
+                if (! is_array($value)) {
                     if ($value === true) {
                         $options = $promptData['params'][1] ?? [];
+
                         return array_keys($options);
                     }
                     if ($value !== null && $value !== '') {
                         return [$value];
                     }
+
                     return [];
                 }
+
                 return $value;
             }
-            
+
             return $value;
         }
 
@@ -59,7 +62,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): string {
         $promptId = $this->generatePromptId('text');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'text',
             'params' => [
@@ -83,7 +86,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): string {
         $promptId = $this->generatePromptId('textarea');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'textarea',
             'params' => [
@@ -106,7 +109,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): string {
         $promptId = $this->generatePromptId('password');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'password',
             'params' => [
@@ -129,7 +132,7 @@ class WebPromptRuntime implements PromptRuntime
         string $hint = '',
     ): bool {
         $promptId = $this->generatePromptId('confirm');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'confirm',
             'params' => [
@@ -153,7 +156,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): mixed {
         $promptId = $this->generatePromptId('select');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'select',
             'params' => [
@@ -179,7 +182,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): array {
         $promptId = $this->generatePromptId('multiselect');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'multiselect',
             'params' => [
@@ -206,7 +209,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): mixed {
         $promptId = $this->generatePromptId('suggest');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'suggest',
             'params' => [
@@ -233,7 +236,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): mixed {
         $promptId = $this->generatePromptId('search');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'search',
             'params' => [
@@ -260,7 +263,7 @@ class WebPromptRuntime implements PromptRuntime
         callable|string|null $transform = null,
     ): array {
         $promptId = $this->generatePromptId('multisearch');
-        
+
         return $this->checkOrThrow($promptId, [
             'method' => 'multisearch',
             'params' => [
@@ -276,41 +279,23 @@ class WebPromptRuntime implements PromptRuntime
         ]);
     }
 
-    public function pause(string $message = 'Press ENTER to continue'): void
-    {
-    }
+    public function pause(string $message = 'Press ENTER to continue'): void {}
 
-    public function note(string $message): void
-    {
-    }
+    public function note(string $message): void {}
 
-    public function info(string $message): void
-    {
-    }
+    public function info(string $message): void {}
 
-    public function warning(string $message): void
-    {
-    }
+    public function warning(string $message): void {}
 
-    public function error(string $message): void
-    {
-    }
+    public function error(string $message): void {}
 
-    public function alert(string $message): void
-    {
-    }
+    public function alert(string $message): void {}
 
-    public function intro(string $message): void
-    {
-    }
+    public function intro(string $message): void {}
 
-    public function outro(string $message): void
-    {
-    }
+    public function outro(string $message): void {}
 
-    public function table(array $headers, array $rows): void
-    {
-    }
+    public function table(array $headers, array $rows): void {}
 
     public function spin(Closure $callback, string $message = ''): mixed
     {
@@ -337,9 +322,7 @@ class WebPromptRuntime implements PromptRuntime
         return $results;
     }
 
-    public function clear(): void
-    {
-    }
+    public function clear(): void {}
 
     public function form(): FormBuilder
     {
