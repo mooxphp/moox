@@ -2,15 +2,15 @@
 
 namespace Moox\Jobs;
 
-use Moox\Jobs\Commands\InstallCommand;
-use Moox\Jobs\Commands\UpdateCommand;
 use Override;
+use Moox\Core\MooxServiceProvider;
+use Moox\Jobs\Commands\UpdateCommand;
+use Moox\Jobs\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class JobsServiceProvider extends PackageServiceProvider
+class JobsServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package->name('jobs')
             ->hasConfigFile()

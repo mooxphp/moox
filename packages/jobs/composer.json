@@ -46,6 +46,12 @@
                 "auto_migrate": [
                     "database/migrations"
                 ],
+                "plugins": [
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsWaitingPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsFailedPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsBatchesPlugin"
+                ],
                 "seed": "database/seeders/JobsSeeder.php",
                 "auto_publish": "jobs-config",
                 "auto_entities": {
@@ -84,6 +90,5 @@
             }
         }
     },
-
     "prefer-stable": true
 }
