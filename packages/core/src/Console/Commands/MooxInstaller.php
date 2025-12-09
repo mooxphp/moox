@@ -13,8 +13,8 @@ use Moox\Core\Console\Traits\InstallPackages;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 use Moox\Core\Services\PackageService;
 
-use function Laravel\Prompts\multiselect;
-use function Laravel\Prompts\select;
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\select;
 
 class MooxInstaller extends Command
 {
