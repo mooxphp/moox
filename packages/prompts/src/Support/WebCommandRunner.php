@@ -53,7 +53,7 @@ class WebCommandRunner
     protected static function getPackage(PackageServiceProvider $provider)
     {
         $reflection = new \ReflectionClass($provider);
-        
+
         if (! $reflection->hasProperty('package')) {
             return null;
         }
@@ -89,7 +89,7 @@ class WebCommandRunner
 
         foreach ($configFileNames as $configFileName) {
             $vendorConfig = $basePathMethod("/../config/{$configFileName}.php");
-            
+
             if (! is_file($vendorConfig)) {
                 $vendorConfig = $basePathMethod("/../config/{$configFileName}.php.stub");
                 if (! is_file($vendorConfig)) {
@@ -98,7 +98,7 @@ class WebCommandRunner
             }
 
             static::callPublishes($provider, [
-                $vendorConfig => config_path("{$configFileName}.php")
+                $vendorConfig => config_path("{$configFileName}.php"),
             ], "{$shortName}-config");
         }
     }
@@ -123,7 +123,7 @@ class WebCommandRunner
             }
 
             static::callPublishes($provider, [
-                $vendorMigration => database_path("migrations/{$migrationFileName}.php")
+                $vendorMigration => database_path("migrations/{$migrationFileName}.php"),
             ], "{$shortName}-migrations");
         }
     }
@@ -143,7 +143,7 @@ class WebCommandRunner
         }
 
         static::callPublishes($provider, [
-            $viewsPath => base_path("resources/views/vendor/{$shortName}")
+            $viewsPath => base_path("resources/views/vendor/{$shortName}"),
         ], "{$shortName}-views");
     }
 
@@ -166,7 +166,7 @@ class WebCommandRunner
             : resource_path("lang/vendor/{$shortName}");
 
         static::callPublishes($provider, [
-            $vendorTranslations => $appTranslations
+            $vendorTranslations => $appTranslations,
         ], "{$shortName}-translations");
     }
 
@@ -185,21 +185,21 @@ class WebCommandRunner
         }
 
         static::callPublishes($provider, [
-            $vendorAssets => public_path("vendor/{$shortName}")
+            $vendorAssets => public_path("vendor/{$shortName}"),
         ], "{$shortName}-assets");
     }
 
     protected static function getPackageProperty($package, string $property)
     {
         $reflection = new \ReflectionClass($package);
-        
+
         if (! $reflection->hasProperty($property)) {
             return null;
         }
 
         $prop = $reflection->getProperty($property);
         $prop->setAccessible(true);
-        
+
         return $prop->getValue($package);
     }
 
@@ -208,7 +208,7 @@ class WebCommandRunner
         $reflection = new \ReflectionClass($package);
         $methodRef = $reflection->getMethod($method);
         $methodRef->setAccessible(true);
-        
+
         return fn (...$args) => $methodRef->invoke($package, ...$args);
     }
 
@@ -217,7 +217,7 @@ class WebCommandRunner
         $reflection = new \ReflectionClass($package);
         $methodRef = $reflection->getMethod($method);
         $methodRef->setAccessible(true);
-        
+
         return $methodRef->invoke($package);
     }
 

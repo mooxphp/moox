@@ -88,7 +88,7 @@ class RunCommandComponent extends Component implements HasForms
             // Stelle sicher, dass publishable Resources registriert sind (auch im Web-Kontext)
             // Dies löst das Problem, dass Spatie Package Tools nur registriert, wenn runningInConsole() true ist
             WebCommandRunner::ensurePublishableResourcesRegistered();
-            
+
             $this->responseStore->resetCounter();
 
             foreach ($this->answers as $promptId => $answer) {
@@ -129,7 +129,7 @@ class RunCommandComponent extends Component implements HasForms
                 // Kumulativer Output: Füge neuen Output zum bestehenden hinzu
                 if (! empty($newOutput)) {
                     if (! empty($this->output)) {
-                        $this->output .= "\n" . $newOutput;
+                        $this->output .= "\n".$newOutput;
                     } else {
                         $this->output = $newOutput;
                     }
@@ -143,14 +143,14 @@ class RunCommandComponent extends Component implements HasForms
                 // Kumulativer Output: Füge neuen Output zum bestehenden hinzu
                 if (! empty($newOutput)) {
                     if (! empty($this->output)) {
-                        $this->output .= "\n" . $newOutput;
+                        $this->output .= "\n".$newOutput;
                     } else {
                         $this->output = $newOutput;
                     }
                 }
                 // Zeige kumulativen Output während Prompts für Debugging
                 $this->currentStepOutput = $this->output ?? '';
-                
+
                 $prompt = $e->getPrompt();
                 $this->currentPrompt = $prompt;
                 $this->executionStep++;
@@ -177,7 +177,7 @@ class RunCommandComponent extends Component implements HasForms
             // Kumulativer Output auch bei Exceptions
             if (! empty($newOutput)) {
                 if (! empty($this->output)) {
-                    $this->output .= "\n" . $newOutput;
+                    $this->output .= "\n".$newOutput;
                 } else {
                     $this->output = $newOutput;
                 }
@@ -288,14 +288,14 @@ class RunCommandComponent extends Component implements HasForms
                     // Capture Filament validation errors
                     $errors = $e->errors();
                     $this->validationErrors = [];
-                    
+
                     // Get errors for current prompt field
                     if (isset($errors[$promptId])) {
-                        $this->validationErrors = is_array($errors[$promptId]) 
-                            ? $errors[$promptId] 
+                        $this->validationErrors = is_array($errors[$promptId])
+                            ? $errors[$promptId]
                             : [$errors[$promptId]];
                     }
-                    
+
                     // If no specific field errors, get all errors
                     if (empty($this->validationErrors)) {
                         foreach ($errors as $fieldErrors) {
@@ -306,7 +306,7 @@ class RunCommandComponent extends Component implements HasForms
                             }
                         }
                     }
-                    
+
                     return;
                 }
             }
@@ -315,16 +315,19 @@ class RunCommandComponent extends Component implements HasForms
             if ($this->currentPrompt['method'] === 'confirm') {
                 if ($answer === null) {
                     $this->validatePromptAnswer($promptId, null, $this->currentPrompt);
+
                     return;
                 }
             } elseif ($this->currentPrompt['method'] === 'select') {
                 // Für Select: Prüfe ob leer oder null
                 if ($answer === null || $answer === '' || $answer === '0') {
                     $this->validatePromptAnswer($promptId, $answer, $this->currentPrompt);
+
                     return;
                 }
             } elseif ($answer === null || $answer === '') {
                 $this->validatePromptAnswer($promptId, '', $this->currentPrompt);
+
                 return;
             }
 
@@ -456,7 +459,7 @@ class RunCommandComponent extends Component implements HasForms
                 $messages["{$promptId}.required"] = 'Bitte mindestens eine Option wählen.';
                 $messages["{$promptId}.min"] = 'Bitte mindestens eine Option wählen.';
             }
-            
+
             // Freundlichere Meldungen speziell für Select
             if ($method === 'select') {
                 $messages["{$promptId}.required"] = 'Bitte wählen Sie eine Option aus.';
@@ -582,16 +585,16 @@ class RunCommandComponent extends Component implements HasForms
         if ($required) {
             $rules[] = 'required';
         }
-        
+
         // Add method-specific rules
         if ($method === 'select' && $required && ! empty($options)) {
             $rules[] = 'in:'.implode(',', array_keys($options));
         }
-        
+
         if ($method === 'confirm') {
             $rules[] = 'boolean';
         }
-        
+
         $pushRules($rules, $validate);
 
         // Kein automatisches Default für Select - Validation wird verwendet
