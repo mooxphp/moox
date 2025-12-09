@@ -2,10 +2,10 @@
 
 namespace Moox\Jobs;
 
-use Override;
 use Moox\Core\MooxServiceProvider;
-use Moox\Jobs\Commands\UpdateCommand;
 use Moox\Jobs\Commands\InstallCommand;
+use Moox\Jobs\Commands\UpdateCommand;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 
 class JobsServiceProvider extends MooxServiceProvider
