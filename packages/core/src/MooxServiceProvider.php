@@ -2,6 +2,7 @@
 
 namespace Moox\Core;
 
+use Illuminate\Support\Facades\File;
 use ReflectionClass;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -103,8 +104,20 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                     if ($this->plugins !== null) {
                         return $this->plugins;
                     }
-
                     $ds = DIRECTORY_SEPARATOR;
+
+                    // First, try to get plugins from composer.json extra.moox.install.plugins
+                    // packagePath points to src/, so we need to go one level up to get package root
+                    $packageRoot = dirname($this->packagePath);
+                    $composerPath = $packageRoot.$ds.'composer.json';
+                    if (File::exists($composerPath)) {
+                        $composer = json_decode(File::get($composerPath), true);
+                        $plugins = $composer['extra']['moox']['install']['plugins'] ?? null;
+                        if (is_array($plugins) && ! empty($plugins)) {
+                            return $plugins;
+                        }
+                    }
+                    // Fallback: Auto-detect plugins from file system
 
                     // Try multiple possible plugin paths
                     $possiblePaths = [

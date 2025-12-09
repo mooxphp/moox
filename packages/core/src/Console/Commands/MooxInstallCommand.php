@@ -9,6 +9,15 @@ use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
 use Moox\Core\Console\Traits\SelectFilamentPanel;
 
+use function Moox\Prompts\clear;
+use function Moox\Prompts\confirm;
+use function Moox\Prompts\error;
+use function Moox\Prompts\info;
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
+use function Moox\Prompts\select;
+use function Moox\Prompts\text;
+use function Moox\Prompts\warning;
 class MooxInstallCommand extends Command
 {
     use Art, CheckForFilament, SelectFilamentPanel;
@@ -19,51 +28,45 @@ class MooxInstallCommand extends Command
 
     protected array $mooxProviders = []; // packageName => providerClass
 
-    protected array $packagePlugins = []; // packageName => ['plugins' => [], 'provider' => '']
-
     public function handle(): int
     {
         $this->art();
-        $this->info('✨ Welcome to the Moox Installer!');
-        $this->newLine();
+        info('✨ Welcome to the Moox Installer!');
 
         // Step 1: Check for Filament
         if (! $this->checkForFilament(silent: true)) {
-            $this->error('❌ Filament installation is required.');
+            error('❌ Filament installation is required.');
 
             return self::FAILURE;
         }
 
         // Step 2: Scan for MooxServiceProvider packages
-        $this->info('🔍 Scanning for Moox packages...');
+        info('🔍 Scanning for Moox packages...');
         $this->scanMooxProviders();
 
         if (empty($this->mooxProviders)) {
-            $this->warn('⚠️ No packages extending MooxServiceProvider found.');
+            warning('⚠️ No packages extending MooxServiceProvider found.');
 
             return self::SUCCESS;
         }
 
-        $this->info('✅ Found '.count($this->mooxProviders).' Moox package(s)');
-        $this->newLine();
+        info('✅ Found '.count($this->mooxProviders).' Moox package(s)');
+        
 
         // Step 3: Collect all assets from all packages
         $assets = $this->collectPackageAssets();
 
         if (empty($assets)) {
-            $this->warn('⚠️ No assets found to install.');
+            warning('⚠️ No assets found to install.');
 
             return self::SUCCESS;
         }
 
-        // Step 4: Install assets in batches
+        // Step 4: Install assets in batches (includes plugins)
         $this->installAssets($assets);
 
-        // Step 5: Install plugins per package (panel-specific)
-        $this->installAllPlugins();
-
-        $this->newLine();
-        $this->info('✅ Installation completed successfully!');
+        
+        info('✅ Installation completed successfully!');
 
         return self::SUCCESS;
     }
@@ -77,31 +80,26 @@ class MooxInstallCommand extends Command
                 $instance = new $providerClass(app());
                 $mooxInfo = $instance->mooxInfo();
 
+                // Initialize package entry if not exists
+                if (! isset($assets[$packageName])) {
+                    $assets[$packageName] = [
+                        'provider' => $providerClass,
+                    ];
+                }
+
                 // Standard asset types - dynamically process all
                 $standardAssetTypes = [
                     'migrations' => 'migrations',
                     'configFiles' => 'configs',
                     'translations' => 'translations',
                     'seeders' => 'seeders',
+                    'plugins' => 'plugins',
                 ];
 
                 foreach ($standardAssetTypes as $mooxInfoKey => $assetType) {
                     if (! empty($mooxInfo[$mooxInfoKey])) {
-                        $assets[] = [
-                            'type' => $assetType,
-                            'package' => $packageName,
-                            'data' => $mooxInfo[$mooxInfoKey],
-                            'provider' => $providerClass,
-                        ];
+                        $assets[$packageName][$assetType] = $mooxInfo[$mooxInfoKey];
                     }
-                }
-
-                // Store plugin info for later (needs panel selection)
-                if (! empty($mooxInfo['plugins'])) {
-                    $this->packagePlugins[$packageName] = [
-                        'plugins' => $mooxInfo['plugins'],
-                        'provider' => $providerClass,
-                    ];
                 }
 
                 // Allow packages to add custom assets via hook
@@ -109,18 +107,23 @@ class MooxInstallCommand extends Command
                     $customAssets = $instance->getCustomInstallAssets();
                     if (is_array($customAssets)) {
                         foreach ($customAssets as $customAsset) {
-                            $assets[] = array_merge([
-                                'package' => $packageName,
-                                'provider' => $providerClass,
-                            ], $customAsset);
+                            $customType = $customAsset['type'] ?? 'unknown';
+                            if (! isset($assets[$packageName][$customType])) {
+                                $assets[$packageName][$customType] = [];
+                            }
+                            if (isset($customAsset['data'])) {
+                                $assets[$packageName][$customType] = array_merge(
+                                    $assets[$packageName][$customType] ?? [],
+                                    $customAsset['data']
+                                );
+                            }
                         }
                     }
                 }
             } catch (\Exception $e) {
-                $this->warn("⚠️ Failed to collect assets for {$packageName}: {$e->getMessage()}");
+                warning("⚠️ Failed to collect assets for {$packageName}: {$e->getMessage()}");
             }
         }
-
         return $assets;
     }
 
@@ -130,19 +133,79 @@ class MooxInstallCommand extends Command
             return;
         }
 
-        // Group assets by type
+        // Group assets by type (assets are now grouped by package)
         $groupedAssets = [];
-        foreach ($assets as $asset) {
-            $type = $asset['type'] ?? 'unknown';
-            if (! isset($groupedAssets[$type])) {
-                $groupedAssets[$type] = [];
+        foreach ($assets as $packageName => $packageAssets) {
+            $provider = $packageAssets['provider'] ?? null;
+            
+            foreach ($packageAssets as $type => $data) {
+                // Skip 'provider' key
+                if ($type === 'provider') {
+                    continue;
+                }
+                
+                if (! isset($groupedAssets[$type])) {
+                    $groupedAssets[$type] = [];
+                }
+                
+                $groupedAssets[$type][] = [
+                    'package' => $packageName,
+                    'data' => $data,
+                    'provider' => $provider,
+                ];
             }
-            $groupedAssets[$type][] = $asset;
         }
 
-        // Install each type
+        if (empty($groupedAssets)) {
+            return;
+        }
+
+        // Build options for multiselect with counts
+        $typeOptions = [];
+        $typeLabels = [
+            'migrations' => 'Migrations',
+            'configs' => 'Config Files',
+            'translations' => 'Translations',
+            'seeders' => 'Seeders',
+            'plugins' => 'Plugins',
+        ];
+
         foreach ($groupedAssets as $type => $typeAssets) {
-            $this->installAssetType($type, $typeAssets);
+            $totalItems = 0;
+            $packageCount = 0;
+            foreach ($typeAssets as $asset) {
+                $totalItems += count($asset['data'] ?? []);
+                $packageCount++;
+            }
+            $label = $typeLabels[$type] ?? ucfirst($type);
+            $typeOptions["{$label} ({$totalItems} items from {$packageCount} package(s))"] = $type;
+        }
+
+        // Let user select which asset types to install
+        $selectedTypes = multiselect(
+            label: 'Select asset types to install:',
+            options: array_keys($typeOptions),
+            default: array_keys($typeOptions), // Select all by default
+            scroll: min(10, count($typeOptions)),
+            required: false
+        );
+
+        // Convert selected labels back to types
+        $typesToInstall = [];
+        foreach ($selectedTypes as $label) {
+            if (isset($typeOptions[$label])) {
+                $typesToInstall[] = $typeOptions[$label];
+            }
+        }
+
+        // Install only selected types - with item-level multiselect
+        foreach ($typesToInstall as $type) {
+            if (isset($groupedAssets[$type])) {
+                $typeLabel = $typeLabels[$type] ?? ucfirst($type);
+                info("📦 Installing {$typeLabel}...");
+                $this->installAssetType($type, $groupedAssets[$type]);
+                note("✅ {$typeLabel} installation completed");
+            }
         }
     }
 
@@ -151,23 +214,25 @@ class MooxInstallCommand extends Command
         $installer = $this->getAssetInstaller($type);
 
         if (! $installer) {
-            $this->warn("⚠️ No installer found for asset type: {$type}");
+            warning("⚠️ No installer found for asset type: {$type}");
 
             return;
         }
 
-        // Collect all data and group by package
+        // Collect all data and map items to packages
         $allData = [];
+        $itemToPackageMap = [];
         $packages = [];
-        $packageDetails = [];
 
         foreach ($assets as $asset) {
             $packageName = $asset['package'];
+            $packages[] = $packageName;
             $data = $asset['data'] ?? [];
 
-            $allData = array_merge($allData, $data);
-            $packages[] = $packageName;
-            $packageDetails[$packageName] = $data;
+            foreach ($data as $item) {
+                $allData[] = $item;
+                $itemToPackageMap[$item] = $packageName;
+            }
         }
 
         if (empty($allData)) {
@@ -175,26 +240,72 @@ class MooxInstallCommand extends Command
         }
 
         // Show summary
-        $this->newLine();
-        $this->info("📦 {$type} found:");
-        $this->line('  Total: '.count($allData).' item(s) from '.count(array_unique($packages)).' package(s)');
+        $typeLabels = [
+            'migrations' => 'Migrations',
+            'configs' => 'Config Files',
+            'translations' => 'Translations',
+            'seeders' => 'Seeders',
+            'plugins' => 'Plugins',
+        ];
+        $label = $typeLabels[$type] ?? ucfirst($type);
+        info("📦 {$label}: ".count($allData).' item(s) from '.count(array_unique($packages)).' package(s)');
 
-        // List details per package
-        foreach ($packageDetails as $packageName => $items) {
-            if (! empty($items)) {
-                $this->line("  • {$packageName}: ".count($items).' item(s)');
-                if ($this->option('debug') || count($items) <= 5) {
-                    foreach ($items as $item) {
-                        $this->line("    - {$item}");
-                    }
-                } else {
-                    $this->line('    ('.implode(', ', array_slice($items, 0, 3)).', ... and '.(count($items) - 3).' more)');
-                }
+        // Plugins have their own multiselect in installPlugins, skip item-level selection here
+        if ($type === 'plugins') {
+            call_user_func($installer, $type, $allData, $assets);
+            return;
+        }
+
+        // Build multiselect options for individual items
+        $itemOptions = [];
+        foreach ($allData as $item) {
+            $packageName = $itemToPackageMap[$item] ?? 'unknown';
+            $itemOptions["{$item} ({$packageName})"] = $item;
+        }
+
+        // Let user select which items to install
+        $selectedItemLabels = multiselect(
+            label: "Select {$type} to install:",
+            options: array_keys($itemOptions),
+            default: array_keys($itemOptions), // Select all by default
+            scroll: min(10, count($itemOptions)),
+            required: false
+        );
+
+        // Convert selected labels back to items
+        $selectedItems = [];
+        foreach ($selectedItemLabels as $itemLabel) {
+            if (isset($itemOptions[$itemLabel])) {
+                $selectedItems[] = $itemOptions[$itemLabel];
             }
         }
 
-        // Call the installer (it will handle confirmation internally)
-        call_user_func($installer, $type, $allData, $assets);
+        if (empty($selectedItems)) {
+            note("⏩ No {$type} selected, skipping");
+            return;
+        }
+
+        // Show what will be installed
+        info("📦 Installing ".count($selectedItems)." {$label} item(s)...");
+
+        // Filter assets to only include selected items
+        $filteredAssets = [];
+        foreach ($assets as $asset) {
+            $packageName = $asset['package'];
+            $data = $asset['data'] ?? [];
+            $filteredData = array_intersect($data, $selectedItems);
+            
+            if (! empty($filteredData)) {
+                $filteredAssets[] = [
+                    'package' => $packageName,
+                    'data' => array_values($filteredData),
+                    'provider' => $asset['provider'] ?? null,
+                ];
+            }
+        }
+
+        // Call the installer with filtered assets
+        call_user_func($installer, $type, $selectedItems, $filteredAssets);
     }
 
     protected function getAssetInstaller(string $type): ?callable
@@ -204,6 +315,7 @@ class MooxInstallCommand extends Command
             'configs' => [$this, 'installConfigs'],
             'translations' => [$this, 'installTranslations'],
             'seeders' => [$this, 'installSeeders'],
+            'plugins' => [$this, 'installPlugins'],
         ];
 
         // Allow custom installers to be registered
@@ -216,72 +328,127 @@ class MooxInstallCommand extends Command
 
     protected function installMigrations(string $type, array $migrations, array $assets): void
     {
-        $this->publishAndInstallAssets($type, $assets, function () {
+        $published = $this->publishAndInstallAssets($type, $assets, function () {
             try {
                 Artisan::call('migrate', ['--force' => true, '--no-interaction' => true]);
-                $this->info('✅ Migrations executed successfully');
+                info('✅ Migrations executed successfully');
             } catch (\Exception $e) {
-                $this->warn("⚠️ Migration error: {$e->getMessage()}");
+                warning("⚠️ Migration error: {$e->getMessage()}");
             }
         });
+
+        if (! $published) {
+            note("⏩ Migrations were skipped or failed");
+        }
     }
 
     protected function installConfigs(string $type, array $configs, array $assets): void
     {
-        $this->publishAndInstallAssets($type, $assets);
+        try {
+            $published = $this->publishAndInstallAssets($type, $assets);
+            
+            if (! $published) {
+                note("⏩ No configs were published (all already exist or no publish tags found)");
+            }
+        } catch (\Exception $e) {
+            warning("⚠️ Configs installation failed: {$e->getMessage()}");
+        }
     }
 
     protected function installTranslations(string $type, array $translations, array $assets): void
     {
-        $this->publishAndInstallAssets($type, $assets);
+        try {
+            $published = $this->publishAndInstallAssets($type, $assets);
+            
+            if (! $published) {
+                note("⏩ No translations were published (all already exist or no publish tags found)");
+            }
+        } catch (\Exception $e) {
+            warning("⚠️ Translations installation failed: {$e->getMessage()}");
+        }
+    }
+
+    protected function installPlugins(string $type, array $plugins, array $assets): void
+    {
+        // Plugins need special handling with panel selection
+        // The $plugins array already contains the plugin class names from mooxInfo
+        // We just need to map them to their packages for display
+        
+        $allPlugins = [];
+        $packagePluginMap = [];
+
+        foreach ($assets as $asset) {
+            $packageName = $asset['package'];
+            $pluginList = $asset['data'] ?? [];
+
+            foreach ($pluginList as $plugin) {
+                // Plugin is already a full class name from mooxInfo
+                // Don't use class_exists() as it can cause class loading conflicts
+                // Just store the plugin name - validation will happen when registering
+                $allPlugins[$plugin] = $plugin;
+                $packagePluginMap[$plugin] = $packageName;
+            }
+        }
+
+        if (empty($allPlugins)) {
+            warning('⚠️ No plugins found');
+            return;
+        }
+
+        // Loop: Install plugins in panels until user says no
+        // Plugins can be installed in multiple panels, so we don't remove them from the list
+        while (true) {
+            // Clear terminal to reset state after Artisan calls
+            clear();
+            
+            $panelPath = $this->selectOrCreatePanel();
+            if (! $panelPath) {
+                break;
+            }
+    
+            info('✅ Selected Panel: '.basename($panelPath, '.php'));
+    
+            // Build display options for the plugins
+            $pluginChoices = [];
+            foreach ($allPlugins as $plugin) {
+                $displayName = basename(str_replace('\\', '/', $plugin));
+                $package = $packagePluginMap[$plugin] ?? 'unknown';
+                $pluginChoices["{$displayName} ({$package})"] = $plugin;
+            }
+    
+            // Multiselect which plugins to install in this panel
+            $selectedLabels = multiselect(
+                label: 'Select plugins to install in this panel:',
+                options: array_keys($pluginChoices),
+                default: array_keys($pluginChoices), // default: all selected
+                scroll: min(10, count($pluginChoices)),
+                required: false
+            );
+    
+            if (empty($selectedLabels)) {
+                note('⏩ No plugins selected for this panel');
+            } else {
+                $selectedPlugins = array_map(
+                    fn ($label) => $pluginChoices[$label],
+                    $selectedLabels
+                );
+        
+                $this->installResolvedPlugins($selectedPlugins, $panelPath);
+            }
+    
+            if (! confirm(label: 'Install plugins in another panel?', default: false)) {
+                break;
+            }
+        }
     }
 
     /**
      * Generic method to publish and optionally install assets.
      * Handles checking, publishing, skipping, and feedback for all asset types.
      */
-    protected function publishAndInstallAssets(string $type, array $assets, ?callable $afterPublish = null): void
+    protected function publishAndInstallAssets(string $type, array $assets, ?callable $afterPublish = null): bool
     {
-        // Ask for confirmation - always ask, don't use default to force user interaction
-        $defaultConfirm = match ($type) {
-            'migrations' => true,
-            'configs' => true,
-            'translations' => true,
-            'seeders' => false,
-            default => true,
-        };
-
-        // Force interactive confirmation - always ask explicitly
-        if ($this->option('no-interaction')) {
-            // In non-interactive mode, use default
-            $shouldInstall = $defaultConfirm;
-        } else {
-            // In interactive mode, always ask - ensure each confirmation is separate
-            // Add newline and ensure we're in interactive mode
-            $this->newLine();
-
-            // Check if we're actually in interactive mode
-            if (! $this->input->isInteractive()) {
-                // Fallback if not interactive - but warn about it
-                $this->warn("⚠️ Not in interactive mode for {$type}, using default: ".($defaultConfirm ? 'yes' : 'no'));
-                $shouldInstall = $defaultConfirm;
-            } else {
-                // Ask the question - this MUST prompt the user
-                // The problem: Laravel Prompts confirm() might be using cached input
-                // Solution: Use Laravel's built-in confirm() method instead of Prompts
-                // This ensures proper input handling
-                $question = "Install {$type} for all packages?";
-
-                // Use Laravel Command's confirm() method which handles input correctly
-                $shouldInstall = $this->confirm($question, $defaultConfirm);
-            }
-        }
-
-        if (! $shouldInstall) {
-            $this->line("⏩ Skipped {$type}");
-
-            return;
-        }
+        // No confirmation needed here - user already selected types via multiselect
 
         $published = false;
         $publishedPackages = [];
@@ -292,43 +459,51 @@ class MooxInstallCommand extends Command
             $packageName = $asset['package'];
             $itemNames = $asset['data'] ?? [];
 
+            // Show progress
+            note("  → Processing {$packageName}...");
+
             // Check if assets are already published/exist
             $alreadyExists = $this->checkAssetsExist($type, $packageName, $itemNames);
 
             if ($alreadyExists) {
                 $skippedPackages[] = $packageName;
-                $this->line("  ℹ️ {$packageName}: {$type} already exist, skipping");
+                note("  ℹ️ {$packageName}: {$type} already exist, skipping");
 
                 continue;
             }
 
             // Try to publish
+            note("    Publishing {$type} for {$packageName}...");
             if ($this->publishPackageAssets($packageName, $type)) {
                 $published = true;
                 $publishedPackages[] = $packageName;
+                note("    ✅ Published");
             } else {
                 $failedPackages[] = $packageName;
+                note("    ⚠️ No publish tag found");
             }
         }
 
         // Show summary
         if ($published) {
-            $this->info('✅ '.ucfirst($type).' published for: '.implode(', ', $publishedPackages));
+            info('✅ '.ucfirst($type).' published for: '.implode(', ', $publishedPackages));
         }
 
         if (! empty($skippedPackages)) {
-            $this->line('ℹ️ Skipped (already exist): '.implode(', ', $skippedPackages));
+            note('ℹ️ Skipped (already exist): '.implode(', ', $skippedPackages));
         }
 
         if (! empty($failedPackages) && ! $published) {
-            $this->line('ℹ️ No '.$type.' were published (no publish tags found)');
+            note('ℹ️ No '.$type.' were published (no publish tags found)');
         }
 
         // Run post-publish action if provided (e.g., migrate for migrations)
-        // Only run if there are assets to process (published or already exist)
-        if ($afterPublish && ($published || ! empty($skippedPackages) || ! empty($failedPackages))) {
+        // Only run if something was actually published
+        if ($afterPublish && $published) {
             $afterPublish();
         }
+        
+        return $published || ! empty($skippedPackages);
     }
 
     /**
@@ -377,9 +552,9 @@ class MooxInstallCommand extends Command
     protected function installSeeders(string $type, array $seeders, array $assets): void
     {
         // Ask for confirmation
-        $this->newLine();
-        if (! $this->confirm('Run seeders for all packages?', false)) {
-            $this->line("⏩ Skipped {$type}");
+        
+        if (! confirm(label: 'Run seeders for all packages?', default: false)) {
+            note("⏩ Skipped {$type}");
 
             return;
         }
@@ -399,19 +574,18 @@ class MooxInstallCommand extends Command
                             '--force' => true,
                             '--no-interaction' => true,
                         ]);
-                        $this->line("  ✅ {$seederClass}");
                         $executed++;
                     } else {
-                        $this->warn("  ⚠️ Seeder class not found: {$seeder}");
+                        warning("  ⚠️ Seeder class not found: {$seeder}");
                         $failed++;
                     }
                 } catch (\Exception $e) {
                     // Check if error is because data already exists
                     if (str_contains($e->getMessage(), 'already') || str_contains($e->getMessage(), 'duplicate')) {
-                        $this->line("  ℹ️ {$seeder}: Already seeded, skipping");
+                        note("  ℹ️ {$seeder}: Already seeded, skipping");
                         $skipped++;
                     } else {
-                        $this->warn("  ⚠️ Seeder error for {$seeder}: {$e->getMessage()}");
+                        warning("  ⚠️ Seeder error for {$seeder}: {$e->getMessage()}");
                         $failed++;
                     }
                 }
@@ -419,111 +593,16 @@ class MooxInstallCommand extends Command
         }
 
         if ($executed > 0) {
-            $this->info("✅ Executed {$executed} seeder(s)");
+            info("✅ Executed {$executed} seeder(s)");
         }
         if ($skipped > 0) {
-            $this->line("ℹ️ Skipped {$skipped} seeder(s) (already executed)");
+            note("ℹ️ Skipped {$skipped} seeder(s) (already executed)");
         }
         if ($failed > 0) {
-            $this->warn("⚠️ {$failed} seeder(s) failed");
+            warning("⚠️ {$failed} seeder(s) failed");
         }
     }
 
-    protected function installAllPlugins(): void
-    {
-        if (empty($this->packagePlugins)) {
-            return;
-        }
-
-        $this->newLine();
-        $this->info('🧩 Installing plugins...');
-
-        // Collect all available plugins from all packages
-        $allPlugins = [];
-        $packagePluginMap = [];
-
-        foreach ($this->packagePlugins as $packageName => $pluginInfo) {
-            foreach ($pluginInfo['plugins'] as $plugin) {
-                $resolved = $this->resolvePluginClass($packageName, $plugin);
-                if ($resolved) {
-                    $allPlugins[$resolved] = $resolved;
-                    $packagePluginMap[$resolved] = $packageName;
-                }
-            }
-        }
-
-        if (empty($allPlugins)) {
-            $this->warn('⚠️ No valid plugin classes found');
-
-            return;
-        }
-
-        $this->newLine();
-        $this->info('📦 Found '.count($allPlugins).' plugin(s)');
-
-        // Loop: Install plugins in panels until user says no
-        do {
-            $this->newLine();
-
-            // Step 1: Select panel
-            $panelPath = $this->selectOrCreatePanel();
-
-            if (! $panelPath) {
-                break;
-            }
-
-            $this->newLine();
-            $this->info('✅ Selected Panel: '.basename($panelPath, '.php'));
-
-            // Step 2: Ask if all plugins should be installed
-            $pluginOptions = array_values($allPlugins);
-
-            if (empty($pluginOptions)) {
-                $this->info('✅ All plugins have been installed');
-                break;
-            }
-
-            $this->newLine();
-            $installAll = $this->confirm('Install all plugins?', true);
-
-            $selectedPlugins = [];
-            if ($installAll) {
-                // Install all plugins
-                $selectedPlugins = $pluginOptions;
-            } else {
-                // Let user select individual plugins
-                $this->newLine();
-                $this->line('Select plugins to install:');
-                foreach ($pluginOptions as $plugin) {
-                    $displayName = basename(str_replace('\\', '/', $plugin));
-                    $packageName = $packagePluginMap[$plugin] ?? 'unknown';
-                    if ($this->confirm("  Install '{$displayName}' ({$packageName})?", false)) {
-                        $selectedPlugins[] = $plugin;
-                    }
-                }
-            }
-
-            // Install selected plugins
-            if (! empty($selectedPlugins)) {
-                $this->installResolvedPlugins($selectedPlugins, $panelPath);
-
-                // Remove installed plugins from available list
-                foreach ($selectedPlugins as $pluginClass) {
-                    unset($allPlugins[$pluginClass]);
-                }
-            }
-
-            // Ask if user wants to install more plugins in another panel
-            if (empty($allPlugins)) {
-                $this->newLine();
-                $this->info('✅ All plugins have been installed');
-                break;
-            }
-
-            $this->newLine();
-            $installMore = $this->confirm('Install plugins in another panel?', false);
-        } while ($installMore);
-    }
 
     protected function scanMooxProviders(): void
     {
@@ -555,7 +634,7 @@ class MooxInstallCommand extends Command
 
             if (! $providerClass) {
                 if ($this->option('debug')) {
-                    $this->line("  ⚠️ {$packageName}: No service provider found");
+                    note("  ⚠️ {$packageName}: No service provider found");
                 }
 
                 continue;
@@ -563,14 +642,14 @@ class MooxInstallCommand extends Command
 
             // Check if it extends MooxServiceProvider without instantiating
             if ($this->isMooxProvider($providerClass)) {
-                $this->line("  ✅ {$packageName}: {$providerClass}");
                 $this->mooxProviders[$packageName] = $providerClass;
             } else {
                 if ($this->option('debug')) {
-                    $this->line("  • {$packageName}: {$providerClass} (not Moox provider)");
+                    note("  • {$packageName}: {$providerClass} (not Moox provider)");
                 }
             }
         }
+        note("✅ Found ".count($this->mooxProviders)." Moox providers");
     }
 
     protected function getProviderClassFromPackage(string $packageName): ?string
@@ -679,12 +758,15 @@ class MooxInstallCommand extends Command
                     '--tag' => $tag,
                     '--force' => false,
                     '--no-interaction' => true,
-                ]);
+                ], $this->output);
 
                 if ($result === 0) {
-                    // Silent success - parent method will show summary
-                    $published = true;
-                    break;
+                    // Check if anything was actually published
+                    $output = Artisan::output();
+                    if (! str_contains($output, 'Nothing to publish')) {
+                        $published = true;
+                        break;
+                    }
                 }
             } catch (\Exception $e) {
                 // Continue to next tag
@@ -727,15 +809,14 @@ class MooxInstallCommand extends Command
         $existingPanels = $this->getExistingPanels();
 
         if (empty($existingPanels)) {
-            $this->newLine();
-            if ($this->confirm('No panels found. Create a new panel?', true)) {
+            if (confirm(label: 'No panels found. Create a new panel?', default: true)) {
                 return $this->createNewPanel();
             }
 
             return null;
         }
 
-        // Build options
+        // Build options - use panel class as key and display name as value
         $options = [];
         foreach ($existingPanels as $panel) {
             $displayName = basename(str_replace('\\', '/', $panel));
@@ -744,19 +825,11 @@ class MooxInstallCommand extends Command
         $options['__new__'] = '✨ Create new panel';
         $options['__skip__'] = '⏩ Skip';
 
-        $choiceOptions = array_values($options);
-        $defaultIndex = 0;
-
-        $selectedDisplay = $this->choice(
-            'Which panel should be used?',
-            $choiceOptions,
-            $defaultIndex
+        $selected = select(
+            label: 'Which panel should be used?',
+            options: $options,
+            default: array_key_first($options)
         );
-
-        $selected = array_search($selectedDisplay, $options, true);
-        if ($selected === false) {
-            $selected = $selectedDisplay;
-        }
 
         if ($selected === '__skip__') {
             return null;
@@ -836,7 +909,11 @@ class MooxInstallCommand extends Command
 
     protected function createNewPanel(): string
     {
-        $panelName = $this->ask('Panel name (e.g. admin, cms):', 'admin');
+        $panelName = text(
+            label: 'Panel name (e.g. admin, cms):',
+            default: 'admin',
+            required: true
+        );
 
         // Get list of files before creation
         $filesBefore = collect(File::files(app_path('Providers/Filament')))
@@ -853,7 +930,7 @@ class MooxInstallCommand extends Command
             foreach ($filesAfter as $file) {
                 if (! in_array($file->getFilename(), $filesBefore) &&
                     str_ends_with($file->getFilename(), 'PanelProvider.php')) {
-                    $this->info("✅ Panel created: {$panelName}");
+                    info("✅ Panel created: {$panelName}");
 
                     return $file->getPathname();
                 }
@@ -861,7 +938,7 @@ class MooxInstallCommand extends Command
 
             throw new \RuntimeException('Panel file was not created');
         } catch (\Exception $e) {
-            $this->error("❌ Could not create panel: {$e->getMessage()}");
+            error("❌ Could not create panel: {$e->getMessage()}");
             throw $e;
         }
     }
@@ -885,7 +962,7 @@ class MooxInstallCommand extends Command
             $escapedPluginClass = preg_quote($pluginClass, '/');
             if (str_contains($content, $pluginClass) ||
                 preg_match('/->plugin\([^)]*'.$escapedPluginClass.'[^)]*\)/', $content)) {
-                $this->line("ℹ️ Plugin already registered: {$pluginClass}");
+                note("ℹ️ Plugin already registered: {$pluginClass}");
 
                 continue;
             }
@@ -896,7 +973,7 @@ class MooxInstallCommand extends Command
         }
 
         if (empty($pluginsToAdd)) {
-            $this->line('ℹ️ All plugins are already registered');
+            note('ℹ️ All plugins are already registered');
 
             return;
         }
@@ -914,7 +991,7 @@ class MooxInstallCommand extends Command
             );
             $changed = true;
             foreach ($pluginsToAdd as $pluginClass) {
-                $this->info("✅ Registered plugin: {$pluginClass}");
+                info("✅ Registered plugin: {$pluginClass}");
             }
         } else {
             // No ->plugins() section exists - we need to create it
@@ -923,12 +1000,12 @@ class MooxInstallCommand extends Command
 
             $pluginsSection = "\n            ->plugins([\n                {$pluginsList},\n            ])";
 
-            // Strategy: Find the last `);` or `];` that's followed by newline, whitespace, and closing brace
+            // Strategy: Find the last `);` or `];` that's followed by newnote, whitespace, and closing brace
             // The structure is: return $panel->...->method();\n    }
             // We want to replace `]);` with `])` + `->plugins([...])` + `;`
 
             // Find the position of the last `];` or `);` before the closing `}` of the method
-            // Look for pattern: ]); or ); followed by newline, spaces/tabs, and }
+            // Look for pattern: ]); or ); followed by newnote, spaces/tabs, and }
             $lastPos = -1;
             $patternToMatch = '';
             $isArrayPattern = false;
@@ -970,11 +1047,11 @@ class MooxInstallCommand extends Command
                 $content = $beforeLast.$replacement.$afterLast;
                 $changed = true;
                 foreach ($pluginsToAdd as $pluginClass) {
-                    $this->info("✅ Registered plugin: {$pluginClass}");
+                    info("✅ Registered plugin: {$pluginClass}");
                 }
             } else {
-                $this->warn('⚠️ Could not find plugin registration point in panel file');
-                $this->line('   Panel file structure may be different than expected');
+                warning('⚠️ Could not find plugin registration point in panel file');
+                note('   Panel file structure may be different than expected');
 
                 return;
             }
@@ -982,14 +1059,14 @@ class MooxInstallCommand extends Command
 
         if ($changed) {
             File::put($panelPath, $content);
-            $this->info('✅ Plugins registered in panel');
+            info('✅ Plugins registered in panel');
         }
     }
 
     protected function resolvePluginClass(string $packageName, string $plugin): ?string
     {
-        // If plugin is already a full class name, return it
-        if (class_exists($plugin)) {
+        // If plugin looks like a full class name (contains backslash), return it as-is
+        if (str_contains($plugin, '\\')) {
             return $plugin;
         }
 
@@ -999,8 +1076,8 @@ class MooxInstallCommand extends Command
 
         // Common plugin namespace patterns
         $possibleNamespaces = [
-            'Moox\\'.$packageShortName.'\\Filament\\Plugins\\',
             'Moox\\'.$packageShortName.'\\Moox\\Plugins\\',
+            'Moox\\'.$packageShortName.'\\Filament\\Plugins\\',
             'Moox\\'.$packageShortName.'\\Plugins\\',
             'Moox\\'.$packageShortName.'\\',
         ];
@@ -1010,13 +1087,8 @@ class MooxInstallCommand extends Command
             $pluginName .= 'Plugin';
         }
 
-        foreach ($possibleNamespaces as $namespace) {
-            $fullClass = $namespace.$pluginName;
-            if (class_exists($fullClass)) {
-                return $fullClass;
-            }
-        }
-
-        return null;
+        // Return the most likely namespace pattern
+        // Don't use class_exists() to avoid class loading conflicts
+        return $possibleNamespaces[0].$pluginName;
     }
 }
