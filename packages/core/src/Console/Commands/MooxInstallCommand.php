@@ -330,7 +330,7 @@ class MooxInstallCommand extends Command
     {
         $published = $this->publishAndInstallAssets($type, $assets, function () {
             try {
-                Artisan::call('migrate', ['--force' => true, '--no-interaction' => true]);
+                Artisan::call('migrate', ['--force' => true]);
                 info('✅ Migrations executed successfully');
             } catch (\Exception $e) {
                 warning("⚠️ Migration error: {$e->getMessage()}");
@@ -572,7 +572,6 @@ class MooxInstallCommand extends Command
                         Artisan::call('db:seed', [
                             '--class' => $seederClass,
                             '--force' => true,
-                            '--no-interaction' => true,
                         ]);
                         $executed++;
                     } else {
@@ -757,7 +756,6 @@ class MooxInstallCommand extends Command
                 $result = Artisan::call('vendor:publish', [
                     '--tag' => $tag,
                     '--force' => false,
-                    '--no-interaction' => true,
                 ], $this->output);
 
                 if ($result === 0) {
