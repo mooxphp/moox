@@ -2,20 +2,20 @@
 
 namespace Moox\Core\Installer\Installers;
 
-use function Moox\Prompts\info;
-use function Moox\Prompts\note;
-use function Moox\Prompts\text;
-use function Moox\Prompts\select;
-use function Moox\Prompts\confirm;
-
-use function Moox\Prompts\warning;
-use Illuminate\Support\Facades\File;
-use function Moox\Prompts\multiselect;
-use Illuminate\Support\Facades\Artisan;
-use Moox\Core\Installer\AbstractAssetInstaller;
 use Filament\Support\Commands\Concerns\CanGeneratePanels;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+use Moox\Core\Installer\AbstractAssetInstaller;
 use Moox\Core\Installer\Contracts\PanelAwareInstallerInterface;
+
+use function Moox\Prompts\confirm;
+use function Moox\Prompts\info;
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
+use function Moox\Prompts\select;
+use function Moox\Prompts\text;
+use function Moox\Prompts\warning;
 
 /**
  * Installer for Filament plugins.
