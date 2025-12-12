@@ -269,17 +269,16 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             required: true
         );
 
-        try {
-            $this->generatePanel(
-                id: $panelName,
-                placeholderId: 'app',
-            );
-        } catch (FailureCommandOutput) {
-            warning("Failed to create panel: {$panelName}");
-            return 'failed';
-        }
-
+      try {
+       Artisan::call('make:filament-panel', [
+        'id' => $panelName,
+        '--force' => true,
+       ]);
+      } catch (FailureCommandOutput) {
+        warning("Failed to create panel: {$panelName}");
         return null;
+      }
+      return $panelName;
     }
 
     protected function registerPluginsInPanel(array $pluginClasses, string $panelPath): void
