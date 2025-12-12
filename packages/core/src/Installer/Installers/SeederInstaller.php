@@ -155,4 +155,3 @@ class SeederInstaller extends AbstractAssetInstaller
         return null;
     }
 }
-

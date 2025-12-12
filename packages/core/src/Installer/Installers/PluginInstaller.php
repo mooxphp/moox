@@ -2,33 +2,28 @@
 
 namespace Moox\Core\Installer\Installers;
 
-use function Moox\Prompts\info;
-use function Moox\Prompts\note;
-use function Moox\Prompts\text;
-use function Moox\Prompts\select;
-
-use function Moox\Prompts\confirm;
-use function Moox\Prompts\warning;
-use Illuminate\Console\OutputStyle;
-use Illuminate\Support\Facades\File;
-use function Moox\Prompts\multiselect;
-use Filament\Commands\MakePanelCommand;
-use Illuminate\Support\Facades\Artisan;
-use Moox\Core\Installer\AbstractAssetInstaller;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Filament\Support\Commands\Concerns\CanGeneratePanels;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
+use Illuminate\Support\Facades\File;
+use Moox\Core\Installer\AbstractAssetInstaller;
 use Moox\Core\Installer\Contracts\PanelAwareInstallerInterface;
+
+use function Moox\Prompts\confirm;
+use function Moox\Prompts\info;
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
+use function Moox\Prompts\select;
+use function Moox\Prompts\text;
+use function Moox\Prompts\warning;
 
 /**
  * Installer for Filament plugins.
  */
 class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstallerInterface
 {
-
     use CanGeneratePanels;
     use CanManipulateFiles;
+
     protected ?string $panelPath = null;
 
     protected $panelSelector = null;
@@ -269,13 +264,17 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             required: true
         );
 
-      try {
-       Artisan::call('make:filament-panel', [
-        'id' => $panelName,
-        '--force' => true,
-       ]);
-      } catch (FailureCommandOutput) {
-        warning("Failed to create panel: {$panelName}");
+        try {
+            $this->generatePanel(
+                id: $panelName,
+                placeholderId: 'app',
+            );
+        } catch (FailureCommandOutput) {
+            warning("Failed to create panel: {$panelName}");
+
+            return 'failed';
+        }
+
         return null;
       }
       return $panelName;
@@ -368,4 +367,3 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
         }
     }
 }
-

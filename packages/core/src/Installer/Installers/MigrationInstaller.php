@@ -58,7 +58,7 @@ class MigrationInstaller extends AbstractAssetInstaller
             if (is_array($migrationName)) {
                 $migrationName = $migrationName['name'] ?? '';
             }
-            
+
             foreach ($existingFiles as $file) {
                 $filename = $file->getFilename();
                 // Remove timestamp prefix if exists (format: YYYY_MM_DD_HHMMSS_name.php)

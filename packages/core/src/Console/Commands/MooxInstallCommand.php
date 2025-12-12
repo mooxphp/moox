@@ -21,7 +21,7 @@ use function Moox\Prompts\warning;
 
 /**
  * Moox Package Installer Command.
- * 
+ *
  * A dynamic, configurable installer for Moox packages.
  * Supports:
  * - Custom installers via traits
@@ -405,4 +405,3 @@ class MooxInstallCommand extends Command
         return $this->registry;
     }
 }
-

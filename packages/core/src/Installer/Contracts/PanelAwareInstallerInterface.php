@@ -4,7 +4,7 @@ namespace Moox\Core\Installer\Contracts;
 
 /**
  * Contract for installers that need panel awareness.
- * 
+ *
  * Implement this interface for installers that need to interact
  * with Filament panels (e.g., plugin installers).
  */
@@ -25,4 +25,3 @@ interface PanelAwareInstallerInterface extends AssetInstallerInterface
      */
     public function requiresPanelSelection(): bool;
 }
-

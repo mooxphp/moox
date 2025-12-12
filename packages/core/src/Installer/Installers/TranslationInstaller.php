@@ -7,7 +7,6 @@ use Moox\Core\Installer\AbstractAssetInstaller;
 
 use function Moox\Prompts\info;
 use function Moox\Prompts\note;
-use function Moox\Prompts\warning;
 
 /**
  * Installer for translation files.

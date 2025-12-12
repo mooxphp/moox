@@ -11,7 +11,7 @@ use Moox\Core\Installer\Installers\TranslationInstaller;
 
 /**
  * Registry for managing asset installers.
- * 
+ *
  * This registry provides a centralized way to:
  * - Register custom installers
  * - Configure installer behavior
@@ -58,7 +58,7 @@ class InstallerRegistry
 
     /**
      * Register the default installers.
-     * 
+     *
      * Installers are only enabled if explicitly defined in the config.
      * If an installer is not in the config, it will be disabled by default.
      */
@@ -78,12 +78,12 @@ class InstallerRegistry
             // Only enable installer if it's explicitly defined in config
             $isConfigured = array_key_exists($type, $configuredInstallers);
             $config = $configuredInstallers[$type] ?? [];
-            
+
             // If not in config, disable by default
             if (! $isConfigured) {
                 $config['enabled'] = false;
             }
-            
+
             $this->register($type, new $installerClass($config));
         }
     }
@@ -126,7 +126,7 @@ class InstallerRegistry
 
     /**
      * Get all registered installers.
-     * 
+     *
      * @return array<string, AssetInstallerInterface>
      */
     public function all(): array
@@ -136,15 +136,14 @@ class InstallerRegistry
 
     /**
      * Get all enabled installers sorted by priority.
-     * 
+     *
      * @return array<string, AssetInstallerInterface>
      */
     public function getEnabled(): array
     {
         $enabled = array_filter(
             $this->installers,
-            fn (AssetInstallerInterface $installer, string $type) => 
-                $installer->isEnabled() && ! ($this->skipped[$type] ?? false),
+            fn (AssetInstallerInterface $installer, string $type) => $installer->isEnabled() && ! ($this->skipped[$type] ?? false),
             ARRAY_FILTER_USE_BOTH
         );
 
@@ -331,4 +330,3 @@ class InstallerRegistry
         return $new;
     }
 }
-

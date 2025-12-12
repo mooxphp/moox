@@ -6,12 +6,12 @@ use Moox\Core\Installer\InstallerRegistry;
 
 /**
  * Trait for commands that allow skipping installers.
- * 
+ *
  * Use this trait to enable --skip options in your install command.
- * 
+ *
  * Example signature:
  * ```php
- * protected $signature = 'mypackage:install 
+ * protected $signature = 'mypackage:install
  *     {--skip=* : Skip specific installers (migrations, configs, etc.)}
  *     {--only=* : Only run specific installers}';
  * ```
@@ -64,4 +64,3 @@ trait HasSkippableInstallers
         return in_array($type, $skip);
     }
 }
-

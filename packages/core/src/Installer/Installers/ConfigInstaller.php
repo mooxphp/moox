@@ -7,7 +7,6 @@ use Moox\Core\Installer\AbstractAssetInstaller;
 
 use function Moox\Prompts\info;
 use function Moox\Prompts\note;
-use function Moox\Prompts\warning;
 
 /**
  * Installer for configuration files.
@@ -48,7 +47,7 @@ class ConfigInstaller extends AbstractAssetInstaller
             // Handle both array format and string format
             $configName = is_array($configFile) ? ($configFile['name'] ?? '') : $configFile;
             $configPath = config_path($configName.'.php');
-            
+
             if (File::exists($configPath)) {
                 return true;
             }
@@ -101,7 +100,7 @@ class ConfigInstaller extends AbstractAssetInstaller
                 $published = true;
                 $publishedPackages[] = $packageName;
                 note('    ✅ Published');
-            } 
+            }
         }
 
         // Show summary

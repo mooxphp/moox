@@ -113,4 +113,3 @@ return [
         'after_plugins' => null,
     ],
 ];
-

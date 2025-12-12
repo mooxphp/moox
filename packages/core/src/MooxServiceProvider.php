@@ -315,7 +315,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
     {
         // Ensure package is initialized (needed when called on fresh instance)
         if (! isset($this->package) || $this->package === null) {
-            $this->package = new Package();
+            $this->package = new Package;
             $this->configurePackage($this->package);
         }
 
@@ -367,7 +367,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
         // Config files with source and target paths
         $configFiles = [];
         $configFileNames = $this->package->configFileNames ?? [];
-        
+
         // If no config names from package, scan filesystem
         if (empty($configFileNames)) {
             $configPath = $packageRoot.$ds.'config';
@@ -378,12 +378,12 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                 }
             }
         }
-        
+
         // Build config paths
         foreach ($configFileNames as $configFileName) {
             $sourcePath = $packageRoot.$ds.'config'.$ds.$configFileName.'.php';
             $stubPath = $packageRoot.$ds.'config'.$ds.$configFileName.'.php.stub';
-            
+
             if (file_exists($sourcePath)) {
                 $configFiles[] = [
                     'name' => $configFileName,
@@ -417,7 +417,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                 // Check for .php and .stub files
                 $phpFile = $migrationSourcePath.$ds.$migrationName.'.php';
                 $stubFile = $migrationSourcePath.$ds.$migrationName.'.php.stub';
-                
+
                 if (file_exists($phpFile)) {
                     $migrationPaths[] = [
                         'name' => $migrationName,

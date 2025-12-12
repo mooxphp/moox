@@ -4,7 +4,7 @@ namespace Moox\Core\Installer\Contracts;
 
 /**
  * Contract for asset installers.
- * 
+ *
  * Implement this interface to create custom asset installers
  * that can be registered with the Moox Installer.
  */
@@ -39,17 +39,17 @@ interface AssetInstallerInterface
 
     /**
      * Install the assets.
-     * 
-     * @param array $assets Array of package assets with structure:
-     *                      [['package' => string, 'data' => array, 'provider' => ?string], ...]
+     *
+     * @param  array  $assets  Array of package assets with structure:
+     *                         [['package' => string, 'data' => array, 'provider' => ?string], ...]
      * @return bool True if installation was successful
      */
     public function install(array $assets): bool;
 
     /**
      * Get items from mooxInfo for this installer type.
-     * 
-     * @param array $mooxInfo The mooxInfo array from the service provider
+     *
+     * @param  array  $mooxInfo  The mooxInfo array from the service provider
      * @return array The items relevant to this installer
      */
     public function getItemsFromMooxInfo(array $mooxInfo): array;
@@ -71,4 +71,3 @@ interface AssetInstallerInterface
      */
     public function setConfig(array $config): void;
 }
-

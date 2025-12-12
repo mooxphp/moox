@@ -6,10 +6,10 @@ use Moox\Core\Installer\InstallerRegistry;
 
 /**
  * Trait for commands that want configurable installer behavior.
- * 
+ *
  * Use this trait to allow configuration-driven installer setup.
  * Configuration can come from config files, command options, or both.
- * 
+ *
  * Example config (config/moox-installer.php):
  * ```php
  * return [
@@ -80,4 +80,3 @@ trait HasConfigurableInstallers
         return $registry;
     }
 }
-

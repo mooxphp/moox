@@ -12,7 +12,7 @@ use function Moox\Prompts\note;
 
 /**
  * Abstract base class for asset installers.
- * 
+ *
  * Provides common functionality for all asset installers including:
  * - Configuration management
  * - Item selection UI
@@ -239,10 +239,10 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
 
     /**
      * Publish assets for a package.
-     * 
-     * @param string $packageName The composer package name (e.g., "moox/prompts")
-     * @param string $type The asset type (e.g., "config", "migrations")
-     * @param string|null $publishTag The exact publish tag from mooxInfo (e.g., "moox-prompts-config")
+     *
+     * @param  string  $packageName  The composer package name (e.g., "moox/prompts")
+     * @param  string  $type  The asset type (e.g., "config", "migrations")
+     * @param  string|null  $publishTag  The exact publish tag from mooxInfo (e.g., "moox-prompts-config")
      */
     protected function publishPackageAssets(string $packageName, string $type, ?string $publishTag = null): bool
     {
@@ -277,14 +277,12 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
 
                 $output = trim(Artisan::output());
 
-                
                 if ($result === 0 && ! str_contains($output, 'Nothing to publish')) {
                     $published = true;
                     break;
-                }else{
+                } else {
                     note($output);
                 }
-
             } catch (\Exception $e) {
                 continue;
             }
@@ -315,4 +313,3 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
         return null;
     }
 }
-

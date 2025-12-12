@@ -9,21 +9,21 @@ use function Moox\Prompts\warning;
 
 /**
  * Trait for adding lifecycle hooks to the installation process.
- * 
+ *
  * Use this trait to add custom logic before/after installation
  * of specific asset types or the entire installation process.
- * 
+ *
  * Example:
  * ```php
  * class MyInstallCommand extends Command
  * {
  *     use HasInstallationHooks;
- * 
+ *
  *     protected function beforeInstall(): void
  *     {
  *         $this->info('Starting installation...');
  *     }
- * 
+ *
  *     protected function afterMigrations(): void
  *     {
  *         // Run custom migrations or setup
@@ -75,7 +75,7 @@ trait HasInstallationHooks
 
     /**
      * Run installation with hooks.
-     * 
+     *
      * Uses graceful degradation - if one installer fails, continues with the next.
      */
     protected function runWithHooks(InstallerRegistry $registry, array $assets, array $selectedTypes): void
@@ -119,10 +119,10 @@ trait HasInstallationHooks
 
     /**
      * Filter assets for a specific installer type.
-     * 
+     *
      * This default implementation looks for assets stored with the type as key.
      * Override in your command for custom filtering logic.
-     * 
+     *
      * Expected $assets structure:
      * [
      *     'package/name' => [
@@ -161,4 +161,3 @@ trait HasInstallationHooks
         return $typeAssets;
     }
 }
-
