@@ -46,7 +46,7 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('core')
-            ->hasConfigFile()
+            ->hasConfigFile(['core', 'moox-installer'])
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
             ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class]);
