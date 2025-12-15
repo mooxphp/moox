@@ -30,8 +30,7 @@ return [
     */
 
     'allowed_commands' => [
-        'prompts:test-flow',
-        'prompts:publish-news-config',
+        'prompts:project-setup',
         // Add more commands here as needed
     ],
 

@@ -4,6 +4,8 @@ namespace Moox\Prompts;
 
 use Moox\Core\MooxServiceProvider;
 use Moox\Prompts\Support\CliPromptRuntime;
+use Moox\Prompts\Support\PromptFlowRunner;
+use Moox\Prompts\Support\PromptFlowStateStore;
 use Moox\Prompts\Support\PromptResponseStore;
 use Moox\Prompts\Support\PromptRuntime;
 use Moox\Prompts\Support\WebPromptRuntime;
@@ -25,6 +27,28 @@ class PromptsServiceProvider extends MooxServiceProvider
 
         $this->app->bind('moox.prompts.response_store', function ($app) {
             return new PromptResponseStore;
+        });
+
+        $this->app->singleton(PromptFlowStateStore::class, function ($app) {
+            $store = cache()->store();
+
+            // Avoid volatile in-memory array cache which loses flow state between requests.
+            if ($store->getStore() instanceof \Illuminate\Cache\ArrayStore) {
+                $store = cache()->store('file');
+            }
+
+            return new PromptFlowStateStore(
+                $store,
+                'moox_prompts_flow:',
+                3600
+            );
+        });
+
+        $this->app->singleton(PromptFlowRunner::class, function ($app) {
+            return new PromptFlowRunner(
+                $app->make(\Illuminate\Contracts\Console\Kernel::class),
+                $app->make(PromptFlowStateStore::class)
+            );
         });
 
         $this->app->singleton(PromptRuntime::class, function ($app) {
@@ -51,4 +75,5 @@ class PromptsServiceProvider extends MooxServiceProvider
             );
         }
     }
+
 }

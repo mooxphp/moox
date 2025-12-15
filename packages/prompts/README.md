@@ -1,59 +1,116 @@
 # Moox Prompts
 
-CLI-kompatible Prompts für Laravel Artisan Commands.
+CLI- und Web-kompatible Prompts für Laravel Artisan Commands – mit einem Flow, der im Browser Schritt für Schritt weiterläuft.
 
-## Übersicht
+## Wie muss ein Flow-Command aussehen?
 
-Dieses Package bietet eine einfache Proxy-Implementierung für Laravel Prompts. Es ermöglicht es, die gleichen Helper-Funktionen wie Laravel Prompts zu verwenden, mit der Möglichkeit, später Web-Funktionalität hinzuzufügen.
+Damit ein Command sowohl in der CLI als auch im Web korrekt als Flow funktioniert, müssen nur diese Regeln erfüllt sein:
 
-## Features
+- **Von `FlowCommand` erben**  
+  ```php
+  use Moox\Prompts\Support\FlowCommand;
+  use function Moox\Prompts\text;
+  use function Moox\Prompts\select;
 
-- ✅ Alle Laravel Prompt-Typen unterstützt (`text`, `select`, `multiselect`, `confirm`, etc.)
-- ✅ Identische API wie Laravel Prompts
+  class ProjectSetupCommand extends FlowCommand
+  {
+      protected $signature = 'prompts:project-setup';
+      protected $description = 'Projekt Setup Wizard (CLI & Web)';
+  ```
 
-## Installation
+- **State als Properties ablegen** (werden im Web automatisch zwischen Steps gespeichert)  
+  ```php
+      public ?string $environment = null;
+      public ?string $projectName = null;
+  ```
 
-```bash
-composer require moox/prompts
-```
+- **Steps über `promptFlowSteps()` definieren** – Reihenfolge = Flow-Reihenfolge  
+  ```php
+      public function promptFlowSteps(): array
+      {
+          return [
+              'stepIntro',
+              'stepEnvironment',
+              'stepProjectName',
+              'stepSummary',
+          ];
+      }
+  ```
 
-## Verwendung
+- **Jeder Step ist eine `public function stepXyz(): void`** – idealerweise **ein Prompt pro Step**  
+  ```php
+      public function stepIntro(): void
+      {
+          $this->info('=== Projekt Setup ===');
+      }
 
-### In Commands
+      public function stepEnvironment(): void
+      {
+          $this->environment = select(
+              label: 'Welche Umgebung konfigurierst du?',
+              options: [
+                  'local' => 'Local',
+                  'staging' => 'Staging',
+                  'production' => 'Production',
+              ],
+              default: 'local',
+          );
+      }
 
-Verwende die gleichen Helper-Funktionen wie in Laravel Prompts:
+      public function stepProjectName(): void
+      {
+          $this->projectName = text(
+              label: 'Wie heißt dein Projekt?',
+              placeholder: 'z.B. MyCoolApp',
+              validate: 'required|min:3',
+              required: true,
+          );
+      }
 
-```php
-use function Moox\Prompts\text;
-use function Moox\Prompts\select;
-use function Moox\Prompts\confirm;
-use function Moox\Prompts\form;
+      public function stepSummary(): void
+      {
+          $this->info('--- Zusammenfassung ---');
+          $this->line('Projekt: '.$this->projectName);
+          $this->line('Environment: '.$this->environment);
+      }
+  }
+  ```
 
-public function handle()
-{
-    // Einzelne Prompts
-    $name = text('What is your name?');
-    $package = select('Which package?', ['moox/core', 'moox/user']);
-    $confirm = confirm('Are you sure?');
-    
-    // FormBuilder
-    $result = form()
-        ->text('Name?')
-        ->select('Package?', ['moox/core', 'moox/user'])
-        ->submit();
-    
-    // Command-Logik...
-}
-```
+- **Optionale Steps** kannst du einfach mit einem Guard am Anfang überspringen:
+  ```php
+  public array $features = [];
 
-## Architektur
+  public function stepLoggingLevel(): void
+  {
+      if (! in_array('logging', $this->features, true)) {
+          return; // Step wird übersprungen
+      }
 
-Das Package besteht aus:
+      // Prompt …
+  }
+  ```
 
-- **PromptRuntime**: Interface für Prompt-Implementierungen
-- **CliPromptRuntime**: CLI-Implementierung (delegiert an Laravel Prompts)
-- **functions.php**: Globale Helper-Funktionen
-- **PromptsServiceProvider**: Registriert Services
+- **Andere Artisan-Commands aufrufen** – verwende im Flow immer `$this->call()` statt `Artisan::call()`, damit der Output auch im Web angezeigt wird:
+  ```php
+  public function stepPublishConfig(): void
+  {
+      $shouldPublish = confirm(
+          label: 'Möchtest du die Config jetzt veröffentlichen?',
+          default: true,
+      );
+
+      if (! $shouldPublish) {
+          return;
+      }
+
+      $this->call('vendor:publish', [
+          '--tag' => 'moox-prompts-config',
+      ]);
+  }
+  ```
+
+Mehr ist im Command nicht nötig – keine speziellen Flow-Methoden, keine eigene Persistenz.  
+Der Rest (CLI/Web-Unterschied, State, Web-Oberfläche) wird komplett vom Package übernommen.
 
 ## License
 

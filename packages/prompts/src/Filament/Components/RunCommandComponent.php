@@ -10,14 +10,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
-use Moox\Prompts\Support\PendingPromptsException;
+use Moox\Prompts\Support\PromptFlowRunner;
+use Moox\Prompts\Support\PromptFlowStateStore;
 use Moox\Prompts\Support\PromptResponseStore;
+use Moox\Prompts\Support\PromptRuntime;
+use Moox\Prompts\Support\WebPromptRuntime;
 use Moox\Prompts\Support\WebCommandRunner;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Throwable;
 
 class RunCommandComponent extends Component implements HasForms
@@ -48,6 +48,8 @@ class RunCommandComponent extends Component implements HasForms
 
     public int $executionStep = 0;
 
+    public ?string $flowId = null;
+
     protected PromptResponseStore $responseStore;
 
     public function boot(): void
@@ -71,8 +73,9 @@ class RunCommandComponent extends Component implements HasForms
         $this->error = null;
         $this->commandStarted = false;
         $this->executionStep = 0;
+        $this->flowId = null;
 
-        $this->responseStore->resetCounter();
+        $this->responseStore->clear();
 
         if ($command) {
             $this->runCommand();
@@ -85,108 +88,113 @@ class RunCommandComponent extends Component implements HasForms
         $this->isComplete = false;
 
         try {
-            // Stelle sicher, dass publishable Resources registriert sind (auch im Web-Kontext)
-            // Dies löst das Problem, dass Spatie Package Tools nur registriert, wenn runningInConsole() true ist
+            // erzwinge Web-Runtime (nicht CLI) im Web-Kontext
+            app()->instance(PromptRuntime::class, new WebPromptRuntime);
             WebCommandRunner::ensurePublishableResourcesRegistered();
 
-            $this->responseStore->resetCounter();
+            $runner = app(PromptFlowRunner::class);
+            $stateStore = app(PromptFlowStateStore::class);
 
-            foreach ($this->answers as $promptId => $answer) {
-                $this->responseStore->set($promptId, $answer);
+            $state = $this->flowId ? $stateStore->get($this->flowId) : null;
+            if (! $state) {
+                // frischer Flow: ResponseStore und lokale States leeren
+                $this->responseStore->clear();
+                $this->responseStore->resetCounter();
+                $this->answers = [];
+                $this->data = [];
+                $this->currentPrompt = null;
+                $this->isComplete = false;
+                $this->error = null;
+                $this->output = '';
+                $this->currentStepOutput = '';
+                $state = $runner->start($this->command, $this->commandInput);
+                $this->flowId = $state->flowId;
             }
 
+            // Antworten in den ResponseStore spiegeln (ohne den Zähler zu manipulieren)
             foreach ($this->answers as $promptId => $answer) {
                 $this->responseStore->set($promptId, $answer);
             }
 
             app()->instance('moox.prompts.response_store', $this->responseStore);
 
-            $commandInstance = app(\Illuminate\Contracts\Console\Kernel::class)
-                ->all()[$this->command] ?? null;
+            while (true) {
+                $result = $runner->runNext($state, $this->commandInput, $this->responseStore);
+                $this->appendOutput($result['output'] ?? '');
+                $state = $result['state'];
 
-            if (! $commandInstance) {
-                $this->error = "Command nicht gefunden: {$this->command}";
+                if (! empty($result['prompt'])) {
+                    $this->currentStepOutput = $this->output ?? '';
+                    $this->currentPrompt = $result['prompt'];
+                    $this->executionStep++;
+                    $this->prefillPromptForm($result['prompt']);
 
-                return;
-            }
-
-            $commandInstance->setLaravel(app());
-            $output = new BufferedOutput;
-
-            $outputStyle = new OutputStyle(
-                new ArrayInput($this->commandInput),
-                $output
-            );
-            $commandInstance->setOutput($outputStyle);
-
-            try {
-                $commandInstance->run(
-                    new ArrayInput($this->commandInput),
-                    $output
-                );
-
-                $newOutput = $output->fetch();
-                // Kumulativer Output: Füge neuen Output zum bestehenden hinzu
-                if (! empty($newOutput)) {
-                    if (! empty($this->output)) {
-                        $this->output .= "\n".$newOutput;
-                    } else {
-                        $this->output = $newOutput;
-                    }
+                    return;
                 }
-                // Am Ende: Zeige den vollständigen Output
-                $this->currentStepOutput = $this->output;
-                $this->isComplete = true;
-                $this->currentPrompt = null;
-            } catch (PendingPromptsException $e) {
-                $newOutput = $output->fetch();
-                // Kumulativer Output: Füge neuen Output zum bestehenden hinzu
-                if (! empty($newOutput)) {
-                    if (! empty($this->output)) {
-                        $this->output .= "\n".$newOutput;
-                    } else {
-                        $this->output = $newOutput;
-                    }
+
+                if (! empty($result['failed'])) {
+                    $this->currentStepOutput = $this->output;
+                    $this->error = $result['error'] ?? 'Unbekannter Fehler';
+                    $this->currentPrompt = null;
+
+                    return;
                 }
-                // Zeige kumulativen Output während Prompts für Debugging
-                $this->currentStepOutput = $this->output ?? '';
 
-                $prompt = $e->getPrompt();
-                $this->currentPrompt = $prompt;
-                $this->executionStep++;
+                if (! empty($result['completed'])) {
+                    $this->currentStepOutput = $this->output;
+                    $this->isComplete = true;
+                    $this->currentPrompt = null;
+                    $this->responseStore->clear();
+                    $this->responseStore->resetCounter();
+                    $this->answers = [];
+                    $this->data = [];
+                    $this->flowId = null;
 
-                $promptId = $prompt['id'] ?? null;
-                if ($promptId && isset($this->answers[$promptId])) {
-                    $value = $this->answers[$promptId];
-                    if ($prompt['method'] === 'multiselect') {
-                        if (! is_array($value)) {
-                            if ($value === true) {
-                                $params = $prompt['params'] ?? [];
-                                $options = $params[1] ?? [];
-                                $value = array_keys($options);
-                            } else {
-                                $value = [];
-                            }
-                        }
-                    }
-                    $this->form->fill([$promptId => $value]);
+                    return;
                 }
             }
         } catch (Throwable $e) {
-            $newOutput = isset($output) ? $output->fetch() : '';
-            // Kumulativer Output auch bei Exceptions
-            if (! empty($newOutput)) {
-                if (! empty($this->output)) {
-                    $this->output .= "\n".$newOutput;
-                } else {
-                    $this->output = $newOutput;
-                }
-            }
             $this->output = $this->appendExceptionToOutput($this->output, $e);
             $this->currentStepOutput = $this->output;
             $this->error = $this->formatThrowableMessage($e);
             $this->currentPrompt = null;
         }
+    }
+
+    protected function appendOutput(?string $newOutput): void
+    {
+        if (empty($newOutput)) {
+            return;
+        }
+
+        if (! empty($this->output)) {
+            $this->output .= "\n".$newOutput;
+        } else {
+            $this->output = $newOutput;
+        }
+    }
+
+    protected function prefillPromptForm(array $prompt): void
+    {
+        $promptId = $prompt['id'] ?? null;
+        if (! $promptId || ! isset($this->answers[$promptId])) {
+            return;
+        }
+
+        $value = $this->answers[$promptId];
+        if (($prompt['method'] ?? '') === 'multiselect') {
+            if (! is_array($value)) {
+                if ($value === true) {
+                    $params = $prompt['params'] ?? [];
+                    $options = $params[1] ?? [];
+                    $value = array_keys($options);
+                } else {
+                    $value = [];
+                }
+            }
+        }
+
+        $this->form->fill([$promptId => $value]);
     }
 
     protected function formatThrowableMessage(Throwable $e): string
@@ -285,18 +293,15 @@ class RunCommandComponent extends Component implements HasForms
                         }
                     }
                 } catch (\Illuminate\Validation\ValidationException $e) {
-                    // Capture Filament validation errors
                     $errors = $e->errors();
                     $this->validationErrors = [];
 
-                    // Get errors for current prompt field
                     if (isset($errors[$promptId])) {
                         $this->validationErrors = is_array($errors[$promptId])
                             ? $errors[$promptId]
                             : [$errors[$promptId]];
                     }
 
-                    // If no specific field errors, get all errors
                     if (empty($this->validationErrors)) {
                         foreach ($errors as $fieldErrors) {
                             if (is_array($fieldErrors)) {
@@ -311,7 +316,6 @@ class RunCommandComponent extends Component implements HasForms
                 }
             }
 
-            // Validate empty fields before returning
             if ($this->currentPrompt['method'] === 'confirm') {
                 if ($answer === null) {
                     $this->validatePromptAnswer($promptId, null, $this->currentPrompt);
@@ -319,7 +323,6 @@ class RunCommandComponent extends Component implements HasForms
                     return;
                 }
             } elseif ($this->currentPrompt['method'] === 'select') {
-                // Für Select: Prüfe ob leer oder null
                 if ($answer === null || $answer === '' || $answer === '0') {
                     $this->validatePromptAnswer($promptId, $answer, $this->currentPrompt);
 
@@ -361,6 +364,7 @@ class RunCommandComponent extends Component implements HasForms
             }
 
             $this->answers[$promptId] = $answer;
+            $this->responseStore->set($promptId, $answer);
             $this->currentPrompt = null;
             $this->runCommand();
         } catch (\Exception $e) {
@@ -376,7 +380,6 @@ class RunCommandComponent extends Component implements HasForms
         $rules = [];
         $messages = [];
 
-        // Map required flag per method (parameter positions differ)
         $requiredFlag = match ($method) {
             'text', 'textarea', 'password' => $params[3] ?? false,
             'multiselect' => $params[3] ?? false,
@@ -384,12 +387,10 @@ class RunCommandComponent extends Component implements HasForms
             default => false,
         };
 
-        // Multiselect: erzwinge Auswahl, wenn Optionen vorhanden
         if ($method === 'multiselect' && ! empty($params[1] ?? [])) {
             $requiredFlag = true;
         }
 
-        // Map validate parameter per method (avoid treating confirm/labels as rules)
         $validate = match ($method) {
             'text', 'textarea', 'password' => $params[4] ?? null,
             'select' => $params[5] ?? null,
@@ -397,7 +398,6 @@ class RunCommandComponent extends Component implements HasForms
             default => null,
         };
 
-        // Normalize rule strings (split pipe-delimited)
         $pushRules = function (array &$into, string|array|null $value): void {
             if ($value === null || $value === false || $value === '') {
                 return;
@@ -454,13 +454,11 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         if (! empty($rules)) {
-            // Freundlichere Meldungen speziell für Multiselect
             if ($method === 'multiselect') {
                 $messages["{$promptId}.required"] = 'Bitte mindestens eine Option wählen.';
                 $messages["{$promptId}.min"] = 'Bitte mindestens eine Option wählen.';
             }
 
-            // Freundlichere Meldungen speziell für Select
             if ($method === 'select') {
                 $messages["{$promptId}.required"] = 'Bitte wählen Sie eine Option aus.';
                 $messages["{$promptId}.in"] = 'Bitte wählen Sie eine gültige Option aus.';
@@ -546,12 +544,11 @@ class RunCommandComponent extends Component implements HasForms
     protected function createFieldFromPrompt(string $promptId, string $method, array $params): ?\Filament\Forms\Components\Field
     {
         $label = $params[0] ?? '';
-        // Determine required flag per prompt type (indexes differ)
         $required = match ($method) {
             'text', 'textarea', 'password' => ($params[3] ?? false) !== false,
             'multiselect' => ($params[3] ?? false) !== false,
             'confirm' => ($params[2] ?? false) !== false,
-            'select' => ($params[2] ?? null) === null, // Required wenn kein Default gesetzt
+            'select' => ($params[2] ?? null) === null,
             default => false,
         };
         $defaultValue = $this->answers[$promptId] ?? null;
@@ -559,7 +556,6 @@ class RunCommandComponent extends Component implements HasForms
         $defaultSelect = $defaultValue ?? ($params[2] ?? null);
         $confirmDefault = $defaultValue ?? ($params[1] ?? false);
 
-        // Map validate parameter per method
         $validate = match ($method) {
             'text', 'textarea', 'password' => $params[4] ?? null,
             'select' => $params[5] ?? null,
@@ -567,7 +563,6 @@ class RunCommandComponent extends Component implements HasForms
             default => null,
         };
 
-        // Build validation rules for Filament fields (normalize pipe-delimited)
         $rules = [];
         $pushRules = function (array &$into, string|array|null $value): void {
             if ($value === null || $value === false || $value === '') {
@@ -586,7 +581,6 @@ class RunCommandComponent extends Component implements HasForms
             $rules[] = 'required';
         }
 
-        // Add method-specific rules
         if ($method === 'select' && $required && ! empty($options)) {
             $rules[] = 'in:'.implode(',', array_keys($options));
         }
@@ -596,8 +590,6 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         $pushRules($rules, $validate);
-
-        // Kein automatisches Default für Select - Validation wird verwendet
 
         return match ($method) {
             'text' => TextInput::make($promptId)
@@ -656,3 +648,4 @@ class RunCommandComponent extends Component implements HasForms
         return view('moox-prompts::filament.components.run-command');
     }
 }
+ 
