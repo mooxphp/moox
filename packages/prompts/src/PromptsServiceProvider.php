@@ -75,5 +75,4 @@ class PromptsServiceProvider extends MooxServiceProvider
             );
         }
     }
-
 }

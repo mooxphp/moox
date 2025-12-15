@@ -2,8 +2,8 @@
 
 namespace Moox\Prompts\Support;
 
-use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Console\OutputStyle;
+use Illuminate\Contracts\Console\Kernel;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Throwable;
@@ -206,4 +206,3 @@ class PromptFlowRunner
         }
     }
 }
-

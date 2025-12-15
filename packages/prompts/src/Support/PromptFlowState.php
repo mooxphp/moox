@@ -40,4 +40,3 @@ class PromptFlowState
         $this->errorMessage = $message;
     }
 }
-

@@ -35,5 +35,3 @@ abstract class FlowCommand extends Command implements PromptFlowCommand
         return self::SUCCESS;
     }
 }
-
-
