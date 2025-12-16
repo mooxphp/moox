@@ -4,10 +4,10 @@ namespace Moox\Prompts\Support;
 
 /**
  * Helper-Klasse zum Zugriff auf Prompt-Parameter.
- * 
+ *
  * Statt direkt auf $params[0], $params[1] etc. zuzugreifen,
  * verwenden wir diese Helper-Methoden, die die Parameter-Namen kennen.
- * 
+ *
  * So sind wir robuster gegen Änderungen in Laravel Prompts,
  * solange die Parameter-Namen gleich bleiben.
  */
@@ -15,9 +15,9 @@ class PromptParamsHelper
 {
     /**
      * Extrahiert die Parameter für eine Prompt-Methode als assoziatives Array.
-     * 
-     * @param string $method Die Prompt-Methode (z.B. 'text', 'confirm', 'select')
-     * @param array $params Die numerischen Parameter-Array
+     *
+     * @param  string  $method  Die Prompt-Methode (z.B. 'text', 'confirm', 'select')
+     * @param  array  $params  Die numerischen Parameter-Array
      * @return array Assoziatives Array mit Parameternamen als Keys
      */
     public static function extract(string $method, array $params): array
@@ -81,18 +81,16 @@ class PromptParamsHelper
 
     /**
      * Gibt einen einzelnen Parameter zurück.
-     * 
-     * @param string $method Die Prompt-Methode
-     * @param array $params Die numerischen Parameter-Array
-     * @param string $paramName Der Name des Parameters (z.B. 'label', 'default')
-     * @param mixed $default Der Default-Wert, falls der Parameter nicht existiert
-     * @return mixed
+     *
+     * @param  string  $method  Die Prompt-Methode
+     * @param  array  $params  Die numerischen Parameter-Array
+     * @param  string  $paramName  Der Name des Parameters (z.B. 'label', 'default')
+     * @param  mixed  $default  Der Default-Wert, falls der Parameter nicht existiert
      */
     public static function get(string $method, array $params, string $paramName, mixed $default = null): mixed
     {
         $extracted = self::extract($method, $params);
-        
+
         return $extracted[$paramName] ?? $default;
     }
 }
-

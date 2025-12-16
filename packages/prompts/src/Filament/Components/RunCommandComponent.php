@@ -185,7 +185,7 @@ class RunCommandComponent extends Component implements HasForms
         $method = $prompt['method'] ?? '';
         $params = $prompt['params'] ?? [];
         $p = PromptParamsHelper::extract($method, $params);
-        
+
         // Wenn bereits eine Antwort vorhanden ist, diese verwenden
         if (isset($this->answers[$promptId])) {
             $value = $this->answers[$promptId];
@@ -200,6 +200,7 @@ class RunCommandComponent extends Component implements HasForms
                 }
             }
             $this->form->fill([$promptId => $value]);
+
             return;
         }
 
@@ -208,6 +209,7 @@ class RunCommandComponent extends Component implements HasForms
             $default = $p['default'] ?? false; // default Parameter (bool)
             $value = $default ? 'yes' : 'no';
             $this->form->fill([$promptId => $value]);
+
             return;
         }
 
@@ -223,6 +225,7 @@ class RunCommandComponent extends Component implements HasForms
             if (! empty($fillData)) {
                 $this->form->fill($fillData);
             }
+
             return;
         }
 
@@ -317,7 +320,7 @@ class RunCommandComponent extends Component implements HasForms
                 $answer = false;
             }
 
-        if (($answer === null || $answer === '' || ($this->currentPrompt['method'] === 'multiselect' && ! is_array($answer))) && $this->currentPrompt['method'] !== 'confirm') {
+            if (($answer === null || $answer === '' || ($this->currentPrompt['method'] === 'multiselect' && ! is_array($answer))) && $this->currentPrompt['method'] !== 'confirm') {
                 try {
                     $data = $this->form->getState();
                     $answer = $data[$promptId] ?? null;
@@ -612,7 +615,7 @@ class RunCommandComponent extends Component implements HasForms
         $defaultValue = $this->answers[$promptId] ?? null;
         $options = $p['options'] ?? [];
         $defaultSelect = $defaultValue ?? ($p['default'] ?? null);
-        
+
         // Für confirm: Default aus params[1] (default Parameter), falls noch keine Antwort vorhanden
         $confirmDefault = null;
         if ($method === 'confirm') {
