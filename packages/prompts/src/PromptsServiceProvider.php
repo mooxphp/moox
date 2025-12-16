@@ -18,7 +18,8 @@ class PromptsServiceProvider extends MooxServiceProvider
         $package
             ->name('moox-prompts')
             ->hasConfigFile('prompts')
-            ->hasViews();
+            ->hasViews()
+            ->hasTranslations();
     }
 
     public function register()

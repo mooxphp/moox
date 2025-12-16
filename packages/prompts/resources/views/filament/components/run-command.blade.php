@@ -2,7 +2,7 @@
     @if($error)
         <x-filament::section>
             <x-slot name="heading">
-                Fehler
+                {{ __('moox-prompts::prompts.ui.error_heading') }}
             </x-slot>
             <p style="color: #b91c1c;">{{ $error }}</p>
             @if($output)
@@ -16,7 +16,7 @@
     @elseif($isComplete)
         <x-filament::section>
             <x-slot name="heading">
-                Command erfolgreich abgeschlossen!
+                {{ __('moox-prompts::prompts.ui.success_heading') }}
             </x-slot>
             @if($output)
                 <pre
@@ -36,7 +36,9 @@
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                         </path>
                     </svg>
-                    <strong style="color: #92400e; font-size: 0.875rem; font-weight: 600;">Validierungsfehler:</strong>
+                    <strong style="color: #92400e; font-size: 0.875rem; font-weight: 600;">
+                        {{ __('moox-prompts::prompts.ui.validation_title') }}
+                    </strong>
                 </div>
                 <ul style="color: #92400e; margin: 0; padding-left: 1.25rem; list-style: disc; font-size: 0.875rem;">
                     @foreach($validationErrors as $msg)
@@ -48,14 +50,14 @@
 
         <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
             <x-filament::button wire:click="submitPrompt" type="button" color="primary">
-                Weiter
+                {{ __('moox-prompts::prompts.ui.next_button') }}
             </x-filament::button>
         </div>
 
         @if($currentStepOutput)
             <x-filament::section style="margin-top: 1rem;">
                 <x-slot name="heading">
-                    Command Output
+                    {{ __('moox-prompts::prompts.ui.output_heading') }}
                 </x-slot>
                 <pre
                     style="background-color: #111827; color: #4ade80; padding: 1rem; border-radius: 0.25rem; overflow: auto; font-size: 0.875rem; max-height: 400px;">{{ $currentStepOutput }}</pre>
@@ -64,7 +66,7 @@
     @else
         <x-filament::section>
             <x-slot name="heading">
-                Command wird gestartet...
+                {{ __('moox-prompts::prompts.ui.starting_heading') }}
             </x-slot>
             <x-filament::loading-indicator />
         </x-filament::section>

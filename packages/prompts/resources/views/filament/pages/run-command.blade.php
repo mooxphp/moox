@@ -4,7 +4,7 @@
             <x-filament::section>
                 @if (empty($availableCommands))
                     <p style="font-size: 0.875rem; color: #6b7280;">
-                        Keine Commands verfügbar. Bitte konfiguriere die erlaubten Commands in der
+                        {{ __('moox-prompts::prompts.ui.no_commands_available') }}
                         <code style="padding: 0.125rem 0.25rem; background-color: #f3f4f6; border-radius: 0.25rem; font-size: 0.75rem;">
                             config/prompts.php
                         </code>.
@@ -13,12 +13,12 @@
                     <form wire:submit="startCommand" style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 0.5rem;">
                         <div style="display: flex; flex-direction: column; gap: 0.25rem; max-width: 480px;">
                             <label style="font-size: 0.875rem;">
-                                Command
+                                {{ __('moox-prompts::prompts.ui.command_label') }}
                             </label>
 
                             <x-filament::input.wrapper>
                                 <x-filament::input.select wire:model="selectedCommand" required>
-                                    <option value="">Bitte Command auswählen …</option>
+                                    <option value="">{{ __('moox-prompts::prompts.ui.select_command_placeholder') }}</option>
                                     @foreach ($availableCommands as $commandName => $description)
                                         <option value="{{ $commandName }}">
                                             {{ $commandName }} — {{ $description }}
@@ -30,11 +30,11 @@
 
                         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; max-width: 640px;">
                             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
-                                Nur Commands aus der Konfiguration sind hier sichtbar.
+                                {{ __('moox-prompts::prompts.ui.commands_config_hint') }}
                             </p>
 
                             <x-filament::button type="submit" color="primary">
-                                Command starten
+                                {{ __('moox-prompts::prompts.ui.start_command_button') }}
                             </x-filament::button>
                         </div>
                     </form>
@@ -52,7 +52,7 @@
 
             <div style="margin-top: 1rem;">
                 <x-filament::button wire:click="resetCommand" color="gray">
-                    Zurück zur Command-Auswahl
+                    {{ __('moox-prompts::prompts.ui.back_to_selection') }}
                 </x-filament::button>
             </div>
         </div>

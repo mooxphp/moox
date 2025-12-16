@@ -7,20 +7,20 @@ use Illuminate\Console\Command;
 interface PromptFlowCommand
 {
     /**
-     * Liste der Step-Methoden, die der Flow in Reihenfolge ausführt.
+     * List of step methods that the flow executes in order.
      */
     public function promptFlowSteps(): array;
 }
 
 /**
- * Basis-Klasse für Flow-basierte Commands.
+ * Base class for flow-based commands.
  *
- * - CLI: führt alle in promptFlowSteps() definierten Methoden der Reihe nach aus.
- * - Web: der PromptFlowRunner ruft die gleichen Methoden stepweise auf.
+ * - CLI: executes all methods defined in promptFlowSteps() sequentially.
+ * - Web: the PromptFlowRunner calls the same methods step by step.
  *
- * Concrete Commands müssen nur:
- *   - promptFlowSteps(): array implementieren
- *   - die entsprechenden step*-Methoden bereitstellen.
+ * Concrete commands only need to:
+ *   - implement promptFlowSteps(): array
+ *   - provide the corresponding step* methods.
  */
 abstract class FlowCommand extends Command implements PromptFlowCommand
 {

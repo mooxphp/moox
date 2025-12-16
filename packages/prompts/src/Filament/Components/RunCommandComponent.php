@@ -89,7 +89,7 @@ class RunCommandComponent extends Component implements HasForms
         $this->isComplete = false;
 
         try {
-            // erzwinge Web-Runtime (nicht CLI) im Web-Kontext
+            // Force web runtime (not CLI) in web context
             app()->instance(PromptRuntime::class, new WebPromptRuntime);
             WebCommandRunner::ensurePublishableResourcesRegistered();
 
@@ -98,7 +98,7 @@ class RunCommandComponent extends Component implements HasForms
 
             $state = $this->flowId ? $stateStore->get($this->flowId) : null;
             if (! $state) {
-                // frischer Flow: ResponseStore und lokale States leeren
+                // Fresh flow: clear ResponseStore and local states
                 $this->responseStore->clear();
                 $this->responseStore->resetCounter();
                 $this->answers = [];
@@ -112,7 +112,7 @@ class RunCommandComponent extends Component implements HasForms
                 $this->flowId = $state->flowId;
             }
 
-            // Antworten in den ResponseStore spiegeln (ohne den Zähler zu manipulieren)
+            // Mirror answers into ResponseStore (without manipulating the counter)
             foreach ($this->answers as $promptId => $answer) {
                 $this->responseStore->set($promptId, $answer);
             }
@@ -135,7 +135,7 @@ class RunCommandComponent extends Component implements HasForms
 
                 if (! empty($result['failed'])) {
                     $this->currentStepOutput = $this->output;
-                    $this->error = $result['error'] ?? 'Unbekannter Fehler';
+                    $this->error = $result['error'] ?? __('moox-prompts::prompts.ui.unknown_error');
                     $this->currentPrompt = null;
 
                     return;
@@ -186,7 +186,7 @@ class RunCommandComponent extends Component implements HasForms
         $params = $prompt['params'] ?? [];
         $p = PromptParamsHelper::extract($method, $params);
 
-        // Wenn bereits eine Antwort vorhanden ist, diese verwenden
+        // If an answer already exists, use it
         if (isset($this->answers[$promptId])) {
             $value = $this->answers[$promptId];
             if ($method === 'multiselect') {
@@ -204,9 +204,9 @@ class RunCommandComponent extends Component implements HasForms
             return;
         }
 
-        // Ansonsten Default-Wert aus den Prompt-Params verwenden
+        // Otherwise use default value from prompt params
         if ($method === 'confirm') {
-            $default = $p['default'] ?? false; // default Parameter (bool)
+            $default = $p['default'] ?? false; // default parameter (bool)
             $value = $default ? 'yes' : 'no';
             $this->form->fill([$promptId => $value]);
 
@@ -214,8 +214,8 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         if ($method === 'multiselect') {
-            $defaultValue = $p['default'] ?? []; // default Parameter (array)
-            // Für multiselect müssen wir die einzelnen Checkboxen füllen
+            $defaultValue = $p['default'] ?? []; // default parameter (array)
+            // For multiselect we need to fill the individual checkboxes
             $options = $p['options'] ?? [];
             $fillData = [];
             foreach (array_keys($options) as $key) {
@@ -231,9 +231,9 @@ class RunCommandComponent extends Component implements HasForms
 
         $defaultValue = null;
         if ($method === 'select') {
-            $defaultValue = $p['default'] ?? null; // default Parameter
+            $defaultValue = $p['default'] ?? null; // default parameter
         } elseif (in_array($method, ['text', 'textarea', 'password'])) {
-            $defaultValue = $p['default'] ?? ''; // default Parameter
+            $defaultValue = $p['default'] ?? ''; // default parameter
         }
 
         if ($defaultValue !== null) {
@@ -577,7 +577,7 @@ class RunCommandComponent extends Component implements HasForms
 
         $label = $p['label'] ?? '';
         $required = ($p['required'] ?? false) !== false;
-        // Default-Wert: erst aus answers, dann aus default-Parameter
+        // Default value: first from answers, then from default parameter
         $defaultValue = $this->answers[$promptId] ?? ($p['default'] ?? []);
         $options = $p['options'] ?? [];
 
@@ -616,7 +616,7 @@ class RunCommandComponent extends Component implements HasForms
         $options = $p['options'] ?? [];
         $defaultSelect = $defaultValue ?? ($p['default'] ?? null);
 
-        // Für confirm: Default aus params[1] (default Parameter), falls noch keine Antwort vorhanden
+        // For confirm: default from params[1] (default parameter), if no answer exists yet
         $confirmDefault = null;
         if ($method === 'confirm') {
             $confirmDefault = $defaultValue !== null ? $defaultValue : ($p['default'] ?? false);
@@ -693,8 +693,8 @@ class RunCommandComponent extends Component implements HasForms
             'confirm' => Radio::make($promptId)
                 ->label($label)
                 ->options([
-                    'yes' => 'Ja',
-                    'no' => 'Nein',
+                    'yes' => __('moox-prompts::prompts.ui.confirm_yes'),
+                    'no' => __('moox-prompts::prompts.ui.confirm_no'),
                 ])
                 ->default($confirmDefault !== null ? ($confirmDefault ? 'yes' : 'no') : null)
                 ->rules($rules)

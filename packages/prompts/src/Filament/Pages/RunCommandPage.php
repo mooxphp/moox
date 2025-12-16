@@ -10,11 +10,26 @@ class RunCommandPage extends Page
 
     protected string $view = 'moox-prompts::filament.pages.run-command';
 
-    protected static ?string $navigationLabel = 'Command Runner';
+    protected static ?string $navigationLabel = null;
 
-    protected static ?string $title = 'Command Runner';
+    protected static ?string $title = null;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'System';
+    protected static string|\UnitEnum|null $navigationGroup = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return static::$navigationLabel ?? __('moox-prompts::prompts.ui.navigation_label');
+    }
+
+    public function getTitle(): string
+    {
+        return static::$title ?? __('moox-prompts::prompts.ui.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return static::$navigationGroup ?? __('moox-prompts::prompts.ui.navigation_group');
+    }
 
     protected static ?int $navigationSort = 100;
 

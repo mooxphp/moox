@@ -3,22 +3,22 @@
 namespace Moox\Prompts\Support;
 
 /**
- * Helper-Klasse zum Zugriff auf Prompt-Parameter.
+ * Helper class for accessing prompt parameters.
  *
- * Statt direkt auf $params[0], $params[1] etc. zuzugreifen,
- * verwenden wir diese Helper-Methoden, die die Parameter-Namen kennen.
+ * Instead of directly accessing $params[0], $params[1], etc.,
+ * we use these helper methods that know the parameter names.
  *
- * So sind wir robuster gegen Änderungen in Laravel Prompts,
- * solange die Parameter-Namen gleich bleiben.
+ * This makes us more robust against changes in Laravel Prompts,
+ * as long as the parameter names remain the same.
  */
 class PromptParamsHelper
 {
     /**
-     * Extrahiert die Parameter für eine Prompt-Methode als assoziatives Array.
+     * Extracts the parameters for a prompt method as an associative array.
      *
-     * @param  string  $method  Die Prompt-Methode (z.B. 'text', 'confirm', 'select')
-     * @param  array  $params  Die numerischen Parameter-Array
-     * @return array Assoziatives Array mit Parameternamen als Keys
+     * @param  string  $method  The prompt method (e.g. 'text', 'confirm', 'select')
+     * @param  array  $params  The numeric parameter array
+     * @return array Associative array with parameter names as keys
      */
     public static function extract(string $method, array $params): array
     {
@@ -80,12 +80,12 @@ class PromptParamsHelper
     }
 
     /**
-     * Gibt einen einzelnen Parameter zurück.
+     * Returns a single parameter.
      *
-     * @param  string  $method  Die Prompt-Methode
-     * @param  array  $params  Die numerischen Parameter-Array
-     * @param  string  $paramName  Der Name des Parameters (z.B. 'label', 'default')
-     * @param  mixed  $default  Der Default-Wert, falls der Parameter nicht existiert
+     * @param  string  $method  The prompt method
+     * @param  array  $params  The numeric parameter array
+     * @param  string  $paramName  The name of the parameter (e.g. 'label', 'default')
+     * @param  mixed  $default  The default value if the parameter does not exist
      */
     public static function get(string $method, array $params, string $paramName, mixed $default = null): mixed
     {

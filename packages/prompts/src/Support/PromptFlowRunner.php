@@ -63,7 +63,7 @@ class PromptFlowRunner
 
         try {
             app()->instance('moox.prompts.response_store', $responseStore);
-            // aktuell ausgeführten Step für die Web-Runtime verfügbar machen
+            // Make the currently executing step available for the web runtime
             app()->instance('moox.prompts.current_step', $step);
 
             // restore persisted command properties (e.g., choice) across steps
@@ -139,7 +139,7 @@ class PromptFlowRunner
         $commandInstance = $this->artisan->all()[$commandName] ?? null;
 
         if (! $commandInstance) {
-            throw new \RuntimeException("Command nicht gefunden: {$commandName}");
+            throw new \RuntimeException(__('moox-prompts::prompts.errors.command_not_found', ['command' => $commandName]));
         }
 
         return $commandInstance;
@@ -148,7 +148,10 @@ class PromptFlowRunner
     protected function invokeStep($command, string $method): void
     {
         if (! method_exists($command, $method)) {
-            throw new \RuntimeException("Step {$method} nicht gefunden auf Command ".get_class($command));
+            throw new \RuntimeException(__('moox-prompts::prompts.errors.step_not_found', [
+                'step' => $method,
+                'class' => get_class($command),
+            ]));
         }
 
         $command->{$method}();
@@ -169,15 +172,15 @@ class PromptFlowRunner
     {
         $ref = new \ReflectionObject($command);
 
-        // Wir persistieren alle nicht-statischen Properties, die auf der konkreten Command-Klasse
-        // deklariert sind und skalare/Array-Werte enthalten (z.B. choice, features, projectName, ...).
+        // We persist all non-static properties declared on the concrete command class
+        // that contain scalar/array values (e.g. choice, features, projectName, ...).
         foreach ($ref->getProperties() as $prop) {
             if ($prop->isStatic()) {
                 continue;
             }
 
             if ($prop->getDeclaringClass()->getName() !== $ref->getName()) {
-                // Nur Properties der konkreten Command-Klasse, nicht von der Basisklasse
+                // Only properties of the concrete command class, not from the base class
                 continue;
             }
 

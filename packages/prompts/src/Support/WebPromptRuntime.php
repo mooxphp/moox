@@ -17,14 +17,14 @@ class WebPromptRuntime implements PromptRuntime
 
     protected function generatePromptId(string $method): string
     {
-        // Wenn der aktuelle Step vom FlowRunner gesetzt wurde, verwenden wir ihn
-        // als stabile Prompt-ID, damit jeder Step genau einen Prompt hat und
-        // Antworten nicht zwischen Steps vermischt werden.
+        // If the current step was set by the FlowRunner, we use it
+        // as a stable prompt ID so that each step has exactly one prompt and
+        // answers are not mixed between steps.
         if (app()->bound('moox.prompts.current_step')) {
             return app('moox.prompts.current_step');
         }
 
-        // Fallback für generische Nutzung (z.B. CLI oder ohne Flow-Kontext)
+        // Fallback for generic usage (e.g. CLI or without flow context)
         return $this->responseStore->getNextPromptId($method);
     }
 
@@ -50,9 +50,17 @@ class WebPromptRuntime implements PromptRuntime
                 return $value;
             }
 
-            // Für alle anderen Prompts erwarten wir skalare Werte.
-            // Falls dennoch ein Array im Store liegt (z.B. durch Formular-State),
-            // wandeln wir es in einen String um, um Typfehler zu vermeiden.
+            // Für Confirm-Prompts: Wenn nichts ausgewählt wurde (null/leer),
+            // den Default-Wert wie in der CLI verwenden.
+            if ($promptData['method'] === 'confirm' && ($value === null || $value === '')) {
+                $default = $promptData['params'][1] ?? false;
+
+                return (bool) $default;
+            }
+
+            // For all other prompts we expect scalar values.
+            // If an array is still in the store (e.g. through form state),
+            // we convert it to a string to avoid type errors.
             if (is_array($value)) {
                 return implode(', ', array_map('strval', $value));
             }
