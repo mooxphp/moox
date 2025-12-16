@@ -684,7 +684,7 @@ class RunCommandComponent extends Component implements HasForms
                 ->options($options)
                 ->default($defaultSelect !== null ? $defaultSelect : null)
                 ->rules($rules)
-                ->placeholder('Bitte wählen...')
+                ->selectablePlaceholder(false)
                 ->hint($p['hint'] ?? null)
                 ->live(onBlur: false),
 
