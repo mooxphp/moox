@@ -38,10 +38,19 @@ class RunCommandPage extends Page
     public array $availableCommands = [];
 
     public bool $started = false;
+    
+    public bool $commandCompleted = false;
+    
+    protected $listeners = ['command-completed' => 'onCommandCompleted'];
 
     public function mount(): void
     {
         $this->availableCommands = $this->getAvailableCommands();
+    }
+    
+    public function onCommandCompleted(): void
+    {
+        $this->commandCompleted = true;
     }
 
     public function startCommand(): void
@@ -55,6 +64,34 @@ class RunCommandPage extends Page
     {
         $this->started = false;
         $this->selectedCommand = '';
+        $this->commandCompleted = false;
+    }
+    
+    public function getButtonText(): string
+    {
+        if ($this->commandCompleted) {
+            return __('moox-prompts::prompts.ui.start_new_command');
+        }
+        
+        return __('moox-prompts::prompts.ui.back_to_selection');
+    }
+    
+    public function getButtonColor(): string
+    {
+        if ($this->commandCompleted) {
+            return 'primary';
+        }
+        
+        return 'warning';
+    }
+    
+    public function getButtonKey(): string
+    {
+        if ($this->commandCompleted) {
+            return 'new';
+        }
+        
+        return 'back';
     }
 
     protected function getAvailableCommands(): array

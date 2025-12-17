@@ -4,6 +4,8 @@ namespace Moox\Prompts\Support;
 
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Auth;
+use Moox\Prompts\Models\CommandExecution;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Throwable;
@@ -26,7 +28,11 @@ class PromptFlowRunner
             $steps = ['handle'];
         }
 
-        return $this->stateStore->create($commandName, array_values($steps));
+        $state = $this->stateStore->create($commandName, array_values($steps));
+
+        // Don't save execution record at start - only when completed, failed, or cancelled
+
+        return $state;
     }
 
     public function get(string $flowId): ?PromptFlowState
@@ -78,6 +84,13 @@ class PromptFlowRunner
             $state->markStepFinished($step, $stepOutput);
             $this->stateStore->put($state);
 
+            // Update execution record if completed
+            if ($state->completed) {
+                $this->updateExecutionCompleted($state);
+            } else {
+                $this->updateExecution($state);
+            }
+
             return [
                 'output' => $stepOutput,
                 'prompt' => null,
@@ -105,6 +118,9 @@ class PromptFlowRunner
             $this->captureCommandContext($command, $state);
             $this->stateStore->put($state);
 
+            // Update execution record as failed
+            $this->updateExecutionFailed($state, $e->getMessage());
+
             return [
                 'output' => $this->appendExceptionToOutput($stepOutput, $e),
                 'prompt' => null,
@@ -113,6 +129,109 @@ class PromptFlowRunner
                 'error' => $e->getMessage(),
                 'state' => $state,
             ];
+        }
+    }
+
+    protected function ensureExecutionExists(PromptFlowState $state, $command): void
+    {
+        if (! class_exists(CommandExecution::class)) {
+            return;
+        }
+
+        try {
+            $exists = CommandExecution::where('flow_id', $state->flowId)->exists();
+            if (! $exists) {
+                $execution = new CommandExecution([
+                    'flow_id' => $state->flowId,
+                    'command_name' => $state->commandName,
+                    'command_description' => $command->getDescription(),
+                    'status' => 'cancelled', // Will be updated by updateExecutionCompleted/Failed
+                    'started_at' => now(),
+                    'steps' => $state->steps,
+                    'step_outputs' => $state->stepOutputs ?? [],
+                    'context' => $state->context ?? [],
+                ]);
+                
+                if (Auth::check()) {
+                    $execution->createdBy()->associate(Auth::user());
+                }
+                
+                $execution->save();
+            }
+        } catch (\Throwable $e) {
+            // Log error for debugging
+            \Log::error('Failed to ensure command execution exists', [
+                'error' => $e->getMessage(),
+                'flow_id' => $state->flowId ?? null,
+            ]);
+        }
+    }
+
+    protected function updateExecution(PromptFlowState $state): void
+    {
+        if (! class_exists(CommandExecution::class)) {
+            return;
+        }
+
+        try {
+            CommandExecution::where('flow_id', $state->flowId)->update([
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
+        } catch (\Throwable $e) {
+            // Silently fail if table doesn't exist yet
+        }
+    }
+
+    protected function updateExecutionCompleted(PromptFlowState $state): void
+    {
+        if (! class_exists(CommandExecution::class)) {
+            return;
+        }
+
+        try {
+            $command = $this->resolveCommand($state->commandName);
+            $this->ensureExecutionExists($state, $command);
+            
+            CommandExecution::where('flow_id', $state->flowId)->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
+        } catch (\Throwable $e) {
+            // Log error for debugging
+            \Log::error('Failed to update command execution as completed', [
+                'error' => $e->getMessage(),
+                'flow_id' => $state->flowId ?? null,
+            ]);
+        }
+    }
+
+    protected function updateExecutionFailed(PromptFlowState $state, string $errorMessage): void
+    {
+        if (! class_exists(CommandExecution::class)) {
+            return;
+        }
+
+        try {
+            $command = $this->resolveCommand($state->commandName);
+            $this->ensureExecutionExists($state, $command);
+            
+            CommandExecution::where('flow_id', $state->flowId)->update([
+                'status' => 'failed',
+                'failed_at' => now(),
+                'failed_at_step' => $state->failedAt, // The step where the failure occurred
+                'error_message' => $errorMessage,
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
+        } catch (\Throwable $e) {
+            // Log error for debugging
+            \Log::error('Failed to update command execution as failed', [
+                'error' => $e->getMessage(),
+                'flow_id' => $state->flowId ?? null,
+            ]);
         }
     }
 

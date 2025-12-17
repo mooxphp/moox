@@ -19,7 +19,8 @@ class PromptsServiceProvider extends MooxServiceProvider
             ->name('moox-prompts')
             ->hasConfigFile('prompts')
             ->hasViews()
-            ->hasTranslations();
+            ->hasTranslations()
+            ->hasMigrations(['create_command_executions_table']);
     }
 
     public function register()

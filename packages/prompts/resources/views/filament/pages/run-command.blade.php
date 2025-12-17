@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     @if (!$started)
         <div>
-            <x-filament::section>
+        <x-filament::section>
                 @if (empty($availableCommands))
                     <p style="font-size: 0.875rem; color: #6b7280;">
                         {{ __('moox-prompts::prompts.ui.no_commands_available') }}
@@ -9,51 +9,58 @@
                             config/prompts.php
                         </code>.
                     </p>
-                @else
+            @else
                     <form wire:submit="startCommand" style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 0.5rem;">
                         <div style="display: flex; flex-direction: column; gap: 0.25rem; max-width: 480px;">
                             <label style="font-size: 0.875rem;">
                                 {{ __('moox-prompts::prompts.ui.command_label') }}
                             </label>
 
-                            <x-filament::input.wrapper>
-                                <x-filament::input.select wire:model="selectedCommand" required>
+                    <x-filament::input.wrapper>
+                        <x-filament::input.select wire:model="selectedCommand" required>
                                     <option value="">{{ __('moox-prompts::prompts.ui.select_command_placeholder') }}</option>
                                     @foreach ($availableCommands as $commandName => $description)
                                         <option value="{{ $commandName }}">
                                             {{ $commandName }} — {{ $description }}
                                         </option>
-                                    @endforeach
-                                </x-filament::input.select>
-                            </x-filament::input.wrapper>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                         </div>
-
+                    
                         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; max-width: 640px;">
                             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
                                 {{ __('moox-prompts::prompts.ui.commands_config_hint') }}
                             </p>
 
-                            <x-filament::button type="submit" color="primary">
+                        <x-filament::button type="submit" color="primary">
                                 {{ __('moox-prompts::prompts.ui.start_command_button') }}
-                            </x-filament::button>
-                        </div>
-                    </form>
-                @endif
-            </x-filament::section>
+                        </x-filament::button>
+                    </div>
+                </form>
+            @endif
+        </x-filament::section>
         </div>
     @else
         <div>
             <x-filament::section>
-                @livewire('moox-prompts.filament.components.run-command-component', [
-                    'command' => $selectedCommand,
-                    'commandInput' => [],
-                ], key('run-command-' . $selectedCommand))
+        @livewire('moox-prompts.filament.components.run-command-component', [
+            'command' => $selectedCommand,
+            'commandInput' => [],
+        ], 'run-command-' . $selectedCommand)
             </x-filament::section>
-
-            <div style="margin-top: 1rem;">
-                <x-filament::button wire:click="resetCommand" color="gray">
-                    {{ __('moox-prompts::prompts.ui.back_to_selection') }}
-                </x-filament::button>
+        
+            <div style="margin-top: 1rem;" 
+                 x-data
+                 x-on:command-completed.window="$wire.set('commandCompleted', true)"
+                 x-on:cancel-command.window="$wire.set('commandCompleted', false)">
+                <x-filament::button 
+                    wire:click="resetCommand"
+                    x-on:click="$dispatch('cancel-command')"
+                    :color="$this->getButtonColor()"
+                    wire:key="button-{{ $this->getButtonKey() }}">
+                    {{ $this->getButtonText() }}
+            </x-filament::button>
             </div>
         </div>
     @endif

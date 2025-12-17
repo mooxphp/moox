@@ -31,7 +31,24 @@ return [
 
     'allowed_commands' => [
         'prompts:project-setup',
+        'prompts:test-failed',
         // Add more commands here as needed
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation Group
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group where the Command Runner and Command Executions
+    | will appear in the Filament navigation. Common options:
+    | - 'System' (default)
+    | - 'Jobs'
+    | - 'Tools'
+    | - null (no group)
+    |
+    */
+
+    'navigation_group' => 'System',
 
 ];

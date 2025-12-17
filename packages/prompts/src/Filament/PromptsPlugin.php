@@ -5,6 +5,7 @@ namespace Moox\Prompts\Filament;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Moox\Prompts\Filament\Pages\RunCommandPage;
+use Moox\Prompts\Filament\Resources\CommandExecutionResource;
 
 class PromptsPlugin implements Plugin
 {
@@ -15,9 +16,13 @@ class PromptsPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->pages([
-            RunCommandPage::class,
-        ]);
+        $panel
+            ->pages([
+                RunCommandPage::class,
+            ])
+            ->resources([
+                CommandExecutionResource::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

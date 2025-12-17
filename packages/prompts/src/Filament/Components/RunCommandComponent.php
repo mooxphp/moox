@@ -35,8 +35,6 @@ class RunCommandComponent extends Component implements HasForms
 
     public string $currentStepOutput = '';
 
-    public string $lastOutput = '';
-
     public bool $isComplete = false;
 
     public array $validationErrors = [];
@@ -53,6 +51,8 @@ class RunCommandComponent extends Component implements HasForms
 
     protected PromptResponseStore $responseStore;
 
+    protected $listeners = ['cancel-command' => 'cancel'];
+
     public function boot(): void
     {
         $this->responseStore = new PromptResponseStore;
@@ -68,11 +68,8 @@ class RunCommandComponent extends Component implements HasForms
         $this->currentPrompt = null;
         $this->output = '';
         $this->currentStepOutput = '';
-        $this->lastOutput = '';
         $this->validationErrors = [];
-        $this->executionOutputHashes = [];
         $this->error = null;
-        $this->commandStarted = false;
         $this->executionStep = 0;
         $this->flowId = null;
 
@@ -110,6 +107,22 @@ class RunCommandComponent extends Component implements HasForms
                 $this->currentStepOutput = '';
                 $state = $runner->start($this->command, $this->commandInput);
                 $this->flowId = $state->flowId;
+            } else {
+                // Security: Validate user has access to this flow
+                if (! $this->hasAccessToFlow($state)) {
+                    $this->error = __('moox-prompts::prompts.errors.flow_access_denied');
+                    $this->flowId = null;
+                    
+                    return;
+                }
+                
+                // Security: Validate command is still allowed (config might have changed)
+                if (! $this->isCommandAllowed($state->commandName)) {
+                    $this->error = __('moox-prompts::prompts.errors.command_not_allowed', ['command' => $state->commandName]);
+                    $this->flowId = null;
+                    
+                    return;
+                }
             }
 
             // Mirror answers into ResponseStore (without manipulating the counter)
@@ -150,6 +163,9 @@ class RunCommandComponent extends Component implements HasForms
                     $this->answers = [];
                     $this->data = [];
                     $this->flowId = null;
+                    
+                    // Dispatch event to parent page - use window event so parent can listen
+                    $this->dispatch('command-completed');
 
                     return;
                 }
@@ -703,6 +719,96 @@ class RunCommandComponent extends Component implements HasForms
 
             default => null,
         };
+    }
+
+    public function cancel(): void
+    {
+        if ($this->flowId) {
+            // Security: Validate user has access to this flow before cancelling
+            $stateStore = app(PromptFlowStateStore::class);
+            $state = $stateStore->get($this->flowId);
+            if ($state && $this->hasAccessToFlow($state)) {
+                $stateStore->reset($this->flowId);
+            }
+            $this->flowId = null;
+        }
+        
+        $this->resetComponentState();
+    }
+
+    /**
+     * Check if a command is in the allowed commands list.
+     */
+    protected function isCommandAllowed(string $commandName): bool
+    {
+        $allowedCommands = config('prompts.allowed_commands', []);
+        
+        if (empty($allowedCommands)) {
+            return false;
+        }
+        
+        return in_array($commandName, $allowedCommands, true);
+    }
+
+    /**
+     * Check if the current user has access to a flow.
+     * Users can only access flows they created (if CommandExecution exists),
+     * or flows without a CommandExecution record (legacy/ongoing flows).
+     */
+    protected function hasAccessToFlow(\Moox\Prompts\Support\PromptFlowState $state): bool
+    {
+        // If no CommandExecution exists yet, allow access (flow just started)
+        if (! class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
+            return true;
+        }
+        
+        try {
+            $execution = \Moox\Prompts\Models\CommandExecution::where('flow_id', $state->flowId)->first();
+            
+            // If no execution record exists, allow access (legacy flow or just started)
+            if (! $execution) {
+                return true;
+            }
+            
+            // If execution has no creator, allow access (system/anonymous flow)
+            if (! $execution->createdBy) {
+                return true;
+            }
+            
+            // Check if current user is the creator
+            $user = \Illuminate\Support\Facades\Auth::user();
+            if (! $user) {
+                return false;
+            }
+            
+            return $execution->createdBy->is($user);
+        } catch (\Throwable $e) {
+            // On error, deny access for security
+            \Log::warning('Error checking flow access', [
+                'flow_id' => $state->flowId,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return false;
+        }
+    }
+
+    protected function resetComponentState(): void
+    {
+        $this->command = '';
+        $this->commandInput = [];
+        $this->currentPrompt = null;
+        $this->output = '';
+        $this->currentStepOutput = '';
+        $this->validationErrors = [];
+        $this->isComplete = false;
+        $this->error = null;
+        $this->answers = [];
+        $this->data = [];
+        $this->executionStep = 0;
+        $this->flowId = null;
+        $this->responseStore->clear();
+        $this->responseStore->resetCounter();
     }
 
     public function render()
