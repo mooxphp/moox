@@ -5,6 +5,7 @@ namespace Moox\Core\Installer\Installers;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Installer\AbstractAssetInstaller;
+use Symfony\Component\Console\Input\StringInput;
 
 use function Moox\Prompts\info;
 use function Moox\Prompts\note;
@@ -144,11 +145,19 @@ class MigrationInstaller extends AbstractAssetInstaller
     {
         try {
             info('🔄 Running migrations...');
-            Artisan::call('migrate', ['--force' => true]);
-            $output = trim(Artisan::output());
-            if (! empty($output)) {
-                note($output);
+            
+            // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
+            // Das nutzt den korrekten IO-Context vom Command
+            if ($this->command) {
+                $this->command->call('migrate', ['--force' => true]);
+            } else {
+                // Fallback: Direkt über Application mit sauberem IO-Context
+                $input = new StringInput('migrate --force');
+                // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
+                $input->setInteractive(true);
+                app()->handleCommand($input);
             }
+            
             info('✅ Migrations executed successfully');
         } catch (\Exception $e) {
             warning("⚠️ Migration error: {$e->getMessage()}");

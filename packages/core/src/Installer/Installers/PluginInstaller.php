@@ -2,20 +2,21 @@
 
 namespace Moox\Core\Installer\Installers;
 
+use function Moox\Prompts\info;
+use function Moox\Prompts\note;
+use function Moox\Prompts\text;
+use function Moox\Prompts\select;
+use function Moox\Prompts\confirm;
+
+use function Moox\Prompts\warning;
+use Illuminate\Support\Facades\File;
+use function Moox\Prompts\multiselect;
+use Illuminate\Support\Facades\Artisan;
+use Moox\Core\Installer\AbstractAssetInstaller;
+use Symfony\Component\Console\Input\StringInput;
 use Filament\Support\Commands\Concerns\CanGeneratePanels;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
-use Moox\Core\Installer\AbstractAssetInstaller;
 use Moox\Core\Installer\Contracts\PanelAwareInstallerInterface;
-
-use function Moox\Prompts\confirm;
-use function Moox\Prompts\info;
-use function Moox\Prompts\multiselect;
-use function Moox\Prompts\note;
-use function Moox\Prompts\select;
-use function Moox\Prompts\text;
-use function Moox\Prompts\warning;
 
 /**
  * Installer for Filament plugins.
@@ -265,20 +266,61 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             required: true
         );
 
-        try {
-            $this->generatePanel(
-                id: $panelName,
-                placeholderId: 'app',
-            );
-        } catch (FailureCommandOutput) {
-            warning("Failed to create panel: {$panelName}");
-
-            return 'failed';
+        // Sanitize panel name - only allow alphanumeric and hyphens
+        $panelName = preg_replace('/[^a-zA-Z0-9-]/', '', $panelName);
+        
+        if (empty($panelName)) {
+            warning('Invalid panel name');
+            return null;
         }
 
-        return null;
-      }
-      return $panelName;
+        $filamentPath = app_path('Providers/Filament');
+        if (! File::isDirectory($filamentPath)) {
+            File::makeDirectory($filamentPath, 0755, true);
+        }
+
+        $className = ucfirst($panelName).'PanelProvider';
+        $expectedPath = $filamentPath.'/'.$className.'.php';
+
+        try {
+            // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
+            // Das nutzt den korrekten IO-Context vom Command
+            if ($this->command) {
+                $exitCode = $this->command->call('make:filament-panel', [
+                    'id' => $panelName,
+                    '--force' => File::exists($expectedPath),
+                ]);
+            } else {
+                // Fallback: Direkt über Application mit sauberem IO-Context
+                // Das umgeht das Problem mit dem veränderten IO-Context nach Prompts
+                $commandString = 'make:filament-panel '.$panelName;
+                if (File::exists($expectedPath)) {
+                    $commandString .= ' --force';
+                }
+                
+                $input = new StringInput($commandString);
+                // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
+                $input->setInteractive(true);
+                $exitCode = app()->handleCommand($input);
+            }
+
+            if ($exitCode !== 0) {
+                warning("⚠️ Panel konnte nicht erstellt werden (Exit Code: {$exitCode})");
+                return null;
+            }
+
+            // Prüfen ob die Datei erstellt wurde
+            if (File::exists($expectedPath)) {
+                note("✅ Panel created: {$panelName}");
+                return $expectedPath;
+            }
+
+            warning('Panel creation may have failed - file not found');
+            return null;
+        } catch (\Throwable $e) {
+            warning("Could not create panel: {$e->getMessage()}");
+            return null;
+        }
     }
 
     protected function registerPluginsInPanel(array $pluginClasses, string $panelPath): void

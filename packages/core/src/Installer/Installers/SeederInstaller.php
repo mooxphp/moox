@@ -4,6 +4,7 @@ namespace Moox\Core\Installer\Installers;
 
 use Illuminate\Support\Facades\Artisan;
 use Moox\Core\Installer\AbstractAssetInstaller;
+use Symfony\Component\Console\Input\StringInput;
 
 use function Moox\Prompts\confirm;
 use function Moox\Prompts\info;
@@ -89,10 +90,21 @@ class SeederInstaller extends AbstractAssetInstaller
                 try {
                     $seederClass = $this->resolveSeederClass($packageName, $seeder);
                     if ($seederClass && class_exists($seederClass)) {
-                        Artisan::call('db:seed', [
-                            '--class' => $seederClass,
-                            '--force' => true,
-                        ]);
+                        // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
+                        // Das nutzt den korrekten IO-Context vom Command
+                        if ($this->command) {
+                            $this->command->call('db:seed', [
+                                '--class' => $seederClass,
+                                '--force' => true,
+                            ]);
+                        } else {
+                            // Fallback: Direkt über Application mit sauberem IO-Context
+                            $commandString = 'db:seed --class='.escapeshellarg($seederClass).' --force';
+                            $input = new StringInput($commandString);
+                            // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
+                            $input->setInteractive(true);
+                            app()->handleCommand($input);
+                        }
                         note("  ✅ {$seeder}: Executed");
                         $executed++;
                     } else {

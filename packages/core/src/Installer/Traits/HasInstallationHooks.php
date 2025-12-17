@@ -101,6 +101,13 @@ trait HasInstallationHooks
                 }
 
                 $this->beforeInstaller($type);
+                
+                // Setze das Command-Objekt, damit Installer $this->command->call() verwenden können
+                // Das ist wichtig, damit der IO-Context nach Prompts korrekt funktioniert
+                if (method_exists($installer, 'setCommand')) {
+                    $installer->setCommand($this);
+                }
+                
                 $installer->install($typeAssets);
                 $this->afterInstaller($type);
             } catch (\Exception $e) {

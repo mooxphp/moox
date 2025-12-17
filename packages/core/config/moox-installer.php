@@ -40,6 +40,7 @@ return [
         //     'require_confirmation' => true,
         // ],
 
+
         'plugins' => [
             'enabled' => true,
             'priority' => 100,

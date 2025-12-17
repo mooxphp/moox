@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
+use Symfony\Component\Console\Input\StringInput;
 
 use function Moox\Prompts\multiselect;
 use function Moox\Prompts\note;
@@ -270,18 +271,36 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
         $published = false;
         foreach ($tags as $tag) {
             try {
-                $result = Artisan::call('vendor:publish', [
-                    '--tag' => $tag,
-                    '--force' => $this->config['force'] ?? false,
-                ]);
-
-                $output = trim(Artisan::output());
-
-                if ($result === 0 && ! str_contains($output, 'Nothing to publish')) {
-                    $published = true;
-                    break;
+                // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
+                // Das nutzt den korrekten IO-Context vom Command
+                if ($this->command) {
+                    $result = $this->command->call('vendor:publish', [
+                        '--tag' => $tag,
+                        '--force' => $this->config['force'] ?? false,
+                    ]);
+                    
+                    // Bei $this->command->call() gibt es keine separate output() Methode
+                    // Die Ausgabe wird direkt angezeigt
+                    if ($result === 0) {
+                        $published = true;
+                        break;
+                    }
                 } else {
-                    note($output);
+                    // Fallback: Direkt über Application mit sauberem IO-Context
+                    $commandString = 'vendor:publish --tag='.escapeshellarg($tag);
+                    if ($this->config['force'] ?? false) {
+                        $commandString .= ' --force';
+                    }
+                    
+                    $input = new StringInput($commandString);
+                    // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
+                    $input->setInteractive(true);
+                    $result = app()->handleCommand($input);
+                    
+                    if ($result === 0) {
+                        $published = true;
+                        break;
+                    }
                 }
             } catch (\Exception $e) {
                 continue;
