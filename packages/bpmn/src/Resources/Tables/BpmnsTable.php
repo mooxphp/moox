@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Tables;
+namespace Moox\Bpmn\Resources\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

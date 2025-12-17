@@ -1,9 +1,9 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Pages;
+namespace Moox\Bpmn\Resources\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Moox\Bpmn\Resources\Bpmns\BpmnResource;
+use Moox\Bpmn\Resources\BpmnResource;
 
 class CreateBpmn extends CreateRecord
 {

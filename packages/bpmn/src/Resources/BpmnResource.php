@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns;
+namespace Moox\Bpmn\Resources;
 
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -8,13 +8,13 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Moox\Bpmn\Models\Bpmn;
-use Moox\Bpmn\Resources\Bpmns\Pages\CreateBpmn;
-use Moox\Bpmn\Resources\Bpmns\Pages\EditBpmn;
-use Moox\Bpmn\Resources\Bpmns\Pages\ListBpmns;
-use Moox\Bpmn\Resources\Bpmns\Pages\ViewBpmn;
-use Moox\Bpmn\Resources\Bpmns\Schemas\BpmnForm;
-use Moox\Bpmn\Resources\Bpmns\Schemas\BpmnInfolist;
-use Moox\Bpmn\Resources\Bpmns\Tables\BpmnsTable;
+use Moox\Bpmn\Resources\Pages\CreateBpmn;
+use Moox\Bpmn\Resources\Pages\EditBpmn;
+use Moox\Bpmn\Resources\Pages\ListBpmns;
+use Moox\Bpmn\Resources\Pages\ViewBpmn;
+use Moox\Bpmn\Resources\Schemas\BpmnForm;
+use Moox\Bpmn\Resources\Schemas\BpmnInfolist;
+use Moox\Bpmn\Resources\Tables\BpmnsTable;
 
 class BpmnResource extends Resource
 {

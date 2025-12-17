@@ -1,10 +1,10 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Pages;
+namespace Moox\Bpmn\Resources\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Bpmn\Resources\Bpmns\BpmnResource;
+use Moox\Bpmn\Resources\BpmnResource;
 
 class ListBpmns extends ListRecords
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Schemas;
+namespace Moox\Bpmn\Resources\Schemas;
 
 use Filament\Schemas\Schema;
 

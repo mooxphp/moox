@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Schemas;
+namespace Moox\Bpmn\Resources\Schemas;
 
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;

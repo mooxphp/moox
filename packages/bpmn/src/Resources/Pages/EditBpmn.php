@@ -1,11 +1,11 @@
 <?php
 
-namespace Moox\Bpmn\Resources\Bpmns\Pages;
+namespace Moox\Bpmn\Resources\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-use Moox\Bpmn\Resources\Bpmns\BpmnResource;
+use Moox\Bpmn\Resources\BpmnResource;
 
 class EditBpmn extends EditRecord
 {
