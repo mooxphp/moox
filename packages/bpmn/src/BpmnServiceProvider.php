@@ -24,9 +24,9 @@ class BpmnServiceProvider extends MooxServiceProvider
             ->hasMigrations()
             ->hasCommands()
             ->hasAssets();            // exposes public assets
-        
+
         // Load config from composer.json
-        $mooxConfig  = $this->getMooxConfig();
+        $mooxConfig = $this->getMooxConfig();
         $mooxPackage = $this->getMooxPackage();
 
         // Map dynamic config → Moox package metadata
@@ -53,7 +53,7 @@ class BpmnServiceProvider extends MooxServiceProvider
         parent::boot();
 
         // Ensure Blade views load
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'bpmn');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'bpmn');
 
         // Register <x-bpmn-viewer />
         Blade::component('bpmn-viewer', BpmnViewer::class);
@@ -68,7 +68,7 @@ class BpmnServiceProvider extends MooxServiceProvider
     private function getMooxConfig(): array
     {
         $composer = json_decode(
-            file_get_contents(__DIR__ . '/../composer.json'),
+            file_get_contents(__DIR__.'/../composer.json'),
             true
         );
 

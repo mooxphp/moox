@@ -6,9 +6,9 @@ namespace Moox\Bpmn\Forms\Components;
 
 use Filament\Forms\Components\Field;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Moox\Media\Models\Media;
 use Moox\Press\Models\WpMedia;
-use Illuminate\View\View;
 
 class BpmnViewer extends Field
 {
