@@ -16,4 +16,3 @@ class ViewCommandExecution extends ViewRecord
         ];
     }
 }
-

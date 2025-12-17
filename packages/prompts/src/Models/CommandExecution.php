@@ -40,4 +40,3 @@ class CommandExecution extends Model
         return $this->morphTo();
     }
 }
-

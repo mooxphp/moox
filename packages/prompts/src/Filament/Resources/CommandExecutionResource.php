@@ -2,26 +2,24 @@
 
 namespace Moox\Prompts\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Schemas\Schema;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Moox\Prompts\Models\CommandExecution;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
+use Moox\Prompts\Models\CommandExecution;
 
 class CommandExecutionResource extends Resource
 {
@@ -192,4 +190,3 @@ class CommandExecutionResource extends Resource
         ];
     }
 }
-

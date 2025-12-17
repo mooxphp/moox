@@ -36,10 +36,10 @@ class PromptFlowStateStore
     {
         // Get state BEFORE deleting it from cache
         $state = $this->get($flowId);
-        
+
         // Delete from cache
         $this->cache->forget($this->key($flowId));
-        
+
         // Mark execution as cancelled if it exists, or create one
         if (class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
             try {
@@ -59,7 +59,7 @@ class PromptFlowStateStore
                         $cancelledAtStep = $state->steps[count($state->steps) - 1] ?? null;
                     }
                 }
-                
+
                 // Try to update existing record - only if it's not already completed or failed
                 $updated = \Moox\Prompts\Models\CommandExecution::where('flow_id', $flowId)
                     ->whereNotIn('status', ['cancelled', 'completed', 'failed'])
@@ -70,7 +70,7 @@ class PromptFlowStateStore
                         'step_outputs' => $state->stepOutputs ?? [],
                         'context' => $state->context ?? [],
                     ]);
-                
+
                 // If no record exists yet, create one with cancelled status
                 if ($updated === 0 && $state) {
                     $command = app(\Illuminate\Contracts\Console\Kernel::class)->all()[$state->commandName] ?? null;
@@ -87,11 +87,11 @@ class PromptFlowStateStore
                             'step_outputs' => $state->stepOutputs ?? [],
                             'context' => $state->context ?? [],
                         ]);
-                        
+
                         if (\Illuminate\Support\Facades\Auth::check()) {
                             $execution->createdBy()->associate(\Illuminate\Support\Facades\Auth::user());
                         }
-                        
+
                         $execution->save();
                     }
                 }

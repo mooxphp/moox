@@ -9,4 +9,3 @@ class ListCommandExecutions extends ListRecords
 {
     protected static string $resource = CommandExecutionResource::class;
 }
-

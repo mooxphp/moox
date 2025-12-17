@@ -151,11 +151,11 @@ class PromptFlowRunner
                     'step_outputs' => $state->stepOutputs ?? [],
                     'context' => $state->context ?? [],
                 ]);
-                
+
                 if (Auth::check()) {
                     $execution->createdBy()->associate(Auth::user());
                 }
-                
+
                 $execution->save();
             }
         } catch (\Throwable $e) {
@@ -192,7 +192,7 @@ class PromptFlowRunner
         try {
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
-            
+
             CommandExecution::where('flow_id', $state->flowId)->update([
                 'status' => 'completed',
                 'completed_at' => now(),
@@ -217,7 +217,7 @@ class PromptFlowRunner
         try {
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
-            
+
             CommandExecution::where('flow_id', $state->flowId)->update([
                 'status' => 'failed',
                 'failed_at' => now(),

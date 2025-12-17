@@ -112,15 +112,15 @@ class RunCommandComponent extends Component implements HasForms
                 if (! $this->hasAccessToFlow($state)) {
                     $this->error = __('moox-prompts::prompts.errors.flow_access_denied');
                     $this->flowId = null;
-                    
+
                     return;
                 }
-                
+
                 // Security: Validate command is still allowed (config might have changed)
                 if (! $this->isCommandAllowed($state->commandName)) {
                     $this->error = __('moox-prompts::prompts.errors.command_not_allowed', ['command' => $state->commandName]);
                     $this->flowId = null;
-                    
+
                     return;
                 }
             }
@@ -163,7 +163,7 @@ class RunCommandComponent extends Component implements HasForms
                     $this->answers = [];
                     $this->data = [];
                     $this->flowId = null;
-                    
+
                     // Dispatch event to parent page - use window event so parent can listen
                     $this->dispatch('command-completed');
 
@@ -732,7 +732,7 @@ class RunCommandComponent extends Component implements HasForms
             }
             $this->flowId = null;
         }
-        
+
         $this->resetComponentState();
     }
 
@@ -742,11 +742,11 @@ class RunCommandComponent extends Component implements HasForms
     protected function isCommandAllowed(string $commandName): bool
     {
         $allowedCommands = config('prompts.allowed_commands', []);
-        
+
         if (empty($allowedCommands)) {
             return false;
         }
-        
+
         return in_array($commandName, $allowedCommands, true);
     }
 
@@ -761,26 +761,26 @@ class RunCommandComponent extends Component implements HasForms
         if (! class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
             return true;
         }
-        
+
         try {
             $execution = \Moox\Prompts\Models\CommandExecution::where('flow_id', $state->flowId)->first();
-            
+
             // If no execution record exists, allow access (legacy flow or just started)
             if (! $execution) {
                 return true;
             }
-            
+
             // If execution has no creator, allow access (system/anonymous flow)
             if (! $execution->createdBy) {
                 return true;
             }
-            
+
             // Check if current user is the creator
             $user = \Illuminate\Support\Facades\Auth::user();
             if (! $user) {
                 return false;
             }
-            
+
             return $execution->createdBy->is($user);
         } catch (\Throwable $e) {
             // On error, deny access for security
@@ -788,7 +788,7 @@ class RunCommandComponent extends Component implements HasForms
                 'flow_id' => $state->flowId,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
