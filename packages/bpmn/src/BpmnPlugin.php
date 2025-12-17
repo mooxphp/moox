@@ -2,10 +2,10 @@
 
 namespace Moox\Bpmn;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
-use Moox\Bpmn\Resources\Bpmns\BpmnResource;
+use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Bpmn\Resources\Bpmns\BpmnResource;
 
 class BpmnPlugin implements Plugin
 {

@@ -19,9 +19,8 @@ return new class extends Migration
             $table->string('status');
             $table->timestamps();
             $table->longText('bpmn_xml')->nullable();
-            $table->longText('bpmn_svg')->nullable();    
+            $table->longText('bpmn_svg')->nullable();
         });
-    
     }
 
     /**

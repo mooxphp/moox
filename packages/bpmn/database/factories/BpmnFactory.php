@@ -3,8 +3,6 @@
 namespace Moox\Bpmn\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-use App\Models\Venue;
 
 class BpmnFactory extends Factory
 {
@@ -23,9 +21,9 @@ class BpmnFactory extends Factory
         return [
             'title' => fake()->title(),
             'description' => fake()->text(),
-        
+
             'status' => fake()->word(),
-        
+
             'bpmn_id' => null,
         ];
     }

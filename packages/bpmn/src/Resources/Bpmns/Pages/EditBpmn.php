@@ -2,9 +2,8 @@
 
 namespace Moox\Bpmn\Resources\Bpmns\Pages;
 
-
-use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Bpmn\Resources\Bpmns\BpmnResource;
 

@@ -3,18 +3,18 @@
 namespace Moox\Bpmn\Resources\Bpmns;
 
 use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Moox\Bpmn\Models\Bpmn;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Support\Icons\Heroicon;
-use Moox\Bpmn\Resources\Bpmns\Pages\EditBpmn;
-use Moox\Bpmn\Resources\Bpmns\Pages\ViewBpmn;
-use Moox\Bpmn\Resources\Bpmns\Pages\ListBpmns;
 use Moox\Bpmn\Resources\Bpmns\Pages\CreateBpmn;
+use Moox\Bpmn\Resources\Bpmns\Pages\EditBpmn;
+use Moox\Bpmn\Resources\Bpmns\Pages\ListBpmns;
+use Moox\Bpmn\Resources\Bpmns\Pages\ViewBpmn;
 use Moox\Bpmn\Resources\Bpmns\Schemas\BpmnForm;
-use Moox\Bpmn\Resources\Bpmns\Tables\BpmnsTable;
 use Moox\Bpmn\Resources\Bpmns\Schemas\BpmnInfolist;
+use Moox\Bpmn\Resources\Bpmns\Tables\BpmnsTable;
 
 class BpmnResource extends Resource
 {

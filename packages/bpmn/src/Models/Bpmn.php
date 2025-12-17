@@ -4,10 +4,10 @@ namespace Moox\Bpmn\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Bpmn extends Model implements HasMedia
 {
