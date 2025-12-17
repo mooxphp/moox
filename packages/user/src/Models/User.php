@@ -21,9 +21,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $first_name
  * @property string|null $last_name
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, HasRoles, InteractsWithMedia, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',

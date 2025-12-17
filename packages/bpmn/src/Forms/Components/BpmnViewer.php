@@ -8,6 +8,7 @@ use Filament\Forms\Components\Field;
 use Illuminate\Support\Facades\Storage;
 use Moox\Media\Models\Media;
 use Moox\Press\Models\WpMedia;
+use Illuminate\View\View;
 
 class BpmnViewer extends Field
 {
@@ -118,6 +119,16 @@ class BpmnViewer extends Field
     public function fileIntegration(): static
     {
         return $this->mediaIntegration('file');
+    }
+
+    public function render(): View
+    {
+        return view('bpmn::components.bpmn-viewer', [
+            'bpmnSource' => $this->getBpmnSource(),
+            'canEdit' => $this->canEdit(),
+            'canView' => $this->canView(),
+            'bpmnContent' => $this->getBpmnContent(),
+        ]);
     }
 
     public function getBpmnSource(): array

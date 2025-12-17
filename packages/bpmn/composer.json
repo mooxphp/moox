@@ -39,7 +39,7 @@
         "moox": {
             "title": "Moox BPMN",
             "stability": "stable",
-            "type": "moox-plugin",
+            "type": "plugin",
             "category": "content",
             "template": false
         }

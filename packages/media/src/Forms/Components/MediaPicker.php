@@ -54,6 +54,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 ]);
 
                 $attachments[$index] = [
+                    'id' => $media->id,
                     'file_name' => $media->file_name,
                     'title' => $this->getMediaAttribute($media, 'title'),
                     'description' => $this->getMediaAttribute($media, 'description'),

@@ -5,60 +5,32 @@ declare(strict_types=1);
 namespace Moox\Bpmn;
 
 use Illuminate\Support\Facades\Blade;
-use Moox\Bpmn\Forms\Components\BpmnViewer;
+use Moox\Bpmn\View\Components\BpmnViewer;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
 class BpmnServiceProvider extends MooxServiceProvider
 {
+    /**
+     * Configure the Moox package.
+     */
     public function configureMoox(Package $package): void
     {
         $package
             ->name('bpmn')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasViews()              // loads ./resources/views
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands()
-            ->hasAssets();
-
-        $mooxConfig = $this->getMooxConfig();
-
-        $this->getMooxPackage()
-            ->title($mooxConfig['title'])
-            ->stability($mooxConfig['stability'])
-            ->type($mooxConfig['type'])
-            ->category($mooxConfig['category'])
-            ->template($mooxConfig['template']);
-    }
-
-    public function boot(): void
-    {
-        parent::boot();
-
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'bpmn');
-
-        Blade::component('bpmn-viewer', \Moox\Bpmn\View\Components\BpmnViewer::class);
-
-        $this->app->singleton('bpmn-viewer', function () {
-            return new BpmnViewer;
-        });
-    }
-
-    private function getMooxConfig(): array
-    {
-        return json_decode(file_get_contents('composer.json'), true)['extra']['moox'];
-    }
-
-    /*
-    After testing , move everything from here to the base MooxServiceProvider:
-
-    public function configureFromComposer(): void
-    {
-        $mooxConfig = $this->getMooxConfig();
+            ->hasAssets();            // exposes public assets
+        
+        // Load config from composer.json
+        $mooxConfig  = $this->getMooxConfig();
         $mooxPackage = $this->getMooxPackage();
 
-        $configurableMethods = [
+        // Map dynamic config → Moox package metadata
+        $configurable = [
             'title',
             'stability',
             'type',
@@ -66,11 +38,40 @@ class BpmnServiceProvider extends MooxServiceProvider
             'template',
         ];
 
-        foreach ($configurableMethods as $method) {
-            if (isset($mooxConfig[$method])) {
-                $mooxPackage->$method($mooxConfig[$method]);
+        foreach ($configurable as $method) {
+            if (isset($mooxConfig[$method]) && method_exists($mooxPackage, $method)) {
+                $mooxPackage->{$method}($mooxConfig[$method]);
             }
         }
     }
-    */
+
+    /**
+     * Boot Moox + BPMN components.
+     */
+    public function boot(): void
+    {
+        parent::boot();
+
+        // Ensure Blade views load
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'bpmn');
+
+        // Register <x-bpmn-viewer />
+        Blade::component('bpmn-viewer', BpmnViewer::class);
+
+        // Optional: service container binding
+        $this->app->singleton('bpmn-viewer', fn () => new BpmnViewer);
+    }
+
+    /**
+     * Read extra.moox config from composer.json.
+     */
+    private function getMooxConfig(): array
+    {
+        $composer = json_decode(
+            file_get_contents(__DIR__ . '/../composer.json'),
+            true
+        );
+
+        return $composer['extra']['moox'] ?? [];
+    }
 }
