@@ -92,3 +92,26 @@ MIT License - see the main Moox project for details.
 ## Support
 
 For support and questions, please visit [Moox.org](https://moox.org).
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                                            updates
+
+moox-bpmn/
+├─ css/
+│  ├─ bpmn-block.css       ← you create this manually
+│  └─ bpmn-viewer.css      ← you create this manually       
+│
+├─ src/
+│  ├─ bpmn-block.js        ← your block JS (the one you showed earlier)
+│  └─ bpmn-viewer.js       ← your block JS (the one you showed earlier)
+│
+├─ build/                      
+│  ├─ block.json
+│  ├─ index.asset.php      ← will be created after `npm run build`   
+│  └─ index.js             ← will be created after `npm run build` 
+│          
+├─ moox-bpmn.php           ← your main plugin file
+├─ package.json            ← you create this (root level) run `npm install` to install all dependencies (@wordpress/scripts, etc)
+├─ README.md
+│
+└─ node_modules/           ← created automatically after `npm install @wordpress/scripts --save-dev`
