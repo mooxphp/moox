@@ -3,13 +3,11 @@
 namespace Moox\Core\Installer;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Symfony\Component\Console\Input\StringInput;
 
 use function Moox\Prompts\multiselect;
-use function Moox\Prompts\note;
 
 /**
  * Abstract base class for asset installers.
@@ -278,7 +276,7 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
                         '--tag' => $tag,
                         '--force' => $this->config['force'] ?? false,
                     ]);
-                    
+
                     // Bei $this->command->call() gibt es keine separate output() Methode
                     // Die Ausgabe wird direkt angezeigt
                     if ($result === 0) {
@@ -291,12 +289,12 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
                     if ($this->config['force'] ?? false) {
                         $commandString .= ' --force';
                     }
-                    
+
                     $input = new StringInput($commandString);
                     // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
                     $input->setInteractive(true);
                     $result = app()->handleCommand($input);
-                    
+
                     if ($result === 0) {
                         $published = true;
                         break;

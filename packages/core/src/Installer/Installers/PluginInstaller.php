@@ -2,21 +2,20 @@
 
 namespace Moox\Core\Installer\Installers;
 
-use function Moox\Prompts\info;
-use function Moox\Prompts\note;
-use function Moox\Prompts\text;
-use function Moox\Prompts\select;
-use function Moox\Prompts\confirm;
-
-use function Moox\Prompts\warning;
-use Illuminate\Support\Facades\File;
-use function Moox\Prompts\multiselect;
-use Illuminate\Support\Facades\Artisan;
-use Moox\Core\Installer\AbstractAssetInstaller;
-use Symfony\Component\Console\Input\StringInput;
 use Filament\Support\Commands\Concerns\CanGeneratePanels;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
+use Illuminate\Support\Facades\File;
+use Moox\Core\Installer\AbstractAssetInstaller;
 use Moox\Core\Installer\Contracts\PanelAwareInstallerInterface;
+use Symfony\Component\Console\Input\StringInput;
+
+use function Moox\Prompts\confirm;
+use function Moox\Prompts\info;
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
+use function Moox\Prompts\select;
+use function Moox\Prompts\text;
+use function Moox\Prompts\warning;
 
 /**
  * Installer for Filament plugins.
@@ -268,9 +267,10 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
 
         // Sanitize panel name - only allow alphanumeric and hyphens
         $panelName = preg_replace('/[^a-zA-Z0-9-]/', '', $panelName);
-        
+
         if (empty($panelName)) {
             warning('Invalid panel name');
+
             return null;
         }
 
@@ -297,7 +297,7 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
                 if (File::exists($expectedPath)) {
                     $commandString .= ' --force';
                 }
-                
+
                 $input = new StringInput($commandString);
                 // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
                 $input->setInteractive(true);
@@ -306,19 +306,23 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
 
             if ($exitCode !== 0) {
                 warning("⚠️ Panel konnte nicht erstellt werden (Exit Code: {$exitCode})");
+
                 return null;
             }
 
             // Prüfen ob die Datei erstellt wurde
             if (File::exists($expectedPath)) {
                 note("✅ Panel created: {$panelName}");
+
                 return $expectedPath;
             }
 
             warning('Panel creation may have failed - file not found');
+
             return null;
         } catch (\Throwable $e) {
             warning("Could not create panel: {$e->getMessage()}");
+
             return null;
         }
     }

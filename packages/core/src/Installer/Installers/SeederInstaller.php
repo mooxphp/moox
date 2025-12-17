@@ -2,7 +2,6 @@
 
 namespace Moox\Core\Installer\Installers;
 
-use Illuminate\Support\Facades\Artisan;
 use Moox\Core\Installer\AbstractAssetInstaller;
 use Symfony\Component\Console\Input\StringInput;
 
