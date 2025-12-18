@@ -337,9 +337,7 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
         $pluginsToAdd = [];
 
         foreach ($pluginClasses as $pluginClass) {
-            $escapedPluginClass = preg_quote($pluginClass, '/');
-            if (str_contains($content, $pluginClass) ||
-                preg_match('/->plugin\([^)]*'.$escapedPluginClass.'[^)]*\)/', $content)) {
+            if ($this->isPluginAlreadyRegistered($pluginClass, $content)) {
                 note("Plugin already registered: {$pluginClass}");
 
                 continue;
@@ -412,5 +410,40 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             }
             info('Plugins registered in panel');
         }
+    }
+
+    /**
+     * Check if a plugin is already registered in the panel file.
+     * Checks both the full namespace and the short class name (if used with 'use' statement).
+     */
+    protected function isPluginAlreadyRegistered(string $pluginClass, string $content): bool
+    {
+        // Check for full namespace
+        $escapedPluginClass = preg_quote($pluginClass, '/');
+        if (str_contains($content, $pluginClass) ||
+            preg_match('/->plugin\([^)]*'.$escapedPluginClass.'[^)]*\)/', $content)) {
+            return true;
+        }
+
+        // Extract short class name (e.g., "DraftPlugin" from "Moox\Draft\DraftPlugin")
+        $parts = explode('\\', $pluginClass);
+        $shortClassName = end($parts);
+
+        // Check if there's a 'use' statement for this class
+        $escapedFullClass = preg_quote($pluginClass, '/');
+        $usePattern = '/use\s+'.$escapedFullClass.'\s*;/';
+        
+        if (preg_match($usePattern, $content)) {
+            // If 'use' statement exists, check for short class name in plugin registration
+            $escapedShortName = preg_quote($shortClassName, '/');
+            if (preg_match('/->plugins?\s*\(\s*\[[^\]]*'.$escapedShortName.'[^\]]*\]/', $content) ||
+                preg_match('/->plugin\s*\(\s*[^)]*'.$escapedShortName.'[^)]*\)/', $content) ||
+                str_contains($content, $shortClassName.'::make()') ||
+                str_contains($content, $shortClassName.'::class')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
