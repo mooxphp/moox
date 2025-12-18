@@ -432,7 +432,7 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
         // Check if there's a 'use' statement for this class
         $escapedFullClass = preg_quote($pluginClass, '/');
         $usePattern = '/use\s+'.$escapedFullClass.'\s*;/';
-        
+
         if (preg_match($usePattern, $content)) {
             // If 'use' statement exists, check for short class name in plugin registration
             $escapedShortName = preg_quote($shortClassName, '/');
