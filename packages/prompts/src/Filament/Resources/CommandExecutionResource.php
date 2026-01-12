@@ -2,24 +2,25 @@
 
 namespace Moox\Prompts\Filament\Resources;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Moox\Prompts\Models\CommandExecution;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 
 class CommandExecutionResource extends Resource
 {
@@ -65,17 +66,25 @@ class CommandExecutionResource extends Resource
                         ->label(__('moox-prompts::prompts.ui.started_at'))
                         ->required(),
                     DateTimePicker::make('completed_at')
-                        ->label(__('moox-prompts::prompts.ui.completed_at')),
+                        ->label(__('moox-prompts::prompts.ui.completed_at'))
+                        ->disabled()
+                        ->visible(fn (Get $get): bool => $get('status') === 'completed'),
                     DateTimePicker::make('failed_at')
-                        ->label(__('moox-prompts::prompts.ui.failed_at')),
+                        ->label(__('moox-prompts::prompts.ui.failed_at'))
+                        ->disabled()
+                        ->visible(fn (Get $get): bool => $get('status') === 'failed'),
                     TextInput::make('failed_at_step')
                         ->label(__('moox-prompts::prompts.ui.failed_at_step'))
-                        ->disabled(),
+                        ->disabled()
+                        ->visible(fn (Get $get): bool => $get('status') === 'failed'),
                     DateTimePicker::make('cancelled_at')
-                        ->label(__('moox-prompts::prompts.ui.cancelled_at')),
+                        ->label(__('moox-prompts::prompts.ui.cancelled_at'))
+                        ->disabled()
+                        ->visible(fn (Get $get): bool => $get('status') === 'cancelled'),
                     TextInput::make('cancelled_at_step')
                         ->label(__('moox-prompts::prompts.ui.cancelled_at_step'))
-                        ->disabled(),
+                        ->disabled()
+                        ->visible(fn (Get $get): bool => $get('status') === 'cancelled'),
                 ])
                 ->columns(2),
             Section::make(__('moox-prompts::prompts.ui.details'))
