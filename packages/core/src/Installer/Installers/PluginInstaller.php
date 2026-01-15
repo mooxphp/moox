@@ -415,13 +415,22 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
     /**
      * Check if a plugin is already registered in the panel file.
      * Checks both the full namespace and the short class name (if used with 'use' statement).
+     * Only considers plugins that are actually registered in the ->plugins() array.
      */
     protected function isPluginAlreadyRegistered(string $pluginClass, string $content): bool
     {
-        // Check for full namespace
+        // Extract the plugins array content
+        $pluginsArrayContent = $this->extractPluginsArrayContent($content);
+        
+        if ($pluginsArrayContent === null) {
+            // No plugins array found, so plugin is not registered
+            return false;
+        }
+
+        // Check for full namespace in plugins array
         $escapedPluginClass = preg_quote($pluginClass, '/');
-        if (str_contains($content, $pluginClass) ||
-            preg_match('/->plugin\([^)]*'.$escapedPluginClass.'[^)]*\)/', $content)) {
+        if (preg_match('/'.$escapedPluginClass.'::(make|class)\(?\)?/', $pluginsArrayContent) ||
+            preg_match('/\\\\'.$escapedPluginClass.'::(make|class)\(?\)?/', $pluginsArrayContent)) {
             return true;
         }
 
@@ -434,16 +443,32 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
         $usePattern = '/use\s+'.$escapedFullClass.'\s*;/';
 
         if (preg_match($usePattern, $content)) {
-            // If 'use' statement exists, check for short class name in plugin registration
+            // If 'use' statement exists, check for short class name in plugins array
             $escapedShortName = preg_quote($shortClassName, '/');
-            if (preg_match('/->plugins?\s*\(\s*\[[^\]]*'.$escapedShortName.'[^\]]*\]/', $content) ||
-                preg_match('/->plugin\s*\(\s*[^)]*'.$escapedShortName.'[^)]*\)/', $content) ||
-                str_contains($content, $shortClassName.'::make()') ||
-                str_contains($content, $shortClassName.'::class')) {
+            if (preg_match('/'.$escapedShortName.'::(make|class)\(?\)?/', $pluginsArrayContent)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Extract the content inside the ->plugins([...]) array.
+     * Returns null if no plugins array is found.
+     */
+    protected function extractPluginsArrayContent(string $content): ?string
+    {
+        // Try to match ->plugins([...])
+        if (preg_match('/->plugins\s*\(\s*\[(.*?)\]\s*\)/s', $content, $matches)) {
+            return $matches[1];
+        }
+
+        // Also check for ->plugin(...) single plugin registration
+        if (preg_match('/->plugin\s*\(\s*([^)]+)\s*\)/', $content, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }

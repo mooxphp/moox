@@ -20,12 +20,12 @@ return [
             'force' => false,
         ],
 
-        // 'configs' => [
-        //     'enabled' => true,
-        //     'priority' => 20,
-        //     'skip_existing' => true,
-        //     'force' => false,
-        // ],
+        'configs' => [
+            'enabled' => true,
+            'priority' => 20,
+            'skip_existing' => true,
+            'force' => false,
+        ],
 
         // 'translations' => [
         //     'enabled' => true,
