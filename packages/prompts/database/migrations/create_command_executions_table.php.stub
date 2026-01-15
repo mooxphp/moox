@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('flow_id')->unique();
             $table->string('command_name');
             $table->string('command_description')->nullable();
-            $table->enum('status', ['cancelled', 'completed', 'failed'])->default('running');
+            $table->enum('status', ['cancelled', 'completed', 'failed'])->default('cancelled');
             $table->timestamp('cancelled_at')->nullable();
             $table->string('cancelled_at_step')->nullable();
             $table->timestamp('started_at');
