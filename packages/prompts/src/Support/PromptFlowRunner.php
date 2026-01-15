@@ -119,7 +119,7 @@ class PromptFlowRunner
             $this->stateStore->put($state);
 
             // Update execution record as failed
-            $this->updateExecutionFailed($state, $e->getMessage());
+            $this->updateExecutionFailed($state, $e);
 
             return [
                 'output' => $this->appendExceptionToOutput($stepOutput, $e),
@@ -208,7 +208,7 @@ class PromptFlowRunner
         }
     }
 
-    protected function updateExecutionFailed(PromptFlowState $state, string $errorMessage): void
+    protected function updateExecutionFailed(PromptFlowState $state, Throwable $exception): void
     {
         if (! class_exists(CommandExecution::class)) {
             return;
@@ -218,11 +218,15 @@ class PromptFlowRunner
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
 
+            // Build full error message with stack trace
+            $errorMessage = $this->formatThrowableMessage($exception);
+            $fullError = $errorMessage . "\n\n" . $exception->getTraceAsString();
+
             CommandExecution::where('flow_id', $state->flowId)->update([
                 'status' => 'failed',
                 'failed_at' => now(),
                 'failed_at_step' => $state->failedAt, // The step where the failure occurred
-                'error_message' => $errorMessage,
+                'error_message' => $fullError,
                 'step_outputs' => $state->stepOutputs,
                 'context' => $state->context,
             ]);

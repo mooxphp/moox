@@ -43,6 +43,12 @@ return [
         'details' => 'Details',
         'context' => 'Kontext',
         'steps' => 'Schritte',
+        'step_outputs' => 'Step Ausgaben',
+        'no_step_outputs' => 'Keine Step Ausgaben verfügbar',
+        'view_error' => 'Fehler anzeigen',
+        'close' => 'Schließen',
+        'no_error_message' => 'Keine Fehlermeldung verfügbar',
+        'copy_error' => 'Fehler kopieren',
     ],
 
     'errors' => [

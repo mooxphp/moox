@@ -2,25 +2,27 @@
 
 namespace Moox\Prompts\Filament\Resources;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
+use Filament\Schemas\Schema;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\View;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Moox\Prompts\Models\CommandExecution;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 
 class CommandExecutionResource extends Resource
 {
@@ -89,14 +91,18 @@ class CommandExecutionResource extends Resource
                 ->columns(2),
             Section::make(__('moox-prompts::prompts.ui.details'))
                 ->components([
-                    Textarea::make('error_message')
-                        ->label(__('moox-prompts::prompts.ui.error_message'))
-                        ->rows(3),
                     KeyValue::make('context')
                         ->label(__('moox-prompts::prompts.ui.context'))
                         ->disabled(),
                     KeyValue::make('steps')
                         ->label(__('moox-prompts::prompts.ui.steps'))
+                        ->disabled(),
+                ])
+                ->collapsible(),
+            Section::make(__('moox-prompts::prompts.ui.step_outputs'))
+                ->components([
+                    KeyValue::make('step_outputs')
+                        ->label(__('moox-prompts::prompts.ui.step_outputs'))
                         ->disabled(),
                 ])
                 ->collapsible(),
