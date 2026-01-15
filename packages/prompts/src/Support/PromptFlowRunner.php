@@ -220,7 +220,7 @@ class PromptFlowRunner
 
             // Build full error message with stack trace
             $errorMessage = $this->formatThrowableMessage($exception);
-            $fullError = $errorMessage . "\n\n" . $exception->getTraceAsString();
+            $fullError = $errorMessage."\n\n".$exception->getTraceAsString();
 
             CommandExecution::where('flow_id', $state->flowId)->update([
                 'status' => 'failed',
