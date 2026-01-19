@@ -28,7 +28,7 @@ jobs:
           touch database/database.sqlite
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: app-artifact
           path: app-artifact.tar.gz
@@ -94,7 +94,7 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: Upload Clover
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: clover-report-${{ matrix.php }}
           path: clover.xml
