@@ -2,17 +2,18 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Filament\Forms\Components\DateTimePicker;
+use Moox\Core\Entities\BaseResource;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Actions;
+use Moox\Core\Traits\HasStatusColors;
 use Filament\Tables\Columns\TextColumn;
+use Moox\Draft\Enums\TranslationStatus;
+use Filament\Schemas\Components\Actions;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\BaseResource;
-use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Draft\Enums\TranslationStatus;
+use Moox\Localization\Models\Localization;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\DateTimePicker;
 
 class BaseDraftResource extends BaseResource
 {
@@ -209,8 +210,7 @@ class BaseDraftResource extends BaseResource
                 if ($translation && $translation->title) {
                     return $translation->title;
                 }
-
-                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+                $defaultLocalization = Localization::where('is_default', true)->first();
                 $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
 
@@ -397,7 +397,7 @@ class BaseDraftResource extends BaseResource
                 return $query->when(
                     $data['value'] ?? null,
                     function (Builder $query, $value): Builder {
-                        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+                        $defaultLocalization = Localization::where('is_default', true)->first();
                         $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
                         $currentLang = request()->query('lang') ?? request()->get('lang') ?? $defaultLang;
 
@@ -433,7 +433,7 @@ class BaseDraftResource extends BaseResource
         return SelectFilter::make('locale')
             ->label(__('localization::fields.language'))
             ->options(function () {
-                $localizations = \Moox\Localization\Models\Localization::where('is_active_admin', true)
+                $localizations = Localization::where('is_active_admin', true)
                     ->with('language')
                     ->orderBy('language_id')
                     ->orderBy('locale_variant')
@@ -513,7 +513,7 @@ class BaseDraftResource extends BaseResource
         }
 
         // 4) Fallback to configured default localization or app locale
-        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+        $defaultLocalization = Localization::where('is_default', true)->first();
 
         return $defaultLocalization?->locale_variant ?? app()->getLocale();
     }
