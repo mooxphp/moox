@@ -2,13 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Override;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\ViewRecord;
-use Moox\Localization\Models\Localization;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
+use Moox\Localization\Models\Localization;
+use Override;
 
 abstract class BaseViewDraft extends ViewRecord
 {
