@@ -5,21 +5,22 @@ namespace Moox\Core\Entities;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Forms\Components\MorphToSelect;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Clipboard\Forms\Components\CopyableField;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 abstract class BaseResource extends Resource
 {
@@ -181,7 +182,7 @@ abstract class BaseResource extends Resource
             ->color('success')
             ->action(function ($record, $livewire) {
                 if (method_exists($record, 'translations')) {
-                    \DB::table($record->getTable())
+                    DB::table($record->getTable())
                         ->where('id', $record->id)
                         ->update(['deleted_at' => null]);
 
@@ -229,7 +230,7 @@ abstract class BaseResource extends Resource
             ->action(function ($records, $livewire): void {
                 foreach ($records as $record) {
                     if (method_exists($record, 'translations')) {
-                        \DB::table($record->getTable())
+                        DB::table($record->getTable())
                             ->where('id', $record->id)
                             ->update(['deleted_at' => null]);
 
@@ -705,13 +706,13 @@ abstract class BaseResource extends Resource
                         }
                         $translation->restore();
 
-                        $isMainModelTrashed = \DB::table($record->getTable())
+                        $isMainModelTrashed = DB::table($record->getTable())
                             ->where('id', $record->id)
                             ->whereNotNull('deleted_at')
                             ->exists();
 
                         if ($isMainModelTrashed) {
-                            \DB::table($record->getTable())
+                            DB::table($record->getTable())
                                 ->where('id', $record->id)
                                 ->update(['deleted_at' => null]);
                         }
