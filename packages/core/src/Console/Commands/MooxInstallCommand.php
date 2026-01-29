@@ -14,8 +14,8 @@ use Moox\Prompts\Support\FlowCommand;
 
 use function Moox\Prompts\error;
 use function Moox\Prompts\info;
-use function Moox\Prompts\note;
 use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
 
 /**
  * Moox Package Installer Command.
