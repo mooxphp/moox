@@ -90,7 +90,7 @@ trait HasPagesTaxonomy
      */
     public function getFormSelectOptionLabels(string $statePath): array
     {
-        $select = Arr::get($this->getCachedForms(), $statePath);
+        $select = Arr::get($this->getCachedSchemas(), $statePath);
 
         if (! $select instanceof Select) {
             return [];

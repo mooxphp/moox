@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
+/**
+ * @property string|null $translation_status
+ * @property \Carbon\Carbon|null $to_publish_at
+ * @property \Carbon\Carbon|null $published_at
+ * @property \Carbon\Carbon|null $to_unpublish_at
+ * @property \Carbon\Carbon|null $unpublished_at
+ */
 abstract class BaseDraftModel extends Model implements TranslatableContract
 {
     use SoftDeletes, Translatable;
