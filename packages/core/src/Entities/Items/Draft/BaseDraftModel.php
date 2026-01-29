@@ -140,7 +140,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function publish(): void
     {
         $this->translation_status = 'published';
-        $this->handleSchedulingDates();
     }
 
     /**
@@ -149,7 +148,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function unpublish(): void
     {
         $this->translation_status = 'draft';
-        $this->handleSchedulingDates();
     }
 
     /**
@@ -161,7 +159,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         if ($publishAt) {
             $this->to_publish_at = $publishAt;
         }
-        $this->handleSchedulingDates();
     }
 
     /**
@@ -170,7 +167,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function setToWaiting(): void
     {
         $this->translation_status = 'waiting';
-        $this->handleSchedulingDates();
     }
 
     /**
@@ -179,7 +175,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function setToPrivate(): void
     {
         $this->translation_status = 'privat';
-        $this->handleSchedulingDates();
     }
 
     /**
