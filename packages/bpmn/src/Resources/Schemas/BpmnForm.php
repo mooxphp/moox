@@ -2,16 +2,15 @@
 
 namespace Moox\Bpmn\Resources\Schemas;
 
-use Filament\Schemas\Schema;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Moox\Bpmn\Forms\Components\BpmnViewer;
 use Moox\Media\Forms\Components\MediaPicker;
-use Filament\Forms\Components\MarkdownEditor;
-
 
 class BpmnForm
 {
@@ -36,18 +35,13 @@ class BpmnForm
                             ->reactive()
                             ->dehydrated(false)
                             ->filterByCollectionId('bpmn'),
-                        
 
-                        
                         BpmnViewer::make('bpmn')
                             ->label(__('BPMN Process'))
                             ->mediaIntegration('moox')
                             ->mode('full')
                             ->columnSpanFull()
                             ->required(),
-                        
-                        
-                        
 
                         MarkdownEditor::make('description')
                             ->label('BPMN Description')

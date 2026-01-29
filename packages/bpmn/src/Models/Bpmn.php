@@ -12,8 +12,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Bpmn extends Model implements HasMedia
 {
     use HasFactory;
-    use InteractsWithMedia;
     use HasMediaUsable;
+    use InteractsWithMedia;
 
     protected $fillable = [
         'title',
@@ -31,7 +31,6 @@ class Bpmn extends Model implements HasMedia
             'bpmn_media_id' => 'integer',
         ];
     }
-
 
     /**
      * Media attached via the media_usables pivot.

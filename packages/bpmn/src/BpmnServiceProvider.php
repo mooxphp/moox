@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Bpmn;
 
-
-
-use Moox\Core\MooxServiceProvider;
 use Illuminate\Support\Facades\Blade;
-use Spatie\LaravelPackageTools\Package;
 use Moox\Bpmn\View\Components\BpmnViewer;
-use Moox\Media\Http\Livewire\MediaPickerModal;
+use Moox\Core\MooxServiceProvider;
+use Spatie\LaravelPackageTools\Package;
 
 class BpmnServiceProvider extends MooxServiceProvider
 {
@@ -63,7 +60,6 @@ class BpmnServiceProvider extends MooxServiceProvider
 
         // Optional: service container binding
         $this->app->singleton('bpmn-viewer', fn () => new BpmnViewer);
-
     }
 
     /**

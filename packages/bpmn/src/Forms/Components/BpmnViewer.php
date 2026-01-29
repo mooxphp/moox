@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Bpmn\Forms\Components;
 
+use Filament\Forms\Components\Field;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Moox\Media\Models\Media;
 use Moox\Press\Models\WpMedia;
-use Filament\Forms\Components\Field;
-use Illuminate\Support\Facades\Storage;
 
 class BpmnViewer extends Field
 {
-    
     protected string $view = 'bpmn::components.bpmn-viewer';
 
     protected string $mediaIntegration = 'file';
