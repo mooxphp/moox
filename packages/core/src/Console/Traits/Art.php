@@ -2,8 +2,6 @@
 
 namespace Moox\Core\Console\Traits;
 
-use function Moox\Prompts\info;
-
 trait Art
 {
     public function art(): void
