@@ -421,7 +421,7 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
     {
         // Extract the plugins array content
         $pluginsArrayContent = $this->extractPluginsArrayContent($content);
-        
+
         if ($pluginsArrayContent === null) {
             // No plugins array found, so plugin is not registered
             return false;

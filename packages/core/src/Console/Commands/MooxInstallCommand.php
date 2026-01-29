@@ -43,7 +43,7 @@ class MooxInstallCommand extends Command
         {--skip=* : Skip specific installers (migrations, configs, translations, seeders, plugins)}
         {--only=* : Only run specific installers}
         {--force : Force overwrite existing assets}';
-        
+
     protected $description = 'Install Moox packages that extend MooxServiceProvider';
 
     protected array $mooxProviders = [];
