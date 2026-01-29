@@ -2,18 +2,18 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Filament\Forms\Components\DateTimePicker;
+use Moox\Core\Entities\BaseResource;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Actions;
+use Moox\Core\Traits\HasStatusColors;
 use Filament\Tables\Columns\TextColumn;
+use Moox\Draft\Enums\TranslationStatus;
+use Filament\Schemas\Components\Actions;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\BaseResource;
-use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Draft\Enums\TranslationStatus;
 use Moox\Localization\Models\Localization;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\DateTimePicker;
 
 class BaseDraftResource extends BaseResource
 {
