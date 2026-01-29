@@ -2,7 +2,6 @@
 
 namespace Moox\Core\Console\Commands;
 
-use Moox\Prompts\Support\FlowCommand;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
@@ -11,11 +10,12 @@ use Moox\Core\Installer\Traits\HasConfigurableInstallers;
 use Moox\Core\Installer\Traits\HasCustomInstallers;
 use Moox\Core\Installer\Traits\HasInstallationHooks;
 use Moox\Core\Installer\Traits\HasSkippableInstallers;
+use Moox\Prompts\Support\FlowCommand;
 
 use function Moox\Prompts\error;
 use function Moox\Prompts\info;
-use function Moox\Prompts\note;
 use function Moox\Prompts\multiselect;
+use function Moox\Prompts\note;
 
 /**
  * Moox Package Installer Command.
@@ -87,7 +87,6 @@ class MooxInstallCommand extends FlowCommand
     {
         info('✨ Welcome to the Moox Installer!');
         note('This command will install the Moox packages that extend MooxServiceProvider.');
-
     }
 
     public function stepCheckForFilament(): int
