@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Console\Commands;
 
-use Illuminate\Console\Command;
+use Moox\Prompts\Support\FlowCommand;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
@@ -14,6 +14,7 @@ use Moox\Core\Installer\Traits\HasSkippableInstallers;
 
 use function Moox\Prompts\error;
 use function Moox\Prompts\info;
+use function Moox\Prompts\note;
 use function Moox\Prompts\multiselect;
 
 /**
@@ -26,7 +27,7 @@ use function Moox\Prompts\multiselect;
  * - Configuration-driven behavior
  * - Lifecycle hooks
  */
-class MooxInstallCommand extends Command
+class MooxInstallCommand extends FlowCommand
 {
     use Art;
     use CheckForFilament;
@@ -84,7 +85,9 @@ class MooxInstallCommand extends Command
 
     public function stepIntro(): void
     {
-        $this->info('✨ Welcome to the Moox Installer!');
+        info('✨ Welcome to the Moox Installer!');
+        note('This command will install the Moox packages that extend MooxServiceProvider.');
+
     }
 
     public function stepCheckForFilament(): int
@@ -110,13 +113,13 @@ class MooxInstallCommand extends Command
     public function stepScanMooxProviders(): int
     {
         $this->mooxProvidersScanned = $this->scanMooxProviders();
-        $this->info('✅ Moox providers scanned found: '.count($this->mooxProvidersScanned));
+        info('✅ Moox providers scanned found: '.count($this->mooxProvidersScanned));
 
         if (empty($this->mooxProvidersScanned)) {
             $this->error('⚠️ No packages extending MooxServiceProvider found.');
         } else {
             foreach ($this->mooxProvidersScanned as $packageName => $providerClass) {
-                $this->info("  • {$packageName}: {$providerClass}");
+                info("  • {$packageName}: {$providerClass}");
             }
         }
 
@@ -126,7 +129,7 @@ class MooxInstallCommand extends Command
     public function stepCollectPackageAssets(): int
     {
         if (empty($this->mooxProvidersScanned)) {
-            $this->error('⚠️ No packages extending MooxServiceProvider found.');
+            error('⚠️ No packages extending MooxServiceProvider found.');
 
             return self::SUCCESS;
         }
@@ -134,7 +137,7 @@ class MooxInstallCommand extends Command
         $this->assets = $this->collectPackageAssets();
 
         if (empty($this->assets)) {
-            $this->error('⚠️ No assets found to install.');
+            error('⚠️ No assets found to install.');
 
             return self::SUCCESS;
         }
@@ -156,7 +159,7 @@ class MooxInstallCommand extends Command
 
         $composerPath = base_path('composer.json');
         if (! File::exists($composerPath)) {
-            $this->error('❌ Composer.json not found.');
+            error('❌ Composer.json not found.');
 
             return $result;
         }
@@ -173,7 +176,7 @@ class MooxInstallCommand extends Command
         );
 
         if (empty($mooxPackages)) {
-            $this->error('❌ No Moox packages found.');
+            error('❌ No Moox packages found.');
 
             return $result;
         }
@@ -185,7 +188,7 @@ class MooxInstallCommand extends Command
 
             if (! $providerClass) {
                 if ($debug) {
-                    $this->error("  ⚠️ {$packageName}: No service provider found");
+                    error("  ⚠️ {$packageName}: No service provider found");
                 }
 
                 continue;
@@ -194,7 +197,7 @@ class MooxInstallCommand extends Command
             if ($this->isMooxProvider($providerClass)) {
                 $result[$packageName] = $providerClass;
             } elseif ($debug) {
-                $this->error("  • {$packageName}: {$providerClass} (not Moox provider)");
+                error("  • {$packageName}: {$providerClass} (not Moox provider)");
             }
         }
 
@@ -203,7 +206,7 @@ class MooxInstallCommand extends Command
 
     public function stepShowOutput(): int
     {
-        $this->info($this->filamentInstalled ? '✅ Filament is installed.' : '❌ Filament installation is required.');
+        info($this->filamentInstalled ? '✅ Filament is installed.' : '❌ Filament installation is required.');
 
         return self::SUCCESS;
     }
@@ -285,7 +288,7 @@ class MooxInstallCommand extends Command
         $selectedTypes = $this->selectAssetTypes($groupedAssets);
 
         if (empty($selectedTypes)) {
-            $this->note('⏩ No asset types selected');
+            note('⏩ No asset types selected');
 
             return;
         }
@@ -376,14 +379,14 @@ class MooxInstallCommand extends Command
             try {
                 $installer = $registry->get($type);
                 if (! $installer) {
-                    $this->note("ℹ️ Installer '{$type}' not found, skipping");
+                    note("ℹ️ Installer '{$type}' not found, skipping");
 
                     continue;
                 }
 
                 $typeAssets = $this->filterAssetsByType($assets, $type, $installer);
                 if (empty($typeAssets)) {
-                    $this->note("ℹ️ No assets for '{$type}', skipping");
+                    note("ℹ️ No assets for '{$type}', skipping");
 
                     continue;
                 }
@@ -400,13 +403,13 @@ class MooxInstallCommand extends Command
                 $this->afterInstaller($type);
             } catch (\Exception $e) {
                 $failedInstallers[] = $type;
-                $this->error("⚠️ Installer '{$type}' failed: {$e->getMessage()}");
+                error("⚠️ Installer '{$type}' failed: {$e->getMessage()}");
                 // Continue with next installer instead of stopping
             }
         }
 
         if (! empty($failedInstallers)) {
-            $this->error('⚠️ Some installers failed: '.implode(', ', $failedInstallers));
+            error('⚠️ Some installers failed: '.implode(', ', $failedInstallers));
         }
 
         $this->afterInstall();
