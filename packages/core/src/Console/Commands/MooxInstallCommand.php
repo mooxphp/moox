@@ -63,7 +63,6 @@ class MooxInstallCommand extends Command
      *
      * @var string
      */
-
     public function promptFlowSteps(): array
     {
         return [
