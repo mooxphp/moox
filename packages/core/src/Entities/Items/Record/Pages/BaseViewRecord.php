@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Entities\Items\Record\Pages;
 
+use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;

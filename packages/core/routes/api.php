@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Moox\Core\Http\SharedHosting\Scheduler;
 use Moox\Core\Http\Controllers\Api\CoreController;
 use Moox\Core\Http\Controllers\Api\ModelController;
-use Moox\Core\Http\SharedHosting\Scheduler;
 
 Route::get('api/core', CoreController::class.'@index');
 Route::get('api/models', ModelController::class.'@index');
