@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Console\Traits\Art;
 use Moox\Core\Console\Traits\CheckForFilament;
-use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\Installer\InstallerRegistry;
 use Moox\Core\Installer\Traits\HasConfigurableInstallers;
 use Moox\Core\Installer\Traits\HasCustomInstallers;
@@ -16,8 +15,6 @@ use Moox\Core\Installer\Traits\HasSkippableInstallers;
 use function Moox\Prompts\error;
 use function Moox\Prompts\info;
 use function Moox\Prompts\multiselect;
-use function Moox\Prompts\note;
-use function Moox\Prompts\warning;
 
 /**
  * Moox Package Installer Command.
@@ -35,8 +32,8 @@ class MooxInstallCommand extends Command
     use CheckForFilament;
     use HasConfigurableInstallers;
     use HasCustomInstallers;
-    use HasSkippableInstallers;
     use HasInstallationHooks;
+    use HasSkippableInstallers;
 
     /**
      * The name and signature of the console command.
@@ -52,7 +49,9 @@ class MooxInstallCommand extends Command
     protected $description = 'Install Moox packages that extend MooxServiceProvider';
 
     public ?bool $filamentInstalled = false;
+
     public ?bool $registryInitialized = null;
+
     public ?array $mooxProvidersScanned = null;
 
     public ?array $assets = null;
@@ -65,7 +64,6 @@ class MooxInstallCommand extends Command
      * @var string
      */
     protected $description = 'Command description';
-
 
     public function promptFlowSteps(): array
     {
@@ -95,9 +93,11 @@ class MooxInstallCommand extends Command
     {
         if (! $this->checkForFilament(silent: true)) {
             $this->error('❌ Filament installation is required.');
+
             return self::FAILURE;
         }
         $this->filamentInstalled = true;
+
         return self::SUCCESS;
     }
 
@@ -105,6 +105,7 @@ class MooxInstallCommand extends Command
     {
         $this->initializeRegistry();
         $this->registryInitialized = true;
+
         return self::SUCCESS;
     }
 
@@ -114,12 +115,13 @@ class MooxInstallCommand extends Command
         $this->info('✅ Moox providers scanned found: '.count($this->mooxProvidersScanned));
 
         if (empty($this->mooxProvidersScanned)) {
-           $this->error('⚠️ No packages extending MooxServiceProvider found.');
-        }else{
+            $this->error('⚠️ No packages extending MooxServiceProvider found.');
+        } else {
             foreach ($this->mooxProvidersScanned as $packageName => $providerClass) {
                 $this->info("  • {$packageName}: {$providerClass}");
             }
         }
+
         return self::SUCCESS;
     }
 
@@ -127,6 +129,7 @@ class MooxInstallCommand extends Command
     {
         if (empty($this->mooxProvidersScanned)) {
             $this->error('⚠️ No packages extending MooxServiceProvider found.');
+
             return self::SUCCESS;
         }
 
@@ -134,24 +137,29 @@ class MooxInstallCommand extends Command
 
         if (empty($this->assets)) {
             $this->error('⚠️ No assets found to install.');
+
             return self::SUCCESS;
         }
+
         return self::SUCCESS;
     }
+
     public function stepInstallAssets(): int
     {
         $this->installAssets($this->assets);
         info('✅ Installation completed successfully!');
+
         return self::SUCCESS;
     }
 
     protected function scanMooxProviders(): array
     {
         $result = [];
-        
+
         $composerPath = base_path('composer.json');
         if (! File::exists($composerPath)) {
             $this->error('❌ Composer.json not found.');
+
             return $result;
         }
 
@@ -168,6 +176,7 @@ class MooxInstallCommand extends Command
 
         if (empty($mooxPackages)) {
             $this->error('❌ No Moox packages found.');
+
             return $result;
         }
 
@@ -194,10 +203,10 @@ class MooxInstallCommand extends Command
         return $result;
     }
 
-
     public function stepShowOutput(): int
     {
         $this->info($this->filamentInstalled ? '✅ Filament is installed.' : '❌ Filament installation is required.');
+
         return self::SUCCESS;
     }
 
@@ -454,5 +463,4 @@ class MooxInstallCommand extends Command
 
         return $assets;
     }
-
 }
