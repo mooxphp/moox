@@ -1,25 +1,25 @@
 <?php
 
-namespace Moox\Jobs;
+namespace Moox\Jobs\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Jobs\Resources\JobsWaitingResource;
+use Moox\Jobs\Resources\JobsResource;
 
-class JobsWaitingPlugin implements Plugin
+class JobsPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'filament-jobs-waiting';
+        return 'filament-jobs';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            JobsWaitingResource::class,
+            JobsResource::class,
         ]);
     }
 

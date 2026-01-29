@@ -1,5 +1,6 @@
 {
     "name": "moox/core",
+    "version": "dev-main",
     "description": "The Moox Core package cares for many common features. It is required by all Moox packages.",
     "keywords": [
         "Laravel",
@@ -18,10 +19,11 @@
     ],
     "require": {
         "codeat3/blade-google-material-design-icons": "^1.0",
-        "filament/filament": "^4.0",
+        "filament/filament": "^5.0",
         "laravel/framework": "^11.0|^12.0",
         "moox/clipboard": "*",
         "moox/progress": "*",
+        "moox/prompts": "*",
         "php": "^8.2.0",
         "spatie/laravel-package-tools": "^1.13.0"
     },

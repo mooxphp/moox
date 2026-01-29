@@ -1,5 +1,6 @@
 {
     "name": "moox/progress",
+    "version": "dev-main",
     "description": "This is my package progress",
     "keywords": [
         "Moox",
@@ -18,7 +19,7 @@
         }
     ],
     "require": {
-        "filament/tables": "^4.0"
+        "moox/core": "dev-main"
     },
     "autoload": {
         "psr-4": {

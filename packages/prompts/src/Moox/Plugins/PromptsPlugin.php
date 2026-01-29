@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Prompts\Filament;
+namespace Moox\Prompts\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;

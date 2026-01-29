@@ -1,25 +1,25 @@
 <?php
 
-namespace Moox\Jobs;
+namespace Moox\Jobs\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Jobs\Resources\JobsResource;
+use Moox\Jobs\Resources\JobsFailedResource;
 
-class JobsPlugin implements Plugin
+class JobsFailedPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'filament-jobs';
+        return 'filament-failed-jobs';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            JobsResource::class,
+            JobsFailedResource::class,
         ]);
     }
 

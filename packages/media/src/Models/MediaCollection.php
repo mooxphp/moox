@@ -14,8 +14,6 @@ class MediaCollection extends Model implements TranslatableContract
 
     public $translatedAttributes = ['name', 'description'];
 
-    protected $fillable = ['name', 'description'];
-
     public function media(): HasMany
     {
         return $this->hasMany(Media::class, 'media_collection_id');

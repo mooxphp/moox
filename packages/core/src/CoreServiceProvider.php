@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Moox\Core;
 
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Console\Commands\MooxInstaller;
-use Moox\Core\Console\Commands\PackageServiceCommand;
+use Moox\Core\Console\Commands\MooxInstallCommand;
 use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
@@ -47,10 +46,10 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('core')
-            ->hasConfigFile()
+            ->hasConfigFile(['core', 'moox-installer'])
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommands([MooxInstaller::class, PublishScheduledContentCommand::class, PackageServiceCommand::class]);
+            ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class]);
     }
 
     protected function getPackageNames(): array

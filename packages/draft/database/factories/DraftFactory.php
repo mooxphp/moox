@@ -9,6 +9,16 @@ class DraftFactory extends Factory
 {
     protected $model = Draft::class;
 
+    /**
+     * Central locale configuration
+     */
+    private const LOCALES = [
+        'en_us' => 'English',
+        'de_de' => 'Deutsch',
+        'fr_fr' => 'Français',
+        'es_es' => 'Español',
+    ];
+
     public function definition(): array
     {
         return [
@@ -23,7 +33,7 @@ class DraftFactory extends Factory
             'type' => $this->faker->randomElement(['article', 'page', 'post', 'news', 'tutorial']),
             'color' => $this->faker->hexColor(),
             'due_at' => $this->faker->optional(0.3)->dateTimeBetween('now', '+30 days'),
-            'status' => $this->faker->randomElement(),
+            'status' => $this->faker->randomElement(['draft', 'published', 'scheduled', 'waiting', 'private']),
             'custom_properties' => [
                 'theme' => $this->faker->randomElement(['light', 'dark', 'auto']),
                 'layout' => $this->faker->randomElement(['grid', 'list', 'masonry']),
@@ -38,8 +48,8 @@ class DraftFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterMaking(function (Draft $draft) {
-            // Set translated attributes directly on the model
+        return $this->afterCreating(function (Draft $draft) {
+            // Set translated attributes directly on the model after it's created
             $this->setTranslatedAttributes($draft);
         });
     }
@@ -63,8 +73,8 @@ class DraftFactory extends Factory
                 'author_id' => $this->faker->numberBetween(1, 10),
                 'author_type' => $userModel,
                 'translation_status' => $this->faker->randomElement(['draft', 'waiting', 'private', 'scheduled', 'published', 'not_translated', 'deleted']),
-
             ]);
+            $draft->save();
         }
     }
 
@@ -73,13 +83,7 @@ class DraftFactory extends Factory
      */
     private function getLocales(): array
     {
-        $locales = ['en_us']; // Always create English
-
-        $locales[] = 'de_de';
-        $locales[] = 'fr_fr';
-        $locales[] = 'es_es';
-
-        return $locales;
+        return array_keys(self::LOCALES);
     }
 
     /**
@@ -88,13 +92,13 @@ class DraftFactory extends Factory
     private function getLocalizedTitle(string $locale): string
     {
         $titles = [
-            'en' => $this->faker->sentence(rand(3, 8)),
-            'de' => $this->faker->sentence(rand(3, 8)).' (Deutsch)',
-            'fr' => $this->faker->sentence(rand(3, 8)).' (Français)',
-            'es' => $this->faker->sentence(rand(3, 8)).' (Español)',
+            'en_us' => $this->faker->sentence(rand(3, 8)).' (English)',
+            'de_de' => $this->faker->sentence(rand(3, 8)).' (Deutsch)',
+            'fr_fr' => $this->faker->sentence(rand(3, 8)).' (Français)',
+            'es_es' => $this->faker->sentence(rand(3, 8)).' (Español)',
         ];
 
-        return $titles[$locale] ?? $titles['en'];
+        return $titles[$locale] ?? $titles['en_us'];
     }
 
     /**
@@ -112,14 +116,10 @@ class DraftFactory extends Factory
      */
     private function getLocalizedDescription(string $locale): string
     {
-        $descriptions = [
-            'en' => $this->faker->paragraph(2),
-            'de' => $this->faker->paragraph(2).' (Deutsche Beschreibung)',
-            'fr' => $this->faker->paragraph(2).' (Description française)',
-            'es' => $this->faker->paragraph(2).' (Descripción española)',
-        ];
+        $baseDescription = $this->faker->paragraph(2);
+        $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
 
-        return $descriptions[$locale] ?? $descriptions['en'];
+        return $baseDescription.$suffix;
     }
 
     /**
@@ -129,13 +129,9 @@ class DraftFactory extends Factory
     {
         $content = $this->faker->paragraphs(rand(3, 8), true);
 
-        $localizedSuffix = [
-            'de' => ' (Deutscher Inhalt)',
-            'fr' => ' (Contenu français)',
-            'es' => ' (Contenido español)',
-        ];
+        $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
 
-        return $content.($localizedSuffix[$locale] ?? '');
+        return $content.$suffix;
     }
 
     /**
@@ -147,11 +143,12 @@ class DraftFactory extends Factory
             return [
                 'status' => 'published',
             ];
-        })->afterMaking(function (Draft $draft) {
+        })->afterCreating(function (Draft $draft) {
             // Override translation status for published
             foreach ($draft->translations as $translation) {
                 $translation->translation_status = 'published';
                 $translation->published_at = $this->faker->dateTimeBetween('-30 days', 'now');
+                $translation->save();
             }
         });
     }
@@ -165,11 +162,12 @@ class DraftFactory extends Factory
             return [
                 'status' => 'scheduled',
             ];
-        })->afterMaking(function (Draft $draft) {
+        })->afterCreating(function (Draft $draft) {
             // Override translation status for scheduled
             foreach ($draft->translations as $translation) {
                 $translation->translation_status = 'scheduled';
                 $translation->to_publish_at = $this->faker->dateTimeBetween('now', '+7 days');
+                $translation->save();
             }
         });
     }
@@ -179,7 +177,7 @@ class DraftFactory extends Factory
      */
     public function withLocales(array $locales): static
     {
-        return $this->afterMaking(function (Draft $draft) use ($locales) {
+        return $this->afterCreating(function (Draft $draft) use ($locales) {
             // Clear existing translations
             $draft->deleteTranslations();
 
@@ -192,9 +190,10 @@ class DraftFactory extends Factory
                     'description' => $this->getLocalizedDescription($locale),
                     'content' => $this->getLocalizedContent($locale),
                     'author_id' => $this->faker->numberBetween(1, 10),
-                    'author_type' => 'Moox\\User\\Models\\User',
+                    'author_type' => array_key_first(config('draft.user_models')),
                     'translation_status' => 'draft',
                 ]);
+                $draft->save();
             }
         });
     }
