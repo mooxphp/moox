@@ -30,7 +30,7 @@
         attributes: {
             mediaId: { type: "number", default: 0 },
             mode: { type: "string", default: "view" },
-            height: { type: "string", default: "500px" },
+            height: { type: "string", default: "700px" },
         },
 
         edit: function (props) {

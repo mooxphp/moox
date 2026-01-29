@@ -1,11 +1,14 @@
+{{-- ===== ASSETS ===== --}}
 @vite('packageslocal/bpmn/resources/css/bpmn.css')
 @vite('packageslocal/bpmn/resources/js/bpmn.js')
+
+
 
 @props([
     'mediaId' => null,
     'wpMediaId' => null,
     'filePath' => null,
-    'mode' => 'edit',
+    'mode' => 'view',
     'height' => '500px',
     'showToolbar' => true,
     'class' => '',
@@ -16,7 +19,7 @@
 ])
 
 @php
-// Normalize file source if only filePath is provided
+  // Normalize file source if only filePath is provided
 if ($filePath && $bpmnSource['type'] === 'none') {
     $bpmnSource['type'] = 'file';
     $bpmnSource['path'] = str_replace('\\', '/', $filePath);

@@ -36,32 +36,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (mode === "edit") enableUnloadWarning(bpmnInstance);
 
-
     const bpmnContent = getBpmnContentFromPHP(element);
-
     if (bpmnContent) {
       loadBpmn(bpmnInstance, bpmnContent, container);
     } else if (sourceType === "file" && element.dataset.filePath) {
       fetch(element.dataset.filePath)
-        .then(res => res.text())
-        .then(xml => loadBpmn(bpmnInstance, xml, container))
-        .catch(() => showError(container, "Error loading BPMN file"));
+        .then((res) => res.text())
+        .then((xml) => loadBpmn(bpmnInstance, xml, container))
+        .catch((err) => showError(container, "Error loading BPMN file"));
     } else {
       showError(container, "No BPMN content found");
     }
-    
+
     if (mode === "edit") {
       setupEditor(element, bpmnInstance, sourceType);
       setupUpload(element, bpmnInstance);
     }
     
     setupZoomManager(element, bpmnInstance);
-    
   });
-}); 
+});
 
-
- 
 // === Helpers ===
 function getBpmnContentFromPHP(element) {
   const scriptTag = element.querySelector("script[data-bpmn-content]");
@@ -143,10 +138,13 @@ function setupEditor(element, bpmnInstance, sourceType) {
 
 async function saveBpmnByType(element, bpmnInstance, sourceType, type) {
   const saveButton = element.querySelector(".bpmn-save");
-  const spinner = saveButton.querySelector("svg");
+  const spinner = saveButton?.querySelector("svg");
+
+  if (!saveButton) return;
 
   saveButton.disabled = true;
-  spinner.classList.remove("hidden");
+  spinner?.classList.remove("hidden");
+
 
   try {
     const baseName = await showRenameModal();
@@ -373,43 +371,70 @@ function hideLoading(container) {
 }
 function showError(container, message) {
   const loading = container.querySelector(".bpmn-loading");
-  if (loading) loading.innerHTML = `<div class="bpmn-error">${message}</div>`;
+  if (!loading) return;
+
+  const div = document.createElement("div");
+  div.className = "bpmn-error";
+  div.textContent = message;   // ✅ no HTML injection
+
+  loading.innerHTML = "";
+  loading.appendChild(div);
 }
+
 function sanitizeFilename(name) {
-  if (!name) return "diagram";
-  return name.trim().replace(/\s+/g, "_").replace(/[^\w\-]/g, "").substring(0, 50) || "diagram";
+  if (!name || typeof name !== "string") return "diagram";
+
+  return name
+    .normalize("NFKD")
+    .replace(/[\u0000-\u001F\u007F<>:"/\\|?*]/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/[^\w\-\.]/g, "")
+    .substring(0, 50) || "diagram";
 }
+
 
 // === Rename Modal ===
 async function showRenameModal() {
   return new Promise((resolve) => {
     const lastName = localStorage.getItem("bpmn_filename") || "diagram";
+
     document.querySelector("#renameModal")?.remove();
+
     const modal = document.createElement("div");
     modal.id = "renameModal";
     modal.className = "fixed inset-0 flex items-center justify-center bg-black/40 z-50";
+
+    // --- static template (no injected values) ---
     modal.innerHTML = `
       <div class="bg-gray-100 rounded-xl shadow-2xl p-6 w-80 transform transition-all scale-95 opacity-0">
         <h2 class="text-lg font-semibold mb-3 text-gray-800">Rename File</h2>
-        <input type="text" id="renameInput" value="${lastName}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+
+        <input type="text" id="renameInput"
+          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+
         <div class="flex justify-end mt-4 space-x-2">
           <button class="cancel-btn px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
           <button class="save-btn px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
         </div>
       </div>`;
+
     document.body.appendChild(modal);
+
     const dialog = modal.querySelector("div");
     requestAnimationFrame(() => {
       dialog.classList.remove("scale-95", "opacity-0");
       dialog.classList.add("scale-100", "opacity-100");
     });
 
-    const input = modal.querySelector("#renameInput");
+    const input  = modal.querySelector("#renameInput");
+    input.value = sanitizeFilename(lastName);   // ✅ assign safely
+
     const cancel = modal.querySelector(".cancel-btn");
-    const save = modal.querySelector(".save-btn");
+    const save   = modal.querySelector(".save-btn");
 
     cancel.addEventListener("click", () => close(null));
     save.addEventListener("click", () => close(input.value.trim()));
+
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") close(input.value.trim());
       if (e.key === "Escape") close(null);
@@ -418,13 +443,16 @@ async function showRenameModal() {
     function close(value) {
       dialog.classList.add("scale-95", "opacity-0");
       setTimeout(() => modal.remove(), 150);
+
       if (!value) return resolve(null);
+
       const finalName = sanitizeFilename(value);
       localStorage.setItem("bpmn_filename", finalName);
       resolve(finalName);
     }
   });
 }
+
 
 // === Unsaved Changes Warning ===
 function enableUnloadWarning(bpmnInstance) {

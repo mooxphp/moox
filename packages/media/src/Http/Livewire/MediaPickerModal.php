@@ -67,6 +67,8 @@ class MediaPickerModal extends Component implements HasForms
 
     public ?string $media_collection_id = '';
 
+    public bool $collectionFilterDisabled = false;
+
     public ?string $collectionFilter = '';
 
     public array $processedHashes = [];
@@ -96,7 +98,7 @@ class MediaPickerModal extends Component implements HasForms
 
         if (! $this->modelId || ! $this->model) {
             $this->modelId = 0;
-        }
+        } 
 
         $firstCollection = MediaCollection::first();
         if (! $firstCollection) {
@@ -106,6 +108,27 @@ class MediaPickerModal extends Component implements HasForms
             ]);
         }
         $this->collection_name = $firstCollection->id;
+
+
+        if (isset($this->uploadConfig['filter_collection_id'])) {
+            $filterCollectionId = $this->uploadConfig['filter_collection_id'];
+            
+            // If it's a string (collection name), find the ID via translations
+            if (is_string($filterCollectionId) && !is_numeric($filterCollectionId)) {
+                $collection = MediaCollection::whereHas('translations', function ($query) use ($filterCollectionId) {
+                    $query->where('name', $filterCollectionId);
+                })->first();
+                
+                if ($collection) {
+                    $this->collectionFilter = (string) $collection->id;
+                    $this->collectionFilterDisabled = true;
+                }
+            } else {
+                // If it's already an ID
+                $this->collectionFilter = (string) $filterCollectionId;
+                $this->collectionFilterDisabled = true;
+            }
+        }
     }
 
     public function form(Schema $schema): Schema
@@ -426,7 +449,16 @@ class MediaPickerModal extends Component implements HasForms
 
     public function render()
     {
+     
         $media = Media::query()
+        ->when(
+        request()->is('admin/bpmns*') ||
+        $this->modelClass === \Moox\Bpmn\Models\Bpmn::class,
+        fn ($q) => $q->where(fn ($qq) =>
+            $qq->where('mime_type', 'application/bpmn+xml')
+               ->orWhere('file_name', 'like', '%.bpmn')
+        )
+    )
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
@@ -464,6 +496,7 @@ class MediaPickerModal extends Component implements HasForms
                             'application/pdf',
                             'application/msword',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'text/xml'
                         ]);
                         break;
                 }

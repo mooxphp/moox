@@ -2,15 +2,16 @@
 
 namespace Moox\Bpmn\Resources\Schemas;
 
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Fieldset;
 use Moox\Bpmn\Forms\Components\BpmnViewer;
+use Moox\Media\Forms\Components\MediaPicker;
+use Filament\Forms\Components\MarkdownEditor;
+
 
 class BpmnForm
 {
@@ -28,25 +29,25 @@ class BpmnForm
                             ->required()
                             ->columnSpanFull(),
 
-                        Select::make('bpmn_file')
-                            ->label('BPMN File')
-                            ->options(fn () => collect(Storage::disk('public')->allFiles('media'))
-                                ->filter(fn ($file) => str_ends_with($file, '.bpmn'))
-                                ->mapWithKeys(fn ($file) => [
-                                    $file => basename($file),
-                                ])
-                                ->toArray()
-                            )
-                            ->searchable()
+                        MediaPicker::make('media')
+                            ->label('BPMN Media')
+                            ->collection('media')
+                            ->acceptedFileTypes(['application/xml', '.bpmn'])
                             ->reactive()
-                            ->required(),
+                            ->dehydrated(false)
+                            ->filterByCollectionId('bpmn'),
+                        
 
-                        BpmnViewer::make('bpmn_xml')
-                            ->label('BPMN Process')
-                            ->fileIntegration() // ✅ tells JS the state is raw XML
+                        
+                        BpmnViewer::make('bpmn')
+                            ->label(__('BPMN Process'))
+                            ->mediaIntegration('moox')
                             ->mode('full')
-                            ->reactive()
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->required(),
+                        
+                        
+                        
 
                         MarkdownEditor::make('description')
                             ->label('BPMN Description')

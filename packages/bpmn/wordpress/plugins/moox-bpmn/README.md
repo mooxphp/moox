@@ -59,14 +59,36 @@ The plugin supports BPMN 2.0 files with the following characteristics:
 ```
 moox-bpmn/
 ├── moox-bpmn.php          # Main plugin file
-├── js/
-│   ├── bpmn-block.js      # Gutenberg block JavaScript
-│   └── bpmn-viewer.js     # Frontend BPMN viewer
 ├── css/
 │   ├── bpmn-block.css     # Block editor styles
 │   └── bpmn-viewer.css    # Frontend styles
+├── src/
+│   ├── bpmn-block.js      # Gutenberg block JavaScript
+│   └── bpmn-viewer.js     # Frontend BPMN viewer
 └── README.md              # This file
 ```
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                                            updated
+moox-bpmn/
+├─ css/
+│  ├─ bpmn-block.css       
+│  └─ bpmn-viewer.css             
+│
+├─ src/
+│  ├─ bpmn-block.js        
+│  └─ bpmn-viewer.js       
+│
+├─ build/                      
+│  ├─ block.json
+│  ├─ index.asset.php     ├─  will be created after  
+│  └─ index.js            ├─  will be created after 
+│                         └─`npm run build` 
+│
+├─ moox-bpmn.php           ← your main plugin file
+├─ package.json            ← (at root level) run `npm install` to install all dependencies
+├─ README.md
+│
+└─ node_modules/           ← created automatically  run `npm install @wordpress/scripts --save-dev`
 
 ### AJAX Endpoints
 

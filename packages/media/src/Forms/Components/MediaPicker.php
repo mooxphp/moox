@@ -192,6 +192,15 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         return parent::visibility($visibility);
     }
 
+    public function filterByCollectionId(Closure|int|string|null $collectionId): static
+    {
+        $this->uploadConfig['filter_collection_id'] = $collectionId instanceof Closure ? $collectionId() : $collectionId;
+ 
+        return $this;
+    }
+
+
+
     public function getUploadConfig(): array
     {
         return $this->uploadConfig;

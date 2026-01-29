@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Bpmn\View\Components;
 
-use Illuminate\Support\Facades\Storage;
-use Illuminate\View\Component;
 use Illuminate\View\View;
 use Moox\Media\Models\Media;
+use Illuminate\View\Component;
 use Moox\Press\Models\WpMedia;
+use Illuminate\Support\Facades\Storage;
 
 class BpmnViewer extends Component
 {
@@ -24,12 +24,13 @@ class BpmnViewer extends Component
         $this->validateProps();
     }
 
+    
     public function render(): View
     {
         return view('bpmn::components.bpmn-viewer', [
-            'bpmnSource' => $this->getBpmnSource(),
-            'canEdit' => $this->canEdit(),
-            'canView' => $this->canView(),
+            'bpmnSource'  => $this->getBpmnSource(),
+            'canEdit'     => $this->canEdit(),
+            'canView'     => $this->canView(),
             'bpmnContent' => $this->getBpmnContent(),
         ]);
     }
@@ -62,7 +63,7 @@ class BpmnViewer extends Component
                 $content = Storage::disk('public')->get($normalized);
             } else {
                 // fallback: absolute path
-                $absolutePath = storage_path('app/public/'.$normalized);
+                $absolutePath = storage_path('app/public/' . $normalized);
                 if (file_exists($absolutePath)) {
                     $content = file_get_contents($absolutePath);
                 }
@@ -80,14 +81,14 @@ class BpmnViewer extends Component
         if ($this->mediaId) {
             return [
                 'type' => 'media',
-                'id' => $this->mediaId,
+                'id'   => $this->mediaId,
             ];
         }
 
         if ($this->wpMediaId) {
             return [
                 'type' => 'wp-media',
-                'id' => $this->wpMediaId,
+                'id'   => $this->wpMediaId,
             ];
         }
 
@@ -96,11 +97,12 @@ class BpmnViewer extends Component
                 'type' => 'file',
                 'path' => str_replace('\\', '/', $this->filePath),
             ];
+            
         }
-
+        
         return [
             'type' => 'none',
-            'id' => null,
+            'id'   => null,
         ];
     }
 
@@ -137,7 +139,7 @@ class BpmnViewer extends Component
             );
         }
 
-        if (! in_array($this->mode, ['view', 'edit'])) {
+        if (!in_array($this->mode, ['view', 'edit'])) {
             throw new \InvalidArgumentException('Mode must be either "view" or "edit".');
         }
     }

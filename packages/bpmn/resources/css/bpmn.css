@@ -17,6 +17,7 @@ html, body {
     transition: box-shadow 0.2s ease;
     height: 100vh !important;
     max-height: 100vh;
+    z-index: 0;
 }
 
 .bpmn-viewer:hover {
@@ -100,7 +101,7 @@ html, body {
 
 .bpmn-zoom-level {
     font-size: 10px;
-    color: #bdb9b9;
+    color: #b1acac;
     text-align: center;
     padding: 2px 0;
 }
@@ -110,7 +111,7 @@ html, body {
     right: 110%;
     top: 50%;
     transform: translateY(-50%);
-    background: #5f5e5e;
+    background: #6b6a6a;
     color: #fff;
     padding: 3px 6px;
     font-size: 10px;
