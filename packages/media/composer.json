@@ -1,5 +1,6 @@
 {
     "name": "moox/media",
+    "version": "dev-main",
     "description": "This is my package media",
     "keywords": [
         "Laravel",
@@ -17,10 +18,10 @@
         }
     ],
     "require": {
-        "moox/core": "self.version",
-        "filament/spatie-laravel-media-library-plugin": "^4.0",
-        "moox/localization": "*",
-        "moox/data": "*"
+        "moox/core": "dev-main  ",
+        "filament/spatie-laravel-media-library-plugin": "^5.0",
+        "moox/localization": "dev-main",
+        "moox/data": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +37,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {

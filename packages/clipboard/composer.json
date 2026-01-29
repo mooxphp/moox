@@ -1,5 +1,6 @@
 {
     "name": "moox/clipboard",
+    "version": "dev-main",
     "description": "Filament fields with copy to clipboard action.",
     "type": "moox-plugin",
     "keywords": [
@@ -23,10 +24,10 @@
         }
     ],
     "require": {
-        "filament/forms": "^4.0"
+        "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
