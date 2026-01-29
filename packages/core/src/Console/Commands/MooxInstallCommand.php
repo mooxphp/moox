@@ -63,7 +63,6 @@ class MooxInstallCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
 
     public function promptFlowSteps(): array
     {
