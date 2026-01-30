@@ -23,9 +23,7 @@ use Moox\Prompts\Support\WebPromptRuntime;
 use Throwable;
 
 /**
- * $form kommt aus dem Trait InteractsWithForms (Filament). Für PHPStan ohne Filament-Scope als object typisiert.
- *
- * @property object $form
+ * @property \Filament\Forms\Form $form
  */
 class RunCommandComponent extends Component implements HasForms
 {

@@ -142,9 +142,24 @@ class PromptFlowRunner
         }
 
         try {
-            $exists = CommandExecution::where('flow_id', $state->flowId)->exists();
-            if ($exists) {
-                return;
+            $exists = CommandExecution::query()->where('flow_id', $state->flowId)->exists();
+            if (! $exists) {
+                $execution = new CommandExecution([
+                    'flow_id' => $state->flowId,
+                    'command_name' => $state->commandName,
+                    'command_description' => $command->getDescription(),
+                    'status' => 'cancelled', // Will be updated by updateExecutionCompleted/Failed
+                    'started_at' => now(),
+                    'steps' => $state->steps,
+                    'step_outputs' => $state->stepOutputs ?? [],
+                    'context' => $state->context ?? [],
+                ]);
+
+                if (Auth::check()) {
+                    $execution->createdBy()->associate(Auth::user());
+                }
+
+                $execution->save();
             }
 
             $now = now();
@@ -186,16 +201,10 @@ class PromptFlowRunner
         }
 
         try {
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
-
-            DB::table('command_executions')
-                ->where('flow_id', $state->flowId)
-                ->update([
-                    'step_outputs' => json_encode($stepOutputs),
-                    'context' => json_encode($context),
-                    'updated_at' => now(),
-                ]);
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
         } catch (\Throwable $e) {
             // Silently fail if table doesn't exist yet
         }
@@ -211,18 +220,12 @@ class PromptFlowRunner
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
 
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
-
-            DB::table('command_executions')
-                ->where('flow_id', $state->flowId)
-                ->update([
-                    'status' => 'completed',
-                    'completed_at' => now(),
-                    'step_outputs' => json_encode($stepOutputs),
-                    'context' => json_encode($context),
-                    'updated_at' => now(),
-                ]);
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
         } catch (\Throwable $e) {
             // Log error for debugging
             Log::error('Failed to update command execution as completed', [
@@ -246,20 +249,14 @@ class PromptFlowRunner
             $errorMessage = $this->formatThrowableMessage($exception);
             $fullError = $errorMessage."\n\n".$exception->getTraceAsString();
 
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
-
-            DB::table('command_executions')
-                ->where('flow_id', $state->flowId)
-                ->update([
-                    'status' => 'failed',
-                    'failed_at' => now(),
-                    'failed_at_step' => $state->failedAt, // The step where the failure occurred
-                    'error_message' => $fullError,
-                    'step_outputs' => json_encode($stepOutputs),
-                    'context' => json_encode($context),
-                    'updated_at' => now(),
-                ]);
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
+                'status' => 'failed',
+                'failed_at' => now(),
+                'failed_at_step' => $state->failedAt, // The step where the failure occurred
+                'error_message' => $fullError,
+                'step_outputs' => $state->stepOutputs,
+                'context' => $state->context,
+            ]);
         } catch (\Throwable $e) {
             // Log error for debugging
             Log::error('Failed to update command execution as failed', [
