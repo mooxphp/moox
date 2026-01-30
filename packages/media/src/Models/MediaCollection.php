@@ -12,6 +12,7 @@ use Moox\Localization\Models\Localization;
 /**
  * @method static Builder whereTranslation(string $key, mixed $value, ?string $locale = null)
  * @method static static create(array $attributes = [])
+ *
  * @property int|null $id
  * @property string|null $name
  */
