@@ -110,6 +110,10 @@ class PromptFlowStateStore
 
                 $now = now();
                 DB::table('command_executions')->insertGetId([
+            } catch (\Throwable $e) {
+                // Log error for debugging
+                Log::error('Failed to mark command execution as cancelled', [
+                    'error' => $e->getMessage(),
                     'flow_id' => $flowId,
                     'command_name' => $name,
                     'command_description' => $description,
