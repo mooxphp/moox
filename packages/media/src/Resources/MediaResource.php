@@ -985,7 +985,6 @@ class MediaResource extends Resource
                             ->modalCancelActionLabel(__('media::fields.cancel'))
                             ->hidden(function (Media $record) {
                                 $user = Auth::user();
-
                                 /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
                                 return $user === null || ! $user->can('delete', $record) || $record->getOriginal('write_protected');
                             })
