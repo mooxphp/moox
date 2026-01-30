@@ -11,7 +11,7 @@ class MediaCollectionTranslation extends Model
     protected static function booted()
     {
         static::updated(function ($translation) {
-            $collection = MediaCollection::find($translation->media_collection_id);
+            $collection = MediaCollection::query()->find($translation->media_collection_id);
             if ($collection) {
                 $collection->media()->update([
                     'collection_name' => $collection->name,

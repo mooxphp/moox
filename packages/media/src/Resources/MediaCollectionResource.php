@@ -103,7 +103,8 @@ class MediaCollectionResource extends Resource
                         }
 
                         if (class_exists(Localization::class)) {
-                            $defaultLocale = Localization::where('is_default', true)
+                            $defaultLocale = Localization::query()
+                                ->where('is_default', true)
                                 ->where('is_active_admin', true)
                                 ->with('language')
                                 ->first();
@@ -150,7 +151,7 @@ class MediaCollectionResource extends Resource
                 TextColumn::make('media_count')
                     ->label(__('media::fields.media_count'))
                     ->getStateUsing(function ($record) {
-                        return Media::where('media_collection_id', $record->id)->count();
+                        return Media::query()->where('media_collection_id', $record->id)->count();
                     }),
             ])
             ->recordActions([
