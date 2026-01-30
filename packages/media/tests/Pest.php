@@ -15,12 +15,17 @@ use Workbench\App\Models\User;
 */
 
 pest()->extends(TestCase::class)
-    ->beforeEach(function () {
+    ->beforeEach(function (): void {
+        // @phpstan-ignore-next-line variable.undefined (Pest bindet $this zur Laufzeit)
         $this->artisan('migrate');
+        // @phpstan-ignore-next-line class.notFound (Workbench\User nur im Test-Workbench)
         $user = User::factory()->create();
+        // @phpstan-ignore-next-line variable.undefined (Pest bindet $this zur Laufzeit)
         $this->actingAs($user);
-    })->afterEach(function () {
+    })->afterEach(function (): void {
+        // @phpstan-ignore-next-line variable.undefined (Pest bindet $this zur Laufzeit)
         $this->artisan('db:wipe');
+        // @phpstan-ignore-next-line variable.undefined (Pest bindet $this zur Laufzeit)
         $this->artisan('optimize:clear');
     })->in('Feature');
 

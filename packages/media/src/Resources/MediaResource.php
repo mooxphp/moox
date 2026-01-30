@@ -23,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Media\Models\Media;
@@ -127,7 +128,7 @@ class MediaResource extends Resource
 
                             $usables = [];
                             if ($oldMediaId && ! $isEdit) {
-                                $usables = \DB::table('media_usables')
+                                $usables = DB::table('media_usables')
                                     ->where('media_id', $oldMediaId)
                                     ->get()
                                     ->map(function ($item) {
@@ -137,7 +138,7 @@ class MediaResource extends Resource
                             }
 
                             if ($oldMediaId && ! $isEdit) {
-                                \DB::table('media')->where('id', $oldMediaId)->delete();
+                                DB::table('media')->where('id', $oldMediaId)->delete();
                             }
 
                             $model = new Media;
@@ -178,7 +179,7 @@ class MediaResource extends Resource
 
                             if (! $isEdit) {
                                 foreach ($usables as $usable) {
-                                    \DB::table('media_usables')->insert([
+                                    DB::table('media_usables')->insert([
                                         'media_id' => $media->id,
                                         'media_usable_id' => $usable['media_usable_id'],
                                         'media_usable_type' => $usable['media_usable_type'],
@@ -319,7 +320,7 @@ class MediaResource extends Resource
                             TextEntry::make('usage')
                                 ->label(__('media::fields.usage'))
                                 ->state(function ($record) {
-                                    $usages = \DB::table('media_usables')
+                                    $usages = DB::table('media_usables')
                                         ->where('media_id', $record->id)
                                         ->get();
 
@@ -690,7 +691,7 @@ class MediaResource extends Resource
             $columns[] = TextColumn::make('usages')
                 ->label(__('media::fields.usage'))
                 ->getStateUsing(function ($record) {
-                    $count = \DB::table('media_usables')
+                    $count = DB::table('media_usables')
                         ->where('media_id', $record->id)
                         ->count();
 
@@ -930,7 +931,7 @@ class MediaResource extends Resource
                             ->requiresConfirmation()
                             ->modalIcon('heroicon-m-trash')
                             ->modalHeading(function ($record) {
-                                $usages = \DB::table('media_usables')
+                                $usages = DB::table('media_usables')
                                     ->where('media_id', $record->id)
                                     ->count();
 
@@ -945,7 +946,7 @@ class MediaResource extends Resource
                                 return __('media::fields.delete_file_heading', ['title' => $record->title ?: $record->name]);
                             })
                             ->modalDescription(function ($record) {
-                                $usages = \DB::table('media_usables')
+                                $usages = DB::table('media_usables')
                                     ->where('media_id', $record->id)
                                     ->count();
 
