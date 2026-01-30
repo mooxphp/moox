@@ -1,8 +1,9 @@
 <?php
 
-namespace Moox\Media\Resources\MediaCollectionResource\Pages;
+namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
+use Moox\Media\Resources\MediaResource;
 
 class EditMedia extends EditRecord
 {

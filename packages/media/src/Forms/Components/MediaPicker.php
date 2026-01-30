@@ -5,9 +5,9 @@ namespace Moox\Media\Forms\Components;
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Schema;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
-use Schema;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {

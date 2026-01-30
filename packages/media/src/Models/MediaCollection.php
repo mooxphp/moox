@@ -12,6 +12,8 @@ class MediaCollection extends Model implements TranslatableContract
 {
     use Translatable;
 
+    protected $fillable = ['name', 'description'];
+
     public $translatedAttributes = ['name', 'description'];
 
     public function media(): HasMany
@@ -63,7 +65,7 @@ class MediaCollection extends Model implements TranslatableContract
 
         $locale = $defaultLocale ?: config('app.locale');
 
-        $collection = new static;
+        $collection = new self;
         $translation = $collection->translateOrNew($locale);
 
         $previousLocale = app()->getLocale();
