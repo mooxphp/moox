@@ -347,7 +347,8 @@ class BaseDraftResource extends BaseResource
         return TextEntry::make('published_at')
             ->label(__('core::core.published_at'))
             ->state(function ($record): string {
-                $translation = $record->translations()->withTrashed()->first();
+                $locale = request()->query('lang') ?? app()->getLocale();
+                $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
                 if (! $translation || ! $translation->published_at) {
                     return '';
                 }
@@ -360,7 +361,12 @@ class BaseDraftResource extends BaseResource
 
                 return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
             })
-            ->hidden(fn ($record) => ! $record->published_at);
+            ->hidden(function ($record): bool {
+                $locale = request()->query('lang') ?? app()->getLocale();
+                $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
+
+                return ! $translation || ! $translation->published_at;
+            });
     }
 
     /**
