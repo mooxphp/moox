@@ -22,6 +22,9 @@ use Moox\Prompts\Support\WebCommandRunner;
 use Moox\Prompts\Support\WebPromptRuntime;
 use Throwable;
 
+/**
+ * @property \Filament\Forms\Form $form
+ */
 class RunCommandComponent extends Component implements HasForms
 {
     use InteractsWithForms;
@@ -764,7 +767,7 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         try {
-            $execution = \Moox\Prompts\Models\CommandExecution::where('flow_id', $state->flowId)->first();
+            $execution = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $state->flowId)->first();
 
             // If no execution record exists, allow access (legacy flow or just started)
             if (! $execution) {

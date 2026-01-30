@@ -140,7 +140,7 @@ class PromptFlowRunner
         }
 
         try {
-            $exists = CommandExecution::where('flow_id', $state->flowId)->exists();
+            $exists = CommandExecution::query()->where('flow_id', $state->flowId)->exists();
             if (! $exists) {
                 $execution = new CommandExecution([
                     'flow_id' => $state->flowId,
@@ -175,7 +175,7 @@ class PromptFlowRunner
         }
 
         try {
-            CommandExecution::where('flow_id', $state->flowId)->update([
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
                 'step_outputs' => $state->stepOutputs,
                 'context' => $state->context,
             ]);
@@ -194,7 +194,7 @@ class PromptFlowRunner
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
 
-            CommandExecution::where('flow_id', $state->flowId)->update([
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
                 'status' => 'completed',
                 'completed_at' => now(),
                 'step_outputs' => $state->stepOutputs,
@@ -223,7 +223,7 @@ class PromptFlowRunner
             $errorMessage = $this->formatThrowableMessage($exception);
             $fullError = $errorMessage."\n\n".$exception->getTraceAsString();
 
-            CommandExecution::where('flow_id', $state->flowId)->update([
+            CommandExecution::query()->where('flow_id', $state->flowId)->update([
                 'status' => 'failed',
                 'failed_at' => now(),
                 'failed_at_step' => $state->failedAt, // The step where the failure occurred

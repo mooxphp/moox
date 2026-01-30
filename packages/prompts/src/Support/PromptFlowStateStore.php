@@ -62,7 +62,7 @@ class PromptFlowStateStore
                 }
 
                 // Try to update existing record - only if it's not already completed or failed
-                $updated = \Moox\Prompts\Models\CommandExecution::where('flow_id', $flowId)
+                $updated = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $flowId)
                     ->whereNotIn('status', ['cancelled', 'completed', 'failed'])
                     ->update([
                         'status' => 'cancelled',
