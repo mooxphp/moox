@@ -20,7 +20,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         parent::setUp();
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
-            /** @var MediaUsable|null $record */
+            /** @var \Illuminate\Database\Eloquent\Model|null $record */
             $record = $component->getRecord();
             if (! $record) {
                 return;
@@ -33,7 +33,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             });
 
             MediaUsable::query()
-                ->where('media_usable_id', $record->id)
+                ->where('media_usable_id', $record->getKey())
                 ->where('media_usable_type', get_class($record))
                 ->whereNotIn('media_id', $mediaIds)
                 ->delete();
@@ -50,8 +50,8 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 // @phpstan-ignore-next-line staticMethod.notFound (Eloquent Model::firstOrCreate)
                 MediaUsable::firstOrCreate([
-                    'media_id' => $media->id,
-                    'media_usable_id' => $record->id,
+                    'media_id' => $media->getKey(),
+                    'media_usable_id' => $record->getKey(),
                     'media_usable_type' => get_class($record),
                 ]);
 

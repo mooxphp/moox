@@ -37,7 +37,7 @@ class ListMediaCollections extends ListRecords
                 ->first();
 
             if ($defaultLocale) {
-                return $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
+                return $defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2;
             }
 
             $firstActiveLocale = Localization::query()
@@ -45,7 +45,7 @@ class ListMediaCollections extends ListRecords
                 ->first();
 
             if ($firstActiveLocale) {
-                return $firstActiveLocale->locale_variant ?: $firstActiveLocale->language->alpha2;
+                return $firstActiveLocale->getAttribute('locale_variant') ?: $firstActiveLocale->language->alpha2;
             }
         }
 

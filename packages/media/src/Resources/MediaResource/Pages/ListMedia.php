@@ -40,7 +40,7 @@ class ListMedia extends BaseListDrafts
             ->first();
 
         $defaultLang = $defaultLocale
-            ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
+            ? ($defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language?->alpha2)
             : config('app.locale');
 
         $this->lang = request()->query('lang', $defaultLang);
@@ -149,7 +149,7 @@ class ListMedia extends BaseListDrafts
                                             ->first();
 
                                         if ($defaultLocale && $defaultLocale->language) {
-                                            $defaultLang = $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
+                                            $defaultLang = $defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2;
                                             $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
                                             if ($fallbackTranslation && ! empty($fallbackTranslation->name)) {
                                                 $name = $fallbackTranslation->name;
@@ -226,7 +226,7 @@ class ListMedia extends BaseListDrafts
                                     ->first();
 
                                 if ($localization && $localization->language) {
-                                    $defaultLang = $localization->locale_variant ?: $localization->language->alpha2;
+                                    $defaultLang = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
                                 }
 
                                 $translation = $collection->translations->firstWhere('locale', $defaultLang);
@@ -234,7 +234,7 @@ class ListMedia extends BaseListDrafts
                                 if ($translation && ! empty($translation->name)) {
                                     $collectionName = $translation->name;
                                 } elseif ($collection->translations->isNotEmpty()) {
-                                    $collectionName = $collection->translations->first()->name;
+                                    $collectionName = $collection->translations->first()->getAttribute('name') ?? __('media::fields.uncategorized');
                                 } elseif (method_exists($collection, 'translate')) {
                                     $translation = $collection->translate($defaultLang);
                                     $collectionName = $translation?->name ?? __('media::fields.uncategorized');
@@ -280,6 +280,7 @@ class ListMedia extends BaseListDrafts
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                                /** @var Media $media */
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                                 $media->media_collection_id = $collectionId;
@@ -290,11 +291,14 @@ class ListMedia extends BaseListDrafts
 
                                 $media->title = $title;
                                 $media->alt = $title;
-                                $media->uploader_type = get_class(auth()->user());
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with user()) */
+                                $user = auth()->user();
+                                $media->uploader_type = $user ? get_class($user) : null;
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with id()) */
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
-                                $media->original_model_id = $media->id;
-                                $media->model_id = $media->id;
+                                $media->original_model_id = $media->getKey();
+                                $media->model_id = $media->getKey();
                                 $media->model_type = Media::class;
 
                                 $media->setCustomProperty('file_hash', $fileHash);
