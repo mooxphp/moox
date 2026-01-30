@@ -33,8 +33,9 @@ class CreateMediaCollection extends CreateRecord
         if (isset($data['extend_existing_collection']) && $data['extend_existing_collection']) {
             $existingCollection = MediaCollection::query()->find($data['extend_existing_collection']);
             if ($existingCollection) {
-                $existingCollection->translateOrNew($this->lang)->name = $data['name'];
-                $existingCollection->translateOrNew($this->lang)->description = $data['description'] ?? '';
+                $translation = $existingCollection->translateOrNew($this->lang);
+                $translation->setAttribute('name', $data['name']);
+                $translation->setAttribute('description', $data['description'] ?? '');
                 $existingCollection->save();
 
                 $this->record = $existingCollection;
@@ -46,8 +47,9 @@ class CreateMediaCollection extends CreateRecord
         unset($data['extend_existing_collection']);
 
         $collection = new MediaCollection;
-        $collection->translateOrNew($this->lang)->name = $data['name'];
-        $collection->translateOrNew($this->lang)->description = $data['description'] ?? '';
+        $translation = $collection->translateOrNew($this->lang);
+        $translation->setAttribute('name', $data['name']);
+        $translation->setAttribute('description', $data['description'] ?? '');
         $collection->save();
 
         return $collection;
