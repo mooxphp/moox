@@ -1217,6 +1217,6 @@ class MediaResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::query()->count();
+        return (string) static::getModel()::query()->count();
     }
 }
