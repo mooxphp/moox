@@ -32,7 +32,8 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 return $id !== null && $id !== '';
             });
 
-            MediaUsable::where('media_usable_id', $record->id)
+            MediaUsable::query()
+                ->where('media_usable_id', $record->id)
                 ->where('media_usable_type', get_class($record))
                 ->whereNotIn('media_id', $mediaIds)
                 ->delete();
@@ -41,12 +42,13 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $index = 1;
 
             foreach ($mediaIds as $mediaId) {
-                $media = Media::where('id', $mediaId)->first();
+                $media = Media::query()->where('id', $mediaId)->first();
 
                 if (! $media) {
                     continue;
                 }
 
+                // @phpstan-ignore-next-line staticMethod.notFound (Eloquent Model::firstOrCreate)
                 MediaUsable::firstOrCreate([
                     'media_id' => $media->id,
                     'media_usable_id' => $record->id,

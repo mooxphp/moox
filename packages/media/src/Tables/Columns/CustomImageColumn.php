@@ -74,11 +74,12 @@ class CustomImageColumn extends ImageColumn
                 : $record->getUrl();
         }
 
-        $mediaIds = MediaUsable::where('media_usable_id', $record->getKey())
+        $mediaIds = MediaUsable::query()
+            ->where('media_usable_id', $record->getKey())
             ->where('media_usable_type', get_class($record))
             ->pluck('media_id');
 
-        $media = Media::whereIn('id', $mediaIds)->get();
+        $media = Media::query()->whereIn('id', $mediaIds)->get();
 
         return $media
             ->sortBy('order_column')
@@ -105,7 +106,8 @@ class CustomImageColumn extends ImageColumn
             return $this->iconMap[$record->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
         }
 
-        $mediaId = MediaUsable::where('media_usable_id', $record->getKey())
+        $mediaId = MediaUsable::query()
+            ->where('media_usable_id', $record->getKey())
             ->where('media_usable_type', get_class($record))
             ->join('media', 'media_usables.media_id', '=', 'media.id')
             ->where('media.uuid', $state)
@@ -115,7 +117,7 @@ class CustomImageColumn extends ImageColumn
             return null;
         }
 
-        $media = Media::find($mediaId);
+        $media = Media::query()->find($mediaId);
 
         if (! $media) {
             return null;

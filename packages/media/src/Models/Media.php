@@ -163,7 +163,8 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                         $defaultLocale = config('app.locale');
 
                         if (class_exists(Localization::class)) {
-                            $localization = Localization::where('is_default', true)
+                            $localization = Localization::query()
+                                ->where('is_default', true)
                                 ->where('is_active_admin', true)
                                 ->with('language')
                                 ->first();

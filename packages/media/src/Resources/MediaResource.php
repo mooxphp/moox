@@ -91,7 +91,7 @@ class MediaResource extends Resource
                             $fileHash = hash_file('sha256', $state->getRealPath());
                             $fileName = $state->getClientOriginalName();
 
-                            $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                            $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
                                 $query->where('name', $fileName);
                             })->orWhere(function ($query) use ($fileHash) {
                                 $query->where('custom_properties->file_hash', $fileHash);
@@ -354,7 +354,8 @@ class MediaResource extends Resource
                                             $name = $translation->name;
                                         } else {
                                             if (class_exists(\Moox\Localization\Models\Localization::class)) {
-                                                $defaultLocale = optional(\Moox\Localization\Models\Localization::where('is_default', true)
+                                                $defaultLocale = optional(\Moox\Localization\Models\Localization::query()
+                                                    ->where('is_default', true)
                                                     ->first()?->language)->alpha2 ?? config('app.locale');
 
                                                 $translation = $collection->translations()->where('locale', $defaultLocale)->first();
@@ -756,7 +757,7 @@ class MediaResource extends Resource
 
                         foreach ($livewire->selected as $id) {
                             try {
-                                $media = Media::find($id);
+                                $media = Media::query()->find($id);
                                 if (! $media) {
                                     continue;
                                 }

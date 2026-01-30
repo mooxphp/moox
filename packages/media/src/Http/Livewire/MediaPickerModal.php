@@ -98,7 +98,7 @@ class MediaPickerModal extends Component implements HasForms
             $this->modelId = 0;
         }
 
-        $firstCollection = MediaCollection::first();
+        $firstCollection = MediaCollection::query()->first();
         if (! $firstCollection) {
             $firstCollection = MediaCollection::create([
                 'name' => __('media::fields.uncategorized'),
@@ -117,7 +117,8 @@ class MediaPickerModal extends Component implements HasForms
 
                 $defaultLocale = null;
                 if (class_exists(Localization::class)) {
-                    $localization = Localization::where('is_default', true)
+                    $localization = Localization::query()
+                        ->where('is_default', true)
                         ->where('is_active_admin', true)
                         ->with('language')
                         ->first();
@@ -141,7 +142,7 @@ class MediaPickerModal extends Component implements HasForms
                     ->toArray();
             })
             ->searchable()
-            ->default(MediaCollection::first()?->id)
+            ->default(MediaCollection::query()->first()?->id)
             ->required()
             ->live();
 
@@ -154,7 +155,7 @@ class MediaPickerModal extends Component implements HasForms
                 }
 
                 $collectionId = $get('media_collection_id');
-                $collection = MediaCollection::find($collectionId);
+                $collection = MediaCollection::query()->find($collectionId);
                 $collectionName = $collection?->name ?? __('media::fields.uncategorized');
 
                 foreach ($state as $tempFile) {
@@ -166,7 +167,7 @@ class MediaPickerModal extends Component implements HasForms
 
                     $fileName = $tempFile->getClientOriginalName();
 
-                    $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                    $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
                         $query->where('name', $fileName);
                     })->orWhere(function ($query) use ($fileHash) {
                         $query->where('custom_properties->file_hash', $fileHash);
@@ -303,7 +304,7 @@ class MediaPickerModal extends Component implements HasForms
             }
         }
 
-        $media = Media::where('id', $mediaId)->first();
+        $media = Media::query()->where('id', $mediaId)->first();
 
         if ($media) {
             $uploaderName = '-';
@@ -356,7 +357,7 @@ class MediaPickerModal extends Component implements HasForms
 
     public function applySelection()
     {
-        $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
+        $selectedMedia = Media::query()->whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
             if (! $this->multiple) {
@@ -389,7 +390,7 @@ class MediaPickerModal extends Component implements HasForms
     public function updatedSelectedMediaMeta($value, $field)
     {
         if ($this->selectedMediaMeta['id']) {
-            $media = Media::where('id', $this->selectedMediaMeta['id'])->first();
+            $media = Media::query()->where('id', $this->selectedMediaMeta['id'])->first();
 
             if (in_array($field, ['title', 'description', 'internal_note', 'alt', 'name', 'media_collection_id'])) {
                 if ($media->getOriginal('write_protected')) {
@@ -399,7 +400,7 @@ class MediaPickerModal extends Component implements HasForms
                 $media->setAttribute($field, $value);
 
                 if ($field === 'media_collection_id') {
-                    $collection = MediaCollection::find($value);
+                    $collection = MediaCollection::query()->find($value);
                     $media->collection_name = $collection?->name ?? null;
                     $this->selectedMediaMeta['collection_name'] = $media->collection_name;
                 }
@@ -501,7 +502,8 @@ class MediaPickerModal extends Component implements HasForms
 
         $defaultLocale = null;
         if (class_exists(\Moox\Localization\Models\Localization::class)) {
-            $localization = \Moox\Localization\Models\Localization::where('is_default', true)
+            $localization = \Moox\Localization\Models\Localization::query()
+                ->where('is_default', true)
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();

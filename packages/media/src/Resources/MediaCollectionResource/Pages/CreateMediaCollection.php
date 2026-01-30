@@ -31,7 +31,7 @@ class CreateMediaCollection extends CreateRecord
     protected function handleRecordCreation(array $data): MediaCollection
     {
         if (isset($data['extend_existing_collection']) && $data['extend_existing_collection']) {
-            $existingCollection = MediaCollection::find($data['extend_existing_collection']);
+            $existingCollection = MediaCollection::query()->find($data['extend_existing_collection']);
             if ($existingCollection) {
                 $existingCollection->translateOrNew($this->lang)->name = $data['name'];
                 $existingCollection->translateOrNew($this->lang)->description = $data['description'] ?? '';
