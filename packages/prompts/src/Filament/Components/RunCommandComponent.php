@@ -406,15 +406,11 @@ class RunCommandComponent extends Component implements HasForms
                         $params = $this->currentPrompt['params'] ?? [];
                         $options = $params[1] ?? [];
                         $answer = array_keys($options);
-                    } elseif ($answer !== null && $answer !== '') {
+                    } elseif ($answer !== '') {
                         $answer = [$answer];
                     } else {
                         $answer = [];
                     }
-                }
-
-                if (! is_array($answer)) {
-                    $answer = [];
                 }
             }
 
@@ -471,7 +467,7 @@ class RunCommandComponent extends Component implements HasForms
         };
 
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === false || $value === '') {
+            if ($value === null || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
@@ -653,7 +649,7 @@ class RunCommandComponent extends Component implements HasForms
 
         $rules = [];
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === false || $value === '') {
+            if ($value === null || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
