@@ -31,7 +31,8 @@ class ListMediaCollections extends ListRecords
     protected function getDefaultLocale(): string
     {
         if (class_exists(Localization::class)) {
-            $defaultLocale = Localization::where('is_default', true)
+            $defaultLocale = Localization::query()
+                ->where('is_default', true)
                 ->where('is_active_admin', true)
                 ->first();
 
@@ -39,7 +40,8 @@ class ListMediaCollections extends ListRecords
                 return $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
             }
 
-            $firstActiveLocale = Localization::where('is_active_admin', true)
+            $firstActiveLocale = Localization::query()
+                ->where('is_active_admin', true)
                 ->first();
 
             if ($firstActiveLocale) {

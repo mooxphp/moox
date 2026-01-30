@@ -4,10 +4,15 @@ namespace Moox\Media\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Localization\Models\Localization;
 
+/**
+ * @method static Builder whereTranslation(string $key, mixed $value, ?string $locale = null)
+ * @method static static create(array $attributes = [])
+ */
 class MediaCollection extends Model implements TranslatableContract
 {
     use Translatable;
@@ -47,13 +52,14 @@ class MediaCollection extends Model implements TranslatableContract
 
     public static function ensureUncategorizedExists()
     {
-        if (static::count() > 0) {
+        if (static::query()->count() > 0) {
             return;
         }
 
         $defaultLocale = null;
         if (class_exists(Localization::class)) {
-            $localization = Localization::where('is_default', true)
+            $localization = Localization::query()
+                ->where('is_default', true)
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();

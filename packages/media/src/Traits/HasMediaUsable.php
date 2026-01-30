@@ -10,7 +10,8 @@ trait HasMediaUsable
     {
         static::deleting(function ($model) {
             if (method_exists($model, 'isForceDeleting') && $model->isForceDeleting()) {
-                MediaUsable::where('media_usable_id', $model->id)
+                MediaUsable::query()
+                    ->where('media_usable_id', $model->id)
                     ->where('media_usable_type', get_class($model))
                     ->delete();
 
@@ -18,7 +19,8 @@ trait HasMediaUsable
             }
 
             if (! in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($model))) {
-                MediaUsable::where('media_usable_id', $model->id)
+                MediaUsable::query()
+                    ->where('media_usable_id', $model->id)
                     ->where('media_usable_type', get_class($model))
                     ->delete();
             }
