@@ -10,6 +10,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Moox\Prompts\Support\PromptFlowRunner;
@@ -784,7 +785,7 @@ class RunCommandComponent extends Component implements HasForms
             return $execution->createdBy->is($user);
         } catch (\Throwable $e) {
             // On error, deny access for security
-            \Log::warning('Error checking flow access', [
+            Log::warning('Error checking flow access', [
                 'flow_id' => $state->flowId,
                 'error' => $e->getMessage(),
             ]);

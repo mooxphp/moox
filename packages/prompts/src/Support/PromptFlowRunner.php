@@ -5,6 +5,7 @@ namespace Moox\Prompts\Support;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Moox\Prompts\Models\CommandExecution;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -160,7 +161,7 @@ class PromptFlowRunner
             }
         } catch (\Throwable $e) {
             // Log error for debugging
-            \Log::error('Failed to ensure command execution exists', [
+            Log::error('Failed to ensure command execution exists', [
                 'error' => $e->getMessage(),
                 'flow_id' => $state->flowId ?? null,
             ]);
@@ -201,7 +202,7 @@ class PromptFlowRunner
             ]);
         } catch (\Throwable $e) {
             // Log error for debugging
-            \Log::error('Failed to update command execution as completed', [
+            Log::error('Failed to update command execution as completed', [
                 'error' => $e->getMessage(),
                 'flow_id' => $state->flowId ?? null,
             ]);
@@ -232,7 +233,7 @@ class PromptFlowRunner
             ]);
         } catch (\Throwable $e) {
             // Log error for debugging
-            \Log::error('Failed to update command execution as failed', [
+            Log::error('Failed to update command execution as failed', [
                 'error' => $e->getMessage(),
                 'flow_id' => $state->flowId ?? null,
             ]);
