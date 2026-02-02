@@ -942,20 +942,27 @@ class MediaResource extends Resource
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
                             ->modalIcon('heroicon-m-trash')
-                            ->modalHeading(function ($record) {
+                            ->modalHeading(function (Media $record) {
                                 $usages = DB::table('media_usables')
-                                    ->where('media_id', $record->id)
+                                    ->where('media_id', $record->getKey())
                                     ->count();
+
+                                $title = $record->getAttribute('title') ?: $record->getAttribute('name');
+                                if ($title === null || $title === '') {
+                                    $first = $record->translations()->first();
+                                    $title = $first ? ($first->getAttribute('title') ?: $first->getAttribute('name')) : null;
+                                }
+                                $title = $title ?: $record->file_name;
 
                                 if ($usages > 0) {
                                     return __('media::fields.delete_linked_file_heading', [
-                                        'title' => $record->title ?: $record->name,
+                                        'title' => $title,
                                         'count' => $usages,
                                         'links' => trans_choice('media::fields.link|links', $usages),
                                     ]);
                                 }
 
-                                return __('media::fields.delete_file_heading', ['title' => $record->title ?: $record->name]);
+                                return __('media::fields.delete_file_heading', ['title' => $title]);
                             })
                             ->modalDescription(function ($record) {
                                 $usages = DB::table('media_usables')
@@ -979,7 +986,7 @@ class MediaResource extends Resource
 
                                 $description[] = __('media::fields.delete_file_description');
 
-                                return new \Illuminate\Support\HtmlString(implode("\n", $description));
+                                return new \Illuminate\Support\HtmlString(implode("\n", array_map(fn ($item) => (string) $item, $description)));
                             })
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
