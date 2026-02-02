@@ -180,7 +180,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                                 ->with('language')
                                 ->first();
 
-                            if ($localization && $localization->language) {
+                            if ($localization) {
                                 $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
                             }
                         }
@@ -193,7 +193,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                         } else {
                             if ($collection->translations->isNotEmpty()) {
                                 $firstTranslation = $collection->translations->first();
-                                $newCollectionName = $firstTranslation !== null ? $firstTranslation->getAttribute('name') : null;
+                                $newCollectionName = $firstTranslation->getAttribute('name');
                             } else {
                                 $newCollectionName = $collection->name ?? null;
                             }
@@ -206,7 +206,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                         $media->collection_name = null;
                     }
                 }
-            } elseif ($media->isDirty('media_collection_id') && ! $media->media_collection_id) {
+            } elseif ($media->isDirty('media_collection_id')) {
                 $media->collection_name = null;
             }
         });

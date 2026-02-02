@@ -368,7 +368,7 @@ class MediaResource extends Resource
 
                                             if (empty($name)) {
                                                 $anyTranslation = $collection->translations()->whereNotNull('name')->first();
-                                                $name = $anyTranslation?->name ?? 'Collection #'.$collection->id;
+                                                $name = $anyTranslation->name ?? 'Collection #'.$collection->getKey();
                                             }
                                         }
 
@@ -401,7 +401,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->name ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('name') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -423,7 +423,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->title ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('title') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -445,7 +445,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->alt ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('alt') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -467,7 +467,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->description ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('description') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -495,7 +495,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->internal_note ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('internal_note') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {

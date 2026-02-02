@@ -67,7 +67,7 @@ class MediaCollection extends Model implements TranslatableContract
                 ->with('language')
                 ->first();
 
-            if ($localization && $localization->language) {
+            if ($localization) {
                 $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
             }
         }
