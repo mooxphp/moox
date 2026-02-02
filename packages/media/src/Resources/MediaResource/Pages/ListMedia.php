@@ -40,7 +40,7 @@ class ListMedia extends BaseListDrafts
             ->first();
 
         $defaultLang = $defaultLocale
-            ? ($defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language?->alpha2)
+            ? ($defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2)
             : config('app.locale');
 
         $this->lang = request()->query('lang', $defaultLang);
@@ -148,7 +148,7 @@ class ListMedia extends BaseListDrafts
                                             ->with('language')
                                             ->first();
 
-                                        if ($defaultLocale && $defaultLocale->language) {
+                                        if ($defaultLocale) {
                                             $defaultLang = $defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2;
                                             $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
                                             if ($fallbackTranslation && ! empty($fallbackTranslation->name)) {
@@ -225,7 +225,7 @@ class ListMedia extends BaseListDrafts
                                     ->with('language')
                                     ->first();
 
-                                if ($localization && $localization->language) {
+                                if ($localization) {
                                     $defaultLang = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
                                 }
 
@@ -237,13 +237,15 @@ class ListMedia extends BaseListDrafts
                                     $collectionName = $collection->translations->first()->getAttribute('name') ?? __('media::fields.uncategorized');
                                 } elseif (method_exists($collection, 'translate')) {
                                     $translation = $collection->translate($defaultLang);
-                                    $collectionName = $translation?->name ?? __('media::fields.uncategorized');
+                                    $collectionName = $translation !== null ? ($translation->getAttribute('name') ?? __('media::fields.uncategorized')) : __('media::fields.uncategorized');
                                 }
                             }
 
                             $defaultLang = optional(Localization::query()
                                 ->where('is_default', true)
                                 ->first()?->language)->alpha2 ?? config('app.locale');
+
+                            $uploadLang = $this->lang ?? $defaultLang;
 
                             foreach ($state as $tempFile) {
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -274,7 +276,7 @@ class ListMedia extends BaseListDrafts
                                 }
 
                                 $previousLocale = app()->getLocale();
-                                app()->setLocale($defaultLang);
+                                app()->setLocale($uploadLang);
 
                                 $model = new Media;
                                 $model->exists = true;
@@ -289,8 +291,11 @@ class ListMedia extends BaseListDrafts
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->title = $title;
-                                $media->alt = $title;
+                                $translation = $media->translateOrNew($uploadLang);
+                                $translation->setAttribute('name', $fileName);
+                                $translation->setAttribute('title', $title);
+                                $translation->setAttribute('alt', $title);
+                                $translation->save();
                                 /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with user()) */
                                 $user = auth()->user();
                                 $media->uploader_type = $user ? get_class($user) : null;

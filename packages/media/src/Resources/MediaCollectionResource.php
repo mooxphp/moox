@@ -109,7 +109,7 @@ class MediaCollectionResource extends Resource
                                 ->with('language')
                                 ->first();
 
-                            if ($defaultLocale && $defaultLocale->language) {
+                            if ($defaultLocale) {
                                 $defaultLang = $defaultLocale->language->alpha2;
                                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
                                 if ($fallbackTranslation && $fallbackTranslation->name) {
