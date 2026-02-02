@@ -66,16 +66,19 @@ class JobManagerProvider extends ServiceProvider
             'status' => 'running',
         ]);
 
-        JobManager::query()
+        /** @var \Illuminate\Support\Collection<int, JobManager> $others */
+        $others = JobManager::query()
             ->where('id', '!=', $monitor->getKey())
             ->where('job_id', $jobId)
             ->where('failed', false)
             ->whereNull('finished_at')
-            ->each(function (JobManager $monitor): void {
-                $monitor->finished_at = now();
-                $monitor->failed = true;
-                $monitor->save();
-            });
+            ->get();
+
+        $others->each(function (JobManager $monitor): void {
+            $monitor->finished_at = now();
+            $monitor->failed = true;
+            $monitor->save();
+        });
     }
 
     /**
