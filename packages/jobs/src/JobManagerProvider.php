@@ -67,7 +67,7 @@ class JobManagerProvider extends ServiceProvider
         ]);
 
         JobManager::query()
-            ->where('id', '!=', $monitor->id)
+            ->where('id', '!=', $monitor->getKey())
             ->where('job_id', $jobId)
             ->where('failed', false)
             ->whereNull('finished_at')
@@ -83,6 +83,7 @@ class JobManagerProvider extends ServiceProvider
      */
     protected static function jobFinished(JobContract $job, bool $failed = false, ?Throwable $exception = null): void
     {
+        /** @var JobManager|null $monitor */
         $monitor = JobManager::query()
             ->where('job_id', self::getJobId($job))
             ->where('attempt', $job->attempts())
