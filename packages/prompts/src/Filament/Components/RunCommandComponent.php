@@ -2,24 +2,25 @@
 
 namespace Moox\Prompts\Filament\Components;
 
-use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Placeholder;
+use Throwable;
+use Livewire\Component;
+use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Illuminate\Support\Facades\Validator;
-use Livewire\Component;
-use Moox\Prompts\Support\PromptFlowRunner;
-use Moox\Prompts\Support\PromptFlowStateStore;
-use Moox\Prompts\Support\PromptParamsHelper;
-use Moox\Prompts\Support\PromptResponseStore;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Textarea;
 use Moox\Prompts\Support\PromptRuntime;
+use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Validator;
+use Filament\Forms\Components\Placeholder;
+use Moox\Prompts\Support\PromptFlowRunner;
 use Moox\Prompts\Support\WebCommandRunner;
 use Moox\Prompts\Support\WebPromptRuntime;
-use Throwable;
+use Moox\Prompts\Support\PromptParamsHelper;
+use Moox\Prompts\Support\PromptResponseStore;
+use Moox\Prompts\Support\PromptFlowStateStore;
+use Filament\Forms\Concerns\InteractsWithForms;
 
 class RunCommandComponent extends Component implements HasForms
 {
@@ -784,7 +785,7 @@ class RunCommandComponent extends Component implements HasForms
             return $execution->createdBy->is($user);
         } catch (\Throwable $e) {
             // On error, deny access for security
-            \Log::warning('Error checking flow access', [
+            Log::warning('Error checking flow access', [
                 'flow_id' => $state->flowId,
                 'error' => $e->getMessage(),
             ]);

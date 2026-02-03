@@ -32,7 +32,6 @@ class CommandExecution extends Model
         'cancelled_at' => 'datetime',
         'steps' => 'array',
         'step_outputs' => 'array',
-        'context' => 'array',
     ];
 
     public function createdBy()

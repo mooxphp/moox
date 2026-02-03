@@ -46,9 +46,17 @@ return [
         'step_outputs' => 'Step Outputs',
         'no_step_outputs' => 'No step outputs available',
         'view_error' => 'View Error',
+        'view_context' => 'View Context',
+        'view_steps' => 'View Steps',
+        'view_step_outputs' => 'View Step Outputs',
         'close' => 'Close',
         'no_error_message' => 'No error message available',
+        'no_context' => 'No context available',
+        'no_steps' => 'No steps available',
         'copy_error' => 'Copy Error',
+        'key' => 'Key',
+        'value' => 'Value',
+        'no_data' => 'No data available',
     ],
 
     'errors' => [

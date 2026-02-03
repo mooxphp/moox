@@ -3,6 +3,7 @@
 namespace Moox\Prompts\Support;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class PromptFlowStateStore
@@ -97,7 +98,7 @@ class PromptFlowStateStore
                 }
             } catch (\Throwable $e) {
                 // Log error for debugging
-                \Log::error('Failed to mark command execution as cancelled', [
+                Log::error('Failed to mark command execution as cancelled', [
                     'error' => $e->getMessage(),
                     'flow_id' => $flowId,
                     'trace' => $e->getTraceAsString(),

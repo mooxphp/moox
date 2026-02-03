@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\HtmlString;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource;
+use Moox\Prompts\Models\CommandExecution;
 
 class ViewCommandExecution extends ViewRecord
 {
