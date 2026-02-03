@@ -8,20 +8,18 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Actions as ActionsComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 use Moox\Prompts\Models\CommandExecution;
 
@@ -88,7 +86,7 @@ class CommandExecutionResource extends Resource
                         ->label(__('moox-prompts::prompts.ui.cancelled_at_step'))
                         ->disabled()
                         ->visible(fn (Get $get): bool => $get('status') === 'cancelled'),
-                        ])
+                ])
                 ->columns(2)
                 ->columnSpanFull(),
             ActionsComponent::make([
@@ -101,7 +99,7 @@ class CommandExecutionResource extends Resource
                         if (is_string($context)) {
                             $context = json_decode($context, true) ?? [];
                         }
-                        if (is_array($context) && !empty($context)) {
+                        if (is_array($context) && ! empty($context)) {
                             $formatted = [];
                             foreach ($context as $key => $value) {
                                 if (is_array($value)) {
@@ -112,10 +110,12 @@ class CommandExecutionResource extends Resource
                                     $formatted[$key] = (string) $value;
                                 }
                             }
+
                             return view('moox-prompts::filament.components.key-value-modal', [
                                 'data' => $formatted,
                             ]);
                         }
+
                         return new HtmlString('<p class="text-gray-500">'.__('moox-prompts::prompts.ui.no_context').'</p>');
                     })
                     ->modalWidth('4xl')
@@ -131,11 +131,12 @@ class CommandExecutionResource extends Resource
                         if (is_string($steps)) {
                             $steps = json_decode($steps, true) ?? [];
                         }
-                        if (is_array($steps) && !empty($steps)) {
+                        if (is_array($steps) && ! empty($steps)) {
                             return view('moox-prompts::filament.components.key-value-modal', [
                                 'data' => $steps,
                             ]);
                         }
+
                         return new HtmlString('<p class="text-gray-500">'.__('moox-prompts::prompts.ui.no_steps').'</p>');
                     })
                     ->modalWidth('4xl')
@@ -151,11 +152,12 @@ class CommandExecutionResource extends Resource
                         if (is_string($stepOutputs)) {
                             $stepOutputs = json_decode($stepOutputs, true) ?? [];
                         }
-                        if (is_array($stepOutputs) && !empty($stepOutputs)) {
+                        if (is_array($stepOutputs) && ! empty($stepOutputs)) {
                             return view('moox-prompts::filament.components.key-value-modal', [
                                 'data' => $stepOutputs,
                             ]);
                         }
+
                         return new HtmlString('<p class="text-gray-500">'.__('moox-prompts::prompts.ui.no_step_outputs').'</p>');
                     })
                     ->modalWidth('4xl')
