@@ -74,4 +74,20 @@
             <x-filament::loading-indicator />
         </x-filament::section>
     @endif
+
+    {{-- Buttons inside component so cancel() runs first and saves cancelled state before page resets --}}
+    @if($flowId && !$isComplete && !$error)
+        <div style="margin-top: 1rem;">
+            <x-filament::button wire:click="cancel" type="button" color="warning">
+                {{ __('moox-prompts::prompts.ui.back_to_selection') }}
+            </x-filament::button>
+        </div>
+    @endif
+    @if($isComplete)
+        <div style="margin-top: 1rem;" x-data x-on:click="$dispatch('prompts-flow-cancelled')">
+            <x-filament::button type="button" color="primary">
+                {{ __('moox-prompts::prompts.ui.start_new_command') }}
+            </x-filament::button>
+        </div>
+    @endif
 </div>

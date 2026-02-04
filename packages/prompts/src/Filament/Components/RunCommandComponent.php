@@ -725,16 +725,28 @@ class RunCommandComponent extends Component implements HasForms
     public function cancel(): void
     {
         if ($this->flowId) {
-            // Security: Validate user has access to this flow before cancelling
             $stateStore = app(PromptFlowStateStore::class);
             $state = $stateStore->get($this->flowId);
-            if ($state && $this->hasAccessToFlow($state)) {
-                $stateStore->reset($this->flowId);
+            
+            // Get command name from state or component property
+            $commandName = $state?->commandName ?? $this->command;
+            
+            // Security: only allow cancel if user has access (or no execution record yet)
+            if ($state === null || $this->hasAccessToFlow($state)) {
+                // Pass command name so we can create cancelled record even when state is missing from cache
+                $stateStore->reset($this->flowId, $commandName);
             }
+            
+            $flowIdToReset = $this->flowId;
             $this->flowId = null;
+        } else {
+            $flowIdToReset = null;
         }
 
         $this->resetComponentState();
+
+        // Tell the page to switch back to command selection (after we saved cancelled state)
+        $this->dispatch('prompts-flow-cancelled');
     }
 
     /**

@@ -53,14 +53,7 @@
             <div style="margin-top: 1rem;" 
                  x-data
                  x-on:command-completed.window="$wire.set('commandCompleted', true)"
-                 x-on:cancel-command.window="$wire.set('commandCompleted', false)">
-                <x-filament::button 
-                    wire:click="resetCommand"
-                    x-on:click="$dispatch('cancel-command')"
-                    :color="$this->getButtonColor()"
-                    wire:key="button-{{ $this->getButtonKey() }}">
-                    {{ $this->getButtonText() }}
-            </x-filament::button>
+                 x-on:prompts-flow-cancelled.window="$wire.resetCommand()">
             </div>
         </div>
     @endif
