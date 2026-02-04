@@ -54,7 +54,7 @@ class PromptFlowStateStore
 
             // Reorder step_outputs to match the execution order (steps array order)
             $orderedStepOutputs = [];
-            if ($state && !empty($steps)) {
+            if ($state && ! empty($steps)) {
                 foreach ($steps as $step) {
                     if (isset($stepOutputs[$step])) {
                         $orderedStepOutputs[$step] = $stepOutputs[$step];
@@ -62,7 +62,7 @@ class PromptFlowStateStore
                 }
                 // Add any remaining steps that might not be in the steps array
                 foreach ($stepOutputs as $step => $output) {
-                    if (!isset($orderedStepOutputs[$step])) {
+                    if (! isset($orderedStepOutputs[$step])) {
                         $orderedStepOutputs[$step] = $output;
                     }
                 }
