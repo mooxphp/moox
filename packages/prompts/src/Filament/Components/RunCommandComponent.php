@@ -22,11 +22,6 @@ use Moox\Prompts\Support\WebCommandRunner;
 use Moox\Prompts\Support\WebPromptRuntime;
 use Throwable;
 
-/**
- * $form kommt aus dem Trait InteractsWithForms (Filament). Für PHPStan ohne Filament-Scope als object typisiert.
- *
- * @property object $form
- */
 class RunCommandComponent extends Component implements HasForms
 {
     use InteractsWithForms;
@@ -406,11 +401,15 @@ class RunCommandComponent extends Component implements HasForms
                         $params = $this->currentPrompt['params'] ?? [];
                         $options = $params[1] ?? [];
                         $answer = array_keys($options);
-                    } elseif ($answer !== '') {
+                    } elseif ($answer !== null && $answer !== '') {
                         $answer = [$answer];
                     } else {
                         $answer = [];
                     }
+                }
+
+                if (! is_array($answer)) {
+                    $answer = [];
                 }
             }
 
@@ -467,7 +466,7 @@ class RunCommandComponent extends Component implements HasForms
         };
 
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === '') {
+            if ($value === null || $value === false || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
@@ -649,7 +648,7 @@ class RunCommandComponent extends Component implements HasForms
 
         $rules = [];
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === '') {
+            if ($value === null || $value === false || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
@@ -777,7 +776,7 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         try {
-            $execution = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $state->flowId)->first();
+            $execution = \Moox\Prompts\Models\CommandExecution::where('flow_id', $state->flowId)->first();
 
             // If no execution record exists, allow access (legacy flow or just started)
             if (! $execution) {
