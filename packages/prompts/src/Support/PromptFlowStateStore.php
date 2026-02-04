@@ -60,40 +60,10 @@ class PromptFlowStateStore
                         $orderedStepOutputs[$step] = $stepOutputs[$step];
                     }
                 }
-
-                // Try to update existing record - only if it's not already completed or failed
-                $updated = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $flowId)
-                    ->whereNotIn('status', ['cancelled', 'completed', 'failed'])
-                    ->update([
-                        'status' => 'cancelled',
-                        'cancelled_at' => now(),
-                        'cancelled_at_step' => $cancelledAtStep,
-                        'step_outputs' => $state->stepOutputs ?? [],
-                        'context' => $state->context ?? [],
-                    ]);
-
-                // If no record exists yet, create one with cancelled status
-                if ($updated === 0 && $state) {
-                    $command = app(\Illuminate\Contracts\Console\Kernel::class)->all()[$state->commandName] ?? null;
-                    if ($command) {
-                        $execution = new \Moox\Prompts\Models\CommandExecution([
-                            'flow_id' => $flowId,
-                            'command_name' => $state->commandName,
-                            'command_description' => $command->getDescription(),
-                            'status' => 'cancelled',
-                            'started_at' => now(),
-                            'cancelled_at' => now(),
-                            'cancelled_at_step' => $cancelledAtStep,
-                            'steps' => $state->steps ?? [],
-                            'step_outputs' => $state->stepOutputs ?? [],
-                            'context' => $state->context ?? [],
-                        ]);
-
-                        if (\Illuminate\Support\Facades\Auth::check()) {
-                            $execution->createdBy()->associate(\Illuminate\Support\Facades\Auth::user());
-                        }
-
-                        $execution->save();
+                // Add any remaining steps that might not be in the steps array
+                foreach ($stepOutputs as $step => $output) {
+                    if (! isset($orderedStepOutputs[$step])) {
+                        $orderedStepOutputs[$step] = $output;
                     }
                 }
             } else {
@@ -140,10 +110,6 @@ class PromptFlowStateStore
 
                 $now = now();
                 DB::table('command_executions')->insertGetId([
-            } catch (\Throwable $e) {
-                // Log error for debugging
-                Log::error('Failed to mark command execution as cancelled', [
-                    'error' => $e->getMessage(),
                     'flow_id' => $flowId,
                     'command_name' => $name,
                     'command_description' => $description,
