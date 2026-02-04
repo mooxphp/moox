@@ -50,8 +50,8 @@ class WebPromptRuntime implements PromptRuntime
                 return $value;
             }
 
-            // Für Confirm-Prompts: Wenn nichts ausgewählt wurde (null/leer),
-            // den Default-Wert wie in der CLI verwenden.
+            // For confirm prompts: if nothing was selected (null/empty),
+            // fall back to the default value, same as in CLI.
             if ($promptData['method'] === 'confirm' && ($value === null || $value === '')) {
                 $default = $promptData['params'][1] ?? false;
 

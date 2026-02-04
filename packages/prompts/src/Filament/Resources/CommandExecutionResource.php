@@ -152,13 +152,34 @@ class CommandExecutionResource extends Resource
                         if (is_string($stepOutputs)) {
                             $stepOutputs = json_decode($stepOutputs, true) ?? [];
                         }
-                        if (is_array($stepOutputs) && ! empty($stepOutputs)) {
-                            return view('moox-prompts::filament.components.key-value-modal', [
-                                'data' => $stepOutputs,
-                            ]);
+                        if (! is_array($stepOutputs) || empty($stepOutputs)) {
+                            return new HtmlString('<p class="text-gray-500">'.__('moox-prompts::prompts.ui.no_step_outputs').'</p>');
                         }
 
-                        return new HtmlString('<p class="text-gray-500">'.__('moox-prompts::prompts.ui.no_step_outputs').'</p>');
+                        $steps = $record->steps ?? [];
+                        if (is_string($steps)) {
+                            $steps = json_decode($steps, true) ?? [];
+                        }
+
+                        if (is_array($steps) && ! empty($steps)) {
+                            $ordered = [];
+                            foreach ($steps as $step) {
+                                if (array_key_exists($step, $stepOutputs)) {
+                                    $ordered[$step] = $stepOutputs[$step];
+                                }
+                            }
+                            foreach ($stepOutputs as $key => $value) {
+                                if (! array_key_exists($key, $ordered)) {
+                                    $ordered[$key] = $value;
+                                }
+                            }
+                        } else {
+                            $ordered = $stepOutputs;
+                        }
+
+                        return view('moox-prompts::filament.components.key-value-modal', [
+                            'data' => $ordered,
+                        ]);
                     })
                     ->modalWidth('4xl')
                     ->modalSubmitAction(false)
