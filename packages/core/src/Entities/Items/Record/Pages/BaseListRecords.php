@@ -44,6 +44,7 @@ abstract class BaseListRecords extends ListRecords
                 ->visible(function (): bool {
                     /** @var class-string<BaseRecordModel> $model */
                     $model = $this->getModel();
+
                     return $this->activeTab === 'deleted' && $model::onlyTrashed()->exists();
                 }),
         ];

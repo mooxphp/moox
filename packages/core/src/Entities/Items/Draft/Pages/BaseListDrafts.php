@@ -4,12 +4,12 @@ namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Localization\Models\Localization;
-use Moox\Core\Traits\CanResolveResourceClass;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\CanResolveResourceClass;
+use Moox\Localization\Models\Localization;
 
 abstract class BaseListDrafts extends ListRecords
 {
@@ -53,7 +53,7 @@ abstract class BaseListDrafts extends ListRecords
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->action(function (): void {
-                     /** @var class-string<BaseDraftModel> $model */
+                    /** @var class-string<BaseDraftModel> $model */
                     $model = $this->getModel();
                     $trashedCount = $model::onlyTrashed()->count();
                     $model::onlyTrashed()->forceDelete();
@@ -72,6 +72,7 @@ abstract class BaseListDrafts extends ListRecords
                     }
                     /** @var class-string<BaseDraftModel> $model */
                     $model = $this->getModel();
+
                     return $model::onlyTrashed()->exists();
                 }), ];
     }
