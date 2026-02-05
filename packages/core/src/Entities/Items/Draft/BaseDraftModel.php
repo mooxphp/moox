@@ -16,6 +16,9 @@ use Illuminate\Support\Str;
  * @property \Carbon\Carbon|null $published_at
  * @property \Carbon\Carbon|null $to_unpublish_at
  * @property \Carbon\Carbon|null $unpublished_at
+ *
+ * @method BaseDraftTranslationModel|null translate(string|null $locale = null, bool $withFallback = false)
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany<BaseDraftTranslationModel, $this> translations()
  */
 abstract class BaseDraftModel extends Model implements TranslatableContract
 {

@@ -25,7 +25,6 @@ trait BaseInResource
 {
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
-        /** @phpstan-ignore-next-line */
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
             $query = static::addTaxonomyRelationsToQuery($query);
         }

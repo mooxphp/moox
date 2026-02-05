@@ -52,14 +52,13 @@ abstract class BaseViewDraft extends ViewRecord
     public function mount($record): void
     {
         $defaultLocalization = Localization::where('is_default', true)->first();
-        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+        $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
 
         $this->lang = request()->query('lang', $defaultLang);
         parent::mount($record);
 
         if ($this->record && method_exists($this->record, 'translations')) {
-            $isAdminContext = request()->is('admin/*') || request()->is('filament/*') ||
-                method_exists($this, 'getResource');
+            $isAdminContext = request()->is('admin/*') || request()->is('filament/*');
 
             if ($isAdminContext) {
                 $localization = Localization::where('locale_variant', $this->lang)

@@ -297,7 +297,7 @@ trait HasPagesTaxonomy
     {
         $record = $this->getRecord();
 
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if (! method_exists($record, 'getResourceName')) {
             return $data;
         }
 
@@ -328,8 +328,7 @@ trait HasPagesTaxonomy
                     ->pluck($modelTable.'.id')
                     ->toArray();
 
-                // Ensure we always have a valid array
-                $data[$taxonomy] = is_array($tags) ? $tags : [];
+                $data[$taxonomy] = $tags;
             }
         } catch (\Exception $e) {
             // If taxonomy service fails, just continue without taxonomies
@@ -345,7 +344,7 @@ trait HasPagesTaxonomy
     {
         $record = $this->getRecord();
 
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if (! method_exists($record, 'getResourceName')) {
             return;
         }
 
@@ -374,7 +373,7 @@ trait HasPagesTaxonomy
      */
     protected function saveTaxonomyDataForRecord(Model $record, array $data): void
     {
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if (! method_exists($record, 'getResourceName')) {
             return;
         }
 

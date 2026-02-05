@@ -2,13 +2,14 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Resources\Pages\EditRecord;
+use Moox\Localization\Models\Localization;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
-use Moox\Localization\Models\Localization;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 /**
  * @phpstan-type TranslatableModel = Model&TranslatableContract
@@ -29,14 +30,13 @@ abstract class BaseEditDraft extends EditRecord
     public function mount($record): void
     {
         $defaultLocalization = Localization::where('is_default', true)->first();
-        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+        $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
 
         $this->lang = request()->query('lang', $defaultLang);
         parent::mount($record);
 
-        if ($this->record && method_exists($this->record, 'translations')) {
-            $isAdminContext = request()->is('admin/*') || request()->is('filament/*') ||
-            method_exists($this, 'getResource');
+        if ($this->record && $this->record instanceof Model && method_exists($this->record, 'translations')) {
+            $isAdminContext = request()->is('admin/*') || request()->is('filament/*');
 
             if ($isAdminContext) {
                 $localization = Localization::where('locale_variant', $this->lang)
@@ -118,7 +118,7 @@ abstract class BaseEditDraft extends EditRecord
 
             if (! $translation) {
                 $translation = $record->translations()->make([
-                    $relation->getForeignKeyName() => $record->id,
+                    $relation->getForeignKeyName() => $record->getKey(),
                     'locale' => $this->lang,
                 ]);
             }
@@ -247,7 +247,7 @@ abstract class BaseEditDraft extends EditRecord
         $title = $entity.' - '.__('core::core.translation_create');
 
         $defaultLocalization = Localization::where('is_default', true)->first();
-        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+        $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
         $fallbackTranslation = $this->record->translations()->where('locale', $defaultLang)->first();
 
         if ($fallbackTranslation && $fallbackTranslation->title) {

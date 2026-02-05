@@ -59,11 +59,6 @@ class MooxInstallCommand extends FlowCommand
 
     protected ?InstallerRegistry $registry = null;
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     public function promptFlowSteps(): array
     {
         return [
@@ -180,7 +175,7 @@ class MooxInstallCommand extends FlowCommand
             return $result;
         }
 
-        $debug = $this->hasOption('debug') && $this->option('debug');
+        $debug = (bool) $this->option('debug');
 
         foreach ($mooxPackages as $packageName) {
             $providerClass = $this->getProviderClassFromPackage($packageName);
@@ -223,7 +218,7 @@ class MooxInstallCommand extends FlowCommand
         $this->applySkipOptions($this->registry);
 
         // Apply force option if set
-        if ($this->hasOption('force') && $this->option('force')) {
+        if ($this->option('force')) {
             $this->registry->configureAll(['force' => true, 'skip_existing' => false]);
         }
 
@@ -354,7 +349,7 @@ class MooxInstallCommand extends FlowCommand
             label: 'Select asset types to install:',
             options: array_keys($typeOptions),
             default: array_keys($typeOptions),
-            scroll: min(10, count($typeOptions)),
+            scroll: (string) min(10, count($typeOptions)),
             required: false
         );
 
