@@ -403,12 +403,11 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             }
         }
 
-            File::put($panelPath, $content);
-            foreach ($pluginsToAdd as $plugin) {
-                info("Registered plugin: {$plugin}");
-            }
-            info('Plugins registered in panel');
-        
+        File::put($panelPath, $content);
+        foreach ($pluginsToAdd as $plugin) {
+            info("Registered plugin: {$plugin}");
+        }
+        info('Plugins registered in panel');
     }
 
     /**

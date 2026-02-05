@@ -2,14 +2,13 @@
 
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\EditRecord;
-use Moox\Localization\Models\Localization;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Moox\Localization\Models\Localization;
 
 /**
  * @phpstan-type TranslatableModel = Model&TranslatableContract

@@ -183,7 +183,7 @@ abstract class BaseResource extends Resource
             ->action(function (\Illuminate\Database\Eloquent\Model $record, $livewire) {
                 if (method_exists($record, 'translations')) {
                     DB::table($record->getTable())
-                    ->where($record->getKeyName(), $record->getKey())
+                        ->where($record->getKeyName(), $record->getKey())
                         ->update(['deleted_at' => null]);
 
                     $translations = $record->translations()->withTrashed()->get();
