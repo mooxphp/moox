@@ -413,6 +413,11 @@ return [
             'path' => $public_base_path.'/trainings',
             'type' => 'public',
         ],
+        'tree' => [
+            'active' => true,
+            'path' => $public_base_path.'/tree',
+            'type' => 'public',
+        ],
         'user' => [
             'active' => true,
             'path' => $public_base_path.'/user',

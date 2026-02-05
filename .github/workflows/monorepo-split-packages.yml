@@ -75,6 +75,7 @@ jobs:
           - tag
           - taxonomy
           - trainings
+          - tree
           - user
           - user-device
           - user-session
