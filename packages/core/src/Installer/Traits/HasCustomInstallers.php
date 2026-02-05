@@ -45,9 +45,7 @@ trait HasCustomInstallers
     protected function registerCustomInstallers(InstallerRegistry $registry): void
     {
         foreach ($this->getCustomInstallers() as $installer) {
-            if ($installer instanceof AssetInstallerInterface) {
-                $registry->register($installer->getType(), $installer);
-            }
+            $registry->register($installer->getType(), $installer);
         }
     }
 

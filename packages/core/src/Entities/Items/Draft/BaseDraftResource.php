@@ -211,7 +211,7 @@ class BaseDraftResource extends BaseResource
                     return $translation->title;
                 }
                 $defaultLocalization = Localization::where('is_default', true)->first();
-                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+                $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
@@ -243,7 +243,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = static::resolveCurrentLang($livewire);
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                return $translation?->slug ?? '';
+                return $translation->slug ?? '';
             });
     }
 
@@ -285,7 +285,7 @@ class BaseDraftResource extends BaseResource
             return TranslationStatus::DELETED->value;
         }
 
-        return $translation->translation_status?->value ?? TranslationStatus::DRAFT->value;
+        return $translation->translation_status->value ?? TranslationStatus::DRAFT->value;
     }
 
     protected static function getDefaultStatus(): string
@@ -404,7 +404,7 @@ class BaseDraftResource extends BaseResource
                     $data['value'] ?? null,
                     function (Builder $query, $value): Builder {
                         $defaultLocalization = Localization::where('is_default', true)->first();
-                        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+                        $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
                         $currentLang = request()->query('lang') ?? request()->get('lang') ?? $defaultLang;
 
                         if (! $value) {
@@ -521,6 +521,6 @@ class BaseDraftResource extends BaseResource
         // 4) Fallback to configured default localization or app locale
         $defaultLocalization = Localization::where('is_default', true)->first();
 
-        return $defaultLocalization?->locale_variant ?? app()->getLocale();
+        return $defaultLocalization->locale_variant ?? app()->getLocale();
     }
 }

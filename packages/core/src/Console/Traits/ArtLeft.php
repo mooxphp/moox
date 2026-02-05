@@ -4,6 +4,7 @@ namespace Moox\Core\Console\Traits;
 
 use function Laravel\Prompts\info;
 
+/** @phpstan-ignore-next-line trait.unused */
 trait ArtLeft
 {
     public function art(): void
