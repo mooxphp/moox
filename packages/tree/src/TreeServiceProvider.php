@@ -15,10 +15,10 @@ class TreeServiceProvider extends MooxServiceProvider
     public function configureMoox(Package $package): void
     {
         $package
-            ->name('draft')
+            ->name('tree')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations('create_drafts_table', 'create_draft_translations_table')
+            ->hasMigrations('create_trees_table')
             ->hasCommands();
     }
 }
