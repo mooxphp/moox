@@ -22,7 +22,6 @@ use function Moox\Prompts\note;
  */
 class DefaultEnglishLocalizationInstaller extends AbstractAssetInstaller
 {
-    
     private static function defaultEnglishLanguageAttributes(): array
     {
         return [
