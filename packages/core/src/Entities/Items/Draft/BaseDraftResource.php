@@ -10,7 +10,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Draft\Enums\TranslationStatus;
@@ -419,9 +418,6 @@ class BaseDraftResource extends BaseResource
                         }
 
                         if ($value === 'deleted') {
-                            /**
-                             * 
-                             */
                             return $query->whereHas('translations', function ($translationQuery) use ($currentLang) {
                                 $translationQuery->where('locale', $currentLang)
                                     ->where('translation_status', 'deleted')
