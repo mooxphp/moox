@@ -5,9 +5,9 @@ namespace Moox\Media\Forms\Components;
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Schema;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
-use Schema;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -20,7 +20,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         parent::setUp();
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
-            /** @var MediaUsable|null $record */
+            /** @var \Illuminate\Database\Eloquent\Model|null $record */
             $record = $component->getRecord();
             if (! $record) {
                 return;
@@ -32,7 +32,8 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 return $id !== null && $id !== '';
             });
 
-            MediaUsable::where('media_usable_id', $record->id)
+            MediaUsable::query()
+                ->where('media_usable_id', $record->getKey())
                 ->where('media_usable_type', get_class($record))
                 ->whereNotIn('media_id', $mediaIds)
                 ->delete();
@@ -41,15 +42,16 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $index = 1;
 
             foreach ($mediaIds as $mediaId) {
-                $media = Media::where('id', $mediaId)->first();
+                $media = Media::query()->where('id', $mediaId)->first();
 
                 if (! $media) {
                     continue;
                 }
 
+                // @phpstan-ignore-next-line staticMethod.notFound (Eloquent Model::firstOrCreate)
                 MediaUsable::firstOrCreate([
-                    'media_id' => $media->id,
-                    'media_usable_id' => $record->id,
+                    'media_id' => $media->getKey(),
+                    'media_usable_id' => $record->getKey(),
                     'media_usable_type' => get_class($record),
                 ]);
 

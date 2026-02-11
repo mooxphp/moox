@@ -148,7 +148,7 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return number_format(static::getModel()::count());
+        return number_format(static::getModel()::query()->count());
     }
 
     #[Override]

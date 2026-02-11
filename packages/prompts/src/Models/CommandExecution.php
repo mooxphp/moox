@@ -4,6 +4,9 @@ namespace Moox\Prompts\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property object|null $createdBy Relation (morphTo), bei Zugriff geladenes Model oder null
+ */
 class CommandExecution extends Model
 {
     protected $fillable = [

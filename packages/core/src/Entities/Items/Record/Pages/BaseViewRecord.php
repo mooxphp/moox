@@ -3,6 +3,7 @@
 namespace Moox\Core\Entities\Items\Record\Pages;
 
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 

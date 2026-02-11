@@ -314,7 +314,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
     public function mooxInfo(): array
     {
         // Ensure package is initialized (needed when called on fresh instance)
-        if (! isset($this->package) || $this->package === null) {
+        if (! isset($this->package)) {
             $this->package = new Package;
             $this->configurePackage($this->package);
         }
@@ -379,68 +379,37 @@ abstract class MooxServiceProvider extends PackageServiceProvider
             }
         }
 
-        // Build config paths
-        foreach ($configFileNames as $configFileName) {
-            $sourcePath = $packageRoot.$ds.'config'.$ds.$configFileName.'.php';
-            $stubPath = $packageRoot.$ds.'config'.$ds.$configFileName.'.php.stub';
-
-            if (file_exists($sourcePath)) {
-                $configFiles[] = [
-                    'name' => $configFileName,
-                    'source' => $sourcePath,
-                    'target' => config_path($configFileName.'.php'),
-                ];
-            } elseif (file_exists($stubPath)) {
-                $configFiles[] = [
-                    'name' => $configFileName,
-                    'source' => $stubPath,
-                    'target' => config_path($configFileName.'.php'),
-                ];
-            }
-        }
-
-        // Translations with source and target paths
+        // Translations from filesystem
         $translations = [];
-        $translationSourcePath = $packageRoot.$ds.'resources'.$ds.'lang';
-        if (is_dir($translationSourcePath) && ($this->package->hasTranslations ?? false)) {
-            $translations[] = [
-                'source' => $translationSourcePath,
-                'target' => lang_path('vendor'.$ds.$packageName),
-            ];
-        }
-
-        // Migration paths
-        $migrationPaths = [];
-        $migrationSourcePath = $packageRoot.$ds.'database'.$ds.'migrations';
-        if (is_dir($migrationSourcePath)) {
-            foreach ($migrations as $migrationName) {
-                // Check for .php and .stub files
-                $phpFile = $migrationSourcePath.$ds.$migrationName.'.php';
-                $stubFile = $migrationSourcePath.$ds.$migrationName.'.php.stub';
-
-                if (file_exists($phpFile)) {
-                    $migrationPaths[] = [
-                        'name' => $migrationName,
-                        'source' => $phpFile,
-                        'target' => database_path('migrations'.$ds.$migrationName.'.php'),
-                    ];
-                } elseif (file_exists($stubFile)) {
-                    $migrationPaths[] = [
-                        'name' => $migrationName,
-                        'source' => $stubFile,
-                        'target' => database_path('migrations'.$ds.$migrationName.'.php'),
-                    ];
+        $translationPath = $packageRoot.$ds.'resources'.$ds.'lang';
+        if (is_dir($translationPath)) {
+            $langDirs = glob($translationPath.$ds.'*', GLOB_ONLYDIR) ?: [];
+            foreach ($langDirs as $langDir) {
+                $translationFiles = glob($langDir.$ds.'*.php') ?: [];
+                foreach ($translationFiles as $file) {
+                    $translations[] = basename($file, '.php');
                 }
             }
+            $translations = array_unique($translations);
+        }
+
+        // Build publish tags based on Spatie package name
+        // Tags are always generated - publishPackageAssets handles gracefully if nothing to publish
+        $publishTags = [];
+        if ($packageName) {
+            $publishTags = [
+                'config' => $packageName.'-config',
+                'migrations' => $packageName.'-migrations',
+                'translations' => $packageName.'-translations',
+            ];
         }
 
         $mooxInfo = [
             'packageName' => $packageName,
-            'packageRoot' => $packageRoot,
+            'publishTags' => $publishTags,
             'plugins' => $plugins,
             'firstPlugin' => $firstPlugin,
             'migrations' => $migrations,
-            'migrationPaths' => $migrationPaths,
             'seeders' => $seeders,
             'configFiles' => $configFiles,
             'translations' => $translations,

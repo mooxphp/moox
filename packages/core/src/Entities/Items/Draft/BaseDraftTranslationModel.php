@@ -7,6 +7,28 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property \Carbon\Carbon|null $to_publish_at
+ * @property \Carbon\Carbon|null $published_at
+ * @property \Carbon\Carbon|null $to_unpublish_at
+ * @property \Carbon\Carbon|null $unpublished_at
+ * @property \Carbon\Carbon|null $restored_at
+ * @property string|null $translation_status
+ * @property int|null $published_by_id
+ * @property string|null $published_by_type
+ * @property int|null $unpublished_by_id
+ * @property string|null $unpublished_by_type
+ * @property int|null $deleted_by_id
+ * @property string|null $deleted_by_type
+ * @property int|null $restored_by_id
+ * @property string|null $restored_by_type
+ * @property int|null $created_by_id
+ * @property string|null $created_by_type
+ * @property int|null $updated_by_id
+ * @property string|null $updated_by_type
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|static withTrashed(bool $withTrashed = true)
+ */
 abstract class BaseDraftTranslationModel extends Model
 {
     use SoftDeletes;

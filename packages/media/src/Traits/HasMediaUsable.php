@@ -2,15 +2,17 @@
 
 namespace Moox\Media\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use Moox\Media\Models\MediaUsable;
 
 trait HasMediaUsable
 {
-    protected static function bootHasMediaUsable()
+    protected static function bootHasMediaUsable(): void
     {
-        static::deleting(function ($model) {
+        static::deleting(function (Model $model): void {
             if (method_exists($model, 'isForceDeleting') && $model->isForceDeleting()) {
-                MediaUsable::where('media_usable_id', $model->id)
+                MediaUsable::query()
+                    ->where('media_usable_id', $model->getKey())
                     ->where('media_usable_type', get_class($model))
                     ->delete();
 
@@ -18,7 +20,8 @@ trait HasMediaUsable
             }
 
             if (! in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive($model))) {
-                MediaUsable::where('media_usable_id', $model->id)
+                MediaUsable::query()
+                    ->where('media_usable_id', $model->getKey())
                     ->where('media_usable_type', get_class($model))
                     ->delete();
             }

@@ -148,7 +148,7 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
             label: "Select {$this->getType()} to install:",
             options: array_keys($itemOptions),
             default: array_keys($itemOptions),
-            scroll: min(10, count($itemOptions)),
+            scroll: (string) min(10, count($itemOptions)),
             required: false
         );
 

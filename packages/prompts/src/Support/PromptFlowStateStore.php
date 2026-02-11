@@ -48,9 +48,9 @@ class PromptFlowStateStore
         }
 
         try {
-            $stepOutputs = $state?->stepOutputs ?? [];
-            $context = $state?->context ?? [];
-            $steps = $state?->steps ?? [];
+            $stepOutputs = $state !== null ? $state->stepOutputs : [];
+            $context = $state !== null ? $state->context : [];
+            $steps = $state !== null ? $state->steps : [];
 
             // Reorder step_outputs to match the execution order (steps array order)
             $orderedStepOutputs = [];
@@ -96,7 +96,7 @@ class PromptFlowStateStore
 
             // If no record exists, create one (always when we have state or commandName from component)
             if ($updated === 0) {
-                $name = $state?->commandName ?? $commandName;
+                $name = $state !== null ? $state->commandName : $commandName;
                 if ($name === null || $name === '') {
                     return;
                 }

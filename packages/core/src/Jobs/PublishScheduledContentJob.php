@@ -52,7 +52,7 @@ class PublishScheduledContentJob implements ShouldQueue
         foreach ($translationTables as $table) {
             $processedTables++;
             $progress = round(($processedTables / $totalTables) * 100);
-            $this->setProgress($progress);
+            $this->setProgress((int) $progress);
 
             try {
                 $this->processTableForPublishing($table);
@@ -73,7 +73,7 @@ class PublishScheduledContentJob implements ShouldQueue
         foreach ($translationTables as $table) {
             $processedTables++;
             $progress = round(($processedTables / $totalTables) * 100);
-            $this->setProgress($progress);
+            $this->setProgress((int) $progress);
 
             try {
                 $this->processTableForUnpublishing($table);

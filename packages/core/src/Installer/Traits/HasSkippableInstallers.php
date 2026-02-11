@@ -23,7 +23,7 @@ trait HasSkippableInstallers
      */
     protected function getSkippedInstallers(): array
     {
-        return $this->option('skip') ?? [];
+        return $this->option('skip');
     }
 
     /**
@@ -31,7 +31,7 @@ trait HasSkippableInstallers
      */
     protected function getOnlyInstallers(): array
     {
-        return $this->option('only') ?? [];
+        return $this->option('only');
     }
 
     /**

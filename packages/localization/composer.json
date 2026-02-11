@@ -17,8 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "moox/data": "*",
+        "moox/core": "dev-main",
+        "moox/data": "dev-main",
         "astrotomic/laravel-translatable": "^11.16"
     },
     "autoload": {
@@ -37,7 +37,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "config": {
         "allow-plugins": {

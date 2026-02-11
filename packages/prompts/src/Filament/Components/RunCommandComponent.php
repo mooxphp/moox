@@ -22,6 +22,9 @@ use Moox\Prompts\Support\WebCommandRunner;
 use Moox\Prompts\Support\WebPromptRuntime;
 use Throwable;
 
+/**
+ * @property mixed $form
+ */
 class RunCommandComponent extends Component implements HasForms
 {
     use InteractsWithForms;
@@ -401,15 +404,11 @@ class RunCommandComponent extends Component implements HasForms
                         $params = $this->currentPrompt['params'] ?? [];
                         $options = $params[1] ?? [];
                         $answer = array_keys($options);
-                    } elseif ($answer !== null && $answer !== '') {
+                    } elseif (is_string($answer) && $answer !== '') {
                         $answer = [$answer];
                     } else {
                         $answer = [];
                     }
-                }
-
-                if (! is_array($answer)) {
-                    $answer = [];
                 }
             }
 
@@ -466,7 +465,7 @@ class RunCommandComponent extends Component implements HasForms
         };
 
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === false || $value === '') {
+            if ($value === null || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
@@ -648,7 +647,7 @@ class RunCommandComponent extends Component implements HasForms
 
         $rules = [];
         $pushRules = function (array &$into, string|array|null $value): void {
-            if ($value === null || $value === false || $value === '') {
+            if ($value === null || $value === '') {
                 return;
             }
             $items = is_array($value) ? $value : explode('|', $value);
@@ -729,7 +728,7 @@ class RunCommandComponent extends Component implements HasForms
             $state = $stateStore->get($this->flowId);
 
             // Get command name from state or component property
-            $commandName = $state?->commandName ?? $this->command;
+            $commandName = $state->commandName ?? $this->command;
 
             // Security: only allow cancel if user has access (or no execution record yet)
             if ($state === null || $this->hasAccessToFlow($state)) {
@@ -776,7 +775,7 @@ class RunCommandComponent extends Component implements HasForms
         }
 
         try {
-            $execution = \Moox\Prompts\Models\CommandExecution::where('flow_id', $state->flowId)->first();
+            $execution = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $state->flowId)->first();
 
             // If no execution record exists, allow access (legacy flow or just started)
             if (! $execution) {
