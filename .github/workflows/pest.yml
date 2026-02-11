@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Download App Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: app-artifact
           path: .
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Coverage Report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: clover-report-8.4
 
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Coverage Report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: clover-report-8.4
 
