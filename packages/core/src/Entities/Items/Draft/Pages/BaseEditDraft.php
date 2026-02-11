@@ -15,6 +15,7 @@ use Moox\Localization\Models\Localization;
  *
  * @phpstan-property-read array<string> $translatedAttributes
  */
+
 abstract class BaseEditDraft extends EditRecord
 {
     use CanResolveResourceClass, HasPagesTaxonomy;
