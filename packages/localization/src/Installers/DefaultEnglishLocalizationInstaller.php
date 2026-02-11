@@ -22,10 +22,7 @@ use function Moox\Prompts\note;
  */
 class DefaultEnglishLocalizationInstaller extends AbstractAssetInstaller
 {
-    /**
-     * Minimal English language data used when Data is missing "en".
-     * Matches the structure expected by Moox\Data\Models\StaticLanguage.
-     */
+    
     private static function defaultEnglishLanguageAttributes(): array
     {
         return [
