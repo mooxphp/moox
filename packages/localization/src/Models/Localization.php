@@ -64,6 +64,7 @@ class Localization extends Model
         return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
 
+
     public function fallbackLanguage(): BelongsTo
     {
         return $this->belongsTo(self::class, 'fallback_language_id');
@@ -74,7 +75,7 @@ class Localization extends Model
      */
     public function getLocaleAttribute(): string
     {
-        $locale = $this->attributes['locale_variant'] ?? $this->language?->alpha2 ?? '';
+        $locale = $this->attributes['locale_variant'] ?? $this->language->alpha2 ?? '';
 
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
