@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Audit;
+namespace Moox\Audit\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
