@@ -22,7 +22,11 @@ use Illuminate\Support\Str;
  */
 abstract class BaseDraftModel extends Model implements TranslatableContract
 {
-    use SoftDeletes, Translatable;
+    use SoftDeletes;
+    use Translatable {
+        translate as protected astTranslate;
+        translateOrNew as protected astTranslateOrNew;
+    }
 
     public $timestamps = false;
 
@@ -37,6 +41,28 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
             $this->getBaseTranslatedAttributes(),
             $this->getCustomTranslatedAttributes()
         );
+    }
+
+       /**
+     * @return BaseDraftTranslationModel|null
+     */
+    public function translate(?string $locale = null, bool $withFallback = false): ?BaseDraftTranslationModel
+    {
+        /** @var BaseDraftTranslationModel|null $translation */
+        $translation = $this->astTranslate($locale, $withFallback);
+
+        return $translation;
+    }
+
+    /**
+     * @return BaseDraftTranslationModel
+     */
+    public function translateOrNew(?string $locale = null): BaseDraftTranslationModel
+    {
+        /** @var BaseDraftTranslationModel $translation */
+        $translation = $this->astTranslateOrNew($locale);
+
+        return $translation;
     }
 
     /**
@@ -296,6 +322,7 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
 
     public function createTranslation(string $locale, array $attributes = []): void
     {
+        /** @var BaseDraftTranslationModel $translation */
         $translation = $this->translateOrNew($locale);
 
         foreach ($attributes as $key => $value) {
