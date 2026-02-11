@@ -18,11 +18,11 @@
         }
     ],
     "require": {
-        "moox/core": "*",
-        "moox/localization": "*",
-        "moox/media": "*",
-        "moox/category": "*",
-        "moox/tag": "*"
+        "moox/core": "dev-main",
+        "moox/localization": "dev-main",
+        "moox/media": "dev-main",
+        "moox/category": "dev-main",
+        "moox/tag": "dev-main"
     },
     "autoload": {
         "psr-4": {
