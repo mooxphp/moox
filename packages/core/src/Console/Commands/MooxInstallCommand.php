@@ -412,27 +412,45 @@ class MooxInstallCommand extends FlowCommand
     protected function collectPackageAssets(): array
     {
         $assets = [];
+    
+        // PHASE 1: Registry mit allen (auch Custom-)Installern aufbauen
+        foreach ($this->mooxProvidersScanned as $packageName => $providerClass) {
+            try {
+                $instance = new $providerClass(app());
+    
+                if (method_exists($instance, 'getCustomInstallers')) {
+                    foreach ($instance->getCustomInstallers() as $installer) {
+                        $this->registry->register($installer->getType(), $installer);
+                    }
+                }
+            } catch (\Exception $e) {
+                error("⚠️ Failed to register custom installers for {$packageName}: {$e->getMessage()}");
+            }
+        }
+    
+        // Jetzt einmal alle aktivierten Installer holen (inkl. Custom)
         $enabledInstallers = $this->registry->getEnabled();
-
+    
+        // PHASE 2: Assets pro Package und Installer-Typ einsammeln
         foreach ($this->mooxProvidersScanned as $packageName => $providerClass) {
             try {
                 $instance = new $providerClass(app());
                 $mooxInfo = $instance->mooxInfo();
-
+    
                 $packageAssets = [
                     'provider' => $providerClass,
                     'publishTags' => $mooxInfo['publishTags'] ?? [],
                 ];
-
-                // Collect assets for each enabled installer
+    
+                // Standard-Assets aus mooxInfo je Installer-Typ
                 foreach ($enabledInstallers as $type => $installer) {
                     $items = $installer->getItemsFromMooxInfo($mooxInfo);
                     if (! empty($items)) {
                         $packageAssets[$type] = $items;
                     }
                 }
-
-                // Allow packages to add custom assets
+    
+                // Optionale Custom-Assets vom Service Provider
                 if (method_exists($instance, 'getCustomInstallAssets')) {
                     $customAssets = $instance->getCustomInstallAssets();
                     if (is_array($customAssets)) {
@@ -447,15 +465,15 @@ class MooxInstallCommand extends FlowCommand
                         }
                     }
                 }
-
-                if (count($packageAssets) > 2) { // More than just 'provider' and 'publishTags'
+    
+                // Nur Packages aufnehmen, die mehr als provider + publishTags haben
+                if (count($packageAssets) > 2) {
                     $assets[$packageName] = $packageAssets;
                 }
             } catch (\Exception $e) {
                 error("⚠️ Failed to collect assets for {$packageName}: {$e->getMessage()}");
             }
         }
-
         return $assets;
     }
 }
