@@ -6,10 +6,10 @@ namespace Moox\Localization;
 
 use Livewire\Livewire;
 use Moox\Core\MooxServiceProvider;
-use Spatie\LaravelPackageTools\Package;
-use Moox\Localization\Livewire\LanguageSwitch;
 use Moox\Localization\Filament\Providers\LocalizationPanelProvider;
 use Moox\Localization\Installers\DefaultEnglishLocalizationInstaller;
+use Moox\Localization\Livewire\LanguageSwitch;
+use Spatie\LaravelPackageTools\Package;
 
 class LocalizationServiceProvider extends MooxServiceProvider
 {
@@ -61,7 +61,7 @@ class LocalizationServiceProvider extends MooxServiceProvider
         }
     }
 
-      /**
+    /**
      * Optional: vom Moox-Installer auswertbare Custom-Installer
      *
      * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
@@ -69,11 +69,12 @@ class LocalizationServiceProvider extends MooxServiceProvider
     public function getCustomInstallers(): array
     {
         return [
-            new DefaultEnglishLocalizationInstaller(),
+            new DefaultEnglishLocalizationInstaller,
         ];
     }
+
     public function getCustomInstallAssets(): array
-    { 
+    {
         return [
             [
                 'type' => 'localizations',          // ← exakt wie getType()

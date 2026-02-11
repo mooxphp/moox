@@ -39,6 +39,7 @@ class DefaultEnglishLocalizationInstaller extends AbstractAssetInstaller
             'exonyms' => ['English', 'Anglais', 'Inglés'],
         ];
     }
+
     public function getType(): string
     {
         return 'localizations';
@@ -140,4 +141,3 @@ class DefaultEnglishLocalizationInstaller extends AbstractAssetInstaller
         });
     }
 }
-

@@ -71,7 +71,7 @@ class StaticDataInstaller extends AbstractAssetInstaller
             note('🌍 Importing static data (countries, languages, timezones) …');
 
             // Synchronously run the import job (like the --sync option of the command).
-            (new ImportStaticDataJob())->handle();
+            (new ImportStaticDataJob)->handle();
 
             note('✅ Static data import completed.');
 
@@ -83,4 +83,3 @@ class StaticDataInstaller extends AbstractAssetInstaller
         }
     }
 }
-

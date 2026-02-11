@@ -43,9 +43,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         );
     }
 
-       /**
-     * @return BaseDraftTranslationModel|null
-     */
     public function translate(?string $locale = null, bool $withFallback = false): ?BaseDraftTranslationModel
     {
         /** @var BaseDraftTranslationModel|null $translation */
@@ -54,9 +51,6 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
         return $translation;
     }
 
-    /**
-     * @return BaseDraftTranslationModel
-     */
     public function translateOrNew(?string $locale = null): BaseDraftTranslationModel
     {
         /** @var BaseDraftTranslationModel $translation */

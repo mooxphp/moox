@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Moox\Data;
 
 use Moox\Core\MooxServiceProvider;
-use Spatie\LaravelPackageTools\Package;
-use Moox\Data\Filament\Providers\DataPanelProvider;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
+use Moox\Data\Filament\Providers\DataPanelProvider;
 use Moox\Data\Installers\StaticDataInstaller;
+use Spatie\LaravelPackageTools\Package;
 
 class DataServiceProvider extends MooxServiceProvider
 {
@@ -68,7 +68,7 @@ class DataServiceProvider extends MooxServiceProvider
     public function getCustomInstallers(): array
     {
         return [
-            new StaticDataInstaller(),
+            new StaticDataInstaller,
         ];
     }
 

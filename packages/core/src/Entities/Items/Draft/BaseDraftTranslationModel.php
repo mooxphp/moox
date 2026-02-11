@@ -2,10 +2,10 @@
 
 namespace Moox\Core\Entities\Items\Draft;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property \Carbon\Carbon|null $to_publish_at
@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $created_by_type
  * @property int|null $updated_by_id
  * @property string|null $updated_by_type
-    * 
-    * @method static \Illuminate\Database\Eloquent\Builder|static withTrashed(bool $withTrashed = true)
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|static withTrashed(bool $withTrashed = true)
  */
 abstract class BaseDraftTranslationModel extends Model
 {
