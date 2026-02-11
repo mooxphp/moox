@@ -64,7 +64,6 @@ class Localization extends Model
         return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
 
-
     public function fallbackLanguage(): BelongsTo
     {
         return $this->belongsTo(self::class, 'fallback_language_id');
