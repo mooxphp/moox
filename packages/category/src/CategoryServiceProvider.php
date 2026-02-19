@@ -32,10 +32,12 @@ class CategoryServiceProvider extends MooxServiceProvider
             scopes: ListCategories::class
         );
     }
+
     public function mooxInfo(): array
     {
         $info = parent::mooxInfo();
         $info['migration_depends_on'] = ['moox/localization'];
+
         return $info;
     }
 }
