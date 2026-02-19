@@ -5,7 +5,6 @@ namespace Moox\Jobs;
 use Moox\Core\MooxServiceProvider;
 use Moox\Jobs\Commands\InstallCommand;
 use Moox\Jobs\Commands\UpdateCommand;
-use Override;
 use Spatie\LaravelPackageTools\Package;
 
 class JobsServiceProvider extends MooxServiceProvider
@@ -19,5 +18,4 @@ class JobsServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasCommands(InstallCommand::class, UpdateCommand::class);
     }
-
 }
