@@ -12,11 +12,11 @@ class FileIconController extends Controller
     public function __invoke(string $icon): BinaryFileResponse
     {
         $iconPath = __DIR__.'/../../../resources/svg/'.$icon;
-        
-        if (!file_exists($iconPath)) {
+
+        if (! file_exists($iconPath)) {
             abort(404);
         }
-        
+
         return response()->file($iconPath, [
             'Content-Type' => 'image/svg+xml',
             'Cache-Control' => 'public, max-age=31536000', // 1 Jahr Cache
