@@ -252,15 +252,16 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
             $tags[] = $publishTag;
         }
 
-        // Fallback tags if the exact tag doesn't work
+        // Fallback: tags that providers typically register (e.g. "data-migrations").
+        // Try short name first – that's what Moox packages use in $this->publishes(..., 'data-migrations').
         $shortName = str_replace('moox/', '', $packageName);
         $spatiePackageName = str_replace('/', '-', $packageName);
 
         $tags = array_merge($tags, [
-            $spatiePackageName.'-'.$type,
-            $spatiePackageName,
             $shortName.'-'.$type,
             $shortName,
+            $spatiePackageName.'-'.$type,
+            $spatiePackageName,
         ]);
 
         // Remove duplicates
