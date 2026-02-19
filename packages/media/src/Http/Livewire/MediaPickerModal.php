@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Moox\Localization\Models\Localization;
+use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
@@ -605,6 +606,7 @@ class MediaPickerModal extends Component implements HasForms
             'mediaItems' => $media,
             'uploaderOptions' => $uploaderOptions,
             'collectionOptions' => $collectionOptions,
+            'mimeTypeLabels' => MediaIconHelper::getIconMapWithLabels(),
         ]);
     }
 }
