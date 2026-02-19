@@ -41,7 +41,7 @@ Curious what the install commands do? See [manual installation](#manual-installa
 | -------------- | --------------- | ---------------- | ----------- |
 | 2.x            | 9.x             | 2.x              | \> 8.0      |
 | 3.x            | 10.x            | 3.x              | \> 8.1      |
-| 4.x            | 11.x            | 5.x              | \> 8.3      |
+| 5.x            | 11.x            | 5.x              | \> 8.3      |
 
 in short steps
 
