@@ -62,10 +62,8 @@ class MediaServiceProvider extends MooxServiceProvider
         ];
     }
 
-    public function boot(): void
+    public function bootingPackage(): void
     {
-        parent::boot();
-
         Gate::policy(Media::class, MediaPolicy::class);
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
