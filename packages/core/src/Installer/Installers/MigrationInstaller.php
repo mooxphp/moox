@@ -78,7 +78,7 @@ class MigrationInstaller extends AbstractAssetInstaller
     public function install(array $assets): bool
     {
         $selectedAssets = $this->selectItems($assets);
-
+        
         // Sort selected assets according to the package dependency graph.
         // If anything goes wrong here, fall back to the original order so
         // publishing still works as before.
@@ -123,7 +123,7 @@ class MigrationInstaller extends AbstractAssetInstaller
 
             $existingFilenames = $this->getMigrationFilenames($migrationPath);
 
-            if ($this->publishPackageAssets($packageName, 'migrations')) {
+            if ($this->publishPackageAssets($packageName, 'migrations', $asset)) {
                 $published = true;
                 $publishedPackages[] = $packageName;
                 $this->assignMigrationTimestampsByOrder($migrationPath, $existingFilenames, $maxTimestampSoFar);

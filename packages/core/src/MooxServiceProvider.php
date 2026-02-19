@@ -328,15 +328,16 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
         $ds = DIRECTORY_SEPARATOR;
 
-        // Get Spatie package name for publish tags (e.g., "draft")
+        // Use same names as Spatie: name + shortName (used in publishes() for tags)
         $packageName = $this->package->name ?? null;
+        $shortName = $packageName ? $this->package->shortName() : null;
 
         // Get info directly from Spatie Package object
         $hasConfig = ! empty($this->package->configFileNames ?? []);
         $hasTranslations = $this->package->hasTranslations ?? false;
         $hasMigrations = ! empty($this->package->migrationFileNames ?? []);
 
-        // Migrations from package or filesystem
+        // Migrations from package or filesystem (same source as ProcessMigrations)
         $migrations = $this->package->migrationFileNames ?? [];
         if (empty($migrations)) {
             $migrationPath = $packageRoot.$ds.'database'.$ds.'migrations';
@@ -393,14 +394,14 @@ abstract class MooxServiceProvider extends PackageServiceProvider
             $translations = array_unique($translations);
         }
 
-        // Build publish tags based on Spatie package name
-        // Tags are always generated - publishPackageAssets handles gracefully if nothing to publish
+        // Publish tags exactly as Spatie registers them (ProcessMigrations, ProcessConfigs, ProcessTranslations)
+        // so installer uses the same tag the ServiceProvider used in $this->publishes(..., tag)
         $publishTags = [];
-        if ($packageName) {
+        if ($shortName !== null) {
             $publishTags = [
-                'config' => $packageName.'-config',
-                'migrations' => $packageName.'-migrations',
-                'translations' => $packageName.'-translations',
+                'config' => $shortName.'-config',
+                'migrations' => $shortName.'-migrations',
+                'translations' => $shortName.'-translations',
             ];
         }
 
