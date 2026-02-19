@@ -197,4 +197,3 @@ class PackageDependencyGraph
         return $candidates[0] ?? null;
     }
 }
-

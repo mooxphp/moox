@@ -117,6 +117,7 @@ class MigrationInstaller extends AbstractAssetInstaller
             if ($this->config['skip_existing'] && $this->checkExists($packageName, $normalizedItems)) {
                 $skippedPackages[] = $packageName;
                 note("  ℹ️ {$packageName}: migrations already exist, skipping");
+
                 continue;
             }
 
