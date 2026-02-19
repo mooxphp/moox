@@ -103,7 +103,7 @@ class CustomImageColumn extends ImageColumn
                     : $record->getUrl();
             }
 
-            return $this->iconMap[$record->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
+            return $this->iconMap[$record->mime_type] ?? '/vendor/file-icons/unknown.svg';
         }
 
         $mediaId = MediaUsable::query()
@@ -129,7 +129,7 @@ class CustomImageColumn extends ImageColumn
                 : $media->getUrl();
         }
 
-        return $this->iconMap[$media->mime_type] ?? '/vendor/file-icons/svg/unknown.svg';
+        return $this->iconMap[$media->mime_type] ?? '/vendor/file-icons/unknown.svg';
     }
 
     public function conversion(?string $conversion): static
