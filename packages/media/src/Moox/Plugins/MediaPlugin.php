@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Media;
+namespace Moox\Media\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
