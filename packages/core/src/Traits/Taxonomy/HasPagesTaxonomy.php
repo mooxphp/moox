@@ -241,11 +241,12 @@ trait HasPagesTaxonomy
      */
     protected function getRelatedTaxonomyIds(string $relationshipName): array
     {
-        if (! method_exists($this->record, $relationshipName)) {
+        $record = $this->record;
+        if ($record === null || ! method_exists($record, $relationshipName)) {
             return [];
         }
 
-        $relation = $this->record->$relationshipName();
+        $relation = $record->$relationshipName();
 
         if (! $relation instanceof MorphToMany) {
             return [];
@@ -296,8 +297,7 @@ trait HasPagesTaxonomy
     protected function loadTaxonomyData(array $data): array
     {
         $record = $this->getRecord();
-
-        if (! method_exists($record, 'getResourceName')) {
+        if ($record === null || ! method_exists($record, 'getResourceName')) {
             return $data;
         }
 
@@ -343,8 +343,7 @@ trait HasPagesTaxonomy
     protected function saveTaxonomyData(array $data): void
     {
         $record = $this->getRecord();
-
-        if (! method_exists($record, 'getResourceName')) {
+        if ($record === null || ! method_exists($record, 'getResourceName')) {
             return;
         }
 
