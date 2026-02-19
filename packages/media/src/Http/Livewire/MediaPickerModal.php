@@ -12,7 +12,6 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
@@ -197,23 +196,23 @@ class MediaPickerModal extends Component implements HasForms
                         $model = new Media;
                         $model->exists = true;
 
-                    $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
-                    /** @var Media $media */
-                    $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
+                        $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                        /** @var Media $media */
+                        $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                         $media->media_collection_id = $collectionId;
                         $media->save();
 
                         $title = pathinfo($fileName, PATHINFO_FILENAME);
 
-                    $media->title = $title;
-                    $media->alt = $title;
-                    $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
-                    $media->uploader_id = Auth::id();
-                    $media->original_model_type = Media::class;
-                    $media->original_model_id = $media->getKey();
-                    $media->model_id = $media->getKey();
-                    $media->model_type = Media::class;
+                        $media->title = $title;
+                        $media->alt = $title;
+                        $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
+                        $media->uploader_id = Auth::id();
+                        $media->original_model_type = Media::class;
+                        $media->original_model_id = $media->getKey();
+                        $media->model_id = $media->getKey();
+                        $media->model_type = Media::class;
 
                         $media->setCustomProperty('file_hash', $fileHash);
 
@@ -244,7 +243,7 @@ class MediaPickerModal extends Component implements HasForms
                 // Formular zurücksetzen und Media-Liste aktualisieren
                 $set('files', null);
                 $this->refreshMedia();
-                
+
                 if ($uploadedCount > 0) {
                     Notification::make()
                         ->success()
