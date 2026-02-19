@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Media\Installers;
 
-use function Moox\Prompts\note;
-use function Moox\Prompts\error;
-use Illuminate\Support\Facades\File;
-
-use Illuminate\Support\Facades\Schema;
-use Moox\Media\Models\MediaCollection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Moox\Core\Installer\AbstractAssetInstaller;
+use Moox\Media\Models\MediaCollection;
+
+use function Moox\Prompts\error;
+use function Moox\Prompts\note;
 
 /**
  * Installer für das Media-Package.
@@ -104,13 +104,13 @@ class MediaInstaller extends AbstractAssetInstaller
 
             note('✅ Spatie Media Library config published and updated with Moox Media model and CustomPathGenerator.');
 
-                try {
-                    if (Schema::hasTable('media_collections')) {
-                        MediaCollection::ensureUncategorizedExists();
-                    }
-                } catch (\Exception $e) {
-                    error('⚠️ Media collection table might not exist yet: '.$e->getMessage());
+            try {
+                if (Schema::hasTable('media_collections')) {
+                    MediaCollection::ensureUncategorizedExists();
                 }
+            } catch (\Exception $e) {
+                error('⚠️ Media collection table might not exist yet: '.$e->getMessage());
+            }
 
             return true;
         } catch (\Throwable $e) {
