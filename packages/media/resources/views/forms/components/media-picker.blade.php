@@ -114,16 +114,16 @@
             initializeState();
         });
         initializeState();
-    " wire:ignore>
+    ">
 
         @if ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord)
             <x-filament::button color="primary" size="sm" icon="heroicon-o-photo" style="width: 100%;" x-on:click="
-                                                        $dispatch('set-media-picker-model', {
-                                                        modelId: {{ $getRecord()?->id ?? 0 }},
-                                                        modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
-                                                        });
-                                                         $dispatch('open-modal', { id: 'mediaPickerModal' });
-                                                        ">
+                                                                            $dispatch('set-media-picker-model', {
+                                                                            modelId: {{ $getRecord()?->id ?? 0 }},
+                                                                            modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
+                                                                            });
+                                                                             $dispatch('open-modal', { id: 'mediaPickerModal' });
+                                                                            ">
                 <span>{{ __('media::fields.select_media') }}</span>
             </x-filament::button>
         @endif
@@ -131,7 +131,7 @@
         <div class="fi-sc fi-grid lg:fi-grid-cols"
             style="--cols-lg: repeat(3, minmax(0, 1fr)); --cols-default: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 1rem;"
             x-show="selectedMedia.length > 0">
-            <template x-for="(media, index) in selectedMedia" :key="media . id">
+            <template x-for="(media, index) in selectedMedia" :key="media.id">
                 <div
                     style="position: relative; background-color: #ffffff; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #e5e7eb; transition: box-shadow 0.3s ease;">
                     <template x-if="isAvatar">
@@ -141,7 +141,7 @@
                     <template x-if="!isAvatar">
                         <div>
                             <template x-if="media.mime_type && media.mime_type.startsWith('image/')">
-                                <img :src="media . url" :alt="media . name"
+                                <img :src="media.url" :alt="media.name"
                                     style="width: 100%; height: 12rem; object-fit: cover; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; cursor: pointer;"
                                     x-on:click="window.open(media.url, '_blank')" />
                             </template>
@@ -149,7 +149,7 @@
                             <template x-if="media.mime_type && !media.mime_type.startsWith('image/')">
                                 <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 100%; height: 12rem; margin-top: 1.5rem; cursor: pointer;"
                                     x-on:click="window.open(media.url, '_blank')">
-                                    <img :src="$el . dataset . baseUrl + getIconForMimeType(media . mime_type)"
+                                    <img :src="$el.dataset.baseUrl + getIconForMimeType(media.mime_type)"
                                         data-base-url="{{ asset('') }}" style="width: 4rem; height: 4rem;" />
                                     <div style="font-size: 0.75rem; color: #374151; width: 100%; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: normal; word-break: break-words; padding: 0 0.5rem;"
                                         x-text="media.file_name"></div>
@@ -174,7 +174,7 @@
             {{ __('media::fields.no_media_selected') }}
         </div>
 
-        <livewire:media-picker-modal id="media-picker-modal" :multiple="$field->isMultiple()"
+        <livewire:media-picker-modal id="media-picker-modal" lazy :multiple="$field->isMultiple()"
             wire:key="media-picker-modal-{{ $field->getStatePath() }}-{{ $getRecord()?->id ?? 'new' }}"
             :upload-config="$field->getUploadConfig()"
             :model-class="$this->getRecord() ? get_class($this->getRecord()) : $this->getResource()::getModel()"

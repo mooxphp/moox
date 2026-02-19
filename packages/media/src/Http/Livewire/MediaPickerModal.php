@@ -23,7 +23,6 @@ use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 class MediaPickerModal extends Component implements HasForms
 {
     use InteractsWithForms;
-    use WithFileUploads;
     use WithPagination;
 
     public ?int $modelId = null;
@@ -147,10 +146,10 @@ class MediaPickerModal extends Component implements HasForms
             ->required()
             ->live();
 
-        $upload = FileUpload::make(__('files'))
+        $upload = FileUpload::make('files')
             ->label(__('media::fields.upload'))
             ->live()
-            ->afterStateUpdated(function ($state, $get) {
+            ->afterStateUpdated(function ($state, $get, $set) {
                 if (! $state) {
                     return;
                 }
@@ -159,7 +158,14 @@ class MediaPickerModal extends Component implements HasForms
                 $collection = MediaCollection::query()->find($collectionId);
                 $collectionName = $collection !== null ? ($collection->getAttribute('name') ?? __('media::fields.uncategorized')) : __('media::fields.uncategorized');
 
-                foreach ($state as $tempFile) {
+                $uploadedCount = 0;
+                $files = is_array($state) ? $state : [$state];
+
+                foreach ($files as $tempFile) {
+                    if (! $tempFile || ! file_exists($tempFile->getRealPath())) {
+                        continue;
+                    }
+
                     $fileHash = hash_file('sha256', $tempFile->getRealPath());
 
                     if (in_array($fileHash, $this->processedHashes)) {
@@ -187,17 +193,18 @@ class MediaPickerModal extends Component implements HasForms
                         continue;
                     }
 
-                    $model = new Media;
-                    $model->exists = true;
+                    try {
+                        $model = new Media;
+                        $model->exists = true;
 
                     $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
                     /** @var Media $media */
                     $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
-                    $media->media_collection_id = $collectionId;
-                    $media->save();
+                        $media->media_collection_id = $collectionId;
+                        $media->save();
 
-                    $title = pathinfo($fileName, PATHINFO_FILENAME);
+                        $title = pathinfo($fileName, PATHINFO_FILENAME);
 
                     $media->title = $title;
                     $media->alt = $title;
@@ -208,18 +215,41 @@ class MediaPickerModal extends Component implements HasForms
                     $media->model_id = $media->getKey();
                     $media->model_type = Media::class;
 
-                    $media->setCustomProperty('file_hash', $fileHash);
+                        $media->setCustomProperty('file_hash', $fileHash);
 
-                    if (str_starts_with($media->mime_type, 'image/')) {
-                        [$width, $height] = getimagesize($media->getPath());
-                        $media->setCustomProperty('dimensions', [
-                            'width' => $width,
-                            'height' => $height,
-                        ]);
+                        if (str_starts_with($media->mime_type, 'image/')) {
+                            try {
+                                [$width, $height] = getimagesize($media->getPath());
+                                $media->setCustomProperty('dimensions', [
+                                    'width' => $width,
+                                    'height' => $height,
+                                ]);
+                            } catch (\Exception $e) {
+                                // Ignore image size errors
+                            }
+                        }
+
+                        $media->save();
+                        $this->processedHashes[] = $fileHash;
+                        $uploadedCount++;
+                    } catch (\Exception $e) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('media::fields.file_upload_error'))
+                            ->body($e->getMessage())
+                            ->send();
                     }
+                }
 
-                    $media->save();
-                    $this->processedHashes[] = $fileHash;
+                // Formular zurücksetzen und Media-Liste aktualisieren
+                $set('files', null);
+                $this->refreshMedia();
+                
+                if ($uploadedCount > 0) {
+                    Notification::make()
+                        ->success()
+                        ->title(__('media::fields.file_uploaded_success'))
+                        ->send();
                 }
             });
 

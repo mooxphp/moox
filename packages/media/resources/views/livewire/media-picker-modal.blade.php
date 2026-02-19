@@ -141,7 +141,7 @@
                             @endphp
 
                             <div wire:click="toggleMediaSelection({{ $item['id'] }})"
-                                style="position: relative; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; background-color: #f3f4f6; cursor: pointer; transition: all 0.2s ease; {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 4px #93c5fd, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #eff6ff; padding: 0.1rem;' : '' }}"
+                                style="position: relative; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; background-color: #f3f4f6; cursor: pointer; transition: all 0.2s ease; {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 4px #93c5fd, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #eff6ff; padding: 0.1rem;' : '' }}">
                                 @if ($fileData)
                                     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 8rem; padding: 1rem; border-radius: 0.5rem;">
                                         <x-filament::icon icon="{{ $fileData['icon'] }}" style="width: 3rem; height: 3rem; margin-bottom: 0.5rem;" />
