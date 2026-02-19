@@ -8,14 +8,12 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Moox\Core\MooxServiceProvider;
 use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Installers\MediaInstaller;
 use Moox\Media\Models\Media;
-use Moox\Media\Models\MediaCollection;
 use Moox\Media\Policies\MediaPolicy;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
@@ -82,7 +80,5 @@ class MediaServiceProvider extends MooxServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMediaCollections::class
         );
-
-  
     }
 }
