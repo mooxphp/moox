@@ -53,19 +53,19 @@ trait HasMediaUsable
             $modelClass = $usable->media_usable_type;
             $model = $modelClass::find($usable->media_usable_id);
 
-            if (!$model) {
+            if (! $model) {
                 continue;
             }
 
             // Try to get en_US translation first (as requested)
             $translation = $translations->get('en_US');
-            
+
             // Fallback to first available translation if en_US doesn't exist
-            if (!$translation && $translations->isNotEmpty()) {
+            if (! $translation && $translations->isNotEmpty()) {
                 $translation = $translations->first();
             }
 
-            if (!$translation) {
+            if (! $translation) {
                 // No translations available, only update file_name
                 $title = null;
                 $alt = null;
@@ -104,7 +104,7 @@ trait HasMediaUsable
                     $jsonData = $value;
                 }
 
-                if (!is_array($jsonData)) {
+                if (! is_array($jsonData)) {
                     continue;
                 }
 
