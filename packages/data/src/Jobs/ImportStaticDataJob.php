@@ -329,9 +329,10 @@ class ImportStaticDataJob implements ShouldQueue
                                 // Skip variant codes that aren't needed
                                 if (in_array($code, $skipVariantCodes)) {
                                     Log::channel('daily')->info("Skipping variant language {$code} ({$name}) for country {$country->alpha2}");
+
                                     continue;
                                 }
-                                
+
                                 $alpha2 = $alpha3ToAlpha2[$code] ?? $code;
                                 $nativeName = $nativeNamesMap[$alpha2] ?? $name;
 
