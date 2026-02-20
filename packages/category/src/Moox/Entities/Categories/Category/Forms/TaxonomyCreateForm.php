@@ -42,8 +42,6 @@ class TaxonomyCreateForm
                     'column' => 'slug',
                 ]
             ),
-            MediaPicker::make('featured_image_url')
-                ->label(__('core::core.featured_image_url')),
             MarkdownEditor::make('content')
                 ->label(__('core::core.content')),
             SelectTree::make('parent_id')

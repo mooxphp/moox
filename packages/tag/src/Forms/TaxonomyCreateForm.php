@@ -41,8 +41,6 @@ class TaxonomyCreateForm
                     'column' => 'slug',
                 ]
             ),
-            MediaPicker::make('image')
-                ->label(__('core::core.image')),
             MarkdownEditor::make('content')
                 ->label(__('core::core.content')),
             Grid::make(2)
