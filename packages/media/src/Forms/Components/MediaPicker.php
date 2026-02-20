@@ -206,12 +206,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
     /**
      * Get media metadata from media_translations table
-     * Uses default locale first, then English, then first available translation
+     * Uses default locale first, then en_US, then first available translation
      */
     protected function getMediaMetadataFromTranslations(Media $media, ?\Illuminate\Database\Eloquent\Model $record = null): array
     {
         // Get default locale from Localization
-        $defaultLocale = 'en';
+        $defaultLocale = 'en_US';
         if (class_exists(Localization::class)) {
             $localization = Localization::query()
                 ->where('is_default', true)
@@ -233,12 +233,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         // Try to get default locale translation first
         $translation = $translations->get($defaultLocale);
         
-        // Fallback to English if default locale doesn't exist
+        // Fallback to en_US if default locale doesn't exist
         if (!$translation) {
-            $translation = $translations->get('en');
+            $translation = $translations->get('en_US');
         }
         
-        // Fallback to first available translation if English doesn't exist
+        // Fallback to first available translation if en_US doesn't exist
         if (!$translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }

@@ -207,8 +207,27 @@ class MediaPickerModal extends Component implements HasForms
 
                         $title = pathinfo($fileName, PATHINFO_FILENAME);
 
-                        $media->title = $title;
-                        $media->alt = $title;
+                        // Get default locale for translations
+                        $uploadLocale = 'en_US';
+                        if (class_exists(Localization::class)) {
+                            $localization = Localization::query()
+                                ->where('is_default', true)
+                                ->where('is_active_admin', true)
+                                ->with('language')
+                                ->first();
+
+                            if ($localization) {
+                                $uploadLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
+                            }
+                        }
+
+                        // Set translations using default locale (or English)
+                        $translation = $media->translateOrNew($uploadLocale);
+                        $translation->name = $title;
+                        $translation->title = $title;
+                        $translation->alt = $title;
+                        $translation->save();
+
                         $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
                         $media->uploader_id = Auth::id();
                         $media->original_model_type = Media::class;
@@ -426,12 +445,12 @@ class MediaPickerModal extends Component implements HasForms
 
     /**
      * Get media metadata from media_translations table
-     * Uses default locale first, then English, then first available translation
+     * Uses default locale first, then en_US, then first available translation
      */
     protected function getMediaMetadataFromTranslations(Media $media): array
     {
         // Get default locale from Localization
-        $defaultLocale = 'en';
+        $defaultLocale = 'en_US';
         if (class_exists(Localization::class)) {
             $localization = Localization::query()
                 ->where('is_default', true)
@@ -453,12 +472,12 @@ class MediaPickerModal extends Component implements HasForms
         // Try to get default locale translation first
         $translation = $translations->get($defaultLocale);
         
-        // Fallback to English if default locale doesn't exist
+        // Fallback to en_US if default locale doesn't exist
         if (!$translation) {
-            $translation = $translations->get('en');
+            $translation = $translations->get('en_US');
         }
         
-        // Fallback to first available translation if English doesn't exist
+        // Fallback to first available translation if en_US doesn't exist
         if (!$translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }
