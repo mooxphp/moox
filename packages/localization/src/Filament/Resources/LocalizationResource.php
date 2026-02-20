@@ -132,7 +132,12 @@ class LocalizationResource extends BaseRecordResource
                                     ->nullable(),
                                 Toggle::make('is_active_admin')
                                     ->label(__('localization::fields.is_activ_admin'))
-                                    ->default(true),
+                                    ->default(true)
+                                    ->disabled(function ($get, $livewire) {
+                                        // Disabled wenn diese Localization als Default gesetzt ist
+                                        $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
+                                        return $isDefault;
+                                    }),
                                 Toggle::make('is_active_frontend')
                                     ->label(__('localization::fields.is_activ_frontend'))
                                     ->default(false),
@@ -153,6 +158,9 @@ class LocalizationResource extends BaseRecordResource
                                     })
                                     ->afterStateUpdated(function ($state, $set, $get, $livewire) {
                                         if ($state) {
+                                            // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
+                                            $set('is_active_admin', true);
+                                            
                                             $currentRecordId = $livewire->record?->id;
                                             $languageId = $get('language_id');
 
@@ -236,7 +244,8 @@ class LocalizationResource extends BaseRecordResource
                 // Status Toggles Group
                 ToggleColumn::make('is_active_admin')
                     ->label('Admin')
-                    ->width(80),
+                    ->width(80)
+                    ->disabled(fn ($record) => $record->is_default ?? false), // Disabled wenn als Default gesetzt
                 ToggleColumn::make('is_active_frontend')
                     ->label('Frontend')
                     ->width(80),
@@ -257,6 +266,9 @@ class LocalizationResource extends BaseRecordResource
                     })
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state) {
+                            // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
+                            $record->update(['is_active_admin' => true]);
+                            
                             static::getModel()::where('id', '!=', $record->id)
                                 ->update(['is_default' => false]);
                         }
