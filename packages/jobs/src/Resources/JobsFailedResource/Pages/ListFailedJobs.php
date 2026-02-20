@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource;
 
@@ -32,7 +33,7 @@ class ListFailedJobs extends ListRecords
                 ->requiresConfirmation()
                 ->color('danger')
                 ->action(function (): void {
-                    FailedJob::truncate();
+                    DB::table((new FailedJob)->getTable())->truncate();
                     Notification::make()
                         ->title(__('jobs::translations.delete_all_failed_jobs_notification'))
                         ->success()

@@ -13,6 +13,7 @@ use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Draft\Enums\TranslationStatus;
+use Moox\Localization\Models\Localization;
 
 class BaseDraftResource extends BaseResource
 {
@@ -209,9 +210,8 @@ class BaseDraftResource extends BaseResource
                 if ($translation && $translation->title) {
                     return $translation->title;
                 }
-
-                $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
-                $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+                $defaultLocalization = Localization::where('is_default', true)->first();
+                $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
@@ -243,7 +243,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = static::resolveCurrentLang($livewire);
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                return $translation?->slug ?? '';
+                return $translation->slug ?? '';
             });
     }
 
@@ -285,7 +285,7 @@ class BaseDraftResource extends BaseResource
             return TranslationStatus::DELETED->value;
         }
 
-        return $translation->translation_status?->value ?? TranslationStatus::DRAFT->value;
+        return $translation->translation_status->value ?? TranslationStatus::DRAFT->value;
     }
 
     protected static function getDefaultStatus(): string
@@ -347,7 +347,8 @@ class BaseDraftResource extends BaseResource
         return TextEntry::make('published_at')
             ->label(__('core::core.published_at'))
             ->state(function ($record): string {
-                $translation = $record->translations()->withTrashed()->first();
+                $locale = request()->query('lang') ?? app()->getLocale();
+                $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
                 if (! $translation || ! $translation->published_at) {
                     return '';
                 }
@@ -360,7 +361,12 @@ class BaseDraftResource extends BaseResource
 
                 return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
             })
-            ->hidden(fn ($record) => ! $record->published_at);
+            ->hidden(function ($record): bool {
+                $locale = request()->query('lang') ?? app()->getLocale();
+                $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
+
+                return ! $translation || ! $translation->published_at;
+            });
     }
 
     /**
@@ -397,8 +403,8 @@ class BaseDraftResource extends BaseResource
                 return $query->when(
                     $data['value'] ?? null,
                     function (Builder $query, $value): Builder {
-                        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
-                        $defaultLang = $defaultLocalization?->locale_variant ?? app()->getLocale();
+                        $defaultLocalization = Localization::where('is_default', true)->first();
+                        $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
                         $currentLang = request()->query('lang') ?? request()->get('lang') ?? $defaultLang;
 
                         if (! $value) {
@@ -412,8 +418,8 @@ class BaseDraftResource extends BaseResource
                         }
 
                         if ($value === 'deleted') {
-                            return $query->whereHas('translations', function ($query) use ($currentLang) {
-                                $query->where('locale', $currentLang)
+                            return $query->whereHas('translations', function ($translationQuery) use ($currentLang) {
+                                $translationQuery->where('locale', $currentLang)
                                     ->where('translation_status', 'deleted')
                                     ->withTrashed();
                             });
@@ -433,7 +439,7 @@ class BaseDraftResource extends BaseResource
         return SelectFilter::make('locale')
             ->label(__('localization::fields.language'))
             ->options(function () {
-                $localizations = \Moox\Localization\Models\Localization::where('is_active_admin', true)
+                $localizations = Localization::where('is_active_admin', true)
                     ->with('language')
                     ->orderBy('language_id')
                     ->orderBy('locale_variant')
@@ -513,8 +519,8 @@ class BaseDraftResource extends BaseResource
         }
 
         // 4) Fallback to configured default localization or app locale
-        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+        $defaultLocalization = Localization::where('is_default', true)->first();
 
-        return $defaultLocalization?->locale_variant ?? app()->getLocale();
+        return $defaultLocalization->locale_variant ?? app()->getLocale();
     }
 }

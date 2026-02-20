@@ -34,12 +34,13 @@ class ListMedia extends BaseListDrafts
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
 
-        $defaultLocale = Localization::where('is_default', true)
+        $defaultLocale = Localization::query()
+            ->where('is_default', true)
             ->where('is_active_admin', true)
             ->first();
 
         $defaultLang = $defaultLocale
-            ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
+            ? ($defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2)
             : config('app.locale');
 
         $this->lang = request()->query('lang', $defaultLang);
@@ -47,7 +48,7 @@ class ListMedia extends BaseListDrafts
 
     public function saveTranslationFromForm($recordId)
     {
-        $record = Media::find($recordId);
+        $record = Media::query()->find($recordId);
 
         if ($record && method_exists($record, 'translateOrNew')) {
             $lang = $this->lang ?? app()->getLocale();
@@ -141,13 +142,14 @@ class ListMedia extends BaseListDrafts
                                     $name = $translation->name;
                                 } else {
                                     if (class_exists(Localization::class)) {
-                                        $defaultLocale = Localization::where('is_default', true)
+                                        $defaultLocale = Localization::query()
+                                            ->where('is_default', true)
                                             ->where('is_active_admin', true)
                                             ->with('language')
                                             ->first();
 
-                                        if ($defaultLocale && $defaultLocale->language) {
-                                            $defaultLang = $defaultLocale->locale_variant ?: $defaultLocale->language->alpha2;
+                                        if ($defaultLocale) {
+                                            $defaultLang = $defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2;
                                             $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
                                             if ($fallbackTranslation && ! empty($fallbackTranslation->name)) {
                                                 $name = $fallbackTranslation->name;
@@ -170,7 +172,7 @@ class ListMedia extends BaseListDrafts
 
                             return array_filter($options, fn ($value) => ! empty($value));
                         })
-                        ->default(MediaCollection::first()?->id)
+                        ->default(MediaCollection::query()->first()?->id)
                         ->searchable()
                         ->required()
                         ->live(),
@@ -185,10 +187,6 @@ class ListMedia extends BaseListDrafts
                         ->maxFiles(config('media.upload.resource.max_files'))
                         ->minFiles(config('media.upload.resource.min_files'))
                         ->acceptedFileTypes(config('media.upload.resource.accepted_file_types'))
-                        ->mimeTypeMap([
-                            'bpmn' => 'application/bpmn+xml',
-                            'xml' => 'application/xml',
-                        ])
                         ->imageResizeMode(config('media.upload.resource.image_resize_mode'))
                         ->imageCropAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
                         ->imageResizeTargetWidth(config('media.upload.resource.image_resize_target_width'))
@@ -217,13 +215,14 @@ class ListMedia extends BaseListDrafts
                             if ($collection) {
                                 $defaultLang = config('app.locale');
 
-                                $localization = Localization::where('is_default', true)
+                                $localization = Localization::query()
+                                    ->where('is_default', true)
                                     ->where('is_active_admin', true)
                                     ->with('language')
                                     ->first();
 
-                                if ($localization && $localization->language) {
-                                    $defaultLang = $localization->locale_variant ?: $localization->language->alpha2;
+                                if ($localization) {
+                                    $defaultLang = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
                                 }
 
                                 $translation = $collection->translations->firstWhere('locale', $defaultLang);
@@ -231,15 +230,18 @@ class ListMedia extends BaseListDrafts
                                 if ($translation && ! empty($translation->name)) {
                                     $collectionName = $translation->name;
                                 } elseif ($collection->translations->isNotEmpty()) {
-                                    $collectionName = $collection->translations->first()->name;
+                                    $collectionName = $collection->translations->first()->getAttribute('name') ?? __('media::fields.uncategorized');
                                 } elseif (method_exists($collection, 'translate')) {
                                     $translation = $collection->translate($defaultLang);
-                                    $collectionName = $translation?->name ?? __('media::fields.uncategorized');
+                                    $collectionName = $translation !== null ? ($translation->getAttribute('name') ?? __('media::fields.uncategorized')) : __('media::fields.uncategorized');
                                 }
                             }
 
-                            $defaultLang = optional(Localization::where('is_default', true)
+                            $defaultLang = optional(Localization::query()
+                                ->where('is_default', true)
                                 ->first()?->language)->alpha2 ?? config('app.locale');
+
+                            $uploadLang = $this->lang ?? $defaultLang;
 
                             foreach ($state as $tempFile) {
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -250,7 +252,7 @@ class ListMedia extends BaseListDrafts
 
                                 $fileName = $tempFile->getClientOriginalName();
 
-                                $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                                $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
                                     $query->where('name', $fileName);
                                 })->orWhere(function ($query) use ($fileHash) {
                                     $query->where('custom_properties->file_hash', $fileHash);
@@ -270,12 +272,13 @@ class ListMedia extends BaseListDrafts
                                 }
 
                                 $previousLocale = app()->getLocale();
-                                app()->setLocale($defaultLang);
+                                app()->setLocale($uploadLang);
 
                                 $model = new Media;
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                                /** @var Media $media */
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                                 $media->media_collection_id = $collectionId;
@@ -284,13 +287,19 @@ class ListMedia extends BaseListDrafts
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->title = $title;
-                                $media->alt = $title;
-                                $media->uploader_type = get_class(auth()->user());
+                                $translation = $media->translateOrNew($uploadLang);
+                                $translation->setAttribute('name', $fileName);
+                                $translation->setAttribute('title', $title);
+                                $translation->setAttribute('alt', $title);
+                                $translation->save();
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with user()) */
+                                $user = auth()->user();
+                                $media->uploader_type = $user ? get_class($user) : null;
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with id()) */
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
-                                $media->original_model_id = $media->id;
-                                $media->model_id = $media->id;
+                                $media->original_model_id = $media->getKey();
+                                $media->model_id = $media->getKey();
                                 $media->model_type = Media::class;
 
                                 $media->setCustomProperty('file_hash', $fileHash);

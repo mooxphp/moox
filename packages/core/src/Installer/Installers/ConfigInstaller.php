@@ -96,7 +96,7 @@ class ConfigInstaller extends AbstractAssetInstaller
             }
 
             note("    Publishing configs for {$packageName}...");
-            if ($this->publishPackageAssets($packageName, 'config')) {
+            if ($this->publishPackageAssets($packageName, 'config', $asset)) {
                 $published = true;
                 $publishedPackages[] = $packageName;
                 note('    ✅ Published');

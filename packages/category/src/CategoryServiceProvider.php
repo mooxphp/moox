@@ -9,12 +9,12 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Category\Commands\InstallCommand;
 use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ListCategories;
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class CategoryServiceProvider extends PackageServiceProvider
+class CategoryServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('category')
@@ -31,5 +31,13 @@ class CategoryServiceProvider extends PackageServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListCategories::class
         );
+    }
+
+    public function mooxInfo(): array
+    {
+        $info = parent::mooxInfo();
+        $info['migration_depends_on'] = ['moox/localization'];
+
+        return $info;
     }
 }

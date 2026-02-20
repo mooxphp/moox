@@ -1,27 +1,25 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Moox\Category\Moox\Entities\Categories\Plugins;
+namespace Moox\Media\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Media\Resources\MediaResource;
 
-class CategoryPlugin implements Plugin
+class MediaPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'category';
+        return 'media';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            CategoryResource::class,
+            MediaResource::class,
         ]);
     }
 

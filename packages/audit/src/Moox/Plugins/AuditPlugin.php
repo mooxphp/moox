@@ -1,27 +1,25 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Moox\Data\Filament\Plugins;
+namespace Moox\Audit\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Data\Filament\Resources\StaticCountriesStaticTimezonesResource;
+use Moox\Audit\Resources\AuditResource;
 
-class StaticCountriesStaticTimezonesPlugin implements Plugin
+class AuditPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'staticcountriesstatictimezones';
+        return 'audit';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            StaticCountriesStaticTimezonesResource::class,
+            AuditResource::class,
         ]);
     }
 

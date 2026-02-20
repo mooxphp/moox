@@ -8,21 +8,22 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Moox\Core\MooxServiceProvider;
 use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
+use Moox\Media\Installers\MediaInstaller;
 use Moox\Media\Models\Media;
-use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaTranslation;
 use Moox\Media\Policies\MediaPolicy;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Traits\HasMediaUsable;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class MediaServiceProvider extends PackageServiceProvider
+class MediaServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('media')
@@ -34,10 +35,35 @@ class MediaServiceProvider extends PackageServiceProvider
             ->hasAssets();
     }
 
-    public function boot()
+    /**
+     * Custom-Installer für das Media-Package, vom Moox-Installer ausgewertet.
+     *
+     * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
+     */
+    public function getCustomInstallers(): array
     {
-        parent::boot();
+        return [
+            new MediaInstaller,
+        ];
+    }
 
+    /**
+     * Custom-Assets, damit der Typ "media-setup" im Installer auswählbar ist.
+     */
+    public function getCustomInstallAssets(): array
+    {
+        return [
+            [
+                'type' => 'media-setup',
+                'data' => [
+                    'spatie-medialibrary-config',
+                ],
+            ],
+        ];
+    }
+
+    public function bootingPackage(): void
+    {
         Gate::policy(Media::class, MediaPolicy::class);
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
@@ -55,17 +81,20 @@ class MediaServiceProvider extends PackageServiceProvider
             scopes: ListMediaCollections::class
         );
 
-        $this->app->booted(function () {
-            if (app()->runningInConsole()) {
-                return;
+        // Listen for changes in media_translations table
+        // These observers are necessary because Translatable may save translations
+        // without triggering the Media model's saved event
+        MediaTranslation::saved(function (MediaTranslation $translation) {
+            $media = Media::find($translation->media_id);
+            if ($media) {
+                HasMediaUsable::syncMediaMetadata($media);
             }
+        });
 
-            try {
-                if (Schema::hasTable('media_collections')) {
-                    MediaCollection::ensureUncategorizedExists();
-                }
-            } catch (\Exception $e) {
-                // Silently ignore - table might not exist yet
+        MediaTranslation::updated(function (MediaTranslation $translation) {
+            $media = Media::find($translation->media_id);
+            if ($media) {
+                HasMediaUsable::syncMediaMetadata($media);
             }
         });
     }

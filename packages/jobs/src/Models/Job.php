@@ -5,6 +5,9 @@ namespace Moox\Jobs\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int|null $reserved_at
+ */
 class Job extends Model
 {
     protected $table = 'jobs';

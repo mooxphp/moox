@@ -128,7 +128,7 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
                     label: 'Select plugins to install in this panel:',
                     options: array_keys($pluginChoices),
                     default: array_keys($pluginChoices),
-                    scroll: min(10, count($pluginChoices)),
+                    scroll: (string) min(10, count($pluginChoices)),
                     required: false
                 );
 
@@ -403,13 +403,11 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             }
         }
 
-        if ($changed) {
-            File::put($panelPath, $content);
-            foreach ($pluginsToAdd as $plugin) {
-                info("Registered plugin: {$plugin}");
-            }
-            info('Plugins registered in panel');
+        File::put($panelPath, $content);
+        foreach ($pluginsToAdd as $plugin) {
+            info("Registered plugin: {$plugin}");
         }
+        info('Plugins registered in panel');
     }
 
     /**

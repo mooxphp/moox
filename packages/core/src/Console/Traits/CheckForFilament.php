@@ -143,7 +143,7 @@ trait CheckForFilament
             return [];
         }
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     protected function getComposerPsr4Mappings(): array

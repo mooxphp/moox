@@ -142,7 +142,7 @@ class PromptFlowRunner
         }
 
         try {
-            $exists = CommandExecution::where('flow_id', $state->flowId)->exists();
+            $exists = CommandExecution::query()->where('flow_id', $state->flowId)->exists();
             if ($exists) {
                 return;
             }

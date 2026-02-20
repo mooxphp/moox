@@ -62,7 +62,6 @@ class ImportStaticDataJob implements ShouldQueue
             'glg' => 'gl', // Galician
             'glv' => 'gv', // Manx
             'grn' => 'gn', // Guarani
-            'gsw' => 'de', // Swiss German (maps to German)
             'hat' => 'ht', // Haitian Creole
             'heb' => 'he', // Hebrew
             'her' => 'hz', // Herero
@@ -187,6 +186,12 @@ class ImportStaticDataJob implements ShouldQueue
             'zha' => 'za', // Zhuang
             'zho' => 'zh', // Chinese
             'zul' => 'zu', // Zulu
+        ];
+
+        // Variant language codes to skip during import
+        // These are regional variants/creoles that aren't needed
+        $skipVariantCodes = [
+            'gsw',  // Swiss German -> skip, not needed
         ];
 
         try {
@@ -321,19 +326,26 @@ class ImportStaticDataJob implements ShouldQueue
                     if (! empty($countryData['languages'])) {
                         foreach ($countryData['languages'] as $code => $name) {
                             try {
+                                // Skip variant codes that aren't needed
+                                if (in_array($code, $skipVariantCodes)) {
+                                    Log::channel('daily')->info("Skipping variant language {$code} ({$name}) for country {$country->alpha2}");
+
+                                    continue;
+                                }
+
                                 $alpha2 = $alpha3ToAlpha2[$code] ?? $code;
                                 $nativeName = $nativeNamesMap[$alpha2] ?? $name;
 
                                 $language = StaticLanguage::updateOrCreate(
                                     ['alpha2' => $alpha2],
                                     [
-                                        'alpha3_b' => $code, // Store the original alpha3_b code
+                                        'alpha3_b' => $code,
                                         'common_name' => $name,
                                         'native_name' => $nativeName,
                                     ]
                                 );
 
-                                $locale = $alpha2.'_'.strtolower($country->alpha2);
+                                $locale = $alpha2.'_'.strtoupper($country->alpha2);
                                 StaticLocale::updateOrCreate(
                                     [
                                         'country_id' => $country->id,

@@ -15,14 +15,6 @@ class AuditServiceProvider extends MooxServiceProvider
         $package
             ->name('audit')
             ->hasConfigFile()
-            ->hasMigrations(['create_activity_log_table'])
             ->hasCommand(InstallCommand::class);
-
-        $this->getMooxPackage()
-            ->mooxPlugins([
-                'audit',
-            ])
-            ->mooxFirstPlugin(true);
-        // ->mooxRequiredSeeders(['AuditSeeder']);
     }
 }

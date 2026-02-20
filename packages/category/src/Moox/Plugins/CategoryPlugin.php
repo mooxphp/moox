@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Moox\Data\Filament\Plugins;
+namespace Moox\Category\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 
-class StaticCountriesStaticCurrenciesPlugin implements Plugin
+class CategoryPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'staticcountriesstaticcurrencies';
+        return 'category';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            StaticCountriesStaticCurrenciesResource::class,
+            CategoryResource::class,
         ]);
     }
 

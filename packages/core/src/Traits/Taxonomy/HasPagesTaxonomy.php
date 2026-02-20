@@ -90,7 +90,7 @@ trait HasPagesTaxonomy
      */
     public function getFormSelectOptionLabels(string $statePath): array
     {
-        $select = Arr::get($this->getCachedForms(), $statePath);
+        $select = Arr::get($this->getCachedSchemas(), $statePath);
 
         if (! $select instanceof Select) {
             return [];
@@ -241,11 +241,12 @@ trait HasPagesTaxonomy
      */
     protected function getRelatedTaxonomyIds(string $relationshipName): array
     {
-        if (! method_exists($this->record, $relationshipName)) {
+        $record = $this->record;
+        if ($record === null || ! method_exists($record, $relationshipName)) {
             return [];
         }
 
-        $relation = $this->record->$relationshipName();
+        $relation = $record->$relationshipName();
 
         if (! $relation instanceof MorphToMany) {
             return [];
@@ -296,8 +297,7 @@ trait HasPagesTaxonomy
     protected function loadTaxonomyData(array $data): array
     {
         $record = $this->getRecord();
-
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if ($record === null || ! method_exists($record, 'getResourceName')) {
             return $data;
         }
 
@@ -328,8 +328,7 @@ trait HasPagesTaxonomy
                     ->pluck($modelTable.'.id')
                     ->toArray();
 
-                // Ensure we always have a valid array
-                $data[$taxonomy] = is_array($tags) ? $tags : [];
+                $data[$taxonomy] = $tags;
             }
         } catch (\Exception $e) {
             // If taxonomy service fails, just continue without taxonomies
@@ -344,8 +343,7 @@ trait HasPagesTaxonomy
     protected function saveTaxonomyData(array $data): void
     {
         $record = $this->getRecord();
-
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if ($record === null || ! method_exists($record, 'getResourceName')) {
             return;
         }
 
@@ -374,7 +372,7 @@ trait HasPagesTaxonomy
      */
     protected function saveTaxonomyDataForRecord(Model $record, array $data): void
     {
-        if (! $record || ! method_exists($record, 'getResourceName')) {
+        if (! method_exists($record, 'getResourceName')) {
             return;
         }
 

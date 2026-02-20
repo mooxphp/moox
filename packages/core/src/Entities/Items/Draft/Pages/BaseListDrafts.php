@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Localization\Models\Localization;
 
@@ -24,7 +25,7 @@ abstract class BaseListDrafts extends ListRecords
     {
         parent::mount();
         $defaultLocalization = Localization::where('is_default', true)->first();
-        $defaultLang = $defaultLocalization?->locale_variant ?? config('app.locale');
+        $defaultLang = $defaultLocalization->locale_variant ?? config('app.locale');
 
         $this->lang = request()->get('lang', $defaultLang);
     }
@@ -52,6 +53,7 @@ abstract class BaseListDrafts extends ListRecords
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->action(function (): void {
+                    /** @var class-string<BaseDraftModel> $model */
                     $model = $this->getModel();
                     $trashedCount = $model::onlyTrashed()->count();
                     $model::onlyTrashed()->forceDelete();
@@ -64,8 +66,15 @@ abstract class BaseListDrafts extends ListRecords
                     $this->redirect($this->getResource()::getUrl('index', ['lang' => $this->lang, 'tab' => 'all']));
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
-        ];
+                ->visible(function (): bool {
+                    if ($this->activeTab !== 'deleted') {
+                        return false;
+                    }
+                    /** @var class-string<BaseDraftModel> $model */
+                    $model = $this->getModel();
+
+                    return $model::onlyTrashed()->exists();
+                }), ];
     }
 
     public function changeLanguage(string $lang): void

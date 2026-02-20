@@ -14,6 +14,17 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
+/**
+ * @property int|null $id
+ * @property int|null $media_collection_id
+ * @property string|null $title
+ * @property string|null $alt
+ * @property object|null $uploader
+ * @property int|string|null $uploader_id
+ * @property string|null $uploader_type
+ * @property int|string|null $original_model_id
+ * @property string|null $original_model_type
+ */
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
     use HasMediaUsable, InteractsWithMedia, Translatable;
@@ -163,24 +174,26 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                         $defaultLocale = config('app.locale');
 
                         if (class_exists(Localization::class)) {
-                            $localization = Localization::where('is_default', true)
+                            $localization = Localization::query()
+                                ->where('is_default', true)
                                 ->where('is_active_admin', true)
                                 ->with('language')
                                 ->first();
 
-                            if ($localization && $localization->language) {
-                                $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
+                            if ($localization) {
+                                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
                             }
                         }
 
                         $translation = $collection->translations->firstWhere('locale', $defaultLocale);
                         $newCollectionName = null;
 
-                        if ($translation && ! empty($translation->name)) {
-                            $newCollectionName = $translation->name;
+                        if ($translation && ! empty($translation->getAttribute('name'))) {
+                            $newCollectionName = $translation->getAttribute('name');
                         } else {
                             if ($collection->translations->isNotEmpty()) {
-                                $newCollectionName = $collection->translations->first()->name;
+                                $firstTranslation = $collection->translations->first();
+                                $newCollectionName = $firstTranslation->getAttribute('name');
                             } else {
                                 $newCollectionName = $collection->name ?? null;
                             }
@@ -193,7 +206,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                         $media->collection_name = null;
                     }
                 }
-            } elseif ($media->isDirty('media_collection_id') && ! $media->media_collection_id) {
+            } elseif ($media->isDirty('media_collection_id')) {
                 $media->collection_name = null;
             }
         });

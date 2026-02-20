@@ -8,18 +8,32 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
+**In the Moox app:** Use `php artisan moox:install` to install all Moox packages and run their migrations in one step—no need to run package-specific install commands.
+
 Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information about Redis, Amazon SQS and Beanstalkd compatibility. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
 
 ## Quick installation
 
-These two commmands are all you need to install the package:
+### Using the Moox app (recommended)
+
+If you use the Moox application, a single command installs **all** Moox packages and runs their migrations:
+
+```bash
+php artisan moox:install
+```
+
+This will handle the Jobs package along with every other Moox package—including publishing configs, running migrations, and registering plugins. You do **not** need to run `mooxjobs:install` or any other package-specific install command when using `moox:install`.
+
+### Installing the Jobs package only
+
+If you are not using the full Moox app and only want this package:
 
 ```bash
 composer require moox/jobs
 php artisan mooxjobs:install
 ```
 
-Curious what the install command does? See [manual installation](#manual-installation) below.
+Curious what the install commands do? See [manual installation](#manual-installation) below.
 
 ## Requirements
 
@@ -27,7 +41,7 @@ Curious what the install command does? See [manual installation](#manual-install
 | -------------- | --------------- | ---------------- | ----------- |
 | 2.x            | 9.x             | 2.x              | \> 8.0      |
 | 3.x            | 10.x            | 3.x              | \> 8.1      |
-| 4.x            | 12.x            | 4.x              | \> 8.3      |
+| 5.x            | 11.x            | 5.x              | \> 8.3      |
 
 in short steps
 
@@ -87,7 +101,11 @@ If there is anything else you want to configure, drop us an issue.
 
 ## Manual Installation
 
-This Laravel package is made for FilamentPHP and the awesome TALL-Stack. If you don't want to use our install command, follow thes manual steps to install the package.
+This Laravel package is made for FilamentPHP and the awesome TALL-Stack.
+
+**Note:** If you use the Moox app, run `php artisan moox:install` instead—it installs all packages and runs all migrations (including Jobs) in one go. The steps below are only for installing this package by itself without the unified installer.
+
+If you don't want to use our install command, follow these manual steps to install the package.
 
 Install the package via Composer:
 

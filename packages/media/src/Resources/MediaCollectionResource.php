@@ -103,12 +103,13 @@ class MediaCollectionResource extends Resource
                         }
 
                         if (class_exists(Localization::class)) {
-                            $defaultLocale = Localization::where('is_default', true)
+                            $defaultLocale = Localization::query()
+                                ->where('is_default', true)
                                 ->where('is_active_admin', true)
                                 ->with('language')
                                 ->first();
 
-                            if ($defaultLocale && $defaultLocale->language) {
+                            if ($defaultLocale) {
                                 $defaultLang = $defaultLocale->language->alpha2;
                                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
                                 if ($fallbackTranslation && $fallbackTranslation->name) {
@@ -150,7 +151,7 @@ class MediaCollectionResource extends Resource
                 TextColumn::make('media_count')
                     ->label(__('media::fields.media_count'))
                     ->getStateUsing(function ($record) {
-                        return Media::where('media_collection_id', $record->id)->count();
+                        return Media::query()->where('media_collection_id', $record->id)->count();
                     }),
             ])
             ->recordActions([
@@ -216,6 +217,6 @@ class MediaCollectionResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::query()->count();
     }
 }
