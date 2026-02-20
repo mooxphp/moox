@@ -34,6 +34,9 @@
             "providers": [
                 "Moox\\Media\\MediaServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

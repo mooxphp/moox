@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\Featherlight\\FeatherlightServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

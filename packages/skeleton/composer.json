@@ -32,11 +32,7 @@
             ]
         },
         "moox": {
-            "title": "Moox Skeleton",
-            "info": "No entity, just an empty package.",
-            "stability": "stable",
-            "type": "moox-plugin",
-            "template": true
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

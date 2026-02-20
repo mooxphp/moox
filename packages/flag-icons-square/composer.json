@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\FlagIconsSquare\\FlagIconsSquareServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "config": {

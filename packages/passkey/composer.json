@@ -33,6 +33,9 @@
             "providers": [
                 "Moox\\Passkey\\PasskeyServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

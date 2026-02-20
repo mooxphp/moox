@@ -33,6 +33,9 @@
             "providers": [
                 "Moox\\Localization\\LocalizationServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

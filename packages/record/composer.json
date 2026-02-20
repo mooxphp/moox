@@ -31,6 +31,9 @@
             "providers": [
                 "Moox\\Record\\RecordServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",

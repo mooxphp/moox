@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\Frontend\\FrontendServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",

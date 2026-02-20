@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\FlagIconsCircle\\FlagIconsCircleServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "config": {

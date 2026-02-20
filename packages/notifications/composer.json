@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Notification\\NotificationServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

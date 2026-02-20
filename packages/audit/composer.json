@@ -33,6 +33,9 @@
             "providers": [
                 "Moox\\Audit\\AuditServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

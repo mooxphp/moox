@@ -29,6 +29,9 @@
             "providers": [
                 "Moox\\Page\\PageServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

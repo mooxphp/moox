@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\FileIcons\\FileIconsServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "config": {

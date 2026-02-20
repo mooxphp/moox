@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\Packages\\PackagesServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,

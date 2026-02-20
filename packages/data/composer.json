@@ -40,6 +40,9 @@
             "providers": [
                 "Moox\\Data\\DataServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

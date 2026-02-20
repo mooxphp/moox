@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Devops\\DevopsServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

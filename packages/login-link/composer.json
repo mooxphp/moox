@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\LoginLink\\LoginLinkServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

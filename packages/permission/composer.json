@@ -33,6 +33,9 @@
             "providers": [
                 "Moox\\Permission\\PermissionServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",

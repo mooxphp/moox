@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Security\\SecurityServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true
