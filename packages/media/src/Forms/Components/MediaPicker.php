@@ -60,7 +60,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 // Get metadata from media_translations (use current locale from record context)
                 $metadata = $this->getMediaMetadataFromTranslations($media, $record);
-                
+
                 $attachments[$index] = [
                     'file_name' => $media->file_name,
                     'title' => $metadata['title'],
@@ -232,14 +232,14 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
         // Try to get default locale translation first
         $translation = $translations->get($defaultLocale);
-        
+
         // Fallback to English if default locale doesn't exist
-        if (!$translation) {
+        if (! $translation) {
             $translation = $translations->get('en');
         }
-        
+
         // Fallback to first available translation if English doesn't exist
-        if (!$translation && $translations->isNotEmpty()) {
+        if (! $translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }
 

@@ -349,8 +349,8 @@ class MediaPickerModal extends Component implements HasForms
                 }
             }
 
-                // Get metadata from media_translations (use default locale, fallback to first available)
-                $metadata = $this->getMediaMetadataFromTranslations($media);
+            // Get metadata from media_translations (use default locale, fallback to first available)
+            $metadata = $this->getMediaMetadataFromTranslations($media);
 
             $this->selectedMediaMeta = [
                 'id' => $media->getKey(),
@@ -452,14 +452,14 @@ class MediaPickerModal extends Component implements HasForms
 
         // Try to get default locale translation first
         $translation = $translations->get($defaultLocale);
-        
+
         // Fallback to English if default locale doesn't exist
-        if (!$translation) {
+        if (! $translation) {
             $translation = $translations->get('en');
         }
-        
+
         // Fallback to first available translation if English doesn't exist
-        if (!$translation && $translations->isNotEmpty()) {
+        if (! $translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }
 
@@ -475,7 +475,7 @@ class MediaPickerModal extends Component implements HasForms
     public function updatedSelectedMediaMeta($value, $field)
     {
         // Updates are disabled for now - fields are read-only
-        return;
+
     }
 
     public function updatingSearchQuery()
