@@ -1,6 +1,5 @@
 {
     "name": "moox/core",
-    "version": "dev-main",
     "description": "The Moox Core package cares for many common features. It is required by all Moox packages.",
     "keywords": [
         "Laravel",

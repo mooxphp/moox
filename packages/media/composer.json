@@ -1,6 +1,5 @@
 {
     "name": "moox/media",
-    "version": "dev-main",
     "description": "This is my package media",
     "keywords": [
         "Laravel",
