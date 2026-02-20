@@ -139,6 +139,18 @@ class LocalizationResource extends BaseRecordResource
                                 Toggle::make('is_default')
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false)
+                                    ->disabled(function ($get, $livewire) {
+                                        // Disabled wenn Englisch als Default ausgewählt ist
+                                        $localeVariant = $get('locale_variant') ?? $livewire->record?->locale_variant ?? '';
+                                        $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
+                                        
+                                        // Wenn es eine englische Localization ist UND bereits als Default gesetzt ist
+                                        if (strpos($localeVariant, 'en_') === 0 && $isDefault) {
+                                            return true;
+                                        }
+                                        
+                                        return false;
+                                    })
                                     ->afterStateUpdated(function ($state, $set, $get, $livewire) {
                                         if ($state) {
                                             $currentRecordId = $livewire->record?->id;
@@ -203,6 +215,9 @@ class LocalizationResource extends BaseRecordResource
     public static function table(Table $table): Table
     {
         return $table
+            ->checkIfRecordIsSelectableUsing(
+                fn ($record): bool => $record->locale_variant !== 'en_us'
+            )
             ->columns([
                 // Basic Info Group
                 IconColumn::make('table_flag')
@@ -228,6 +243,18 @@ class LocalizationResource extends BaseRecordResource
                 ToggleColumn::make('is_default')
                     ->label('Default')
                     ->width(80)
+                    ->disabled(function ($record) {
+                        // Disabled wenn Englisch als Default ausgewählt ist
+                        $localeVariant = $record->locale_variant ?? '';
+                        $isDefault = $record->is_default ?? false;
+                        
+                        // Wenn es eine englische Localization ist UND bereits als Default gesetzt ist
+                        if (strpos($localeVariant, 'en_') === 0 && $isDefault) {
+                            return true;
+                        }
+                        
+                        return false;
+                    })
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state) {
                             static::getModel()::where('id', '!=', $record->id)
