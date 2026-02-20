@@ -136,6 +136,7 @@ class LocalizationResource extends BaseRecordResource
                                     ->disabled(function ($get, $livewire) {
                                         // Disabled wenn diese Localization als Default gesetzt ist
                                         $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
+
                                         return $isDefault;
                                     }),
                                 Toggle::make('is_active_frontend')
@@ -160,7 +161,7 @@ class LocalizationResource extends BaseRecordResource
                                         if ($state) {
                                             // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
                                             $set('is_active_admin', true);
-                                            
+
                                             $currentRecordId = $livewire->record?->id;
                                             $languageId = $get('language_id');
 
@@ -268,7 +269,7 @@ class LocalizationResource extends BaseRecordResource
                         if ($state) {
                             // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
                             $record->update(['is_active_admin' => true]);
-                            
+
                             static::getModel()::where('id', '!=', $record->id)
                                 ->update(['is_default' => false]);
                         }
