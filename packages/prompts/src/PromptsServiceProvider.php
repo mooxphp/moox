@@ -64,7 +64,6 @@ class PromptsServiceProvider extends MooxServiceProvider
 
     public function bootingPackage(): void
     {
-
         require_once __DIR__.'/functions.php';
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'moox-prompts');
