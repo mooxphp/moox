@@ -58,7 +58,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 // Get metadata from media_translations (prefer en_US, fallback to first available)
                 $metadata = $this->getMediaMetadataFromTranslations($media);
-                
+
                 $attachments[$index] = [
                     'file_name' => $media->file_name,
                     'title' => $metadata['title'],
@@ -216,9 +216,9 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
         // Try to get en_US translation first
         $translation = $translations->get('en_US');
-        
+
         // Fallback to first available translation if en_US doesn't exist
-        if (!$translation && $translations->isNotEmpty()) {
+        if (! $translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }
 
