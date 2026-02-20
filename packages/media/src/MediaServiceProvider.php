@@ -14,9 +14,11 @@ use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Installers\MediaInstaller;
 use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaTranslation;
 use Moox\Media\Policies\MediaPolicy;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Traits\HasMediaUsable;
 use Spatie\LaravelPackageTools\Package;
 
 class MediaServiceProvider extends MooxServiceProvider
@@ -78,5 +80,22 @@ class MediaServiceProvider extends MooxServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMediaCollections::class
         );
+
+        // Listen for changes in media_translations table
+        // These observers are necessary because Translatable may save translations
+        // without triggering the Media model's saved event
+        MediaTranslation::saved(function (MediaTranslation $translation) {
+            $media = Media::find($translation->media_id);
+            if ($media) {
+                HasMediaUsable::syncMediaMetadata($media);
+            }
+        });
+
+        MediaTranslation::updated(function (MediaTranslation $translation) {
+            $media = Media::find($translation->media_id);
+            if ($media) {
+                HasMediaUsable::syncMediaMetadata($media);
+            }
+        });
     }
 }

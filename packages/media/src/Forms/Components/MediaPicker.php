@@ -5,6 +5,7 @@ namespace Moox\Media\Forms\Components;
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
@@ -55,12 +56,15 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                     'media_usable_type' => get_class($record),
                 ]);
 
+                // Get metadata from media_translations (prefer en_US, fallback to first available)
+                $metadata = $this->getMediaMetadataFromTranslations($media);
+                
                 $attachments[$index] = [
                     'file_name' => $media->file_name,
-                    'title' => $this->getMediaAttribute($media, 'title'),
-                    'description' => $this->getMediaAttribute($media, 'description'),
-                    'internal_note' => $this->getMediaAttribute($media, 'internal_note'),
-                    'alt' => $this->getMediaAttribute($media, 'alt'),
+                    'title' => $metadata['title'],
+                    'description' => $metadata['description'],
+                    'internal_note' => $metadata['internal_note'],
+                    'alt' => $metadata['alt'],
                 ];
 
                 $index++;
@@ -196,6 +200,34 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     public function getUploadConfig(): array
     {
         return $this->uploadConfig;
+    }
+
+    /**
+     * Get media metadata from media_translations table
+     * Prefers en_US, falls back to first available translation
+     */
+    protected function getMediaMetadataFromTranslations(Media $media): array
+    {
+        // Get translations from media_translations table
+        $translations = DB::table('media_translations')
+            ->where('media_id', $media->id)
+            ->get()
+            ->keyBy('locale');
+
+        // Try to get en_US translation first
+        $translation = $translations->get('en_US');
+        
+        // Fallback to first available translation if en_US doesn't exist
+        if (!$translation && $translations->isNotEmpty()) {
+            $translation = $translations->first();
+        }
+
+        return [
+            'title' => $translation->title ?? null,
+            'alt' => $translation->alt ?? null,
+            'description' => $translation->description ?? null,
+            'internal_note' => $translation->internal_note ?? null,
+        ];
     }
 
     /**
