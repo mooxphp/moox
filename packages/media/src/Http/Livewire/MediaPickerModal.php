@@ -368,8 +368,8 @@ class MediaPickerModal extends Component implements HasForms
                 }
             }
 
-                // Get metadata from media_translations (use default locale, fallback to first available)
-                $metadata = $this->getMediaMetadataFromTranslations($media);
+            // Get metadata from media_translations (use default locale, fallback to first available)
+            $metadata = $this->getMediaMetadataFromTranslations($media);
 
             $this->selectedMediaMeta = [
                 'id' => $media->getKey(),
@@ -494,7 +494,6 @@ class MediaPickerModal extends Component implements HasForms
     public function updatedSelectedMediaMeta($value, $field)
     {
         // Updates are disabled for now - fields are read-only
-        return;
     }
 
     public function updatingSearchQuery()

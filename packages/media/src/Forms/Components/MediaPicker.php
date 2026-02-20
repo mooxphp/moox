@@ -60,7 +60,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 // Get metadata from media_translations (use current locale from record context)
                 $metadata = $this->getMediaMetadataFromTranslations($media, $record);
-                
+
                 $attachments[$index] = [
                     'file_name' => $media->file_name,
                     'title' => $metadata['title'],
