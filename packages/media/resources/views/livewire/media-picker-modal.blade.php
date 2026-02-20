@@ -60,22 +60,24 @@
                     @if($mediaItems)
                         @foreach ($mediaItems as $item)
                             @php
-                                $mimeType = $item['mime_type'];
+                                $mimeType = $item['mime_type'] ?? null;
+                                $isImage = $mimeType && str_starts_with($mimeType, 'image/');
                                 $fileData = $mimeTypeLabels[$mimeType] ?? null;
+                                $iconData = $fileData ?? ['icon' => '/vendor/file-icons/unknown.svg', 'label' => 'File'];
                             @endphp
 
                             <div wire:click="toggleMediaSelection({{ $item['id'] }})"
                                 style="position: relative; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; background-color: #f3f4f6; cursor: pointer; transition: all 0.2s ease; {{ $selectedMediaMeta['id'] == $item['id'] ? 'box-shadow: 0 0 0 4px #93c5fd, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); background-color: #eff6ff; padding: 0.1rem;' : '' }}">
-                                @if ($fileData)
+                                @if ($isImage)
+                                    <div style="position: relative; width: 100%; height: 8rem; border-radius: 0.5rem; overflow: hidden;">
+                                        <img src="{{ $item['original_url'] }}" style="object-fit: cover; width: 100%; height: 100%;" />
+                                    </div>
+                                @else
                                     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 8rem; padding: 1rem; border-radius: 0.5rem;">
-                                        <x-filament::icon icon="{{ $fileData['icon'] }}" style="width: 3rem; height: 3rem; margin-bottom: 0.5rem;" />
+                                        <x-filament::icon icon="{{ $iconData['icon'] }}" style="width: 3rem; height: 3rem; margin-bottom: 0.5rem;" />
                                         <div style="font-size: 0.875rem; color: #374151; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 500;">
                                             {{ $item['file_name'] }}
                                         </div>
-                                    </div>
-                                @else
-                                    <div style="position: relative; width: 100%; height: 8rem; border-radius: 0.5rem; overflow: hidden;">
-                                        <img src="{{ $item['original_url'] }}" style="object-fit: cover; width: 100%; height: 100%;" />
                                     </div>
                                 @endif
 
