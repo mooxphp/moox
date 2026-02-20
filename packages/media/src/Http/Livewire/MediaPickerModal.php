@@ -471,14 +471,14 @@ class MediaPickerModal extends Component implements HasForms
 
         // Try to get default locale translation first
         $translation = $translations->get($defaultLocale);
-        
+
         // Fallback to en_US if default locale doesn't exist
-        if (!$translation) {
+        if (! $translation) {
             $translation = $translations->get('en_US');
         }
-        
+
         // Fallback to first available translation if en_US doesn't exist
-        if (!$translation && $translations->isNotEmpty()) {
+        if (! $translation && $translations->isNotEmpty()) {
             $translation = $translations->first();
         }
 
