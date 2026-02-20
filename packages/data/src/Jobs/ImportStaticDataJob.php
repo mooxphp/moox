@@ -345,7 +345,7 @@ class ImportStaticDataJob implements ShouldQueue
                                     ]
                                 );
 
-                                $locale = $alpha2.'_'.strtolower($country->alpha2);
+                                $locale = $alpha2.'_'.strtoupper($country->alpha2);
                                 StaticLocale::updateOrCreate(
                                     [
                                         'country_id' => $country->id,

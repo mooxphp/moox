@@ -75,8 +75,18 @@ class LocalizationResource extends BaseRecordResource
                                         if ($state) {
                                             $language = StaticLanguage::find($state);
                                             if ($language) {
-                                                $mainLocale = $language->alpha2.'_'.strtoupper($language->alpha2);
-                                                $set('locale_variant', $mainLocale);
+                                                // Try to find the first available locale
+                                                $firstLocale = StaticLocale::where('language_id', $state)->first();
+                                                if ($firstLocale) {
+                                                    $set('locale_variant', $firstLocale->locale);
+                                                } else {
+                                                    // Fallback: en_US for English, otherwise Language_Language
+                                                    if ($language->alpha2 === 'en') {
+                                                        $set('locale_variant', 'en_US');
+                                                    } else {
+                                                        $set('locale_variant', $language->alpha2.'_'.strtoupper($language->alpha2));
+                                                    }
+                                                }
                                             }
                                         }
                                     }),
@@ -101,7 +111,6 @@ class LocalizationResource extends BaseRecordResource
                                         }
 
                                         $baseLanguage = $language->alpha2;
-                                        $mainLocale = $baseLanguage.'_'.strtoupper($baseLanguage);
 
                                         $locales = StaticLocale::where('language_id', $languageId)->with('country')->get();
 
@@ -109,18 +118,17 @@ class LocalizationResource extends BaseRecordResource
 
                                         foreach ($locales as $locale) {
                                             $countryName = $locale->country ? $locale->country->common_name : 'Unknown';
-
-                                            // Wenn es der Haupt-Locale ist (z.B. de_DE), zeige "Standard"
-                                            if ($locale->locale === $mainLocale) {
-                                                $options[$locale->locale] = $language->common_name.' (Standard)';
-                                            } else {
-                                                $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
-                                            }
+                                            $options[$locale->locale] = $language->common_name.' ('.$countryName.')';
                                         }
 
-                                        // Falls kein Locale in der DB existiert, füge den Haupt-Locale hinzu
+                                        // If no locale exists in the DB, add a fallback
                                         if (empty($options)) {
-                                            $options[$mainLocale] = $language->common_name.' (Standard)';
+                                            // en_US for English, otherwise Language_Language
+                                            if ($baseLanguage === 'en') {
+                                                $options['en_US'] = $language->common_name.' (Standard)';
+                                            } else {
+                                                $options[$baseLanguage.'_'.strtoupper($baseLanguage)] = $language->common_name.' (Standard)';
+                                            }
                                         }
 
                                         return $options;
@@ -134,7 +142,7 @@ class LocalizationResource extends BaseRecordResource
                                     ->label(__('localization::fields.is_activ_admin'))
                                     ->default(true)
                                     ->disabled(function ($get, $livewire) {
-                                        // Disabled wenn diese Localization als Default gesetzt ist
+                                        // Disabled when this localization is set as default
                                         $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
 
                                         return $isDefault;
@@ -146,11 +154,11 @@ class LocalizationResource extends BaseRecordResource
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false)
                                     ->disabled(function ($get, $livewire) {
-                                        // Disabled wenn Englisch als Default ausgewählt ist
+                                        // Disabled when English is selected as default
                                         $localeVariant = $get('locale_variant') ?? $livewire->record?->locale_variant ?? '';
                                         $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
 
-                                        // Wenn es eine englische Localization ist UND bereits als Default gesetzt ist
+                                        // If it is an English localization AND already set as default
                                         if (strpos($localeVariant, 'en_') === 0 && $isDefault) {
                                             return true;
                                         }
@@ -159,7 +167,7 @@ class LocalizationResource extends BaseRecordResource
                                     })
                                     ->afterStateUpdated(function ($state, $set, $get, $livewire) {
                                         if ($state) {
-                                            // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
+                                            // When activated as default, automatically set is_active_admin to true
                                             $set('is_active_admin', true);
 
                                             $currentRecordId = $livewire->record?->id;
@@ -170,6 +178,12 @@ class LocalizationResource extends BaseRecordResource
                                                     $query->where('id', '!=', $currentRecordId);
                                                 })
                                                 ->update(['is_default' => false]);
+                                        } else {
+                                            // When default is deactivated, always set en_US as default
+                                            $enUsLocale = Localization::where('locale_variant', 'en_US')->first();
+                                            if ($enUsLocale) {
+                                                $enUsLocale->update(['is_default' => true, 'is_active_admin' => true]);
+                                            }
                                         }
                                     }),
                                 TextInput::make('routing_path')
@@ -225,7 +239,7 @@ class LocalizationResource extends BaseRecordResource
     {
         return $table
             ->checkIfRecordIsSelectableUsing(
-                fn ($record): bool => $record->locale_variant !== 'en_us'
+                fn ($record): bool => $record->locale_variant !== 'en_US'
             )
             ->columns([
                 // Basic Info Group
@@ -246,7 +260,7 @@ class LocalizationResource extends BaseRecordResource
                 ToggleColumn::make('is_active_admin')
                     ->label('Admin')
                     ->width(80)
-                    ->disabled(fn ($record) => $record->is_default ?? false), // Disabled wenn als Default gesetzt
+                    ->disabled(fn ($record) => $record->is_default ?? false), // Disabled when set as default
                 ToggleColumn::make('is_active_frontend')
                     ->label('Frontend')
                     ->width(80),
@@ -254,11 +268,11 @@ class LocalizationResource extends BaseRecordResource
                     ->label('Default')
                     ->width(80)
                     ->disabled(function ($record) {
-                        // Disabled wenn Englisch als Default ausgewählt ist
+                        // Disabled when English is selected as default
                         $localeVariant = $record->locale_variant ?? '';
                         $isDefault = $record->is_default ?? false;
 
-                        // Wenn es eine englische Localization ist UND bereits als Default gesetzt ist
+                        // If it is an English localization AND already set as default
                         if (strpos($localeVariant, 'en_') === 0 && $isDefault) {
                             return true;
                         }
@@ -267,11 +281,17 @@ class LocalizationResource extends BaseRecordResource
                     })
                     ->afterStateUpdated(function ($state, $record) {
                         if ($state) {
-                            // Wenn als Default aktiviert, setze is_active_admin automatisch auf true
+                            // When activated as default, automatically set is_active_admin to true
                             $record->update(['is_active_admin' => true]);
 
                             static::getModel()::where('id', '!=', $record->id)
                                 ->update(['is_default' => false]);
+                        } else {
+                            // When default is deactivated, always set en_US as default
+                            $enUsLocale = static::getModel()::where('locale_variant', 'en_US')->first();
+                            if ($enUsLocale) {
+                                $enUsLocale->update(['is_default' => true, 'is_active_admin' => true]);
+                            }
                         }
                     }),
                 // Config Toggles Group
