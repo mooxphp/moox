@@ -475,7 +475,6 @@ class MediaPickerModal extends Component implements HasForms
     public function updatedSelectedMediaMeta($value, $field)
     {
         // Updates are disabled for now - fields are read-only
-
     }
 
     public function updatingSearchQuery()
