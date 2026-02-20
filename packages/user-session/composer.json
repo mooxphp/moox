@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\UserSession\\UserSessionServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

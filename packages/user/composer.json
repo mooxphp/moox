@@ -34,14 +34,7 @@
             ]
         },
         "moox": {
-            "package": {
-                "title": "Moox User",
-                "info": "User management package for Moox.",
-                "website": "https://moox.org/docs/user",
-                "stability": "stable",
-                "type": "moox-plugin",
-                "template": true
-            }
+            "stability": "stable"
         }
     },
     "prefer-stable": true

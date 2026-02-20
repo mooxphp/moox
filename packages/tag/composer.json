@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Tag\\TagServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,
