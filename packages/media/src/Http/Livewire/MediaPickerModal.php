@@ -3,21 +3,22 @@
 namespace Moox\Media\Http\Livewire;
 
 use Exception;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
-use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Filament\Schemas\Schema;
 use Livewire\WithPagination;
-use Moox\Localization\Models\Localization;
-use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Contracts\HasForms;
 use Moox\Media\Models\MediaCollection;
+use Illuminate\Database\Eloquent\Model;
+use Moox\Media\Helpers\MediaIconHelper;
+use Moox\Media\Models\MediaTranslation;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\FileUpload;
+use Moox\Localization\Models\Localization;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property \Filament\Schemas\Schema $form */
@@ -195,19 +196,9 @@ class MediaPickerModal extends Component implements HasForms
                     }
 
                     try {
-                        $model = new Media;
-                        $model->exists = true;
-
-                        $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
-                        /** @var Media $media */
-                        $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
-
-                        $media->media_collection_id = $collectionId;
-                        $media->save();
-
                         $title = pathinfo($fileName, PATHINFO_FILENAME);
 
-                        // Get default locale for translations
+                        // Get default locale for translations FIRST, before creating media
                         $uploadLocale = 'en_US';
                         if (class_exists(Localization::class)) {
                             $localization = Localization::query()
@@ -221,35 +212,63 @@ class MediaPickerModal extends Component implements HasForms
                             }
                         }
 
-                        // Set translations using default locale (or English)
-                        $translation = $media->translateOrNew($uploadLocale);
-                        $translation->name = $title;
-                        $translation->title = $title;
-                        $translation->alt = $title;
-                        $translation->save();
+                        // Set app locale BEFORE creating media to prevent Translatable from creating unwanted translations
+                        $originalLocale = app()->getLocale();
+                        app()->setLocale($uploadLocale);
 
-                        $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
-                        $media->uploader_id = Auth::id();
-                        $media->original_model_type = Media::class;
-                        $media->original_model_id = $media->getKey();
-                        $media->model_id = $media->getKey();
-                        $media->model_type = Media::class;
+                        try {
+                            $model = new Media;
+                            $model->exists = true;
 
-                        $media->setCustomProperty('file_hash', $fileHash);
+                            $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                            /** @var Media $media */
+                            $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
-                        if (str_starts_with($media->mime_type, 'image/')) {
-                            try {
-                                [$width, $height] = getimagesize($media->getPath());
-                                $media->setCustomProperty('dimensions', [
-                                    'width' => $width,
-                                    'height' => $height,
-                                ]);
-                            } catch (\Exception $e) {
-                                // Ignore image size errors
+                            $media->media_collection_id = $collectionId;
+                            $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
+                            $media->uploader_id = Auth::id();
+                            $media->original_model_type = Media::class;
+                            $media->original_model_id = $media->getKey();
+                            $media->model_id = $media->getKey();
+                            $media->model_type = Media::class;
+
+                            $media->setCustomProperty('file_hash', $fileHash);
+
+                            if (str_starts_with($media->mime_type, 'image/')) {
+                                try {
+                                    [$width, $height] = getimagesize($media->getPath());
+                                    $media->setCustomProperty('dimensions', [
+                                        'width' => $width,
+                                        'height' => $height,
+                                    ]);
+                                } catch (\Exception $e) {
+                                    // Ignore image size errors
+                                }
                             }
-                        }
 
-                        $media->save();
+                            $media->save();
+
+                            // Create translation directly in database (only one translation in upload locale)
+                            MediaTranslation::updateOrCreate(
+                                [
+                                    'media_id' => $media->id,
+                                    'locale' => $uploadLocale,
+                                ],
+                                [
+                                    'name' => $title,
+                                    'title' => $title,
+                                    'alt' => $title,
+                                ]
+                            );
+
+                            // Delete any unwanted translations that might have been created
+                            MediaTranslation::where('media_id', $media->id)
+                                ->where('locale', '!=', $uploadLocale)
+                                ->delete();
+                        } finally {
+                            // Restore original locale
+                            app()->setLocale($originalLocale);
+                        }
                         $this->processedHashes[] = $fileHash;
                         $uploadedCount++;
                     } catch (\Exception $e) {
