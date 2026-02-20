@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Moox\Localization\Models\Localization;
@@ -348,14 +349,17 @@ class MediaPickerModal extends Component implements HasForms
                 }
             }
 
+                // Get metadata from media_translations (use default locale, fallback to first available)
+                $metadata = $this->getMediaMetadataFromTranslations($media);
+
             $this->selectedMediaMeta = [
                 'id' => $media->getKey(),
                 'file_name' => $media->file_name,
-                'name' => $media->getAttribute('name') ?? '',
-                'title' => $media->getAttribute('title') ?? '',
-                'description' => $media->getAttribute('description') ?? '',
-                'internal_note' => $media->getAttribute('internal_note') ?? '',
-                'alt' => $media->getAttribute('alt') ?? '',
+                'name' => $metadata['name'] ?? '',
+                'title' => $metadata['title'] ?? '',
+                'description' => $metadata['description'] ?? '',
+                'internal_note' => $metadata['internal_note'] ?? '',
+                'alt' => $metadata['alt'] ?? '',
                 'mime_type' => $media->getReadableMimeType(),
                 'write_protected' => (bool) $media->getOriginal('write_protected'),
                 'size' => $media->size,
@@ -420,27 +424,58 @@ class MediaPickerModal extends Component implements HasForms
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
 
-    public function updatedSelectedMediaMeta($value, $field)
+    /**
+     * Get media metadata from media_translations table
+     * Uses default locale first, then English, then first available translation
+     */
+    protected function getMediaMetadataFromTranslations(Media $media): array
     {
-        if ($this->selectedMediaMeta['id']) {
-            $media = Media::query()->where('id', $this->selectedMediaMeta['id'])->first();
+        // Get default locale from Localization
+        $defaultLocale = 'en';
+        if (class_exists(Localization::class)) {
+            $localization = Localization::query()
+                ->where('is_default', true)
+                ->where('is_active_admin', true)
+                ->with('language')
+                ->first();
 
-            if (in_array($field, ['title', 'description', 'internal_note', 'alt', 'name', 'media_collection_id'])) {
-                if ($media->getOriginal('write_protected')) {
-                    return;
-                }
-
-                $media->setAttribute($field, $value);
-
-                if ($field === 'media_collection_id') {
-                    $collection = MediaCollection::query()->find($value);
-                    $media->collection_name = $collection !== null ? ($collection->getAttribute('name') ?? null) : null;
-                    $this->selectedMediaMeta['collection_name'] = $media->collection_name;
-                }
-
-                $media->save();
+            if ($localization) {
+                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
             }
         }
+
+        // Get translations from media_translations table
+        $translations = DB::table('media_translations')
+            ->where('media_id', $media->id)
+            ->get()
+            ->keyBy('locale');
+
+        // Try to get default locale translation first
+        $translation = $translations->get($defaultLocale);
+        
+        // Fallback to English if default locale doesn't exist
+        if (!$translation) {
+            $translation = $translations->get('en');
+        }
+        
+        // Fallback to first available translation if English doesn't exist
+        if (!$translation && $translations->isNotEmpty()) {
+            $translation = $translations->first();
+        }
+
+        return [
+            'name' => $translation->name ?? null,
+            'title' => $translation->title ?? null,
+            'alt' => $translation->alt ?? null,
+            'description' => $translation->description ?? null,
+            'internal_note' => $translation->internal_note ?? null,
+        ];
+    }
+
+    public function updatedSelectedMediaMeta($value, $field)
+    {
+        // Updates are disabled for now - fields are read-only
+        return;
     }
 
     public function updatingSearchQuery()

@@ -12,6 +12,7 @@
 - phpstan
 - filament v5 compatible
 - installer
+- translations
 
 ## jobs
 - minimal fixes ui 

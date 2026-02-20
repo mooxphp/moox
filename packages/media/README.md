@@ -1,211 +1,114 @@
-![Moox Media](https://github.com/mooxphp/moox/raw/main/art/banner/media-package.jpg)
+# Moox Media Package
 
-# Moox Media
+A comprehensive media management package for FilamentPHP with translation support.
 
-This is my package media
+## Installation
 
-## Quick Installation
-
-These two commmands are all you need to install the package:
+Install the package using the Moox installer:
 
 ```bash
-composer require moox/media
-php artisan media:install
+php artisan moox:install
 ```
 
-Curious what the install command does? See manual installation below.
+This will:
+- Publish migrations and configuration files
+- Publish Spatie Media Library configuration
+- Integrate the custom Media model and PathGenerator
 
-## Using the Template
+## Features
 
-1. Go to https://github.com/mooxphp/media
-2. Press the `Use this template` button
-3. Create a new repository based on the template
-4. Clone the repository locally
-5. Run `php build.php`in the repo's directory and follow the steps
+- **Media Management**: Upload, organize, and manage media files with Spatie Media Library integration
+- **Translations**: Full translation support for media metadata
+- **MediaPicker Component**: Filament form component for selecting and attaching media to models
+- **Media Collections**: Organize media into collections with translation support
 
-After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
+## Usage
 
-### Config
+### Setup Model for Media
 
-After that the Resource is highly configurable.
+To use media in your model, you need to:
 
-#### Tabs and Translation
+1. Use the `HasMediaUsable` trait
+2. Implement `HasMedia` interface
+3. Use `InteractsWithMedia` trait from Spatie Media Library
+4. Add a JSON field for storing media metadata (e.g., `image`)
+5. Optionally add a relation method to access media through usables
 
-Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
+Example:
 
 ```php
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
+use Illuminate\Database\Eloquent\Model;
+use Moox\Media\Traits\HasMediaUsable;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-        ],
+class Draft extends Model implements HasMedia
+{
+    use HasMediaUsable, InteractsWithMedia;
+
+    protected $fillable = [
+        'image', // JSON field for media metadata
+        // ... other fields
+    ];
+
+    protected $casts = [
+        'image' => 'json',
+        // ... other casts
+    ];
+
+    // Optional: Access media through usables relation
+    public function mediaThroughUsables()
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'media_usables',
+            'media_usable_id',
+            'media_id'
+        )->where('media_usables.media_usable_type', '=', static::class);
+    }
+
+    // Optional: Register media conversions
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300);
+    }
+}
 ```
 
-All options for Tabs are explained in [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs).
-
-#### Item Types
-
-The item also support 'item' types, means you are able to configure selectable types for your Entity. By default, we provide "Post" and "Page" as example. If you don't want to use types, just empty the array and the field and column become invisible.
+### Use MediaPicker in Filament Forms
 
 ```php
-    /*
-    |--------------------------------------------------------------------------
-    | Item Types
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the types of items entities. You can delete
-    | the types you don't need and add new ones. If you don't need
-    | types, you can empty this array like this: 'types' => [],
-    |
-    */
+use Moox\Media\Forms\Components\MediaPicker;
 
-    'types' => [
-        'post' => 'Post',
-        'page' => 'Page',
-    ],
+MediaPicker::make('image')
+    ->multiple(false)
+    ->acceptedFileTypes(['image/jpeg', 'image/png'])
 ```
 
-#### Author Model
+### Access Media Metadata
 
-You can configure the user model used for displaying Authors. By default it is tied to App User:
+When media is attached via MediaPicker, the JSON field contains:
 
-```php
-    /*
-    |--------------------------------------------------------------------------
-    | Author Model
-    |--------------------------------------------------------------------------
-    |
-    | This sets the user model that can be used as author. It should be an
-    | authenticatable model and support the morph relationship.
-    | It should have fields similar to Moox User or WpUser.
-    |
-    */
-
-    'author_model' => \App\Models\User::class,
+```json
+{
+    "file_name": "example.jpg",
+    "title": "Example Image",
+    "alt": "Example Image",
+    "description": "Image description",
+    "internal_note": "Internal notes"
+}
 ```
 
-You may probably use Moox User
+### Editing Media Metadata
 
-```php
-    'author_model' => \Moox\User\Models\User::class,
-```
+When editing media in the admin panel, fields like `title`, `alt`, `description`, and `internal_note` are automatically saved as soon as you leave the field (blur event). No save button is required - changes are persisted immediately and synchronized to all models using that media.
 
-or Moox Press User instead:
+## Requirements
 
-```php
-    'author_model' => \Moox\Press\Models\WpUser::class,
-```
-
-<!--/whatdoes-->
-
-## Manual Installation
-
-Instead of using the install-command `php artisan media:install` you are able to install this package manually step by step:
-
-```bash
-// Publish and run the migrations:
-php artisan vendor:publish --tag="media-migrations"
-php artisan migrate
-
-// Publish the config file with:
-php artisan vendor:publish --tag="media-config"
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Security Vulnerabilities
-
-Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
-
-## Credits
-
--   [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+- Laravel 12+
+- Filament 4+
+- Spatie Media Library
+- Astrotomic Translatable
