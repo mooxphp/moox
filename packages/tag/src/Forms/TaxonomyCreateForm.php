@@ -7,7 +7,6 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class TaxonomyCreateForm
