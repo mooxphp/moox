@@ -3,22 +3,22 @@
 namespace Moox\Media\Http\Livewire;
 
 use Exception;
-use Livewire\Component;
-use Filament\Schemas\Schema;
-use Livewire\WithPagination;
-use Moox\Media\Models\Media;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Contracts\HasForms;
-use Moox\Media\Models\MediaCollection;
-use Illuminate\Database\Eloquent\Model;
-use Moox\Media\Helpers\MediaIconHelper;
-use Moox\Media\Models\MediaTranslation;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
-use Moox\Localization\Models\Localization;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Moox\Localization\Models\Localization;
+use Moox\Media\Helpers\MediaIconHelper;
+use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaTranslation;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property \Filament\Schemas\Schema $form */
