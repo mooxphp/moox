@@ -159,7 +159,7 @@ jobs:
           echo "Stability: $STABILITY"
           
       - name: Split package to separate repository
-        uses: symplify/monorepo-split-github-action@v2.4.0
+        uses: symplify/monorepo-split-github-action@v2.4.4
         env:
           GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
         with:
