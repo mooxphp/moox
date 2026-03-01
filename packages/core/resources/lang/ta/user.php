@@ -1,5 +1,4 @@
 <?php
-
 return [
     'user' => 'பயனர்',
     'users' => 'பயனர்கள்',
@@ -18,7 +17,7 @@ return [
     'new_password' => 'புதிய கடவுச்சொல்',
     'new_password_confirmation' => 'புதிய கடவுச்சொல் உறுதிப்படுத்தல்',
     'user_login' => 'பயனர் உள்நுழைவு',
-    'user_nicename' => 'பயனர் NICENAME',
+    'user_nicename' => 'பயனர் நல்லபெயர்',
     'user_email' => 'பயனர் மின்னஞ்சல்',
     'user_url' => 'பயனர் முகவரி',
     'user_registered' => 'பயனர் பதிவு செய்யப்பட்டார்',
@@ -35,6 +34,6 @@ return [
     'email' => 'மின்னஞ்சல்',
     'email_verified_at' => 'மின்னஞ்சல் சரிபார்க்கப்பட்டது',
     'website' => 'வலைத்தளம்',
-    'wp_user_meta' => 'WP பயனர் மேவு',
-    'wp_user_metas' => 'WP பயனர் மேவு',
+    'wp_user_meta' => 'டபள்யுபி பயனர் மேவு',
+    'wp_user_metas' => 'டபள்யுபி பயனர் மேவுகள்',
 ];
