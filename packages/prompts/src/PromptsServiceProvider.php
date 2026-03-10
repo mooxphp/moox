@@ -2,7 +2,11 @@
 
 namespace Moox\Prompts;
 
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Contracts\Console\Kernel;
+use Livewire\Livewire;
 use Moox\Core\MooxServiceProvider;
+use Moox\Prompts\Filament\Components\RunCommandComponent;
 use Moox\Prompts\Support\CliPromptRuntime;
 use Moox\Prompts\Support\PromptFlowRunner;
 use Moox\Prompts\Support\PromptFlowStateStore;
@@ -35,7 +39,7 @@ class PromptsServiceProvider extends MooxServiceProvider
             $store = cache()->store();
 
             // Avoid volatile in-memory array cache which loses flow state between requests.
-            if ($store->getStore() instanceof \Illuminate\Cache\ArrayStore) {
+            if ($store->getStore() instanceof ArrayStore) {
                 $store = cache()->store('file');
             }
 
@@ -48,7 +52,7 @@ class PromptsServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(PromptFlowRunner::class, function ($app) {
             return new PromptFlowRunner(
-                $app->make(\Illuminate\Contracts\Console\Kernel::class),
+                $app->make(Kernel::class),
                 $app->make(PromptFlowStateStore::class)
             );
         });
@@ -68,10 +72,10 @@ class PromptsServiceProvider extends MooxServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'moox-prompts');
 
-        if (class_exists(\Livewire\Livewire::class)) {
-            \Livewire\Livewire::component(
+        if (class_exists(Livewire::class)) {
+            Livewire::component(
                 'moox-prompts.filament.components.run-command-component',
-                \Moox\Prompts\Filament\Components\RunCommandComponent::class
+                RunCommandComponent::class
             );
         }
     }

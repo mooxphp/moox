@@ -1,11 +1,12 @@
 <?php
 
-/** @var \Moox\Item\Tests\TestCase $this */
+/** @var TestCase $this */
 
 use Moox\Item\Models\Item;
 use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\EditItem;
 use Moox\Item\Moox\Entities\Items\Item\Pages\ListItems;
+use Moox\Item\Tests\TestCase;
 
 use function Pest\Livewire\livewire;
 

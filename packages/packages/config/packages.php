@@ -70,7 +70,7 @@ return [
             'relationship' => 'taggable',
             'foreignKey' => 'taggable_id',
             'relatedKey' => 'tag_id',
-            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+            'createForm' => Moox\Tag\Forms\TaxonomyCreateForm::class,
             'hierarchical' => false,
         ],
     ],

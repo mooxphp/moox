@@ -3,9 +3,12 @@
 namespace Moox\Prompts\Support;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Moox\Prompts\Models\CommandExecution;
 
 class PromptFlowStateStore
 {
@@ -43,7 +46,7 @@ class PromptFlowStateStore
         $this->cache->forget($this->key($flowId));
 
         // Mark execution as cancelled if it exists, or create one
-        if (! class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
+        if (! class_exists(CommandExecution::class)) {
             return;
         }
 
@@ -84,7 +87,7 @@ class PromptFlowStateStore
             }
 
             // Try to update existing record
-            $updated = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $flowId)
+            $updated = CommandExecution::query()->where('flow_id', $flowId)
                 ->whereNotIn('status', ['cancelled', 'completed', 'failed'])
                 ->update([
                     'status' => 'cancelled',
@@ -101,12 +104,12 @@ class PromptFlowStateStore
                     return;
                 }
 
-                $command = app(\Illuminate\Contracts\Console\Kernel::class)->all()[$name] ?? null;
+                $command = app(Kernel::class)->all()[$name] ?? null;
                 $description = $command ? $command->getDescription() : $name;
 
                 // Insert directly into database to bypass model casts
-                $userId = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::id() : null;
-                $userType = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()::class : null;
+                $userId = Auth::check() ? Auth::id() : null;
+                $userType = Auth::check() ? Auth::user()::class : null;
 
                 $now = now();
                 DB::table('command_executions')->insertGetId([

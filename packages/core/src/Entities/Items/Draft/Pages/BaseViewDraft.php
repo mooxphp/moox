@@ -86,7 +86,7 @@ abstract class BaseViewDraft extends ViewRecord
                 if ($firstAvailableTranslation) {
                     $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $firstAvailableTranslation->locale]));
                 } else {
-                    $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+                    $defaultLocalization = Localization::where('is_default', true)->first();
                     if ($defaultLocalization) {
                         $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record, 'lang' => $defaultLocalization->locale_variant]));
                     } else {
