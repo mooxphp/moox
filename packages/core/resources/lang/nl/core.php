@@ -1,8 +1,8 @@
 <?php
 
-return [
-    'title' => 'Titel',
-    'published' => 'Published',
-    'draft' => 'Draft',
-    'trash' => 'Trash',
-];
+return array (
+  'title' => 'Titel',
+  'published' => 'Published',
+  'draft' => 'Draft',
+  'trash' => 'Trash',
+);

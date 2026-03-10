@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'Sync',

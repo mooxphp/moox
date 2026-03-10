@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Job refers to Laravel's job queue, should not be translated
     'job' => 'Auftrag',

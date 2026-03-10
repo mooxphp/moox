@@ -1,5 +1,4 @@
 <?php
-
 return [
     'comment' => 'Commentaire',
     'comments' => 'Commentaires',
