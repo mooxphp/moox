@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     'comment' => 'Comment',
     'comments' => 'Comments',
     'no_comments' => 'No comments',
@@ -24,5 +22,4 @@ return [
     'comment_count' => 'Comment count',
     'wp_comment_meta' => 'WP Comment Meta',
     'wp_comment_metas' => 'WP Comment Metas',
-
 ];
