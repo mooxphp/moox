@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'Sync',
@@ -65,4 +64,9 @@ return [
     'locked' => 'Locked',
     // Lock Reason refers to the reason the platform or model is locked
     'lock_reason' => 'Lock Reason',
+    'models_are_not_fully_compatible' => '',
+    'extra_columns' => '',
+    'please_map_fields_manually' => '',
+    'model_compatibility_warning' => '',
+    'missing_columns' => '',
 ];
