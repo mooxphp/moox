@@ -4,6 +4,7 @@ namespace Moox\Jobs\Traits;
 
 use Moox\Jobs\Models\JobManager;
 
+/** @phpstan-ignore trait.unused (Public API: consumers use this trait in their jobs, see README) */
 trait JobProgress
 {
     public $progressLastUpdated;

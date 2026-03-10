@@ -17,10 +17,10 @@
         }
     ],
     "require": {
-        "moox/core": "self.version"
+        "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Security\\SecurityServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true

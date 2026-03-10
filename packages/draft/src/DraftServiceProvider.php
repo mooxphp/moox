@@ -7,13 +7,13 @@ namespace Moox\Draft;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Moox\Core\MooxServiceProvider;
 use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class DraftServiceProvider extends PackageServiceProvider
+class DraftServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('draft')

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Moox\Data\Filament\Providers\DataPanelProvider;
+use Moox\Data\Installers\StaticDataInstaller;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class DataServiceProvider extends PackageServiceProvider
+class DataServiceProvider extends MooxServiceProvider
 {
     public function register(): void
     {
@@ -40,7 +41,7 @@ class DataServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('data')
@@ -57,5 +58,32 @@ class DataServiceProvider extends PackageServiceProvider
                 'create_static_countries_static_currencies_table',
                 'create_static_country_static_timezones_table',
             ]);
+    }
+
+    /**
+     * Custom-Installer für das Data-Package, vom Moox-Installer ausgewertet.
+     *
+     * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
+     */
+    public function getCustomInstallers(): array
+    {
+        return [
+            new StaticDataInstaller,
+        ];
+    }
+
+    /**
+     * Custom-Assets, damit der Typ "static-data" im Installer auswählbar ist.
+     */
+    public function getCustomInstallAssets(): array
+    {
+        return [
+            [
+                'type' => 'static-data',
+                'data' => [
+                    'import-rest-countries-static-data',
+                ],
+            ],
+        ];
     }
 }

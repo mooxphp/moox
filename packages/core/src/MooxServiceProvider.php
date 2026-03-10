@@ -2,6 +2,7 @@
 
 namespace Moox\Core;
 
+use Illuminate\Support\Facades\File;
 use ReflectionClass;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -103,13 +104,49 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                     if ($this->plugins !== null) {
                         return $this->plugins;
                     }
+                    $ds = DIRECTORY_SEPARATOR;
 
-                    $pluginPath = $this->packagePath.'/Filament/Plugins';
-                    $pluginFiles = glob($pluginPath.'/*.php');
+                    // First, try to get plugins from composer.json extra.moox.install.plugins
+                    // packagePath points to src/, so we need to go one level up to get package root
+                    $packageRoot = dirname($this->packagePath);
+                    $composerPath = $packageRoot.$ds.'composer.json';
+                    if (File::exists($composerPath)) {
+                        $composer = json_decode(File::get($composerPath), true);
+                        $plugins = $composer['extra']['moox']['install']['plugins'] ?? null;
+                        if (is_array($plugins) && ! empty($plugins)) {
+                            return $plugins;
+                        }
+                    }
+                    // Fallback: Auto-detect plugins from file system
 
-                    return is_array($pluginFiles)
-                        ? array_map(fn (string $file): string => basename($file, '.php'), $pluginFiles)
-                        : [];
+                    // Try multiple possible plugin paths
+                    $possiblePaths = [
+                        $this->packagePath.$ds.'src'.$ds.'Filament'.$ds.'Plugins',
+                        $this->packagePath.$ds.'Filament'.$ds.'Plugins',
+                        $this->packagePath.$ds.'src'.$ds.'Moox'.$ds.'Plugins',
+                        $this->packagePath.$ds.'Moox'.$ds.'Plugins',
+                    ];
+
+                    foreach ($possiblePaths as $pluginPath) {
+                        if (is_dir($pluginPath)) {
+                            $pluginFiles = glob($pluginPath.$ds.'*Plugin.php') ?: [];
+                            if (! empty($pluginFiles)) {
+                                // Extract class names from files
+                                $plugins = [];
+                                foreach ($pluginFiles as $file) {
+                                    $content = file_get_contents($file);
+                                    if (preg_match('/namespace\s+([^;]+);/', $content, $nsMatch) &&
+                                        preg_match('/class\s+(\w+)/', $content, $classMatch)) {
+                                        $plugins[] = $nsMatch[1].'\\'.$classMatch[1];
+                                    }
+                                }
+
+                                return $plugins;
+                            }
+                        }
+                    }
+
+                    return [];
                 }
 
                 public function mooxFirstPlugin(bool $isFirst): self
@@ -276,36 +313,101 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
     public function mooxInfo(): array
     {
+        // Ensure package is initialized (needed when called on fresh instance)
+        if (! isset($this->package)) {
+            $this->package = new Package;
+            $this->configurePackage($this->package);
+        }
+
         $plugins = $this->getMooxPackage()->getMooxPlugins();
         $firstPlugin = $this->getMooxPackage()->isFirstPlugin();
 
-        $packagePath = dirname((new ReflectionClass(static::class))->getFileName());
+        // Get package root directory (one level up from src/)
+        $providerPath = dirname((new ReflectionClass(static::class))->getFileName());
+        $packageRoot = dirname($providerPath); // Go up from src/ to package root
 
-        $migrations = glob($packagePath.'/database/migrations/*.php');
-        $migrations = is_array($migrations) ? array_map(
-            fn (string $migration): string => basename($migration, '.php'),
-            $migrations
-        ) : [];
+        $ds = DIRECTORY_SEPARATOR;
 
-        $seeders = glob($packagePath.'/database/seeders/*.php');
-        $seeders = is_array($seeders) ? array_map(
-            fn (string $seeder): string => basename($seeder, '.php'),
-            $seeders
-        ) : [];
+        // Use same names as Spatie: name + shortName (used in publishes() for tags)
+        $packageName = $this->package->name ?? null;
+        $shortName = $packageName ? $this->package->shortName() : null;
 
-        $configFiles = glob($packagePath.'/config/*.php');
-        $configFiles = is_array($configFiles) ? array_map(
-            fn (string $configFile): string => basename($configFile, '.php'),
-            $configFiles
-        ) : [];
+        // Get info directly from Spatie Package object
+        $hasConfig = ! empty($this->package->configFileNames ?? []);
+        $hasTranslations = $this->package->hasTranslations ?? false;
+        $hasMigrations = ! empty($this->package->migrationFileNames ?? []);
 
-        $translations = glob($packagePath.'/resources/lang/en/*.php');
-        $translations = is_array($translations) ? array_map(
-            fn (string $translation): string => basename($translation, '.php'),
-            $translations
-        ) : [];
+        // Migrations from package or filesystem (same source as ProcessMigrations)
+        $migrations = $this->package->migrationFileNames ?? [];
+        if (empty($migrations)) {
+            $migrationPath = $packageRoot.$ds.'database'.$ds.'migrations';
+            if (is_dir($migrationPath)) {
+                $migrationFiles = array_merge(
+                    glob($migrationPath.$ds.'*.php') ?: [],
+                    glob($migrationPath.$ds.'*.stub') ?: []
+                );
+                $migrations = array_map(function (string $migration): string {
+                    $name = basename($migration);
+
+                    return str_replace(['.php', '.stub'], '', $name);
+                }, $migrationFiles);
+            }
+        }
+
+        // Seeders from filesystem
+        $seeders = [];
+        $seederPath = $packageRoot.$ds.'database'.$ds.'seeders';
+        if (is_dir($seederPath)) {
+            $seederFiles = glob($seederPath.$ds.'*.php') ?: [];
+            $seeders = array_map(
+                fn (string $seeder): string => basename($seeder, '.php'),
+                $seederFiles
+            );
+        }
+
+        // Config files with source and target paths
+        $configFiles = [];
+        $configFileNames = $this->package->configFileNames ?? [];
+
+        // If no config names from package, scan filesystem
+        if (empty($configFileNames)) {
+            $configPath = $packageRoot.$ds.'config';
+            if (is_dir($configPath)) {
+                $files = glob($configPath.$ds.'*.php') ?: [];
+                foreach ($files as $file) {
+                    $configFileNames[] = basename($file, '.php');
+                }
+            }
+        }
+
+        // Translations from filesystem
+        $translations = [];
+        $translationPath = $packageRoot.$ds.'resources'.$ds.'lang';
+        if (is_dir($translationPath)) {
+            $langDirs = glob($translationPath.$ds.'*', GLOB_ONLYDIR) ?: [];
+            foreach ($langDirs as $langDir) {
+                $translationFiles = glob($langDir.$ds.'*.php') ?: [];
+                foreach ($translationFiles as $file) {
+                    $translations[] = basename($file, '.php');
+                }
+            }
+            $translations = array_unique($translations);
+        }
+
+        // Publish tags exactly as Spatie registers them (ProcessMigrations, ProcessConfigs, ProcessTranslations)
+        // so installer uses the same tag the ServiceProvider used in $this->publishes(..., tag)
+        $publishTags = [];
+        if ($shortName !== null) {
+            $publishTags = [
+                'config' => $shortName.'-config',
+                'migrations' => $shortName.'-migrations',
+                'translations' => $shortName.'-translations',
+            ];
+        }
 
         $mooxInfo = [
+            'packageName' => $packageName,
+            'publishTags' => $publishTags,
             'plugins' => $plugins,
             'firstPlugin' => $firstPlugin,
             'migrations' => $migrations,

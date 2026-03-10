@@ -18,13 +18,16 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "dev-main"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Prompts\\": "src",
             "Moox\\Prompts\\Database\\Factories\\": "database/factories"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

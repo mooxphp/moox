@@ -10,6 +10,7 @@ use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\warning;
 
+/** @phpstan-ignore-next-line trait.unused */
 trait SelectFilamentPanel
 {
     protected array $panelMap = [
