@@ -1,4 +1,5 @@
 <?php
+
 return [
     // Login Link refers to the link that is sent to the user to login without a password
     'login-link' => 'உள்நுழைவு இணைப்பு',

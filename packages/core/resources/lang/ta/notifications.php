@@ -1,4 +1,5 @@
 <?php
+
 return [
     'notification' => 'அறிவிப்பு',
     'notifications' => 'அறிவிப்புகள்',
