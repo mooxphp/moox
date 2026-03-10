@@ -150,4 +150,9 @@ return [
     'ulid' => 'ULID',
     'inactive' => 'Неактивно',
     'archived' => 'Архивировано',
+    'slug_unique' => '',
+    'publish_main_entry_description' => '',
+    'publish_main_entry' => '',
+    'translation_create' => '',
+    'no_title_available' => '',
 ];
