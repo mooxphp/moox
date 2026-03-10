@@ -1,3 +1,5 @@
 <?php
 
-uses(Moox\Item\Tests\TestCase::class)->in('Feature', 'Unit');
+use Moox\Item\Tests\TestCase;
+
+uses(TestCase::class)->in('Feature', 'Unit');

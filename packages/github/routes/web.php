@@ -31,8 +31,8 @@ Route::middleware(['web'])->group(function () {
             $redirectUrl = $panel ? $panel->getUrl() : '/moox';
 
             return redirect($redirectUrl)->with('success', 'GitHub erfolgreich verbunden!');
-        } catch (\Exception $e) {
-            \Log::error('GitHub OAuth Fehler: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::error('GitHub OAuth Fehler: '.$e->getMessage());
 
             $panel = Filament::getCurrentOrDefaultPanel();
             $redirectUrl = $panel ? $panel->getUrl() : '/moox';

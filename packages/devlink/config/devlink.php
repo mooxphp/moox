@@ -167,6 +167,11 @@ return [
             'path' => $public_base_path.'/featherlight',
             'type' => 'public',
         ],
+        'file-icons' => [
+            'active' => true,
+            'path' => $public_base_path.'/file-icons',
+            'type' => 'public',
+        ],
         'firewall' => [
             'active' => true,
             'path' => $public_base_path.'/firewall',

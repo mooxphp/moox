@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Tag;
+namespace Moox\Tag\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;

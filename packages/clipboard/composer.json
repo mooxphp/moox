@@ -1,6 +1,5 @@
 {
     "name": "moox/clipboard",
-    "version": "dev-main",
     "description": "Filament fields with copy to clipboard action.",
     "type": "moox-plugin",
     "keywords": [

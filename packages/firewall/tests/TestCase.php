@@ -2,6 +2,9 @@
 
 namespace Moox\Firewall\Tests;
 
+use App\Exceptions\Handler;
+use App\Http\Kernel;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -17,7 +20,7 @@ class TestCase extends BaseTestCase
 
         $app->singleton(
             \Illuminate\Contracts\Http\Kernel::class,
-            \App\Http\Kernel::class
+            Kernel::class
         );
 
         $app->singleton(
@@ -26,8 +29,8 @@ class TestCase extends BaseTestCase
         );
 
         $app->singleton(
-            \Illuminate\Contracts\Debug\ExceptionHandler::class,
-            \App\Exceptions\Handler::class
+            ExceptionHandler::class,
+            Handler::class
         );
 
         $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();

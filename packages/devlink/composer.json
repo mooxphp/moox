@@ -26,6 +26,9 @@
             "providers": [
                 "Moox\\Devlink\\DevlinkServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",

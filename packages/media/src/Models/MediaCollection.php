@@ -4,13 +4,23 @@ namespace Moox\Media\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Localization\Models\Localization;
 
+/**
+ * @method static Builder whereTranslation(string $key, mixed $value, ?string $locale = null)
+ * @method static static create(array $attributes = [])
+ *
+ * @property int|null $id
+ * @property string|null $name
+ */
 class MediaCollection extends Model implements TranslatableContract
 {
     use Translatable;
+
+    protected $fillable = ['name', 'description'];
 
     public $translatedAttributes = ['name', 'description'];
 
@@ -36,8 +46,8 @@ class MediaCollection extends Model implements TranslatableContract
                     ]);
                 }
                 $mediaCollection->media()->update([
-                    'media_collection_id' => $uncategorized->id,
-                    'collection_name' => $uncategorized->name,
+                    'media_collection_id' => $uncategorized->getKey(),
+                    'collection_name' => $uncategorized->getAttribute('name'),
                 ]);
             }
         });
@@ -45,37 +55,38 @@ class MediaCollection extends Model implements TranslatableContract
 
     public static function ensureUncategorizedExists()
     {
-        if (static::count() > 0) {
+        if (static::query()->count() > 0) {
             return;
         }
 
         $defaultLocale = null;
         if (class_exists(Localization::class)) {
-            $localization = Localization::where('is_default', true)
+            $localization = Localization::query()
+                ->where('is_default', true)
                 ->where('is_active_admin', true)
                 ->with('language')
                 ->first();
 
-            if ($localization && $localization->language) {
-                $defaultLocale = $localization->locale_variant ?: $localization->language->alpha2;
+            if ($localization) {
+                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
             }
         }
 
         $locale = $defaultLocale ?: config('app.locale');
 
-        $collection = new static;
+        $collection = new self;
         $translation = $collection->translateOrNew($locale);
 
         $previousLocale = app()->getLocale();
         app()->setLocale($locale);
 
-        $translation->name = __('media::fields.uncategorized');
-        $translation->description = __('media::fields.uncategorized_description');
+        $translation->setAttribute('name', __('media::fields.uncategorized'));
+        $translation->setAttribute('description', __('media::fields.uncategorized_description'));
 
-        if ($translation->name === 'media::fields.uncategorized') {
+        if ($translation->getAttribute('name') === 'media::fields.uncategorized') {
             app()->setLocale('en');
-            $translation->name = __('media::fields.uncategorized');
-            $translation->description = __('media::fields.uncategorized_description');
+            $translation->setAttribute('name', __('media::fields.uncategorized'));
+            $translation->setAttribute('description', __('media::fields.uncategorized_description'));
         }
 
         app()->setLocale($previousLocale);

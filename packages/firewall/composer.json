@@ -32,6 +32,9 @@
             "providers": [
                 "Moox\\Firewall\\FirewallServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",

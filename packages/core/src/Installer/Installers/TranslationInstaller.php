@@ -83,7 +83,7 @@ class TranslationInstaller extends AbstractAssetInstaller
             }
 
             note("    Publishing translations for {$packageName}...");
-            if ($this->publishPackageAssets($packageName, 'translations')) {
+            if ($this->publishPackageAssets($packageName, 'translations', $asset)) {
                 $published = true;
                 $publishedPackages[] = $packageName;
                 note('    ✅ Published');

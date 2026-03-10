@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Models;
 
+use BladeUI\Icons\Exceptions\SvgNotFound;
+use BladeUI\Icons\Factory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,7 +76,7 @@ class Localization extends Model
      */
     public function getLocaleAttribute(): string
     {
-        $locale = $this->attributes['locale_variant'] ?? $this->language?->alpha2 ?? '';
+        $locale = $this->attributes['locale_variant'] ?? $this->language->alpha2 ?? '';
 
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
@@ -208,11 +210,11 @@ class Localization extends Model
     public function flagExists(string $flagCode): bool
     {
         try {
-            $factory = app(\BladeUI\Icons\Factory::class);
+            $factory = app(Factory::class);
             $factory->svg("flag-icons-circle-{$flagCode}");
 
             return true;
-        } catch (\BladeUI\Icons\Exceptions\SvgNotFound $e) {
+        } catch (SvgNotFound $e) {
             return false;
         }
     }

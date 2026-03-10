@@ -95,7 +95,7 @@ return [
     */
     'user_models' => [
         'App Users' => User::class,
-        'Moox Users' => \Moox\User\Models\User::class,
+        'Moox Users' => Moox\User\Models\User::class,
     ],
     'device_model' => UserDevice::class,
 

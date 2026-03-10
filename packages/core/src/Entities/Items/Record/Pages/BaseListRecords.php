@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseListRecords extends ListRecords
@@ -27,6 +28,7 @@ abstract class BaseListRecords extends ListRecords
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->action(function (): void {
+                    /** @var class-string<BaseRecordModel> $model */
                     $model = $this->getModel();
                     $trashedCount = $model::onlyTrashed()->count();
                     $model::onlyTrashed()->forceDelete();
@@ -39,7 +41,12 @@ abstract class BaseListRecords extends ListRecords
                     $this->redirect($this->getResource()::getUrl('index', ['tab' => 'all']));
                 })
                 ->requiresConfirmation()
-                ->visible(fn (): bool => $this->activeTab === 'deleted' && $this->getModel()::onlyTrashed()->exists()),
+                ->visible(function (): bool {
+                    /** @var class-string<BaseRecordModel> $model */
+                    $model = $this->getModel();
+
+                    return $this->activeTab === 'deleted' && $model::onlyTrashed()->exists();
+                }),
         ];
     }
 }

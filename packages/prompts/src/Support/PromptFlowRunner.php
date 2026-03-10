@@ -142,7 +142,7 @@ class PromptFlowRunner
         }
 
         try {
-            $exists = CommandExecution::where('flow_id', $state->flowId)->exists();
+            $exists = CommandExecution::query()->where('flow_id', $state->flowId)->exists();
             if ($exists) {
                 return;
             }
@@ -170,7 +170,7 @@ class PromptFlowRunner
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Log error for debugging
             Log::error('Failed to ensure command execution exists', [
                 'error' => $e->getMessage(),
@@ -196,7 +196,7 @@ class PromptFlowRunner
                     'context' => json_encode($context),
                     'updated_at' => now(),
                 ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Silently fail if table doesn't exist yet
         }
     }
@@ -223,7 +223,7 @@ class PromptFlowRunner
                     'context' => json_encode($context),
                     'updated_at' => now(),
                 ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Log error for debugging
             Log::error('Failed to update command execution as completed', [
                 'error' => $e->getMessage(),
@@ -260,7 +260,7 @@ class PromptFlowRunner
                     'context' => json_encode($context),
                     'updated_at' => now(),
                 ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Log error for debugging
             Log::error('Failed to update command execution as failed', [
                 'error' => $e->getMessage(),

@@ -148,7 +148,7 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
             label: "Select {$this->getType()} to install:",
             options: array_keys($itemOptions),
             default: array_keys($itemOptions),
-            scroll: min(10, count($itemOptions)),
+            scroll: (string) min(10, count($itemOptions)),
             required: false
         );
 
@@ -238,74 +238,41 @@ abstract class AbstractAssetInstaller implements AssetInstallerInterface
 
     /**
      * Publish assets for a package.
+     * Tag is taken from $asset['publishTags'][$type], which mooxInfo() fills from
+     * the same Package (shortName()) that Spatie uses in publishes().
      *
      * @param  string  $packageName  The composer package name (e.g., "moox/prompts")
      * @param  string  $type  The asset type (e.g., "config", "migrations")
-     * @param  string|null  $publishTag  The exact publish tag from mooxInfo (e.g., "moox-prompts-config")
+     * @param  array  $asset  Asset array with 'publishTags' from ServiceProvider mooxInfo()
      */
-    protected function publishPackageAssets(string $packageName, string $type, ?string $publishTag = null): bool
+    protected function publishPackageAssets(string $packageName, string $type, array $asset = []): bool
     {
-        $tags = [];
-
-        // If we have the exact tag from mooxInfo, use it first
-        if ($publishTag) {
-            $tags[] = $publishTag;
+        $publishTag = $asset['publishTags'][$type] ?? null;
+        if (! $publishTag) {
+            return false;
         }
 
-        // Fallback tags if the exact tag doesn't work
-        $shortName = str_replace('moox/', '', $packageName);
-        $spatiePackageName = str_replace('/', '-', $packageName);
+        try {
+            if ($this->command) {
+                $result = $this->command->call('vendor:publish', [
+                    '--tag' => $publishTag,
+                    '--force' => $this->config['force'] ?? false,
+                ]);
 
-        $tags = array_merge($tags, [
-            $spatiePackageName.'-'.$type,
-            $spatiePackageName,
-            $shortName.'-'.$type,
-            $shortName,
-        ]);
-
-        // Remove duplicates
-        $tags = array_unique($tags);
-
-        $published = false;
-        foreach ($tags as $tag) {
-            try {
-                // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
-                // Das nutzt den korrekten IO-Context vom Command
-                if ($this->command) {
-                    $result = $this->command->call('vendor:publish', [
-                        '--tag' => $tag,
-                        '--force' => $this->config['force'] ?? false,
-                    ]);
-
-                    // Bei $this->command->call() gibt es keine separate output() Methode
-                    // Die Ausgabe wird direkt angezeigt
-                    if ($result === 0) {
-                        $published = true;
-                        break;
-                    }
-                } else {
-                    // Fallback: Direkt über Application mit sauberem IO-Context
-                    $commandString = 'vendor:publish --tag='.escapeshellarg($tag);
-                    if ($this->config['force'] ?? false) {
-                        $commandString .= ' --force';
-                    }
-
-                    $input = new StringInput($commandString);
-                    // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
-                    $input->setInteractive(true);
-                    $result = app()->handleCommand($input);
-
-                    if ($result === 0) {
-                        $published = true;
-                        break;
-                    }
-                }
-            } catch (\Exception $e) {
-                continue;
+                return $result === 0;
             }
-        }
 
-        return $published;
+            $commandString = 'vendor:publish --tag='.escapeshellarg($publishTag);
+            if ($this->config['force'] ?? false) {
+                $commandString .= ' --force';
+            }
+            $input = new StringInput($commandString);
+            $input->setInteractive(true);
+
+            return app()->handleCommand($input) === 0;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**

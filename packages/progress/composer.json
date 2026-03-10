@@ -1,6 +1,5 @@
 {
     "name": "moox/progress",
-    "version": "dev-main",
     "description": "This is my package progress",
     "keywords": [
         "Moox",
@@ -38,7 +37,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "config": {
         "allow-plugins": {

@@ -3,9 +3,12 @@
 namespace Moox\Prompts\Support;
 
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Moox\Prompts\Models\CommandExecution;
 
 class PromptFlowStateStore
 {
@@ -43,14 +46,14 @@ class PromptFlowStateStore
         $this->cache->forget($this->key($flowId));
 
         // Mark execution as cancelled if it exists, or create one
-        if (! class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
+        if (! class_exists(CommandExecution::class)) {
             return;
         }
 
         try {
-            $stepOutputs = $state?->stepOutputs ?? [];
-            $context = $state?->context ?? [];
-            $steps = $state?->steps ?? [];
+            $stepOutputs = $state !== null ? $state->stepOutputs : [];
+            $context = $state !== null ? $state->context : [];
+            $steps = $state !== null ? $state->steps : [];
 
             // Reorder step_outputs to match the execution order (steps array order)
             $orderedStepOutputs = [];
@@ -84,7 +87,7 @@ class PromptFlowStateStore
             }
 
             // Try to update existing record
-            $updated = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $flowId)
+            $updated = CommandExecution::query()->where('flow_id', $flowId)
                 ->whereNotIn('status', ['cancelled', 'completed', 'failed'])
                 ->update([
                     'status' => 'cancelled',
@@ -96,17 +99,17 @@ class PromptFlowStateStore
 
             // If no record exists, create one (always when we have state or commandName from component)
             if ($updated === 0) {
-                $name = $state?->commandName ?? $commandName;
+                $name = $state !== null ? $state->commandName : $commandName;
                 if ($name === null || $name === '') {
                     return;
                 }
 
-                $command = app(\Illuminate\Contracts\Console\Kernel::class)->all()[$name] ?? null;
+                $command = app(Kernel::class)->all()[$name] ?? null;
                 $description = $command ? $command->getDescription() : $name;
 
                 // Insert directly into database to bypass model casts
-                $userId = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::id() : null;
-                $userType = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()::class : null;
+                $userId = Auth::check() ? Auth::id() : null;
+                $userType = Auth::check() ? Auth::user()::class : null;
 
                 $now = now();
                 DB::table('command_executions')->insertGetId([
