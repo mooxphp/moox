@@ -1,0 +1,82 @@
+{
+    "name": "moox/tree",
+    "description": "Tree is a simple Moox Entity, that can be used to create and manage simple entries, like logs.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/tree",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Tree\\": "src",
+            "Moox\\Tree\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Tree\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Tree\\TreeServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Tree",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/TreeSeeder.php",
+                "auto_publish": "moox-tree-config",
+                "auto_entities": {
+                    "Tree": true
+                },
+                "auto_class": {
+                    "Tree": "Moox\\Tree\\Tree"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-tree-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-tree-config"
+            }
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

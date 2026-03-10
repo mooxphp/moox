@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @property Carbon|null $finished_at
+ * @property bool $failed
+ */
 class JobManager extends Model
 {
     use HasFactory;
@@ -83,7 +88,7 @@ class JobManager extends Model
     public function prunable()
     {
         if (config('jobs.pruning.activate')) {
-            return static::where('created_at', '<=', now()->subDays(config('jobs.pruning.retention_days')));
+            return static::query()->where('created_at', '<=', now()->subDays(config('jobs.pruning.retention_days')));
         }
 
         return static::query();

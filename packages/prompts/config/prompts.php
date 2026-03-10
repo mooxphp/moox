@@ -2,55 +2,53 @@
 
 /*
 |--------------------------------------------------------------------------
-| Moox Configuration
+| Prompts Configuration
 |--------------------------------------------------------------------------
 |
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
+| This configuration file defines which Artisan commands are allowed to be
+| executed through the web interface using prompts.
 |
 */
+
 return [
-
-    'readonly' => false,
-
-    'resources' => [
-        'item' => [
-            'single' => 'trans//item::item.item',
-            'plural' => 'trans//item::item.items',
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'title',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
-
-    'relations' => [],
 
     /*
     |--------------------------------------------------------------------------
-    | Navigation
+    | Allowed Commands
     |--------------------------------------------------------------------------
     |
-    | The navigation group and sort of the Resource,
-    | and if the panel is enabled.
+    | List of Artisan command names that are allowed to be executed through
+    | the web interface. Only commands listed here will be available in the
+    | Command Runner page.
+    |
+    | Example:
+    | 'allowed_commands' => [
+    |     'prompts:test-flow',
+    |     'prompts:test-web',
+    | ],
     |
     */
-    'auth' => [
-        'user' => 'Moox\\DevTools\\Models\\TestUser',
+
+    'allowed_commands' => [
+        'prompts:project-setup',
+        'prompts:test-failed',
+        // Add more commands here as needed
     ],
-    'navigation_group' => 'DEV',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation Group
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group where the Command Runner and Command Executions
+    | will appear in the Filament navigation. Common options:
+    | - 'System' (default)
+    | - 'Jobs'
+    | - 'Tools'
+    | - null (no group)
+    |
+    */
+
+    'navigation_group' => 'System',
+
 ];

@@ -75,6 +75,7 @@ jobs:
           - tag
           - taxonomy
           - trainings
+          - tree
           - user
           - user-device
           - user-session
@@ -106,7 +107,7 @@ jobs:
           fi
 
       - if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: "symplify/monorepo-split-github-action@v2.4.0"
+        uses: "symplify/monorepo-split-github-action@v2.4.4"
         with:
           tag: ${GITHUB_REF#refs/tags/}
 

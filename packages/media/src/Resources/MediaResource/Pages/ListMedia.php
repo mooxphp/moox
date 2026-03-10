@@ -7,7 +7,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
-use Moox\Data\Models\StaticLanguage;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -35,12 +34,13 @@ class ListMedia extends BaseListDrafts
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
 
-        $defaultLocale = Localization::where('is_default', true)
+        $defaultLocale = Localization::query()
+            ->where('is_default', true)
             ->where('is_active_admin', true)
             ->first();
 
         $defaultLang = $defaultLocale
-            ? ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2)
+            ? ($defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2)
             : config('app.locale');
 
         $this->lang = request()->query('lang', $defaultLang);
@@ -48,7 +48,7 @@ class ListMedia extends BaseListDrafts
 
     public function saveTranslationFromForm($recordId)
     {
-        $record = Media::find($recordId);
+        $record = Media::query()->find($recordId);
 
         if ($record && method_exists($record, 'translateOrNew')) {
             $lang = $this->lang ?? app()->getLocale();
@@ -127,31 +127,52 @@ class ListMedia extends BaseListDrafts
                 ->schema([
                     Select::make('media_collection_id')
                         ->label(__('media::fields.collection'))
-                        ->options(fn () => (function () {
-                            $defaultLang = Localization::where('is_default', true)
-                                ->value('language_id');
+                        ->options(function () {
+                            $currentLang = $this->lang ?? app()->getLocale();
 
-                            $alpha2 = $defaultLang
-                                ? StaticLanguage::whereKey($defaultLang)->value('alpha2')
-                                : config('app.locale');
+                            $collections = MediaCollection::query()
+                                ->with('translations')
+                                ->get();
 
-                            return MediaCollection::query()
-                                ->with(['translations' => fn ($q) => $q->where('locale', $alpha2)])
-                                ->whereHas('translations', fn ($q) => $q->where('locale', $alpha2))
-                                ->get()
-                                ->mapWithKeys(function ($item) use ($alpha2) {
-                                    $translation = method_exists($item, 'translate')
-                                        ? $item->translate($alpha2)
-                                        : ($item->translations->first() ?? null);
+                            $options = [];
+                            foreach ($collections as $collection) {
+                                $translation = $collection->translations()->where('locale', $currentLang)->first();
 
-                                    $name = $translation?->name ?? $item->name;
+                                if ($translation && ! empty($translation->name)) {
+                                    $name = $translation->name;
+                                } else {
+                                    if (class_exists(Localization::class)) {
+                                        $defaultLocale = Localization::query()
+                                            ->where('is_default', true)
+                                            ->where('is_active_admin', true)
+                                            ->with('language')
+                                            ->first();
 
-                                    return [$item->id => $name];
-                                })
-                                ->filter()
-                                ->toArray();
-                        })())
-                        ->default(MediaCollection::first()->id)
+                                        if ($defaultLocale) {
+                                            $defaultLang = $defaultLocale->getAttribute('locale_variant') ?: $defaultLocale->language->alpha2;
+                                            $fallbackTranslation = $collection->translations()->where('locale', $defaultLang)->first();
+                                            if ($fallbackTranslation && ! empty($fallbackTranslation->name)) {
+                                                $name = $fallbackTranslation->name;
+                                            }
+                                        }
+                                    }
+
+                                    if (empty($name)) {
+                                        $anyTranslation = $collection->translations()->whereNotNull('name')->first();
+                                        $name = $anyTranslation?->name;
+                                    }
+
+                                    if (empty($name)) {
+                                        $name = __('media::fields.uncategorized');
+                                    }
+                                }
+
+                                $options[$collection->id] = trim((string) $name);
+                            }
+
+                            return array_filter($options, fn ($value) => ! empty($value));
+                        })
+                        ->default(MediaCollection::query()->first()?->id)
                         ->searchable()
                         ->required()
                         ->live(),
@@ -188,11 +209,39 @@ class ListMedia extends BaseListDrafts
                             }
 
                             $collectionId = $get('media_collection_id');
-                            $collection = MediaCollection::find($collectionId);
-                            $collectionName = $collection?->name ?? __('media::fields.uncategorized');
+                            $collection = MediaCollection::with('translations')->find($collectionId);
 
-                            $defaultLang = optional(Localization::where('is_default', true)
+                            $collectionName = __('media::fields.uncategorized');
+                            if ($collection) {
+                                $defaultLang = config('app.locale');
+
+                                $localization = Localization::query()
+                                    ->where('is_default', true)
+                                    ->where('is_active_admin', true)
+                                    ->with('language')
+                                    ->first();
+
+                                if ($localization) {
+                                    $defaultLang = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
+                                }
+
+                                $translation = $collection->translations->firstWhere('locale', $defaultLang);
+
+                                if ($translation && ! empty($translation->name)) {
+                                    $collectionName = $translation->name;
+                                } elseif ($collection->translations->isNotEmpty()) {
+                                    $collectionName = $collection->translations->first()->getAttribute('name') ?? __('media::fields.uncategorized');
+                                } elseif (method_exists($collection, 'translate')) {
+                                    $translation = $collection->translate($defaultLang);
+                                    $collectionName = $translation !== null ? ($translation->getAttribute('name') ?? __('media::fields.uncategorized')) : __('media::fields.uncategorized');
+                                }
+                            }
+
+                            $defaultLang = optional(Localization::query()
+                                ->where('is_default', true)
                                 ->first()?->language)->alpha2 ?? config('app.locale');
+
+                            $uploadLang = $this->lang ?? $defaultLang;
 
                             foreach ($state as $tempFile) {
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
@@ -203,7 +252,7 @@ class ListMedia extends BaseListDrafts
 
                                 $fileName = $tempFile->getClientOriginalName();
 
-                                $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                                $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
                                     $query->where('name', $fileName);
                                 })->orWhere(function ($query) use ($fileHash) {
                                     $query->where('custom_properties->file_hash', $fileHash);
@@ -223,26 +272,34 @@ class ListMedia extends BaseListDrafts
                                 }
 
                                 $previousLocale = app()->getLocale();
-                                app()->setLocale($defaultLang);
+                                app()->setLocale($uploadLang);
 
                                 $model = new Media;
                                 $model->exists = true;
 
                                 $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                                /** @var Media $media */
                                 $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                                 $media->media_collection_id = $collectionId;
+                                $media->collection_name = $collectionName;
                                 $media->save();
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
 
-                                $media->title = $title;
-                                $media->alt = $title;
-                                $media->uploader_type = get_class(auth()->user());
+                                $translation = $media->translateOrNew($uploadLang);
+                                $translation->setAttribute('name', $fileName);
+                                $translation->setAttribute('title', $title);
+                                $translation->setAttribute('alt', $title);
+                                $translation->save();
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with user()) */
+                                $user = auth()->user();
+                                $media->uploader_type = $user ? get_class($user) : null;
+                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with id()) */
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
-                                $media->original_model_id = $media->id;
-                                $media->model_id = $media->id;
+                                $media->original_model_id = $media->getKey();
+                                $media->model_id = $media->getKey();
                                 $media->model_type = Media::class;
 
                                 $media->setCustomProperty('file_hash', $fileHash);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Data\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Traits\Base\BaseInModel;
 use Moox\Core\Traits\Simple\SingleSimpleInModel;
 
@@ -28,12 +29,12 @@ class StaticLocale extends Model
         'is_official_language',
     ];
 
-    public function language()
+    public function language(): BelongsTo
     {
         return $this->belongsTo(StaticLanguage::class);
     }
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(StaticCountry::class);
     }

@@ -17,12 +17,12 @@
         }
     ],
     "require": {
-        "moox/core": "self.version",
+        "moox/core": "dev-main",
         "adrolli/eloquent-mutators": "*",
-        "moox/press": "*"
+        "moox/press": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

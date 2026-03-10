@@ -4,6 +4,7 @@ namespace Moox\Github\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class GitHubTokenCommand extends Command
 {
@@ -68,7 +69,7 @@ class GitHubTokenCommand extends Command
 
         // Test the token
         try {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
+            $response = Http::withHeaders([
                 'Authorization' => "Bearer {$token}",
                 'Accept' => 'application/vnd.github+json',
             ])->get('https://api.github.com/user');

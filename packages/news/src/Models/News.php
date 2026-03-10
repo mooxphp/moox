@@ -2,6 +2,10 @@
 
 namespace Moox\News\Models;
 
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Media\Traits\HasMediaUsable;
@@ -16,7 +20,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property array $image
  * @property string $type
  * @property string[] $translatedAttributes
- * @property \Carbon\Carbon|null $due_at
+ * @property Carbon|null $due_at
  * @property string $uuid
  * @property string $ulid
  * @property-read string $title
@@ -26,24 +30,24 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $content
  * @property-read string $status
  * @property-read int $author_id
- * @property-read \Carbon\Carbon|null $to_publish_at
- * @property-read \Carbon\Carbon|null $published_at
- * @property-read \Carbon\Carbon|null $to_unpublish_at
- * @property-read \Carbon\Carbon|null $unpublished_at
+ * @property-read Carbon|null $to_publish_at
+ * @property-read Carbon|null $published_at
+ * @property-read Carbon|null $to_unpublish_at
+ * @property-read Carbon|null $unpublished_at
  * @property-read int|null $published_by_id
  * @property-read int|null $unpublished_by_id
- * @property-read \Carbon\Carbon|null $deleted_at
+ * @property-read Carbon|null $deleted_at
  * @property-read int|null $deleted_by_id
- * @property-read \Carbon\Carbon|null $restored_at
+ * @property-read Carbon|null $restored_at
  * @property-read int|null $restored_by_id
- * @property-read \App\Models\User|null $author
- * @property-read \Illuminate\Database\Eloquent\Model|null $publishedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $updatedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $unpublishedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $deletedBy
- * @property-read \Illuminate\Database\Eloquent\Model|null $restoredBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read User|null $author
+ * @property-read Model|null $publishedBy
+ * @property-read Model|null $updatedBy
+ * @property-read Model|null $createdBy
+ * @property-read Model|null $unpublishedBy
+ * @property-read Model|null $deletedBy
+ * @property-read Model|null $restoredBy
+ * @property-read Collection<int, Media> $media
  */
 class News extends BaseDraftModel implements HasMedia
 {

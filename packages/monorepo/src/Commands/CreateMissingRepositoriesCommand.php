@@ -9,13 +9,16 @@ use Moox\Monorepo\Contracts\GitHubClientInterface;
 use Moox\Monorepo\DataTransferObjects\PackageInfo;
 use Moox\Monorepo\Services\DevlinkService;
 
+use function Moox\Prompts\multiselect;
+use function Moox\Prompts\progress;
+use function Moox\Prompts\table;
+
 class CreateMissingRepositoriesCommand extends Command
 {
     protected $signature = 'monorepo:create-missing 
                            {--public : Only create missing public repositories}
                            {--private : Only create missing private repositories}
                            {--force : Skip confirmation prompts}
-                           {--interactive : Ask for confirmation before creating each repository}
                            {--dry-run : Show what would be created without making changes}
                            {--skip-devlink : Skip updating devlink configuration}';
 
@@ -75,13 +78,17 @@ class CreateMissingRepositoriesCommand extends Command
             return 0;
         }
 
-        // Ask for confirmation
+        // Let user select which repositories to create
         if (! $this->option('force')) {
-            if (! $this->confirm("Create {$missingPackages->count()} missing repositories?", true)) {
-                $this->info('Operation cancelled.');
+            $selectedPackages = $this->selectPackagesToCreate($missingPackages);
+
+            if ($selectedPackages->isEmpty()) {
+                $this->info('No repositories selected. Operation cancelled.');
 
                 return 0;
             }
+
+            $missingPackages = $selectedPackages;
         }
 
         // Create repositories
@@ -163,7 +170,7 @@ class CreateMissingRepositoriesCommand extends Command
             ];
         })->toArray();
 
-        $this->table(
+        table(
             ['Package Name', 'Type', 'Stability', 'Description'],
             $tableData
         );
@@ -175,6 +182,48 @@ class CreateMissingRepositoriesCommand extends Command
         $this->line('');
     }
 
+    private function selectPackagesToCreate(Collection $missingPackages): Collection
+    {
+        // Build choice options with package details and create a mapping
+        $choiceToPackage = [];
+        $choices = $missingPackages->map(function ($package) use (&$choiceToPackage) {
+            $type = $package->visibility === 'public' ? '🔓' : '🔒';
+            $description = $package->description ? ' - '.substr($package->description, 0, 50) : '';
+            $choice = "{$type} {$package->name} ({$package->visibility}){$description}";
+
+            // Store mapping for easy lookup
+            $choiceToPackage[$choice] = $package;
+
+            return $choice;
+        })->toArray();
+
+        // Add "Select all" option at the beginning
+        $selectAllOption = '✅ Select all';
+        array_unshift($choices, $selectAllOption);
+
+        $selected = multiselect(
+            label: 'Which repositories would you like to create?',
+            options: $choices,
+            default: [],
+            required: false,
+            hint: 'Use SPACE to select, ENTER to confirm'
+        );
+
+        // If "Select all" was chosen, return all packages
+        if (in_array($selectAllOption, $selected)) {
+            return $missingPackages;
+        }
+
+        // Map selected choices back to packages using the mapping
+        $selectedPackages = collect($selected)
+            ->map(function ($choice) use ($choiceToPackage) {
+                return $choiceToPackage[$choice] ?? null;
+            })
+            ->filter();
+
+        return $selectedPackages;
+    }
+
     private function createRepositories(Collection $missingPackages, string $organization): int
     {
         $this->info('🚀 Creating missing repositories...');
@@ -182,55 +231,13 @@ class CreateMissingRepositoriesCommand extends Command
 
         $created = 0;
         $failed = 0;
-        $skipped = 0;
         $devlinkUpdated = 0;
 
-        if ($this->option('interactive')) {
-            // Interactive mode - ask for each repository
-            foreach ($missingPackages as $index => $package) {
-                $this->line('Repository '.($index + 1).'/'.$missingPackages->count().": {$package->name}");
-                $this->line("  Type: {$package->visibility}");
-                $this->line("  Stability: {$package->stability}");
-                $this->line('  Description: '.($package->description ?: '—'));
-
-                if ($this->confirm("Create repository for {$package->name}?", true)) {
-                    try {
-                        $this->createSingleRepository($package, $organization);
-                        $created++;
-                        $this->info("  ✅ Created: {$package->name}");
-
-                        // Update devlink configuration
-                        if (! $this->option('skip-devlink')) {
-                            try {
-                                $this->updateDevlinkConfig($package);
-                                $devlinkUpdated++;
-                                $this->info("  🔗 Added to devlink config: {$package->name}");
-                            } catch (\Exception $e) {
-                                $this->warn("  ⚠️  Failed to update devlink config for {$package->name}: {$e->getMessage()}");
-                            }
-                        }
-
-                        // Small delay to avoid rate limiting
-                        usleep(100000); // 0.1 seconds
-                    } catch (\Exception $e) {
-                        $failed++;
-                        $this->error("  ❌ Failed to create {$package->name}: {$e->getMessage()}");
-                    }
-                } else {
-                    $skipped++;
-                    $this->line("  ⏭️  Skipped: {$package->name}");
-                }
-
-                $this->line('');
-            }
-        } else {
-            // Batch mode with progress bar
-            $progressBar = $this->output->createProgressBar($missingPackages->count());
-            $progressBar->start();
-
-            foreach ($missingPackages as $package) {
-                $progressBar->advance();
-
+        // Use Prompts progress bar
+        progress(
+            label: 'Creating repositories...',
+            steps: $missingPackages,
+            callback: function ($package) use ($organization, &$created, &$failed, &$devlinkUpdated) {
                 try {
                     $this->createSingleRepository($package, $organization);
                     $created++;
@@ -253,11 +260,9 @@ class CreateMissingRepositoriesCommand extends Command
                     $this->line('');
                     $this->error("Failed to create repository for {$package->name}: {$e->getMessage()}");
                 }
-            }
-
-            $progressBar->finish();
-            $this->line('');
-        }
+            },
+            hint: 'Creating repositories and updating devlink config'
+        );
 
         $this->line('');
 
@@ -274,18 +279,11 @@ class CreateMissingRepositoriesCommand extends Command
             $this->warn("⚠️  Failed to create {$failed} repositories");
         }
 
-        if ($skipped > 0) {
-            $this->line("⏭️  Skipped {$skipped} repositories");
-        }
-
         $this->line('');
         $this->info('📊 Summary:');
         $this->line("Total packages processed: {$missingPackages->count()}");
         $this->line("Repositories created: {$created}");
         $this->line("Devlink config updated: {$devlinkUpdated}");
-        if ($skipped > 0) {
-            $this->line("Repositories skipped: {$skipped}");
-        }
         $this->line("Failed creations: {$failed}");
 
         if ($created > 0) {

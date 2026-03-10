@@ -7,14 +7,14 @@ namespace Moox\Tag;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Moox\Core\MooxServiceProvider;
 use Moox\Tag\Commands\InstallCommand;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class TagServiceProvider extends PackageServiceProvider
+class TagServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('tag')
@@ -31,5 +31,13 @@ class TagServiceProvider extends PackageServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListTags::class
         );
+    }
+
+    public function mooxInfo(): array
+    {
+        $info = parent::mooxInfo();
+        $info['migration_depends_on'] = ['moox/localization'];
+
+        return $info;
     }
 }

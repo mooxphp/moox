@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('moox/core/assets/{filename}', function (string $filename) {
     $path = base_path('vendor/moox/core/public/'.$filename);
 

@@ -23,10 +23,10 @@
         }
     ],
     "require": {
-        "filament/forms": "^4.0"
+        "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

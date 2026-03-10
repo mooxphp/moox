@@ -23,11 +23,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\HtmlString;
 use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Resources\MediaResource\Pages;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
@@ -70,6 +73,7 @@ class MediaResource extends Resource
         return $schema->schema([
             SpatieMediaLibraryFileUpload::make('image')
                 ->columnSpanFull()
+                ->conversion('thumbnail')
                 ->collection(function ($record) {
                     $mediaCollection = $record->collection_name;
 
@@ -89,7 +93,7 @@ class MediaResource extends Resource
                             $fileHash = hash_file('sha256', $state->getRealPath());
                             $fileName = $state->getClientOriginalName();
 
-                            $existingMedia = Media::whereHas('translations', function ($query) use ($fileName) {
+                            $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
                                 $query->where('name', $fileName);
                             })->orWhere(function ($query) use ($fileHash) {
                                 $query->where('custom_properties->file_hash', $fileHash);
@@ -113,10 +117,10 @@ class MediaResource extends Resource
 
                             if ($record instanceof \Spatie\MediaLibrary\MediaCollections\Models\Media) {
                                 $oldMedia = $record;
-                                $oldMediaId = $record->id;
+                                $oldMediaId = $record->getKey();
                             } else {
                                 $oldMedia = $record->getFirstMedia();
-                                $oldMediaId = $oldMedia?->id;
+                                $oldMediaId = $oldMedia !== null ? $oldMedia->getKey() : null;
                             }
 
                             $originalFileName = pathinfo($oldMedia?->file_name, PATHINFO_FILENAME);
@@ -126,7 +130,7 @@ class MediaResource extends Resource
 
                             $usables = [];
                             if ($oldMediaId && ! $isEdit) {
-                                $usables = \DB::table('media_usables')
+                                $usables = DB::table('media_usables')
                                     ->where('media_id', $oldMediaId)
                                     ->get()
                                     ->map(function ($item) {
@@ -136,7 +140,7 @@ class MediaResource extends Resource
                             }
 
                             if ($oldMediaId && ! $isEdit) {
-                                \DB::table('media')->where('id', $oldMediaId)->delete();
+                                DB::table('media')->where('id', $oldMediaId)->delete();
                             }
 
                             $model = new Media;
@@ -144,26 +148,27 @@ class MediaResource extends Resource
 
                             $fileAdder = app(FileAdderFactory::class)->create($model, $state);
                             $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
+                            /** @var Media $media */
                             $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
 
                             $title = $newFileName;
                             $media->setAttribute('title', $title);
                             $media->setAttribute('alt', $title);
-                            $media->uploader_type = get_class(auth()->user());
-                            $media->uploader_id = auth()->id();
+                            $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
+                            $media->setAttribute('uploader_id', Auth::id());
 
                             $media->setCustomProperty('file_hash', $fileHash);
 
                             if ($isEdit && $oldMedia) {
-                                $media->original_model_type = $oldMedia->original_model_type;
-                                $media->original_model_id = $oldMedia->original_model_id;
+                                $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
+                                $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
                             } else {
-                                $media->original_model_type = Media::class;
-                                $media->original_model_id = $media->id;
+                                $media->setAttribute('original_model_type', Media::class);
+                                $media->setAttribute('original_model_id', $media->getKey());
                             }
 
-                            $media->model_id = $media->id;
-                            $media->model_type = Media::class;
+                            $media->setAttribute('model_id', $media->getKey());
+                            $media->setAttribute('model_type', Media::class);
 
                             if (str_starts_with($media->mime_type, 'image/')) {
                                 [$width, $height] = getimagesize($media->getPath());
@@ -177,8 +182,8 @@ class MediaResource extends Resource
 
                             if (! $isEdit) {
                                 foreach ($usables as $usable) {
-                                    \DB::table('media_usables')->insert([
-                                        'media_id' => $media->id,
+                                    DB::table('media_usables')->insert([
+                                        'media_id' => $media->getKey(),
                                         'media_usable_id' => $usable['media_usable_id'],
                                         'media_usable_type' => $usable['media_usable_type'],
                                         'created_at' => now(),
@@ -198,10 +203,10 @@ class MediaResource extends Resource
                                             if (isset($jsonData['file_name']) && $jsonData['file_name'] === $oldMedia->file_name) {
                                                 $model->{$field} = json_encode([
                                                     'file_name' => $media->file_name,
-                                                    'title' => $media->title,
-                                                    'description' => $media->description,
-                                                    'internal_note' => $media->internal_note,
-                                                    'alt' => $media->alt,
+                                                    'title' => $media->getAttribute('title'),
+                                                    'description' => $media->getAttribute('description'),
+                                                    'internal_note' => $media->getAttribute('internal_note'),
+                                                    'alt' => $media->getAttribute('alt'),
                                                 ]);
 
                                                 continue;
@@ -212,10 +217,10 @@ class MediaResource extends Resource
                                                 if (is_array($item) && isset($item['file_name']) && $item['file_name'] === $oldMedia->file_name) {
                                                     $jsonData[$key] = [
                                                         'file_name' => $media->file_name,
-                                                        'title' => $media->title,
-                                                        'description' => $media->description,
-                                                        'internal_note' => $media->internal_note,
-                                                        'alt' => $media->alt,
+                                                        'title' => $media->getAttribute('title'),
+                                                        'description' => $media->getAttribute('description'),
+                                                        'internal_note' => $media->getAttribute('internal_note'),
+                                                        'alt' => $media->getAttribute('alt'),
                                                     ];
                                                     $changed = true;
                                                 }
@@ -318,7 +323,7 @@ class MediaResource extends Resource
                             TextEntry::make('usage')
                                 ->label(__('media::fields.usage'))
                                 ->state(function ($record) {
-                                    $usages = \DB::table('media_usables')
+                                    $usages = DB::table('media_usables')
                                         ->where('media_id', $record->id)
                                         ->get();
 
@@ -335,15 +340,51 @@ class MediaResource extends Resource
                             Select::make('media_collection_id')
                                 ->label(__('media::fields.collection'))
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
-                                ->options(
-                                    MediaCollection::whereHas('translations', function ($query) {
-                                        $query->where('locale', app()->getLocale());
-                                    })->get()->pluck('name', 'id')->filter()->toArray()
-                                )
+                                ->options(function ($record, $livewire) {
+                                    $currentLang = $livewire->lang ?? app()->getLocale();
+
+                                    $collections = MediaCollection::query()
+                                        ->with('translations')
+                                        ->get();
+
+                                    $options = [];
+                                    foreach ($collections as $collection) {
+                                        $name = null;
+
+                                        $translation = $collection->translations()->where('locale', $currentLang)->first();
+
+                                        if ($translation && ! empty($translation->name)) {
+                                            $name = $translation->name;
+                                        } else {
+                                            if (class_exists(Localization::class)) {
+                                                $defaultLocale = optional(Localization::query()
+                                                    ->where('is_default', true)
+                                                    ->first()?->language)->alpha2 ?? config('app.locale');
+
+                                                $translation = $collection->translations()->where('locale', $defaultLocale)->first();
+                                                if ($translation && ! empty($translation->name)) {
+                                                    $name = $translation->name;
+                                                }
+                                            }
+
+                                            if (empty($name)) {
+                                                $anyTranslation = $collection->translations()->whereNotNull('name')->first();
+                                                $name = $anyTranslation->name ?? 'Collection #'.$collection->getKey();
+                                            }
+                                        }
+
+                                        $options[$collection->id] = $name;
+                                    }
+
+                                    return $options;
+                                })
                                 ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
                                     if ($state !== $record->media_collection_id) {
                                         $record->media_collection_id = $state;
+
+                                        $record->collection_name = null;
+
                                         $record->save();
                                     }
                                 }),
@@ -361,7 +402,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->name ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('name') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -383,7 +424,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->title ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('title') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -405,7 +446,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->alt ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('alt') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -427,7 +468,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->description ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('description') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -455,7 +496,7 @@ class MediaResource extends Resource
                             if ($record && method_exists($record, 'translations')) {
                                 $lang = $livewire->lang ?? app()->getLocale();
                                 $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation?->internal_note ?? '');
+                                $component->state($translation !== null ? ($translation->getAttribute('internal_note') ?? '') : '');
                             }
                         })
                         ->afterStateUpdated(function ($state, $record, $livewire) {
@@ -481,7 +522,8 @@ class MediaResource extends Resource
     {
         $columns = [];
 
-        if ($table->getLivewire()->isGridView) {
+        $livewire = $table->getLivewire();
+        if (property_exists($livewire, 'isGridView') && $livewire->isGridView) {
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
                     ->alignment('center')
@@ -654,7 +696,7 @@ class MediaResource extends Resource
             $columns[] = TextColumn::make('usages')
                 ->label(__('media::fields.usage'))
                 ->getStateUsing(function ($record) {
-                    $count = \DB::table('media_usables')
+                    $count = DB::table('media_usables')
                         ->where('media_id', $record->id)
                         ->count();
 
@@ -719,12 +761,14 @@ class MediaResource extends Resource
 
                         foreach ($livewire->selected as $id) {
                             try {
-                                $media = Media::find($id);
+                                $media = Media::query()->find($id);
                                 if (! $media) {
                                     continue;
                                 }
 
-                                if (! auth()->user()->can('delete', $media)) {
+                                $user = Auth::user();
+                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
+                                if ($user === null || ! $user->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -736,7 +780,9 @@ class MediaResource extends Resource
                                     continue;
                                 }
 
-                                $media->deletePreservingMedia();
+                                if (method_exists($media, 'deletePreservingMedia')) {
+                                    $media->deletePreservingMedia();
+                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
@@ -792,7 +838,7 @@ class MediaResource extends Resource
                     ->modalDescription(__('media::fields.delete_confirmation'))
                     ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))
-                    ->visible(fn ($livewire) => ! $livewire->isGridView)
+                    ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false))
                     ->action(function (Collection $records) {
                         $successCount = 0;
                         $errorCount = 0;
@@ -800,7 +846,9 @@ class MediaResource extends Resource
 
                         foreach ($records as $media) {
                             try {
-                                if (! auth()->user()->can('delete', $media)) {
+                                $user = Auth::user();
+                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
+                                if ($user === null || ! $user->can('delete', $media)) {
                                     $protectedCount++;
 
                                     continue;
@@ -812,12 +860,14 @@ class MediaResource extends Resource
                                     continue;
                                 }
 
-                                $media->deletePreservingMedia();
+                                if (method_exists($media, 'deletePreservingMedia')) {
+                                    $media->deletePreservingMedia();
+                                }
                                 $media->delete();
                                 $successCount++;
                             } catch (\Exception $e) {
                                 Log::error('Media deletion failed: '.$e->getMessage(), [
-                                    'media_id' => $media->id,
+                                    'media_id' => $media->getKey(),
                                 ]);
                                 $errorCount++;
                             }
@@ -893,23 +943,30 @@ class MediaResource extends Resource
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
                             ->modalIcon('heroicon-m-trash')
-                            ->modalHeading(function ($record) {
-                                $usages = \DB::table('media_usables')
-                                    ->where('media_id', $record->id)
+                            ->modalHeading(function (Media $record) {
+                                $usages = DB::table('media_usables')
+                                    ->where('media_id', $record->getKey())
                                     ->count();
+
+                                $title = $record->getAttribute('title') ?: $record->getAttribute('name');
+                                if ($title === null || $title === '') {
+                                    $first = $record->translations()->first();
+                                    $title = $first ? ($first->getAttribute('title') ?: $first->getAttribute('name')) : null;
+                                }
+                                $title = $title ?: $record->file_name;
 
                                 if ($usages > 0) {
                                     return __('media::fields.delete_linked_file_heading', [
-                                        'title' => $record->title ?: $record->name,
+                                        'title' => $title,
                                         'count' => $usages,
                                         'links' => trans_choice('media::fields.link|links', $usages),
                                     ]);
                                 }
 
-                                return __('media::fields.delete_file_heading', ['title' => $record->title ?: $record->name]);
+                                return __('media::fields.delete_file_heading', ['title' => $title]);
                             })
                             ->modalDescription(function ($record) {
-                                $usages = \DB::table('media_usables')
+                                $usages = DB::table('media_usables')
                                     ->where('media_id', $record->id)
                                     ->count();
 
@@ -930,11 +987,16 @@ class MediaResource extends Resource
 
                                 $description[] = __('media::fields.delete_file_description');
 
-                                return new \Illuminate\Support\HtmlString(implode("\n", $description));
+                                return new HtmlString(implode("\n", array_map(fn ($item) => (string) $item, $description)));
                             })
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
-                            ->hidden(fn (Media $record) => ! auth()->user()->can('delete', $record) || $record->getOriginal('write_protected'))
+                            ->hidden(function (Media $record) {
+                                $user = Auth::user();
+
+                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
+                                return $user === null || ! $user->can('delete', $record) || $record->getOriginal('write_protected');
+                            })
                             ->before(function ($record) {
                                 try {
                                     if ($record->getOriginal('write_protected')) {
@@ -1037,12 +1099,11 @@ class MediaResource extends Resource
                         $options = [];
 
                         foreach ($uploaderTypes as $type) {
-                            /** @var \Illuminate\Database\Eloquent\Collection<int, Media> $mediaItems */
-                            $mediaItems = Media::query()
+                            /** @var Builder<Media> $uploaderQuery */
+                            $uploaderQuery = Media::query()
                                 ->where('uploader_type', $type)
-                                ->whereNotNull('uploader_id')
-                                ->with('uploader')
-                                ->get();
+                                ->whereNotNull('uploader_id');
+                            $mediaItems = $uploaderQuery->with('uploader')->get();
 
                             /** @var array<string, string> $uploaders */
                             $uploaders = $mediaItems
@@ -1158,12 +1219,12 @@ class MediaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMedia::route('/'),
+            'index' => ListMedia::route('/'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::query()->count();
     }
 }

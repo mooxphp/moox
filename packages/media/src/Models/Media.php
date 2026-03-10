@@ -7,12 +7,24 @@ use Astrotomic\Translatable\Translatable;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
+use Moox\Localization\Models\Localization;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
+/**
+ * @property int|null $id
+ * @property int|null $media_collection_id
+ * @property string|null $title
+ * @property string|null $alt
+ * @property object|null $uploader
+ * @property int|string|null $uploader_id
+ * @property string|null $uploader_type
+ * @property int|string|null $original_model_id
+ * @property string|null $original_model_type
+ */
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
     use HasMediaUsable, InteractsWithMedia, Translatable;
@@ -54,21 +66,31 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
     public function registerMediaConversions(?BaseMedia $media = null): void
     {
-        $this->addMediaConversion('preview')
-            ->nonQueued()
-            ->fit(Fit::Contain, 300, 300);
-
-        $this->addMediaConversion('thumb')
+        $this->addMediaConversion('thumbnail')
             ->nonQueued()
             ->fit(Fit::Contain, 150, 150);
 
-        $this->addMediaConversion('medium')
+        $this->addMediaConversion('preview')
             ->nonQueued()
-            ->fit(Fit::Contain, 800, 600);
+            ->width(300);
+
+        $this->addMediaConversion('medium_large')
+            ->nonQueued()
+            ->width(768);
 
         $this->addMediaConversion('large')
             ->nonQueued()
-            ->fit(Fit::Contain, 1200, 900)
+            ->width(1024)
+            ->quality(80);
+
+        $this->addMediaConversion('1536')
+            ->nonQueued()
+            ->width(1536)
+            ->quality(80);
+
+        $this->addMediaConversion('2048')
+            ->nonQueued()
+            ->width(2048)
             ->quality(80);
     }
 
@@ -134,8 +156,58 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
         static::saving(function ($media) {
             if ($media->media_collection_id) {
-                $collection = MediaCollection::find($media->media_collection_id);
-                $media->collection_name = $collection?->name ?? null;
+                $collectionChanged = false;
+                if ($media->exists) {
+                    if ($media->isDirty('media_collection_id')) {
+                        $originalCollectionId = $media->getOriginal('media_collection_id');
+                        $newCollectionId = $media->media_collection_id;
+                        $collectionChanged = $originalCollectionId != $newCollectionId;
+                    }
+                } else {
+                    $collectionChanged = true;
+                }
+
+                if (! $media->exists || $collectionChanged || empty($media->collection_name)) {
+                    $collection = MediaCollection::with('translations')->find($media->media_collection_id);
+
+                    if ($collection) {
+                        $defaultLocale = config('app.locale');
+
+                        if (class_exists(Localization::class)) {
+                            $localization = Localization::query()
+                                ->where('is_default', true)
+                                ->where('is_active_admin', true)
+                                ->with('language')
+                                ->first();
+
+                            if ($localization) {
+                                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
+                            }
+                        }
+
+                        $translation = $collection->translations->firstWhere('locale', $defaultLocale);
+                        $newCollectionName = null;
+
+                        if ($translation && ! empty($translation->getAttribute('name'))) {
+                            $newCollectionName = $translation->getAttribute('name');
+                        } else {
+                            if ($collection->translations->isNotEmpty()) {
+                                $firstTranslation = $collection->translations->first();
+                                $newCollectionName = $firstTranslation->getAttribute('name');
+                            } else {
+                                $newCollectionName = $collection->name ?? null;
+                            }
+                        }
+
+                        if ($collectionChanged || ! empty($newCollectionName)) {
+                            $media->collection_name = $newCollectionName;
+                        }
+                    } else {
+                        $media->collection_name = null;
+                    }
+                }
+            } elseif ($media->isDirty('media_collection_id')) {
+                $media->collection_name = null;
             }
         });
     }
