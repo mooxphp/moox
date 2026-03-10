@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Press refers to the package name Moox Press, don't translate this
     'press' => 'Presse',
@@ -26,4 +25,6 @@ return [
     'post_parent' => 'Post Parent',
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post mime Type',
+    'wp_post_metas' => '',
+    'wp_post_meta' => '',
 ];
