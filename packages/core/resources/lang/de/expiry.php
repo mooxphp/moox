@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Expiry refers to the expiration date of a record and the package name Moox Expiry
     'expiry' => 'Ablaufdatum',
@@ -11,7 +10,6 @@ return [
     'no_expiry_date' => 'Kein Ablaufdatum',
     'update_expiries' => 'Ablaufdaten aktualisieren',
     'updating_started' => 'Aktualisieren gestartet',
-
     'expired_at' => 'Fällig',
     'processing_deadline' => 'Bearbeitungsfrist',
     'escalated_at' => 'Erinnerung',
@@ -19,7 +17,6 @@ return [
     'cycle' => 'Turnus',
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Typ',
-
     'escalated_entries_in_expiry_dashboard' => 'Erinnerung an zu bearbeitende Einträge',
     'following_escalated_entries' => 'Folgende Einträge stehen zur Bearbeitung an',
     'review_entries' => 'Bitte überprüfen Sie diese Einträge so bald wie möglich im ',
