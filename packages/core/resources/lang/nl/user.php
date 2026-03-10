@@ -1,5 +1,4 @@
 <?php
-
 return [
     'user' => 'Gebruiker',
     'users' => 'Gebruikers',
@@ -26,4 +25,16 @@ return [
     'user_status' => 'Gebruikersstatus',
     'user_pass' => 'Gebruikerspas',
     'display_name' => 'Weergavenaam',
+    'role' => '',
+    'last_name' => '',
+    'email' => '',
+    'website' => '',
+    'wp_user_meta' => '',
+    'roles' => '',
+    'name' => '',
+    'email_verified_at' => '',
+    'gender' => '',
+    'wp_user_metas' => '',
+    'avatar' => '',
+    'first_name' => '',
 ];
