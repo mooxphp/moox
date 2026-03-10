@@ -1,34 +1,5 @@
 <?php
-return [
-    'save' => 'Сохранить',
-    'date_updated' => '',
-    'expired_at' => '',
-    'yearly' => '',
-    'following_escalated_entries' => '',
-    'expiry_dashboard' => '',
-    'set_new_expiry_date' => '',
-    'cycle' => '',
-    'expiry_job' => '',
-    'half_yearly' => '',
-    'weekly' => '',
-    'no_assignee' => '',
-    'set_date_based_on_cycle' => '',
-    'processing_deadline' => '',
-    'updating_started' => '',
-    'monthly' => '',
-    'notifyUser' => '',
-    'review_entries' => '',
-    'no_expiry_set' => '',
-    'update_expiries' => '',
-    'escalated_at' => '',
-    'escalated_entries_in_expiry_dashboard' => '',
-    'update_expiry_date' => '',
-    'no_fixed_cycle' => '',
-    'no_expiry_date' => '',
-    'expiry' => '',
-    'previous_expiry_date' => '',
-    'quarterly' => '',
-    'expiries' => '',
-    'escalated_to' => '',
-    'expiry_in_future' => '',
-];
+
+return array (
+  'save' => 'Сохранить',
+);
