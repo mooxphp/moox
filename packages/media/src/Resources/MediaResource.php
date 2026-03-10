@@ -26,10 +26,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\HtmlString;
 use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
-use Moox\Media\Resources\MediaResource\Pages;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
@@ -355,8 +356,8 @@ class MediaResource extends Resource
                                         if ($translation && ! empty($translation->name)) {
                                             $name = $translation->name;
                                         } else {
-                                            if (class_exists(\Moox\Localization\Models\Localization::class)) {
-                                                $defaultLocale = optional(\Moox\Localization\Models\Localization::query()
+                                            if (class_exists(Localization::class)) {
+                                                $defaultLocale = optional(Localization::query()
                                                     ->where('is_default', true)
                                                     ->first()?->language)->alpha2 ?? config('app.locale');
 
@@ -986,7 +987,7 @@ class MediaResource extends Resource
 
                                 $description[] = __('media::fields.delete_file_description');
 
-                                return new \Illuminate\Support\HtmlString(implode("\n", array_map(fn ($item) => (string) $item, $description)));
+                                return new HtmlString(implode("\n", array_map(fn ($item) => (string) $item, $description)));
                             })
                             ->modalSubmitActionLabel(__('media::fields.yes_delete'))
                             ->modalCancelActionLabel(__('media::fields.cancel'))
@@ -1098,7 +1099,7 @@ class MediaResource extends Resource
                         $options = [];
 
                         foreach ($uploaderTypes as $type) {
-                            /** @var \Illuminate\Database\Eloquent\Builder<Media> $uploaderQuery */
+                            /** @var Builder<Media> $uploaderQuery */
                             $uploaderQuery = Media::query()
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id');
@@ -1218,7 +1219,7 @@ class MediaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMedia::route('/'),
+            'index' => ListMedia::route('/'),
         ];
     }
 

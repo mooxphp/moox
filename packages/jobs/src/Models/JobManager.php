@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @property \Illuminate\Support\Carbon|null $finished_at
+ * @property Carbon|null $finished_at
  * @property bool $failed
  */
 class JobManager extends Model

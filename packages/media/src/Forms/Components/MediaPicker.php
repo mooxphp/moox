@@ -23,7 +23,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         parent::setUp();
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
-            /** @var \Illuminate\Database\Eloquent\Model|null $record */
+            /** @var Model|null $record */
             $record = $component->getRecord();
             if (! $record) {
                 return;
@@ -208,7 +208,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
      * Get media metadata from media_translations table
      * Uses default locale first, then en_US, then first available translation
      */
-    protected function getMediaMetadataFromTranslations(Media $media, ?\Illuminate\Database\Eloquent\Model $record = null): array
+    protected function getMediaMetadataFromTranslations(Media $media, ?Model $record = null): array
     {
         // Get default locale from Localization
         $defaultLocale = 'en_US';

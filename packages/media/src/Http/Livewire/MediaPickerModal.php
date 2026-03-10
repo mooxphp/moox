@@ -9,7 +9,9 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -21,7 +23,7 @@ use Moox\Media\Models\MediaCollection;
 use Moox\Media\Models\MediaTranslation;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-/** @property \Filament\Schemas\Schema $form */
+/** @property Schema $form */
 class MediaPickerModal extends Component implements HasForms
 {
     use InteractsWithForms;
@@ -241,7 +243,7 @@ class MediaPickerModal extends Component implements HasForms
                                         'width' => $width,
                                         'height' => $height,
                                     ]);
-                                } catch (\Exception $e) {
+                                } catch (Exception $e) {
                                     // Ignore image size errors
                                 }
                             }
@@ -271,7 +273,7 @@ class MediaPickerModal extends Component implements HasForms
                         }
                         $this->processedHashes[] = $fileHash;
                         $uploadedCount++;
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->danger()
                             ->title(__('media::fields.file_upload_error'))
@@ -431,7 +433,7 @@ class MediaPickerModal extends Component implements HasForms
 
     public function applySelection(): void
     {
-        /** @var \Illuminate\Support\Collection<int, Media> $selectedMedia */
+        /** @var Collection<int, Media> $selectedMedia */
         $selectedMedia = Media::query()->whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
@@ -606,8 +608,8 @@ class MediaPickerModal extends Component implements HasForms
         $currentLang = app()->getLocale();
 
         $defaultLocale = null;
-        if (class_exists(\Moox\Localization\Models\Localization::class)) {
-            $localization = \Moox\Localization\Models\Localization::query()
+        if (class_exists(Localization::class)) {
+            $localization = Localization::query()
                 ->where('is_default', true)
                 ->where('is_active_admin', true)
                 ->with('language')
@@ -639,7 +641,7 @@ class MediaPickerModal extends Component implements HasForms
             ->toArray();
 
         foreach ($uploaderTypes as $type) {
-            /** @var \Illuminate\Database\Eloquent\Builder<Media> $uploaderQuery */
+            /** @var Builder<Media> $uploaderQuery */
             $uploaderQuery = Media::query()
                 ->where('uploader_type', $type)
                 ->whereNotNull('uploader_id');

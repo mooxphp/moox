@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Entities;
 
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
@@ -17,6 +18,7 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
@@ -180,7 +182,7 @@ abstract class BaseResource extends Resource
         return RestoreAction::make('restore')
             ->label(__('core::core.restore'))
             ->color('success')
-            ->action(function (\Illuminate\Database\Eloquent\Model $record, $livewire) {
+            ->action(function (Model $record, $livewire) {
                 if (method_exists($record, 'translations')) {
                     DB::table($record->getTable())
                         ->where($record->getKeyName(), $record->getKey())
@@ -228,7 +230,7 @@ abstract class BaseResource extends Resource
         return RestoreBulkAction::make()
             ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
             ->action(function (array $records, $livewire): void {
-                /** @var \Illuminate\Database\Eloquent\Model $record */
+                /** @var Model $record */
                 foreach ($records as $record) {
                     if (method_exists($record, 'translations')) {
                         DB::table($record->getTable())
@@ -817,12 +819,12 @@ abstract class BaseResource extends Resource
         }
 
         if (empty($types)) {
-            $types[] = MorphToSelect\Type::make(\App\Models\User::class)
+            $types[] = MorphToSelect\Type::make(User::class)
                 ->titleAttribute('name')
                 ->label('User')
                 ->getOptionLabelUsing(fn ($record): string => (string) ($record->name ?? 'Unknown'))
                 ->getSearchResultsUsing(
-                    fn (string $search) => \App\Models\User::query()
+                    fn (string $search) => User::query()
                         ->where('name', 'like', "%{$search}%")
                         ->whereNotNull('name')
                         ->where('name', '!=', '')
@@ -831,7 +833,7 @@ abstract class BaseResource extends Resource
                         ->toArray()
                 )
                 ->getOptionsUsing(
-                    fn () => \App\Models\User::query()
+                    fn () => User::query()
                         ->whereNotNull('name')
                         ->where('name', '!=', '')
                         ->limit(50)
@@ -856,7 +858,7 @@ abstract class BaseResource extends Resource
             }
         }
 
-        return config('auth.providers.users.model', \App\Models\User::class);
+        return config('auth.providers.users.model', User::class);
     }
 
     /**

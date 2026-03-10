@@ -9,6 +9,7 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
@@ -38,7 +39,7 @@ class MediaServiceProvider extends MooxServiceProvider
     /**
      * Custom-Installer für das Media-Package, vom Moox-Installer ausgewertet.
      *
-     * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
+     * @return array<AssetInstallerInterface>
      */
     public function getCustomInstallers(): array
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
+use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Moox\Data\Filament\Providers\DataPanelProvider;
@@ -63,7 +64,7 @@ class DataServiceProvider extends MooxServiceProvider
     /**
      * Custom-Installer für das Data-Package, vom Moox-Installer ausgewertet.
      *
-     * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
+     * @return array<AssetInstallerInterface>
      */
     public function getCustomInstallers(): array
     {
