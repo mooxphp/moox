@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     'user' => 'User',
     'users' => 'Users',
     'user_agent' => 'User Agent',
@@ -34,5 +32,9 @@ return [
     'email' => 'Email',
     'email_verified_at' => 'Email verified at',
     'website' => 'Website',
-
+    'role' => '',
+    'wp_user_meta' => '',
+    'name' => '',
+    'wp_user_metas' => '',
+    'avatar' => '',
 ];
