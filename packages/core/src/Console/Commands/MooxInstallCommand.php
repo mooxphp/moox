@@ -10,6 +10,7 @@ use Moox\Core\Installer\Traits\HasConfigurableInstallers;
 use Moox\Core\Installer\Traits\HasCustomInstallers;
 use Moox\Core\Installer\Traits\HasInstallationHooks;
 use Moox\Core\Installer\Traits\HasSkippableInstallers;
+use Moox\Core\MooxServiceProvider;
 use Moox\Prompts\Support\FlowCommand;
 
 use function Moox\Prompts\error;
@@ -259,7 +260,7 @@ class MooxInstallCommand extends FlowCommand
         try {
             $reflection = new \ReflectionClass($providerClass);
 
-            return $reflection->isSubclassOf(\Moox\Core\MooxServiceProvider::class);
+            return $reflection->isSubclassOf(MooxServiceProvider::class);
         } catch (\Exception $e) {
             return false;
         }

@@ -3,10 +3,12 @@
 namespace Moox\Monorepo\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Moox\Monorepo\Actions\DiscoverPackagesAction;
 use Moox\Monorepo\Actions\ProcessChangelogAction;
 use Moox\Monorepo\Contracts\GitHubClientInterface;
 use Moox\Monorepo\Contracts\VersionManagerInterface;
+use Moox\Monorepo\DataTransferObjects\PackageInfo;
 
 class ListPackagesCommand extends Command
 {
@@ -90,7 +92,7 @@ class ListPackagesCommand extends Command
         return 0;
     }
 
-    private function discoverPackages(string $type): \Illuminate\Support\Collection
+    private function discoverPackages(string $type): Collection
     {
         $organization = config('monorepo.github.organization');
         $repoName = $type === 'public'
@@ -108,7 +110,7 @@ class ListPackagesCommand extends Command
         // Convert to PackageInfo objects
         $this->line("     🔄 Processing {$packages->count()} packages...");
         $packageInfos = $packages->map(function ($package) use ($type) {
-            return new \Moox\Monorepo\DataTransferObjects\PackageInfo(
+            return new PackageInfo(
                 name: $package['name'],
                 path: '', // No local path since we're getting from GitHub
                 visibility: $type,
@@ -135,7 +137,7 @@ class ListPackagesCommand extends Command
         return null;
     }
 
-    private function displayPackagesTable(\Illuminate\Support\Collection $packages): void
+    private function displayPackagesTable(Collection $packages): void
     {
         $tableData = $packages->map(function ($package) {
             $hasRepo = $package->existsInOrganization ? '✅' : '❌';
@@ -157,7 +159,7 @@ class ListPackagesCommand extends Command
         );
     }
 
-    private function displaySummary(\Illuminate\Support\Collection $packages): void
+    private function displaySummary(Collection $packages): void
     {
         $total = $packages->count();
         $public = $packages->where('type', 'public')->count();

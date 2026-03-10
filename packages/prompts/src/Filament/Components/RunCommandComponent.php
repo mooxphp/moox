@@ -3,6 +3,7 @@
 namespace Moox\Prompts\Filament\Components;
 
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -10,10 +11,15 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use Moox\Prompts\Models\CommandExecution;
 use Moox\Prompts\Support\PromptFlowRunner;
+use Moox\Prompts\Support\PromptFlowState;
 use Moox\Prompts\Support\PromptFlowStateStore;
 use Moox\Prompts\Support\PromptParamsHelper;
 use Moox\Prompts\Support\PromptResponseStore;
@@ -356,7 +362,7 @@ class RunCommandComponent extends Component implements HasForms
                             }
                         }
                     }
-                } catch (\Illuminate\Validation\ValidationException $e) {
+                } catch (ValidationException $e) {
                     $errors = $e->errors();
                     $this->validationErrors = [];
 
@@ -557,7 +563,7 @@ class RunCommandComponent extends Component implements HasForms
         return ['form'];
     }
 
-    public function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public function form(Schema $schema): Schema
     {
         return $schema
             ->components($this->getFormSchema())
@@ -616,7 +622,7 @@ class RunCommandComponent extends Component implements HasForms
         return $fields;
     }
 
-    protected function createFieldFromPrompt(string $promptId, string $method, array $params): ?\Filament\Forms\Components\Field
+    protected function createFieldFromPrompt(string $promptId, string $method, array $params): ?Field
     {
         $p = PromptParamsHelper::extract($method, $params);
 
@@ -767,15 +773,15 @@ class RunCommandComponent extends Component implements HasForms
      * Users can only access flows they created (if CommandExecution exists),
      * or flows without a CommandExecution record (legacy/ongoing flows).
      */
-    protected function hasAccessToFlow(\Moox\Prompts\Support\PromptFlowState $state): bool
+    protected function hasAccessToFlow(PromptFlowState $state): bool
     {
         // If no CommandExecution exists yet, allow access (flow just started)
-        if (! class_exists(\Moox\Prompts\Models\CommandExecution::class)) {
+        if (! class_exists(CommandExecution::class)) {
             return true;
         }
 
         try {
-            $execution = \Moox\Prompts\Models\CommandExecution::query()->where('flow_id', $state->flowId)->first();
+            $execution = CommandExecution::query()->where('flow_id', $state->flowId)->first();
 
             // If no execution record exists, allow access (legacy flow or just started)
             if (! $execution) {
@@ -788,13 +794,13 @@ class RunCommandComponent extends Component implements HasForms
             }
 
             // Check if current user is the creator
-            $user = \Illuminate\Support\Facades\Auth::user();
+            $user = Auth::user();
             if (! $user) {
                 return false;
             }
 
             return $execution->createdBy->is($user);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // On error, deny access for security
             Log::warning('Error checking flow access', [
                 'flow_id' => $state->flowId,

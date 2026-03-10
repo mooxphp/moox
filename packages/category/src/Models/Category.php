@@ -38,9 +38,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Collection<int, \Moox\Category\Models\Category> $children
- * @property-read Collection<int, \Moox\Category\Models\Category> $ancestors
- * @property-read \Moox\Category\Models\Category|null $parent
+ * @property-read Collection<int, Category> $children
+ * @property-read Collection<int, Category> $ancestors
+ * @property-read Category|null $parent
  *
  * @method static CategoryFactory factory($count = null, $state = [])
  */

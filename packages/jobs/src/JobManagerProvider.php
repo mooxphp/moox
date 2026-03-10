@@ -7,6 +7,7 @@ use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Moox\Jobs\Models\JobManager;
@@ -66,7 +67,7 @@ class JobManagerProvider extends ServiceProvider
             'status' => 'running',
         ]);
 
-        /** @var \Illuminate\Support\Collection<int, JobManager> $others */
+        /** @var Collection<int, JobManager> $others */
         $others = JobManager::query()
             ->where('id', '!=', $monitor->getKey())
             ->where('job_id', $jobId)
