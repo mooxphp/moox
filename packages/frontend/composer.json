@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "moox/core": "self.version"
+        "moox/core": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -30,12 +30,15 @@
             "providers": [
                 "Moox\\Frontend\\FrontendServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "config": {
         "allow-plugins": {

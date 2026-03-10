@@ -10,7 +10,6 @@ use Filament\Schemas\Components\Grid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Category\Models\Category;
-use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class TaxonomyCreateForm
@@ -42,8 +41,6 @@ class TaxonomyCreateForm
                     'column' => 'slug',
                 ]
             ),
-            MediaPicker::make('featured_image_url')
-                ->label(__('core::core.featured_image_url')),
             MarkdownEditor::make('content')
                 ->label(__('core::core.content')),
             SelectTree::make('parent_id')

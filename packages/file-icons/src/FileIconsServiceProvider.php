@@ -6,13 +6,23 @@ namespace Moox\FileIcons;
 
 use BladeUI\Icons\Factory;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use Moox\Core\MooxServiceProvider;
+use Moox\FileIcons\Http\Controllers\FileIconController;
+use Spatie\LaravelPackageTools\Package;
 
-final class FileIconsServiceProvider extends ServiceProvider
+class FileIconsServiceProvider extends MooxServiceProvider
 {
+    public function configureMoox(Package $package): void
+    {
+        $package
+            ->name('file-icons')
+            ->hasConfigFile();
+    }
+
     public function register(): void
     {
-        $this->registerConfig();
+        parent::register();
 
         $this->callAfterResolving(Factory::class, function (Factory $factory, Container $container) {
             $config = $container->make('config')->get('file-icons', []);
@@ -21,21 +31,15 @@ final class FileIconsServiceProvider extends ServiceProvider
         });
     }
 
-    private function registerConfig(): void
+    public function packageBooted(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/file-icons.php', 'file-icons');
-    }
+        Route::get('/vendor/file-icons/{icon}', FileIconController::class)
+            ->where('icon', '[a-zA-Z0-9_-]+\.svg');
 
-    public function boot(): void
-    {
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../resources/svg' => public_path('vendor/file-icons'),
             ], 'file-icons');
-
-            $this->publishes([
-                __DIR__.'/../config/file-icons.php' => $this->app->configPath('file-icons.php'),
-            ], 'file-icons-config');
         }
     }
 }

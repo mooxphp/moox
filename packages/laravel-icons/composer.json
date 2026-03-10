@@ -29,6 +29,9 @@
             "providers": [
                 "Moox\\LaravelIcons\\LaravelIconsServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "config": {

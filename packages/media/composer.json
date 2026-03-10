@@ -17,10 +17,11 @@
         }
     ],
     "require": {
-        "moox/core": "self.version",
-        "filament/spatie-laravel-media-library-plugin": "^4.0",
-        "moox/localization": "*",
-        "moox/data": "*"
+        "moox/core": "dev-main ",
+        "filament/spatie-laravel-media-library-plugin": "^5.0",
+        "moox/localization": "dev-main",
+        "moox/data": "dev-main",
+        "moox/file-icons": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -32,11 +33,14 @@
             "providers": [
                 "Moox\\Media\\MediaServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "*"
     },
     "config": {
         "allow-plugins": {

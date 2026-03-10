@@ -7,6 +7,7 @@ use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Moox\Jobs\Models\JobManager;
@@ -66,16 +67,19 @@ class JobManagerProvider extends ServiceProvider
             'status' => 'running',
         ]);
 
-        JobManager::query()
-            ->where('id', '!=', $monitor->id)
+        /** @var Collection<int, JobManager> $others */
+        $others = JobManager::query()
+            ->where('id', '!=', $monitor->getKey())
             ->where('job_id', $jobId)
             ->where('failed', false)
             ->whereNull('finished_at')
-            ->each(function (JobManager $monitor): void {
-                $monitor->finished_at = now();
-                $monitor->failed = true;
-                $monitor->save();
-            });
+            ->get();
+
+        $others->each(function (JobManager $monitor): void {
+            $monitor->finished_at = now();
+            $monitor->failed = true;
+            $monitor->save();
+        });
     }
 
     /**
@@ -83,6 +87,7 @@ class JobManagerProvider extends ServiceProvider
      */
     protected static function jobFinished(JobContract $job, bool $failed = false, ?Throwable $exception = null): void
     {
+        /** @var JobManager|null $monitor */
         $monitor = JobManager::query()
             ->where('job_id', self::getJobId($job))
             ->where('attempt', $job->attempts())

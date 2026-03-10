@@ -1,11 +1,14 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Moox\Monorepo\Tests\TestCase;
+
 uses(
-    Moox\Monorepo\Tests\TestCase::class,
-    Illuminate\Foundation\Testing\RefreshDatabase::class,
+    TestCase::class,
+    RefreshDatabase::class,
 )->in('Feature');
 
-uses(Moox\Monorepo\Tests\TestCase::class)->in('Unit');
+uses(TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------

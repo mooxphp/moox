@@ -2,26 +2,44 @@
 
 namespace Moox\Item\Tests;
 
+use Filament\Actions\ActionsServiceProvider;
 use Filament\Facades\Filament;
 use Filament\FilamentServiceProvider;
+use Filament\Forms\FormsServiceProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Infolists\InfolistsServiceProvider;
+use Filament\Notifications\NotificationsServiceProvider;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\Support\Colors\Color;
+use Filament\Support\SupportServiceProvider;
+use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Filament\Widgets\WidgetsServiceProvider;
+use Illuminate\Auth\AuthServiceProvider;
+use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Database\DatabaseServiceProvider;
+use Illuminate\Encryption\EncryptionServiceProvider;
+use Illuminate\Filesystem\FilesystemServiceProvider;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Session\SessionServiceProvider;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
+use Illuminate\Translation\TranslationServiceProvider;
+use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Moox\Core\CoreServiceProvider;
 use Moox\Item\ItemServiceProvider;
@@ -109,26 +127,26 @@ class TestCase extends Orchestra
             FilamentServiceProvider::class,
             // Laravel Kernel essentials
             // Basis-Laravel Provider, die Testbench sonst nicht lädt
-            \Illuminate\Auth\AuthServiceProvider::class,
-            \Illuminate\Cookie\CookieServiceProvider::class,
-            \Illuminate\Database\DatabaseServiceProvider::class,
-            \Illuminate\Encryption\EncryptionServiceProvider::class,
-            \Illuminate\Session\SessionServiceProvider::class,
-            \Illuminate\Validation\ValidationServiceProvider::class,
-            \Illuminate\View\ViewServiceProvider::class,
-            \Illuminate\Pagination\PaginationServiceProvider::class,
-            \Illuminate\Translation\TranslationServiceProvider::class,
-            \Illuminate\Filesystem\FilesystemServiceProvider::class,
+            AuthServiceProvider::class,
+            CookieServiceProvider::class,
+            DatabaseServiceProvider::class,
+            EncryptionServiceProvider::class,
+            SessionServiceProvider::class,
+            ValidationServiceProvider::class,
+            ViewServiceProvider::class,
+            PaginationServiceProvider::class,
+            TranslationServiceProvider::class,
+            FilesystemServiceProvider::class,
 
-            \Filament\Support\SupportServiceProvider::class,
+            SupportServiceProvider::class,
 
             // Filament Components
-            \Filament\Forms\FormsServiceProvider::class,
-            \Filament\Tables\TablesServiceProvider::class,
-            \Filament\Notifications\NotificationsServiceProvider::class,
-            \Filament\Actions\ActionsServiceProvider::class,
-            \Filament\Infolists\InfolistsServiceProvider::class,
-            \Filament\Widgets\WidgetsServiceProvider::class,
+            FormsServiceProvider::class,
+            TablesServiceProvider::class,
+            NotificationsServiceProvider::class,
+            ActionsServiceProvider::class,
+            InfolistsServiceProvider::class,
+            WidgetsServiceProvider::class,
 
             // Moox packages
             CoreServiceProvider::class,
@@ -157,7 +175,7 @@ class TestCase extends Orchestra
 
         if (! class_exists($userClass)) {
             // Fallback to a simple test user
-            $userClass = new class extends \Illuminate\Foundation\Auth\User
+            $userClass = new class extends User
             {
                 protected $table = 'users';
 

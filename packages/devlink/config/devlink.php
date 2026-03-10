@@ -167,6 +167,11 @@ return [
             'path' => $public_base_path.'/featherlight',
             'type' => 'public',
         ],
+        'file-icons' => [
+            'active' => true,
+            'path' => $public_base_path.'/file-icons',
+            'type' => 'public',
+        ],
         'firewall' => [
             'active' => true,
             'path' => $public_base_path.'/firewall',
@@ -411,6 +416,11 @@ return [
         'trainings' => [
             'active' => true,
             'path' => $public_base_path.'/trainings',
+            'type' => 'public',
+        ],
+        'tree' => [
+            'active' => true,
+            'path' => $public_base_path.'/tree',
             'type' => 'public',
         ],
         'user' => [

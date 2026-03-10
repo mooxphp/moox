@@ -99,18 +99,19 @@ class JobsResource extends Resource
                     })
                     ->color(function ($record) {
                         if ($record->failed) {
-                            return 'rgb(239, 68, 68)';
+                            return 'var(--danger-500)';
                         }
 
-                        $progress = $record->progress ?? 0;
-                        $gray = [156, 163, 175];
-                        $green = [34, 197, 94];
-                        $f = $progress / 100;
-                        $r = round($gray[0] + ($green[0] - $gray[0]) * $f);
-                        $g = round($gray[1] + ($green[1] - $gray[1]) * $f);
-                        $b = round($gray[2] + ($green[2] - $gray[2]) * $f);
+                        // $progress = $record->progress ?? 0;
+                        // $gray = [156, 163, 175];
+                        // $green = [34, 197, 15];
+                        // $f = $progress / 100;
+                        // $r = round($gray[0] + ($green[0] - $gray[0]) * $f);
+                        // $g = round($gray[1] + ($green[1] - $gray[1]) * $f);
+                        // $b = round($gray[2] + ($green[2] - $gray[2]) * $f);
 
-                        return "rgb({$r}, {$g}, {$b})";
+                        // return "rgb({$r}, {$g}, {$b})";
+                        return 'var(--success-500)';
                     }),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))

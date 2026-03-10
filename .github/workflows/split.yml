@@ -73,7 +73,7 @@ jobs:
         package: ${{ fromJson(needs.prepare.outputs.package-list) }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get package stability and determine version
         working-directory: packages/${{ matrix.package }}
@@ -126,6 +126,9 @@ jobs:
             # Also handle self.version case
             sed -i 's/"moox\/core":\s*"self\.version"/"moox\/core": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
             
+            # Handle other Moox packages dependencies
+            sed -i 's/"moox\/\([^"]*\)":\s*"dev-main"/"moox\/\1": "${{ needs.prepare.outputs.core-version }}"/g' composer.json
+            
             echo "Updated composer.json:"
             grep "moox/core" composer.json || echo "No moox/core dependency found"
           else
@@ -156,7 +159,7 @@ jobs:
           echo "Stability: $STABILITY"
           
       - name: Split package to separate repository
-        uses: symplify/monorepo-split-github-action@v2.4.0
+        uses: symplify/monorepo-split-github-action@v2.4.4
         env:
           GITHUB_TOKEN: ${{ github.event.inputs.user_token != '' && github.event.inputs.user_token || secrets.BOT }}
         with:

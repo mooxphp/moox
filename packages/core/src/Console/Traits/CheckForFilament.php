@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Console\Traits;
 
+use Filament\PanelProvider;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
@@ -16,7 +17,7 @@ trait CheckForFilament
 
     public function checkForFilament(bool $silent = false): bool
     {
-        if (! class_exists(\Filament\PanelProvider::class, false)) {
+        if (! class_exists(PanelProvider::class, false)) {
             $panelProviderPath = base_path('vendor/filament/filament/src/PanelProvider.php');
 
             if (! file_exists($panelProviderPath)) {
@@ -143,7 +144,7 @@ trait CheckForFilament
             return [];
         }
 
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     protected function getComposerPsr4Mappings(): array

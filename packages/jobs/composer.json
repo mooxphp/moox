@@ -21,10 +21,10 @@
         }
     ],
     "require": {
-        "moox/core": "self.version"
+        "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +45,12 @@
             "install": {
                 "auto_migrate": [
                     "database/migrations"
+                ],
+                "plugins": [
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsWaitingPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsFailedPlugin",
+                    "Moox\\Jobs\\Moox\\Plugins\\JobsBatchesPlugin"
                 ],
                 "seed": "database/seeders/JobsSeeder.php",
                 "auto_publish": "jobs-config",
@@ -84,6 +90,5 @@
             }
         }
     },
-
     "prefer-stable": true
 }

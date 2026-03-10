@@ -30,6 +30,9 @@
             "providers": [
                 "Moox\\FlagIconsOrigin\\FlagIconsOriginServiceProvider"
             ]
+        },
+        "moox": {
+            "stability": "stable"
         }
     },
     "config": {

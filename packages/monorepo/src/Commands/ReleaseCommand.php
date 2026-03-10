@@ -9,6 +9,8 @@ use Moox\Monorepo\Actions\DiscoverPackagesAction;
 use Moox\Monorepo\Actions\ProcessChangelogAction;
 use Moox\Monorepo\Contracts\GitHubClientInterface;
 use Moox\Monorepo\Contracts\VersionManagerInterface;
+use Moox\Monorepo\DataTransferObjects\PackageChange;
+use Moox\Monorepo\DataTransferObjects\PackageInfo;
 use Moox\Monorepo\DataTransferObjects\ReleaseInfo;
 use Moox\Monorepo\Services\RepositoryCreationService;
 
@@ -201,7 +203,7 @@ class ReleaseCommand extends Command
                 $mooxStability = $composerData['extra']['moox-stability'] ?? 'stable';
             }
 
-            return new \Moox\Monorepo\DataTransferObjects\PackageInfo(
+            return new PackageInfo(
                 name: $package['name'],
                 path: '', // No local path since we're getting from GitHub
                 visibility: $type,
@@ -238,7 +240,7 @@ class ReleaseCommand extends Command
             $metadata = $packageChange->metadata;
             $metadata['moox_stability'] = $package->composer['extra']['moox-stability'] ?? 'stable';
 
-            return new \Moox\Monorepo\DataTransferObjects\PackageChange(
+            return new PackageChange(
                 packageName: $packageChange->packageName,
                 changes: $packageChange->changes,
                 releaseMessage: $packageChange->releaseMessage,

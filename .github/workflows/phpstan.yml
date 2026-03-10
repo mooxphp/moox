@@ -13,12 +13,12 @@ jobs:
     outputs:
       artifact-name: app-artifact
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Bootstrap Laravel App
         run: |
@@ -28,7 +28,7 @@ jobs:
           touch database/database.sqlite
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: app-artifact
           path: app-artifact.tar.gz
@@ -38,7 +38,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download App Artifact
         uses: actions/download-artifact@v7
@@ -55,7 +55,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
 
       - name: Fix bin permissions
         run: chmod +x vendor/bin/phpstan || true

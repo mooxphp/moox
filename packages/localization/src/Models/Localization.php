@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Localization\Models;
 
+use BladeUI\Icons\Exceptions\SvgNotFound;
+use BladeUI\Icons\Factory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,7 +76,7 @@ class Localization extends Model
      */
     public function getLocaleAttribute(): string
     {
-        $locale = $this->attributes['locale_variant'] ?? $this->language?->alpha2 ?? '';
+        $locale = $this->attributes['locale_variant'] ?? $this->language->alpha2 ?? '';
 
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
@@ -171,7 +173,6 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             $countryCode = strtolower($parts[1] ?? '');
-
             if ($countryCode && $this->flagExists($countryCode)) {
                 return 'flag-'.$countryCode;
             }
@@ -195,7 +196,6 @@ class Localization extends Model
         if (str_contains($locale, '_')) {
             $parts = explode('_', $locale, 2);
             $countryCode = strtolower($parts[1] ?? '');
-
             if ($countryCode && $this->flagExists($countryCode)) {
                 return 'flag-'.$countryCode;
             }
@@ -205,17 +205,17 @@ class Localization extends Model
     }
 
     /**
-     * Check if a flag file exists
+     * Check if a flag file exists using Blade Icons Factory
      */
     public function flagExists(string $flagCode): bool
     {
-        $packagePath = base_path('packages/flag-icons-circle/resources/svg/'.$flagCode.'.svg');
-        if (file_exists($packagePath)) {
+        try {
+            $factory = app(Factory::class);
+            $factory->svg("flag-icons-circle-{$flagCode}");
+
             return true;
+        } catch (SvgNotFound $e) {
+            return false;
         }
-
-        $publicPath = public_path('vendor/flag-icons-circle/'.$flagCode.'.svg');
-
-        return file_exists($publicPath);
     }
 }

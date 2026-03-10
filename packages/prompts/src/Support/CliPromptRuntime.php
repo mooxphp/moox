@@ -9,12 +9,6 @@ use Laravel\Prompts\Progress;
 
 class CliPromptRuntime implements PromptRuntime
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Input Prompts
-    |--------------------------------------------------------------------------
-    */
-
     public function text(
         string $label,
         string $placeholder = '',
@@ -202,22 +196,10 @@ class CliPromptRuntime implements PromptRuntime
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Auxiliary Prompts
-    |--------------------------------------------------------------------------
-    */
-
     public function pause(string $message = 'Press ENTER to continue'): void
     {
         Prompts\pause($message);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Informational
-    |--------------------------------------------------------------------------
-    */
 
     public function note(string $message): void
     {
@@ -254,22 +236,10 @@ class CliPromptRuntime implements PromptRuntime
         Prompts\outro($message);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Table Output
-    |--------------------------------------------------------------------------
-    */
-
     public function table(array $headers, array $rows): void
     {
         Prompts\table($headers, $rows);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Spinner
-    |--------------------------------------------------------------------------
-    */
 
     public function spin(
         Closure $callback,
@@ -277,12 +247,6 @@ class CliPromptRuntime implements PromptRuntime
     ): mixed {
         return Prompts\spin($callback, $message);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Progress
-    |--------------------------------------------------------------------------
-    */
 
     public function progress(
         string $label,
@@ -298,22 +262,10 @@ class CliPromptRuntime implements PromptRuntime
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Clear Terminal
-    |--------------------------------------------------------------------------
-    */
-
     public function clear(): void
     {
         Prompts\clear();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Form
-    |--------------------------------------------------------------------------
-    */
 
     public function form(): FormBuilder
     {

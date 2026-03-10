@@ -9,21 +9,21 @@ class CustomPathGenerator extends BasePathGenerator
 {
     public function getPath(Media $media): string
     {
-        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->id;
+        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->getKey();
 
         return "media/{$originalMediaId}/";
     }
 
     public function getPathForConversions(Media $media): string
     {
-        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->id;
+        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->getKey();
 
         return "media/{$originalMediaId}/conversions/";
     }
 
     public function getPathForResponsiveImages(Media $media): string
     {
-        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->id;
+        $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->getKey();
 
         return "media/{$originalMediaId}/responsive-images/";
     }
