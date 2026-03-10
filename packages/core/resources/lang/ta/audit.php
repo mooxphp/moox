@@ -1,10 +1,9 @@
 <?php
-
 return [
     // Audit refers to Logging of changes in the system and the package name Moox Audit
     'audit' => 'தணிக்கை',
     // Audits refers to Logging of changes in the system and the package name Moox Audit
-    'audits' => 'தணிக்கை',
+    'audits' => 'தணிக்கைகள்',
     // The causer type is the type of the user who caused the log entry
     'causer_type' => 'அரட்டை',
     // The causer id is the id of the user who caused the log entry
