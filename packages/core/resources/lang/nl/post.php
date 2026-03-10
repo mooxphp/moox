@@ -1,5 +1,4 @@
 <?php
-
 return [
     'press' => 'Press',
     'post' => 'Post',
@@ -22,4 +21,7 @@ return [
     'post_content_filtered' => 'Post Inhoud gefilterd',
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post Mime-type',
+    'post_parent' => '',
+    'wp_post_metas' => '',
+    'wp_post_meta' => '',
 ];
