@@ -72,7 +72,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "^4.0"
+        "moox/devtools": "^5.0"
     },
     "config": {
         "allow-plugins": {
