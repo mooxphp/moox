@@ -21,7 +21,6 @@ use Moox\Tag\Models\Tag;
 */
 return [
     'readonly' => false,
-
     'resources' => [
         'draft' => [
 
@@ -69,6 +68,30 @@ return [
                             'value' => null,
                         ],
                     ],
+                ],
+            ],
+            'scopes' => [
+                'media' => [
+                    'enabled' => true,
+                    'resource' => \Moox\Media\Resources\MediaResource::class,
+                    'origin' => 'media',
+                    'boundary' => 'private',
+                    'label' => 'Media Private',
+                ],
+                'media_public' => [
+                    'enabled' => true,
+                    'resource' => \Moox\Media\Resources\MediaResource::class,
+                    'origin' => 'media',
+                    'boundary' => 'public',
+                    'label' => 'Media Public',
+                ],
+                'tag' => [
+                    'enabled' => true,
+                    'resource' => \Moox\Tag\Resources\TagResource::class,
+                ],
+                'category' => [
+                    'enabled' => true,
+                    'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
                 ],
             ],
         ],

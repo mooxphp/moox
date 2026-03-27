@@ -8,6 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 use Moox\Localization\Models\Localization;
@@ -43,6 +44,7 @@ abstract class BaseCreateDraft extends CreateRecord
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
 
         $record->fill($nonTranslatableData);
+        ScopedResourceContext::applyDefaults($record, static::getResource());
         $record->save();
         /** @var Model $translation */
         $translation = $record->translations()->firstOrNew([

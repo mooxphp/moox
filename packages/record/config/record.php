@@ -35,6 +35,12 @@ return [
             */
             'single' => 'trans//record::record.record',
             'plural' => 'trans//record::record.records',
+            'scopes' => [
+                'category' => [
+                    'enabled' => true,
+                    'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                ],
+            ],
 
             /*
             |--------------------------------------------------------------------------

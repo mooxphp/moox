@@ -4,6 +4,7 @@ namespace Moox\Draft\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Draft\Moox\Entities\Drafts\Draft\DraftResource;
 
 class DraftPlugin implements Plugin
@@ -15,10 +16,12 @@ class DraftPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel
-            ->resources([
-                DraftResource::class,
-            ]);
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
+            DraftResource::class,
+            'draft',
+            config('draft.resources.draft', []),
+        );
     }
 
     public function boot(Panel $panel): void

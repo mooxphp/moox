@@ -17,22 +17,29 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
+use Filament\Resources\ResourceConfiguration;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use Moox\Clipboard\Forms\Components\CopyableField;
+use Moox\Core\Support\Resources\ScopedResourceConfiguration;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 
 abstract class BaseResource extends Resource
 {
+    public static function make(string $key = 'default'): ResourceConfiguration
+    {
+        return ScopedResourceConfiguration::make(static::class, $key);
+    }
+
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
             $query = static::addTaxonomyRelationsToQuery($query);
         }
-
-        return $query;
+        return ScopedResourceContext::applyScope($query, static::class);
     }
 
     public static function getEloquentQuery(): Builder
