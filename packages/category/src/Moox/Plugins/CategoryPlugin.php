@@ -7,6 +7,7 @@ namespace Moox\Category\Moox\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 
 class CategoryPlugin implements Plugin
@@ -20,7 +21,7 @@ class CategoryPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
+        ResourceNavigationRegistrar::register($panel, [
             CategoryResource::class,
         ]);
     }

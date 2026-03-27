@@ -7,6 +7,9 @@ namespace Moox\Core;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstallCommand;
 use Moox\Core\Console\Commands\PublishScheduledContentCommand;
+use Moox\Core\Console\Commands\ScopesSyncCommand;
+use Moox\Core\Services\ScopeAssignmentValidator;
+use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Core\Traits\HasGoogleIcons;
@@ -26,6 +29,8 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
+        $this->app->singleton(ScopeRegistry::class);
+        $this->app->singleton(ScopeAssignmentValidator::class);
         $this->app->singleton(TabStateManager::class);
         $this->app->singleton(TaxonomyService::class);
 
@@ -48,8 +53,9 @@ class CoreServiceProvider extends PackageServiceProvider
             ->name('core')
             ->hasConfigFile(['core', 'moox-installer'])
             ->hasTranslations()
+            ->hasMigration('create_scopes_table')
             ->hasRoutes(['api', 'web'])
-            ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class]);
+            ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class, ScopesSyncCommand::class]);
     }
 
     protected function getPackageNames(): array

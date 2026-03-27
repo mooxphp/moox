@@ -5,6 +5,7 @@ namespace Moox\Media\Moox\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
 use Moox\Media\Resources\MediaResource;
 
 class MediaPlugin implements Plugin
@@ -18,7 +19,7 @@ class MediaPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
+        ResourceNavigationRegistrar::register($panel, [
             MediaResource::class,
         ]);
     }

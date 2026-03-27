@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -33,7 +34,7 @@ use Override;
 
 class TagResource extends BaseDraftResource
 {
-    use HasResourceTabs;
+    use HasResourceTabs, HasScopedChildResource;
 
     protected static ?string $model = Tag::class;
 
@@ -212,7 +213,7 @@ class TagResource extends BaseDraftResource
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('tag.resources.tag.plural');
+        return static::resolveScopedNavigationLabel(config('tag.resources.tag.plural'));
     }
 
     #[Override]
@@ -224,13 +225,25 @@ class TagResource extends BaseDraftResource
     #[Override]
     public static function shouldRegisterNavigation(): bool
     {
-        return true;
+        return static::resolveScopedNavigationRegistration(true);
     }
 
     #[Override]
     public static function getNavigationGroup(): ?string
     {
-        return config('tag.navigation_group');
+        return static::resolveScopedNavigationGroup(config('tag.navigation_group'));
+    }
+
+    #[Override]
+    public static function getNavigationParentItem(): ?string
+    {
+        return static::resolveScopedNavigationParentItem(parent::getNavigationParentItem());
+    }
+
+    #[Override]
+    public static function getNavigationSort(): ?int
+    {
+        return static::resolveScopedNavigationSort(parent::getNavigationSort());
     }
 
     public static function setCurrentTab(?string $tab): void

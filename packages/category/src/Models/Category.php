@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Traits\HasMediaUsable;
 use Override;
@@ -48,6 +49,7 @@ class Category extends BaseDraftModel implements HasMedia
 {
     use HasFactory;
     use HasMediaUsable;
+    use HasScopedModel;
     use InteractsWithMedia;
     use NodeTrait;
     use SoftDeletes;

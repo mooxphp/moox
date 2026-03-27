@@ -482,4 +482,29 @@ return [
         'prompt_when_all_published' => true,
         'prompt_when_any_published' => false,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    |
+    | Scopes stay plain strings in the database using the format
+    | "origin:target:context:mode". The registry maps origin and target
+    | segments to model classes inside the codebase.
+    |
+    */
+    'scopes' => [
+        'origins' => [
+            'media' => \Moox\Media\Models\Media::class,
+            'draft' => \Moox\Draft\Models\Draft::class,
+            'category' => \Moox\Category\Models\Category::class,
+            'tag' => \Moox\Tag\Models\Tag::class,
+            'record' => \Moox\Record\Models\Record::class,
+        ],
+        'sources' => [
+            'draft' => \Moox\Draft\Models\Draft::class,
+            'global' => null,
+        ],
+    ],
+
 ];

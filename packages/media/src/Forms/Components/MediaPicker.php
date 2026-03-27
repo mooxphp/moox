@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
@@ -29,6 +30,8 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 return;
             }
 
+            $scopedMediaScope = $component->resolveScopedMediaScope($record);
+
             $mediaIds = is_array($state) ? $state : [$state];
 
             $mediaIds = array_filter($mediaIds, function ($id) {
@@ -49,6 +52,11 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 if (! $media) {
                     continue;
+                }
+
+                if (filled($scopedMediaScope) && $media->getRawOriginal('scope') !== $scopedMediaScope) {
+                    $media->scope = $scopedMediaScope;
+                    $media->save();
                 }
 
                 // @phpstan-ignore-next-line staticMethod.notFound (Eloquent Model::firstOrCreate)
@@ -199,9 +207,49 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         return parent::visibility($visibility);
     }
 
+    public function scopedMediaCollectionId(Closure|int|null $mediaCollectionId): static
+    {
+        $this->uploadConfig['scoped_media_collection_id'] = $mediaCollectionId;
+
+        return $this;
+    }
+
+    public function scopedMediaScope(Closure|string|null $scope): static
+    {
+        $this->uploadConfig['scoped_media_scope'] = $scope;
+
+        return $this;
+    }
+
     public function getUploadConfig(): array
     {
-        return $this->uploadConfig;
+        return array_map(
+            fn (mixed $value): mixed => $this->evaluate($value),
+            $this->uploadConfig,
+        );
+    }
+
+    protected function resolveScopedMediaScope(?Model $record = null): ?string
+    {
+        $scopedMediaScope = $this->getUploadConfig()['scoped_media_scope'] ?? null;
+
+        if (filled($scopedMediaScope)) {
+            return ScopeValue::toStringOrNull((string) $scopedMediaScope);
+        }
+
+        if (! $record) {
+            return null;
+        }
+
+        if (method_exists($record, 'deriveChildScope')) {
+            return $record->deriveChildScope('media');
+        }
+
+        if (method_exists($record, 'deriveScopeForOrigin')) {
+            return $record->deriveScopeForOrigin('media');
+        }
+
+        return ScopeValue::forOriginString($record->getAttribute('scope'), 'media');
     }
 
     /**

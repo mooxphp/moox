@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
@@ -46,6 +47,10 @@ class MediaPickerModal extends Component implements HasForms
     public ?array $data = [];
 
     public array $uploadConfig = [];
+
+    public ?int $scopedMediaCollectionId = null;
+
+    public ?string $scopedMediaScope = null;
 
     public array $selectedMediaMeta = [
         'id' => null,
@@ -102,52 +107,159 @@ class MediaPickerModal extends Component implements HasForms
             $this->modelId = 0;
         }
 
-        $firstCollection = MediaCollection::query()->first();
+        $this->scopedMediaCollectionId = $this->resolveScopedMediaCollectionId();
+        $this->scopedMediaScope = $this->resolveScopedMediaScope();
+
+        $firstCollection = $this->getCollectionsQuery()->first();
         if (! $firstCollection) {
             $firstCollection = MediaCollection::create([
                 'name' => __('media::fields.uncategorized'),
                 'description' => __('media::fields.uncategorized_description'),
             ]);
         }
-        $this->collection_name = $firstCollection->getKey();
+        $this->collection_name = (string) $firstCollection->getKey();
+        $this->media_collection_id = (string) $firstCollection->getKey();
+    }
+
+    protected function resolveScopedMediaCollectionId(): ?int
+    {
+        $scopedMediaCollectionId = $this->uploadConfig['scoped_media_collection_id'] ?? $this->scopedMediaCollectionId;
+
+        if ($scopedMediaCollectionId === null || $scopedMediaCollectionId === '') {
+            return null;
+        }
+
+        return (int) $scopedMediaCollectionId;
+    }
+
+    protected function resolveScopedMediaScope(): ?string
+    {
+        $scopedMediaScope = $this->uploadConfig['scoped_media_scope'] ?? $this->scopedMediaScope;
+
+        if ($scopedMediaScope !== null && $scopedMediaScope !== '') {
+            return ScopeValue::toStringOrNull((string) $scopedMediaScope);
+        }
+
+        if ($this->model && method_exists($this->model, 'deriveChildScope')) {
+            return $this->model->deriveChildScope('media');
+        }
+
+        if ($this->model && method_exists($this->model, 'deriveScopeForOrigin')) {
+            return $this->model->deriveScopeForOrigin('media');
+        }
+
+        return ScopeValue::forOriginString($this->model?->getAttribute('scope'), 'media');
+    }
+
+    protected function applyMediaScope(Builder $query): Builder
+    {
+        $mediaCollectionId = $this->resolveScopedMediaCollectionId();
+        $mediaScope = $this->resolveScopedMediaScope();
+
+        if ($mediaCollectionId !== null) {
+            $query->where('media_collection_id', $mediaCollectionId);
+        }
+
+        if ($mediaScope !== null) {
+            $query->where('scope', $mediaScope);
+        }
+
+        return $query;
+    }
+
+    protected function shouldLockCollectionSelection(): bool
+    {
+        return $this->resolveScopedMediaCollectionId() !== null;
+    }
+
+    protected function getCollectionsQuery(): Builder
+    {
+        $query = MediaCollection::query()->with('translations');
+
+        if ($this->shouldLockCollectionSelection()) {
+            $query->whereKey($this->resolveScopedMediaCollectionId());
+        }
+
+        return $query;
+    }
+
+    protected function getFallbackLocale(): string
+    {
+        if (! class_exists(Localization::class)) {
+            return config('app.locale');
+        }
+
+        $localization = Localization::query()
+            ->where('is_default', true)
+            ->where('is_active_admin', true)
+            ->with('language')
+            ->first();
+
+        return $localization?->getAttribute('locale_variant')
+            ?: $localization?->language?->alpha2
+            ?: config('app.locale');
+    }
+
+    protected function resolveCollectionLabel(MediaCollection $collection, ?string $locale = null): string
+    {
+        $currentLocale = $locale ?? app()->getLocale();
+        $fallbackLocale = $this->getFallbackLocale();
+
+        return $collection->translate($currentLocale)?->getAttribute('name')
+            ?? $collection->translate($fallbackLocale)?->getAttribute('name')
+            ?? $collection->translations->first()?->getAttribute('name')
+            ?? __('media::fields.uncategorized');
+    }
+
+    protected function getCollectionOptions(?string $locale = null): array
+    {
+        return $this->getCollectionsQuery()
+            ->get()
+            ->mapWithKeys(fn (MediaCollection $collection): array => [
+                $collection->getKey() => $this->resolveCollectionLabel($collection, $locale),
+            ])
+            ->filter(fn (?string $label): bool => filled($label))
+            ->toArray();
+    }
+
+    protected function getDefaultCollectionId(): ?int
+    {
+        if ($this->shouldLockCollectionSelection()) {
+            return $this->resolveScopedMediaCollectionId();
+        }
+
+        /** @var ?MediaCollection $collection */
+        $collection = $this->getCollectionsQuery()->first();
+
+        return $collection?->getKey();
+    }
+
+    protected function resolveCollectionName(?int $mediaCollectionId, ?string $locale = null): string
+    {
+        if ($mediaCollectionId === null) {
+            return __('media::fields.uncategorized');
+        }
+
+        $collection = MediaCollection::query()
+            ->with('translations')
+            ->find($mediaCollectionId);
+
+        if (! $collection) {
+            return __('media::fields.uncategorized');
+        }
+
+        return $this->resolveCollectionLabel($collection, $locale);
     }
 
     public function form(Schema $schema): Schema
     {
         $collection = Select::make('media_collection_id')
             ->label(__('media::fields.collection'))
-            ->options(function () {
-                $currentLang = app()->getLocale();
-
-                $defaultLocale = null;
-                if (class_exists(Localization::class)) {
-                    $localization = Localization::query()
-                        ->where('is_default', true)
-                        ->where('is_active_admin', true)
-                        ->with('language')
-                        ->first();
-
-                    if ($localization) {
-                        $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-                    }
-                }
-
-                return MediaCollection::with('translations')
-                    ->get()
-                    ->mapWithKeys(function (MediaCollection $item) use ($currentLang, $defaultLocale) {
-                        $name =
-                            $item->translate($currentLang)?->getAttribute('name')
-                            ?? ($defaultLocale ? $item->translate($defaultLocale)?->getAttribute('name') : null)
-                            ?? $item->translations->first()?->getAttribute('name')
-                            ?? ('ID: '.$item->getKey());
-
-                        return [$item->getKey() => $name];
-                    })
-                    ->toArray();
-            })
+            ->options(fn () => $this->getCollectionOptions(app()->getLocale()))
             ->searchable()
-            ->default(MediaCollection::query()->first()?->getKey())
+            ->default(fn () => $this->getDefaultCollectionId())
             ->required()
+            ->disabled(fn (): bool => $this->shouldLockCollectionSelection())
             ->live();
 
         $upload = FileUpload::make('files')
@@ -158,9 +270,8 @@ class MediaPickerModal extends Component implements HasForms
                     return;
                 }
 
-                $collectionId = $get('media_collection_id');
-                $collection = MediaCollection::query()->find($collectionId);
-                $collectionName = $collection !== null ? ($collection->getAttribute('name') ?? __('media::fields.uncategorized')) : __('media::fields.uncategorized');
+                $collectionId = $get('media_collection_id') ?: $this->getDefaultCollectionId();
+                $collectionName = $this->resolveCollectionName($collectionId ? (int) $collectionId : null, app()->getLocale());
 
                 $uploadedCount = 0;
                 $files = is_array($state) ? $state : [$state];
@@ -178,11 +289,15 @@ class MediaPickerModal extends Component implements HasForms
 
                     $fileName = $tempFile->getClientOriginalName();
 
-                    $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
-                        $query->where('name', $fileName);
-                    })->orWhere(function ($query) use ($fileHash) {
-                        $query->where('custom_properties->file_hash', $fileHash);
-                    })->first();
+                    $existingMedia = $this->applyMediaScope(Media::query())
+                        ->where(function ($query) use ($fileName, $fileHash) {
+                            $query->whereHas('translations', function ($query) use ($fileName) {
+                                $query->where('name', $fileName);
+                            })->orWhere(function ($query) use ($fileHash) {
+                                $query->where('custom_properties->file_hash', $fileHash);
+                            });
+                        })
+                        ->first();
 
                     if ($existingMedia) {
                         Notification::make()
@@ -227,6 +342,7 @@ class MediaPickerModal extends Component implements HasForms
                             $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
                             $media->media_collection_id = $collectionId;
+                            $media->scope = $this->resolveScopedMediaScope();
                             $media->uploader_type = Auth::user() !== null ? get_class(Auth::user()) : null;
                             $media->uploader_id = Auth::id();
                             $media->original_model_type = Media::class;
@@ -377,7 +493,9 @@ class MediaPickerModal extends Component implements HasForms
             }
         }
 
-        $media = Media::query()->where('id', $mediaId)->first();
+        $media = $this->applyMediaScope(Media::query())
+            ->where('id', $mediaId)
+            ->first();
 
         if ($media) {
             $uploaderName = '-';
@@ -433,8 +551,10 @@ class MediaPickerModal extends Component implements HasForms
 
     public function applySelection(): void
     {
-        /** @var Collection<int, Media> $selectedMedia */
-        $selectedMedia = Media::query()->whereIn('id', $this->selectedMediaIds)->get();
+        /** @var \Illuminate\Support\Collection<int, Media> $selectedMedia */
+        $selectedMedia = $this->applyMediaScope(Media::query())
+            ->whereIn('id', $this->selectedMediaIds)
+            ->get();
 
         if ($selectedMedia->isNotEmpty()) {
             if (! $this->multiple) {
@@ -534,7 +654,7 @@ class MediaPickerModal extends Component implements HasForms
 
     public function render()
     {
-        $media = Media::query()
+        $media = $this->applyMediaScope(Media::query())
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
@@ -620,29 +740,18 @@ class MediaPickerModal extends Component implements HasForms
             }
         }
 
-        $collectionOptions = MediaCollection::with('translations')
-            ->get()
-            ->mapWithKeys(function (MediaCollection $item) use ($currentLang, $defaultLocale) {
-                $name =
-                    $item->translate($currentLang)?->getAttribute('name')
-                    ?? ($defaultLocale ? $item->translate($defaultLocale)?->getAttribute('name') : null)
-                    ?? $item->translations->first()?->getAttribute('name')
-                    ?? ('ID: '.$item->getKey());
-
-                return [$item->getKey() => $name];
-            })
-            ->toArray();
+        $collectionOptions = $this->getCollectionOptions($currentLang);
 
         $uploaderOptions = [];
-        $uploaderTypes = Media::query()
+        $uploaderTypes = $this->applyMediaScope(Media::query())
             ->distinct()
             ->whereNotNull('uploader_type')
             ->pluck('uploader_type')
             ->toArray();
 
         foreach ($uploaderTypes as $type) {
-            /** @var Builder<Media> $uploaderQuery */
-            $uploaderQuery = Media::query()
+            /** @var \Illuminate\Database\Eloquent\Builder<Media> $uploaderQuery */
+            $uploaderQuery = $this->applyMediaScope(Media::query())
                 ->where('uploader_type', $type)
                 ->whereNotNull('uploader_id');
             $mediaItems = $uploaderQuery->with('uploader')->get();

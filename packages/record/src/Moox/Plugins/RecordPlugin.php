@@ -4,6 +4,7 @@ namespace Moox\Record\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Record\Moox\Entities\Records\Record\RecordResource;
 
 class RecordPlugin implements Plugin
@@ -15,10 +16,12 @@ class RecordPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel
-            ->resources([
-                RecordResource::class,
-            ]);
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
+            RecordResource::class,
+            'record',
+            config('record.resources.record', []),
+        );
     }
 
     public function boot(Panel $panel): void
