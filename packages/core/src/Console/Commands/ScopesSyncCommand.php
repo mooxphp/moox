@@ -178,4 +178,3 @@ class ScopesSyncCommand extends Command
         return $rows;
     }
 }
-

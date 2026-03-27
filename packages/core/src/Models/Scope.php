@@ -28,4 +28,3 @@ class Scope extends Model
         return ScopeValue::parse($this->scope);
     }
 }
-

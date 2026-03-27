@@ -127,7 +127,7 @@ class ChildResourceRegistrar
                     )
                     ->isActiveWhen(
                         fn (): bool => request()->routeIs(
-                            $resource::withConfiguration($configurationKey, fn (): string | array => $resource::getNavigationItemActiveRoutePattern())
+                            $resource::withConfiguration($configurationKey, fn (): string|array => $resource::getNavigationItemActiveRoutePattern())
                         )
                     )
                     ->url(
@@ -186,7 +186,7 @@ class ChildResourceRegistrar
 
         return array_merge($child, [
             'origin' => $childOrigin,
-            'slug' => trim($parentSlug, '/') . '/' . $childSlug,
+            'slug' => trim($parentSlug, '/').'/'.$childSlug,
             'scope' => $childScope,
             'enabled' => (bool) value($child['enabled'] ?? true),
             'navigation_label' => value($child['label'] ?? null) ?? value($child['navigation_label'] ?? null),
@@ -203,7 +203,7 @@ class ChildResourceRegistrar
         ]);
     }
 
-    protected static function shouldShowNavigationForScope(string | ScopeValue | null $scope): bool
+    protected static function shouldShowNavigationForScope(string|ScopeValue|null $scope): bool
     {
         $scopeString = ScopeValue::toStringOrNull($scope);
 
@@ -223,7 +223,7 @@ class ChildResourceRegistrar
         return static::$hasScopesTable ??= Schema::hasTable('scopes');
     }
 
-    protected static function resolveDefaultScopeMatchFromDatabase(string | ScopeValue | null $scope): string
+    protected static function resolveDefaultScopeMatchFromDatabase(string|ScopeValue|null $scope): string
     {
         $parsed = ScopeValue::parse($scope);
 

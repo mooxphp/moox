@@ -1,5 +1,11 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Draft\Models\Draft;
+use Moox\Media\Models\Media;
+use Moox\Record\Models\Record;
+use Moox\Tag\Models\Tag;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -495,14 +501,14 @@ return [
     */
     'scopes' => [
         'origins' => [
-            'media' => \Moox\Media\Models\Media::class,
-            'draft' => \Moox\Draft\Models\Draft::class,
-            'category' => \Moox\Category\Models\Category::class,
-            'tag' => \Moox\Tag\Models\Tag::class,
-            'record' => \Moox\Record\Models\Record::class,
+            'media' => Media::class,
+            'draft' => Draft::class,
+            'category' => Category::class,
+            'tag' => Tag::class,
+            'record' => Record::class,
         ],
         'sources' => [
-            'draft' => \Moox\Draft\Models\Draft::class,
+            'draft' => Draft::class,
             'global' => null,
         ],
     ],

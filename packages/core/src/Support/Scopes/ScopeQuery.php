@@ -10,7 +10,7 @@ class ScopeQuery
 {
     protected static ?bool $hasScopesTable = null;
 
-    public static function applyExact(Builder $query, string | ScopeValue $scope, ?string $column = null): Builder
+    public static function applyExact(Builder $query, string|ScopeValue $scope, ?string $column = null): Builder
     {
         $parsedScope = ScopeValue::parse($scope);
 
@@ -38,7 +38,7 @@ class ScopeQuery
         );
     }
 
-    public static function applyContext(Builder $query, string | ScopeValue $scope, ?string $column = null): Builder
+    public static function applyContext(Builder $query, string|ScopeValue $scope, ?string $column = null): Builder
     {
         $parsedScope = ScopeValue::parse($scope);
 
