@@ -39,6 +39,7 @@ abstract class BaseResource extends Resource
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
             $query = static::addTaxonomyRelationsToQuery($query);
         }
+
         return ScopedResourceContext::applyScope($query, static::class);
     }
 
