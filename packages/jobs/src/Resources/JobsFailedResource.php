@@ -50,8 +50,8 @@ class JobsFailedResource extends Resource
                 TextInput::make('queue')->disabled()->label(__('jobs::translations.queue')),
 
                 // make text a little bit smaller because often a complete Stack Trace is shown:
-                TextArea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.connection')),
-                TextArea::make('payload')->disabled()->columnSpan(4)->label(__('jobs::translations.payload')),
+                Textarea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.connection')),
+                Textarea::make('payload')->disabled()->columnSpan(4)->label(__('jobs::translations.payload')),
             ])->columns(4);
     }
 

@@ -3,6 +3,7 @@
 namespace Moox\Prompts\Filament\Pages;
 
 use Filament\Pages\Page;
+use Illuminate\Contracts\Console\Kernel;
 
 class RunCommandPage extends Page
 {
@@ -102,7 +103,7 @@ class RunCommandPage extends Page
             return [];
         }
 
-        $allCommands = app(\Illuminate\Contracts\Console\Kernel::class)->all();
+        $allCommands = app(Kernel::class)->all();
 
         $available = [];
         foreach ($allowedCommands as $commandName) {

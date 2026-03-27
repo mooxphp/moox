@@ -1,5 +1,7 @@
 <?php
 
+use Tests\TestCase;
+
 it('shows which testcase is being used', function () {
     // Aktuelle Test-Klasse Info
     $testClass = get_class($this);
@@ -7,7 +9,7 @@ it('shows which testcase is being used', function () {
 
     dump();
     dump('=== TESTCASE USAGE ===');
-    if ($this instanceof Tests\TestCase) {
+    if ($this instanceof TestCase) {
         dump('✅ Using Root Laravel TestCase');
         dump('TestCase file: '.(new ReflectionClass('Tests\\TestCase'))->getFileName());
     } elseif ($this instanceof Moox\Item\Tests\TestCase) {

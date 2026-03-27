@@ -21,7 +21,7 @@ use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 use Override;
 
 /**
- * @property \Filament\Schemas\Schema $form
+ * @property Schema $form
  */
 class RequestPasswordReset extends SimplePage
 {
@@ -101,7 +101,7 @@ class RequestPasswordReset extends SimplePage
     }
 
     /**
-     * @return array<int|string, string|\Filament\Schemas\Schema>
+     * @return array<int|string, string|Schema>
      */
     protected function getForms(): array
     {

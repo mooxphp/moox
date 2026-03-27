@@ -12,10 +12,10 @@ use Illuminate\Support\Str;
 
 /**
  * @property string|null $translation_status
- * @property \Carbon\Carbon|null $to_publish_at
- * @property \Carbon\Carbon|null $published_at
- * @property \Carbon\Carbon|null $to_unpublish_at
- * @property \Carbon\Carbon|null $unpublished_at
+ * @property Carbon|null $to_publish_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $to_unpublish_at
+ * @property Carbon|null $unpublished_at
  *
  * @method BaseDraftTranslationModel|null translate(string|null $locale = null, bool $withFallback = false)
  * @method \Illuminate\Database\Eloquent\Relations\HasMany<BaseDraftTranslationModel, $this> translations()

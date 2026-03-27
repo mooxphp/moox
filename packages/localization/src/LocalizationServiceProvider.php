@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization;
 
 use Livewire\Livewire;
+use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Localization\Filament\Providers\LocalizationPanelProvider;
 use Moox\Localization\Installers\DefaultEnglishLocalizationInstaller;
@@ -64,7 +65,7 @@ class LocalizationServiceProvider extends MooxServiceProvider
     /**
      * Optional: vom Moox-Installer auswertbare Custom-Installer
      *
-     * @return array<\Moox\Core\Installer\Contracts\AssetInstallerInterface>
+     * @return array<AssetInstallerInterface>
      */
     public function getCustomInstallers(): array
     {

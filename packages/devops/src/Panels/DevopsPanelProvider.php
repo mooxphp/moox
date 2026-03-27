@@ -18,10 +18,11 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Moox\User\Models\User;
 
 class DevopsPanelProvider extends PanelProvider
 {
-    protected const USER_MODEL = \Moox\User\Models\User::class;
+    protected const USER_MODEL = User::class;
 
     public function panel(Panel $panel): Panel
     {

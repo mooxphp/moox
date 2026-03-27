@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
+use Moox\Localization\Models\Localization;
 use Override;
 
 abstract class BaseCreateDraft extends CreateRecord
@@ -20,7 +21,7 @@ abstract class BaseCreateDraft extends CreateRecord
 
     public function mount(): void
     {
-        $defaultLocalization = \Moox\Localization\Models\Localization::where('is_default', true)->first();
+        $defaultLocalization = Localization::where('is_default', true)->first();
         $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
 
         $this->lang = request()->query('lang', $defaultLang);
