@@ -5,8 +5,8 @@ namespace Moox\Core\Support\Resources;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Core\Support\Scopes\ScopeQuery;
+use Moox\Core\Support\Scopes\ScopeValue;
 
 class ScopedResourceContext
 {

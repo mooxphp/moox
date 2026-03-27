@@ -551,7 +551,7 @@ class MediaPickerModal extends Component implements HasForms
 
     public function applySelection(): void
     {
-        /** @var \Illuminate\Support\Collection<int, Media> $selectedMedia */
+        /** @var Collection<int, Media> $selectedMedia */
         $selectedMedia = $this->applyMediaScope(Media::query())
             ->whereIn('id', $this->selectedMediaIds)
             ->get();
@@ -750,7 +750,7 @@ class MediaPickerModal extends Component implements HasForms
             ->toArray();
 
         foreach ($uploaderTypes as $type) {
-            /** @var \Illuminate\Database\Eloquent\Builder<Media> $uploaderQuery */
+            /** @var Builder<Media> $uploaderQuery */
             $uploaderQuery = $this->applyMediaScope(Media::query())
                 ->where('uploader_type', $type)
                 ->whereNotNull('uploader_id');

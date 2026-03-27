@@ -30,7 +30,7 @@ readonly class ScopeValue implements Wireable
         return new self($origin, $source, $context, self::normalizeBoundary($boundary));
     }
 
-    public static function parse(string | self | null $scope): ?self
+    public static function parse(string|self|null $scope): ?self
     {
         if ($scope instanceof self) {
             return $scope;
@@ -49,25 +49,25 @@ readonly class ScopeValue implements Wireable
         return self::make(...$segments);
     }
 
-    public static function toStringOrNull(string | self | null $scope): ?string
+    public static function toStringOrNull(string|self|null $scope): ?string
     {
         $parsedScope = self::parse($scope);
 
         return $parsedScope ? (string) $parsedScope : null;
     }
 
-    public static function forOrigin(string | self | null $scope, string $origin): ?self
+    public static function forOrigin(string|self|null $scope, string $origin): ?self
     {
         return self::parse($scope)?->withOrigin($origin);
     }
 
-    public static function forOriginString(string | self | null $scope, string $origin): ?string
+    public static function forOriginString(string|self|null $scope, string $origin): ?string
     {
         return self::toStringOrNull(self::forOrigin($scope, $origin));
     }
 
     public static function deriveChildString(
-        string | self | null $scope,
+        string|self|null $scope,
         string $origin,
         ?string $context = null,
         ?string $boundary = null,
@@ -175,14 +175,14 @@ readonly class ScopeValue implements Wireable
         return $this->contextPrefix().':%';
     }
 
-    public function matchesContext(string | self $other): bool
+    public function matchesContext(string|self $other): bool
     {
         $otherScope = self::parse($other);
 
         return $otherScope !== null && $this->contextPrefix() === $otherScope->contextPrefix();
     }
 
-    public function matchesExact(string | self $other): bool
+    public function matchesExact(string|self $other): bool
     {
         return $this->equals($other);
     }
@@ -270,7 +270,7 @@ readonly class ScopeValue implements Wireable
         return $this->hasBoundary(self::MODE_PRIVATE);
     }
 
-    public function equals(string | self $other): bool
+    public function equals(string|self $other): bool
     {
         $otherScope = self::parse($other);
 
@@ -326,4 +326,3 @@ readonly class ScopeValue implements Wireable
         return self::parse(is_string($value) ? $value : null);
     }
 }
-

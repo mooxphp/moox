@@ -199,4 +199,3 @@ class ScopeAssignmentValidator
         return array_values(array_unique($groups));
     }
 }
-

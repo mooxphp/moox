@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
 
@@ -38,7 +39,7 @@ return [
             'scopes' => [
                 'category' => [
                     'enabled' => true,
-                    'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    'resource' => CategoryResource::class,
                 ],
             ],
 

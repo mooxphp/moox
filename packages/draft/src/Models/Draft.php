@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Models\Concerns\HasScopedModel;
+use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Draft\Database\Factories\DraftFactory;
 use Moox\Media\Traits\HasMediaUsable;
@@ -28,7 +29,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $description
  * @property-read string $content
  * @property-read string $status
- * @property string|\Moox\Core\Support\Scopes\ScopeValue|null $scope
+ * @property string|ScopeValue|null $scope
  * @property-read int $author_id
  * @property-read string $author_type
  * @property-read User|null $author
@@ -83,7 +84,7 @@ class Draft extends BaseDraftModel implements HasMedia
 
     public function getDefaultScope(): ?string
     {
-        return \Moox\Core\Support\Scopes\ScopeValue::forKeyString(
+        return ScopeValue::forKeyString(
             static::getResourceName(),
             boundary: config('draft.resources.draft.boundary'),
             source: config('draft.resources.draft.source'),

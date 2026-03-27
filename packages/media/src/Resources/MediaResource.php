@@ -1124,7 +1124,7 @@ class MediaResource extends BaseResource
                         $options = [];
 
                         foreach ($uploaderTypes as $type) {
-                            /** @var \Illuminate\Database\Eloquent\Builder<Media> $uploaderQuery */
+                            /** @var Builder<Media> $uploaderQuery */
                             $uploaderQuery = static::scopeQuery(Media::query())
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id');

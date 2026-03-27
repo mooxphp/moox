@@ -2,8 +2,11 @@
 
 use App\Models\User;
 use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Media\Resources\MediaResource;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
+use Moox\Tag\Resources\TagResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,25 +76,25 @@ return [
             'scopes' => [
                 'media' => [
                     'enabled' => true,
-                    'resource' => \Moox\Media\Resources\MediaResource::class,
+                    'resource' => MediaResource::class,
                     'origin' => 'media',
                     'boundary' => 'private',
                     'label' => 'Media Private',
                 ],
                 'media_public' => [
                     'enabled' => true,
-                    'resource' => \Moox\Media\Resources\MediaResource::class,
+                    'resource' => MediaResource::class,
                     'origin' => 'media',
                     'boundary' => 'public',
                     'label' => 'Media Public',
                 ],
                 'tag' => [
                     'enabled' => true,
-                    'resource' => \Moox\Tag\Resources\TagResource::class,
+                    'resource' => TagResource::class,
                 ],
                 'category' => [
                     'enabled' => true,
-                    'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    'resource' => CategoryResource::class,
                 ],
             ],
         ],

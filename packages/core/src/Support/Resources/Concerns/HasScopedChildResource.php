@@ -5,15 +5,15 @@ namespace Moox\Core\Support\Resources\Concerns;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeAssignmentValidator;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Resources\ScopedResourceContext;
-use Moox\Core\Support\Scopes\ScopeValue;
 
 trait HasScopedChildResource
 {
@@ -91,6 +91,7 @@ trait HasScopedChildResource
                 foreach ($records as $record) {
                     if (! method_exists($record, 'assignScope')) {
                         $skippedCount++;
+
                         continue;
                     }
 
@@ -101,6 +102,7 @@ trait HasScopedChildResource
                     $validation = $validator->validate($record, $targetScope, $actor);
                     if (! ($validation['allowed'] ?? false)) {
                         $skippedCount++;
+
                         continue;
                     }
 
@@ -151,7 +153,7 @@ trait HasScopedChildResource
         }
 
         /** @var array<string, array{scope: string, label: string|null, source: string, context: string, boundary: string}> $rows */
-        $rows = \Moox\Core\Models\Scope::query()
+        $rows = Scope::query()
             ->where('origin', $origin)
             ->where('is_active', true)
             ->orderByRaw('label is null, label asc, scope asc')
