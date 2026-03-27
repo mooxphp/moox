@@ -48,7 +48,7 @@ class ListMedia extends BaseListDrafts
 
     public function saveTranslationFromForm($recordId)
     {
-        $record = Media::query()->find($recordId);
+        $record = static::getResource()::scopeQuery(Media::query())->find($recordId);
 
         if ($record && method_exists($record, 'translateOrNew')) {
             $lang = $this->lang ?? app()->getLocale();
@@ -252,11 +252,15 @@ class ListMedia extends BaseListDrafts
 
                                 $fileName = $tempFile->getClientOriginalName();
 
-                                $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
-                                    $query->where('name', $fileName);
-                                })->orWhere(function ($query) use ($fileHash) {
-                                    $query->where('custom_properties->file_hash', $fileHash);
-                                })->first();
+                                $existingMedia = static::getResource()::scopeQuery(Media::query())
+                                    ->where(function ($query) use ($fileName, $fileHash) {
+                                        $query->whereHas('translations', function ($query) use ($fileName) {
+                                            $query->where('name', $fileName);
+                                        })->orWhere(function ($query) use ($fileHash) {
+                                            $query->where('custom_properties->file_hash', $fileHash);
+                                        });
+                                    })
+                                    ->first();
 
                                 if ($existingMedia) {
                                     Notification::make()
@@ -283,6 +287,7 @@ class ListMedia extends BaseListDrafts
 
                                 $media->media_collection_id = $collectionId;
                                 $media->collection_name = $collectionName;
+                                static::getResource()::applyScopedDefaults($media);
                                 $media->save();
 
                                 $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
