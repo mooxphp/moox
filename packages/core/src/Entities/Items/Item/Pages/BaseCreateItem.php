@@ -4,8 +4,8 @@ namespace Moox\Core\Entities\Items\Item\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Support\Resources\ScopedResourceContext;
+use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseCreateItem extends CreateRecord
 {
