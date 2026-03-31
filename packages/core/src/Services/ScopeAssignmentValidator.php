@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Moox\Core\Models\Scope;
-use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
 
 class ScopeAssignmentValidator
