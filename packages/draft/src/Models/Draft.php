@@ -5,8 +5,6 @@ namespace Moox\Draft\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Moox\Core\Models\Concerns\HasScopedModel;
-use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Draft\Database\Factories\DraftFactory;
 use Moox\Media\Traits\HasMediaUsable;
@@ -29,7 +27,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $description
  * @property-read string $content
  * @property-read string $status
- * @property string|ScopeValue|null $scope
+ * @property string|null $scope
  * @property-read int $author_id
  * @property-read string $author_type
  * @property-read User|null $author
@@ -38,7 +36,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasFactory, HasMediaUsable, HasModelTaxonomy, HasScopedModel, InteractsWithMedia;
+    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft
@@ -80,16 +78,6 @@ class Draft extends BaseDraftModel implements HasMedia
     public static function getResourceName(): string
     {
         return 'draft';
-    }
-
-    public function getDefaultScope(): ?string
-    {
-        return ScopeValue::forKeyString(
-            static::getResourceName(),
-            boundary: config('draft.resources.draft.boundary'),
-            source: config('draft.resources.draft.source'),
-            context: config('draft.resources.draft.context'),
-        );
     }
 
     public function registerMediaConversions(?Media $media = null): void
