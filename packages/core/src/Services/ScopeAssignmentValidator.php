@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Moox\Core\Models\Scope;
+use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
 
 class ScopeAssignmentValidator
@@ -40,16 +41,19 @@ class ScopeAssignmentValidator
         // Prevent scope assignment across unrelated "origins".
         // This closes the gap where a malicious user could tamper with the request payload
         // and submit an active scope from a different origin than the record supports.
+        $expectedOrigin = null;
         if (method_exists($record, 'resolveScopeOrigin')) {
             /** @var string|null $expectedOrigin */
             $expectedOrigin = $record->resolveScopeOrigin();
+        } else {
+            $expectedOrigin = app(ScopeRegistry::class)->resolveOriginKeyForModel($record::class);
+        }
 
-            if (blank($expectedOrigin) || $expectedOrigin !== $parsedScope->origin()) {
-                return [
-                    'allowed' => false,
-                    'reason' => 'Target scope origin does not match the record.',
-                ];
-            }
+        if (blank($expectedOrigin) || $expectedOrigin !== $parsedScope->origin()) {
+            return [
+                'allowed' => false,
+                'reason' => 'Target scope origin does not match the record.',
+            ];
         }
 
         if (! $this->isTargetScopeActive((string) $parsedScope)) {
