@@ -14,6 +14,7 @@ use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeAssignmentValidator;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Resources\ScopedResourceContext;
+use Moox\Core\Support\Scopes\ScopeValue;
 
 trait HasScopedChildResource
 {
@@ -89,7 +90,7 @@ trait HasScopedChildResource
                 $skippedCount = 0;
 
                 foreach ($records as $record) {
-                    if (! method_exists($record, 'assignScope')) {
+                    if (! static::recordSupportsScopeColumn($record)) {
                         $skippedCount++;
 
                         continue;
@@ -108,9 +109,9 @@ trait HasScopedChildResource
                     }
 
                     if ($selectedScope === static::ASSIGN_GLOBAL_SCOPE) {
-                        $record->assignScope(null);
+                        $record->setAttribute('scope', null);
                     } else {
-                        $record->assignScope($selectedScope);
+                        $record->setAttribute('scope', ScopeValue::toStringOrNull($selectedScope));
                     }
 
                     $record->save();
@@ -205,5 +206,10 @@ trait HasScopedChildResource
         $options = static::getAssignableScopeOptions();
 
         return count($options) > 1;
+    }
+
+    protected static function recordSupportsScopeColumn(Model $record): bool
+    {
+        return Schema::hasColumn($record->getTable(), 'scope');
     }
 }

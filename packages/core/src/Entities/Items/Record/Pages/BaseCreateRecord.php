@@ -6,6 +6,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 
@@ -45,6 +46,8 @@ abstract class BaseCreateRecord extends CreateRecord
         $record = new $model;
 
         $record->fill($data);
+        // Ensure the record gets the correct scope in scoped Resource contexts.
+        ScopedResourceContext::applyDefaults($record, static::getResource());
         $record->save();
 
         // Save taxonomy data if available
