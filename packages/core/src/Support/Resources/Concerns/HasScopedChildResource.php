@@ -96,7 +96,8 @@ trait HasScopedChildResource
                     }
 
                     $targetScope = $selectedScope === static::ASSIGN_GLOBAL_SCOPE
-                        ? ($record->resolveGlobalScopeString() ?? '')
+                        // Global is "unassigned" => we validate an empty target scope.
+                        ? ''
                         : $selectedScope;
 
                     $validation = $validator->validate($record, $targetScope, $actor);

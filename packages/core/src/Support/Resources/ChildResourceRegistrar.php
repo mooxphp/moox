@@ -52,10 +52,6 @@ class ChildResourceRegistrar
         $items = [];
 
         foreach ($children as $childKey => $child) {
-            if (! static::isEnabled($child)) {
-                continue;
-            }
-
             $resource = $child['resource'] ?? null;
 
             if (! is_string($resource) || ! class_exists($resource)) {
@@ -150,7 +146,9 @@ class ChildResourceRegistrar
      */
     protected static function isEnabled(array $child): bool
     {
-        return (bool) value($child['enabled'] ?? true);
+        // Config should define scopes/resources, but runtime visibility/activation is driven by DB (scopes.is_active).
+        // Keeping this method for backward compatibility, but it no longer blocks registration.
+        return true;
     }
 
     /**
@@ -188,7 +186,6 @@ class ChildResourceRegistrar
             'origin' => $childOrigin,
             'slug' => trim($parentSlug, '/').'/'.$childSlug,
             'scope' => $childScope,
-            'enabled' => (bool) value($child['enabled'] ?? true),
             'navigation_label' => value($child['label'] ?? null) ?? value($child['navigation_label'] ?? null),
             'navigation_group' => value($child['navigation_group'] ?? null) ?? $parentResource::getNavigationGroup(),
             'navigation_parent_item' => value($child['navigation_parent_item'] ?? null) ?? $parentResource::getNavigationLabel(),
