@@ -2,10 +2,10 @@
 
 namespace Moox\Core\Services;
 
-use InvalidArgumentException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use InvalidArgumentException;
 use Moox\Core\Models\Scope;
 use Moox\Core\Support\Scopes\ScopeValue;
 
