@@ -495,21 +495,19 @@ return [
     |--------------------------------------------------------------------------
     |
     | Scopes stay plain strings in the database using the format
-    | "origin:target:context:mode". The registry maps origin and target
+    | "origin:source:context:mode". The registry maps origin and target
     | segments to model classes inside the codebase.
     |
     */
     'scopes' => [
         'origins' => [
             'media' => Media::class,
-            'draft' => Draft::class,
             'category' => Category::class,
             'tag' => Tag::class,
             'record' => Record::class,
         ],
         'sources' => [
             'draft' => Draft::class,
-            'global' => null,
         ],
     ],
 
