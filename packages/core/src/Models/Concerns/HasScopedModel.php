@@ -2,8 +2,8 @@
 
 namespace Moox\Core\Models\Concerns;
 
-use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Casts\ScopeCast;
+use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
 
 trait HasScopedModel
@@ -55,8 +55,7 @@ trait HasScopedModel
         ?string $context = null,
         ?string $boundary = null,
         ?string $source = null,
-    ): ?string
-    {
+    ): ?string {
         return ScopeValue::deriveChildString(
             $this->getCurrentScopeString(),
             $childOrigin,
@@ -81,8 +80,7 @@ trait HasScopedModel
         ?string $context = null,
         ?string $boundary = null,
         ?string $source = null,
-    ): ?string
-    {
+    ): ?string {
         return $this->deriveChildScope($origin, $context, $boundary, $source);
     }
 
@@ -97,7 +95,7 @@ trait HasScopedModel
         return null;
     }
 
-    public function assignScope(string | ScopeValue | null $scope): void
+    public function assignScope(string|ScopeValue|null $scope): void
     {
         // When $scope is null/empty => truly unassigned (global).
         $this->setAttribute('scope', ScopeValue::toStringOrNull($scope));
