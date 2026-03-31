@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Services;
 
+use InvalidArgumentException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +16,40 @@ class ScopeAssignmentValidator
      */
     public function validate(Model $record, string $targetScope, ?Authenticatable $actor = null): array
     {
-        $parsedScope = ScopeValue::parse($targetScope);
+        if (blank($targetScope)) {
+            // "Global" means unassigned: always allowed, independent of DB scope rows.
+            return ['allowed' => true];
+        }
+
+        try {
+            $parsedScope = ScopeValue::parse($targetScope);
+        } catch (InvalidArgumentException) {
+            return [
+                'allowed' => false,
+                'reason' => 'Target scope is empty or invalid.',
+            ];
+        }
 
         if ($parsedScope === null) {
             return [
                 'allowed' => false,
                 'reason' => 'Target scope is empty or invalid.',
             ];
+        }
+
+        // Prevent scope assignment across unrelated "origins".
+        // This closes the gap where a malicious user could tamper with the request payload
+        // and submit an active scope from a different origin than the record supports.
+        if (method_exists($record, 'resolveScopeOrigin')) {
+            /** @var string|null $expectedOrigin */
+            $expectedOrigin = $record->resolveScopeOrigin();
+
+            if (blank($expectedOrigin) || $expectedOrigin !== $parsedScope->origin()) {
+                return [
+                    'allowed' => false,
+                    'reason' => 'Target scope origin does not match the record.',
+                ];
+            }
         }
 
         if (! $this->isTargetScopeActive((string) $parsedScope)) {

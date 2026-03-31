@@ -2,8 +2,8 @@
 
 namespace Moox\Core\Models\Concerns;
 
-use Moox\Core\Casts\ScopeCast;
 use Moox\Core\Services\ScopeRegistry;
+use Moox\Core\Casts\ScopeCast;
 use Moox\Core\Support\Scopes\ScopeValue;
 
 trait HasScopedModel
@@ -31,7 +31,8 @@ trait HasScopedModel
 
     public function getDefaultScope(): ?string
     {
-        return $this->resolveGlobalScopeString();
+        // "Global" means unassigned: stored as NULL/empty in DB.
+        return null;
     }
 
     public function hasScope(): bool
@@ -54,7 +55,8 @@ trait HasScopedModel
         ?string $context = null,
         ?string $boundary = null,
         ?string $source = null,
-    ): ?string {
+    ): ?string
+    {
         return ScopeValue::deriveChildString(
             $this->getCurrentScopeString(),
             $childOrigin,
@@ -79,7 +81,8 @@ trait HasScopedModel
         ?string $context = null,
         ?string $boundary = null,
         ?string $source = null,
-    ): ?string {
+    ): ?string
+    {
         return $this->deriveChildScope($origin, $context, $boundary, $source);
     }
 
@@ -90,25 +93,14 @@ trait HasScopedModel
 
     public function resolveGlobalScopeString(): ?string
     {
-        $origin = $this->resolveScopeOrigin();
-
-        if (blank($origin)) {
-            return null;
-        }
-
-        return ScopeValue::forKeyString(
-            $origin,
-            boundary: ScopeValue::MODE_PRIVATE,
-            source: 'global',
-            context: 'global',
-        );
+        // Kept for backward compatibility: this system treats global as NULL/empty.
+        return null;
     }
 
-    public function assignScope(string|ScopeValue|null $scope): void
+    public function assignScope(string | ScopeValue | null $scope): void
     {
-        $scopeString = ScopeValue::toStringOrNull($scope) ?? $this->resolveGlobalScopeString();
-
-        $this->setAttribute('scope', $scopeString);
+        // When $scope is null/empty => truly unassigned (global).
+        $this->setAttribute('scope', ScopeValue::toStringOrNull($scope));
     }
 
     public function assignGlobalScope(): void
