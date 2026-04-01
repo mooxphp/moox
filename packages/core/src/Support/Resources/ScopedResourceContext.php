@@ -83,16 +83,9 @@ class ScopedResourceContext
         $scope = static::getParsedScope($resource);
 
         if ($scope === null) {
-            if (! static::supportsScopeColumn($query->getModel()::class)) {
-                return $query;
-            }
-
-            // Global view: show only global records (empty scope).
-            $scopeColumn = $query->getModel()->qualifyColumn('scope');
-
-            return $query->where(function (Builder $builder) use ($scopeColumn): void {
-                $builder->whereNull($scopeColumn)->orWhere($scopeColumn, '');
-            });
+            // Global view (no scoped resource context): do not restrict by scope.
+            // This means global resources show both unassigned and scoped records.
+            return $query;
         }
 
         if (! static::supportsScopeColumn($query->getModel()::class)) {
