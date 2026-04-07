@@ -139,4 +139,10 @@ return [
     |
     */
     'navigation_group' => 'DEV',
+
+    'scope_registry' => [
+        'origins' => [
+            'record' => \Moox\Record\Models\Record::class,
+        ],
+    ],
 ];

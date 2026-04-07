@@ -92,4 +92,10 @@ return [
 
     'navigation_group' => 'trans//core::core.cms',
 
+    'scope_registry' => [
+        'origins' => [
+            'category' => \Moox\Category\Models\Category::class,
+        ],
+    ],
+
 ];
