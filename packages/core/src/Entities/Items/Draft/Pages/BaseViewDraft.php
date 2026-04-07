@@ -3,7 +3,6 @@
 namespace Moox\Core\Entities\Items\Draft\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\CanResolveResourceClass;
