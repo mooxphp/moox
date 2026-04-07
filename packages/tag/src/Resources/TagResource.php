@@ -107,6 +107,7 @@ class TagResource extends BaseDraftResource
                                     ]),
                                 Section::make('')
                                     ->schema([
+                                        static::getScopeSelectField(),
                                         static::getTranslationStatusSelect(),
                                         static::getPublishDateField(),
                                         static::getUnpublishDateField(),
