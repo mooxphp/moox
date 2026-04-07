@@ -165,7 +165,7 @@ return [
 
     'scope_registry' => [
         'origins' => [
-            'draft' => \Moox\Draft\Models\Draft::class,
+            'draft' => Draft::class,
         ],
         'sources' => [
             'draft' => Draft::class,
