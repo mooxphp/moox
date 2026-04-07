@@ -3,6 +3,7 @@
 use App\Models\User;
 use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Record\Models\Record;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
 
@@ -142,7 +143,7 @@ return [
 
     'scope_registry' => [
         'origins' => [
-            'record' => \Moox\Record\Models\Record::class,
+            'record' => Record::class,
         ],
     ],
 ];
