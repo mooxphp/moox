@@ -123,4 +123,10 @@ return [
             'plural_model_label' => 'trans//media::media.collections',
         ],
     ],
+
+    'scope_registry' => [
+        'origins' => [
+            'media' => \Moox\Media\Models\Media::class,
+        ],
+    ],
 ];
