@@ -3,6 +3,7 @@
 use App\Models\User;
 use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Draft\Models\Draft;
 use Moox\Media\Resources\MediaResource;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
@@ -164,7 +165,7 @@ return [
 
     'scope_registry' => [
         'sources' => [
-            'draft' => \Moox\Draft\Models\Draft::class,
+            'draft' => Draft::class,
         ],
     ],
 ];

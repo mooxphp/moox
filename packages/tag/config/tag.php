@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Moox\Tag\Models\Tag;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,7 +138,7 @@ return [
 
     'scope_registry' => [
         'origins' => [
-            'tag' => \Moox\Tag\Models\Tag::class,
+            'tag' => Tag::class,
         ],
     ],
 ];
