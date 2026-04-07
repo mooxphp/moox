@@ -163,6 +163,9 @@ return [
     'navigation_group' => 'DEV',
 
     'scope_registry' => [
+        'origins' => [
+            'draft' => \Moox\Draft\Models\Draft::class,
+        ],
         'sources' => [
             'draft' => \Moox\Draft\Models\Draft::class,
         ],

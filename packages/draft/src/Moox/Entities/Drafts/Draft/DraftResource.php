@@ -18,6 +18,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Draft\Models\Draft;
@@ -33,6 +34,7 @@ class DraftResource extends BaseDraftResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use HasScopedChildResource;
 
     protected static ?string $model = Draft::class;
 
@@ -120,6 +122,7 @@ class DraftResource extends BaseDraftResource
                             Section::make('')
                                 ->schema([
                                     static::getTypeSelect(),
+                                    static::getScopeSelectField(),
                                     static::getTranslationStatusSelect(),
                                     static::getPublishDateField(),
                                     static::getUnpublishDateField(),

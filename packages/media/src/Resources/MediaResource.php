@@ -411,6 +411,9 @@ class MediaResource extends BaseResource
                                         $record->save();
                                     }
                                 }),
+
+                            static::getScopeSelectField()
+                                ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                         ]),
                 ])
                 ->columnSpanFull(),

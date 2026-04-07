@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeAssignmentValidator;
 use Moox\Core\Services\ScopeRegistry;
@@ -19,6 +20,124 @@ use Moox\Core\Support\Scopes\ScopeValue;
 trait HasScopedChildResource
 {
     public const ASSIGN_GLOBAL_SCOPE = '__global__';
+
+    public static function canAssignScopes(): bool
+    {
+        return static::hasMultipleAssignableScopes();
+    }
+
+    public static function formatScopeForDisplay(?string $scope): string
+    {
+        if ($scope === null || $scope === '') {
+            return 'Global';
+        }
+
+        $parsed = ScopeValue::parse($scope);
+        if ($parsed === null) {
+            return $scope;
+        }
+
+        $origin = static::humanizeScopeSegment($parsed->origin());
+        $source = static::humanizeScopeSegment($parsed->source());
+        $context = static::humanizeScopeSegment($parsed->context());
+        $boundary = static::humanizeScopeSegment($parsed->boundary());
+
+        return "{$origin} → {$source} → {$context} ({$boundary})";
+    }
+
+    protected static function humanizeScopeSegment(string $value): string
+    {
+        return Str::headline(Str::snake($value));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getAssignableScopeOptionsForRecord(?Model $record = null): array
+    {
+        return static::getAssignableScopeOptions();
+    }
+
+    public static function getDefaultAssignableScopeForRecord(?Model $record = null): string
+    {
+        if ($record && is_string($record->scope) && $record->scope !== '') {
+            $options = static::getAssignableScopeOptions();
+            if (array_key_exists($record->scope, $options)) {
+                return $record->scope;
+            }
+        }
+
+        if ($record && ($record->scope === null || $record->scope === '')) {
+            return static::ASSIGN_GLOBAL_SCOPE;
+        }
+
+        return static::getDefaultAssignableScope();
+    }
+
+    /**
+     * @return array{updated: bool, message?: string}
+     */
+    public static function assignScopeToRecord(Model $record, string $selectedScope): array
+    {
+        if (! static::recordSupportsScopeColumn($record)) {
+            return ['updated' => false, 'message' => 'This record is not scopable.'];
+        }
+
+        $actor = Auth::user();
+        $validator = app(ScopeAssignmentValidator::class);
+
+        $targetScope = $selectedScope === static::ASSIGN_GLOBAL_SCOPE ? '' : $selectedScope;
+
+        $validation = $validator->validate($record, $targetScope, $actor);
+        if (! ($validation['allowed'] ?? false)) {
+            return ['updated' => false, 'message' => 'Target scope was inactive or boundary rules were not fulfilled.'];
+        }
+
+        if ($selectedScope === static::ASSIGN_GLOBAL_SCOPE) {
+            $record->setAttribute('scope', null);
+        } else {
+            $record->setAttribute('scope', ScopeValue::toStringOrNull($selectedScope));
+        }
+
+        $record->save();
+
+        return ['updated' => true];
+    }
+
+    public static function getScopeSelectField(string $name = 'scope'): Select
+    {
+        return Select::make($name)
+            ->label('Scope')
+            ->dehydrated(false)
+            ->live()
+            ->options(fn (?Model $record) => static::getAssignableScopeOptionsForRecord($record))
+            ->default(fn (?Model $record) => static::getDefaultAssignableScopeForRecord($record))
+            ->afterStateUpdated(function ($state, ?Model $record, Select $component): void {
+                if (! $record) {
+                    return;
+                }
+
+                $result = static::assignScopeToRecord($record, (string) $state);
+
+                if (! ($result['updated'] ?? false)) {
+                    Notification::make()
+                        ->warning()
+                        ->title('Scope not allowed')
+                        ->body($result['message'] ?? 'Unable to update scope.')
+                        ->send();
+
+                    $record->refresh();
+                    $component->state(static::getDefaultAssignableScopeForRecord($record));
+
+                    return;
+                }
+
+                Notification::make()
+                    ->success()
+                    ->title('Scope updated')
+                    ->send();
+            });
+    }
 
     public static function scopeQuery(Builder $query): Builder
     {
@@ -170,8 +289,19 @@ trait HasScopedChildResource
             ->toArray();
 
         foreach ($rows as $scope => $row) {
-            $base = $row['label'] ?: $row['scope'];
-            $options[$scope] = "{$base} — {$row['source']}/{$row['context']} ({$row['boundary']})";
+            $parsed = ScopeValue::parse($scope);
+            if ($parsed === null) {
+                $options[$scope] = $scope;
+
+                continue;
+            }
+
+            $originLabel = static::humanizeScopeSegment($parsed->origin());
+            $sourceLabel = static::humanizeScopeSegment($parsed->source());
+            $contextLabel = static::humanizeScopeSegment($parsed->context());
+            $boundaryLabel = static::humanizeScopeSegment($parsed->boundary());
+
+            $options[$scope] = "{$originLabel} → {$sourceLabel} → {$contextLabel} ({$boundaryLabel})";
         }
 
         return $options;
