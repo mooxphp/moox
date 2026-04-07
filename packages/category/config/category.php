@@ -1,5 +1,7 @@
 <?php
 
+use Moox\Category\Models\Category;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -94,7 +96,7 @@ return [
 
     'scope_registry' => [
         'origins' => [
-            'category' => \Moox\Category\Models\Category::class,
+            'category' => Category::class,
         ],
     ],
 
