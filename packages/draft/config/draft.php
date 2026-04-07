@@ -93,7 +93,7 @@ return [
                     'resource' => TagResource::class,
                 ],
                 'category' => [
-                    'enabled' => false,
+                    'enabled' => true,
                     'resource' => CategoryResource::class,
                     'origin' => 'category',
                     'boundary' => 'private',
@@ -161,4 +161,10 @@ return [
     |
     */
     'navigation_group' => 'DEV',
+
+    'scope_registry' => [
+        'sources' => [
+            'draft' => \Moox\Draft\Models\Draft::class,
+        ],
+    ],
 ];

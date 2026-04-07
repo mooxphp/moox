@@ -1,11 +1,5 @@
 <?php
 
-use Moox\Category\Models\Category;
-use Moox\Draft\Models\Draft;
-use Moox\Media\Models\Media;
-use Moox\Record\Models\Record;
-use Moox\Tag\Models\Tag;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -99,6 +93,19 @@ return [
             'package' => 'Moox Core',
             'models' => [],
         ],
+        'draft' => [
+            'package' => 'Moox Draft',
+            'models' => [
+                'Draft' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'expiry' => [
             'package' => 'Moox Expiry',
             'models' => [
@@ -162,10 +169,36 @@ return [
                 ],
             ],
         ],
+        'media' => [
+            'package' => 'Moox Media',
+            'models' => [
+                'Media' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'notifications' => [
             'package' => 'Moox Notifications',
             'models' => [
                 'Notification' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'record' => [
+            'package' => 'Moox Record',
+            'models' => [
+                'Record' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -487,28 +520,6 @@ return [
         'auto_publish_single' => true,
         'prompt_when_all_published' => true,
         'prompt_when_any_published' => false,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    |
-    | Scopes stay plain strings in the database using the format
-    | "origin:source:context:mode". The registry maps origin and target
-    | segments to model classes inside the codebase.
-    |
-    */
-    'scopes' => [
-        'origins' => [
-            'media' => Media::class,
-            'category' => Category::class,
-            'tag' => Tag::class,
-            'record' => Record::class,
-        ],
-        'sources' => [
-            'draft' => Draft::class,
-        ],
     ],
 
 ];
