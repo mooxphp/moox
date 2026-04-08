@@ -706,6 +706,8 @@ class MediaResource extends BaseResource
                 ->label(__('media::fields.collection'))
                 ->searchable();
 
+            $columns[] = static::getScopeTableColumn();
+
             $columns[] = TextColumn::make('mime_type')
                 ->label(__('media::fields.mime_type'))
                 ->searchable()

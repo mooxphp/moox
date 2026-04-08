@@ -4,6 +4,7 @@ namespace Moox\Core\Support\Resources\Concerns;
 
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -137,6 +138,14 @@ trait HasScopedChildResource
                     ->title('Scope updated')
                     ->send();
             });
+    }
+
+    public static function getScopeTableColumn(string $name = 'scope'): TextColumn
+    {
+        return TextColumn::make($name)
+            ->label('Scope')
+            ->toggleable(isToggledHiddenByDefault: true)
+            ->formatStateUsing(fn ($state) => static::formatScopeForDisplay(is_string($state) ? $state : null));
     }
 
     public static function scopeQuery(Builder $query): Builder
