@@ -6,6 +6,7 @@ use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Moox\Core\Support\Scopes\ScopeValue;
 
 class ChildResourceRegistrar
@@ -27,18 +28,144 @@ class ChildResourceRegistrar
             );
 
         $scopes = $parentDefinition['scopes'] ?? $parentDefinition['children'] ?? [];
+        $scopes = is_array($scopes) ? $scopes : [];
+
+        // Allow a structured scopes config: ['allowed' => [...], 'registry' => [...]].
+        if (is_array($scopes['allowed'] ?? null)) {
+            $scopes = $scopes['allowed'];
+        }
 
         $panel->resources([
             $parentResource,
         ]);
 
+        // Add DB-derived child definitions for all active scopes under this parent source.
+        // This allows users to create new contexts/boundaries in the UI without requiring
+        // a new config slot per case. The config still defines which child origins/resources
+        // are allowed under the parent.
+        $dbChildren = static::childrenFromDatabase(
+            $parentKey,
+            (string) ($parentDefinition['slug'] ?? $parentKey),
+            $scopes,
+        );
+
+        // If DB provides active scopes, prefer DB-driven navigation to avoid duplicate
+        // "config slot" entries. Config stays as the whitelist / mapping and as a fallback
+        // when the scopes table is empty.
+        $children = $dbChildren !== [] ? $dbChildren : $scopes;
+
         static::register(
             $panel,
             $parentResource,
-            is_array($scopes) ? $scopes : [],
+            $children,
             (string) ($parentDefinition['slug'] ?? $parentKey),
             $parentScope,
         );
+    }
+
+    /**
+     * Create dynamic child definitions from active DB scopes for a parent source.
+     *
+     * @param  array<string, array<string, mixed>>  $configuredChildren
+     * @return array<string, array<string, mixed>>
+     */
+    protected static function childrenFromDatabase(string $parentKey, string $parentSlug, array $configuredChildren): array
+    {
+        if (! static::hasScopesTable()) {
+            return [];
+        }
+
+        $originToResource = static::originToResourceMap($configuredChildren);
+        if ($originToResource === []) {
+            return [];
+        }
+
+        $rows = DB::table('scopes')
+            ->where('source', $parentKey)
+            ->where('is_active', true)
+            ->whereNotNull('context')
+            ->where('context', '!=', '')
+            ->get(['scope', 'origin', 'context', 'boundary', 'label']);
+
+        $children = [];
+
+        foreach ($rows as $row) {
+            $origin = (string) ($row->origin ?? '');
+            $context = (string) ($row->context ?? '');
+            $boundary = (string) ($row->boundary ?? '');
+            $scope = (string) ($row->scope ?? '');
+
+            if ($origin === '' || $context === '' || $boundary === '' || $scope === '') {
+                continue;
+            }
+
+            $resource = $originToResource[$origin] ?? null;
+            if (! is_string($resource) || $resource === '' || ! class_exists($resource)) {
+                continue;
+            }
+
+            // Keep child keys predictable and URL-safe.
+            $childKey = "{$origin}-{$context}-{$boundary}";
+            $childKey = Str::slug($childKey);
+
+            // Do not overwrite existing configured slots.
+            if (array_key_exists($childKey, $configuredChildren)) {
+                continue;
+            }
+
+            $label = is_string($row->label ?? null) && $row->label !== ''
+                ? (string) $row->label
+                : Str::headline(Str::snake($origin)).' — '.Str::headline(Str::snake($context)).' ('.Str::headline(Str::snake($boundary)).')';
+
+            $children[$childKey] = [
+                'resource' => $resource,
+                'origin' => $origin,
+                'context' => $context,
+                'boundary' => $boundary,
+                'scope' => $scope,
+                // Group under the parent item; label is the nav item.
+                'label' => $label,
+                // Put dynamic children under "<parent>/<origin>/<context>/<boundary>" for clarity.
+                'slug' => trim($parentSlug, '/').'/'.$origin.'/'.$context.'/'.$boundary,
+            ];
+        }
+
+        return $children;
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $configuredChildren
+     * @return array<string, class-string>
+     */
+    protected static function originToResourceMap(array $configuredChildren): array
+    {
+        $map = [];
+
+        foreach ($configuredChildren as $childKey => $child) {
+            if (! is_array($child)) {
+                continue;
+            }
+
+            $resource = $child['resource'] ?? null;
+            if (! is_string($resource) || $resource === '' || ! class_exists($resource)) {
+                continue;
+            }
+
+            $origin = $child['origin'] ?? null;
+            if (! is_string($origin) || $origin === '') {
+                // Infer origin from key, e.g. media_public -> media.
+                $origin = is_string($childKey) ? explode('_', $childKey, 2)[0] : '';
+            }
+
+            if (! is_string($origin) || $origin === '') {
+                continue;
+            }
+
+            // First wins.
+            $map[$origin] ??= $resource;
+        }
+
+        return $map;
     }
 
     /**

@@ -1,7 +1,5 @@
 <?php
 
-use Moox\Category\Models\Category;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -78,6 +76,25 @@ return [
                     ],
                 ],
             ],
+
+            'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                    ],
+                    'tag' => [
+                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'category' => \Moox\Category\Models\Category::class,
+                    ],
+                    'sources' => [
+                        'category' => \Moox\Category\Models\Category::class,
+                    ],
+                ],
+            ],
         ],
     ],
 
@@ -93,11 +110,5 @@ return [
     */
 
     'navigation_group' => 'trans//core::core.cms',
-
-    'scope_registry' => [
-        'origins' => [
-            'category' => Category::class,
-        ],
-    ],
 
 ];

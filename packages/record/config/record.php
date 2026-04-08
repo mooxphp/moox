@@ -1,12 +1,5 @@
 <?php
 
-use App\Models\User;
-use Moox\Category\Models\Category;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
-use Moox\Record\Models\Record;
-use Moox\Tag\Forms\TaxonomyCreateForm;
-use Moox\Tag\Models\Tag;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -37,12 +30,6 @@ return [
             */
             'single' => 'trans//record::record.record',
             'plural' => 'trans//record::record.records',
-            'scopes' => [
-                'category' => [
-                    'enabled' => true,
-                    'resource' => CategoryResource::class,
-                ],
-            ],
 
             /*
             |--------------------------------------------------------------------------
@@ -79,13 +66,27 @@ return [
                     ],
                 ],
             ],
+
+            'scopes' => [
+                'allowed' => [
+                    'category' => [
+                        'enabled' => true,
+                        'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'record' => \Moox\Record\Models\Record::class,
+                    ],
+                ],
+            ],
         ],
     ],
     'relations' => [],
     'taxonomies' => [
         'category' => [
             'label' => 'trans//core::core.category',
-            'model' => Category::class,
+            'model' => \Moox\Category\Models\Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
@@ -95,12 +96,12 @@ return [
         ],
         'tag' => [
             'label' => 'trans//core::core.tag',
-            'model' => Tag::class,
+            'model' => \Moox\Tag\Models\Tag::class,
             'table' => 'taggables',
             'relationship' => 'taggable',
             'foreignKey' => 'taggable_id',
             'relatedKey' => 'tag_id',
-            'createForm' => TaxonomyCreateForm::class,
+            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
             'hierarchical' => false,
         ],
     ],
@@ -115,7 +116,7 @@ return [
     |
     */
     'user_models' => [
-        User::class => [
+        \App\Models\User::class => [
             'title_attribute' => 'name',
             'label' => 'App User',
         ],
@@ -141,9 +142,4 @@ return [
     */
     'navigation_group' => 'DEV',
 
-    'scope_registry' => [
-        'origins' => [
-            'record' => Record::class,
-        ],
-    ],
 ];
