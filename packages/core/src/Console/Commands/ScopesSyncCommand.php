@@ -9,7 +9,14 @@ use Throwable;
 
 class ScopesSyncCommand extends Command
 {
-    protected $signature = 'scopes:sync {--dry-run : Show what would be synced without writing} {--disable-missing : Disable DB scopes not present in config}';
+    protected $signature = 'moox:scope {--dry-run : Show what would be synced without writing} {--disable-missing : Disable DB scopes not present in config}';
+
+    /**
+     * Backwards compatible alias.
+     *
+     * @var array<int, string>
+     */
+    protected $aliases = ['scopes:sync'];
 
     protected $description = 'Sync scope definitions from package configs into scopes table';
 
@@ -103,6 +110,12 @@ class ScopesSyncCommand extends Command
                 }
 
                 $scopes = $resourceDefinition['scopes'] ?? $resourceDefinition['children'] ?? null;
+
+                // If scopes contain registry metadata, treat the remaining keys as scope definitions.
+                if (is_array($scopes) && array_key_exists('registry', $scopes)) {
+                    $allowed = is_array($scopes['allowed'] ?? null) ? $scopes['allowed'] : null;
+                    $scopes = $allowed ?? array_diff_key($scopes, ['registry' => true]);
+                }
 
                 if (! is_array($scopes)) {
                     continue;

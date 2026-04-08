@@ -1,7 +1,5 @@
 <?php
 
-use Moox\Media\Models\Media;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -126,9 +124,15 @@ return [
         ],
     ],
 
-    'scope_registry' => [
-        'origins' => [
-            'media' => Media::class,
+    'resources' => [
+        'media' => [
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'media' => \Moox\Media\Models\Media::class,
+                    ],
+                ],
+            ],
         ],
     ],
 ];

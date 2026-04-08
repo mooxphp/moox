@@ -6,7 +6,7 @@ class ScopeRegistry
 {
     /**
      * Build the scope registry by merging all package contributions
-     * (declared in each package config under `scope_registry`) and then
+     * (declared in each package config under `scopes.registry`, legacy: `scope_registry`) and then
      * applying any application overrides from `core.scopes`.
      *
      * @return array{origins: array<string, class-string|null>, sources: array<string, class-string|null>}
@@ -22,7 +22,36 @@ class ScopeRegistry
         $packages = config('core.packages', []);
 
         foreach (array_keys($packages) as $packageKey) {
-            $contribution = config($packageKey.'.scope_registry', []);
+            $contribution = [];
+
+            $resources = config($packageKey.'.resources', []);
+            if (is_array($resources)) {
+                foreach ($resources as $resourceDefinition) {
+                    if (! is_array($resourceDefinition)) {
+                        continue;
+                    }
+
+                    $registry = $resourceDefinition['scopes']['registry'] ?? null;
+                    if (! is_array($registry)) {
+                        continue;
+                    }
+
+                    $contribution['origins'] = array_replace(
+                        is_array($contribution['origins'] ?? null) ? $contribution['origins'] : [],
+                        is_array($registry['origins'] ?? null) ? $registry['origins'] : [],
+                    );
+
+                    $contribution['sources'] = array_replace(
+                        is_array($contribution['sources'] ?? null) ? $contribution['sources'] : [],
+                        is_array($registry['sources'] ?? null) ? $registry['sources'] : [],
+                    );
+                }
+            }
+
+            // Backwards compatible fallbacks.
+            if ($contribution === []) {
+                $contribution = config($packageKey.'.scopes.registry', config($packageKey.'.scope_registry', []));
+            }
 
             if (! is_array($contribution)) {
                 continue;
