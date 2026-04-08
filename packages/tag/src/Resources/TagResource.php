@@ -149,6 +149,7 @@ class TagResource extends BaseDraftResource
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
+                static::getScopeTableColumn(),
                 TextColumn::make('description')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
