@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\User;
+use Moox\Tag\Models\Tag;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -80,7 +83,7 @@ return [
             'scopes' => [
                 'registry' => [
                     'origins' => [
-                        'tag' => \Moox\Tag\Models\Tag::class,
+                        'tag' => Tag::class,
                     ],
                 ],
             ],
@@ -139,6 +142,6 @@ return [
     'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
     'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 
-    'user_model' => \App\Models\User::class,
+    'user_model' => User::class,
 
 ];
