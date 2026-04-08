@@ -1,5 +1,14 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
+use Moox\Draft\Models\Draft;
+use Moox\Media\Resources\MediaResource;
+use Moox\Tag\Models\Tag;
+use Moox\Tag\Resources\TagResource;
+use Moox\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -69,21 +78,21 @@ return [
             'scopes' => [
                 'allowed' => [
                     'media' => [
-                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                        'resource' => MediaResource::class,
                     ],
                     'tag' => [
-                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                        'resource' => TagResource::class,
                     ],
                     'category' => [
-                        'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                        'resource' => CategoryResource::class,
                     ],
                 ],
                 'registry' => [
                     'origins' => [
-                        'draft' => \Moox\Draft\Models\Draft::class,
+                        'draft' => Draft::class,
                     ],
                     'sources' => [
-                        'draft' => \Moox\Draft\Models\Draft::class,
+                        'draft' => Draft::class,
                     ],
                 ],
             ],
@@ -93,22 +102,22 @@ return [
     'taxonomies' => [
         'category' => [
             'label' => 'trans//core::core.category',
-            'model' => \Moox\Category\Models\Category::class,
+            'model' => Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
         'tag' => [
             'label' => 'trans//core::core.tag',
-            'model' => \Moox\Tag\Models\Tag::class,
+            'model' => Tag::class,
             'table' => 'taggables',
             'relationship' => 'taggable',
             'foreignKey' => 'taggable_id',
             'relatedKey' => 'tag_id',
-            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+            'createForm' => Moox\Tag\Forms\TaxonomyCreateForm::class,
             'hierarchical' => false,
         ],
     ],
@@ -123,11 +132,11 @@ return [
    |
    */
     'user_models' => [
-        \App\Models\User::class => [
+        App\Models\User::class => [
             'title_attribute' => 'name',
             'label' => 'App User',
         ],
-        Moox\User\Models\User::class => [
+        User::class => [
             'title_attribute' => 'name',
             'label' => 'Moox User',
         ],

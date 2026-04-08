@@ -1,5 +1,12 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
+use Moox\Record\Models\Record;
+use Moox\Tag\Models\Tag;
+use Moox\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -71,12 +78,12 @@ return [
                 'allowed' => [
                     'category' => [
                         'enabled' => true,
-                        'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                        'resource' => CategoryResource::class,
                     ],
                 ],
                 'registry' => [
                     'origins' => [
-                        'record' => \Moox\Record\Models\Record::class,
+                        'record' => Record::class,
                     ],
                 ],
             ],
@@ -86,22 +93,22 @@ return [
     'taxonomies' => [
         'category' => [
             'label' => 'trans//core::core.category',
-            'model' => \Moox\Category\Models\Category::class,
+            'model' => Category::class,
             'table' => 'categorizables',
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
         'tag' => [
             'label' => 'trans//core::core.tag',
-            'model' => \Moox\Tag\Models\Tag::class,
+            'model' => Tag::class,
             'table' => 'taggables',
             'relationship' => 'taggable',
             'foreignKey' => 'taggable_id',
             'relatedKey' => 'tag_id',
-            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+            'createForm' => Moox\Tag\Forms\TaxonomyCreateForm::class,
             'hierarchical' => false,
         ],
     ],
@@ -116,11 +123,11 @@ return [
     |
     */
     'user_models' => [
-        \App\Models\User::class => [
+        App\Models\User::class => [
             'title_attribute' => 'name',
             'label' => 'App User',
         ],
-        Moox\User\Models\User::class => [
+        User::class => [
             'title_attribute' => 'name',
             'label' => 'Moox User',
         ],

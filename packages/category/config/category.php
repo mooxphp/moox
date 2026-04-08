@@ -1,5 +1,9 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Media\Resources\MediaResource;
+use Moox\Tag\Resources\TagResource;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -80,18 +84,18 @@ return [
             'scopes' => [
                 'allowed' => [
                     'media' => [
-                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                        'resource' => MediaResource::class,
                     ],
                     'tag' => [
-                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                        'resource' => TagResource::class,
                     ],
                 ],
                 'registry' => [
                     'origins' => [
-                        'category' => \Moox\Category\Models\Category::class,
+                        'category' => Category::class,
                     ],
                     'sources' => [
-                        'category' => \Moox\Category\Models\Category::class,
+                        'category' => Category::class,
                     ],
                 ],
             ],
