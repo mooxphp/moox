@@ -404,6 +404,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "Nickson256",
+      "name": "Nickson N",
+      "avatar_url": "https://avatars.githubusercontent.com/u/115783204?v=4",
+      "profile": "https://github.com/Nickson256",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
