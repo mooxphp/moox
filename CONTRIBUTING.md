@@ -54,4 +54,8 @@ If the project maintainer has any additional requirements, you will find them li
   
 - Before adding code, please make sure that your contribution is compliant to the [Developer Certifcate of Origin](https://developercertificate.org).
 
+## Project Governance
+
+Please be aware that all code changes including translations can only be merged by the Moox Core team.
+
 **Happy coding**!
