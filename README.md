@@ -290,6 +290,7 @@ For more information, please see [composer.json](composer.json).
 
 We welcome every contribution! It would be awesome, if you:
 
+-   Read our [Contribution Guide](CONTRIBUTING.md) before creating your fork.
 -   Create an Issue in the Repo that fits best and add information about the problem or idea. We'll reply within a couple of days.
 -   Create a Pull Request in this Monorepo. Please do not PR to our read-only repos, they are not prepared for code changes. Only the monorepo has quality gates and automated tests.
 -   Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
