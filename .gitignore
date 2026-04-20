@@ -13,7 +13,6 @@ auth.json
 /public/hot
 /public/storage
 /storage/*.key
-auth.json
 LocalValetDriver.php
 herd.yml
 
@@ -40,3 +39,28 @@ testbench.yaml
 
 # Windows
 Thumbs.db
+
+# Moox Dev
+/app
+/bootstrap
+/config
+/database
+/public
+/resources
+/routes
+/storage
+/tests
+/composer.json
+/composer.lock
+/artisan
+/package.json
+/package-lock.json
+/vite.config.js
+/pro
+/.ai
+/.boost
+/.skills
+/.mcp
+/prompts
+/agents
+/ai
