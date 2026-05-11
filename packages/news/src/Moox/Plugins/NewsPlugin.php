@@ -4,6 +4,7 @@ namespace Moox\News\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\News\Moox\Entities\News\News\NewsResource;
 
 class NewsPlugin implements Plugin
@@ -15,10 +16,12 @@ class NewsPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel
-            ->resources([
-                NewsResource::class,
-            ]);
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
+            NewsResource::class,
+            'news',
+            config('news.resources.news', []),
+        );
     }
 
     public function boot(Panel $panel): void
