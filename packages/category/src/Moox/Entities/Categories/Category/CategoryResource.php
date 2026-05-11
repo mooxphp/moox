@@ -294,39 +294,14 @@ class CategoryResource extends BaseDraftResource
     }
 
     #[Override]
-    public static function getNavigationLabel(): string
-    {
-        return static::resolveScopedNavigationLabel(config('category.resources.category.plural'));
-    }
-
-    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('category.resources.category.single');
     }
 
-    #[Override]
-    public static function shouldRegisterNavigation(): bool
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
-        return static::resolveScopedNavigationRegistration(true);
-    }
-
-    #[Override]
-    public static function getNavigationGroup(): ?string
-    {
-        return static::resolveScopedNavigationGroup(config('category.navigation_group'));
-    }
-
-    #[Override]
-    public static function getNavigationParentItem(): ?string
-    {
-        return static::resolveScopedNavigationParentItem(parent::getNavigationParentItem());
-    }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return static::resolveScopedNavigationSort(parent::getNavigationSort());
+        return config('category.navigation_group');
     }
 
     public static function setCurrentTab(?string $tab): void
