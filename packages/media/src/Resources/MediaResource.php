@@ -53,29 +53,9 @@ class MediaResource extends BaseResource
         return config('media.plural_model_label');
     }
 
-    public static function getNavigationLabel(): string
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
-        return static::resolveScopedNavigationLabel(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return static::resolveScopedNavigationGroup(config('media.navigation_group'));
-    }
-
-    public static function getNavigationParentItem(): ?string
-    {
-        return static::resolveScopedNavigationParentItem(parent::getNavigationParentItem());
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return static::resolveScopedNavigationRegistration(parent::shouldRegisterNavigation());
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return static::resolveScopedNavigationSort(parent::getNavigationSort());
+        return config('media.navigation_group');
     }
 
     public static function form(Schema $schema): Schema
