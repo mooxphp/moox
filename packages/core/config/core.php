@@ -349,6 +349,19 @@ return [
                 ],
             ],
         ],
+        'scopes' => [
+            'package' => 'Moox Scopes',
+            'models' => [
+                'Scope' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'sync' => [
             'package' => 'Moox Sync',
             'models' => [
