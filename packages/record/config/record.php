@@ -76,13 +76,18 @@ return [
 
             'scopes' => [
                 'allowed' => [
+                    'media' => [
+                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                    ],
+                    'tag' => [
+                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                    ],
                     'category' => [
-                        'enabled' => true,
                         'resource' => CategoryResource::class,
                     ],
                 ],
                 'registry' => [
-                    'origins' => [
+                    'sources' => [
                         'record' => Record::class,
                     ],
                 ],
