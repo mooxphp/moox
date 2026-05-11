@@ -88,9 +88,6 @@ return [
                     ],
                 ],
                 'registry' => [
-                    'origins' => [
-                        'draft' => Draft::class,
-                    ],
                     'sources' => [
                         'draft' => Draft::class,
                     ],
