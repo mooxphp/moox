@@ -20,7 +20,7 @@ Example:
 Meaning:
 
 - **origin**: which record type stores the scope (e.g. `media`, `category`, `tag`)
-- **source**: which “parent context type” (e.g. `draft`, later `career`)
+- **source**: which "parent context type" (e.g. `draft`, later `career`)
 - **context**: concrete bucket inside that source (e.g. `jobapplications`)
 - **boundary**: boundary bucket (`private`, `public`, `group`, `user`, `user_type`)
 
@@ -129,18 +129,42 @@ Convention:
 
 - `NULL`/`''` = global/unassigned
 
-### 3.2 Use Moox base resources (query scoping)
+### 3.2 Add the `HasScopedModel` trait to the model
 
-Resources that extend `Moox\Core\Entities\BaseResource` automatically call:
+```php
+use Moox\Core\Models\Concerns\HasScopedModel;
 
-- `ScopedResourceContext::applyScope($query, static::class)`
+class Media extends Model
+{
+    use HasScopedModel;
+}
+```
+
+This adds `scope` to `$fillable` and handles default scope assignment on creation.
+
+### 3.3 Use Moox base resources (query scoping + navigation)
+
+Resources that extend `Moox\Core\Entities\BaseResource` automatically get:
+
+- **Query scoping**: `ScopedResourceContext::applyScope($query, static::class)`
+- **Navigation resolution**: `getNavigationLabel()`, `getNavigationGroup()`, `getNavigationParentItem()`, `shouldRegisterNavigation()`, `getNavigationSort()` all check for scoped definition values and fall back to defaults.
 
 Effect:
 
 - **scoped list view** → filtered by `exact` or `context`
 - **global list view** → only `scope IS NULL OR scope=''`
+- **scoped child navigation** → automatically resolved from DB (no boilerplate methods needed per resource)
 
-### 3.3 Ensure “Create” applies defaults in scoped contexts
+If a resource needs a custom navigation group, override `resolveDefaultNavigationGroup()`:
+
+```php
+protected static function resolveDefaultNavigationGroup(): ?string
+{
+    return config('media.navigation_group');
+}
+```
+
+### 3.4 Ensure "Create" applies defaults in scoped contexts
 
 Moox base create pages call:
 
@@ -148,7 +172,7 @@ Moox base create pages call:
 
 So creating a record inside a scoped child resource automatically writes the correct 4-part scope string.
 
-### 3.4 (Optional) enable bulk “Assign scope”
+### 3.5 (Optional) enable bulk "Assign scope"
 
 If a resource uses:
 
@@ -156,7 +180,7 @@ If a resource uses:
 
 Then it can provide a bulk action that moves records between scopes by writing the `scope` column.
 
-### 3.5 Assign scope for a single record (required)
+### 3.6 Assign scope for a single record (required)
 
 For single records, scopable resources must:
 
@@ -177,7 +201,7 @@ Behavior:
 - options come from active DB rows in the `scopes` table (fail-closed)
 - display labels are derived from the 4-part scope string (not from `scopes.label`)
 
-### 3.6 (Required) Make the scope UI not feel broken
+### 3.7 (Required) Make the scope UI not feel broken
 
 The Scopes UI should only offer valid combinations:
 
@@ -187,30 +211,35 @@ The Scopes UI should only offer valid combinations:
 
 ---
 
-## 4) Global resource registration (example: Categories)
+## 4) Resource registration via `ChildResourceRegistrar`
 
-If you want a **global** admin resource (unscoped), register it explicitly via `ResourceNavigationRegistrar`.
+All scopable resources (both origins and sources) register via `ChildResourceRegistrar::registerFromParentDefinition()`. This handles both the parent resource and any scoped child navigation items.
 
-### `packages/category/src/Moox/Plugins/CategoryPlugin.php`
+### Example: `packages/category/src/Moox/Plugins/CategoryPlugin.php`
 
 ```php
-use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 
 public function register(Panel $panel): void
 {
-    ResourceNavigationRegistrar::register($panel, [
+    ChildResourceRegistrar::registerFromParentDefinition(
+        $panel,
         CategoryResource::class,
-    ]);
+        'category',
+        config('category.resources.category', []),
+    );
 }
 ```
 
 What this does:
 
-- `$panel->resources([...])` → registers pages/routes for the resource
-- `$panel->navigationItems([...])` → forces a global navigation item using the resource’s own navigation methods
+1. Registers the parent resource in the panel (routes, pages, navigation).
+2. Reads `scopes.allowed` from the config to determine which child origins are supported.
+3. Queries the `scopes` table for active scopes under this source and creates child navigation items.
+4. Navigation visibility is controlled by `scopes.is_active` in the DB (fail-closed).
 
-This is useful when scoped child navigation is also present, so global resources don’t “disappear” due to navigation composition.
+`BaseResource` handles scoped navigation resolution automatically — no boilerplate overrides needed per resource.
 
 ---
 
@@ -340,11 +369,31 @@ Then activate/deactivate via the Scopes UI.
 
 ---
 
+## 6) What "is_active" affects
+
+- **Navigation**: scoped child nav item appears only when its scope is present and active.
+- **Queries**: `ScopeQuery` applies DB guards so inactive scopes do not return data.
+- **Assign options**: only active scopes are offered (both single-record select and bulk assign).
+
+---
+
+## 7) exact vs context (scope_match)
+
+- `exact` → matches the full `origin:source:context:boundary`
+- `context` → matches `origin:source:context:%` (boundary ignored)
+
+Default behavior (when not explicitly set) is derived from the DB:
+
+- if there is **more than one active boundary** for the same `origin/source/context` → default is `exact`
+- else → default is `context`
+
+---
+
 ## 8) Common workflows
 
 ### 8.1 Add a new scopable model (new origin)
 
-You need three things:
+You need four things:
 
 1) **DB column** on the model table:
 
@@ -352,7 +401,18 @@ You need three things:
 $table->string('scope')->nullable()->index();
 ```
 
-2) **Registry entry** for the origin key (inside a resource config):
+2) **`HasScopedModel` trait** on the model:
+
+```php
+use Moox\Core\Models\Concerns\HasScopedModel;
+
+class MyModel extends Model
+{
+    use HasScopedModel;
+}
+```
+
+3) **Registry entry** for the origin key (inside a resource config):
 
 ```php
 'resources' => [
@@ -368,11 +428,12 @@ $table->string('scope')->nullable()->index();
 ],
 ```
 
-3) **Resource UI integration** (required):
+4) **Resource UI integration** (required):
 
-- View: show current scope read-only
+- Use `HasScopedChildResource` trait in the resource
 - Edit: include `static::getScopeSelectField()`
 - Table: include `static::getScopeTableColumn()` (toggleable, hidden by default)
+- Plugin: use `ChildResourceRegistrar::registerFromParentDefinition()`
 
 ### 8.2 Allow an origin under a parent source
 
@@ -406,24 +467,3 @@ php artisan moox:scope
 ```
 
 Then the scoped navigation item appears automatically (no extra config slot per context/boundary needed).
-
----
-
-## 6) What “is_active” affects
-
-- **Navigation**: scoped child nav item appears only when its scope is present and active.
-- **Queries**: `ScopeQuery` applies DB guards so inactive scopes do not return data.
-- **Assign options**: only active scopes are offered (both single-record select and bulk assign).
-
----
-
-## 7) exact vs context (scope_match)
-
-- `exact` → matches the full `origin:source:context:boundary`
-- `context` → matches `origin:source:context:%` (boundary ignored)
-
-Default behavior (when not explicitly set) is derived from the DB:
-
-- if there is **more than one active boundary** for the same `origin/source/context` → default is `exact`
-- else → default is `context`
-
