@@ -182,6 +182,19 @@ return [
                 ],
             ],
         ],
+        'news' => [
+            'package' => 'Moox News',
+            'models' => [
+                'News' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'notifications' => [
             'package' => 'Moox Notifications',
             'models' => [
