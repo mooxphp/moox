@@ -3,8 +3,10 @@
 use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
+use Moox\Media\Resources\MediaResource;
 use Moox\Record\Models\Record;
 use Moox\Tag\Models\Tag;
+use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 
 /*
@@ -77,10 +79,10 @@ return [
             'scopes' => [
                 'allowed' => [
                     'media' => [
-                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                        'resource' => MediaResource::class,
                     ],
                     'tag' => [
-                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                        'resource' => TagResource::class,
                     ],
                     'category' => [
                         'resource' => CategoryResource::class,
