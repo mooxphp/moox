@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
@@ -51,7 +52,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class News extends BaseDraftModel implements HasMedia
 {
-    use HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
+    use HasMediaUsable, HasModelTaxonomy, HasScopedModel, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft

@@ -70,7 +70,28 @@ return [
                         ],
                     ],
                 ],
+            ],
 
+            'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                    ],
+                    'tag' => [
+                        'resource' => \Moox\Tag\Resources\TagResource::class,
+                    ],
+                    'category' => [
+                        'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'news' => \Moox\News\Models\News::class,
+                    ],
+                    'sources' => [
+                        'news' => \Moox\News\Models\News::class,
+                    ],
+                ],
             ],
         ],
     ],
