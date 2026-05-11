@@ -81,8 +81,19 @@ return [
             ],
 
             'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => \Moox\Media\Resources\MediaResource::class,
+                    ],
+                    'category' => [
+                        'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    ],
+                ],
                 'registry' => [
                     'origins' => [
+                        'tag' => Tag::class,
+                    ],
+                    'sources' => [
                         'tag' => Tag::class,
                     ],
                 ],
