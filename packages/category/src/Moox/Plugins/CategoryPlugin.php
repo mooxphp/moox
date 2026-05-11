@@ -9,7 +9,6 @@ use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Core\Support\Resources\ChildResourceRegistrar;
-use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
 
 class CategoryPlugin implements Plugin
 {
@@ -28,10 +27,6 @@ class CategoryPlugin implements Plugin
             'category',
             config('category.resources.category', []),
         );
-
-        ResourceNavigationRegistrar::register($panel, [
-            CategoryResource::class,
-        ]);
     }
 
     public function boot(Panel $panel): void
