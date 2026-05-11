@@ -27,7 +27,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $description
  * @property-read string $content
  * @property-read string $status
- * @property string|null $scope
  * @property-read int $author_id
  * @property-read string $author_type
  * @property-read User|null $author
