@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Media\Traits\HasMediaUsable;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
@@ -18,7 +19,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Tag extends BaseDraftModel implements HasMedia
 {
-    use HasFactory, HasMediaUsable, InteractsWithMedia;
+    use HasFactory, HasMediaUsable, HasScopedModel, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft

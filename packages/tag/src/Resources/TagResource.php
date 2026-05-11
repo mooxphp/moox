@@ -224,28 +224,9 @@ class TagResource extends BaseDraftResource
         return config('tag.resources.tag.single');
     }
 
-    #[Override]
-    public static function shouldRegisterNavigation(): bool
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
-        return static::resolveScopedNavigationRegistration(true);
-    }
-
-    #[Override]
-    public static function getNavigationGroup(): ?string
-    {
-        return static::resolveScopedNavigationGroup(config('tag.navigation_group'));
-    }
-
-    #[Override]
-    public static function getNavigationParentItem(): ?string
-    {
-        return static::resolveScopedNavigationParentItem(parent::getNavigationParentItem());
-    }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return static::resolveScopedNavigationSort(parent::getNavigationSort());
+        return config('tag.navigation_group');
     }
 
     public static function setCurrentTab(?string $tab): void
