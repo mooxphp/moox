@@ -21,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\\\Scopes\\\\": "src"
+            "Moox\\Scopes\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\\\Scopes\\\\ScopesServiceProvider"
+                "Moox\\Scopes\\ScopesServiceProvider"
             ]
         },
         "moox": {
