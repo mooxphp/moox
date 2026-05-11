@@ -34,6 +34,51 @@ abstract class BaseResource extends Resource
         return ScopedResourceConfiguration::make(static::class, $key);
     }
 
+    public static function getNavigationLabel(): string
+    {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_label');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
+        return parent::getNavigationLabel();
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_group');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
+        return static::resolveDefaultNavigationGroup();
+    }
+
+    protected static function resolveDefaultNavigationGroup(): ?string
+    {
+        return parent::getNavigationGroup();
+    }
+
+    public static function getNavigationParentItem(): ?string
+    {
+        return ScopedResourceContext::getDefinitionValue(static::class, 'navigation_parent_item')
+            ?? parent::getNavigationParentItem();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $value = ScopedResourceContext::getDefinitionValue(static::class, 'should_register_navigation');
+
+        return $value !== null ? (bool) $value : parent::shouldRegisterNavigation();
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        $value = ScopedResourceContext::getDefinitionValue(static::class, 'sort');
+
+        return $value !== null ? (int) $value : parent::getNavigationSort();
+    }
+
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
