@@ -109,35 +109,9 @@ trait HasScopedChildResource
     {
         return Select::make($name)
             ->label('Scope')
-            ->dehydrated(false)
-            ->live()
             ->options(fn (?Model $record) => static::getAssignableScopeOptionsForRecord($record))
             ->default(fn (?Model $record) => static::getDefaultAssignableScopeForRecord($record))
-            ->afterStateUpdated(function ($state, ?Model $record, Select $component): void {
-                if (! $record) {
-                    return;
-                }
-
-                $result = static::assignScopeToRecord($record, (string) $state);
-
-                if (! ($result['updated'] ?? false)) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Scope not allowed')
-                        ->body($result['message'] ?? 'Unable to update scope.')
-                        ->send();
-
-                    $record->refresh();
-                    $component->state(static::getDefaultAssignableScopeForRecord($record));
-
-                    return;
-                }
-
-                Notification::make()
-                    ->success()
-                    ->title('Scope updated')
-                    ->send();
-            });
+            ->dehydrateStateUsing(fn ($state) => $state === static::ASSIGN_GLOBAL_SCOPE ? null : $state);
     }
 
     public static function getScopeTableColumn(string $name = 'scope'): TextColumn
@@ -145,7 +119,9 @@ trait HasScopedChildResource
         return TextColumn::make($name)
             ->label('Scope')
             ->toggleable(isToggledHiddenByDefault: true)
-            ->formatStateUsing(fn ($state) => static::formatScopeForDisplay(is_string($state) ? $state : null));
+            ->formatStateUsing(fn ($state) => static::formatScopeForDisplay(
+                $state instanceof ScopeValue ? (string) $state : (is_string($state) ? $state : null)
+            ));
     }
 
     public static function scopeQuery(Builder $query): Builder
