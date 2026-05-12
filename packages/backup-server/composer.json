@@ -18,7 +18,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "spatie/laravel-backup-server": "^4.1"
+        "spatie/laravel-backup-server": "^4.0|^4.1|^4.2"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
