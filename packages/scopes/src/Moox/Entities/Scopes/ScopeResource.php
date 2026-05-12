@@ -14,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
@@ -37,11 +38,16 @@ class ScopeResource extends Resource
                         ->label('Origin')
                         ->helperText('What kind of record this scope applies to (e.g. media, category).')
                         ->options(function (): array {
-                            $origins = array_keys(app(ScopeRegistry::class)->getOrigins());
+                            $registry = app(ScopeRegistry::class);
+                            $origins = array_keys($registry->getOrigins());
 
-                            // Only show origins that are actually supported by some parent config,
-                            // otherwise the Source select would be empty and the UX feels broken.
-                            $origins = array_values(array_filter($origins, fn (string $origin): bool => static::allowedSourcesForOrigin($origin) !== []));
+                            $origins = array_values(array_filter($origins, function (string $origin) use ($registry): bool {
+                                if (static::allowedSourcesForOrigin($origin) === []) {
+                                    return false;
+                                }
+
+                                return static::isOriginResourceRegistered($origin, $registry);
+                            }));
 
                             return array_combine($origins, $origins);
                         })
@@ -221,6 +227,56 @@ class ScopeResource extends Resource
         sort($allowed);
 
         return $allowed;
+    }
+
+    /**
+     * Check if the origin is ready: its resource is registered in the panel
+     * and its model uses the HasScopedModel trait.
+     */
+    protected static function isOriginResourceRegistered(string $origin, ScopeRegistry $registry): bool
+    {
+        $modelClass = $registry->resolveOriginModel($origin);
+
+        if (! $modelClass || ! class_exists($modelClass)) {
+            return false;
+        }
+
+        if (! in_array(HasScopedModel::class, class_uses_recursive($modelClass), true)) {
+            return false;
+        }
+
+        $panelResources = filament()->getCurrentPanel()?->getResources() ?? [];
+        $packages = (array) config('core.packages', []);
+
+        foreach (array_keys($packages) as $packageKey) {
+            $resources = (array) config($packageKey.'.resources', []);
+            foreach ($resources as $definition) {
+                if (! is_array($definition)) {
+                    continue;
+                }
+
+                $scopes = $definition['scopes'] ?? null;
+                if (! is_array($scopes)) {
+                    continue;
+                }
+
+                $allowed = is_array($scopes['allowed'] ?? null) ? $scopes['allowed'] : [];
+
+                foreach ($allowed as $key => $childDef) {
+                    if (! is_array($childDef)) {
+                        continue;
+                    }
+
+                    $childOrigin = $childDef['origin'] ?? (is_string($key) ? explode('_', $key, 2)[0] : '');
+
+                    if ($childOrigin === $origin && isset($childDef['resource'])) {
+                        return in_array($childDef['resource'], $panelResources, true);
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     protected static function buildScopeKey(callable $get): string
