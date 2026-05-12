@@ -1,0 +1,56 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('attribute_translations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedBigInteger('attribute_id');
+            $table->string('locale')->index();
+            $table->json('value');
+
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->nullableMorphs('author');
+
+
+            $table->unique(['attribute_id', 'locale']);
+            $table->foreign('attribute_id')->references('id')->on('attributes')->onDelete('cascade');
+
+            // Schedule fields
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            // Actor fields (explicit short index: default name exceeds MySQL 64-char limit)
+            $table->nullableMorphs('published_by');
+            $table->nullableMorphs('unpublished_by', 'attr_tr_unpub_by_morph_idx');
+
+            // Soft delete fields
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+
+    {
+        Schema::dropIfExists('attribute_translations');
+    }
+};
