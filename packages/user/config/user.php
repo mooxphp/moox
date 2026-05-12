@@ -59,19 +59,14 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
-                /*
-                'error' => [
-                    'label' => 'trans//core::core.error',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'subject_type',
-                            'operator' => '=',
-                            'value' => 'Error',
-                        ],
+            ],
+
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'user' => \Moox\User\Models\User::class,
                     ],
                 ],
-                */
             ],
         ],
     ],
