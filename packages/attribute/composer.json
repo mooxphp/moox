@@ -1,0 +1,86 @@
+{
+    "name": "moox/attribute",
+    "description": "Attribute is a simple Moox Entity, that can be used to create and manage attribute additions to your models.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "Attribute"
+    ],
+    "homepage": "https://moox.org/docs/attribute",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/localization": "dev-main",
+        "moox/category": "dev-main",
+        "moox/tag": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Attribute\\": "src",
+            "Moox\\Attribute\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Attribute\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Attribute\\AttributeServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Attribute",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/AttributeSeeder.php",
+                "auto_publish": "moox-attribute-config",
+                "auto_entities": {
+                    "Attribute": true
+                },
+                "auto_class": {
+                    "Attribute": "Moox\\Attribute\\Attribute"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-attribute-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-attribute-config"
+            }
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
