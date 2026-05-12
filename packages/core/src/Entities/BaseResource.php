@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Infolists\Components\TextEntry;
@@ -63,6 +64,25 @@ abstract class BaseResource extends Resource
     {
         return ScopedResourceContext::getDefinitionValue(static::class, 'navigation_parent_item')
             ?? parent::getNavigationParentItem();
+    }
+
+    public static function registerNavigationItems(): void
+    {
+        $currentKey = Filament::getCurrentResourceConfigurationKey();
+        $panel = filament()->getCurrentPanel();
+
+        // When the IdentifyResourceConfiguration middleware sets a child config key
+        // globally, it pollutes the navigation-building loop for bare-class resources.
+        // Temporarily clear the key so the resource's own default navigation is used.
+        if ($currentKey !== null && $panel && in_array(static::class, $panel->getResources(), true)) {
+            Filament::setCurrentResourceConfigurationKey(null);
+            parent::registerNavigationItems();
+            Filament::setCurrentResourceConfigurationKey($currentKey);
+
+            return;
+        }
+
+        parent::registerNavigationItems();
     }
 
     public static function shouldRegisterNavigation(): bool
