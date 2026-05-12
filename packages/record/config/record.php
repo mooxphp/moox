@@ -4,10 +4,14 @@ use Moox\Category\Models\Category;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
 use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm;
 use Moox\Media\Resources\MediaResource;
+use Moox\News\Moox\Entities\News\News\NewsResource;
 use Moox\Record\Models\Record;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
+use Moox\User\Resources\UserResource;
+use Moox\UserDevice\Resources\UserDeviceResource;
+use Moox\UserSession\Resources\UserSessionResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +82,9 @@ return [
 
             'scopes' => [
                 'allowed' => [
+                    'news' => [
+                        'resource' => NewsResource::class,
+                    ],
                     'media' => [
                         'resource' => MediaResource::class,
                     ],
@@ -86,6 +93,12 @@ return [
                     ],
                     'category' => [
                         'resource' => CategoryResource::class,
+                    ],
+                    'user' => [
+                        'resource' => UserResource::class,
+                    ],
+                    'user-device' => [
+                        'resource' => UserDeviceResource::class,
                     ],
                 ],
                 'registry' => [
