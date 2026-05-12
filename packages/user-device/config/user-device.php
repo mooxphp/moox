@@ -59,6 +59,14 @@ return [
                     'query' => [],
                 ],
             ],
+
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'user-device' => \Moox\UserDevice\Models\UserDevice::class,
+                    ],
+                ],
+            ],
         ],
     ],
 

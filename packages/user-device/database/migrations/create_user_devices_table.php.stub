@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('whitelisted')->default(false);
             $table->boolean('active')->default(false);
             $table->ipAddress('ip_address')->nullable();
+            $table->string('scope')->nullable();
             $table->timestamps();
         });
     }
