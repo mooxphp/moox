@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Validation\Rules\Password;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +65,7 @@ return [
             'scopes' => [
                 'registry' => [
                     'origins' => [
-                        'user' => \Moox\User\Models\User::class,
+                        'user' => User::class,
                     ],
                 ],
             ],
