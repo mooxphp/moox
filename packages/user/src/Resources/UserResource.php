@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -33,6 +34,7 @@ class UserResource extends Resource
 {
     use BaseInResource;
     use HasResourceTabs;
+    use HasScopedChildResource;
 
     protected static ?string $model = User::class;
 
@@ -105,6 +107,8 @@ class UserResource extends Resource
                 RichEditor::make('description')
                     ->label(__('core::core.description'))
                     ->rules(['max:255']),
+
+                static::getScopeSelectField(),
 
                 TextInput::make('password')
                     ->label(__('core::user.password'))
@@ -181,6 +185,7 @@ class UserResource extends Resource
                         'success' => fn ($record): bool => $record->email_verified_at !== null,
                         'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
+                static::getScopeTableColumn(),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
