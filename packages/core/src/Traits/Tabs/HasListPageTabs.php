@@ -6,7 +6,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\HasQueriesInConfig;
 
 trait HasListPageTabs
@@ -46,6 +46,7 @@ trait HasListPageTabs
     {
         $tabsConfig = Config::get($configKey, []);
         $tabs = [];
+        $resource = static::getResource();
 
         foreach ($tabsConfig as $key => $tabConfig) {
             if (isset($tabConfig['visible']) && ! $tabConfig['visible']) {
@@ -58,12 +59,16 @@ trait HasListPageTabs
             $queryConditions = $tabConfig['query'];
 
             if (empty($queryConditions)) {
+                $badgeQuery = $modelClass::query();
+                $badgeQuery = ScopedResourceContext::applyScope($badgeQuery, $resource);
+
                 $tab->modifyQueryUsing(fn ($query) => $query)
-                    ->badge($modelClass::query()->count());
+                    ->badge($badgeQuery->count());
             } else {
                 $tab->modifyQueryUsing(fn ($query) => $this->applyConditions($query, $queryConditions));
 
                 $badgeCountQuery = $modelClass::query();
+                $badgeCountQuery = ScopedResourceContext::applyScope($badgeCountQuery, $resource);
                 $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);
 
                 $tab->badge($badgeCountQuery->count());
