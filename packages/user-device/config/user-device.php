@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Moox\UserDevice\Models\UserDevice;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +64,7 @@ return [
             'scopes' => [
                 'registry' => [
                     'origins' => [
-                        'user-device' => \Moox\UserDevice\Models\UserDevice::class,
+                        'user-device' => UserDevice::class,
                     ],
                 ],
             ],
