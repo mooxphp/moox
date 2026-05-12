@@ -11,7 +11,6 @@ use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 use Moox\UserDevice\Resources\UserDeviceResource;
-use Moox\UserSession\Resources\UserSessionResource;
 
 /*
 |--------------------------------------------------------------------------
