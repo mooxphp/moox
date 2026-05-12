@@ -13,7 +13,6 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- 
  * @property string $type
  * @property string[] $translatedAttributes
  * @property string $uuid

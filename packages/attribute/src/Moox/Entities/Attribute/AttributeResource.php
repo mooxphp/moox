@@ -84,7 +84,7 @@ class AttributeResource extends BaseDraftResource
                                 ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
-                                    static::getAuthorSelect()
+                                    static::getAuthorSelect(),
                                 ]),
                             Section::make('')
                                 ->schema([
