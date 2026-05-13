@@ -2,15 +2,12 @@
 
 namespace Moox\Attribute\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Moox\Attribute\Database\Factories\AttributeFactory;
+use Moox\Attribute\Models\AttributeValues;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
-use Moox\Draft\Database\Factories\AttributeFactory;
-use Moox\Media\Traits\HasMediaUsable;
-use Spatie\Image\Enums\Fit;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property string $type
@@ -21,53 +18,34 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $author_type
  * @property-read User|null $author
 
- * @property-read Collection<int, Media> $media
  */
-class Attribute extends BaseDraftModel implements HasMedia
+class Attribute extends BaseDraftModel
 {
-    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
+    use HasFactory, HasModelTaxonomy;
 
     protected function getCustomTranslatedAttributes(): array
     {
         return [
-            'name',
+            'value',
         ];
     }
 
     protected $fillable = [
         'type',
-        'value',
+        'name',
+        'description',
+        'status',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'image' => 'json',
-        'due_at' => 'datetime',
-        'uuid' => 'string',
-        'ulid' => 'string',
-        'custom_properties' => 'json',
-    ];
 
     public static function getResourceName(): string
     {
         return 'attribute';
     }
 
-    public function registerMediaConversions(?Media $media = null): void
+    public function values()
     {
-        $this
-            ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300);
-    }
-
-    public function mediaThroughUsables()
-    {
-        return $this->belongsToMany(
-            Media::class,
-            'media_usables',
-            'media_usable_id',
-            'media_id'
-        )->where('media_usables.media_usable_type', '=', static::class);
+        return $this->hasMany(AttributeValues::class);
     }
 
     protected static function newFactory()

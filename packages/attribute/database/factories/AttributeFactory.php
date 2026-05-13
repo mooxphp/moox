@@ -1,9 +1,9 @@
 <?php
 
-namespace Moox\Draft\Database\Factories;
+namespace Moox\Attribute\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Moox\Draft\Models\Attribute;
+use Moox\Attribute\Models\Attribute;
 
 class AttributeFactory extends Factory
 {

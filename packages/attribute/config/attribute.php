@@ -33,8 +33,57 @@ return [
             | The translatable title of the Resource in singular and plural.
             |
             */
-            'single' => 'trans//draft::attribute.attribute',
-            'plural' => 'trans//draft::attribute.attributes',
+            'single' => 'trans//attribute::attribute.attribute',
+            'plural' => 'trans//attribute::attribute.attributes',
+
+            /*
+            |--------------------------------------------------------------------------
+            | <Tabs></Tabs>
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'attribute_value' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+            'single' => 'trans//attribute::attribute_value.attribute_value',
+            'plural' => 'trans//attribute::attribute_value.attribute_values',
 
             /*
             |--------------------------------------------------------------------------
@@ -111,10 +160,10 @@ return [
             'title_attribute' => 'name',
             'label' => 'App User',
         ],
-        Moox\User\Models\User::class => [
-            'title_attribute' => 'name',
-            'label' => 'Moox User',
-        ],
+        // Moox\User\Models\User::class => [
+        //     'title_attribute' => 'name',
+        //     'label' => 'Moox User',
+        // ],
         // Add more user models as needed:
         // \My\Custom\AdminUser::class => [
         //     'title_attribute' => 'full_name',
