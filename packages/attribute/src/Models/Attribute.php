@@ -5,7 +5,6 @@ namespace Moox\Attribute\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Attribute\Database\Factories\AttributeFactory;
-use Moox\Attribute\Models\AttributeValues;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
@@ -17,7 +16,6 @@ use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
  * @property-read int $author_id
  * @property-read string $author_type
  * @property-read User|null $author
-
  */
 class Attribute extends BaseDraftModel
 {
@@ -36,7 +34,6 @@ class Attribute extends BaseDraftModel
         'description',
         'status',
     ];
-
 
     public static function getResourceName(): string
     {

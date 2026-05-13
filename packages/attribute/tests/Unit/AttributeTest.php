@@ -3,12 +3,10 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Moox\Attribute\Models\Attribute;
-use Moox\Attribute\Models\AttributeTranslation;
 
 uses(RefreshDatabase::class);
 
 it('attributes table migration: creates the correct columns', function () {
-    
     expect(Schema::hasTable('attributes'))->toBeTrue();
 
     $columns = [
