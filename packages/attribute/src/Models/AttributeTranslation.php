@@ -6,10 +6,6 @@ use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
 class AttributeTranslation extends BaseDraftTranslationModel
 {
-    protected $casts = [
-        'value' => 'json',
-    ];
-
     /**
      * Get custom fillable for Draft translations
      */
@@ -19,6 +15,19 @@ class AttributeTranslation extends BaseDraftTranslationModel
             'attribute_id',
             'author_id',
             'author_type',
+            'value',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Base draft translations override {@see Model::getCasts()}; child models must register casts here.
+     */
+    protected function getCustomCasts(): array
+    {
+        return [
+            'value' => 'json',
         ];
     }
 }

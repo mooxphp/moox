@@ -1,7 +1,8 @@
 <?php
 
-namespace Moox\Attribute\Moox\Entities\Attribute;
+namespace Moox\Attribute\Moox\Entities\AttributeValues;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -9,40 +10,39 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Attribute\Models\Attribute;
-use Moox\Attribute\Moox\Entities\Attribute\RelationManagers\AttributeValuesRelationManager;
+use Moox\Attribute\Models\AttributeValues;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 
-class AttributeResource extends BaseDraftResource
+class AttributeValueResource extends BaseDraftResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
 
-    protected static ?string $model = Attribute::class;
+    protected static ?string $model = AttributeValues::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-new-label-o';
 
     public static function getModelLabel(): string
     {
-        return config('attribute.resources.attribute.single');
+        return config('attribute.resources.attribute_value.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('attribute.resources.attribute.plural');
+        return config('attribute.resources.attribute_value.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('attribute.resources.attribute.plural');
+        return config('attribute.resources.attribute_value.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('attribute.resources.attribute.single');
+        return config('attribute.resources.attribute_value.single');
     }
 
     public static function getNavigationGroup(): ?string
@@ -59,14 +59,9 @@ class AttributeResource extends BaseDraftResource
                 ->schema([
                     Section::make()
                         ->schema([
-                            TextInput::make('type')
-                                ->label(__('core::core.type'))
-                                ->required(),
-                            TextInput::make('name')
-                                ->label(__('core::core.name'))
-                                ->required(),
-                            TextInput::make('description')
-                                ->label(__('core::core.description'))
+                            Select::make('attribute_id')
+                                ->label(__('attribute::attribute.fields.attribute'))
+                                ->options(Attribute::all()->pluck('name', 'id'))
                                 ->required(),
                             TextInput::make('value')
                                 ->label(__('attribute::field.value')),
@@ -118,20 +113,9 @@ class AttributeResource extends BaseDraftResource
     {
         return $table
             ->columns([
-                TranslationColumn::make('translations.locale'),
-                TextColumn::make('name')
-                    ->label(__('core::core.name'))
-                    ->sortable(),
-                TextColumn::make('description')
-                    ->label(__('core::core.description'))
-                    ->sortable(),
                 TextColumn::make('value')
                     ->label(__('attribute::field.value'))
                     ->sortable(),
-                TextColumn::make('uuid')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('ulid')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 static::getStatusColumn(),
                 ...static::getTaxonomyColumns(),
             ])
@@ -151,20 +135,10 @@ class AttributeResource extends BaseDraftResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAttributes::route('/'),
-            'create' => Pages\CreateAttribute::route('/create'),
-            'edit' => Pages\EditAttribute::route('/{record}/edit'),
-            'view' => Pages\ViewAttribute::route('/{record}'),
-        ];
-    }
-
-    /**
-     * @return array<class-string>
-     */
-    public static function getRelations(): array
-    {
-        return [
-            AttributeValuesRelationManager::class,
+            'index' => Pages\ListAttributeValues::route('/'),
+            'create' => Pages\CreateAttributeValue::route('/create'),
+            'edit' => Pages\EditAttributeValue::route('/{record}/edit'),
+            'view' => Pages\ViewAttributeValue::route('/{record}'),
         ];
     }
 

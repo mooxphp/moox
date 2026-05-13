@@ -1,10 +1,11 @@
 <?php
 
-namespace Moox\Attribute\Moox\Entities\Attribute\Pages;
+
+namespace Moox\Attribute\Moox\Entities\AttributeValues\Pages;
 
 use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
 
-class EditAttribute extends BaseEditDraft {
+class EditAttributeValue extends BaseEditDraft {
 
     public function getHeading(): string
     {
