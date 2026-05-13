@@ -10,9 +10,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
+use Moox\Core\Enums\TranslationStatus;
 use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Draft\Enums\TranslationStatus;
 use Moox\Localization\Models\Localization;
 
 class BaseDraftResource extends BaseResource
