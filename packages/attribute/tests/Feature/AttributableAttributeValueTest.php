@@ -7,9 +7,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Moox\Attribute\Models\AttributableAttributeValue;
 use Moox\Attribute\Models\Attribute;
 use Moox\Attribute\Models\AttributeValues;
-use Moox\Attribute\Models\AttributableAttributeValue;
 use Moox\Attribute\Models\Concerns\HasAttributeValues;
 
 const ATTRIBUTABLE_TEST_TABLE = 'test_attributables';
