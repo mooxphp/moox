@@ -14,7 +14,6 @@ use Moox\Attribute\Models\AttributeValues;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 
 class AttributeValueResource extends BaseDraftResource
 {
