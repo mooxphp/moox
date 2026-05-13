@@ -24,6 +24,7 @@
         "moox/progress": "dev-main",
         "moox/prompts": "dev-main",
         "moox/localization": "dev-main",
+        "moox/slug": "dev-main",
         "php": "^8.2.0",
         "spatie/laravel-package-tools": "^1.13.0"
     },
