@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Attribute\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 /**
  * Pivot between any Eloquent model and an {@see AttributeValues} row.
  *
- * @property-read \Illuminate\Database\Eloquent\Model $attributable
+ * @property-read Model $attributable
  * @property-read AttributeValues $attributeValue
  * @property int $sort_order
  */
