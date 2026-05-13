@@ -3,6 +3,7 @@
 namespace Moox\Attribute\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AttributeValues extends Model
 {
@@ -20,5 +21,13 @@ class AttributeValues extends Model
     public function attribute()
     {
         return $this->belongsTo(Attribute::class);
+    }
+
+    /**
+     * @return HasMany<AttributableAttributeValue, $this>
+     */
+    public function attributableAssignments(): HasMany
+    {
+        return $this->hasMany(AttributableAttributeValue::class, 'attribute_value_id');
     }
 }

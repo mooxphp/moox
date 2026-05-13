@@ -15,7 +15,12 @@ class AttributeServiceProvider extends MooxServiceProvider
             ->name('attribute')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations('create_attribute_table', 'create_attribute_translations_table', 'create_attribute_values_table')
+            ->hasMigrations(
+                'create_attribute_table',
+                'create_attribute_translations_table',
+                'create_attribute_values_table',
+                'create_attributable_attribute_value_table',
+            )
             ->hasCommands();
     }
 
