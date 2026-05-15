@@ -5,11 +5,13 @@ namespace Moox\Core\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Moox\Jobs\Models\JobManager;
 
 class PublishScheduledContentJob implements ShouldQueue
 {
@@ -46,7 +48,7 @@ class PublishScheduledContentJob implements ShouldQueue
 
     public function setProgress(int $progress): void
     {
-        if (! class_exists(\Moox\Jobs\Models\JobManager::class)) {
+        if (! class_exists(JobManager::class)) {
             return;
         }
 
@@ -65,7 +67,7 @@ class PublishScheduledContentJob implements ShouldQueue
 
     protected function getJobMonitor(): ?Model
     {
-        if (! class_exists(\Moox\Jobs\Models\JobManager::class)) {
+        if (! class_exists(JobManager::class)) {
             return null;
         }
 
@@ -77,11 +79,11 @@ class PublishScheduledContentJob implements ShouldQueue
             return null;
         }
 
-        if (! $jobId = \Moox\Jobs\Models\JobManager::getJobId($this->job)) {
+        if (! $jobId = JobManager::getJobId($this->job)) {
             return null;
         }
 
-        $model = \Moox\Jobs\Models\JobManager::getModel();
+        $model = JobManager::getModel();
 
         return $model::whereJobId($jobId)
             ->orderBy('started_at', 'desc')
@@ -257,6 +259,6 @@ class PublishScheduledContentJob implements ShouldQueue
             return $model;
         }
 
-        return \Illuminate\Foundation\Auth\User::class;
+        return User::class;
     }
 }
