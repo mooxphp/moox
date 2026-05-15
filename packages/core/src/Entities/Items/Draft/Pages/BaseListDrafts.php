@@ -15,11 +15,20 @@ abstract class BaseListDrafts extends ListRecords
 {
     use CanResolveResourceClass;
 
-    public string $lang;
+    public string $lang = '';
 
     protected $queryString = [
         'lang' => ['except' => ''],
     ];
+
+    /**
+     * Livewire rehydrates $lang from the snapshot on search/filter requests, but the HTTP
+     * request has no ?lang= — models read locale from request()->input('lang').
+     */
+    public function hydrate(): void
+    {
+        $this->syncLangToRequest();
+    }
 
     public function mount(): void
     {
