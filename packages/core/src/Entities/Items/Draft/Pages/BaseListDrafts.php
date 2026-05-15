@@ -27,7 +27,19 @@ abstract class BaseListDrafts extends ListRecords
         $defaultLocalization = Localization::where('is_default', true)->first();
         $defaultLang = $defaultLocalization->locale_variant ?? config('app.locale');
 
-        $this->lang = request()->get('lang', $defaultLang);
+        $this->lang = request()->input('lang', $defaultLang);
+        $this->syncLangToRequest();
+    }
+
+    /**
+     * Table columns read translated fields via request()->input('lang') on the model.
+     * Livewire keeps locale in $this->lang; merge it so the first render matches the language switcher.
+     */
+    protected function syncLangToRequest(): void
+    {
+        if ($this->lang !== '') {
+            request()->merge(['lang' => $this->lang]);
+        }
     }
 
     public function getTitle(): string
@@ -80,6 +92,7 @@ abstract class BaseListDrafts extends ListRecords
     public function changeLanguage(string $lang): void
     {
         $this->lang = $lang;
+        $this->syncLangToRequest();
 
         $url = $this->getResource()::getUrl('index', ['lang' => $lang, 'tab' => $this->activeTab]);
 

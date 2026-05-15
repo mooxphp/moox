@@ -190,7 +190,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = static::resolveCurrentLang($livewire);
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('title', 'like', '%'.$search.'%');
+                        ->where('title', 'like', '%' . $search . '%');
                 });
             })
             // ->sortable()
@@ -215,12 +215,12 @@ class BaseDraftResource extends BaseResource
                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title.' ('.$defaultLang.')';
+                    return $fallbackTranslation->title . ' (' . $defaultLang . ')';
                 }
 
                 $anyTranslation = $record->translations()->whereNotNull('title')->first();
                 if ($anyTranslation && $anyTranslation->title) {
-                    return $anyTranslation->title.' ('.$anyTranslation->locale.')';
+                    return $anyTranslation->title . ' (' . $anyTranslation->locale . ')';
                 }
 
                 return __('core::core.no_title_available');
@@ -235,7 +235,7 @@ class BaseDraftResource extends BaseResource
                 $currentLang = static::resolveCurrentLang($livewire);
                 $query->whereHas('translations', function ($query) use ($search, $currentLang) {
                     $query->where('locale', $currentLang)
-                        ->where('slug', 'like', '%'.$search.'%');
+                        ->where('slug', 'like', '%' . $search . '%');
                 });
             })
             // ->sortable()
@@ -263,21 +263,21 @@ class BaseDraftResource extends BaseResource
     public static function getEditableTranslationStatusOptions(): array
     {
         return collect(TranslationStatus::cases())
-            ->filter(fn ($case) => ! in_array($case, [TranslationStatus::NOT_TRANSLATED, TranslationStatus::DELETED]))
-            ->mapWithKeys(fn ($case) => [$case->value => ucfirst($case->value)])
+            ->filter(fn($case) => !in_array($case, [TranslationStatus::NOT_TRANSLATED, TranslationStatus::DELETED]))
+            ->mapWithKeys(fn($case) => [$case->value => ucfirst($case->value)])
             ->toArray();
     }
 
     protected static function getCurrentTranslationStatus($record): string
     {
-        if (! $record) {
+        if (!$record) {
             return TranslationStatus::DRAFT->value;
         }
 
-        $currentLang = request()->get('lang', app()->getLocale());
+        $currentLang = request()->input('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
-        if (! $translation) {
+        if (!$translation) {
             return TranslationStatus::NOT_TRANSLATED->value;
         }
 
@@ -299,7 +299,7 @@ class BaseDraftResource extends BaseResource
     public static function getTranslationStatusOptions(): array
     {
         return collect(TranslationStatus::cases())
-            ->mapWithKeys(fn ($case) => [$case->value => ucfirst($case->value)])
+            ->mapWithKeys(fn($case) => [$case->value => ucfirst($case->value)])
             ->toArray();
     }
 
@@ -322,8 +322,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_publish_at'))
             ->placeholder(__('core::core.to_publish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => $get('translation_status') !== 'scheduled')
-            ->dehydrateStateUsing(fn ($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
+            ->hidden(fn($get) => $get('translation_status') !== 'scheduled')
+            ->dehydrateStateUsing(fn($state, $get) => $get('translation_status') === 'scheduled' ? $state : null);
     }
 
     /**
@@ -335,8 +335,8 @@ class BaseDraftResource extends BaseResource
             ->label(__('core::core.to_unpublish_at'))
             ->placeholder(__('core::core.to_unpublish_at'))
             ->minDate(now())
-            ->hidden(fn ($get) => ! in_array($get('translation_status'), ['scheduled', 'published']))
-            ->dehydrateStateUsing(fn ($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
+            ->hidden(fn($get) => !in_array($get('translation_status'), ['scheduled', 'published']))
+            ->dehydrateStateUsing(fn($state, $get) => in_array($get('translation_status'), ['scheduled', 'published']) ? $state : null);
     }
 
     /**
@@ -349,23 +349,23 @@ class BaseDraftResource extends BaseResource
             ->state(function ($record): string {
                 $locale = request()->query('lang') ?? app()->getLocale();
                 $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
-                if (! $translation || ! $translation->published_at) {
+                if (!$translation || !$translation->published_at) {
                     return '';
                 }
 
                 $publishedBy = '';
                 if ($translation->published_by_id && $translation->published_by_type) {
                     $user = app($translation->published_by_type)->find($translation->published_by_id);
-                    $publishedBy = $user ? ' '.__('core::core.by').' '.$user->name : '';
+                    $publishedBy = $user ? ' ' . __('core::core.by') . ' ' . $user->name : '';
                 }
 
-                return $translation->published_at.' - '.$translation->published_at->diffForHumans().$publishedBy;
+                return $translation->published_at . ' - ' . $translation->published_at->diffForHumans() . $publishedBy;
             })
             ->hidden(function ($record): bool {
                 $locale = request()->query('lang') ?? app()->getLocale();
                 $translation = $record->translations()->withTrashed()->where('locale', $locale)->first();
 
-                return ! $translation || ! $translation->published_at;
+                return !$translation || !$translation->published_at;
             });
     }
 
@@ -376,9 +376,9 @@ class BaseDraftResource extends BaseResource
     {
         return TextEntry::make('to_unpublish_at')
             ->label(__('core::core.to_unpublish_at'))
-            ->state(fn ($record): string => $record->to_unpublish_at ?
-                $record->to_unpublish_at.' - '.$record->to_unpublish_at->diffForHumans() : '')
-            ->hidden(fn ($record) => ! $record->to_unpublish_at);
+            ->state(fn($record): string => $record->to_unpublish_at ?
+                $record->to_unpublish_at . ' - ' . $record->to_unpublish_at->diffForHumans() : '')
+            ->hidden(fn($record) => !$record->to_unpublish_at);
     }
 
     /**
@@ -405,9 +405,9 @@ class BaseDraftResource extends BaseResource
                     function (Builder $query, $value): Builder {
                         $defaultLocalization = Localization::where('is_default', true)->first();
                         $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
-                        $currentLang = request()->query('lang') ?? request()->get('lang') ?? $defaultLang;
+                        $currentLang = request()->query('lang') ?? request()->input('lang') ?? $defaultLang;
 
-                        if (! $value) {
+                        if (!$value) {
                             return $query;
                         }
 
@@ -488,7 +488,7 @@ class BaseDraftResource extends BaseResource
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
 
-                if (! $translation) {
+                if (!$translation) {
                     return TranslationStatus::NOT_TRANSLATED;
                 }
 
@@ -508,12 +508,12 @@ class BaseDraftResource extends BaseResource
         }
 
         // 2) Filament table filter value for locale, if present
-        if ($livewire && property_exists($livewire, 'tableFilters') && ! empty($livewire->tableFilters['locale']['value'] ?? null)) {
+        if ($livewire && property_exists($livewire, 'tableFilters') && !empty($livewire->tableFilters['locale']['value'] ?? null)) {
             return (string) $livewire->tableFilters['locale']['value'];
         }
 
         // 3) Request parameter 'lang' (URL switcher)
-        $requestLang = request()->query('lang') ?? request()->get('lang');
+        $requestLang = request()->query('lang') ?? request()->input('lang');
         if ($requestLang) {
             return (string) $requestLang;
         }
