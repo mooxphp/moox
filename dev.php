@@ -10,7 +10,7 @@ $options = getopt('', [
 ]);
 
 if (isset($options['help'])) {
-    echo <<<TXT
+    echo <<<'TXT'
 Moox Dev App Bootstrapper
 
 Usage:
