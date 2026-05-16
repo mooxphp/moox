@@ -4,17 +4,20 @@ namespace Moox\Core\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Moox\Jobs\Traits\JobProgress;
-use Moox\User\Models\User;
+use Moox\Jobs\Models\JobManager;
 
 class PublishScheduledContentJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $progressLastUpdated;
 
     /**
      * Create a new job instance.
@@ -43,6 +46,50 @@ class PublishScheduledContentJob implements ShouldQueue
         }
     }
 
+    public function setProgress(int $progress): void
+    {
+        if (! class_exists(JobManager::class)) {
+            return;
+        }
+
+        $progress = min(100, max(0, $progress));
+
+        if (! $monitor = $this->getJobMonitor()) {
+            return;
+        }
+
+        $monitor->update([
+            'progress' => $progress,
+        ]);
+
+        $this->progressLastUpdated = time();
+    }
+
+    protected function getJobMonitor(): ?Model
+    {
+        if (! class_exists(JobManager::class)) {
+            return null;
+        }
+
+        if (! property_exists($this, 'job')) {
+            return null;
+        }
+
+        if (! $this->job) {
+            return null;
+        }
+
+        if (! $jobId = JobManager::getJobId($this->job)) {
+            return null;
+        }
+
+        $model = JobManager::getModel();
+
+        return $model::whereJobId($jobId)
+            ->orderBy('started_at', 'desc')
+            ->first();
+    }
+
     private function publishScheduledContent(): void
     {
         $translationTables = $this->getTranslationTablesWithPublishFields();
@@ -51,7 +98,7 @@ class PublishScheduledContentJob implements ShouldQueue
 
         foreach ($translationTables as $table) {
             $processedTables++;
-            $progress = round(($processedTables / $totalTables) * 100);
+            $progress = $totalTables > 0 ? round(($processedTables / $totalTables) * 100) : 100;
             $this->setProgress((int) $progress);
 
             try {
@@ -72,7 +119,7 @@ class PublishScheduledContentJob implements ShouldQueue
 
         foreach ($translationTables as $table) {
             $processedTables++;
-            $progress = round(($processedTables / $totalTables) * 100);
+            $progress = $totalTables > 0 ? round(($processedTables / $totalTables) * 100) : 100;
             $this->setProgress((int) $progress);
 
             try {
@@ -171,7 +218,7 @@ class PublishScheduledContentJob implements ShouldQueue
                     ->update([
                         'published_at' => now(),
                         'published_by_id' => 15,
-                        'published_by_type' => User::class,
+                        'published_by_type' => $this->publisherMorphType(),
                         'to_publish_at' => null,
                         'translation_status' => 'published',
                         'unpublished_at' => null,
@@ -193,7 +240,7 @@ class PublishScheduledContentJob implements ShouldQueue
                     ->update([
                         'unpublished_at' => now(),
                         'unpublished_by_id' => 15,
-                        'unpublished_by_type' => User::class,
+                        'unpublished_by_type' => $this->publisherMorphType(),
                         'to_unpublish_at' => null,
                         'translation_status' => 'draft',
                     ]);
@@ -201,5 +248,17 @@ class PublishScheduledContentJob implements ShouldQueue
         } catch (\Exception $e) {
             Log::error("❌ Error unpublishing translation {$translation->id}: ".$e->getMessage());
         }
+    }
+
+    /** @return class-string */
+    private function publisherMorphType(): string
+    {
+        $model = config('auth.providers.users.model');
+
+        if (is_string($model) && class_exists($model)) {
+            return $model;
+        }
+
+        return User::class;
     }
 }
