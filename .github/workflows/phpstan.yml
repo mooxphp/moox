@@ -22,10 +22,9 @@ jobs:
 
       - name: Bootstrap Laravel App
         run: |
-          php ci.php
+          php dev.php --db=sqlite
           mkdir -p storage/app storage/framework storage/logs
           touch storage/.gitkeep
-          touch database/database.sqlite
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v7
