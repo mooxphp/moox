@@ -3,7 +3,7 @@
 namespace Moox\Draft\Models;
 
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
-use Moox\Draft\Enums\TranslationStatus;
+use Moox\Core\Enums\TranslationStatus;
 
 class DraftTranslation extends BaseDraftTranslationModel
 {

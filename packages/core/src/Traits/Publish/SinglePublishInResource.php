@@ -14,7 +14,6 @@ use Filament\Schemas\Components\Actions;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
 
 trait SinglePublishInResource
 {
@@ -108,7 +107,8 @@ trait SinglePublishInResource
                 }
 
                 $livewire->form->fill($data);
-                $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
+                $createItemFqcn = 'Moox\\Item\\Moox\\Entities\\Items\\Item\\Pages\\CreateItem';
+                $livewire instanceof $createItemFqcn ? $livewire->create() : $livewire->save();
             })
             ->hidden(fn ($livewire, $record): bool => $record && $record->trashed());
     }
