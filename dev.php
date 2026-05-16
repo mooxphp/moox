@@ -184,7 +184,7 @@ function buildComposerJson(string $root, string $laravelVersion): void
         'name' => 'moox/dev-app',
         'type' => 'project',
         'require' => [
-            'laravel/laravel' => '^'.$laravelVersion.'.0',
+            'laravel/framework' => '^'.$laravelVersion.'.0',
         ],
         'autoload' => [
             'psr-4' => [
@@ -303,7 +303,5 @@ if ($database === 'sqlite') {
         touch($sqlitePath);
     }
 }
-
-run('tar -czf app-artifact.tar.gz . --exclude=app-artifact.tar.gz');
 
 echo "✅ Moox is ready.\n";
