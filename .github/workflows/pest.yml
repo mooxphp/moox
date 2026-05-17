@@ -67,7 +67,7 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: Upload Clover
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: clover-report-${{ matrix.php }}-${{ matrix.laravel }}
           path: clover.xml
