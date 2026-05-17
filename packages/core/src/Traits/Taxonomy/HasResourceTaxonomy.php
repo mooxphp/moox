@@ -10,7 +10,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
+use Moox\Core\Forms\TaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Localization\Models\Localization;
 
@@ -43,7 +43,7 @@ trait HasResourceTaxonomy
         $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
         $taxonomyService->validateTaxonomy($taxonomy);
         $isHierarchical = $settings['hierarchical'] ?? false;
-        $createFormClass = $settings['createForm'] ?? CoreTaxonomyCreateForm::class;
+        $createFormClass = $settings['createForm'] ?? TaxonomyCreateForm::class;
 
         $commonConfig = [
             'label' => $settings['label'] ?? ucfirst($taxonomy),

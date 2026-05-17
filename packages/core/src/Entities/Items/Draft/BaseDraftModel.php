@@ -334,7 +334,7 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function setAttribute($key, $value)
     {
         if (in_array($key, $this->translatedAttributes)) {
-            $lang = request()->query('lang') ?? app()->getLocale();
+            $lang = request()->query('lang') ?? request()->input('lang') ?? app()->getLocale();
 
             $this->translateOrNew($lang)->$key = $value;
 
@@ -350,7 +350,7 @@ abstract class BaseDraftModel extends Model implements TranslatableContract
     public function getAttribute($key)
     {
         if (in_array($key, $this->translatedAttributes)) {
-            $lang = request()->query('lang') ?? app()->getLocale();
+            $lang = request()->query('lang') ?? request()->input('lang') ?? app()->getLocale();
 
             return $this->translate($lang, false) ? $this->translate($lang, false)->$key : null;
         }
