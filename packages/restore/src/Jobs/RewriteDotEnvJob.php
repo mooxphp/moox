@@ -49,7 +49,7 @@ class RewriteDotEnvJob implements ShouldQueue
         try {
             $restoreDestination = $this->restoreBackup->restoreDestination;
             $data = $this->restoreBackup->restoreDestination->env_data;
-            $envPath = str_replace(env('BACKUP_HOST'), $restoreDestination->host, base_path()).'/.env';
+            $envPath = str_replace((string) config('restore.backup_host'), $restoreDestination->host, base_path()).'/.env';
 
             $contents = File::get($envPath);
 

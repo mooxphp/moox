@@ -4,6 +4,7 @@ namespace Moox\Tag\Database\Factories;
 
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
@@ -61,6 +62,19 @@ class TagFactory extends Factory
         ];
     }
 
+    protected function uniqueTranslationSlug(string $title, string $locale): string
+    {
+        $base = Str::slug($title);
+        $slug = $base;
+        $n = 1;
+        while (TagTranslation::query()->where('locale', $locale)->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$n;
+            $n++;
+        }
+
+        return $slug;
+    }
+
     /**
      * Configure the model's state
      */
@@ -69,7 +83,7 @@ class TagFactory extends Factory
         return $this->afterCreating(function (Tag $tag) {
             // Always create English translation by default
             $title = $this->generateLocalizedTitle('en');
-            $slug = TagTranslation::generateUniqueSlug($title, 'en');
+            $slug = $this->uniqueTranslationSlug($title, 'en');
 
             $tag->translateOrNew('en')->fill([
                 'title' => $title,
@@ -122,7 +136,7 @@ class TagFactory extends Factory
 
         return $this->afterCreating(function (Tag $tag) use ($locale) {
             $title = $this->generateLocalizedTitle($locale);
-            $slug = TagTranslation::generateUniqueSlug($title, $locale);
+            $slug = $this->uniqueTranslationSlug($title, $locale);
 
             $tag->translateOrNew($locale)->fill([
                 'title' => $title,
@@ -184,7 +198,7 @@ class TagFactory extends Factory
                 } // Skip English as it's already created
 
                 $title = $this->generateLocalizedTitle($locale);
-                $slug = TagTranslation::generateUniqueSlug($title, $locale);
+                $slug = $this->uniqueTranslationSlug($title, $locale);
 
                 $tag->translateOrNew($locale)->fill([
                     'title' => $title,

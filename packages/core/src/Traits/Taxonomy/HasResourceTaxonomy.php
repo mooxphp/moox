@@ -26,7 +26,13 @@ trait HasResourceTaxonomy
 
     protected static function getResourceName(): string
     {
-        return static::getModel()::getResourceName();
+        $modelClass = static::getModel();
+
+        if (! method_exists($modelClass, 'getResourceName')) {
+            throw new \LogicException(sprintf('Model %s must implement static getResourceName().', $modelClass));
+        }
+
+        return $modelClass::getResourceName();
     }
 
     public static function getTaxonomyFields(): array
@@ -86,12 +92,12 @@ trait HasResourceTaxonomy
                         }
                     }
 
-                    $newTaxonomy = $model::create($nonTranslatableData);
+                    $newTaxonomy = $modelClass::create($nonTranslatableData);
                     $newTaxonomy->createTranslation($locale, $translationData);
 
                     $newTaxonomy->refresh();
                 } else {
-                    $newTaxonomy = $model::create($data);
+                    $newTaxonomy = $modelClass::create($data);
                 }
 
                 Notification::make()

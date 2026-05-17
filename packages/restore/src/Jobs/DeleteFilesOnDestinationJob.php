@@ -53,7 +53,7 @@ class DeleteFilesOnDestinationJob implements ShouldQueue
             RestoreStartedEvent::dispatch($this->restoreBackup->id);
 
             $sourcePath = storage_path('app').'/private'.'/'.$backup->path.$backup->source->host; // to use the source.some.url.test not the timestamp folder
-            $destinationPath = str_replace(env('BACKUP_HOST'), $destination->host, base_path());
+            $destinationPath = str_replace((string) config('restore.backup_host'), $destination->host, base_path());
 
             if (! is_dir($sourcePath)) {
                 RestoreFailedEvent::dispatch($this->restoreBackup->id, new Exception('Sourcepath is not a path '.$sourcePath));

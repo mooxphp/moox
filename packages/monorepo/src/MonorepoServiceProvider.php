@@ -103,7 +103,7 @@ class MonorepoServiceProvider extends MooxServiceProvider
     private function getGitHubToken(): ?string
     {
         // First try environment variable
-        if ($token = env('GITHUB_TOKEN')) {
+        if ($token = config('monorepo.github.token')) {
             return $token;
         }
 

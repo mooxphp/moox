@@ -767,7 +767,6 @@ class MediaResource extends Resource
                                 }
 
                                 $user = Auth::user();
-                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
                                 if ($user === null || ! $user->can('delete', $media)) {
                                     $protectedCount++;
 
@@ -847,7 +846,6 @@ class MediaResource extends Resource
                         foreach ($records as $media) {
                             try {
                                 $user = Auth::user();
-                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
                                 if ($user === null || ! $user->can('delete', $media)) {
                                     $protectedCount++;
 
@@ -994,7 +992,6 @@ class MediaResource extends Resource
                             ->hidden(function (Media $record) {
                                 $user = Auth::user();
 
-                                /** @phpstan-ignore method.notFound (Laravel User implements Authorizable::can()) */
                                 return $user === null || ! $user->can('delete', $record) || $record->getOriginal('write_protected');
                             })
                             ->before(function ($record) {

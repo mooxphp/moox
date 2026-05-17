@@ -42,7 +42,7 @@ class MoveFilesToRestoreDestinationJob implements ShouldQueue
             $destination = $this->restoreBackup->restoreDestination;
 
             $sourcePath = storage_path('app').'/private'.'/'.$backup->path.$backup->source->host; // to use the source.some.url.test not the timestamp folder
-            $destinationPath = str_replace(env('BACKUP_HOST'), $destination->host, base_path());
+            $destinationPath = str_replace((string) config('restore.backup_host'), $destination->host, base_path());
 
             if (config('restore.debug_mode')) {
                 Log::info('Source path: '.$sourcePath);

@@ -18,7 +18,7 @@ class GitHubTokenCommand extends Command
     public function handle(): int
     {
         // If env token exists, we don't need a user
-        if (! env('GITHUB_TOKEN')) {
+        if (! filled(config('github.token'))) {
             $user = User::first();
 
             if (! $user) {
@@ -49,7 +49,7 @@ class GitHubTokenCommand extends Command
     private function checkToken(?User $user): int
     {
         // Check environment variable first (like monorepo v2 does)
-        $token = env('GITHUB_TOKEN');
+        $token = config('github.token');
         $source = 'environment';
 
         // Fallback to user model
@@ -123,7 +123,7 @@ class GitHubTokenCommand extends Command
 
     private function clearToken(?User $user): int
     {
-        if (env('GITHUB_TOKEN')) {
+        if (filled(config('github.token'))) {
             $this->error('Cannot clear environment token. Remove GITHUB_TOKEN from .env file manually.');
 
             return 1;
@@ -148,7 +148,7 @@ class GitHubTokenCommand extends Command
     private function showTokenInfo(?User $user): int
     {
         // Check environment variable first
-        $token = env('GITHUB_TOKEN');
+        $token = config('github.token');
         $source = 'environment';
 
         // Fallback to user model
@@ -186,7 +186,7 @@ class GitHubTokenCommand extends Command
         $this->line('');
 
         // Check environment variable first
-        $token = env('GITHUB_TOKEN');
+        $token = config('github.token');
         $source = 'environment';
 
         // Fallback to user model

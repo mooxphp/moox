@@ -12,6 +12,7 @@ return [
         'private_repo' => env('MONOREPO_PRIVATE_REPO', 'pro'),
         'default_branch' => env('MONOREPO_DEFAULT_BRANCH', 'main'),
         'api_version' => '2022-11-28',
+        'token' => env('GITHUB_TOKEN'),
     ],
 
     /*

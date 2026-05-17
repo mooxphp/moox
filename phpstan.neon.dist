@@ -15,4 +15,13 @@ parameters:
         - 'packages/*/vendor/*'
         - 'packages/*/wordpress/*'
         - 'packages/*/tests/*'
+        - 'packages/core/src/Traits/Publish/*.php'
+        - 'packages/core/src/Traits/Simple/*.php'
+        - 'packages/core/src/Traits/Base/BaseInCreatePage.php'
+        - 'packages/core/src/Traits/Base/BaseInEditPage.php'
+        - 'packages/core/src/Traits/Base/BaseInViewPage.php'
+        - 'packages/core/src/Traits/HasScheduledPublish.php'
+        - 'packages/core/src/Traits/SoftDelete/SingleSoftDeleteInCreatePage.php'
+        - 'packages/core/src/Traits/SoftDelete/SingleSoftDeleteInEditPage.php'
+        - 'packages/core/src/Traits/SoftDelete/SingleSoftDeleteInViewPage.php'
     tmpDir: build/phpstan

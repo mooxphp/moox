@@ -66,7 +66,7 @@ trait BaseInResource
         $model = static::getModel();
 
         if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-            $query = $model::withTrashed();
+            $query = $model::query()->withoutGlobalScope(SoftDeletingScope::class);
         } else {
             $query = method_exists(parent::class, 'getTableQuery')
                 ? parent::getTableQuery()

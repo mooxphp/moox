@@ -7,6 +7,7 @@ use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use Filament\Auth\MultiFactor\Contracts\HasBeforeChallengeHook;
 use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;

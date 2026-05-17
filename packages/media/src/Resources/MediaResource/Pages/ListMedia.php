@@ -292,10 +292,8 @@ class ListMedia extends BaseListDrafts
                                 $translation->setAttribute('title', $title);
                                 $translation->setAttribute('alt', $title);
                                 $translation->save();
-                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with user()) */
                                 $user = auth()->user();
                                 $media->uploader_type = $user ? get_class($user) : null;
-                                /** @phpstan-ignore method.notFound (Laravel auth() returns Guard with id()) */
                                 $media->uploader_id = auth()->id();
                                 $media->original_model_type = Media::class;
                                 $media->original_model_id = $media->getKey();
