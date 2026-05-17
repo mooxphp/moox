@@ -1,0 +1,1 @@
+https://github.com/backstagephp/laravel-seo-scanner

@@ -229,7 +229,7 @@ abstract class BaseResource extends Resource
     {
         return RestoreBulkAction::make()
             ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
-            ->action(function (array $records, $livewire): void {
+            ->action(function (iterable $records, $livewire): void {
                 /** @var Model $record */
                 foreach ($records as $record) {
                     if (method_exists($record, 'translations')) {

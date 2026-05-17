@@ -15,11 +15,20 @@ abstract class BaseListDrafts extends ListRecords
 {
     use CanResolveResourceClass;
 
-    public string $lang;
+    public string $lang = '';
 
     protected $queryString = [
         'lang' => ['except' => ''],
     ];
+
+    /**
+     * Livewire rehydrates $lang from the snapshot on search/filter requests, but the HTTP
+     * request has no ?lang= — models read locale from request()->input('lang').
+     */
+    public function hydrate(): void
+    {
+        $this->syncLangToRequest();
+    }
 
     public function mount(): void
     {
@@ -27,7 +36,19 @@ abstract class BaseListDrafts extends ListRecords
         $defaultLocalization = Localization::where('is_default', true)->first();
         $defaultLang = $defaultLocalization->locale_variant ?? config('app.locale');
 
-        $this->lang = request()->get('lang', $defaultLang);
+        $this->lang = request()->input('lang', $defaultLang);
+        $this->syncLangToRequest();
+    }
+
+    /**
+     * Table columns read translated fields via request()->input('lang') on the model.
+     * Livewire keeps locale in $this->lang; merge it so the first render matches the language switcher.
+     */
+    protected function syncLangToRequest(): void
+    {
+        if ($this->lang !== '') {
+            request()->merge(['lang' => $this->lang]);
+        }
     }
 
     public function getTitle(): string
@@ -80,6 +101,7 @@ abstract class BaseListDrafts extends ListRecords
     public function changeLanguage(string $lang): void
     {
         $this->lang = $lang;
+        $this->syncLangToRequest();
 
         $url = $this->getResource()::getUrl('index', ['lang' => $lang, 'tab' => $this->activeTab]);
 
