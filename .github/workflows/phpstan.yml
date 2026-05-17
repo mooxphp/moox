@@ -27,7 +27,7 @@ jobs:
           touch storage/.gitkeep
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: app-artifact
           path: app-artifact.tar.gz
