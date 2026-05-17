@@ -107,7 +107,7 @@ jobs:
           fi
 
       - if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: "symplify/monorepo-split-github-action@v2.4.4"
+        uses: "symplify/monorepo-split-github-action@v2.4.5"
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
