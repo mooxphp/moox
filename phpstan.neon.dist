@@ -4,6 +4,11 @@ includes:
 
 parameters:
     level: 5
+    ignoreErrors:
+        -
+            message: "#^Called 'env' outside of the config directory#"
+            paths:
+                - packages/*/config/*
     paths:
         - packages
     excludePaths:
