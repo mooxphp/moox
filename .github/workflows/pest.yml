@@ -7,40 +7,16 @@ on:
     branches: [main, "feature/**"]
 
 jobs:
-  build:
-    name: Build Laravel App
-    runs-on: ubuntu-latest
-    outputs:
-      artifact-name: app-artifact
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
-
-      - name: Bootstrap Laravel App
-        run: |
-          php ci.php
-          mkdir -p storage/app storage/framework storage/logs
-          touch storage/.gitkeep
-          touch database/database.sqlite
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: app-artifact
-          path: app-artifact.tar.gz
-
   pest:
-    name: Pest (PHP ${{ matrix.php }} on ${{ matrix.os }})
-    needs: build
-    runs-on: ${{ matrix.os }}
+    name: Pest (PHP ${{ matrix.php }}, Laravel ${{ matrix.laravel }})
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [8.4, 8.5]
-        os: [ubuntu-latest]
+        include:
+          - php: '8.4'
+            laravel: '12'
+          - php: '8.5'
+            laravel: '13'
       fail-fast: false
     env:
       DB_DATABASE: testing
@@ -61,24 +37,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Download App Artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: app-artifact
-          path: .
-
-      - name: Extract Artifact
-        run: tar -xzf app-artifact.tar.gz
-
-      - name: Composer dump-autoload
-        run: composer dump-autoload -o -vvv
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
           tools: composer
+
+      - name: Bootstrap Laravel App
+        run: |
+          php dev.php --laravel=${{ matrix.laravel }} --db=mysql
+          mkdir -p storage/app storage/framework storage/logs
+          touch storage/.gitkeep
+
+      - name: Composer dump-autoload
+        run: composer dump-autoload -o -vvv
 
       - name: Fix Permissions (Linux only)
         if: runner.os == 'Linux'
@@ -96,7 +69,7 @@ jobs:
       - name: Upload Clover
         uses: actions/upload-artifact@v7
         with:
-          name: clover-report-${{ matrix.php }}
+          name: clover-report-${{ matrix.php }}-${{ matrix.laravel }}
           path: clover.xml
 
   codacy:
@@ -107,7 +80,7 @@ jobs:
       - name: Download Coverage Report
         uses: actions/download-artifact@v8
         with:
-          name: clover-report-8.4
+          name: clover-report-8.4-12
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
@@ -123,7 +96,7 @@ jobs:
       - name: Download Coverage Report
         uses: actions/download-artifact@v8
         with:
-          name: clover-report-8.4
+          name: clover-report-8.4-12
 
       - name: QLTY Coverage
         uses: qltysh/qlty-action/coverage@v2

@@ -35,19 +35,16 @@ abstract class BaseEditDraft extends EditRecord
         parent::mount($record);
 
         if ($this->record && $this->record instanceof Model && method_exists($this->record, 'translations')) {
-            $isAdminContext = request()->is('admin/*') || request()->is('filament/*');
+            // If ?lang= is not a Filament-offered locale (is_active_admin), switch to default or list — avoids editing in locales hidden from the admin UI.
+            $localization = Localization::where('locale_variant', $this->lang)
+                ->where('is_active_admin', true)->first();
 
-            if ($isAdminContext) {
-                $localization = Localization::where('locale_variant', $this->lang)
-                    ->where('is_active_admin', true)->first();
-
-                if (! $localization) {
-                    $defaultLocalization = Localization::where('is_default', true)->first();
-                    if ($defaultLocalization) {
-                        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->locale_variant]));
-                    } else {
-                        $this->redirect($this->getResource()::getUrl('index'));
-                    }
+            if (! $localization) {
+                $defaultLocalization = Localization::where('is_default', true)->first();
+                if ($defaultLocalization) {
+                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record, 'lang' => $defaultLocalization->locale_variant]));
+                } else {
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }
             }
 
