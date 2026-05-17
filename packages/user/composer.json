@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "spatie/laravel-permission": "^7.0"
     },
     "require-dev": {
         "moox/devtools": "dev-main"

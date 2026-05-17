@@ -32,4 +32,4 @@ jobs:
         run: chmod +x vendor/bin/phpstan || true
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse --memory-limit=512M
