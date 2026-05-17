@@ -13,6 +13,6 @@ parameters:
         - packages
     excludePaths:
         - 'packages/*/vendor/*'
-        - 'packages/press/wordpress/*'
+        - 'packages/*/wordpress/*'
         - 'packages/*/tests/*'
     tmpDir: build/phpstan
