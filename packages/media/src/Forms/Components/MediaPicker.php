@@ -62,6 +62,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 $metadata = $this->getMediaMetadataFromTranslations($media, $record);
 
                 $attachments[$index] = [
+                    'id' => $media->id,
                     'file_name' => $media->file_name,
                     'title' => $metadata['title'],
                     'description' => $metadata['description'],
@@ -197,6 +198,13 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         $this->uploadConfig['visibility'] = $visibility instanceof Closure ? $visibility() : $visibility;
 
         return parent::visibility($visibility);
+    }
+
+    public function filterByCollectionId(Closure|int|string|null $collectionId): static
+    {
+        $this->uploadConfig['filter_collection_id'] = $collectionId instanceof Closure ? $collectionId() : $collectionId;
+
+        return $this;
     }
 
     public function getUploadConfig(): array

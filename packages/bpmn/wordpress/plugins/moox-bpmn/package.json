@@ -1,0 +1,37 @@
+{
+  "name": "moox-bpmn-viewer",
+  "version": "1.0.0",
+  "description": "Upload, view, and edit BPMN 2.0 models in WordPress",
+  "author": "Moox Developer",
+  "license": "GPL-2.0-or-later",
+  "main": "src/bpmn-block.js",
+  "scripts": {
+    "clean": "rimraf build",
+    "build": "npm run clean && wp-scripts build src/bpmn-block.js --output-path=build --output-filename=bpmn-block.js && cp block.json build/block.json",
+    "start": "wp-scripts start src/bpmn-block.js --output-path=build --output-filename=bpmn-block.js"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^31.0.0",
+    "rimraf": "^5.0.0"
+  },
+  "dependencies": {
+    "@bpmn-io/properties-panel": "^3.34.0",
+    "bpmn-js": "^14.0.2",
+    "bpmn-js-properties-panel": "^5.43.0"
+  },
+  "keywords": [
+    "wordpress",
+    "block",
+    "gutenberg",
+    "bpmn",
+    "bpmn-js",
+    "toolkit",
+    "web modeler",
+    "modeler",
+    "modeling",
+    "process modeling"
+  ],
+  "browserslist": [
+    "extends @wordpress/browserslist-config"
+  ]
+}

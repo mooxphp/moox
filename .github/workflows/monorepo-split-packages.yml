@@ -20,6 +20,7 @@ jobs:
           - audit
           - backup-server
           - base-theme
+          - bpmn
           - build
           - cart
           - category

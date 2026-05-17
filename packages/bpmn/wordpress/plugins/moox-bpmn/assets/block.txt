@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "moox/bpmn-viewer",
+  "title": "BPMN Viewer",
+  "category": "media",
+  "icon": "chart-line",
+  "description": "Upload, view and edit BPMN 2.0 models made with BPMN.io or Camunda.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "moox-bpmn-block",
+  "editorStyle": "moox-bpmn-block",
+  "style": "moox-bpmn-viewer",
+  "attributes": {
+    "mediaId": {
+      "type": "number",
+      "default": 0
+    },
+    "mode": {
+      "type": "string",
+      "default": "view"
+    },
+    "height": {
+      "type": "string",
+      "default": "500px"
+    }
+  },
+  "renderCallback": "Moox_BPMN_Plugin::render_bpmn_block"
+}

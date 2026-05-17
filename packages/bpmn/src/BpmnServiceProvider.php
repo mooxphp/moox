@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Bpmn;
 
 use Illuminate\Support\Facades\Blade;
-use Moox\Bpmn\Forms\Components\BpmnViewer;
+use Moox\Bpmn\View\Components\BpmnViewer;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -23,13 +23,21 @@ class BpmnServiceProvider extends MooxServiceProvider
             ->hasAssets();
 
         $mooxConfig = $this->getMooxConfig();
+        $mooxPackage = $this->getMooxPackage();
 
-        $this->getMooxPackage()
-            ->title($mooxConfig['title'])
-            ->stability($mooxConfig['stability'])
-            ->type($mooxConfig['type'])
-            ->category($mooxConfig['category'])
-            ->template($mooxConfig['template']);
+        $configurable = [
+            'title',
+            'stability',
+            'type',
+            'category',
+            'template',
+        ];
+
+        foreach ($configurable as $method) {
+            if (isset($mooxConfig[$method]) && method_exists($mooxPackage, $method)) {
+                $mooxPackage->{$method}($mooxConfig[$method]);
+            }
+        }
     }
 
     public function boot(): void
@@ -38,39 +46,18 @@ class BpmnServiceProvider extends MooxServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'bpmn');
 
-        Blade::component('bpmn-viewer', View\Components\BpmnViewer::class);
+        Blade::component('bpmn-viewer', BpmnViewer::class);
 
-        $this->app->singleton('bpmn-viewer', function () {
-            return new BpmnViewer;
-        });
+        $this->app->singleton('bpmn-viewer', fn () => new BpmnViewer);
     }
 
     private function getMooxConfig(): array
     {
-        return json_decode(file_get_contents('composer.json'), true)['extra']['moox'];
+        $composer = json_decode(
+            file_get_contents(__DIR__.'/../composer.json'),
+            true
+        );
+
+        return $composer['extra']['moox'] ?? [];
     }
-
-    /*
-    After testing , move everything from here to the base MooxServiceProvider:
-
-    public function configureFromComposer(): void
-    {
-        $mooxConfig = $this->getMooxConfig();
-        $mooxPackage = $this->getMooxPackage();
-
-        $configurableMethods = [
-            'title',
-            'stability',
-            'type',
-            'category',
-            'template',
-        ];
-
-        foreach ($configurableMethods as $method) {
-            if (isset($mooxConfig[$method])) {
-                $mooxPackage->$method($mooxConfig[$method]);
-            }
-        }
-    }
-    */
 }

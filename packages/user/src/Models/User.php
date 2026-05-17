@@ -11,19 +11,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Image\Enums\Fit;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property string|null $avatar_url
  * @property string|null $first_name
  * @property string|null $last_name
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, HasRoles, InteractsWithMedia, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',

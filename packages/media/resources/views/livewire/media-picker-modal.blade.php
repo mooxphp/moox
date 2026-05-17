@@ -46,7 +46,7 @@
                     </x-filament::input.wrapper>
 
                     <x-filament::input.wrapper>
-                        <x-filament::input.select wire:model.live="collectionFilter">
+                        <x-filament::input.select wire:model.live="collectionFilter" :disabled="$collectionFilterDisabled">
                             <option value="">{{ __('media::fields.all_collections') }}</option>
                             @foreach($collectionOptions as $id => $name)
                                 <option value="{{ $id }}">{{ $name === 'default' ? __('media::fields.default_collection') : $name }}</option>
