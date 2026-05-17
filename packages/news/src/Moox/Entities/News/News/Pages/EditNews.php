@@ -2,13 +2,17 @@
 
 namespace Moox\News\Moox\Entities\News\News\Pages;
 
+use Filament\Resources\Concerns\HasTabs;
 use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\News\Models\News;
 
 class EditNews extends BaseEditDraft
 {
-    use HasListPageTabs;
+    use HasListPageTabs {
+        HasListPageTabs::updatedActiveTab insteadof HasTabs;
+    }
+    use HasTabs;
 
     public function getTabs(): array
     {

@@ -2,9 +2,11 @@
 
 namespace Moox\Core\Traits\Tabs;
 
+use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\HasQueriesInConfig;
 
 trait HasListPageTabs
@@ -19,15 +21,21 @@ trait HasListPageTabs
     public function updatedActiveTab(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
-        $this->tableFilters = null;
-        $this->tableSortColumn = null;
-        $this->tableSortDirection = null;
-        $this->resetTable();
+
+        if ($this instanceof ListRecords) {
+            $this->tableFilters = null;
+            $this->tableSort = null;
+            $this->resetTable();
+            $this->cachedDefaultTableColumnState = null;
+            $this->applyTableColumnManager();
+        } elseif (method_exists($this, 'resetPage')) {
+            $this->resetPage();
+        }
     }
 
     protected function getTableQuery(): Builder
     {
-        if (method_exists($this, 'syncLangToRequest')) {
+        if ($this instanceof BaseListDrafts) {
             $this->syncLangToRequest();
         }
 
