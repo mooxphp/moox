@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Draft\Enums;
+namespace Moox\Core\Enums;
 
 enum TranslationStatus: string
 {

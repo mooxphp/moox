@@ -95,7 +95,9 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
+        if (class_exists(DefaultPolicy::class)) {
+            Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
+        }
     }
 
     public function hasCommand(string $commandClassName): Package
