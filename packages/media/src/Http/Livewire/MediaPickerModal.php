@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Moox\Bpmn\Models\Bpmn;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
@@ -557,7 +558,7 @@ class MediaPickerModal extends Component implements HasForms
         $media = Media::query()
             ->when(
                 request()->is('admin/bpmns*') ||
-                $this->modelClass === \Moox\Bpmn\Models\Bpmn::class,
+                $this->modelClass === Bpmn::class,
                 fn ($q) => $q->where(fn ($qq) => $qq->where('mime_type', 'application/bpmn+xml')
                     ->orWhere('file_name', 'like', '%.bpmn')
                 )
