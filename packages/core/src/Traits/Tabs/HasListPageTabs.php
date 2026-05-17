@@ -27,6 +27,10 @@ trait HasListPageTabs
 
     protected function getTableQuery(): Builder
     {
+        if (method_exists($this, 'syncLangToRequest')) {
+            $this->syncLangToRequest();
+        }
+
         return static::getResource()::getTableQuery($this->activeTab);
     }
 

@@ -152,23 +152,7 @@ class MooxInstallCommand extends FlowCommand
     {
         $result = [];
 
-        $composerPath = base_path('composer.json');
-        if (! File::exists($composerPath)) {
-            error('❌ Composer.json not found.');
-
-            return $result;
-        }
-
-        $composer = json_decode(File::get($composerPath), true);
-        $allPackages = array_merge(
-            $composer['require'] ?? [],
-            $composer['require-dev'] ?? []
-        );
-
-        $mooxPackages = array_filter(
-            array_keys($allPackages),
-            fn ($pkg) => str_starts_with($pkg, 'moox/')
-        );
+        $mooxPackages = $this->getAllMooxPackageNames();
 
         if (empty($mooxPackages)) {
             error('❌ No Moox packages found.');
@@ -197,6 +181,50 @@ class MooxInstallCommand extends FlowCommand
         }
 
         return $result;
+    }
+
+    /**
+     * Collect all Moox package names from the resolved dependency tree.
+     * Uses composer.lock (packages + packages-dev) so all direct and transitive
+     * Moox dependencies are found. Falls back to composer.json require/require-dev
+     * when no lock file exists.
+     */
+    protected function getAllMooxPackageNames(): array
+    {
+        $names = [];
+
+        $lockPath = base_path('composer.lock');
+        if (File::exists($lockPath)) {
+            $lock = json_decode(File::get($lockPath), true);
+            $packages = array_merge(
+                $lock['packages'] ?? [],
+                $lock['packages-dev'] ?? []
+            );
+            foreach ($packages as $pkg) {
+                $name = $pkg['name'] ?? null;
+                if ($name && str_starts_with($name, 'moox/')) {
+                    $names[$name] = true;
+                }
+            }
+        }
+
+        if (empty($names)) {
+            $composerPath = base_path('composer.json');
+            if (File::exists($composerPath)) {
+                $composer = json_decode(File::get($composerPath), true);
+                $allPackages = array_merge(
+                    $composer['require'] ?? [],
+                    $composer['require-dev'] ?? []
+                );
+                foreach (array_keys($allPackages) as $pkg) {
+                    if (str_starts_with($pkg, 'moox/')) {
+                        $names[$pkg] = true;
+                    }
+                }
+            }
+        }
+
+        return array_keys($names);
     }
 
     public function stepShowOutput(): int
