@@ -10,9 +10,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
+use Moox\Core\Enums\TranslationStatus;
 use Moox\Core\Traits\HasStatusColors;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Draft\Enums\TranslationStatus;
 use Moox\Localization\Models\Localization;
 
 class BaseDraftResource extends BaseResource
@@ -274,7 +274,7 @@ class BaseDraftResource extends BaseResource
             return TranslationStatus::DRAFT->value;
         }
 
-        $currentLang = request()->get('lang', app()->getLocale());
+        $currentLang = request()->input('lang', app()->getLocale());
         $translation = $record->translations()->where('locale', $currentLang)->first();
 
         if (! $translation) {
@@ -405,7 +405,7 @@ class BaseDraftResource extends BaseResource
                     function (Builder $query, $value): Builder {
                         $defaultLocalization = Localization::where('is_default', true)->first();
                         $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
-                        $currentLang = request()->query('lang') ?? request()->get('lang') ?? $defaultLang;
+                        $currentLang = request()->query('lang') ?? request()->input('lang') ?? $defaultLang;
 
                         if (! $value) {
                             return $query;
@@ -513,7 +513,7 @@ class BaseDraftResource extends BaseResource
         }
 
         // 3) Request parameter 'lang' (URL switcher)
-        $requestLang = request()->query('lang') ?? request()->get('lang');
+        $requestLang = request()->query('lang') ?? request()->input('lang');
         if ($requestLang) {
             return (string) $requestLang;
         }
