@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@bpmn-io/properties-panel": "^3.34.0",
-    "bpmn-js": "^14.0.2",
+    "bpmn-js": "^18.0.0",
     "bpmn-js-properties-panel": "^5.43.0"
   },
   "keywords": [
