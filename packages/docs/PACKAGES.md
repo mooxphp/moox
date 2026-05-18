@@ -69,6 +69,7 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/devtools          | moox          | Stable       | No    | ...             |
 | moox/docs              | moox          | Idea         | No    | ...             |
 | moox/draft             | moox          | Stable       | Yes   | ...             |
+| moox/ebilling-gateway  | moox          | Idea         | No    | ...             |
 | moox/expiry            | moox          | Stable       | Todo  | ...             |
 | moox/featherlight      | moox          | Stable       | No    | ...             |
 | moox/file-icons        | moox          | Stable       | No    | ...             |
@@ -82,12 +83,15 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/frontend          | moox          | Stable       | No    | ...             |
 | moox/github            | moox          | Stable       | No    | ...             |
 | moox/impersonate       | moox          | Idea         | Todo  | ...             |
+| moox/invoice           | moox          | Idea         | Todo   | ...             |
 | moox/item              | moox          | Stable       | Yes   | ...             |
 | moox/jobs              | moox          | Stable       | No    | ...             |
 | moox/json              | moox          | Idea         | Todo  | ...             |
+| moox/kosit-validator   | moox          | Idea         | No    | ...             |
 | moox/laravel-icons     | moox          | Stable       | No    | ...             |
 | moox/localization      | moox          | Stable       | No    | ...             |
 | moox/login-link        | moox          | Stable       | No    | ...             |
+| moox/mail-inbox        | moox          | Idea         | Todo  | ...             |
 | moox/markdown          | moox          | Idea         | Todo  | ...             |
 | moox/media             | moox          | Stable       | Yes   | ...             |
 | moox/module            | moox          | Idea         | Todo  | ...             |
@@ -98,6 +102,7 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/packagist         | moox          | Idea         | Todo  | ...             |
 | moox/page              | moox          | Stable       | Yes   | ...             |
 | moox/passkey           | moox          | Stable       | Yes   | ...             |
+| moox/pdf-parser        | moox          | Idea         | No    | ...             |
 | moox/permission        | moox          | Idea         | Todo  | ...             |
 | moox/post              | moox          | Idea         | Yes   | ...             |
 | moox/press             | moox          | Beta         | Yes   | ...             |
@@ -126,5 +131,6 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/vscode            | moox          | Stale        | No    | ...             |
 | moox/wishlist          | moox          | Idea         | Yes   | ...             |
 | moox/wp-install        | moox          | Stale        | No    | ...             |
+| moox/zugferd           | moox          | Idea         | No    | ...             |
 
 

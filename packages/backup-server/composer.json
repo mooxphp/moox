@@ -21,7 +21,7 @@
         "spatie/laravel-backup-server": "^4.1|^4.2"
     },
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "^5.0"
     },
     "autoload": {
         "psr-4": {
