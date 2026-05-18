@@ -1,0 +1,89 @@
+{
+    "name": "moox/product",
+    "description": "Product is a Moox draft entity with taxonomy and attribute value assignments.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "Product"
+    ],
+    "homepage": "https://moox.org/docs/product",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/attribute": "dev-main",
+        "moox/category": "dev-main",
+        "moox/core": "dev-main",
+        "moox/draft": "dev-main",
+        "moox/localization": "dev-main",
+        "moox/slug": "dev-main",
+        "moox/tag": "dev-main",
+        "moox/user": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Product\\": "src",
+            "Moox\\Product\\Database\\Factories\\": "database/factories",
+            "Moox\\Product\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Product\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Product\\ProductServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Product",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "auto_publish": "moox-product-config",
+                "auto_entities": {
+                    "Product": true
+                },
+                "auto_class": {
+                    "Product": "Moox\\Product\\Product"
+                },
+                "auto_run": {
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-product-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-product-config"
+            }
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
