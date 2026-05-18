@@ -65,3 +65,4 @@ Thumbs.db
 /agents
 /ai
 /laravel-temp
+/.env.example
