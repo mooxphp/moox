@@ -11,7 +11,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
@@ -26,18 +25,17 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\HtmlString;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Localization\Models\Localization;
+use Moox\Core\Entities\BaseResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-class MediaResource extends Resource
+class MediaResource extends BaseResource
 {
-    use BaseInResource;
+    use HasScopedChildResource;
 
     protected static ?string $model = Media::class;
 
@@ -55,7 +53,7 @@ class MediaResource extends Resource
         return config('media.plural_model_label');
     }
 
-    public static function getNavigationGroup(): ?string
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
         return config('media.navigation_group');
     }
@@ -93,11 +91,15 @@ class MediaResource extends Resource
                             $fileHash = hash_file('sha256', $state->getRealPath());
                             $fileName = $state->getClientOriginalName();
 
-                            $existingMedia = Media::query()->whereHas('translations', function ($query) use ($fileName) {
-                                $query->where('name', $fileName);
-                            })->orWhere(function ($query) use ($fileHash) {
-                                $query->where('custom_properties->file_hash', $fileHash);
-                            })->first();
+                            $existingMedia = static::scopeQuery(Media::query())
+                                ->where(function (Builder $query) use ($fileName, $fileHash) {
+                                    $query->whereHas('translations', function ($query) use ($fileName) {
+                                        $query->where('name', $fileName);
+                                    })->orWhere(function ($query) use ($fileHash) {
+                                        $query->where('custom_properties->file_hash', $fileHash);
+                                    });
+                                })
+                                ->first();
 
                             if ($existingMedia) {
                                 Notification::make()
@@ -178,6 +180,7 @@ class MediaResource extends Resource
                                 ]);
                             }
 
+                            static::applyScopedDefaults($media);
                             $media->save();
 
                             if (! $isEdit) {
@@ -388,6 +391,9 @@ class MediaResource extends Resource
                                         $record->save();
                                     }
                                 }),
+
+                            static::getScopeSelectField()
+                                ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                         ]),
                 ])
                 ->columnSpanFull(),
@@ -680,6 +686,8 @@ class MediaResource extends Resource
                 ->label(__('media::fields.collection'))
                 ->searchable();
 
+            $columns[] = static::getScopeTableColumn();
+
             $columns[] = TextColumn::make('mime_type')
                 ->label(__('media::fields.mime_type'))
                 ->searchable()
@@ -761,7 +769,7 @@ class MediaResource extends Resource
 
                         foreach ($livewire->selected as $id) {
                             try {
-                                $media = Media::query()->find($id);
+                                $media = static::scopeQuery(Media::query())->find($id);
                                 if (! $media) {
                                     continue;
                                 }
@@ -826,6 +834,8 @@ class MediaResource extends Resource
                     }),
             ])
             ->bulkActions([
+                static::getAssignScopeBulkAction()
+                    ->visible(fn ($livewire) => ! (property_exists($livewire, 'isGridView') ? $livewire->isGridView : false)),
                 BulkAction::make('delete')
                     ->label(__('media::fields.delete_selected'))
                     ->icon('heroicon-m-trash')
@@ -1087,7 +1097,7 @@ class MediaResource extends Resource
                 SelectFilter::make('uploader')
                     ->label(__('media::fields.uploaded_by'))
                     ->options(function () {
-                        $uploaderTypes = Media::query()
+                        $uploaderTypes = static::scopeQuery(Media::query())
                             ->distinct()
                             ->whereNotNull('uploader_type')
                             ->pluck('uploader_type')
@@ -1097,7 +1107,7 @@ class MediaResource extends Resource
 
                         foreach ($uploaderTypes as $type) {
                             /** @var Builder<Media> $uploaderQuery */
-                            $uploaderQuery = Media::query()
+                            $uploaderQuery = static::scopeQuery(Media::query())
                                 ->where('uploader_type', $type)
                                 ->whereNotNull('uploader_id');
                             $mediaItems = $uploaderQuery->with('uploader')->get();
@@ -1184,7 +1194,7 @@ class MediaResource extends Resource
                 SelectFilter::make('collection_name')
                     ->label(__('media::fields.collection'))
                     ->options(function () {
-                        return Media::query()
+                        return static::scopeQuery(Media::query())
                             ->distinct()
                             ->pluck('collection_name', 'collection_name')
                             ->filter()
@@ -1222,6 +1232,6 @@ class MediaResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::getModel()::query()->count();
+        return static::resolveScopedNavigationBadge();
     }
 }

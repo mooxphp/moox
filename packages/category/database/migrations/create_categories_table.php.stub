@@ -26,6 +26,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
             $table->json('custom_properties')->nullable();
+            $table->string('scope')->nullable()->index();
             $table->softDeletes();
 
         });

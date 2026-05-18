@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Override;
 
 class UserDevice extends Model
 {
+    use HasScopedModel;
+
     /**
      * The table associated with the model.
      *
@@ -37,6 +40,7 @@ class UserDevice extends Model
         'whitelisted',
         'active',
         'ip_address',
+        'scope',
     ];
 
     /**

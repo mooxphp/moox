@@ -1,5 +1,7 @@
 <?php
 
+use Moox\Media\Models\Media;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -121,6 +123,18 @@ return [
             'navigation_group' => 'trans//core::core.cms',
             'model_label' => 'trans//media::media.collection',
             'plural_model_label' => 'trans//media::media.collections',
+        ],
+    ],
+
+    'resources' => [
+        'media' => [
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'media' => Media::class,
+                    ],
+                ],
+            ],
         ],
     ],
 ];

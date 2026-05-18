@@ -6,11 +6,12 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -20,7 +21,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, HasScopedModel, InteractsWithMedia, Notifiable;
 
     protected $fillable = [
         'name',
@@ -35,7 +36,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'password',
         'profile_photo_path',
         'avatar_url',
-
+        'scope',
     ];
 
     protected $searchableFields = ['*'];

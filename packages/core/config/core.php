@@ -93,6 +93,19 @@ return [
             'package' => 'Moox Core',
             'models' => [],
         ],
+        'draft' => [
+            'package' => 'Moox Draft',
+            'models' => [
+                'Draft' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'expiry' => [
             'package' => 'Moox Expiry',
             'models' => [
@@ -156,10 +169,49 @@ return [
                 ],
             ],
         ],
+        'media' => [
+            'package' => 'Moox Media',
+            'models' => [
+                'Media' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'news' => [
+            'package' => 'Moox News',
+            'models' => [
+                'News' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'notifications' => [
             'package' => 'Moox Notifications',
             'models' => [
                 'Notification' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'record' => [
+            'package' => 'Moox Record',
+            'models' => [
+                'Record' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -301,6 +353,19 @@ return [
             'package' => 'Moox Security',
             'models' => [
                 'ResetPassword' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'scopes' => [
+            'package' => 'Moox Scopes',
+            'models' => [
+                'Scope' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -482,4 +547,5 @@ return [
         'prompt_when_all_published' => true,
         'prompt_when_any_published' => false,
     ],
+
 ];

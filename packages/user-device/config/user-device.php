@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Moox\UserDevice\Models\UserDevice;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,14 @@ return [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
+                ],
+            ],
+
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'user-device' => UserDevice::class,
+                    ],
                 ],
             ],
         ],

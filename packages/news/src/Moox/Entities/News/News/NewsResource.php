@@ -18,6 +18,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
@@ -29,6 +30,7 @@ class NewsResource extends BaseDraftResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use HasScopedChildResource;
 
     protected static ?string $model = News::class;
 
@@ -44,17 +46,12 @@ class NewsResource extends BaseDraftResource
         return config('news.resources.news.plural');
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return config('news.resources.news.plural');
-    }
-
     public static function getBreadcrumb(): string
     {
         return config('news.resources.news.single');
     }
 
-    public static function getNavigationGroup(): ?string
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
         return config('news.navigation_group');
     }
@@ -121,6 +118,7 @@ class NewsResource extends BaseDraftResource
                             Section::make('')
                                 ->schema([
                                     static::getTypeSelect(),
+                                    static::getScopeSelectField(),
                                     static::getTranslationStatusSelect(),
                                     static::getPublishDateField(),
                                     static::getUnpublishDateField(),
@@ -168,6 +166,7 @@ class NewsResource extends BaseDraftResource
                     ->label(__('core::core.active'))
                     ->boolean()
                     ->sortable(),
+                static::getScopeTableColumn(),
                 TextColumn::make('excerpt')
                     ->label(__('core::core.excerpt'))
                     ->limit(50)

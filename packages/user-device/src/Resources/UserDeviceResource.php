@@ -15,6 +15,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Models\UserDevice;
@@ -27,6 +28,7 @@ class UserDeviceResource extends Resource
 {
     use BaseInResource;
     use HasResourceTabs;
+    use HasScopedChildResource;
 
     protected static ?string $model = UserDevice::class;
 
@@ -68,6 +70,7 @@ class UserDeviceResource extends Resource
                 TextInput::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->required(),
+                static::getScopeSelectField(),
                 // TODO: Not implemented yet, must be editable then
                 // TODO: Is misleading, should be activated, enabled or similar, because active would better be recently been in use
                 /*
@@ -106,6 +109,7 @@ class UserDeviceResource extends Resource
                     ->toggleable()
                     ->boolean(),
                 */
+                static::getScopeTableColumn(),
                 TextColumn::make('updated_at')
                     ->label(__('core::core.updated_at'))
                     ->since()

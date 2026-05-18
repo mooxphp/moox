@@ -95,6 +95,10 @@ class BaseRecordResource extends BaseResource
     {
         $actions = [];
 
+        if (method_exists(static::class, 'getAssignScopeBulkAction')) {
+            $actions[] = static::getAssignScopeBulkAction();
+        }
+
         if (static::enableDelete()) {
             $actions[] = static::getDeleteBulkAction();
         }

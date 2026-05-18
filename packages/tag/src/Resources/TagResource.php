@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -33,7 +34,7 @@ use Override;
 
 class TagResource extends BaseDraftResource
 {
-    use HasResourceTabs;
+    use HasResourceTabs, HasScopedChildResource;
 
     protected static ?string $model = Tag::class;
 
@@ -106,6 +107,7 @@ class TagResource extends BaseDraftResource
                                     ]),
                                 Section::make('')
                                     ->schema([
+                                        static::getScopeSelectField(),
                                         static::getTranslationStatusSelect(),
                                         static::getPublishDateField(),
                                         static::getUnpublishDateField(),
@@ -147,6 +149,7 @@ class TagResource extends BaseDraftResource
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
+                static::getScopeTableColumn(),
                 TextColumn::make('description')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -212,7 +215,7 @@ class TagResource extends BaseDraftResource
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('tag.resources.tag.plural');
+        return static::resolveScopedNavigationLabel(config('tag.resources.tag.plural'));
     }
 
     #[Override]
@@ -221,14 +224,7 @@ class TagResource extends BaseDraftResource
         return config('tag.resources.tag.single');
     }
 
-    #[Override]
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    #[Override]
-    public static function getNavigationGroup(): ?string
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
         return config('tag.navigation_group');
     }

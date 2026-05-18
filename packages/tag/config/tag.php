@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\User;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Media\Resources\MediaResource;
+use Moox\Tag\Models\Tag;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +81,25 @@ return [
                     ],
                 ],
             ],
+
+            'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => MediaResource::class,
+                    ],
+                    'category' => [
+                        'resource' => CategoryResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'tag' => Tag::class,
+                    ],
+                    'sources' => [
+                        'tag' => Tag::class,
+                    ],
+                ],
+            ],
         ],
     ],
 
@@ -121,8 +143,6 @@ return [
     |
     */
 
-    'user_model' => User::class,
-
     /*
     |--------------------------------------------------------------------------
     | Allow Slug Change - WIP
@@ -134,4 +154,7 @@ return [
 
     'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
     'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
+
+    'user_model' => User::class,
+
 ];

@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Infolists\Components\TextEntry;
@@ -17,22 +18,94 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
+use Filament\Resources\ResourceConfiguration;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use Moox\Clipboard\Forms\Components\CopyableField;
+use Moox\Core\Support\Resources\ScopedResourceConfiguration;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 
 abstract class BaseResource extends Resource
 {
+    public static function make(string $key = 'default'): ResourceConfiguration
+    {
+        return ScopedResourceConfiguration::make(static::class, $key);
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_label');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
+        return parent::getNavigationLabel();
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_group');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
+        return static::resolveDefaultNavigationGroup();
+    }
+
+    protected static function resolveDefaultNavigationGroup(): ?string
+    {
+        return parent::getNavigationGroup();
+    }
+
+    public static function getNavigationParentItem(): ?string
+    {
+        return ScopedResourceContext::getDefinitionValue(static::class, 'navigation_parent_item')
+            ?? parent::getNavigationParentItem();
+    }
+
+    public static function registerNavigationItems(): void
+    {
+        $currentKey = Filament::getCurrentResourceConfigurationKey();
+        $panel = filament()->getCurrentPanel();
+
+        // When the IdentifyResourceConfiguration middleware sets a child config key
+        // globally, it pollutes the navigation-building loop for bare-class resources.
+        // Temporarily clear the key so the resource's own default navigation is used.
+        if ($currentKey !== null && $panel && in_array(static::class, $panel->getResources(), true)) {
+            Filament::setCurrentResourceConfigurationKey(null);
+            parent::registerNavigationItems();
+            Filament::setCurrentResourceConfigurationKey($currentKey);
+
+            return;
+        }
+
+        parent::registerNavigationItems();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $value = ScopedResourceContext::getDefinitionValue(static::class, 'should_register_navigation');
+
+        return $value !== null ? (bool) $value : parent::shouldRegisterNavigation();
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        $value = ScopedResourceContext::getDefinitionValue(static::class, 'sort');
+
+        return $value !== null ? (int) $value : parent::getNavigationSort();
+    }
+
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
             $query = static::addTaxonomyRelationsToQuery($query);
         }
 
-        return $query;
+        return ScopedResourceContext::applyScope($query, static::class);
     }
 
     public static function getEloquentQuery(): Builder

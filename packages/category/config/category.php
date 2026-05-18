@@ -1,5 +1,9 @@
 <?php
 
+use Moox\Category\Models\Category;
+use Moox\Media\Resources\MediaResource;
+use Moox\Tag\Resources\TagResource;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -73,6 +77,25 @@ return [
                             'operator' => '!=',
                             'value' => null,
                         ],
+                    ],
+                ],
+            ],
+
+            'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => MediaResource::class,
+                    ],
+                    'tag' => [
+                        'resource' => TagResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'category' => Category::class,
+                    ],
+                    'sources' => [
+                        'category' => Category::class,
                     ],
                 ],
             ],

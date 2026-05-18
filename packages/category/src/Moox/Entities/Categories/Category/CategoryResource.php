@@ -28,6 +28,7 @@ use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\P
 use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -36,7 +37,7 @@ use Override;
 
 class CategoryResource extends BaseDraftResource
 {
-    use HasResourceTabs;
+    use HasResourceTabs, HasScopedChildResource;
 
     protected static ?string $model = Category::class;
 
@@ -90,13 +91,15 @@ class CategoryResource extends BaseDraftResource
                                         relationship: 'parent',
                                         titleAttribute: 'title',
                                         parentAttribute: 'parent_id',
-                                        modifyQueryUsing: fn (Builder $query, $get) => $query->where('id', '!=', $get('id'))
+                                        modifyQueryUsing: fn (Builder $query, $get) => static::scopeQuery(
+                                            $query->where('id', '!=', $get('id'))
+                                        )
                                     )
                                     ->label('Parent Category')
                                     ->searchable()
                                     ->disabledOptions(fn ($get): array => [$get('id')])
                                     ->enableBranchNode()
-                                    ->visible(fn () => Category::count() > 0),
+                                    ->visible(fn () => static::scopeQuery(Category::query())->count() > 0),
                                 Grid::make(2)
                                     ->schema([
                                         static::getFooterActions()->columnSpan(1),
@@ -117,6 +120,7 @@ class CategoryResource extends BaseDraftResource
                                     ]),
                                 Section::make('')
                                     ->schema([
+                                        static::getScopeSelectField(),
                                         static::getTranslationStatusSelect(),
                                         static::getPublishDateField(),
                                         static::getUnpublishDateField(),
@@ -161,6 +165,7 @@ class CategoryResource extends BaseDraftResource
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
+                static::getScopeTableColumn(),
                 TextColumn::make('description')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -289,25 +294,12 @@ class CategoryResource extends BaseDraftResource
     }
 
     #[Override]
-    public static function getNavigationLabel(): string
-    {
-        return config('category.resources.category.plural');
-    }
-
-    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('category.resources.category.single');
     }
 
-    #[Override]
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    #[Override]
-    public static function getNavigationGroup(): ?string
+    protected static function resolveDefaultNavigationGroup(): ?string
     {
         return config('category.navigation_group');
     }

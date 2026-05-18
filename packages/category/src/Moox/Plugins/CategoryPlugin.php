@@ -8,6 +8,7 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
 class CategoryPlugin implements Plugin
 {
@@ -20,9 +21,12 @@ class CategoryPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
             CategoryResource::class,
-        ]);
+            'category',
+            config('category.resources.category', []),
+        );
     }
 
     public function boot(Panel $panel): void

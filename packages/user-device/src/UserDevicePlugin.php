@@ -5,6 +5,7 @@ namespace Moox\UserDevice;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\UserDevice\Resources\UserDeviceResource;
 
 class UserDevicePlugin implements Plugin
@@ -18,9 +19,12 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
             UserDeviceResource::class,
-        ]);
+            'user-device',
+            config('user-device.resources.devices', []),
+        );
     }
 
     public function boot(Panel $panel): void

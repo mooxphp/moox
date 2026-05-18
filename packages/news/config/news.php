@@ -1,8 +1,12 @@
 <?php
 
 use Moox\Category\Models\Category;
+use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Media\Resources\MediaResource;
+use Moox\News\Models\News;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
+use Moox\Tag\Resources\TagResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +74,28 @@ return [
                         ],
                     ],
                 ],
+            ],
 
+            'scopes' => [
+                'allowed' => [
+                    'media' => [
+                        'resource' => MediaResource::class,
+                    ],
+                    'tag' => [
+                        'resource' => TagResource::class,
+                    ],
+                    'category' => [
+                        'resource' => CategoryResource::class,
+                    ],
+                ],
+                'registry' => [
+                    'origins' => [
+                        'news' => News::class,
+                    ],
+                    'sources' => [
+                        'news' => News::class,
+                    ],
+                ],
             ],
         ],
     ],

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Validation\Rules\Password;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,19 +60,14 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
-                /*
-                'error' => [
-                    'label' => 'trans//core::core.error',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'subject_type',
-                            'operator' => '=',
-                            'value' => 'Error',
-                        ],
+            ],
+
+            'scopes' => [
+                'registry' => [
+                    'origins' => [
+                        'user' => User::class,
                     ],
                 ],
-                */
             ],
         ],
     ],

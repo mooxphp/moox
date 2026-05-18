@@ -7,6 +7,8 @@ use Astrotomic\Translatable\Translatable;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
+use Moox\Core\Models\Concerns\HasScopedModel;
+use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
@@ -24,10 +26,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
  * @property string|null $uploader_type
  * @property int|string|null $original_model_id
  * @property string|null $original_model_type
+ * @property ScopeValue|string|null $scope
  */
 class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
-    use HasMediaUsable, InteractsWithMedia, Translatable;
+    use HasMediaUsable, HasScopedModel, InteractsWithMedia, Translatable;
 
     public $translatedAttributes = ['name', 'title', 'alt', 'description', 'internal_note'];
 

@@ -7,6 +7,7 @@ namespace Moox\Tag\Moox\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
 use Moox\Tag\Resources\TagResource;
 
 class TagPlugin implements Plugin
@@ -20,9 +21,12 @@ class TagPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
             TagResource::class,
-        ]);
+            'tag',
+            config('tag.resources.tag', []),
+        );
     }
 
     public function boot(Panel $panel): void
