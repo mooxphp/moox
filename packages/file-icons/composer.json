@@ -18,7 +18,7 @@
         "moox/core": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "^5.0"
     },
     "autoload": {
         "psr-4": {
