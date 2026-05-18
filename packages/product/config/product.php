@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\User;
-use Moox\Attribute\Models\AttributeValues;
 use Moox\Attribute\Models\AttributableAttributeValue;
+use Moox\Attribute\Models\AttributeValues;
 use Moox\Category\Models\Category;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
