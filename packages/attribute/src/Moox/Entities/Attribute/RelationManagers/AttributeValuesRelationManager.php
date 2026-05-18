@@ -18,7 +18,7 @@ use Override;
 
 class AttributeValuesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'attributeValues';
+    protected static string $relationship = 'values';
 
     #[Override]
     public static function getTitle(Model $ownerRecord, string $pageClass): string
