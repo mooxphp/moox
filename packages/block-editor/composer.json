@@ -36,7 +36,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "^5.0"
     },
     "config": {
         "allow-plugins": {

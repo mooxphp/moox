@@ -29,7 +29,7 @@
         "spatie/laravel-package-tools": "^1.13.0"
     },
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "^5.0"
     },
     "autoload": {
         "psr-4": {
