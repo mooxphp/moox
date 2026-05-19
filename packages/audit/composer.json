@@ -18,10 +18,10 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "spatie/laravel-activitylog": "^5.0"
+        "spatie/laravel-activitylog": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "^5.0"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

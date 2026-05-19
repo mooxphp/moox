@@ -18,10 +18,10 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "web-auth/webauthn-lib": "^5.0"
+        "web-auth/webauthn-lib": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "^5.0"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

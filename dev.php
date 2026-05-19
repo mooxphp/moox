@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Moox\Devlink\Support\DevlinkPackageNotRegisteredException;
 use Moox\Devlink\Support\EffectivePackages;
 
 $options = getopt('', [
@@ -458,9 +459,15 @@ function buildComposerJson(string $root, string $laravelVersion): void
 
     $config = require $configPath;
 
+    require_once $root.'/packages/devlink/src/Support/DevlinkPackageNotRegisteredException.php';
     require_once $root.'/packages/devlink/src/Support/EffectivePackages.php';
 
-    $effectivePackages = EffectivePackages::resolve($root, $config['packages']);
+    try {
+        $effectivePackages = EffectivePackages::resolve($root, $config['packages']);
+    } catch (DevlinkPackageNotRegisteredException $e) {
+        echo '❌ '.$e->getMessage()."\n";
+        exit(1);
+    }
 
     $composer = [
         'name' => 'moox/dev-app',

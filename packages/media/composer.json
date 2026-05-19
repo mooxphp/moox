@@ -40,7 +40,7 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "^5.0"
+        "moox/devtools": "dev-main"
     },
     "config": {
         "allow-plugins": {

@@ -17,7 +17,7 @@
         "blade-ui-kit/blade-icons": "^1.6"
     },
     "require-dev": {
-        "moox/devtools": "^5.0"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

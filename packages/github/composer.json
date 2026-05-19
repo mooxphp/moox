@@ -17,7 +17,7 @@
         "laravel/socialite": "^5.21"
     },
     "require-dev": {
-        "moox/devtools": "^5.0"
+        "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {

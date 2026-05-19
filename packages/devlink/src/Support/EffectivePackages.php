@@ -19,6 +19,7 @@ final class EffectivePackages
         $queue = [];
         $visited = [];
         $effective = [];
+        $missing = [];
 
         foreach ($packages as $name => $package) {
             if ($package['active'] ?? false) {
@@ -53,10 +54,21 @@ final class EffectivePackages
             $directory = self::resolvePackageDirectory($root, $package);
 
             foreach (self::readMooxSlugsFromComposer($directory) as $depSlug) {
-                if (isset($packages[$depSlug]) && ! isset($visited[$depSlug])) {
+                if (! isset($packages[$depSlug])) {
+                    $missing[$depSlug] ??= [];
+                    $missing[$depSlug][] = $slug;
+
+                    continue;
+                }
+
+                if (! isset($visited[$depSlug])) {
                     $queue[] = $depSlug;
                 }
             }
+        }
+
+        if ($missing !== []) {
+            throw new DevlinkPackageNotRegisteredException($missing);
         }
 
         return $effective;

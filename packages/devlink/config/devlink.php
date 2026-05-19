@@ -50,7 +50,8 @@ return [
     | The URL of the private repository (Satis).
     |
     | Types:
-    | - bundle = meta package; active bundles resolve moox/* from composer.json (require + require-dev)
+    | - bundle = meta package; active bundles resolve moox/* from composer.json (require + require-dev);
+    |   any required moox/* not listed here aborts with an error
     | - public = installed from Packagist
     | - private = installed from Satis
     | - local = local package
@@ -104,6 +105,11 @@ return [
         | Single packages from the FOSS repository.
         |
         */
+        'attribute' => [
+            'active' => false,
+            'path' => $public_base_path.'/attribute',
+            'type' => 'public',
+        ],
         'audit' => [
             'active' => false,
             'path' => $public_base_path.'/audit',
