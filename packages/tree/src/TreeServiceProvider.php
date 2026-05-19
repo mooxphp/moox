@@ -11,7 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Moox\Tree\Livewire\ResourceTreeIndex;
 
-class FilamentTreeIndexServiceProvider extends ServiceProvider
+class TreeServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
