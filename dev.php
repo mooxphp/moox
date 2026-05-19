@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Moox\Devlink\Support\EffectivePackages;
 
 $options = getopt('', [
     'laravel::',
@@ -11,7 +12,7 @@ $options = getopt('', [
 
 if (isset($options['help'])) {
     echo <<<'TXT'
-Moox Dev App Bootstrapper
+moox Dev App Bootstrapper
 
 Usage:
   php dev.php
@@ -25,6 +26,7 @@ Options:
   --help              Show this help
 
 Env templates: .env.mysql, .env.postgresql, .env.sqlite → copied to .env
+Devlink: packages/devlink/config/devlink.php → config/devlink.php (optional edit before composer)
 
 TXT;
     exit(0);
@@ -150,14 +152,14 @@ function promptYesNo(string $question, bool $defaultYes): bool
             return false;
         }
 
-        echo "Bitte y oder n eingeben.\n";
+        echo "Please enter y or n.\n";
     }
 }
 
 function requireInteractiveForPrompts(): void
 {
     if (! stream_isatty(STDIN)) {
-        echo "❌ Interaktive Eingabe nicht möglich (kein TTY).\n";
+        echo "❌ Interactive input is not available (no TTY).\n";
         exit(1);
     }
 }
@@ -183,7 +185,7 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
     if ($connection === 'sqlite') {
         $dbFile = (string) ($vars['DB_DATABASE'] ?? '');
         if ($dbFile === '') {
-            echo "❌ DB_DATABASE fehlt in .env.\n";
+            echo "❌ DB_DATABASE is missing in .env.\n";
             exit(1);
         }
 
@@ -191,9 +193,9 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
 
         if (file_exists($full) || is_link($full)) {
             unlink($full);
-            echo "✅ SQLite-Datei gelöscht: {$full}\n";
+            echo "✅ SQLite database file deleted: {$full}\n";
         } else {
-            echo "ℹ️ SQLite-Datei nicht gefunden: {$full}\n";
+            echo "ℹ️ SQLite database file not found: {$full}\n";
         }
 
         return;
@@ -207,7 +209,7 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
         $password = (string) ($vars['DB_PASSWORD'] ?? '');
 
         if ($database === '') {
-            echo "❌ DB_DATABASE fehlt in .env.\n";
+            echo "❌ DB_DATABASE is missing in .env.\n";
             exit(1);
         }
 
@@ -217,9 +219,9 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
                 $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
                 $quoted = str_replace('`', '``', $database);
                 $pdo->exec('DROP DATABASE IF EXISTS `'.$quoted.'`');
-                echo "✅ MySQL-Datenbank gelöscht: {$database}\n";
+                echo "✅ MySQL database dropped: {$database}\n";
             } catch (PDOException $e) {
-                echo '❌ MySQL DROP DATABASE fehlgeschlagen: '.$e->getMessage()."\n";
+                echo '❌ MySQL DROP DATABASE failed: '.$e->getMessage()."\n";
                 exit(1);
             }
 
@@ -236,7 +238,7 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
         $quotedDb = str_replace('`', '``', $database);
         $cmd .= ' -e '.escapeshellarg('DROP DATABASE IF EXISTS `'.$quotedDb.'`');
         run($cmd);
-        echo "✅ MySQL-Datenbank gelöscht: {$database}\n";
+        echo "✅ MySQL database dropped: {$database}\n";
 
         return;
     }
@@ -249,7 +251,7 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
         $password = (string) ($vars['DB_PASSWORD'] ?? '');
 
         if ($database === '') {
-            echo "❌ DB_DATABASE fehlt in .env.\n";
+            echo "❌ DB_DATABASE is missing in .env.\n";
             exit(1);
         }
 
@@ -259,9 +261,9 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
                 $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
                 $safe = str_replace('"', '""', $database);
                 $pdo->exec('DROP DATABASE IF EXISTS "'.$safe.'" WITH (FORCE)');
-                echo "✅ PostgreSQL-Datenbank gelöscht: {$database}\n";
+                echo "✅ PostgreSQL database dropped: {$database}\n";
             } catch (PDOException $e) {
-                echo '❌ PostgreSQL DROP DATABASE fehlgeschlagen: '.$e->getMessage()."\n";
+                echo '❌ PostgreSQL DROP DATABASE failed: '.$e->getMessage()."\n";
                 exit(1);
             }
 
@@ -275,12 +277,12 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
             .' dropdb --if-exists '
             .escapeshellarg($database);
         run($cmd);
-        echo "✅ PostgreSQL-Datenbank gelöscht: {$database}\n";
+        echo "✅ PostgreSQL database dropped: {$database}\n";
 
         return;
     }
 
-    echo "❌ Unbekannte DB_CONNECTION in .env: {$connection}\n";
+    echo "❌ Unknown DB_CONNECTION in .env: {$connection}\n";
     exit(1);
 }
 
@@ -298,11 +300,11 @@ function resolveDatabase(?string $dbOption): string
     }
 
     if (! stream_isatty(STDIN)) {
-        echo "❌ --db=mysql|postgresql|sqlite ist in CI/non-interaktiv erforderlich.\n";
+        echo "❌ --db=mysql|postgresql|sqlite is required for non-interactive/CI use.\n";
         exit(1);
     }
 
-    echo "Welche Datenbank soll verwendet werden?\n";
+    echo "Which database driver should be used?\n";
     echo "  1) mysql\n";
     echo "  2) postgresql\n";
     echo "  3) sqlite\n";
@@ -314,7 +316,7 @@ function resolveDatabase(?string $dbOption): string
     ];
 
     while (true) {
-        echo 'Auswahl (1-3): ';
+        echo 'Choice (1-3): ';
         $input = trim(fgets(STDIN) ?: '');
 
         if (isset($choiceMap[$input])) {
@@ -325,8 +327,30 @@ function resolveDatabase(?string $dbOption): string
             return $input;
         }
 
-        echo "Bitte 1, 2 oder 3 eingeben.\n";
+        echo "Please enter 1, 2, or 3.\n";
     }
+}
+
+function databaseDriverFromEnvFile(string $root): string
+{
+    $path = $root.DIRECTORY_SEPARATOR.'.env';
+
+    if (! is_readable($path)) {
+        return 'mysql';
+    }
+
+    $vars = parseDotenv($path);
+    $c = strtolower((string) ($vars['DB_CONNECTION'] ?? 'mysql'));
+
+    if ($c === 'sqlite') {
+        return 'sqlite';
+    }
+
+    if (in_array($c, ['pgsql', 'postgres', 'postgresql'], true)) {
+        return 'postgresql';
+    }
+
+    return 'mysql';
 }
 
 function installEnv(string $root, string $database): void
@@ -346,6 +370,54 @@ function installEnv(string $root, string $database): void
     }
 
     echo "✅ .env created from .env.{$database}\n";
+}
+
+function publishDevlinkConfig(string $root): void
+{
+    $source = $root.DIRECTORY_SEPARATOR.'packages'.DIRECTORY_SEPARATOR.'devlink'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'devlink.php';
+
+    if (! is_readable($source)) {
+        echo "❌ Devlink package config not found: {$source}\n";
+        exit(1);
+    }
+
+    $targetDir = $root.DIRECTORY_SEPARATOR.'config';
+
+    if (! is_dir($targetDir)) {
+        if (! mkdir($targetDir, 0755, true)) {
+            echo "❌ Failed to create directory: {$targetDir}\n";
+            exit(1);
+        }
+    }
+
+    $target = $targetDir.DIRECTORY_SEPARATOR.'devlink.php';
+
+    if (! copy($source, $target)) {
+        echo "❌ Failed to publish devlink config to {$target}\n";
+        exit(1);
+    }
+
+    echo "✅ config/devlink.php published.\n";
+}
+
+function offerDevlinkConfigPause(string $root): void
+{
+    if (! stream_isatty(STDIN)) {
+        return;
+    }
+
+    $path = $root.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'devlink.php';
+
+    if (! file_exists($path)) {
+        return;
+    }
+
+    if (! promptYesNo('Edit config/devlink.php before composer update?', true)) {
+        return;
+    }
+
+    echo "Edit {$path}, then press Enter when done.\n";
+    fgets(STDIN);
 }
 
 function buildComposerJson(string $root, string $laravelVersion): void
@@ -377,7 +449,18 @@ function buildComposerJson(string $root, string $laravelVersion): void
         }
     }
 
-    $config = require $root.'/packages/devlink/config/devlink.php';
+    $configPath = $root.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'devlink.php';
+
+    if (! is_readable($configPath)) {
+        echo "❌ config/devlink.php not found or not readable: {$configPath}\n";
+        exit(1);
+    }
+
+    $config = require $configPath;
+
+    require_once $root.'/packages/devlink/src/Support/EffectivePackages.php';
+
+    $effectivePackages = EffectivePackages::resolve($root, $config['packages']);
 
     $composer = [
         'name' => 'moox/dev-app',
@@ -405,23 +488,23 @@ function buildComposerJson(string $root, string $laravelVersion): void
         ],
     ];
 
-    foreach ($config['packages'] as $name => $pkg) {
-        if (! ($pkg['active'] ?? false)) {
+    foreach ($effectivePackages as $name => $pkg) {
+        $type = (string) ($pkg['type'] ?? '');
+
+        if (! EffectivePackages::isLinkableType($type)) {
             continue;
         }
 
-        if (! isset($pkg['type']) || ! in_array($pkg['type'], ['local', 'public'], true)) {
+        $directory = EffectivePackages::resolvePackageDirectory($root, $pkg);
+
+        if ($directory === null || ! is_file($directory.DIRECTORY_SEPARATOR.'composer.json')) {
             continue;
         }
 
-        $pkgPath = $pkg['path'] ?? null;
-        $pkgPath = str_replace('../moox/', '', (string) $pkgPath);
+        $pkgPath = str_replace('../moox/', '', (string) ($pkg['path'] ?? ''));
+        $pkgPath = str_replace('\\', '/', $pkgPath);
 
-        if (! $pkgPath || ! is_dir($pkgPath)) {
-            continue;
-        }
-
-        if (! file_exists($pkgPath.'/composer.json')) {
+        if ($pkgPath === '') {
             continue;
         }
 
@@ -448,9 +531,9 @@ if ($delete) {
 
     if (file_exists($envPath)) {
         if (stream_isatty(STDIN)) {
-            $dropDb = promptYesNo('Datenbank löschen?', true);
+            $dropDb = promptYesNo('Drop database?', true);
         } else {
-            echo "ℹ️ Non-interaktiv: Datenbank wird nicht gelöscht (kein TTY).\n";
+            echo "ℹ️ Non-interactive: database will not be dropped (no TTY).\n";
         }
 
         if ($dropDb) {
@@ -464,52 +547,63 @@ if ($delete) {
     exit(0);
 }
 
+$keepExistingApp = false;
+
 if (appLooksPresent($root)) {
     requireInteractiveForPrompts();
 
-    $delApp = promptYesNo('Es liegt bereits eine App im Repo. App-Dateien löschen?', false);
-    $delDb = promptYesNo('Datenbank löschen?', false);
+    $delApp = promptYesNo('An app already exists in this repo. Delete app files?', false);
 
-    if (! $delApp) {
-        echo "Abgebrochen.\n";
-        exit(0);
+    if ($delApp) {
+        $delDb = promptYesNo('Drop database?', false);
+
+        if ($delDb && file_exists($envPath)) {
+            dropDatabaseFromEnv($root, $envPath);
+        }
+
+        deleteAppFiles($root, $appPaths);
+    } else {
+        echo "Keeping existing application. Publishing devlink config and running composer update.\n";
+        $keepExistingApp = true;
     }
-
-    if ($delDb && file_exists($envPath)) {
-        dropDatabaseFromEnv($root, $envPath);
-    }
-
-    deleteAppFiles($root, $appPaths);
 }
 
-echo "🚀 Building Moox dev app with Laravel {$laravelVersion}\n";
+if (! $keepExistingApp) {
+    echo "🚀 Building moox dev app with Laravel {$laravelVersion}\n";
 
-$tempDir = $root.DIRECTORY_SEPARATOR.'laravel-temp';
+    $tempDir = $root.DIRECTORY_SEPARATOR.'laravel-temp';
 
-removePath($tempDir);
+    removePath($tempDir);
 
-run('composer create-project laravel/laravel '.escapeshellarg($tempDir).' "^'.$laravelVersion.'.0" --no-install --no-scripts');
+    run('composer create-project laravel/laravel '.escapeshellarg($tempDir).' "^'.$laravelVersion.'.0" --no-install --no-scripts');
 
-foreach (scandir($tempDir) ?: [] as $item) {
-    if ($item === '.' || $item === '..') {
-        continue;
+    foreach (scandir($tempDir) ?: [] as $item) {
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+
+        $source = $tempDir.DIRECTORY_SEPARATOR.$item;
+        $target = $root.DIRECTORY_SEPARATOR.$item;
+
+        if (file_exists($target)) {
+            continue;
+        }
+
+        rename($source, $target);
     }
 
-    $source = $tempDir.DIRECTORY_SEPARATOR.$item;
-    $target = $root.DIRECTORY_SEPARATOR.$item;
+    removePath($tempDir);
 
-    if (file_exists($target)) {
-        continue;
-    }
+    $database = resolveDatabase(is_string($dbOption) ? $dbOption : null);
 
-    rename($source, $target);
+    installEnv($root, $database);
+} else {
+    $database = databaseDriverFromEnvFile($root);
 }
 
-removePath($tempDir);
+publishDevlinkConfig($root);
 
-$database = resolveDatabase(is_string($dbOption) ? $dbOption : null);
-
-installEnv($root, $database);
+offerDevlinkConfigPause($root);
 
 buildComposerJson($root, $laravelVersion);
 
@@ -535,4 +629,4 @@ if ($database === 'sqlite') {
     }
 }
 
-echo "✅ Moox is ready.\n";
+echo "✅ moox is prepared, use `php artisan moox:install` to install...\n";
