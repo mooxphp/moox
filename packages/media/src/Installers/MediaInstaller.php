@@ -57,7 +57,7 @@ class MediaInstaller extends AbstractAssetInstaller
 
         $content = File::get($configPath);
 
-        return str_contains($content, 'Moox\\Media\\Models\\Media::class');
+        return $this->hasMooxMediaModel($content) && $this->hasMooxPathGenerator($content);
     }
 
     public function install(array $assets): bool
@@ -86,21 +86,18 @@ class MediaInstaller extends AbstractAssetInstaller
                 return false;
             }
 
-            $configContent = File::get($configPath);
-
-            $configContent = str_replace(
-                "'media_model' => Spatie\\MediaLibrary\\MediaCollections\\Models\\Media::class",
-                "'media_model' => Moox\\Media\\Models\\Media::class",
-                $configContent
-            );
-
-            $configContent = str_replace(
-                "'path_generator' => Spatie\\MediaLibrary\\Support\\PathGenerator\\DefaultPathGenerator::class",
-                "'path_generator' => Moox\\Media\\Support\\CustomPathGenerator::class",
-                $configContent
-            );
+            $configContent = $this->applyMooxMediaLibraryConfig(File::get($configPath));
 
             File::put($configPath, $configContent);
+
+            $resultConfigContent = File::get($configPath);
+            $mediaModelSet = $this->hasMooxMediaModel($resultConfigContent);
+            $pathGeneratorSet = $this->hasMooxPathGenerator($resultConfigContent);
+
+            if (! $mediaModelSet || ! $pathGeneratorSet) {
+                error('⚠️ media-library.php could not be overwritten correctly. Please check manually!');
+            }
+    
 
             note('✅ Spatie Media Library config published and updated with Moox Media model and CustomPathGenerator.');
 
@@ -118,5 +115,80 @@ class MediaInstaller extends AbstractAssetInstaller
 
             return false;
         }
+    }
+
+    private function applyMooxMediaLibraryConfig(string $configContent): string
+    {
+        if (! $this->hasMooxMediaModel($configContent)) {
+            $configContent = str_replace(
+                'use Spatie\MediaLibrary\MediaCollections\Models\Media;',
+                'use Moox\Media\Models\Media;',
+                $configContent,
+            );
+
+            if (! $this->hasMooxMediaModel($configContent)) {
+                $configContent = preg_replace(
+                    "/(['\"]media_model['\"]\s*=>\s*)(?:\\\\?Spatie\\\\MediaLibrary\\\\MediaCollections\\\\Models\\\\)?Media::class/",
+                    '$1\\Moox\\Media\\Models\\Media::class',
+                    $configContent,
+                    1,
+                ) ?? $configContent;
+            }
+        }
+
+        if (! $this->hasMooxPathGenerator($configContent)) {
+            $configContent = str_replace(
+                'use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator;',
+                'use Moox\Media\Support\CustomPathGenerator;',
+                $configContent,
+            );
+
+            $configContent = str_replace(
+                "'path_generator' => DefaultPathGenerator::class",
+                "'path_generator' => CustomPathGenerator::class",
+                $configContent,
+            );
+
+            $configContent = str_replace(
+                '"path_generator" => DefaultPathGenerator::class',
+                '"path_generator" => CustomPathGenerator::class',
+                $configContent,
+            );
+
+            if (! $this->hasMooxPathGenerator($configContent)) {
+                $configContent = preg_replace(
+                    "/(['\"]path_generator['\"]\s*=>\s*)(?:\\\\?Spatie\\\\MediaLibrary\\\\Support\\\\PathGenerator\\\\)?DefaultPathGenerator::class/",
+                    '$1\\Moox\\Media\\Support\\CustomPathGenerator::class',
+                    $configContent,
+                    1,
+                ) ?? $configContent;
+            }
+        }
+
+        return $configContent;
+    }
+
+    private function hasMooxMediaModel(string $content): bool
+    {
+        if (str_contains($content, 'use Moox\Media\Models\Media;')) {
+            return true;
+        }
+
+        return (bool) preg_match(
+            '/[\'"]media_model[\'"]\s*=>\s*\\\\?Moox\\\\Media\\\\Models\\\\Media::class/',
+            $content,
+        );
+    }
+
+    private function hasMooxPathGenerator(string $content): bool
+    {
+        if (str_contains($content, 'use Moox\Media\Support\CustomPathGenerator;')) {
+            return true;
+        }
+
+        return (bool) preg_match(
+            '/[\'"]path_generator[\'"]\s*=>\s*\\\\?Moox\\\\Media\\\\Support\\\\CustomPathGenerator::class/',
+            $content,
+        );
     }
 }
