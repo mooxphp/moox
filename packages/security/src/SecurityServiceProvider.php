@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Security;
 
-use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
+use Illuminate\Auth\Passwords\PasswordResetServiceProvider as LaravelPasswordResetServiceProvider;
+use Moox\Core\MooxServiceProvider;
 use Moox\Security\Commands\GetPasswordResetLinksCommand;
 use Moox\Security\Commands\InstallCommand;
 use Override;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class SecurityServiceProvider extends PackageServiceProvider
+class SecurityServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('security')
@@ -28,8 +28,8 @@ class SecurityServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->registerDeferredProvider(PasswordResetServiceProvider::class);
+        $this->app->registerDeferredProvider(LaravelPasswordResetServiceProvider::class);
 
-        $this->app->register(\Moox\Security\PasswordResetServiceProvider::class);
+        $this->app->register(PasswordResetServiceProvider::class);
     }
 }
