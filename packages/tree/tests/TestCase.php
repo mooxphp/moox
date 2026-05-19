@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Tests;
+namespace Moox\Tree\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;

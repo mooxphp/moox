@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Tests\Models\TreeNode;
 
 it('can disable reordering', function (): void {
     $configuration = TreeIndexConfiguration::make(TreeNode::class)->reorderable(false);

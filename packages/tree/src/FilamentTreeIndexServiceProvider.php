@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex;
+namespace Moox\Tree;
 
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
-use Heco\FilamentTreeIndex\Livewire\ResourceTreeIndex;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Moox\Tree\Livewire\ResourceTreeIndex;
 
 class FilamentTreeIndexServiceProvider extends ServiceProvider
 {

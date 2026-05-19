@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Config;
+namespace Moox\Tree\Config;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

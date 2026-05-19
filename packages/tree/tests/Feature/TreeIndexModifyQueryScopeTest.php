@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Actions\Tree\CreateNestedSetTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\CreateTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\MoveNestedSetTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\MoveTreeNodeAction;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Tests\Models\NestedSetTreeNode;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Moox\Tree\Actions\Tree\CreateNestedSetTreeNodeAction;
+use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
+use Moox\Tree\Actions\Tree\MoveNestedSetTreeNodeAction;
+use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Tests\Models\NestedSetTreeNode;
+use Moox\Tree\Tests\Models\TreeNode;
 
 beforeEach(function (): void {
     Schema::dropIfExists('tree_nodes');

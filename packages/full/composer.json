@@ -82,6 +82,7 @@
         "moox/taxonomy": "dev-main",
         "moox/themes": "dev-main",
         "moox/trainings": "dev-main",
+        "moox/tree": "dev-main",
         "moox/user": "dev-main",
         "moox/user-session": "dev-main"
     },

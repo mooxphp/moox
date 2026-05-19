@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex;
-use Heco\FilamentTreeIndex\Tests\Support\TestNestedSetTreeIndexResource;
-use Heco\FilamentTreeIndex\Tests\Support\TestTreeInspectorPage;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Tests\Support\TestNestedSetTreeIndexResource;
+use Moox\Tree\Tests\Support\TestTreeInspectorPage;
 
 it('supports nested set resources with a dedicated inspector page', function (): void {
     expect(class_implements(TestNestedSetTreeIndexResource::class))

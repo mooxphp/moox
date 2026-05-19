@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Tests\Models;
+namespace Moox\Tree\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

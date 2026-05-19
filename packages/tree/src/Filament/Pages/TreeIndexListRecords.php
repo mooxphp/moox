@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Filament\Pages;
+namespace Moox\Tree\Filament\Pages;
 
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfigurationRegistry;
-use Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
 
 abstract class TreeIndexListRecords extends ListRecords
 {

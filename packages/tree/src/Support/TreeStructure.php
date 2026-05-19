@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Support;
+namespace Moox\Tree\Support;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class TreeStructure
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Actions\Tree;
+namespace Moox\Tree\Actions\Tree;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class UpdateTreeNodeAction
 {

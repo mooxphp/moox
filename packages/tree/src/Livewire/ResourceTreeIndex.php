@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Livewire;
+namespace Moox\Tree\Livewire;
 
 use Filament\Notifications\Notification;
-use Heco\FilamentTreeIndex\Actions\Tree\CreateTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\DeleteTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\MoveTreeNodeAction;
-use Heco\FilamentTreeIndex\Actions\Tree\UpdateTreeNodeAction;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfigurationRegistry;
-use Heco\FilamentTreeIndex\Support\TreeIndexAuthorizer;
-use Heco\FilamentTreeIndex\Support\TreeStructure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
+use Moox\Tree\Actions\Tree\DeleteTreeNodeAction;
+use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
+use Moox\Tree\Actions\Tree\UpdateTreeNodeAction;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Support\TreeIndexAuthorizer;
+use Moox\Tree\Support\TreeStructure;
 
 class ResourceTreeIndex extends Component
 {

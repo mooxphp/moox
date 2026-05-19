@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfigurationRegistry;
-use Heco\FilamentTreeIndex\Livewire\ResourceTreeIndex;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Livewire\ResourceTreeIndex;
+use Moox\Tree\Tests\Models\TreeNode;
 
 beforeEach(function (): void {
     Schema::dropIfExists('tree_nodes');

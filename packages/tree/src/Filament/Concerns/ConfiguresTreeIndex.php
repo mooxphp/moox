@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Filament\Concerns;
+namespace Moox\Tree\Filament\Concerns;
 
 use Filament\Resources\Pages\PageRegistration;
-use Heco\FilamentTreeIndex\Filament\Pages\TreeIndexListRecords;
+use Moox\Tree\Filament\Pages\TreeIndexListRecords;
 
 trait ConfiguresTreeIndex
 {

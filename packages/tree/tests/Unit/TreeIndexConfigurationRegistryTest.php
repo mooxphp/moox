@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfigurationRegistry;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
-use Heco\FilamentTreeIndex\Tests\Support\TestTreeIndexResource;
+use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Tests\Models\TreeNode;
+use Moox\Tree\Tests\Support\TestTreeIndexResource;
 
 it('resolves tree index configuration from the resource class on demand', function (): void {
     $key = TestTreeIndexResource::class;

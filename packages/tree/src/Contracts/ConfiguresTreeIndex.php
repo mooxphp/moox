@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Contracts;
+namespace Moox\Tree\Contracts;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
+use Moox\Tree\Config\TreeIndexConfiguration;
 
 interface ConfiguresTreeIndex
 {

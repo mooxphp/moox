@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Config;
+namespace Moox\Tree\Config;
 
-use Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex;
 use LogicException;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
 
 final class TreeIndexConfigurationRegistry
 {

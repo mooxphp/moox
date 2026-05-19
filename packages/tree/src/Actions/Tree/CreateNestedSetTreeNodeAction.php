@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Actions\Tree;
+namespace Moox\Tree\Actions\Tree;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Kalnoy\Nestedset\NodeTrait;
+use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class CreateNestedSetTreeNodeAction
 {

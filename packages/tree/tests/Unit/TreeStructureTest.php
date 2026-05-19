@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Support\TreeStructure;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Support\TreeStructure;
+use Moox\Tree\Tests\Models\TreeNode;
 
 it('builds a nested tree from flat records', function (): void {
     $configuration = TreeIndexConfiguration::make(TreeNode::class)->labelColumn('label');

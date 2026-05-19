@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Tests\Support;
+namespace Moox\Tree\Tests\Support;
 
 final class TestTreeInspectorPage {}

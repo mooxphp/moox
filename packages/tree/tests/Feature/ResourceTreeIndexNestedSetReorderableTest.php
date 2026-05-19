@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Heco\FilamentTreeIndex\Actions\Tree\MoveNestedSetTreeNodeAction;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Config\TreeIndexConfigurationRegistry;
-use Heco\FilamentTreeIndex\Livewire\ResourceTreeIndex;
-use Heco\FilamentTreeIndex\Tests\Models\NestedSetTreeNode;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Moox\Tree\Actions\Tree\MoveNestedSetTreeNodeAction;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Livewire\ResourceTreeIndex;
+use Moox\Tree\Tests\Models\NestedSetTreeNode;
 
 beforeEach(function (): void {
     Schema::dropIfExists('nested_set_tree_nodes');

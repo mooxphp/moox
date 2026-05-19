@@ -1,6 +1,6 @@
 {
-    "name": "heco/filament-tree-index",
-    "description": "Filament resource tree index UI for hierarchical Eloquent models.",
+    "name": "moox/tree",
+    "description": "moox Tree adds a tree view to your hierarchical Filament resources.",
     "type": "library",
     "license": "MIT",
     "require": {

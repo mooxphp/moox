@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Support;
+namespace Moox\Tree\Support;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
 use Illuminate\Support\Facades\Gate;
+use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class TreeIndexAuthorizer
 {

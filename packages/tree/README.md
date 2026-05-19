@@ -2,10 +2,10 @@
 
 **`heco/filament-tree-index`** ist ein internes Laravel-/Filament-5-Package für hierarchische Eloquent-Modelle. Es ersetzt die klassische **Tabellen-Listenansicht** eines Filament-Resources durch eine **zweispaltige Baum-Oberfläche**:
 
-| Bereich | Funktion |
-|--------|----------|
-| **Links** | Hierarchischer Baum (Auswahl, Auf-/Zuklappen, optional Drag & Drop) |
-| **Rechts** | **Inspector** – Bearbeitung des gewählten Datensatzes |
+| Bereich    | Funktion                                                            |
+| ---------- | ------------------------------------------------------------------- |
+| **Links**  | Hierarchischer Baum (Auswahl, Auf-/Zuklappen, optional Drag & Drop) |
+| **Rechts** | **Inspector** – Bearbeitung des gewählten Datensatzes               |
 
 Technisch basiert das Package auf **Livewire 4**, **Alpine.js** (`$store.filamentTreeIndex`), **Filament Panels** und **Action-Klassen** für CRUD am Baum. Geschäftslogik liegt in Actions (`CreateTreeNodeAction`, `UpdateTreeNodeAction`, …), nicht in der UI.
 
@@ -59,7 +59,7 @@ Bei `composer require` erfolgt die Registrierung über `extra.laravel.providers`
 Ohne Composer-Abhängigkeit manuell in `bootstrap/providers.php`:
 
 ```php
-use Heco\FilamentTreeIndex\FilamentTreeIndexServiceProvider;
+use Moox\Tree\FilamentTreeIndexServiceProvider;
 
 FilamentTreeIndexServiceProvider::class,
 ```
@@ -96,11 +96,11 @@ php artisan vendor:publish --tag=filament-tree-index-views
 
 ### Variante A: Adjacency List (Standard)
 
-| Spalte | Standardname | Zweck |
-|--------|--------------|--------|
-| Eltern-FK | `parent_id` | `nullable`, Verweis auf eigene Tabelle |
-| Sortierung | `sort_order` | Geschwister-Reihenfolge |
-| Anzeige | `label` | Text im Baum |
+| Spalte     | Standardname | Zweck                                  |
+| ---------- | ------------ | -------------------------------------- |
+| Eltern-FK  | `parent_id`  | `nullable`, Verweis auf eigene Tabelle |
+| Sortierung | `sort_order` | Geschwister-Reihenfolge                |
+| Anzeige    | `label`      | Text im Baum                           |
 
 ```php
 protected $fillable = ['parent_id', 'label', 'sort_order'];
@@ -114,11 +114,11 @@ Zusätzlich **`_lft`** und **`_rgt`** (z. B. mit `kalnoy/nestedset`, `NodeTrai
 
 ### Schritt 1: Interface `ConfiguresTreeIndex` implementieren
 
-Die Resource muss `treeIndex()` bereitstellen (Contract: `Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex`).
+Die Resource muss `treeIndex()` bereitstellen (Contract: `Moox\Tree\Contracts\ConfiguresTreeIndex`).
 
 ```php
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
 use Illuminate\Database\Eloquent\Builder;
 
 class CategoryResource extends SomeBaseResource implements ConfiguresTreeIndex
@@ -150,7 +150,7 @@ Referenz im Projekt: `app/Filament/Resources/CategoryResource.php`.
 ### Schritt 2: List-Page
 
 ```php
-use Heco\FilamentTreeIndex\Filament\Pages\TreeIndexListRecords;
+use Moox\Tree\Filament\Pages\TreeIndexListRecords;
 
 class ListCategories extends TreeIndexListRecords
 {
@@ -177,14 +177,14 @@ public static function getPages(): array
 }
 ```
 
-Für schlanke eigene Resources ohne Parent-Pages reicht oft nur die Index-Route. Alternativ das Trait `Heco\FilamentTreeIndex\Filament\Concerns\ConfiguresTreeIndex` nutzen: `getTreeIndexListPage()` implementieren – setzt automatisch `'index' => …::route('/')`. Zusätzliche Pages (Inspector, Edit, …) über `getAdditionalResourcePages()` ergänzen.
+Für schlanke eigene Resources ohne Parent-Pages reicht oft nur die Index-Route. Alternativ das Trait `Moox\Tree\Filament\Concerns\ConfiguresTreeIndex` nutzen: `getTreeIndexListPage()` implementieren – setzt automatisch `'index' => …::route('/')`. Zusätzliche Pages (Inspector, Edit, …) über `getAdditionalResourcePages()` ergänzen.
 
 ### Schritt 4 (optional): Eigener Inspector
 
 Für volle Filament-Formulare (Tabs, Relationen, Medien, …):
 
 ```php
-use Heco\FilamentTreeIndex\Filament\Concerns\RendersAsTreeIndexInspector;
+use Moox\Tree\Filament\Concerns\RendersAsTreeIndexInspector;
 
 class TreeInspectorCategory extends EditCategory
 {
@@ -207,19 +207,19 @@ Ohne `inspectorPage()` zeigt das Package rechts nur ein **Minimalformular** (Lab
 
 ## `TreeIndexConfiguration`
 
-| Methode | Default | Bedeutung |
-|---------|---------|-----------|
-| `make(Model::class)` | – | Eloquent-Model |
-| `parentColumn('parent_id')` | `parent_id` | Eltern-Spalte |
-| `sortColumn('sort_order')` | `sort_order` | Sortierung; bei Nested Set: `_lft` |
-| `labelColumn('label')` | `label` | Anzeigetext im Baum |
-| `labelColumnQueryable(false)` | `true` | `false`, wenn Label nicht per SQL selektierbar ist (z. B. Accessor); Wert wird nach `create` gesetzt |
-| `nestedSet()` | `false` | Baum aus `_lft`/`_rgt` |
-| `reorderable(true)` | `true` | Drag & Drop (Livewire `wire:sort`) |
-| `inspectorPage(EditPage::class)` | `null` | Volles Filament-Formular rechts |
-| `modifyQuery(Closure)` | – | z. B. Resource-Scopes, Soft-Deletes, Mandanten |
-| `authorizationAbility('update')` | `null` | Gate-Ability für das Model; ohne Wert nur `auth()->check()` |
-| `labels(...)` | deutsche Standardtexte | UI-Texte (siehe unten) |
+| Methode                          | Default                | Bedeutung                                                                                            |
+| -------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| `make(Model::class)`             | –                      | Eloquent-Model                                                                                       |
+| `parentColumn('parent_id')`      | `parent_id`            | Eltern-Spalte                                                                                        |
+| `sortColumn('sort_order')`       | `sort_order`           | Sortierung; bei Nested Set: `_lft`                                                                   |
+| `labelColumn('label')`           | `label`                | Anzeigetext im Baum                                                                                  |
+| `labelColumnQueryable(false)`    | `true`                 | `false`, wenn Label nicht per SQL selektierbar ist (z. B. Accessor); Wert wird nach `create` gesetzt |
+| `nestedSet()`                    | `false`                | Baum aus `_lft`/`_rgt`                                                                               |
+| `reorderable(true)`              | `true`                 | Drag & Drop (Livewire `wire:sort`)                                                                   |
+| `inspectorPage(EditPage::class)` | `null`                 | Volles Filament-Formular rechts                                                                      |
+| `modifyQuery(Closure)`           | –                      | z. B. Resource-Scopes, Soft-Deletes, Mandanten                                                       |
+| `authorizationAbility('update')` | `null`                 | Gate-Ability für das Model; ohne Wert nur `auth()->check()`                                          |
+| `labels(...)`                    | deutsche Standardtexte | UI-Texte (siehe unten)                                                                               |
 
 Parameter von `labels()`: `treeHeading`, `treeSubheading`, `inspectorHeading`, `createRootLabel`, `createChildLabel`, `saveLabel`, `newRecordLabel`, `deleteConfirmMessage`.
 
@@ -265,14 +265,14 @@ return TreeIndexConfiguration::make(Category::class)
 
 Geschäftslogik liegt in Action-Klassen mit `handle()`. `ResourceTreeIndex` delegiert dorthin.
 
-| Klasse | Aufgabe |
-|--------|---------|
-| `CreateTreeNodeAction` | Neuer Knoten (Adjacency List); `sort_order` = max + 10; bei `nestedSet()` → `CreateNestedSetTreeNodeAction` |
-| `CreateNestedSetTreeNodeAction` | Neuer Knoten per Kalnoy (`appendTo` / Kind von Parent); Model braucht `NodeTrait` |
-| `UpdateTreeNodeAction` | Label/Parent aktualisieren |
-| `MoveTreeNodeAction` | Parent + Geschwister-Reihenfolge; bei `nestedSet()` → `MoveNestedSetTreeNodeAction` |
-| `MoveNestedSetTreeNodeAction` | Verschieben per Kalnoy (`beforeNode` / `afterNode` / `appendToNode`) |
-| `DeleteTreeNodeAction` | `$record->delete()` (Kaskade über DB/FK/Model/Nested-Set) |
+| Klasse                          | Aufgabe                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `CreateTreeNodeAction`          | Neuer Knoten (Adjacency List); `sort_order` = max + 10; bei `nestedSet()` → `CreateNestedSetTreeNodeAction` |
+| `CreateNestedSetTreeNodeAction` | Neuer Knoten per Kalnoy (`appendTo` / Kind von Parent); Model braucht `NodeTrait`                           |
+| `UpdateTreeNodeAction`          | Label/Parent aktualisieren                                                                                  |
+| `MoveTreeNodeAction`            | Parent + Geschwister-Reihenfolge; bei `nestedSet()` → `MoveNestedSetTreeNodeAction`                         |
+| `MoveNestedSetTreeNodeAction`   | Verschieben per Kalnoy (`beforeNode` / `afterNode` / `appendToNode`)                                        |
+| `DeleteTreeNodeAction`          | `$record->delete()` (Kaskade über DB/FK/Model/Nested-Set)                                                   |
 
 ## Konfiguration
 
@@ -295,12 +295,12 @@ Pro Resource: `authorizationAbility('update')` o. Ä. für `Gate::authorize()`
 
 Alle Tests liegen im Package unter `tests/`:
 
-| Verzeichnis | Inhalt |
-|-------------|--------|
-| `tests/Feature/` | Livewire `ResourceTreeIndex` (CRUD, Reorder) |
-| `tests/Unit/` | `TreeIndexConfiguration`, `TreeStructure`, Registry |
-| `tests/Support/` | Test-Resource, Nested-Set-Beispielkonfiguration |
-| `tests/Models/` | `TreeNode` (Adjacency List), `NestedSetTreeNode` (Nested Set) |
+| Verzeichnis      | Inhalt                                                        |
+| ---------------- | ------------------------------------------------------------- |
+| `tests/Feature/` | Livewire `ResourceTreeIndex` (CRUD, Reorder)                  |
+| `tests/Unit/`    | `TreeIndexConfiguration`, `TreeStructure`, Registry           |
+| `tests/Support/` | Test-Resource, Nested-Set-Beispielkonfiguration               |
+| `tests/Models/`  | `TreeNode` (Adjacency List), `NestedSetTreeNode` (Nested Set) |
 
 Ausführen:
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Tests\Support;
+namespace Moox\Tree\Tests\Support;
 
-use Heco\FilamentTreeIndex\Config\TreeIndexConfiguration;
-use Heco\FilamentTreeIndex\Contracts\ConfiguresTreeIndex;
-use Heco\FilamentTreeIndex\Tests\Models\TreeNode;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Tests\Models\TreeNode;
 
 final class TestTreeIndexResource implements ConfiguresTreeIndex
 {

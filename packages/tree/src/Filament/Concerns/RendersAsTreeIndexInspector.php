@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Heco\FilamentTreeIndex\Filament\Concerns;
+namespace Moox\Tree\Filament\Concerns;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
