@@ -97,7 +97,6 @@ class MediaInstaller extends AbstractAssetInstaller
             if (! $mediaModelSet || ! $pathGeneratorSet) {
                 error('⚠️ media-library.php could not be overwritten correctly. Please check manually!');
             }
-    
 
             note('✅ Spatie Media Library config published and updated with Moox Media model and CustomPathGenerator.');
 
