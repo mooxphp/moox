@@ -31,10 +31,29 @@ class {{ class }} extends PanelProvider
                 'primary' => {{ primary_color }},
             ]);
 
-        if (is_file(public_path('vendor/core/signet.svg'))) {
+        $signetPath = public_path('vendor/core/signet.svg');
+        $loginLogoPath = public_path('vendor/core/login-logo.svg');
+
+        if (is_file($signetPath) || is_file($loginLogoPath)) {
             $panel = $panel
-                ->brandLogo(asset('vendor/core/signet.svg'))
-                ->brandLogoHeight('3.5rem');
+                ->brandLogo(function () use ($signetPath, $loginLogoPath): ?string {
+                    if (request()->routeIs('filament.{{ panel_id }}.auth.login') && is_file($loginLogoPath)) {
+                        return asset('vendor/core/login-logo.svg');
+                    }
+
+                    if (is_file($signetPath)) {
+                        return asset('vendor/core/signet.svg');
+                    }
+
+                    return null;
+                })
+                ->brandLogoHeight(function () use ($loginLogoPath): string {
+                    if (request()->routeIs('filament.{{ panel_id }}.auth.login') && is_file($loginLogoPath)) {
+                        return '4rem';
+                    }
+
+                    return '3.5rem';
+                });
         }
 
         return $panel
