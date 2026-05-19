@@ -45,7 +45,14 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
-    public function packageBooted(): void {}
+    public function packageBooted(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                $this->package->basePath('/../public') => public_path('vendor/core'),
+            ], 'core-assets');
+        }
+    }
 
     public function configurePackage(Package $package): void
     {

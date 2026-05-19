@@ -2,12 +2,11 @@
 
 namespace Moox\Core\Installer\Installers;
 
-use Filament\Support\Commands\Concerns\CanGeneratePanels;
-use Filament\Support\Commands\Concerns\CanManipulateFiles;
 use Illuminate\Support\Facades\File;
 use Moox\Core\Installer\AbstractAssetInstaller;
 use Moox\Core\Installer\Contracts\PanelAwareInstallerInterface;
-use Symfony\Component\Console\Input\StringInput;
+use Moox\Core\Installer\Support\FilamentPanelStubPublisher;
+use Moox\Core\Installer\Traits\PublishesFilamentAssets;
 
 use function Moox\Prompts\confirm;
 use function Moox\Prompts\info;
@@ -22,8 +21,7 @@ use function Moox\Prompts\warning;
  */
 class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstallerInterface
 {
-    use CanGeneratePanels;
-    use CanManipulateFiles;
+    use PublishesFilamentAssets;
 
     protected ?string $panelPath = null;
 
@@ -265,61 +263,31 @@ class PluginInstaller extends AbstractAssetInstaller implements PanelAwareInstal
             required: true
         );
 
-        // Sanitize panel name - only allow alphanumeric and hyphens
-        $panelName = preg_replace('/[^a-zA-Z0-9-]/', '', $panelName);
+        $publisher = app(FilamentPanelStubPublisher::class);
+        $panelName = $publisher->sanitizePanelId($panelName);
 
-        if (empty($panelName)) {
+        if ($panelName === '') {
             warning('Invalid panel name');
 
             return null;
         }
 
-        $filamentPath = app_path('Providers/Filament');
-        if (! File::isDirectory($filamentPath)) {
-            File::makeDirectory($filamentPath, 0755, true);
-        }
-
         $className = ucfirst($panelName).'PanelProvider';
-        $expectedPath = $filamentPath.'/'.$className.'.php';
+        $expectedPath = app_path('Providers/Filament/'.$className.'.php');
 
         try {
-            // Verwende $this->command->call() wenn verfügbar (nach Prompts funktioniert das besser)
-            // Das nutzt den korrekten IO-Context vom Command
-            if ($this->command) {
-                $exitCode = $this->command->call('make:filament-panel', [
-                    'id' => $panelName,
-                    '--force' => File::exists($expectedPath),
-                ]);
-            } else {
-                // Fallback: Direkt über Application mit sauberem IO-Context
-                // Das umgeht das Problem mit dem veränderten IO-Context nach Prompts
-                $commandString = 'make:filament-panel '.$panelName;
-                if (File::exists($expectedPath)) {
-                    $commandString .= ' --force';
-                }
+            $panelPath = $publisher->publishToApp(
+                $panelName,
+                force: File::exists($expectedPath),
+            );
 
-                $input = new StringInput($commandString);
-                // Wichtig: Als interaktiv markieren, damit Prompts funktionieren
-                $input->setInteractive(true);
-                $exitCode = app()->handleCommand($input);
-            }
+            $providerClass = 'App\\Providers\\Filament\\'.$className;
+            $publisher->registerInBootstrapProviders($providerClass);
 
-            if ($exitCode !== 0) {
-                warning("⚠️ Panel konnte nicht erstellt werden (Exit Code: {$exitCode})");
+            note("✅ Panel created: {$panelName}");
+            $this->publishFilamentAssets();
 
-                return null;
-            }
-
-            // Prüfen ob die Datei erstellt wurde
-            if (File::exists($expectedPath)) {
-                note("✅ Panel created: {$panelName}");
-
-                return $expectedPath;
-            }
-
-            warning('Panel creation may have failed - file not found');
-
-            return null;
+            return $panelPath;
         } catch (\Throwable $e) {
             warning("Could not create panel: {$e->getMessage()}");
 

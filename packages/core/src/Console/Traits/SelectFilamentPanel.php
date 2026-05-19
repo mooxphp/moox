@@ -3,6 +3,7 @@
 namespace Moox\Core\Console\Traits;
 
 use Illuminate\Support\Facades\File;
+use Moox\Core\Installer\Support\FilamentPanelStubPublisher;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
@@ -18,7 +19,7 @@ trait SelectFilamentPanel
         'devops' => ['path' => 'packages/devops/src/panels',  'namespace' => 'Moox\\Devops\\Panels'],
         'shop' => ['path' => 'packages/shop/src/panels',    'namespace' => 'Moox\\Shop\\Panels'],
         'press' => ['path' => 'packages/press/src/panels',   'namespace' => 'Moox\\Press\\Panels'],
-        'empty' => ['path' => 'packages/core/src/panels',    'namespace' => 'Moox\\Core\\Panels'],
+        'admin' => ['path' => 'packages/core/src/Panels',    'namespace' => 'Moox\\Core\\Panels'],
     ];
 
     protected array $pluginPackageMap = [
@@ -146,19 +147,12 @@ trait SelectFilamentPanel
         }
 
         if ($publish) {
-            $toDir = app_path('Providers/Filament');
-            File::ensureDirectoryExists($toDir);
-            $publishedPath = $toDir.'/'.ucfirst($panel).'PanelProvider.php';
-            File::copy($packageProviderPath, $publishedPath);
-
-            $content = File::get($publishedPath);
-            $content = preg_replace('/^namespace\s+[^;]+;/m', 'namespace App\\Providers\\Filament;', $content, 1);
-
-            File::put($publishedPath, $content);
+            $publisher = app(FilamentPanelStubPublisher::class);
+            $publishedPath = $publisher->publishToApp($panel, force: true);
             info("✅ Published and customized provider: {$publishedPath}");
 
-            $providerClass = 'App\\\\Providers\\\\Filament\\\\'.ucfirst($panel).'PanelProvider';
-            $this->registerPanelProviderInBootstrapProviders($providerClass, $panel);
+            $providerClass = 'App\\Providers\\Filament\\'.ucfirst($panel).'PanelProvider';
+            $publisher->registerInBootstrapProviders($providerClass);
             $this->cleanupPanelProviderInAppServiceProvider($panel);
         } else {
             $providerClass = $this->panelMap[$panel]['namespace'].'\\'.ucfirst($panel).'PanelProvider';
