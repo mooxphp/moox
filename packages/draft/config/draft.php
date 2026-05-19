@@ -96,7 +96,7 @@ return [
                     ],
                     'user-device' => [
                         'resource' => UserDeviceResource::class,
-                    ]
+                    ],
                     // 'user' => [
                     //     'resource' => UserResource::class,
                     // ],
