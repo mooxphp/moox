@@ -10,6 +10,7 @@ return [
     'profile_photo_path' => 'Profilfotopfad',
     'avatar' => 'Avatar',
     'password' => 'Password',
+    'password_helper_default' => 'Mindestens :min Zeichen.',
     'language_id' => 'Language ID',
     'user_updated' => 'Benutzer aktualisiert',
     'user_updated_message' => 'Benutzer wurde erfolgreich aktualisiert.',

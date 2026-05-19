@@ -72,23 +72,12 @@ class RequestPasswordReset extends SimplePage
         $status = Password::broker(Filament::getAuthPasswordBroker())->sendResetLink(
             $data,
             function (CanResetPassword $user, string $token): void {
-                $notification = new PasswordResetNotification($token);
-
-                $user->notify($notification);
+                $user->notify(PasswordResetNotification::forToken($token));
             },
         );
 
-        if ($status !== Password::RESET_LINK_SENT) {
-            Notification::make()
-                ->title(__($status))
-                ->danger()
-                ->send();
-
-            return;
-        }
-
         Notification::make()
-            ->title(__($status))
+            ->title(__($status === Password::RESET_LINK_SENT ? $status : Password::RESET_LINK_SENT))
             ->success()
             ->send();
 

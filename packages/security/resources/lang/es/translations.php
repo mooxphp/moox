@@ -1,16 +1,8 @@
 <?php
 
 return [
-    'single' => 'Desarrollador',
-    'plural' => 'Desarrolladores',
-    'breadcrumb' => 'Desarrollador',
-    'title' => 'Desarrollador',
-    'navigation_label' => 'Desarrollador',
-    'navigation_group' => 'Desarrollador de Moox',
-    'totalone' => 'Desarrollador uno',
-    'totaltwo' => 'Desarrollador dos',
-    'totalthree' => 'Desarrollador tres',
-    'name' => 'Nombre',
-    'started_at' => 'Empezó a las',
-    'failed' => 'failed',
+    'send_password_reset_link' => 'Enviar enlace para restablecer contraseña',
+    'send_password_reset_links' => 'Enviar enlaces para restablecer contraseña',
+    'password_reset_link_sent' => 'Enlace para restablecer contraseña enviado',
+    'password_reset_links_sent' => 'Enlaces para restablecer contraseña enviados',
 ];

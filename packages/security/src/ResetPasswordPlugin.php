@@ -6,7 +6,14 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Security\Resources\ResetPasswordResource;
+use Moox\Security\Services\RequestPasswordReset;
+use Moox\Security\Services\ResetPassword;
 
+/**
+ * Filament plugin for {@see ResetPasswordResource} (password reset tokens).
+ *
+ * Part of the moox/security package — register alongside other panel plugins.
+ */
 class ResetPasswordPlugin implements Plugin
 {
     use EvaluatesClosures;
@@ -18,9 +25,11 @@ class ResetPasswordPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            ResetPasswordResource::class,
-        ]);
+        $panel
+            ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
+            ->resources([
+                ResetPasswordResource::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Moox\Core\Entities\BaseResource;
+use Moox\User\Support\PasswordValidation;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -87,9 +87,22 @@ class UserResource extends BaseResource
         return Gate::allows('viewTabs', static::getModel());
     }
 
+    public static function securityPasswordResetActionsAvailable(): bool
+    {
+        return class_exists(\Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction::class)
+            && (bool) config('security.actions.bulkactions.sendPasswordResetLinkBulkAction', false);
+    }
+
     public static function shouldShowSendPasswordResetLinksBulkAction(): bool
     {
-        return (bool) config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')
+        return static::securityPasswordResetActionsAvailable()
+            && static::canViewAllUsers();
+    }
+
+    public static function shouldShowSendPasswordResetLinkAction(): bool
+    {
+        return class_exists(\Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction::class)
+            && static::securityPasswordResetActionsAvailable()
             && static::canViewAllUsers();
     }
 
@@ -102,6 +115,15 @@ class UserResource extends BaseResource
         $authUser = auth()->user();
 
         return $authUser instanceof Model && $authUser->is($record);
+    }
+
+    public static function canSendPasswordResetTo(Model $record): bool
+    {
+        if (! static::hasUserPolicy()) {
+            return true;
+        }
+
+        return Gate::allows('update', $record);
     }
 
     #[Override]
@@ -197,9 +219,9 @@ class UserResource extends BaseResource
                         ->required()
                         ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                         ->password()
-                        ->visibleOn('create')
-                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
+                        ->rules(PasswordValidation::rules())
+                        ->helperText(PasswordValidation::helperText())
+                        ->visibleOn('create'),
 
                     TextInput::make('password_confirmation')
                         ->label(__('core::user.password_confirmation'))
@@ -214,26 +236,28 @@ class UserResource extends BaseResource
                         ->password()
                         ->rule('current_password')
                         ->required(fn (Get $get): bool => filled($get('new_password')))
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->hiddenOn('create'),
 
                     TextInput::make('new_password')
                         ->label(__('core::user.new_password'))
                         ->revealable()
                         ->password()
-                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
-                        ->dehydrated(false),
+                        ->rules(PasswordValidation::rules())
+                        ->helperText(PasswordValidation::helperText())
+                        ->dehydrated(fn (?string $state): bool => filled($state))
+                        ->hiddenOn('create'),
 
                     TextInput::make('new_password_confirmation')
                         ->label(__('core::user.new_password_confirmation'))
                         ->password()
-                        ->label('Confirm new password')
                         ->same('new_password')
                         ->requiredWith('new_password')
-                        ->dehydrated(false),
+                        ->dehydrated(false)
+                        ->hiddenOn('create'),
                 ])
                 ->columns(2)
-                ->visible(fn (?Model $record): bool => static::canManagePassword($record)),
+                ->visible(fn (?Model $record, string $operation): bool => $operation === 'create' || static::canManagePassword($record)),
         ])->statePath('data')->columns(1);
     }
 
@@ -279,13 +303,15 @@ class UserResource extends BaseResource
                         'success' => fn ($record): bool => $record->email_verified_at !== null,
                         'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
-                $supportsRoles ? TextColumn::make('roles')
-                    ->label(__('core::user.roles'))
-                    ->state(fn (User $record): array => $record->roles->pluck('name')->values()->all())
-                    ->badge()
-                    ->separator(', ')
-                    ->limitList(3)
-                    ->toggleable() : null,
+                ...($supportsRoles ? [
+                    TextColumn::make('roles')
+                        ->label(__('core::user.roles'))
+                        ->state(fn (User $record): array => $record->roles->pluck('name')->values()->all())
+                        ->badge()
+                        ->separator(', ')
+                        ->limitList(3)
+                        ->toggleable(),
+                ] : []),
                 TextColumn::make('deleted_at')
                     ->label(__('core::core.deleted'))
                     ->dateTime()

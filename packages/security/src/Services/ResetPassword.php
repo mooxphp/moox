@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Security\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
@@ -14,15 +16,14 @@ use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
-use Moox\Security\Helper\PasswordHash;
+use Moox\Security\Support\ResetsUserPassword;
+use Moox\Security\Support\ResolvesPasswordResetRules;
 use Override;
 
 /**
@@ -31,6 +32,8 @@ use Override;
 class ResetPassword extends SimplePage
 {
     use InteractsWithFormActions;
+    use ResetsUserPassword;
+    use ResolvesPasswordResetRules;
     use WithRateLimiting;
 
     /**
@@ -89,13 +92,7 @@ class ResetPassword extends SimplePage
         $status = Password::broker(Filament::getAuthPasswordBroker())->reset(
             $data,
             function (CanResetPassword|Model|Authenticatable $user) use ($data): void {
-                $passwordHash = new PasswordHash(8, true);
-                $user->forceFill([
-                    'user_pass' => $passwordHash->HashPassword($data['password']),
-                    'remember_token' => Str::random(60),
-                ])->save();
-
-                event(new PasswordReset($user));
+                $this->resetUserPassword($user, $data['password']);
             },
         );
 
@@ -141,10 +138,10 @@ class ResetPassword extends SimplePage
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->rules(config('press.password.validation'))
+            ->rules($this->getPasswordResetValidationRules())
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::pages/auth/password-reset/reset-password.form.password.validation_attribute'))
-            ->helperText(config('press.password.helperText'));
+            ->helperText($this->getPasswordResetHelperText());
     }
 
     protected function getPasswordConfirmationFormComponent(): Component

@@ -9,7 +9,6 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
-use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction;
 use Moox\User\Resources\UserResource;
 use Override;
 
@@ -17,15 +16,20 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    protected bool $passwordWasChanged = false;
+
     protected function getHeaderActions(): array
     {
-        return [
-            SendPasswordResetLinkAction::make()
-                ->visible(fn (): bool => UserResource::canViewAllUsers() && ! UserResource::canManagePassword($this->getRecord())),
+        return array_values(array_filter([
+            UserResource::shouldShowSendPasswordResetLinkAction()
+                ? \Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction::make()
+                    ->visible(fn (): bool => ! UserResource::canManagePassword($this->getRecord())
+                        && UserResource::canSendPasswordResetTo($this->getRecord()))
+                : null,
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),
-        ];
+        ]));
     }
 
     #[Override]
@@ -33,6 +37,7 @@ class EditUser extends EditRecord
     {
         if (UserResource::canManagePassword($this->getRecord()) && filled($data['new_password'] ?? null)) {
             $data['password'] = Hash::make((string) $data['new_password']);
+            $this->passwordWasChanged = true;
         }
 
         unset($data['current_password'], $data['new_password'], $data['new_password_confirmation']);
@@ -42,7 +47,7 @@ class EditUser extends EditRecord
 
     public function afterSave(): void
     {
-        if (UserResource::canManagePassword($this->getRecord())) {
+        if (UserResource::canManagePassword($this->getRecord()) && $this->passwordWasChanged) {
             session()->forget('password_hash_'.Filament::getCurrentOrDefaultPanel()->getAuthGuard());
         }
 

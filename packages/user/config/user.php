@@ -131,21 +131,22 @@ return [
     |--------------------------------------------------------------------------
     |
     | Define the password validation rules for your Moox users.
-    | If you want to be hacked pretty soon, you can disable
-    | the password validation by emptying the rules.
+    | An empty array uses simple defaults (min 8 characters). Set
+    | validation to null to disable custom password rules entirely.
     |
     */
 
     'password' => [
         'validation' => [
-            'min' => 20,
-            'max' => 64,
-            'mixed_case' => true,
-            'numbers' => true,
-            'symbols' => true,
-            'uncompromised' => true,
+            // Defaults (when omitted): min 8, max 255, no mixed_case/numbers/symbols/uncompromised
+            // 'min' => 8,
+            // 'max' => 255,
+            // 'mixed_case' => false,
+            // 'numbers' => false,
+            // 'symbols' => false,
+            // 'uncompromised' => false,
         ],
-        'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
+        'helperText' => null,
     ],
 
     /*

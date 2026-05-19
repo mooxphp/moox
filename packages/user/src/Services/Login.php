@@ -33,8 +33,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Moox\User\Support\PasswordValidation;
 use Jenssegers\Agent\Agent;
 use Livewire\Attributes\Locked;
 use Moox\UserDevice\Services\UserDeviceTracker;
@@ -247,33 +247,7 @@ class Login extends SimplePage
             ->autocomplete('current-password')
             ->required()
             ->extraInputAttributes(['tabindex' => 2])
-            ->rules([$this->getPasswordValidationRule()]);
-    }
-
-    protected function getPasswordValidationRule(): Password
-    {
-        $config = config('user.password.validation', []);
-
-        $rule = Password::min((int) ($config['min'] ?? 20))
-            ->max((int) ($config['max'] ?? 64));
-
-        if (($config['mixed_case'] ?? true) === true) {
-            $rule = $rule->mixedCase();
-        }
-
-        if (($config['numbers'] ?? true) === true) {
-            $rule = $rule->numbers();
-        }
-
-        if (($config['symbols'] ?? true) === true) {
-            $rule = $rule->symbols();
-        }
-
-        if (($config['uncompromised'] ?? true) === true) {
-            $rule = $rule->uncompromised();
-        }
-
-        return $rule;
+            ->rules(PasswordValidation::rules());
     }
 
     protected function getRememberFormComponent(): Component

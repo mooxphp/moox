@@ -1,16 +1,8 @@
 <?php
 
 return [
-    'single' => 'Bygger',
-    'plural' => 'Byggers',
-    'breadcrumb' => 'Bygger',
-    'title' => 'Bygger',
-    'navigation_label' => 'Bygger',
-    'navigation_group' => 'Moox Security',
-    'totalone' => 'Bygger én',
-    'totaltwo' => 'Bygger to',
-    'totalthree' => 'Bygger tre',
-    'name' => 'Navn',
-    'started_at' => 'Startet',
-    'failed' => 'mislyktes',
+    'send_password_reset_link' => 'Send lenke for tilbakestilling av passord',
+    'send_password_reset_links' => 'Send lenker for tilbakestilling av passord',
+    'password_reset_link_sent' => 'Lenke for tilbakestilling av passord sendt',
+    'password_reset_links_sent' => 'Lenker for tilbakestilling av passord sendt',
 ];

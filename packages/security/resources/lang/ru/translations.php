@@ -1,16 +1,8 @@
 <?php
 
 return [
-    'single' => 'Сборщик',
-    'plural' => 'Сборщики',
-    'breadcrumb' => 'Сборщик',
-    'title' => 'Сборщик',
-    'navigation_label' => 'Сборщик',
-    'navigation_group' => 'Сборщик Moox',
-    'totalone' => 'Первый сборщик',
-    'totaltwo' => 'Второй Сборщик',
-    'totalthree' => 'Третий Сборщик',
-    'name' => 'Имя',
-    'started_at' => 'Начато в',
-    'failed' => 'Неудача',
+    'send_password_reset_link' => 'Отправить ссылку для сброса пароля',
+    'send_password_reset_links' => 'Отправить ссылки для сброса пароля',
+    'password_reset_link_sent' => 'Ссылка для сброса пароля отправлена',
+    'password_reset_links_sent' => 'Ссылки для сброса пароля отправлены',
 ];

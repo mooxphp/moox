@@ -28,19 +28,19 @@ return [
     */
 
     'resources' => [
-        'security' => [
+        'reset_password' => [
 
             /*
             |--------------------------------------------------------------------------
             | Title
             |--------------------------------------------------------------------------
             |
-            | The translatable title of the Resource in singular and plural.
+            | Labels for ResetPasswordResource (password reset tokens).
             |
             */
 
-            'single' => 'trans//core::security.security',
-            'plural' => 'trans//core::security.securitys',
+            'single' => 'trans//core::security.reset_password_token',
+            'plural' => 'trans//core::security.reset_password_tokens',
 
             /*
             |--------------------------------------------------------------------------
@@ -125,6 +125,8 @@ return [
 
     'password_reset_links' => [
         'model' => User::class,
+        'broker' => env('MOOX_PASSWORD_RESET_BROKER', 'users'),
+        'panel' => env('MOOX_PASSWORD_RESET_PANEL', 'admin'),
     ],
 
     /*

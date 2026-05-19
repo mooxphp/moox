@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Security\Notifications\Passwords;
 
 use Carbon\Carbon;
@@ -24,11 +26,14 @@ class PasswordResetNotification extends Notification implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    protected Panel $panel;
+    public function __construct(
+        public string $token,
+        protected string $panelId,
+    ) {}
 
-    public function __construct(public string $token)
+    public static function forToken(string $token, ?string $panelId = null): static
     {
-        $this->panel = Filament::getCurrentOrDefaultPanel();
+        return new static($token, $panelId ?? Filament::getCurrentOrDefaultPanel()->getId());
     }
 
     public function via($notifiable): array
@@ -41,25 +46,32 @@ class PasswordResetNotification extends Notification implements ShouldQueue
         $mailRecipientName = config('security.mail_recipient_name') ?? 'name';
 
         return (new MailMessage)
-            ->subject(__('security::translations.Reset Password Message'))
-            ->greeting(__('security::translations.Hello').sprintf(' %s,', $notifiable->$mailRecipientName))
-            ->line(__('security::translations.You are receiving this email because we received a password reset request for your account.'))
-            ->action(__('security::translations.Reset Password'), $this->resetUrl($notifiable))
-            ->line(__('security::translations.This password reset link will expire').' '.$this->getReadableExpiryTime().'.')
-            ->line(__('security::translations.If you did not request a password reset, no further action is required.'))
-            ->salutation(new HtmlString(__('security::translations.Regards').'<br>'.config('mail.from.name')));
+            ->subject(__('security::translations.mail_reset_password_subject'))
+            ->greeting(__('security::translations.mail_greeting').sprintf(' %s,', (string) data_get($notifiable, $mailRecipientName, '')))
+            ->line(__('security::translations.mail_intro'))
+            ->action(__('security::translations.mail_action'), $this->resetUrl($notifiable))
+            ->line(__('security::translations.mail_expire_prefix').' '.$this->getReadableExpiryTime().'.')
+            ->line(__('security::translations.mail_outro'))
+            ->salutation(new HtmlString(__('security::translations.mail_salutation').'<br>'.config('mail.from.name')));
     }
 
     protected function resetUrl(CanResetPassword|Model|Authenticatable $notifiable): string
     {
-        return $this->panel->getResetPasswordUrl($this->token, $notifiable);
+        return $this->panel()->getResetPasswordUrl($this->token, $notifiable);
     }
 
     protected function getReadableExpiryTime(): string
     {
-        $expiryMinutes = config('auth.passwords.'.$this->panel->getAuthPasswordBroker().'.expire') ?? config('auth.passwords.users.expire');
+        $panel = $this->panel();
+        $expiryMinutes = config('auth.passwords.'.$panel->getAuthPasswordBroker().'.expire')
+            ?? config('auth.passwords.users.expire');
         $expiryTime = Carbon::now()->addMinutes($expiryMinutes + 1);
 
         return $expiryTime->diffForHumans();
+    }
+
+    protected function panel(): Panel
+    {
+        return Filament::getPanel($this->panelId);
     }
 }

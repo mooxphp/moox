@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Security\FilamentActions\Passwords;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
@@ -7,9 +9,13 @@ use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
 use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\CanCustomizeProcess;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Password;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 use Override;
 
@@ -29,7 +35,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
         parent::setUp();
 
         $this
-            ->label(__('security::translations.Send Password Reset Links'))
+            ->label(__('security::translations.send_password_reset_links'))
             ->requiresConfirmation()
             ->action(function (Collection $records): void {
                 try {
@@ -50,23 +56,49 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     return;
                 }
 
+                $authUser = auth()->user();
+                $sent = false;
+
+                $broker = Password::broker(Filament::getAuthPasswordBroker());
+                $panelId = Filament::getCurrentOrDefaultPanel()->getId();
+
+                /** @var array<string, true> $processedEmails */
+                $processedEmails = [];
+
                 foreach ($records as $record) {
+                    if ($authUser instanceof Model && $record->is($authUser)) {
+                        continue;
+                    }
+
+                    if (Gate::getPolicyFor($record) !== null && ! Gate::allows('update', $record)) {
+                        continue;
+                    }
+
                     if (! $record instanceof CanResetPassword) {
                         $recordClass = $record::class;
                         throw new Exception(sprintf('Model [%s] must implement [Illuminate\Contracts\Auth\CanResetPassword] interface.', $recordClass));
                     }
 
-                    $user = $record;
+                    $email = $record->getEmailForPasswordReset();
 
-                    $token = app('auth.password.broker')->createToken($user);
+                    if ($email === '' || isset($processedEmails[$email])) {
+                        continue;
+                    }
 
-                    $notification = new PasswordResetNotification($token);
+                    $processedEmails[$email] = true;
 
-                    $user->notify($notification);
+                    $token = $broker->createToken($record);
+
+                    $record->notify(PasswordResetNotification::forToken($token, $panelId));
+                    $sent = true;
+                }
+
+                if (! $sent) {
+                    return;
                 }
 
                 Notification::make()
-                    ->title(__('security::translations.Password reset links sent'))
+                    ->title(__('security::translations.password_reset_links_sent'))
                     ->success()
                     ->send();
             });

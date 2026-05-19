@@ -11,6 +11,7 @@ return [
     'profile_photo_path' => 'Profile Photo Path',
     'avatar' => 'Avatar',
     'password' => 'Password',
+    'password_helper_default' => 'At least :min characters.',
     'language_id' => 'Language ID',
     'user_updated' => 'User updated',
     'user_updated_message' => 'User has been updated successfully.',

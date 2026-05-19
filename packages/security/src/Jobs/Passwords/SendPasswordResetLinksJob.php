@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Security\Jobs\Passwords;
 
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Password;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 
@@ -40,14 +45,39 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
     public function handle(): void
     {
-        $usermodel = config('security.password_reset_links.model');
-        $users = $usermodel::all();
+        $userModel = config('security.password_reset_links.model');
 
-        foreach ($users as $user) {
-            $token = app('auth.password.broker')->createToken($user);
-            $notification = new PasswordResetNotification($token);
+        if (! is_string($userModel) || ! class_exists($userModel)) {
+            return;
+        }
 
-            $user->notify($notification);
+        $brokerName = config('security.password_reset_links.broker', config('auth.defaults.passwords', 'users'));
+        $panelId = config('security.password_reset_links.panel', 'admin');
+        $broker = Password::broker($brokerName);
+
+        /** @var array<string, true> $processedEmails */
+        $processedEmails = [];
+
+        foreach ($userModel::query()->cursor() as $user) {
+            if (! $user instanceof CanResetPassword) {
+                continue;
+            }
+
+            if (! $user instanceof Notifiable) {
+                continue;
+            }
+
+            $email = $user->getEmailForPasswordReset();
+
+            if ($email === '' || isset($processedEmails[$email])) {
+                continue;
+            }
+
+            $processedEmails[$email] = true;
+
+            $token = $broker->createToken($user);
+
+            $user->notify(PasswordResetNotification::forToken($token, $panelId));
         }
     }
 }

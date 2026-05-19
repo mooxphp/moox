@@ -4,6 +4,7 @@ namespace Moox\Security\Auth\Passwords;
 
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as DatabaseTokenRepositoryBase;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Support\Facades\Schema;
 use Override;
 
 class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
@@ -19,7 +20,7 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
         $email = $user->getEmailForPasswordReset();
         $userType = $this->getUserType($user);
 
-        $this->deleteSomeExisting($email, $userType);
+        $this->deleteExistingForEmail($email);
 
         $token = $this->createNewToken();
 
@@ -40,11 +41,10 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     public function exists(CanResetPasswordContract $user, $token)
     {
         $email = $user->getEmailForPasswordReset();
-        $userType = $this->getUserType($user);
 
+        // Primary key is `email` (Laravel default) — one token per address.
         $record = $this->getTable()
             ->where('email', $email)
-            ->where('user_type', $userType)
             ->first();
 
         if ($record) {
@@ -58,40 +58,43 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     #[Override]
     public function delete(CanResetPasswordContract $user): void
     {
-        $email = $user->getEmailForPasswordReset();
-        $userType = $this->getUserType($user);
-
-        $this->getTable()
-            ->where('email', $email)
-            ->where('user_type', $userType)
-            ->delete();
+        $this->deleteExistingForEmail($user->getEmailForPasswordReset());
     }
 
     /**
-     * Delete SOME existing reset tokens from the database.
+     * Delete existing reset tokens for the email address.
+     *
+     * The table primary key is `email` only; `user_type` is stored for auditing only.
      *
      * @return int
      */
-    protected function deleteSomeExisting(string $email, string $userType)
+    protected function deleteExistingForEmail(string $email): int
     {
-        return $this->getTable()
-            ->where('email', $email)
-            ->where('user_type', $userType)
-            ->delete();
+        return $this->getTable()->where('email', $email)->delete();
     }
 
     protected function createPayload(string $email, string $token, string $userType): array
     {
-        return [
+        $payload = [
             'email' => $email,
             'token' => $this->hasher->make($token),
-            'user_type' => $userType,
             'created_at' => now(),
         ];
+
+        if ($this->supportsUserTypes()) {
+            $payload['user_type'] = $userType;
+        }
+
+        return $payload;
     }
 
     protected function getUserType(CanResetPasswordContract $user): string
     {
         return $user::class;
+    }
+
+    protected function supportsUserTypes(): bool
+    {
+        return Schema::hasColumn($this->table, 'user_type');
     }
 }

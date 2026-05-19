@@ -19,8 +19,6 @@ class ResetPasswordResource extends Resource
     use BaseInResource;
     use HasResourceTabs;
 
-    protected static ?string $modelLabel = 'Reset Tokens';
-
     protected static ?string $model = ResetPassword::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-token';
@@ -85,25 +83,25 @@ class ResetPasswordResource extends Resource
     #[Override]
     public static function getModelLabel(): string
     {
-        return config('security.resources.security.single');
+        return config('security.resources.reset_password.single');
     }
 
     #[Override]
     public static function getPluralModelLabel(): string
     {
-        return config('security.resources.security.plural');
+        return config('security.resources.reset_password.plural');
     }
 
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('security.resources.security.plural');
+        return config('security.resources.reset_password.plural');
     }
 
     #[Override]
     public static function getBreadcrumb(): string
     {
-        return config('security.resources.security.single');
+        return config('security.resources.reset_password.single');
     }
 
     #[Override]

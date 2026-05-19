@@ -6,7 +6,6 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Security\Models\ResetPassword;
-use Moox\Security\Models\Security;
 
 class ResetPasswordWidgets extends BaseWidget
 {
