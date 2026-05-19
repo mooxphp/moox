@@ -234,7 +234,6 @@ trait Link
         }
 
         foreach ($this->effectivePackages() as $name => $package) {
-
             $packageName = $this->getPackageName($name, $package);
             if (! $packageName) {
                 info("Skipping $name: no composer.json found or invalid");

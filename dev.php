@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Moox\Devlink\Support\EffectivePackages;
 
 $options = getopt('', [
     'laravel::',
@@ -459,7 +460,7 @@ function buildComposerJson(string $root, string $laravelVersion): void
 
     require_once $root.'/packages/devlink/src/Support/EffectivePackages.php';
 
-    $effectivePackages = Moox\Devlink\Support\EffectivePackages::resolve($root, $config['packages']);
+    $effectivePackages = EffectivePackages::resolve($root, $config['packages']);
 
     $composer = [
         'name' => 'moox/dev-app',
@@ -490,11 +491,11 @@ function buildComposerJson(string $root, string $laravelVersion): void
     foreach ($effectivePackages as $name => $pkg) {
         $type = (string) ($pkg['type'] ?? '');
 
-        if (! Moox\Devlink\Support\EffectivePackages::isLinkableType($type)) {
+        if (! EffectivePackages::isLinkableType($type)) {
             continue;
         }
 
-        $directory = Moox\Devlink\Support\EffectivePackages::resolvePackageDirectory($root, $pkg);
+        $directory = EffectivePackages::resolvePackageDirectory($root, $pkg);
 
         if ($directory === null || ! is_file($directory.DIRECTORY_SEPARATOR.'composer.json')) {
             continue;
