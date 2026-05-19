@@ -2,6 +2,8 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use Moox\Devlink\Support\EffectivePackages;
+
 trait Check
 {
     private function check(): array
@@ -39,6 +41,7 @@ trait Check
         }
 
         $repositories = $composerJson['repositories'] ?? [];
+        $effectiveSlugs = array_keys(EffectivePackages::resolve(base_path(), $config['packages']));
 
         foreach ($config['packages'] as $name => $package) {
             $packagePath = "packages/{$name}";
@@ -59,10 +62,13 @@ trait Check
 
             $packagesArray[$name] = $package;
 
+            $isEffective = in_array($name, $effectiveSlugs, true);
+
             $realPackages[$name] = [
                 'name' => $name,
                 'type' => $package['type'] ?? 'unknown',
-                'active' => $package['active'] ?? false,
+                'active' => $isEffective,
+                'config_active' => $package['active'] ?? false,
                 'link' => $package['linked'] ?? true,
                 'deploy' => $package['deploy'] ?? false,
                 'valid' => match (true) {
@@ -133,17 +139,12 @@ trait Check
     private function checkUpdated(): bool
     {
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
-        $devlinkConfig = config('devlink.packages');
         $composerRequire = array_merge(
             $composerJson['require'] ?? [],
             $composerJson['require-dev'] ?? []
         );
 
-        foreach ($devlinkConfig as $package => $config) {
-            if (! ($config['active'] ?? false)) {
-                continue;
-            }
-
+        foreach (EffectivePackages::resolve(base_path(), config('devlink.packages', [])) as $package => $config) {
             $packageName = $this->getPackageName($package, $config);
             if (! $packageName || ! isset($composerRequire[$packageName])) {
                 return false;

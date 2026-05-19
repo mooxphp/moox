@@ -50,6 +50,7 @@ return [
     | The URL of the private repository (Satis).
     |
     | Types:
+    | - bundle = meta package; active bundles resolve moox/* from composer.json (require + require-dev)
     | - public = installed from Packagist
     | - private = installed from Satis
     | - local = local package
@@ -59,8 +60,52 @@ return [
     |
     */
     'packages' => [
-        'audit' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Bundles
+        |--------------------------------------------------------------------------
+        |
+        | moox Bundles are used to install
+        | a set of packages at once.
+        |
+        */
+        'identity' => [
+            'active' => false,
+            'path' => $public_base_path.'/identity',
+            'type' => 'bundle',
+        ],
+        'content' => [
+            'active' => false,
+            'path' => $public_base_path.'/content',
+            'type' => 'bundle',
+        ],
+        'commerce' => [
+            'active' => false,
+            'path' => $public_base_path.'/commerce',
+            'type' => 'bundle',
+        ],
+        'infra' => [
+            'active' => false,
+            'path' => $public_base_path.'/infra',
+            'type' => 'bundle',
+        ],
+        'full' => [
             'active' => true,
+            'path' => $public_base_path.'/full',
+            'type' => 'bundle',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | FOSS Packages
+        |--------------------------------------------------------------------------
+        |
+        | Single packages from the FOSS repository.
+        |
+        */
+        'audit' => [
+            'active' => false,
             'path' => $public_base_path.'/audit',
             'type' => 'public',
         ],
@@ -70,7 +115,7 @@ return [
             'type' => 'public',
         ],
         'backup-server' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/backup-server',
             'type' => 'public',
         ],
@@ -80,7 +125,7 @@ return [
             'type' => 'public',
         ],
         'build' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/build',
             'type' => 'public',
         ],
@@ -95,17 +140,17 @@ return [
             'type' => 'public',
         ],
         'category' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/category',
             'type' => 'public',
         ],
         'clipboard' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/clipboard',
             'type' => 'public',
         ],
         'components' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/components',
             'type' => 'public',
         ],
@@ -116,7 +161,7 @@ return [
             'type' => 'private',
         ],
         'core' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/core',
             'type' => 'public',
         ],
@@ -126,7 +171,7 @@ return [
             'type' => 'public',
         ],
         'data' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/data',
             'type' => 'public',
         ],
@@ -143,62 +188,62 @@ return [
             'dev' => true,
         ],
         'devops' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/devops',
             'type' => 'public',
         ],
         'devtools' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/devtools',
             'type' => 'public',
         ],
         'draft' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/draft',
             'type' => 'public',
         ],
         'expiry' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/expiry',
             'type' => 'public',
         ],
         'featherlight' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/featherlight',
             'type' => 'public',
         ],
         'file-icons' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/file-icons',
             'type' => 'public',
         ],
         'firewall' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/firewall',
             'type' => 'public',
         ],
         'flag-icons-circle' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/flag-icons-circle',
             'type' => 'public',
         ],
         'flag-icons-origin' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/flag-icons-origin',
             'type' => 'public',
         ],
         'flag-icons-rect' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/flag-icons-rect',
             'type' => 'public',
         ],
         'flag-icons-square' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/flag-icons-square',
             'type' => 'public',
         ],
         'forge' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/forge',
             'type' => 'public',
         ],
@@ -223,12 +268,12 @@ return [
             'type' => 'public',
         ],
         'item' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/item',
             'type' => 'public',
         ],
         'jobs' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/jobs',
             'type' => 'public',
         ],
@@ -238,17 +283,17 @@ return [
             'type' => 'public',
         ],
         'laravel-icons' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/laravel-icons',
             'type' => 'public',
         ],
         'localization' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/localization',
             'type' => 'public',
         ],
         'login-link' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/login-link',
             'type' => 'public',
         ],
@@ -258,7 +303,7 @@ return [
             'type' => 'public',
         ],
         'media' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/media',
             'type' => 'public',
         ],
@@ -279,17 +324,17 @@ return [
             'type' => 'public',
         ],
         'news' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/news',
             'type' => 'public',
         ],
         'notifications' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/notifications',
             'type' => 'public',
         ],
         'packages' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/packages',
             'type' => 'public',
         ],
@@ -299,12 +344,12 @@ return [
             'type' => 'public',
         ],
         'page' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/page',
             'type' => 'public',
         ],
         'passkey' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/passkey',
             'type' => 'public',
         ],
@@ -319,17 +364,17 @@ return [
             'type' => 'public',
         ],
         'press' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/press',
             'type' => 'public',
         ],
         'press-trainings' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/press-trainings',
             'type' => 'public',
         ],
         'press-wiki' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/press-wiki',
             'type' => 'public',
         ],
@@ -339,12 +384,12 @@ return [
             'type' => 'public',
         ],
         'progress' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/progress',
             'type' => 'public',
         ],
         'prompts' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/prompts',
             'type' => 'public',
         ],
@@ -359,7 +404,7 @@ return [
             'type' => 'public',
         ],
         'restore' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/restore',
             'type' => 'public',
         ],
@@ -374,7 +419,7 @@ return [
             'type' => 'public',
         ],
         'security' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/security',
             'type' => 'public',
         ],
@@ -389,17 +434,17 @@ return [
             'type' => 'public',
         ],
         'skeleton' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/skeleton',
             'type' => 'public',
         ],
         'slug' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/slug',
             'type' => 'public',
         ],
         'tag' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/tag',
             'type' => 'public',
         ],
@@ -414,27 +459,27 @@ return [
             'type' => 'public',
         ],
         'trainings' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/trainings',
             'type' => 'public',
         ],
         'tree' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/tree',
             'type' => 'public',
         ],
         'user' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/user',
             'type' => 'public',
         ],
         'user-device' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/user-device',
             'type' => 'public',
         ],
         'user-session' => [
-            'active' => true,
+            'active' => false,
             'path' => $public_base_path.'/user-session',
             'type' => 'public',
         ],
@@ -448,6 +493,34 @@ return [
             'path' => $public_base_path.'/wishlist',
             'type' => 'public',
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pro Packages
+        |--------------------------------------------------------------------------
+        |
+        | These packages are moox Pro packages
+        | that are installed from the
+        | private repository.
+        |
+        */
+        'pro' => [
+            'active' => false,
+            'path' => $private_base_path.'/pro',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Local Packages
+        |--------------------------------------------------------------------------
+        |
+        | These packages are local packages
+        | that are installed from the
+        | packages directory.
+        |
+        */
         'zzz-your-local-package' => [
             'active' => false,
             'type' => 'local',

@@ -10,6 +10,8 @@ use function Laravel\Prompts\note;
 
 trait Link
 {
+    use UsesEffectivePackages;
+
     private function link(): void
     {
         $this->prepare();
@@ -34,16 +36,14 @@ trait Link
         $notFoundPackages = [];
         $failedPackages = [];
         $inactivePackages = [];
-        $configuredPackages = config('devlink.packages', []);
+        $effectivePackages = $this->effectivePackages();
 
-        foreach ($configuredPackages as $name => $package) {
-            if (! ($package['active'] ?? false)) {
-                $inactivePackages[] = $name;
-
+        foreach ($effectivePackages as $name => $package) {
+            if (($package['type'] ?? '') === 'local') {
                 continue;
             }
 
-            if (($package['type'] ?? '') === 'local') {
+            if (($package['type'] ?? '') === 'bundle') {
                 continue;
             }
 
@@ -147,6 +147,7 @@ trait Link
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
         $removedPackages = [];
         $configuredPackages = config('devlink.packages', []);
+        $effectiveSlugs = array_keys($this->effectivePackages());
         $packagesBaseName = basename($this->packagesPath);
 
         foreach ($composerJson['repositories'] ?? [] as $key => $repo) {
@@ -155,7 +156,7 @@ trait Link
                 $packageName = $this->getPackageName($package, $configuredPackages[$package] ?? []);
 
                 if (! isset($configuredPackages[$package]) ||
-                    ! ($configuredPackages[$package]['active'] ?? false)) {
+                    ! in_array($package, $effectiveSlugs, true)) {
                     $removedPackages[] = [
                         'key' => $key,
                         'package' => $package,
@@ -211,13 +212,14 @@ trait Link
         $addedRequires = [];
         $removedRepos = [];
         $removedRequires = [];
+        $effectiveSlugs = array_keys($this->effectivePackages());
 
         foreach ($repositories as $key => $repo) {
             if (($repo['type'] ?? '') === 'path') {
                 $name = basename($repo['url']);
                 $package = $this->packages[$name] ?? null;
 
-                if (! $package || ! ($package['active'] ?? false)) {
+                if (! $package || ! in_array($name, $effectiveSlugs, true)) {
                     unset($repositories[$key]);
                     $packageName = $this->getPackageName($name, $package ?? []);
                     if ($packageName) {
@@ -231,10 +233,7 @@ trait Link
             }
         }
 
-        foreach ($this->packages as $name => $package) {
-            if (! ($package['active'] ?? false)) {
-                continue;
-            }
+        foreach ($this->effectivePackages() as $name => $package) {
 
             $packageName = $this->getPackageName($name, $package);
             if (! $packageName) {
