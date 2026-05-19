@@ -2,11 +2,9 @@
 
 namespace Moox\Core\Traits\Tabs;
 
-use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\HasQueriesInConfig;
 
 trait HasListPageTabs
@@ -21,21 +19,15 @@ trait HasListPageTabs
     public function updatedActiveTab(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
-
-        if ($this instanceof ListRecords) {
-            $this->tableFilters = null;
-            $this->tableSort = null;
-            $this->resetTable();
-            $this->cachedDefaultTableColumnState = null;
-            $this->applyTableColumnManager();
-        } elseif (method_exists($this, 'resetPage')) {
-            $this->resetPage();
-        }
+        $this->tableFilters = null;
+        $this->tableSortColumn = null;
+        $this->tableSortDirection = null;
+        $this->resetTable();
     }
 
     protected function getTableQuery(): Builder
     {
-        if ($this instanceof BaseListDrafts) {
+        if (method_exists($this, 'syncLangToRequest')) {
             $this->syncLangToRequest();
         }
 
@@ -46,10 +38,9 @@ trait HasListPageTabs
     {
         $tabsConfig = Config::get($configKey, []);
         $tabs = [];
-        $resource = static::getResource();
 
         foreach ($tabsConfig as $key => $tabConfig) {
-            if (isset($tabConfig['visible']) && ! $tabConfig['visible']) {
+            if (isset($tabConfig['visible']) && !$tabConfig['visible']) {
                 continue;
             }
 
@@ -59,16 +50,12 @@ trait HasListPageTabs
             $queryConditions = $tabConfig['query'];
 
             if (empty($queryConditions)) {
-                $badgeQuery = $modelClass::query();
-                $badgeQuery = ScopedResourceContext::applyScope($badgeQuery, $resource);
-
-                $tab->modifyQueryUsing(fn ($query) => $query)
-                    ->badge($badgeQuery->count());
+                $tab->modifyQueryUsing(fn($query) => $query)
+                    ->badge($modelClass::query()->count());
             } else {
-                $tab->modifyQueryUsing(fn ($query) => $this->applyConditions($query, $queryConditions));
+                $tab->modifyQueryUsing(fn($query) => $this->applyConditions($query, $queryConditions));
 
                 $badgeCountQuery = $modelClass::query();
-                $badgeCountQuery = ScopedResourceContext::applyScope($badgeCountQuery, $resource);
                 $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);
 
                 $tab->badge($badgeCountQuery->count());
