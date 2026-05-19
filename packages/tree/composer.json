@@ -11,18 +11,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Heco\\FilamentTreeIndex\\": "src/"
+            "Moox\\Tree\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Heco\\FilamentTreeIndex\\Tests\\": "tests/"
+            "Moox\\Tree\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Heco\\FilamentTreeIndex\\FilamentTreeIndexServiceProvider"
+                "Moox\\Tree\\TreeServiceProvider"
             ]
         }
     },
