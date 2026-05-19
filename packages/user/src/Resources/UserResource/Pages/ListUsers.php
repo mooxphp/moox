@@ -21,6 +21,10 @@ class ListUsers extends ListRecords
 
     public function getTabs(): array
     {
+        if (! UserResource::canViewUserTabs()) {
+            return [];
+        }
+
         return $this->getDynamicTabs('user.resources.user.tabs', User::class);
     }
 }

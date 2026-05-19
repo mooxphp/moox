@@ -2,23 +2,34 @@
 
 namespace Moox\User\Resources;
 
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
@@ -30,9 +41,8 @@ use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
 use Override;
 
-class UserResource extends Resource
+class UserResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
     use HasScopedChildResource;
 
@@ -42,125 +52,209 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function hasUserPolicy(): bool
+    {
+        return Gate::getPolicyFor(static::getModel()) !== null;
+    }
+
+    public static function canViewAllUsers(): bool
+    {
+        if (! static::hasUserPolicy()) {
+            return true;
+        }
+
+        $policy = Gate::getPolicyFor(static::getModel());
+
+        if (! $policy || ! method_exists($policy, 'viewAll')) {
+            return true;
+        }
+
+        return Gate::allows('viewAll', static::getModel());
+    }
+
+    public static function canViewUserTabs(): bool
+    {
+        if (! static::hasUserPolicy()) {
+            return true;
+        }
+
+        $policy = Gate::getPolicyFor(static::getModel());
+
+        if (! $policy || ! method_exists($policy, 'viewTabs')) {
+            return true;
+        }
+
+        return Gate::allows('viewTabs', static::getModel());
+    }
+
+    public static function shouldShowSendPasswordResetLinksBulkAction(): bool
+    {
+        return (bool) config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')
+            && static::canViewAllUsers();
+    }
+
+    public static function canManagePassword(?Model $record): bool
+    {
+        if ($record === null) {
+            return true;
+        }
+
+        $authUser = auth()->user();
+
+        return $authUser instanceof Model && $authUser->is($record);
+    }
+
     #[Override]
     public static function form(Schema $schema): Schema
     {
+        $supportsRoles = method_exists(static::getModel(), 'roles');
+
         return $schema->components([
-            Section::make()->schema([
-                MediaPicker::make('avatar_url')
-                    ->label('Avatar')
-                    ->multiple()
-                    ->maxFiles(4)
-                    ->imageEditor()
-                    ->panelLayout('grid'),
-
-                TextInput::make('name')
-                    ->label(__('core::core.name'))
-                    ->rules(['max:255', 'string'])
-                    ->required(),
-                TextInput::make('slug')
-                    ->label(__('core::core.slug'))
-                    ->rules(['max:255', 'string']),
-
-                Select::make('roles')
-                    ->label(__('core::user.roles'))
-                    ->relationship('roles', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
-                Select::make('gender')
-                    ->label(__('core::user.gender'))
-                    ->rules(['in:unknown,male,female,other'])
-                    ->required()
-                    ->searchable()
-                    ->options([
-                        'unknown' => 'Unknown',
-                        'female' => 'Female',
-                        'male' => 'Male',
-                        'other' => 'Other',
-                    ]),
-                TextInput::make('title')
-                    ->label(__('core::user.title'))
-                    ->rules(['max:255', 'string'])
-                    ->nullable(),
-                TextInput::make('first_name')
-                    ->label(__('core::user.first_name'))
-                    ->rules(['max:255', 'string']),
-                TextInput::make('last_name')
-                    ->label(__('core::user.last_name'))
-                    ->rules(['max:255', 'string']),
-                TextInput::make('email')
-                    ->label(__('core::user.email'))
-                    ->rules(['email'])
-                    ->required()
-                    ->unique(
-                        'users',
-                        'email',
-                        fn (?Model $record): ?Model => $record
-                    )
-                    ->email(),
-                TextInput::make('website')
-                    ->label(__('core::user.website'))
-                    ->rules(['max:255', 'string'])
-                    ->nullable(),
-
-                RichEditor::make('description')
-                    ->label(__('core::core.description'))
-                    ->rules(['max:255']),
-
-                static::getScopeSelectField(),
-
-                TextInput::make('password')
-                    ->label(__('core::user.password'))
-                    ->revealable()
-                    ->required()
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->password()
-                    ->visibleOn('create')
-                    ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                    ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
-
-                TextInput::make('password_confirmation')
-                    ->label(__('core::user.password_confirmation'))
-                    ->requiredWith('password')
-                    ->password()
-                    ->same('password')
-                    ->visibleOn('create'),
-            ]),
-            Section::make('Update Password')
+            Section::make(__('core::core.general'))
                 ->schema([
+                    MediaPicker::make('avatar_url')
+                        ->label('Avatar')
+                        ->imageEditor()
+                        ->panelLayout('grid'),
+
+                    TextInput::make('name')
+                        ->label(__('core::core.name'))
+                        ->rules(['max:255', 'string'])
+                        ->required(),
+
+                    TextInput::make('slug')
+                        ->label(__('core::core.slug'))
+                        ->rules(['max:255', 'string']),
+
+                    TextInput::make('title')
+                        ->label(__('core::user.title'))
+                        ->rules(['max:255', 'string'])
+                        ->nullable(),
+
+                    TextInput::make('first_name')
+                        ->label(__('core::user.first_name'))
+                        ->rules(['max:255', 'string']),
+
+                    TextInput::make('last_name')
+                        ->label(__('core::user.last_name'))
+                        ->rules(['max:255', 'string']),
+
+                    Select::make('gender')
+                        ->label(__('core::user.gender'))
+                        ->rules(['in:unknown,male,female,other'])
+                        ->required()
+                        ->searchable()
+                        ->options([
+                            'unknown' => 'Unknown',
+                            'female' => 'Female',
+                            'male' => 'Male',
+                            'other' => 'Other',
+                        ]),
+                ])
+                ->columns(2),
+
+            Section::make(__('core::core.contact'))
+                ->schema([
+                    TextInput::make('email')
+                        ->label(__('core::user.email'))
+                        ->rules(['email'])
+                        ->required()
+                        ->unique(
+                            'users',
+                            'email',
+                            fn (?Model $record): ?Model => $record
+                        )
+                        ->email(),
+
+                    TextInput::make('website')
+                        ->label(__('core::user.website'))
+                        ->rules(['max:255', 'string'])
+                        ->nullable(),
+
+                    RichEditor::make('description')
+                        ->label(__('core::core.description'))
+                        ->columnSpanFull(),
+                ])
+                ->columns(2),
+
+            Section::make(__('core::user.roles'))
+                ->schema(array_filter([
+                    $supportsRoles ? Select::make('roles')
+                        ->label(__('core::user.roles'))
+                        ->relationship('roles', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->searchable() : null,
+                ]))
+                ->columns(1)
+                ->visible($supportsRoles),
+
+            Section::make(__('core::user.password'))
+                ->schema([
+                    TextInput::make('password')
+                        ->label(__('core::user.password'))
+                        ->revealable()
+                        ->required()
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->password()
+                        ->visibleOn('create')
+                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
+                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
+
+                    TextInput::make('password_confirmation')
+                        ->label(__('core::user.password_confirmation'))
+                        ->requiredWith('password')
+                        ->password()
+                        ->same('password')
+                        ->visibleOn('create'),
+
                     TextInput::make('current_password')
                         ->label(__('core::user.current_password'))
                         ->revealable()
                         ->password()
-                        ->rule('current_password'),
+                        ->rule('current_password')
+                        ->required(fn (Get $get): bool => filled($get('new_password')))
+                        ->dehydrated(false),
+
                     TextInput::make('new_password')
                         ->label(__('core::user.new_password'))
                         ->revealable()
                         ->password()
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
-                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.'),
+                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
+                        ->dehydrated(false),
+
                     TextInput::make('new_password_confirmation')
                         ->label(__('core::user.new_password_confirmation'))
                         ->password()
                         ->label('Confirm new password')
                         ->same('new_password')
-                        ->requiredWith('new_password'),
-                ])->visibleOn('edit'),
+                        ->requiredWith('new_password')
+                        ->dehydrated(false),
+                ])
+                ->columns(2)
+                ->visible(fn (?Model $record): bool => static::canManagePassword($record)),
         ])->statePath('data')->columns(1);
     }
 
     #[Override]
     public static function table(Table $table): Table
     {
+        $supportsRoles = method_exists(static::getModel(), 'roles');
+
         return $table
             ->poll('60s')
             ->columns([
                 CustomImageColumn::make('avatar_url')
-                    ->circular(),
+                    ->circular()
+                    ->defaultImageUrl(fn (User $record): string => 'https://ui-avatars.com/api/?name='.urlencode((string) ($record->name ?? 'User'))),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
+                    ->state(function (User $record): string {
+                        $fullName = trim(($record->first_name ?? '').' '.($record->last_name ?? ''));
+
+                        return filled($fullName) ? $fullName : (string) ($record->name ?? '');
+                    })
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -185,27 +279,85 @@ class UserResource extends Resource
                         'success' => fn ($record): bool => $record->email_verified_at !== null,
                         'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
-                static::getScopeTableColumn(),
-                IconColumn::make('roles.name')
+                $supportsRoles ? TextColumn::make('roles')
                     ->label(__('core::user.roles'))
+                    ->state(fn (User $record): array => $record->roles->pluck('name')->values()->all())
+                    ->badge()
+                    ->separator(', ')
+                    ->limitList(3)
+                    ->toggleable() : null,
+                TextColumn::make('deleted_at')
+                    ->label(__('core::core.deleted'))
+                    ->dateTime()
                     ->sortable()
-                    ->alignCenter()
-                    ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
-                    ])
-                    ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
-                    ]),
+                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted')
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-
+                //
             ])
-            ->recordActions([ViewAction::make(), EditAction::make()])
-            ->toolbarActions(array_filter([
-                DeleteBulkAction::make(),
-                (config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')) ?
-                SendPasswordResetLinksBulkAction::make() : null,
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
+                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) !== 'deleted'),
+                ForceDeleteAction::make()
+                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+                RestoreAction::make()
+                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+            ])
+            ->bulkActions(array_filter([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) !== 'deleted'),
+                    ForceDeleteBulkAction::make()
+                        ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+                    RestoreBulkAction::make()
+                        ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+                ]),
+                static::shouldShowSendPasswordResetLinksBulkAction() ?
+                    SendPasswordResetLinksBulkAction::make() : null,
             ]));
+    }
+
+    public static function getTableQuery(?string $activeTab = null): Builder
+    {
+        $modelClass = static::getModel();
+        $supportsRoles = method_exists($modelClass, 'roles');
+        $authUser = auth()->user();
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($modelClass), true) && $activeTab === 'deleted') {
+            $query = $modelClass::onlyTrashed();
+            $query = ScopedResourceContext::applyScope($query, static::class);
+        } else {
+            $query = static::getEloquentQuery();
+        }
+
+        if ($supportsRoles) {
+            $query->with(['roles']);
+        }
+
+        if ($authUser instanceof Model && ! static::canViewAllUsers()) {
+            $query->whereKey($authUser->getKey());
+        }
+
+        return $query;
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        $query = parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+
+        $authUser = auth()->user();
+
+        if ($authUser instanceof Model && ! static::canViewAllUsers()) {
+            $query->whereKey($authUser->getKey());
+        }
+
+        return $query;
     }
 
     #[Override]

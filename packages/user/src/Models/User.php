@@ -6,11 +6,13 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use Moox\Core\Models\Concerns\HasScopedModel;
+use Moox\User\Support\HasRolesTrait;
 use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -19,9 +21,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $first_name
  * @property string|null $last_name
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
-    use HasFactory, HasScopedModel, InteractsWithMedia, Notifiable;
+    use HasFactory, HasRolesTrait, InteractsWithMedia, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -36,7 +38,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'password',
         'profile_photo_path',
         'avatar_url',
-        'scope',
+
     ];
 
     protected $searchableFields = ['*'];
@@ -55,12 +57,108 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        $email = strtolower((string) $this->email);
+
+        if ($panel->getId() === 'admin' && $email === 'thomas.herrmann@wilo.com') {
+            return false;
+        }
+
+        return preg_match('/@[^@\s]+\.[a-z]{2,63}$/i', $email) === 1
+            && $this->hasVerifiedEmail();
     }
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+        $value = $this->avatar_url;
+
+        if (blank($value)) {
+            return null;
+        }
+
+        // The MediaPicker may store JSON objects/arrays in this column.
+        if (is_string($value)) {
+            $trimmed = trim($value);
+
+            if ($trimmed !== '' && (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '['))) {
+                $decoded = json_decode($trimmed, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    // Sometimes the payload is an object with a single numeric key, e.g. {"1": {...}}.
+                    // Treat that key as a directory hint (media/{id}/{file_name}), without requiring Spatie Media.
+                    if (is_array($decoded) && ! array_is_list($decoded) && count($decoded) === 1) {
+                        $firstKey = array_key_first($decoded);
+                        $first = $decoded[$firstKey] ?? null;
+
+                        if (is_array($first)) {
+                            if (
+                                (is_int($firstKey) || (is_string($firstKey) && ctype_digit($firstKey)))
+                                && is_string($first['file_name'] ?? null)
+                            ) {
+                                $mediaPath = 'media/'.((int) $firstKey).'/'.$first['file_name'];
+
+                                if (Storage::disk('public')->exists($mediaPath)) {
+                                    return Storage::disk('public')->url($mediaPath);
+                                }
+                            }
+
+                            $decoded = $first;
+                        }
+                    }
+
+                    if (is_array($decoded) && array_is_list($decoded)) {
+                        $decoded = $decoded[0] ?? null;
+                    }
+
+                    if (is_array($decoded)) {
+                        $value = $decoded['path']
+                            ?? $decoded['file_path']
+                            ?? $decoded['file_name']
+                            ?? null;
+                    } elseif (is_string($decoded)) {
+                        $value = $decoded;
+                    } else {
+                        $value = null;
+                    }
+                }
+            }
+        }
+
+        if (blank($value) || ! is_string($value)) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        $path = ltrim($value, '/');
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        // If it's just a filename, it may live under "media/{id}/{file_name}".
+        // Keep it package-standalone: filesystem search, no DB required.
+        if (! str_contains($path, '/')) {
+            $mediaRoot = Storage::disk('public')->path('media');
+            $matches = glob($mediaRoot.'/*/'.$path) ?: [];
+
+            if (! empty($matches)) {
+                $absoluteMatch = (string) $matches[0];
+                $publicRoot = Storage::disk('public')->path('');
+                $relativeMatch = ltrim(str_replace($publicRoot, '', $absoluteMatch), '/');
+
+                if (Storage::disk('public')->exists($relativeMatch)) {
+                    return Storage::disk('public')->url($relativeMatch);
+                }
+            }
+        }
+
+        return null;
     }
 
     public function registerMediaConversions(?Media $media = null): void

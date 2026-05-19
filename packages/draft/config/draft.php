@@ -10,7 +10,6 @@ use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
-use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +96,13 @@ return [
                     ],
                     'user-device' => [
                         'resource' => UserDeviceResource::class,
-                    ],
+                    ]
+                    // 'user' => [
+                    //     'resource' => UserResource::class,
+                    // ],
+                    // 'user-device' => [
+                    //     'resource' => UserDeviceResource::class,
+                    // ],
                 ],
                 'registry' => [
                     'sources' => [

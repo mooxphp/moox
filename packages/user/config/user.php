@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Validation\Rules\Password;
 use Moox\User\Models\User;
 
 /*
@@ -60,7 +59,42 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
             ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Scopes (origin)
+            |--------------------------------------------------------------------------
+            |
+            | Registers `user` as a scope origin (source). Child resources under
+            | `scopes.allowed` are optional — add them when you need scoped nav
+            | items beneath Users.
+            |
+            */
 
             'scopes' => [
                 'registry' => [
@@ -104,12 +138,12 @@ return [
 
     'password' => [
         'validation' => [
-            'rules' => Password::min(20)
-                ->max(64)
-                ->mixedCase()
-                ->numbers()
-                ->symbols()
-                ->uncompromised(),
+            'min' => 20,
+            'max' => 64,
+            'mixed_case' => true,
+            'numbers' => true,
+            'symbols' => true,
+            'uncompromised' => true,
         ],
         'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
