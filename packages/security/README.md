@@ -110,13 +110,11 @@ Then add `ResetPasswordPlugin::make()` to your panel provider plugins array (see
 
 ## Local development (path repositories)
 
-This monorepo copies packages into `vendor/` on install (`symlink: false`). After changing files under `packages/security`, refresh vendor:
+Path repositories install Moox packages into `vendor/` as symlinks to `packages/…`, so edits under `packages/security` are picked up without copying. If autoload or install state looks stale, refresh with:
 
 ```bash
 composer reinstall moox/security
 ```
-
-If you use Devlink for `packages/security`, still run reinstall when Filament classes or autoload paths must match `vendor/`.
 
 ## Verify routes
 

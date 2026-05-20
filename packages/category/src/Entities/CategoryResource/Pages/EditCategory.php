@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages;
+namespace Moox\Category\Entities\CategoryResource\Pages;
 
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Entities\CategoryResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseEditDraft;
 
 class EditCategory extends BaseEditDraft

@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Category\Moox\Entities\Categories\Category\Forms;
+namespace Moox\Category\Entities\Forms;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\ColorPicker;

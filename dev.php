@@ -521,7 +521,7 @@ function buildComposerJson(string $root, string $laravelVersion): void
         $composer['repositories'][] = [
             'type' => 'path',
             'url' => $pkgPath,
-            'options' => ['symlink' => false],
+            'options' => ['symlink' => true],
         ];
     }
 
