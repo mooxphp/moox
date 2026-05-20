@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Moox\Entities\Categories\Category;
+namespace Moox\Category\Resources;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\ColorPicker;
@@ -23,10 +23,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Category\Models\Category;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\CreateCategory;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\EditCategory;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ListCategories;
-use Moox\Category\Moox\Entities\Categories\Category\Resources\CategoryResource\Pages\ViewCategory;
+use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
+use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
+use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
+use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;

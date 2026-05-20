@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Moox\Plugins;
+namespace Moox\Category\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Resources\CategoryTreeResource;
 use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
 class CategoryPlugin implements Plugin
@@ -23,7 +23,7 @@ class CategoryPlugin implements Plugin
     {
         ChildResourceRegistrar::registerFromParentDefinition(
             $panel,
-            CategoryResource::class,
+            CategoryTreeResource::class,
             'category',
             config('category.resources.category', []),
         );
