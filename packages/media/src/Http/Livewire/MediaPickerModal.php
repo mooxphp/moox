@@ -668,36 +668,18 @@ class MediaPickerModal extends Component implements HasForms
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
-                switch ($this->fileTypeFilter) {
-                    case 'images':
-                        $query->whereIn('mime_type', [
-                            'image/jpeg',
-                            'image/png',
-                            'image/webp',
-                            'image/svg+xml',
-                        ]);
-                        break;
-                    case 'videos':
-                        $query->whereIn('mime_type', [
-                            'video/mp4',
-                            'video/webm',
-                        ]);
-                        break;
-                    case 'audios':
-                        $query->whereIn('mime_type', [
-                            'audio/mpeg',
-                            'audio/ogg',
-                        ]);
-                        break;
-                    case 'documents':
-                        $query->whereIn('mime_type', [
-                            'application/pdf',
-                            'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                            'text/xml',
-                        ]);
-                        break;
-                }
+                match ($this->fileTypeFilter) {
+                    'images' => $query->where('mime_type', 'like', 'image/%'),
+                    'videos' => $query->where('mime_type', 'like', 'video/%'),
+                    'audios' => $query->where('mime_type', 'like', 'audio/%'),
+                    'documents' => $query->where(function ($documentQuery): void {
+                        $documentQuery
+                            ->where('mime_type', 'like', 'application/%')
+                            ->orWhere('mime_type', 'like', 'text/%')
+                            ->orWhere('mime_type', 'like', 'model/%');
+                    }),
+                    default => null,
+                };
             })
             ->when($this->dateFilter, function ($query) {
                 switch ($this->dateFilter) {

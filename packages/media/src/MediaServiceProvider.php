@@ -67,6 +67,7 @@ class MediaServiceProvider extends MooxServiceProvider
     {
         Gate::policy(Media::class, MediaPolicy::class);
 
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
 
