@@ -65,8 +65,6 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
      * Delete existing reset tokens for the email address.
      *
      * The table primary key is `email` only; `user_type` is stored for auditing only.
-     *
-     * @return int
      */
     protected function deleteExistingForEmail(string $email): int
     {

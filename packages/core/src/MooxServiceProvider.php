@@ -125,6 +125,7 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                         $this->packagePath.$ds.'Filament'.$ds.'Plugins',
                         $this->packagePath.$ds.'src'.$ds.'Moox'.$ds.'Plugins',
                         $this->packagePath.$ds.'Moox'.$ds.'Plugins',
+                        $this->packagePath.$ds.'Plugins',
                     ];
 
                     foreach ($possiblePaths as $pluginPath) {

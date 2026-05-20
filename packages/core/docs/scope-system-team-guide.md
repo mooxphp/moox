@@ -241,7 +241,7 @@ All scopable resources (both origins and sources) register via `ChildResourceReg
 
 ```php
 use Moox\Core\Support\Resources\ChildResourceRegistrar;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Resources\CategoryResource;
 
 public function register(Panel $panel): void
 {
@@ -303,7 +303,7 @@ Example (real, from our repo):
                 ],
                 'category' => [
                     'enabled' => false,
-                    'resource' => \Moox\Category\Moox\Entities\Categories\Category\CategoryResource::class,
+                    'resource' => \Moox\Category\Resources\CategoryResource::class,
                     'origin' => 'category',
                     'boundary' => 'private',
                     'label' => 'Category Private',

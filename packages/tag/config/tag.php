@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\Tag\Models\Tag;
 
