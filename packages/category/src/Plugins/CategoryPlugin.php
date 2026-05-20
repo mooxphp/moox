@@ -7,7 +7,7 @@ namespace Moox\Category\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Category\Entities\CategoryTreeResource;
+use Moox\Category\Resources\CategoryTreeResource;
 use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
 class CategoryPlugin implements Plugin

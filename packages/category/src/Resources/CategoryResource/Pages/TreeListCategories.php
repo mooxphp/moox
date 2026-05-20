@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Entities\CategoryResource\Pages;
+namespace Moox\Category\Resources\CategoryResource\Pages;
 
-use Moox\Category\Entities\CategoryTreeResource;
+use Moox\Category\Resources\CategoryTreeResource;
 use Moox\Tree\Filament\Pages\TreeIndexListRecords;
 
 class TreeListCategories extends TreeIndexListRecords

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Entities\CategoryResource\Pages;
+namespace Moox\Category\Resources\CategoryResource\Pages;
 
-use Moox\Category\Entities\CategoryResource;
 use Moox\Category\Models\Category;
+use Moox\Category\Resources\CategoryResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Moox\Category\Entities;
+namespace Moox\Category\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
-use Moox\Category\Entities\CategoryResource as MooxCategoryResource;
-use Moox\Category\Entities\CategoryResource\Pages\TreeInspectorCategory;
-use Moox\Category\Entities\CategoryResource\Pages\TreeListCategories;
 use Moox\Category\Models\Category;
+use Moox\Category\Resources\CategoryResource as MooxCategoryResource;
+use Moox\Category\Resources\CategoryResource\Pages\TreeInspectorCategory;
+use Moox\Category\Resources\CategoryResource\Pages\TreeListCategories;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
 
