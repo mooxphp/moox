@@ -1,6 +1,6 @@
 <?php
 
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Resources\CategoryResource;
 use Moox\Item\Models\Item;
 use Moox\Media\Resources\MediaResource;
 use Moox\Tag\Resources\TagResource;

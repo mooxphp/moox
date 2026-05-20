@@ -55,9 +55,6 @@ return new class extends Migration {
             if (!Schema::hasColumn('users', 'deleted_at')) {
                 $table->softDeletes()->after('scope');
             }
-             if (! Schema::hasColumn('users', 'deleted_at')) {
-                $table->softDeletes();
-            }
         });
     }
 

@@ -40,7 +40,7 @@ trait HasListPageTabs
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {
-            if (isset($tabConfig['visible']) && !$tabConfig['visible']) {
+            if (isset($tabConfig['visible']) && ! $tabConfig['visible']) {
                 continue;
             }
 
@@ -50,10 +50,10 @@ trait HasListPageTabs
             $queryConditions = $tabConfig['query'];
 
             if (empty($queryConditions)) {
-                $tab->modifyQueryUsing(fn($query) => $query)
+                $tab->modifyQueryUsing(fn ($query) => $query)
                     ->badge($modelClass::query()->count());
             } else {
-                $tab->modifyQueryUsing(fn($query) => $this->applyConditions($query, $queryConditions));
+                $tab->modifyQueryUsing(fn ($query) => $this->applyConditions($query, $queryConditions));
 
                 $badgeCountQuery = $modelClass::query();
                 $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);

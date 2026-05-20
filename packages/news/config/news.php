@@ -1,7 +1,7 @@
 <?php
 
 use Moox\Category\Models\Category;
-use Moox\Category\Moox\Entities\Categories\Category\CategoryResource;
+use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Models\News;
 use Moox\Tag\Forms\TaxonomyCreateForm;
@@ -109,7 +109,7 @@ return [
             'relationship' => 'categorizable',
             'foreignKey' => 'categorizable_id',
             'relatedKey' => 'category_id',
-            'createForm' => Moox\Category\Moox\Entities\Categories\Category\Forms\TaxonomyCreateForm::class,
+            'createForm' => Moox\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
         'tag' => [
