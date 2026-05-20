@@ -7,13 +7,13 @@ namespace Moox\News;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
-use Moox\News\Moox\Entities\News\News\Pages\ListNews;
+use Moox\News\Resources\News\Pages\ListNews;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Core\MooxServiceProvider;
 
-class NewsServiceProvider extends PackageServiceProvider
+class NewsServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('news')
