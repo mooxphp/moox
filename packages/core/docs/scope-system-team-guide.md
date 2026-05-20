@@ -49,6 +49,23 @@ The DB controls what is active/visible at runtime:
 
 Config does **not** decide runtime visibility. Config defines what the codebase supports.
 
+**Navigation:** Scoped child nav items are registered only from **active rows in `scopes`**.  
+Without a `scopes` table, no scoped children appear in the panel.
+
+**`scopes.allowed` is not navigation** — it is the capability whitelist for:
+
+- **`moox:scope` / `scopes:sync`** — which default scope rows can be created from config
+- **Scopes UI (create scope form)** — which origin/source combinations can be selected
+- **Child resource mapping** — which Filament `resource` class belongs to an origin under a parent
+
+| Layer | Navigation | Scopes UI (create form) | Record scope select |
+| --- | --- | --- | --- |
+| `scopes.allowed` | Whitelist only (no menu entries) | Filters Origin + Source dropdowns | — |
+| `scopes.registry` | — | Origin keys ↔ models | Registry lookup |
+| DB `scopes` | Active rows → child nav (`is_active`) | Saved scope definitions | Options from active rows |
+
+Example: without `tag.resources.tag.scopes.allowed` containing `media`, origin `media` does not appear when creating a scope (and there is no matching source `tag`).
+
 #### 2.1 Registry (which origin/source keys exist?)
 
 The registry for translating scope keys ↔ model classes is defined **inside each resource config** under:
@@ -112,6 +129,11 @@ This is the **capability / whitelist** layer:
 - It maps an `origin` to the Filament `resource` class that should be registered for that scoped child.
 
 This is intentionally separate from runtime visibility (which is DB-driven via `scopes.is_active`).
+
+Used by `ScopeResource` (`packages/scopes`):
+
+- **Origin** — keys from `registry.origins`, but only if at least one parent’s `scopes.allowed` references that origin (`allowedSourcesForOrigin()`), and the origin model is registered in the panel and uses `HasScopedModel`.
+- **Source** — parent resource keys (e.g. `tag`, `draft`) whose `scopes.allowed` includes the selected origin (e.g. origin `media` → source `tag` when `tag.resources.tag.scopes.allowed` lists `media`).
 
 ---
 
@@ -203,11 +225,11 @@ Behavior:
 
 ### 3.7 (Required) Make the scope UI not feel broken
 
-The Scopes UI should only offer valid combinations:
+The Scopes UI should only offer valid combinations (see `ScopeResource`):
 
-- **Origin select** only shows origins that appear somewhere in `resources.*.scopes.allowed`
-  - otherwise the Source select would be empty
-- **Source select** is filtered based on the selected origin by scanning `resources.*.scopes.allowed`
+- **Origin** — from `registry.origins`, filtered to origins that appear in at least one `resources.*.scopes.allowed`, with a registered panel resource and `HasScopedModel` on the model
+- **Source** — only parent keys whose `scopes.allowed` includes the selected origin (scanning all `config('core.packages')` resource configs)
+- Without a matching `allowed` entry (e.g. `media` under `tag.resources.tag.scopes.allowed`), that origin does not appear and no source can be chosen for it
 
 ---
 
@@ -235,9 +257,10 @@ public function register(Panel $panel): void
 What this does:
 
 1. Registers the parent resource in the panel (routes, pages, navigation).
-2. Reads `scopes.allowed` from the config to determine which child origins are supported.
-3. Queries the `scopes` table for active scopes under this source and creates child navigation items.
-4. Navigation visibility is controlled by `scopes.is_active` in the DB (fail-closed).
+2. Queries the `scopes` table for active scopes under this source and registers scoped child resources / navigation from those rows only (no config fallback when the table is missing or empty).
+3. Navigation visibility is controlled by `scopes.is_active` in the DB (fail-closed).
+
+`scopes.allowed` on the parent is not read here for menu items; it remains required for `moox:scope`, the Scopes create form, and origin→resource mapping.
 
 `BaseResource` handles scoped navigation resolution automatically — no boilerplate overrides needed per resource.
 
@@ -331,10 +354,10 @@ Optional keys (`origin`, `context`, `boundary`, `label`) only matter if you want
 
 Important:
 
-- the config defines which child origins/resources are **allowed** under the parent (capability / whitelist)
-- the navigation items are derived from **active DB scopes**:
-  - config-defined allowed scopes produce default scope rows (via `moox:scope`)
-  - user-created scopes in the Scopes UI can also appear automatically as child navigation items (no new config slot required)
+- `allowed` defines which child origins/resources are supported under the parent (whitelist for **`moox:scope`**, the **Scopes create form**, and resource mapping — not for panel navigation)
+- navigation items come only from **active DB scopes**:
+  - `moox:scope` seeds default rows from `allowed`
+  - scopes created in the Scopes UI can also drive child navigation (no extra config slot per context/boundary)
 
 ### 5.2 Register the parent definition in the plugin
 
