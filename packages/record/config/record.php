@@ -1,8 +1,8 @@
 <?php
 
+use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
-use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Moox\Entities\News\News\NewsResource;
 use Moox\Record\Models\Record;

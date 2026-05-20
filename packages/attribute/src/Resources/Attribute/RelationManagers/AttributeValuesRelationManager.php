@@ -15,7 +15,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use JsonException;
 use Override;
-    
+
 class AttributeValuesRelationManager extends RelationManager
 {
     protected static string $relationship = 'values';

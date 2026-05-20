@@ -49,7 +49,7 @@ class MediaController extends Controller
                         ->orWhere('mime_type', 'like', 'model/%');
                 });
             } else {
-                $query->where('mime_type', 'like', $type . '/%');
+                $query->where('mime_type', 'like', $type.'/%');
             }
         }
 
@@ -59,13 +59,13 @@ class MediaController extends Controller
 
         if ($search = $request->search()) {
             $query->where(function ($q) use ($search, $locales) {
-                $q->where('file_name', 'like', '%' . $search . '%')
+                $q->where('file_name', 'like', '%'.$search.'%')
                     ->orWhereHas('translations', function ($t) use ($search, $locales) {
                         $t->whereIn('locale', $locales)
                             ->where(function ($tt) use ($search) {
-                                $tt->where('name', 'like', '%' . $search . '%')
-                                    ->orWhere('title', 'like', '%' . $search . '%')
-                                    ->orWhere('alt', 'like', '%' . $search . '%');
+                                $tt->where('name', 'like', '%'.$search.'%')
+                                    ->orWhere('title', 'like', '%'.$search.'%')
+                                    ->orWhere('alt', 'like', '%'.$search.'%');
                             });
                     });
             });
@@ -74,10 +74,10 @@ class MediaController extends Controller
         return MediaItemResource::collection(
             $query->paginate($request->perPage())->withQueryString()
         )->additional([
-                    'context' => [
-                        'locale' => app()->getLocale(),
-                    ],
-                ]);
+            'context' => [
+                'locale' => app()->getLocale(),
+            ],
+        ]);
     }
 
     public function store(MediaStoreRequest $request)
@@ -183,19 +183,19 @@ class MediaController extends Controller
     protected function getLangFromReferer(Request $request): ?string
     {
         $referer = $request->headers->get('referer');
-        if (!is_string($referer) || trim($referer) === '') {
+        if (! is_string($referer) || trim($referer) === '') {
             return null;
         }
 
         $query = parse_url($referer, PHP_URL_QUERY);
-        if (!is_string($query) || $query === '') {
+        if (! is_string($query) || $query === '') {
             return null;
         }
 
         parse_str($query, $params);
 
         $lang = $params['lang'] ?? null;
-        if (!is_string($lang)) {
+        if (! is_string($lang)) {
             return null;
         }
 
@@ -242,7 +242,7 @@ class MediaController extends Controller
             $locale,
             $fallbackLocale,
             'en_US',
-        ], static fn(mixed $value): bool => is_string($value) && trim($value) !== '');
+        ], static fn (mixed $value): bool => is_string($value) && trim($value) !== '');
 
         $expanded = [];
         foreach ($locales as $locale) {
@@ -257,6 +257,6 @@ class MediaController extends Controller
             }
         }
 
-        return array_values(array_unique(array_filter($expanded, static fn(mixed $value): bool => is_string($value) && trim($value) !== '')));
+        return array_values(array_unique(array_filter($expanded, static fn (mixed $value): bool => is_string($value) && trim($value) !== '')));
     }
 }

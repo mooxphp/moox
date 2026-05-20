@@ -24,11 +24,11 @@ use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\News\Models\News;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\News\Resources\News\Pages\ListNews;
 use Moox\News\Resources\News\Pages\CreateNews;
 use Moox\News\Resources\News\Pages\EditNews;
+use Moox\News\Resources\News\Pages\ListNews;
 use Moox\News\Resources\News\Pages\ViewNews;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class NewsResource extends BaseDraftResource
 {

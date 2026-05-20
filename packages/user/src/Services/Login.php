@@ -34,9 +34,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
-use Moox\User\Support\PasswordValidation;
 use Jenssegers\Agent\Agent;
 use Livewire\Attributes\Locked;
+use Moox\User\Support\PasswordValidation;
 use Moox\UserDevice\Services\UserDeviceTracker;
 use Moox\UserSession\Services\SessionRelationService;
 

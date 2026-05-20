@@ -7,9 +7,9 @@ namespace Moox\News;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Moox\Core\MooxServiceProvider;
 use Moox\News\Resources\News\Pages\ListNews;
 use Spatie\LaravelPackageTools\Package;
-use Moox\Core\MooxServiceProvider;
 
 class NewsServiceProvider extends MooxServiceProvider
 {

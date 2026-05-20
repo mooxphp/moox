@@ -12,9 +12,9 @@ use Moox\Product\Resources\ProductResource;
 class EditProduct extends BaseEditDraft
 {
     use HasListPageTabs;
-    
+
     protected static string $resource = ProductResource::class;
-    
+
     public function getHeading(): string
     {
         return (string) ($this->record->title ?? parent::getHeading());

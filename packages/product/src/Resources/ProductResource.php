@@ -25,11 +25,11 @@ use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Product\Models\Product;
 use Moox\Product\Moox\Entities\Product\RelationManagers\ProductAttributeValuesRelationManager;
-use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Moox\Product\Resources\Product\Pages\ListProducts;
 use Moox\Product\Resources\Product\Pages\CreateProduct;
 use Moox\Product\Resources\Product\Pages\EditProduct;
+use Moox\Product\Resources\Product\Pages\ListProducts;
 use Moox\Product\Resources\Product\Pages\ViewProduct;
+use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class ProductResource extends BaseDraftResource
 {
@@ -220,7 +220,7 @@ class ProductResource extends BaseDraftResource
     public static function getPages(): array
     {
         return [
-            'index' =>  ListProducts::route('/'),
+            'index' => ListProducts::route('/'),
             'create' => CreateProduct::route('/create'),
             'edit' => EditProduct::route('/{record}/edit'),
             'view' => ViewProduct::route('/{record}'),

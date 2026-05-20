@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Support\Facades\Schema;
 use Moox\User\Models\User;
+use Spatie\Permission\Models\Permission;
 
 class UserPolicy
 {
@@ -98,12 +99,12 @@ class UserPolicy
 
     protected function permissionSystemAvailable(): bool
     {
-        return class_exists(\Spatie\Permission\Models\Permission::class) && Schema::hasTable('permissions');
+        return class_exists(Permission::class) && Schema::hasTable('permissions');
     }
 
     protected function permissionExists(string $permissionName): bool
     {
-        return \Spatie\Permission\Models\Permission::query()
+        return Permission::query()
             ->where('name', $permissionName)
             ->exists();
     }

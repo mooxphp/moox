@@ -10,7 +10,7 @@ use Moox\Record\Resources\RecordResource;
 class ListRecords extends BaseListRecords
 {
     use HasListPageTabs;
-    
+
     protected static string $resource = RecordResource::class;
 
     public function getTabs(): array

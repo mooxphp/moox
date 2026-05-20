@@ -27,18 +27,19 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Moox\Core\Entities\BaseResource;
-use Moox\User\Support\PasswordValidation;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
+use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
+use Moox\User\Support\PasswordValidation;
 use Override;
 
 class UserResource extends BaseResource
@@ -89,7 +90,7 @@ class UserResource extends BaseResource
 
     public static function securityPasswordResetActionsAvailable(): bool
     {
-        return class_exists(\Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction::class)
+        return class_exists(SendPasswordResetLinksBulkAction::class)
             && (bool) config('security.actions.bulkactions.sendPasswordResetLinkBulkAction', false);
     }
 
@@ -101,7 +102,7 @@ class UserResource extends BaseResource
 
     public static function shouldShowSendPasswordResetLinkAction(): bool
     {
-        return class_exists(\Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction::class)
+        return class_exists(SendPasswordResetLinkAction::class)
             && static::securityPasswordResetActionsAvailable()
             && static::canViewAllUsers();
     }

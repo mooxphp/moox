@@ -11,14 +11,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Attribute\Models\Attribute;
 use Moox\Attribute\Moox\Entities\Attribute\RelationManagers\AttributeValuesRelationManager;
+use Moox\Attribute\Resources\Attribute\Pages\CreateAttribute;
+use Moox\Attribute\Resources\Attribute\Pages\EditAttribute;
+use Moox\Attribute\Resources\Attribute\Pages\ListAttributes;
+use Moox\Attribute\Resources\Attribute\Pages\ViewAttribute;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Moox\Attribute\Resources\Attribute\Pages\ListAttributes;
-use Moox\Attribute\Resources\Attribute\Pages\CreateAttribute;
-use Moox\Attribute\Resources\Attribute\Pages\EditAttribute;
-use Moox\Attribute\Resources\Attribute\Pages\ViewAttribute;
 
 class AttributeResource extends BaseDraftResource
 {

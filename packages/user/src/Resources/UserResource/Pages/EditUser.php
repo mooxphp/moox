@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
+use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction;
 use Moox\User\Resources\UserResource;
 use Override;
 
@@ -22,7 +23,7 @@ class EditUser extends EditRecord
     {
         return array_values(array_filter([
             UserResource::shouldShowSendPasswordResetLinkAction()
-                ? \Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction::make()
+                ? SendPasswordResetLinkAction::make()
                     ->visible(fn (): bool => ! UserResource::canManagePassword($this->getRecord())
                         && UserResource::canSendPasswordResetTo($this->getRecord()))
                 : null,

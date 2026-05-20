@@ -84,7 +84,6 @@ class UserDevice extends Model
 
             DB::table('sessions')->where('device_id', $item->getKey())->delete();
         });
-
     }
 
     /**

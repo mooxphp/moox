@@ -3,9 +3,9 @@
 namespace Moox\Attribute\Resources\AttributeValues\Pages;
 
 use Moox\Attribute\Models\Attribute;
+use Moox\Attribute\Resources\AttributeValuesResource;
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\Attribute\Resources\AttributeValuesResource;
 
 class ListAttributeValues extends BaseListDrafts
 {
