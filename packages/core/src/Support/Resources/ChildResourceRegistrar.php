@@ -49,10 +49,7 @@ class ChildResourceRegistrar
             $scopes,
         );
 
-        // If DB provides active scopes, prefer DB-driven navigation to avoid duplicate
-        // "config slot" entries. Config stays as the whitelist / mapping and as a fallback
-        // when the scopes table is empty.
-        $children = $dbChildren !== [] ? $dbChildren : $scopes;
+        $children = static::resolveScopedChildren($dbChildren);
 
         static::register(
             $panel,
@@ -61,6 +58,19 @@ class ChildResourceRegistrar
             (string) ($parentDefinition['slug'] ?? $parentKey),
             $parentScope,
         );
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $dbChildren
+     * @return array<string, array<string, mixed>>
+     */
+    protected static function resolveScopedChildren(array $dbChildren): array
+    {
+        if (! static::hasScopesTable()) {
+            return [];
+        }
+
+        return $dbChildren;
     }
 
     /**
@@ -331,8 +341,12 @@ class ChildResourceRegistrar
     {
         $scopeString = ScopeValue::toStringOrNull($scope);
 
-        if ($scopeString === null || ! static::hasScopesTable()) {
+        if ($scopeString === null) {
             return true;
+        }
+
+        if (! static::hasScopesTable()) {
+            return false;
         }
 
         $active = DB::table('scopes')

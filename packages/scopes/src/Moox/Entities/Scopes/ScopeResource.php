@@ -293,14 +293,90 @@ class ScopeResource extends Resource
         return "{$origin}:{$source}:{$context}:{$boundary}";
     }
 
+    /**
+     * Context buckets for a source — same derivation as `moox:scope` / ScopesSyncCommand.
+     *
+     * @return array<string, string>
+     */
     protected static function contextOptionsForSource(string $source): array
     {
         if (blank($source)) {
             return [];
         }
 
-        $configContexts = (array) config("core.scopes.contexts.{$source}", []);
-        $configContexts = array_values(array_unique(array_filter($configContexts, static fn ($v): bool => filled($v))));
+        $contexts = [];
+
+        foreach (array_keys((array) config('core.packages', [])) as $packageKey) {
+            $definition = config("{$packageKey}.resources.{$source}");
+
+            if (! is_array($definition)) {
+                continue;
+            }
+
+            if (filled($definition['context'] ?? null)) {
+                $contexts[] = (string) $definition['context'];
+            }
+
+            $scopes = $definition['scopes'] ?? null;
+
+            if (! is_array($scopes)) {
+                continue;
+            }
+
+            $allowed = is_array($scopes['allowed'] ?? null) ? $scopes['allowed'] : $scopes;
+
+            if (array_key_exists('registry', $allowed)) {
+                $allowed = array_diff_key($allowed, ['registry' => true]);
+            }
+
+            $baseScope = value($definition['scope'] ?? null)
+                ?? ScopeValue::forKeyString(
+                    $source,
+                    boundary: value($definition['boundary'] ?? $definition['mode'] ?? null),
+                    source: value($definition['source'] ?? $definition['target'] ?? null),
+                    context: value($definition['context'] ?? null),
+                );
+
+            foreach ($allowed as $originKey => $scopeDefinition) {
+                if (! is_array($scopeDefinition)) {
+                    continue;
+                }
+
+                if (filled($scopeDefinition['context'] ?? null)) {
+                    $contexts[] = (string) $scopeDefinition['context'];
+
+                    continue;
+                }
+
+                $origin = value($scopeDefinition['origin'] ?? null) ?: (is_string($originKey) ? $originKey : null);
+
+                if (! is_string($origin) || $origin === '') {
+                    continue;
+                }
+
+                $derived = ScopeValue::deriveChildString(
+                    $baseScope,
+                    $origin,
+                    context: is_string(value($scopeDefinition['context'] ?? null)) ? value($scopeDefinition['context']) : null,
+                    boundary: is_string(value($scopeDefinition['boundary'] ?? $scopeDefinition['mode'] ?? null)) ? value($scopeDefinition['boundary'] ?? $scopeDefinition['mode']) : null,
+                    source: is_string(value($scopeDefinition['source'] ?? $scopeDefinition['target'] ?? null)) ? value($scopeDefinition['source'] ?? $scopeDefinition['target']) : null,
+                );
+
+                if (! is_string($derived) || $derived === '') {
+                    continue;
+                }
+
+                try {
+                    $parsed = ScopeValue::parse($derived);
+
+                    if ($parsed) {
+                        $contexts[] = $parsed->context();
+                    }
+                } catch (\Throwable) {
+                    // ignore invalid derived scope
+                }
+            }
+        }
 
         $dbContexts = Scope::query()
             ->where('source', $source)
@@ -308,12 +384,17 @@ class ScopeResource extends Resource
             ->where('context', '!=', '')
             ->orderBy('context')
             ->pluck('context')
-            ->unique()
-            ->values()
             ->all();
 
-        $contexts = array_values(array_unique([...$configContexts, ...$dbContexts]));
+        $contexts = array_values(array_unique(array_filter(
+            [...$contexts, ...$dbContexts],
+            static fn ($value): bool => filled($value),
+        )));
         sort($contexts);
+
+        if ($contexts === []) {
+            return [];
+        }
 
         return array_combine($contexts, $contexts);
     }
