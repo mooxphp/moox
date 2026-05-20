@@ -5,14 +5,13 @@ namespace Moox\UserDevice\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Moox\Core\Models\Concerns\HasScopedModel;
 use Override;
 
 class UserDevice extends Model
 {
-    use HasScopedModel;
-
     /**
      * The table associated with the model.
      *
@@ -40,7 +39,6 @@ class UserDevice extends Model
         'whitelisted',
         'active',
         'ip_address',
-        'scope',
     ];
 
     /**
@@ -51,6 +49,7 @@ class UserDevice extends Model
     protected $casts = [
         'active' => 'bool',
         'whitelisted' => 'bool',
+        'location' => 'array',
     ];
 
     /**
@@ -61,18 +60,31 @@ class UserDevice extends Model
     {
         parent::boot();
 
-        UserDevice::creating(function ($item): void {
+        static::creating(function (self $item): void {
+            if (filled($item->slug)) {
+                return;
+            }
+
             $baseSlug = Str::slug($item->title);
             $slug = $baseSlug;
             $counter = 1;
 
-            while (UserDevice::where('slug', $slug)->exists()) {
+            while (static::query()->where('slug', $slug)->exists()) {
                 $slug = sprintf('%s-%d', $baseSlug, $counter);
                 $counter++;
             }
 
             $item->slug = $slug;
         });
+
+        static::deleting(function (self $item): void {
+            if (! Schema::hasTable('sessions') || ! Schema::hasColumn('sessions', 'device_id')) {
+                return;
+            }
+
+            DB::table('sessions')->where('device_id', $item->getKey())->delete();
+        });
+
     }
 
     /**
@@ -85,22 +97,16 @@ class UserDevice extends Model
 
     /**
      * Scope a query to only include active devices.
-     *
-     * @param  Builder  $query
-     * @return Builder
      */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
     }
 
     /**
      * Scope a query to only include whitelisted devices.
-     *
-     * @param  Builder  $query
-     * @return Builder
      */
-    public function scopeWhitelisted($query)
+    public function scopeWhitelisted(Builder $query): Builder
     {
         return $query->where('whitelisted', true);
     }

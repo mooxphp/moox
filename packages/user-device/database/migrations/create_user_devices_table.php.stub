@@ -13,9 +13,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->unsignedBigInteger('user_id');
-            $table->string('user_type');
-            $table->string('user_agent')->nullable();
+
+            $table->morphs('user');
+
+            $table->text('user_agent')->nullable();
             $table->string('os')->nullable();
             $table->string('browser')->nullable();
             $table->string('platform')->nullable();
@@ -25,8 +26,9 @@ return new class extends Migration
             $table->boolean('whitelisted')->default(false);
             $table->boolean('active')->default(false);
             $table->ipAddress('ip_address')->nullable();
-            $table->string('scope')->nullable();
             $table->timestamps();
+
+            $table->unique(['user_id', 'user_type', 'ip_address'], 'user_devices_user_ip_unique');
         });
     }
 

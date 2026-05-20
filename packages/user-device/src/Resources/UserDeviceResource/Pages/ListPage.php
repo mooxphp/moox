@@ -6,7 +6,6 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
-use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
 use Override;
 
 class ListPage extends ListRecords
@@ -18,15 +17,6 @@ class ListPage extends ListRecords
     protected function getActions(): array
     {
         return [];
-    }
-
-    #[Override]
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            // TODO: Widgets
-            // UserDeviceWidgets::class,
-        ];
     }
 
     #[Override]
@@ -44,6 +34,10 @@ class ListPage extends ListRecords
 
     public function getTabs(): array
     {
+        if (! UserDeviceResource::shouldShowTabsForUser(filament()->auth()->user())) {
+            return [];
+        }
+
         return $this->getDynamicTabs('user-device.resources.devices.tabs', UserDevice::class);
     }
 }

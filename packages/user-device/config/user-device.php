@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\User;
-use Moox\UserDevice\Models\UserDevice;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -18,6 +15,16 @@ use Moox\UserDevice\Models\UserDevice;
 |
 */
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Enabled
+    |--------------------------------------------------------------------------
+    |
+    | Master switch: false disables device tracking on login, trust enforcement
+    | middleware, and trust routes. The Filament devices resource stays available.
+    |
+    */
+    'enabled' => env('USER_DEVICE_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +36,6 @@ return [
     */
     'resources' => [
         'devices' => [
-
             /*
             |--------------------------------------------------------------------------
             | Title
@@ -38,7 +44,6 @@ return [
             | The translatable title of the Resource in singular and plural.
             |
             */
-
             'single' => 'trans//core::device.device',
             'plural' => 'trans//core::device.devices',
 
@@ -52,20 +57,11 @@ return [
             | You may simply do a 'tabs' => [], to disable them.
             |
             */
-
             'tabs' => [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
-                ],
-            ],
-
-            'scopes' => [
-                'registry' => [
-                    'origins' => [
-                        'user-device' => UserDevice::class,
-                    ],
                 ],
             ],
         ],
@@ -81,22 +77,7 @@ return [
     | string, you may also use a simple string.
     |
     */
-
     'navigation_group' => 'trans//core::user.users',
-
-    /*
-    |--------------------------------------------------------------------------
-    | User Models
-    |--------------------------------------------------------------------------
-    |
-    | Add your user models here. You can add as many as you want.
-    |
-    */ //
-
-    'user_models' => [
-        'App Users' => User::class,
-        'Moox Users' => Moox\User\Models\User::class,
-    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +88,48 @@ return [
     | added to their account. You can disable this by setting it to false.
     |
     */
-
     'new_device_notification' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Trust link expiration (minutes)
+    |--------------------------------------------------------------------------
+    |
+    | Signed trust links sent via email will expire after this many minutes.
+    |
+    */
+    'trust_link_expires_minutes' => 60,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scope UserDevice Resource to the authenticated user (self-service mode)
+    |--------------------------------------------------------------------------
+    |
+    | When set to true, the Filament resource is always scoped to the currently
+    | authenticated user (user_id + user_type), regardless of permissions.
+    |
+    */
+    'scope_to_authenticated_user' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow all devices (no Shield)
+    |--------------------------------------------------------------------------
+    |
+    | If Shield / Spatie Permission is NOT installed, users will only see their
+    | own devices by default. Enable this to show all devices in that scenario.
+    |
+    */
+    'allow_all_devices_without_shield' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mail logo URL
+    |--------------------------------------------------------------------------
+    |
+    | Either a full URL (https://...) or a public path (/logo/foo.svg).
+    |
+    */
+    'mail_logo_url' => '/logo/logo_heco_2021.svg',
 
 ];

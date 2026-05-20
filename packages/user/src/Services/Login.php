@@ -172,7 +172,7 @@ class Login extends SimplePage
             $this->sessionRelationService->associateUserSession($user);
         }
 
-        if ($this->userDeviceTracker) {
+        if ($this->userDeviceTracker && config('user-device.enabled', false)) {
             $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
         }
 

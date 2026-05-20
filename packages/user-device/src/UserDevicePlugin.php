@@ -5,7 +5,8 @@ namespace Moox\UserDevice;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Core\Support\Resources\ChildResourceRegistrar;
+use Moox\UserDevice\Http\Middleware\EnsureTrustedDevice;
+use Moox\UserDevice\Http\Middleware\SyncDeviceIdToSessionRow;
 use Moox\UserDevice\Resources\UserDeviceResource;
 
 class UserDevicePlugin implements Plugin
@@ -19,12 +20,20 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        ChildResourceRegistrar::registerFromParentDefinition(
-            $panel,
+        $panel->resources([
             UserDeviceResource::class,
-            'user-device',
-            config('user-device.resources.devices', []),
-        );
+        ]);
+
+        if (! config('user-device.enabled', false)) {
+            return;
+        }
+
+        // Apply enforcement automatically for panels using this plugin.
+        // Must be persistent so it also runs for Livewire requests (Filament actions/forms).
+        $panel->authMiddleware([
+            SyncDeviceIdToSessionRow::class,
+            EnsureTrustedDevice::class,
+        ], isPersistent: true);
     }
 
     public function boot(Panel $panel): void
