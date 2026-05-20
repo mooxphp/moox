@@ -7,23 +7,23 @@ namespace Moox\Category\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Category\Resources\CategoryResource;
+use Moox\Category\Resources\CategoryTreeResource;
 use Moox\Core\Support\Resources\ChildResourceRegistrar;
 
-class CategoryPlugin implements Plugin
+class CategoryTreePlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'category';
+        return 'category-tree';
     }
 
     public function register(Panel $panel): void
     {
         ChildResourceRegistrar::registerFromParentDefinition(
             $panel,
-            CategoryResource::class,
+            CategoryTreeResource::class,
             'category',
             config('category.resources.category', []),
         );

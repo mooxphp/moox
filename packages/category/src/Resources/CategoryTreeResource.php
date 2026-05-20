@@ -10,8 +10,10 @@ use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource as MooxCategoryResource;
 use Moox\Category\Resources\CategoryResource\Pages\TreeInspectorCategory;
 use Moox\Category\Resources\CategoryResource\Pages\TreeListCategories;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Override;
 
 class CategoryTreeResource extends MooxCategoryResource implements ConfiguresTreeIndex
 {
@@ -47,5 +49,16 @@ class CategoryTreeResource extends MooxCategoryResource implements ConfiguresTre
             'tree-inspector' => TreeInspectorCategory::route('/{record}/tree-inspector'),
             ...Arr::except(parent::getPages(), ['index']),
         ];
+    }
+
+    #[Override]
+    public static function getNavigationLabel(): string
+    {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_label');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
+        return __('category::category.categories_tree');
     }
 }
