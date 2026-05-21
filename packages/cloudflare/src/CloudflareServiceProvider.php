@@ -25,7 +25,7 @@ class CloudflareServiceProvider extends MooxServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(CloudflareClient::class);
-        $this->app->singleton(CloudflareCachePlugin::class, fn (): CloudflareCachePlugin => CloudflareCachePlugin::make());
+        $this->app->singleton(CloudflareCachePlugin::class, fn (): CloudflareCachePlugin => new CloudflareCachePlugin);
     }
 
     public function packageBooted(): void
