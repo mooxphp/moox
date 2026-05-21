@@ -6,6 +6,7 @@ namespace Moox\LoginLink\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Moox\LoginLink\LoginLinkServiceProvider;
+use Moox\LoginLink\Tests\Support\TestUser;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -31,9 +32,9 @@ abstract class TestCase extends Orchestra
         ]);
         config()->set('login-link.expiration_minutes', 60);
         config()->set('login-link.user_models', [
-            'Test User' => \Moox\LoginLink\Tests\Support\TestUser::class,
+            'Test User' => TestUser::class,
         ]);
-        config()->set('auth.providers.users.model', \Moox\LoginLink\Tests\Support\TestUser::class);
+        config()->set('auth.providers.users.model', TestUser::class);
         config()->set('auth.guards.web.provider', 'users');
     }
 
