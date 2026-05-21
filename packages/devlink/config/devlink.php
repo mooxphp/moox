@@ -434,6 +434,11 @@ return [
             'path' => $public_base_path.'/schedule',
             'type' => 'public',
         ],
+        'scopes' => [
+            'active' => false,
+            'path' => $public_base_path.'/scopes',
+            'type' => 'public',
+        ],
         'search' => [
             'active' => false,
             'path' => $public_base_path.'/search',
