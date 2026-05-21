@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "roots/wordpress": "^6.4",
+        "roots/wordpress": "^7.0",
         "vlucas/phpdotenv": "^5.6"
     },
     "extra": {
