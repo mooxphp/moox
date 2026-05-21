@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\CacheStatic\Targets;
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Cache\Data\CacheClearRequest;
 use Moox\Cache\Data\CacheClearResult;
 use Moox\Cache\Enums\CacheTargetStatus;
 use Moox\Cache\Support\AbstractCacheTarget;
+
 class PageCacheClearAllTarget extends AbstractCacheTarget
 {
     public function __construct()
@@ -65,7 +67,7 @@ class PageCacheClearAllTarget extends AbstractCacheTarget
     {
         return array_key_exists(
             (string) config('cache-static.command', 'page-cache:clear'),
-            app(\Illuminate\Contracts\Console\Kernel::class)->all(),
+            app(Kernel::class)->all(),
         );
     }
 }
