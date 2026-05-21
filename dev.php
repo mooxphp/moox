@@ -59,6 +59,9 @@ $appPaths = [
     'package.json',
     'phpunit.xml',
     'vite.config.js',
+    'phpunit.cache',
+    'phpstan',
+    'build',
 ];
 
 function run(string $command): void
@@ -92,32 +95,51 @@ function removePath(string $path): void
         return;
     }
 
-    if (is_link($path) || ! is_dir($path)) {
-        @chmod($path, 0777);
-        unlink($path);
+    echo "🗑️  Removing {$path}\n";
 
-        return;
-    }
+    $normalized = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
 
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST
-    );
+    if (PHP_OS_FAMILY === 'Windows') {
+        // Symlink/File
 
-    foreach ($iterator as $item) {
-        $itemPath = $item->getPathname();
+        if (is_link($normalized) || is_file($normalized)) {
+            exec(
 
-        if ($item->isDir()) {
-            @chmod($itemPath, 0777);
-            rmdir($itemPath);
+                'cmd /c del /f /q '.escapeshellarg($normalized).' 2>NUL',
+
+                $output,
+
+                $exitCode
+
+            );
         } else {
-            @chmod($itemPath, 0777);
-            unlink($itemPath);
+            // Directory
+
+            exec(
+
+                'cmd /c rmdir /s /q '.escapeshellarg($normalized).' 2>NUL',
+
+                $output,
+
+                $exitCode
+
+            );
         }
+    } else {
+        exec(
+
+            'rm -rf '.escapeshellarg($normalized).' 2>/dev/null',
+
+            $output,
+
+            $exitCode
+
+        );
     }
 
-    @chmod($path, 0777);
-    rmdir($path);
+    if (file_exists($normalized) || is_link($normalized)) {
+        throw new RuntimeException("Failed to remove path: {$normalized}");
+    }
 }
 
 function parseDotenv(string $path): array
