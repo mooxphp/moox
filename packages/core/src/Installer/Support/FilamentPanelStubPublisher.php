@@ -11,7 +11,7 @@ use InvalidArgumentException;
 
 class FilamentPanelStubPublisher
 {
-    public const STUB_FILENAME = 'PanelProvider.php.stup';
+    public const STUB_FILENAME = 'PanelProvider.php.stub';
 
     /**
      * @return array<string, string>

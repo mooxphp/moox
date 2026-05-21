@@ -62,6 +62,7 @@ class ImportStaticDataJob implements ShouldQueue
             'glg' => 'gl', // Galician
             'glv' => 'gv', // Manx
             'grn' => 'gn', // Guarani
+            'gsw' => 'de', // Swiss German (maps to German)
             'hat' => 'ht', // Haitian Creole
             'heb' => 'he', // Hebrew
             'her' => 'hz', // Herero
@@ -191,7 +192,7 @@ class ImportStaticDataJob implements ShouldQueue
         // Variant language codes to skip during import
         // These are regional variants/creoles that aren't needed
         $skipVariantCodes = [
-            'gsw',  // Swiss German -> skip, not needed
+            //'gsw', (skip german swiss variant for example)
         ];
 
         try {

@@ -1,26 +1,30 @@
 <?php
 
-namespace Moox\UserSession;
+namespace Moox\User\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\UserSession\Resources\UserSessionResource;
+use Moox\Core\Support\Resources\ChildResourceRegistrar;
+use Moox\User\Resources\UserResource;
 
-class UserSessionPlugin implements Plugin
+class UserPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'user-session';
+        return 'user';
     }
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            UserSessionResource::class,
-        ]);
+        ChildResourceRegistrar::registerFromParentDefinition(
+            $panel,
+            UserResource::class,
+            'user',
+            config('user.resources.user', []),
+        );
     }
 
     public function boot(Panel $panel): void

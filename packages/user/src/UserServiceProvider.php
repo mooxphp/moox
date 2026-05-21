@@ -17,8 +17,7 @@ class UserServiceProvider extends MooxServiceProvider
             ->name('user')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations(['update_user_table'])
-            ->hasCommand(InstallCommand::class);
+            ->hasMigrations(['update_user_table']);
     }
 
     public function bootingPackage(): void
