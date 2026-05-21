@@ -26,7 +26,7 @@ class CacheServiceProvider extends MooxServiceProvider
     {
         $this->app->singleton(CacheTargetRegistry::class);
 
-        $this->app->singleton(CachePlugin::class, fn (): CachePlugin => CachePlugin::make());
+        $this->app->singleton(CachePlugin::class, fn (): CachePlugin => new CachePlugin);
     }
 
     public function packageBooted(): void
