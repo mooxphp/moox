@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Validation\ValidationException;
 use Moox\Address\Exceptions\DuplicateAddressException;
 use Moox\Address\Models\Address;
+
 it('creates an address via factory', function (): void {
     $address = Address::factory()->create();
 

@@ -14,16 +14,18 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Address\Models\Address;
-use Moox\Address\Support\AddressRules;
 use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\Address\Pages\ViewAddress;
 use Moox\Address\Resources\Address\RelationManagers\AddressablesRelationManager;
+use Moox\Address\Support\AddressRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Moox\Data\Models\StaticCountry;
 
 class AddressResource extends BaseRecordResource
 {
@@ -236,9 +238,9 @@ class AddressResource extends BaseRecordResource
      */
     protected static function getCountryFilterOptions(): array
     {
-        if (class_exists(\Moox\Data\Models\StaticCountry::class)) {
-            /** @var class-string<\Illuminate\Database\Eloquent\Model> $model */
-            $model = \Moox\Data\Models\StaticCountry::class;
+        if (class_exists(StaticCountry::class)) {
+            /** @var class-string<Model> $model */
+            $model = StaticCountry::class;
 
             return $model::query()
                 ->whereNotNull('alpha2')
@@ -246,7 +248,7 @@ class AddressResource extends BaseRecordResource
                 ->get(['alpha2', 'common_name'])
                 ->mapWithKeys(fn ($country): array => [
                     strtoupper((string) $country->alpha2) => sprintf('%s %s', $country->name, strtoupper((string) $country->alpha2)),
-               
+
                 ])
                 ->all();
         }
