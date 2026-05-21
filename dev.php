@@ -73,19 +73,51 @@ function run(string $command): void
     }
 }
 
+function isAbsolutePath(string $path): bool
+{
+    if ($path === '') {
+        return false;
+    }
+
+    if (str_starts_with($path, '/') || str_starts_with($path, '\\')) {
+        return true;
+    }
+
+    return (bool) preg_match('/^[A-Za-z]:[\\\\\\/]/', $path);
+}
+
 function removePath(string $path): void
 {
     if (! file_exists($path) && ! is_link($path)) {
         return;
     }
 
-    if (is_dir($path) && ! is_link($path)) {
-        run('rm -rf '.escapeshellarg($path));
+    if (is_link($path) || ! is_dir($path)) {
+        @chmod($path, 0777);
+        unlink($path);
 
         return;
     }
 
-    unlink($path);
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($iterator as $item) {
+        $itemPath = $item->getPathname();
+
+        if ($item->isDir()) {
+            @chmod($itemPath, 0777);
+            rmdir($itemPath);
+        } else {
+            @chmod($itemPath, 0777);
+            unlink($itemPath);
+        }
+    }
+
+    @chmod($path, 0777);
+    rmdir($path);
 }
 
 function parseDotenv(string $path): array
@@ -190,7 +222,9 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
             exit(1);
         }
 
-        $full = str_starts_with($dbFile, DIRECTORY_SEPARATOR) ? $dbFile : $root.DIRECTORY_SEPARATOR.$dbFile;
+        $full = isAbsolutePath($dbFile)
+            ? $dbFile
+            : $root.DIRECTORY_SEPARATOR.str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $dbFile);
 
         if (file_exists($full) || is_link($full)) {
             unlink($full);
@@ -214,32 +248,21 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
             exit(1);
         }
 
-        if (extension_loaded('pdo_mysql')) {
-            $dsn = 'mysql:host='.$host.';port='.$port;
-            try {
-                $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-                $quoted = str_replace('`', '``', $database);
-                $pdo->exec('DROP DATABASE IF EXISTS `'.$quoted.'`');
-                echo "✅ MySQL database dropped: {$database}\n";
-            } catch (PDOException $e) {
-                echo '❌ MySQL DROP DATABASE failed: '.$e->getMessage()."\n";
-                exit(1);
-            }
-
-            return;
+        if (! extension_loaded('pdo_mysql')) {
+            echo "❌ pdo_mysql extension is required to drop MySQL databases.\n";
+            exit(1);
         }
 
-        $cmd = 'mysql -h'.escapeshellarg($host).' -P'.escapeshellarg((string) $port)
-            .' -u'.escapeshellarg($user);
-
-        if ($password !== '') {
-            $cmd .= ' -p'.escapeshellarg($password);
+        $dsn = 'mysql:host='.$host.';port='.$port;
+        try {
+            $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            $quoted = str_replace('`', '``', $database);
+            $pdo->exec('DROP DATABASE IF EXISTS `'.$quoted.'`');
+            echo "✅ MySQL database dropped: {$database}\n";
+        } catch (PDOException $e) {
+            echo '❌ MySQL DROP DATABASE failed: '.$e->getMessage()."\n";
+            exit(1);
         }
-
-        $quotedDb = str_replace('`', '``', $database);
-        $cmd .= ' -e '.escapeshellarg('DROP DATABASE IF EXISTS `'.$quotedDb.'`');
-        run($cmd);
-        echo "✅ MySQL database dropped: {$database}\n";
 
         return;
     }
@@ -256,29 +279,21 @@ function dropDatabaseFromEnv(string $root, string $envPath): void
             exit(1);
         }
 
-        if (extension_loaded('pdo_pgsql')) {
-            $dsn = 'pgsql:host='.$host.';port='.$port.';dbname=postgres';
-            try {
-                $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-                $safe = str_replace('"', '""', $database);
-                $pdo->exec('DROP DATABASE IF EXISTS "'.$safe.'" WITH (FORCE)');
-                echo "✅ PostgreSQL database dropped: {$database}\n";
-            } catch (PDOException $e) {
-                echo '❌ PostgreSQL DROP DATABASE failed: '.$e->getMessage()."\n";
-                exit(1);
-            }
-
-            return;
+        if (! extension_loaded('pdo_pgsql')) {
+            echo "❌ pdo_pgsql extension is required to drop PostgreSQL databases.\n";
+            exit(1);
         }
 
-        $cmd = 'PGHOST='.escapeshellarg($host)
-            .' PGPORT='.escapeshellarg((string) $port)
-            .' PGUSER='.escapeshellarg($user)
-            .' PGPASSWORD='.escapeshellarg($password)
-            .' dropdb --if-exists '
-            .escapeshellarg($database);
-        run($cmd);
-        echo "✅ PostgreSQL database dropped: {$database}\n";
+        $dsn = 'pgsql:host='.$host.';port='.$port.';dbname=postgres';
+        try {
+            $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            $safe = str_replace('"', '""', $database);
+            $pdo->exec('DROP DATABASE IF EXISTS "'.$safe.'" WITH (FORCE)');
+            echo "✅ PostgreSQL database dropped: {$database}\n";
+        } catch (PDOException $e) {
+            echo '❌ PostgreSQL DROP DATABASE failed: '.$e->getMessage()."\n";
+            exit(1);
+        }
 
         return;
     }
@@ -627,7 +642,7 @@ if (! file_exists($root.'/vendor/pestphp/pest/bin/pest')) {
 }
 
 if ($database === 'sqlite') {
-    $sqlitePath = $root.'/database/database.sqlite';
+    $sqlitePath = $root.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'database.sqlite';
     if (! is_dir(dirname($sqlitePath))) {
         mkdir(dirname($sqlitePath), 0755, true);
     }
