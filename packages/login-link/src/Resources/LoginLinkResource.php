@@ -2,8 +2,8 @@
 
 namespace Moox\LoginLink\Resources;
 
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -18,7 +18,6 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
-use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 use Override;
 
 class LoginLinkResource extends Resource
@@ -43,10 +42,6 @@ class LoginLinkResource extends Resource
                     ->maxLength(255),
                 TextInput::make('user_agent')
                     ->label(__('core::user.user_agent'))
-                    ->maxLength(255)
-                    ->columnSpan(2),
-                TextInput::make('token')
-                    ->label(__('core::login-link.token'))
                     ->maxLength(255)
                     ->columnSpan(2),
                 DateTimePicker::make('expires_at')
@@ -86,12 +81,14 @@ class LoginLinkResource extends Resource
         return $table
             ->columns([
                 IconColumn::make('used')
-                    ->label(__('core::core.valid'))
-                    ->icons([
-                        'heroicon-o-x-circle' => fn ($record): bool => empty($record->used_at),
-                        'heroicon-o-check-circle' => fn ($record): bool => ! empty($record->used_at),
-                    ])
-                    ->tooltip(fn ($record): string => empty($record->used_at) ? 'Not Used' : 'Used')
+                    ->label(__('login-link::translations.used'))
+                    ->state(fn ($record): bool => ! empty($record->used_at))
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->tooltip(fn ($record): string => empty($record->used_at)
+                        ? __('login-link::translations.used_no')
+                        : __('login-link::translations.used_yes'))
                     ->sortable(),
                 TextColumn::make('email')
                     ->label(__('core::user.email'))
@@ -117,7 +114,7 @@ class LoginLinkResource extends Resource
                     ->sortable(),
             ])
             ->recordActions([
-                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
@@ -143,9 +140,7 @@ class LoginLinkResource extends Resource
     #[Override]
     public static function getWidgets(): array
     {
-        return [
-            LoginLinkWidgets::class,
-        ];
+        return [];
     }
 
     #[Override]

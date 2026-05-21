@@ -2,12 +2,10 @@
 
 namespace Moox\LoginLink\Resources\LoginLinkResource\Pages;
 
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource;
-use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 use Override;
 
 class ListPage extends ListRecords
@@ -24,9 +22,7 @@ class ListPage extends ListRecords
     #[Override]
     protected function getHeaderWidgets(): array
     {
-        return [
-            LoginLinkWidgets::class,
-        ];
+        return [];
     }
 
     #[Override]
@@ -37,10 +33,8 @@ class ListPage extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make()
-                ->using(fn (array $data, string $model): LoginLink => $model::create($data)),
-        ];
+        // Login links should be created via the request flow (mail), not manually in the admin UI.
+        return [];
     }
 
     public function getTabs(): array

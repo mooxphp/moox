@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,19 +99,79 @@ return [
     */
 
     'user_models' => [
-        'App Users' => User::class,
-        'Moox Users' => Moox\User\Models\User::class,
+        // Use class-strings to avoid hard dependencies on optional packages.
+        // This must include the model used by the panel's auth guard provider.
+        'Users' => User::class,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Login Link - Redirect To
+    | Login Link - Expiration
     |--------------------------------------------------------------------------
     |
-    | Where should we go after successful login?
+    | How long should login links remain valid (in minutes)?
     |
     */
 
-    'redirect_to' => '/moox',
+    'expiration_minutes' => 60,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mail
+    |--------------------------------------------------------------------------
+    |
+    | Optional logo URL/path shown in login-link emails. You may provide
+    | an absolute URL or a public path starting with "/". When empty or the
+    | file does not exist, the application name (APP_NAME) is shown instead.
+    |
+    */
+
+    'mail_logo_url' => env('LOGIN_LINK_MAIL_LOGO_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Passwordless / Login link (toggle)
+    |--------------------------------------------------------------------------
+    |
+    | Toggle the passwordless login-link flow.
+    |
+    */
+
+    'passwordless' => [
+        'enabled' => env('LOGIN_LINK_PASSWORDLESS_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rate limiting (send login link only)
+    |--------------------------------------------------------------------------
+    |
+    | Limits unauthenticated "send magic link" requests on the login page.
+    | ip_* caps total attempts per IP; max_attempts caps per IP + email.
+    |
+    */
+
+    'rate_limit' => [
+        'send' => [
+            'max_attempts' => (int) env('LOGIN_LINK_SEND_MAX_ATTEMPTS', 5),
+            'decay_seconds' => (int) env('LOGIN_LINK_SEND_DECAY_SECONDS', 60),
+            'ip_max_attempts' => (int) env('LOGIN_LINK_SEND_IP_MAX_ATTEMPTS', 20),
+            'ip_decay_seconds' => (int) env('LOGIN_LINK_SEND_IP_DECAY_SECONDS', 60),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Login page route patterns (middleware)
+    |--------------------------------------------------------------------------
+    |
+    | Used for redeeming legacy links that still point at the login URL with
+    | ?loginLink= query parameter.
+    |
+    */
+
+    'login_route_patterns' => [
+        'filament.*.auth.login',
+    ],
 
 ];

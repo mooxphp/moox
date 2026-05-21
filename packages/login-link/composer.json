@@ -27,6 +27,16 @@
             "Moox\\LoginLink\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\LoginLink\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [

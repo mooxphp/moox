@@ -2,39 +2,68 @@
 
 # Moox LoginLink
 
-This is my package login-link
-
-## Quick Installation
-
-These two commmands are all you need to install the package:
-
-```bash
-composer require moox/login-link
-php artisan mooxlogin-link:install
-```
-
-Curious what the install command does? See manual installation below.
+Passwordless login links for Filament panels, integrated into the native Filament login page.
 
 ## What it does
 
-<!--whatdoes-->
+- Generates **temporary signed** login links (expires + signature).
+- Enforces **single-use** (marks links as used, and invalidates previous valid links for the same user + panel).
+- **Panel-aware**: login links are only valid for the panel they were created for.
+- Sends email via the queue (uses `Mail::queue()`).
+- Adds a “Send login link” action directly on Filament’s login form (no extra public routes required).
 
-Here are some things missing, like an overview with screenshots about this package, or simply a link to the package's docs.
+## How it works (high level)
 
-<!--/whatdoes-->
+- The Filament login page adds a **“Send login link”** action on the email/login field.
+- When requested, it creates a `login_links` record and queues a `LoginLinkEmail`.
+- The email contains a **temporary signed URL** to `{panel}/login-link/{id}`.
+- When the link is opened:
+  - Laravel validates the URL signature and expiry
+  - the `login_links` record is locked and marked as used (single-use)
+  - the user is logged in and redirected into the panel
+- Invalid or expired links redirect to the login page with a danger notification.
 
-## Manual Installation
-
-Instead of using the install-command `php artisan mooxlogin-link:install` you are able to install this package manually step by step:
+## Installation
 
 ```bash
-// Publish and run the migrations:
-php artisan vendor:publish --tag="login-link-migrations"
-php artisan migrate
-
-// Publish the config file with:
-php artisan vendor:publish --tag="login-link-config"
+composer require moox/login-link
+php artisan login-link:install
 ```
+
+Ensure a **queue worker** is running (`php artisan queue:work`) so login-link emails are sent.
+
+## Filament panel setup
+
+Register the plugin on every panel that should support passwordless login:
+
+```php
+use Moox\LoginLink\Plugins\LoginLinkPlugin;
+
+$panel->plugins([
+    // ...
+    LoginLinkPlugin::make(),
+]);
+```
+
+No other login-link wiring is required in `AdminPanelProvider` (no custom `->login()` class needed).
+
+The plugin automatically extends **your panel's configured login class** (Filament default, `Moox\User\Services\Login`, or a custom `->login(YourLogin::class)`) with the login-link hint on the email/login field.
+
+If your login page does not use `getLoginFormComponent()` or `getEmailFormComponent()`, add `Moox\LoginLink\Concerns\InteractsWithLoginLinks` yourself and call `configureLoginFormWithMagicLink()` on the identifier field.
+
+## Key configuration knobs
+
+- `login-link.passwordless.enabled`: enable/disable the passwordless integration.
+- `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
+- `login-link.expiration_minutes`: link validity window.
+- `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
+- `login-link.mail_logo_url`: optional logo shown in the email template.
+
+## Security notes
+
+- The email flow is **non-enumerating** from the UI perspective (same success message when the address is unknown).
+- Links are **signed + expiring** and **single-use** (server-enforced).
+- Panel access is enforced via `FilamentUser::canAccessPanel()`.
 
 ## Changelog
 
