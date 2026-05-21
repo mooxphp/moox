@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Firewall;
 
-use Illuminate\Routing\Events\RouteMatched;
-use Illuminate\Support\Facades\Event;
-use Moox\Firewall\Listeners\FirewallListener;
+use Illuminate\Support\Facades\Route;
+use Moox\Core\MooxServiceProvider;
+use Moox\Firewall\Http\Middleware\EnsureFirewallAccess;
+use Override;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FirewallServiceProvider extends PackageServiceProvider
+class FirewallServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('firewall')
@@ -20,20 +20,27 @@ class FirewallServiceProvider extends PackageServiceProvider
             ->hasViews('access-denied')
             ->hasViews('backdoor')
             ->hasTranslations()
-            ->hasMigrations()
-            ->hasCommands();
+            ->hasMigrations([
+                'create_firewall_whitelist_entries_table',
+            ]);
     }
 
+    #[Override]
     public function boot(): void
     {
         parent::boot();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'firewall');
 
-        if (config('firewall.enabled', false)) {
-            Event::listen(RouteMatched::class, [FirewallListener::class, 'handle']);
+        // Global firewall middleware (package-level). We also provide a dummy backdoor route
+        // so the middleware can handle GET/POST on this path.
+        $this->app['router']->pushMiddlewareToGroup('web', EnsureFirewallAccess::class);
 
-            \Log::info('🛡️ Moox Firewall is active');
-        }
+        Route::middleware(['web'])
+            ->match(
+                ['GET', 'POST'],
+                trim((string) config('firewall.backdoor_url', '/backdoor'), '/'),
+                fn () => abort(404),
+            );
     }
 }

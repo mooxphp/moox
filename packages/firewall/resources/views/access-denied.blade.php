@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('firewall.message', 'Moox Firewall') }}</title>
+    <title>{{ config('firewall.message', __('firewall::translations.message')) }}</title>
     <style>
         * {
             margin: 0;
@@ -34,7 +33,7 @@
         .title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #dc2626;
+            color: {{ config('firewall.color', 'black') }};
             margin-bottom: 0.5rem;
         }
 
@@ -46,16 +45,29 @@
 
         .error-icon {
             font-size: 3rem;
-            color: #dc2626;
+            color: {{ config('firewall.color', 'black') }};
             margin-bottom: 1rem;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
     </style>
 </head>
 <body>
     <div class="firewall-container">
-        <div class="error-icon">🚫</div>
-        <h1 class="title">{{ config('firewall.message', 'Moox Firewall') }}</h1>
-        <p class="message">{{ config('firewall.denied_message', 'Access denied. Please contact the IT department.') }}</p>
+        <div class="error-icon" aria-hidden="true">🚫</div>
+        <span class="sr-only">{{ __('firewall::translations.denied_message') }}</span>
+        <h1 class="title">{{ config('firewall.message', __('firewall::translations.message')) }}</h1>
+        <p class="message">{{ __('firewall::translations.denied_message') }}</p>
     </div>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('firewall.message', 'Moox Firewall') }}</title>
+    <title>{{ config('firewall.message', __('firewall::translations.message')) }}</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +25,7 @@
         .firewall-container {
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             padding: 3rem;
             max-width: 400px;
             width: 90%;
@@ -34,7 +35,9 @@
         .title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: {{ config('firewall.color', 'black') }};
+            color:
+                {{ config('firewall.color', 'black') }}
+            ;
             margin-bottom: 0.5rem;
         }
 
@@ -65,11 +68,15 @@
         }
 
         .input:focus {
-            border-color: {{ config('firewall.color', 'black') }};
+            border-color:
+                {{ config('firewall.color', 'black') }}
+            ;
         }
 
         .button {
-            background: {{ config('firewall.color', 'black') }};
+            background:
+                {{ config('firewall.color', 'black') }}
+            ;
             color: white;
             border: none;
             padding: 1rem;
@@ -94,37 +101,34 @@
         }
     </style>
 </head>
+
 <body>
     <div class="firewall-container">
-        <h1 class="title">{{ config('firewall.message', 'Moox Firewall') }}</h1>
-        <p class="message">{{ config('firewall.description', 'Please enter your access token to continue.') }}</p>
+        <h1 class="title">{{ config('firewall.message', __('firewall::translations.message')) }}</h1>
+        <p class="message">{{ __('firewall::translations.description') }}</p>
 
         @if(isset($firewall_error) && $firewall_error)
-        <div class="error">
-            {{ $firewall_error }}
-        </div>
+            <div class="error">
+                {{ $firewall_error }}
+            </div>
         @elseif(session('firewall_error'))
-        <div class="error">
-            {{ session('firewall_error') }}
-        </div>
+            <div class="error">
+                {{ session('firewall_error') }}
+            </div>
         @endif
 
-        <form method="GET" class="form">
+        <form method="POST" class="form" action="{{ config('firewall.backdoor_url', '/backdoor') }}">
+            @csrf
             <div class="input-group">
-                <input
-                    type="password"
-                    name="backdoor_token"
-                    class="input"
-                    placeholder="Enter your access token"
-                    autocomplete="off"
-                    autofocus
-                >
+                <input type="password" name="backdoor_token" class="input"
+                    placeholder="{{ __('firewall::translations.backdoor_placeholder') }}" autocomplete="off" autofocus>
             </div>
 
             <button type="submit" class="button">
-                Continue
+                {{ __('firewall::translations.backdoor_continue') }}
             </button>
         </form>
     </div>
 </body>
+
 </html>

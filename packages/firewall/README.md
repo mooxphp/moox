@@ -1,33 +1,8 @@
-<div class="filament-hidden">
-
 ![Moox Firewall](banner.jpg)
-
-</div>
 
 # Moox Firewall
 
-<!-- description -->
-
-Moox Firewall allows you to secure your Laravel application by restricting access to whitelisted IP addresses.
-
-For maintenance or emergency access, you can enable a temporary backdoor using a secret access token.
-
-Moox Firewall provides an additional security layer on top of your existing authentication mechanisms.
-It strengthens access control but does not replace Multi-Factor Authentication (MFA) as defined by the BSI.
-
-Support for MFA and modern Passkeys is planned for an upcoming release, see [Roadmap](ROADMAP.md) for more
-
-<!-- /description -->
-
-## Features
-
-<!--features-->
-
--   Application level firewall
--   IP Whitelisting
--   Backdoor with Token
-
-<!--/features-->
+Application-level access gate for Laravel and Filament. Blocks `web` (and optionally panel) traffic unless the client is whitelisted, has a valid unlock session, or passes the backdoor token challenge.
 
 ## Installation
 
@@ -35,57 +10,84 @@ Support for MFA and modern Passkeys is planned for an upcoming release, see [Roa
 composer require moox/firewall
 ```
 
-and publish the config, to activate and adjust Moox Firewall:
+Publish config and migrations, then migrate:
 
 ```bash
-php artisan vendor:publish --tag="firewall-config"
+php artisan vendor:publish --provider="Moox\Firewall\FirewallServiceProvider" --tag=firewall-config
+php artisan vendor:publish --provider="Moox\Firewall\FirewallServiceProvider" --tag=firewall-migrations
+php artisan migrate
 ```
 
-## Screenshot
+Set a strong backdoor token in production:
 
-![Firewall Backdoor](./screenshot/main.jpg)
+```env
+MOOX_FIREWALL_ENABLED=true
+MOOX_FIREWALL_BACKDOOR_TOKEN=your-long-random-token
+```
 
-## Configuration
+## Filament panel setup
 
-You can configure all things in firewall.php:
+Register the plugin on panels that should use panel-level middleware and the whitelist resource:
 
 ```php
-return [
-    // Enable firewall?
-    'enabled' => env('MOOX_FIREWALL_ENABLED', true),
+use Moox\Firewall\Plugins\FirewallPlugin;
 
-    // Whitelist IP addresses
-    'whitelist' => array_filter(explode(',', env('MOOX_FIREWALL_WHITELIST', ''))),
-
-    // Logo to display on the firewall page
-    'logo' => env('MOOX_FIREWALL_LOGO', 'img/logo.png'),
-
-    // Backdoor allowed?
-    'backdoor' => env('MOOX_FIREWALL_BACKDOOR', true),
-
-    // Backdoor bypass token
-    'backdoor_token' => env('MOOX_FIREWALL_BACKDOOR_TOKEN', 'let-me-in'),
-
-    // Firewall page message
-    'message' => env('MOOX_FIREWALL_MESSAGE', 'Moox Firewall'),
-
-    // Firewall page color as hex
-    'color' => env('MOOX_FIREWALL_COLOR', 'darkblue'),
-
-    // Firewall page description
-    'description' => env('MOOX_FIREWALL_DESCRIPTION', 'Please enter your access token to continue.'),
-];
+$panel->plugins([
+    // ...
+    FirewallPlugin::make(),
+]);
 ```
 
-## Usage
+The package also pushes `EnsureFirewallAccess` onto Laravel's `web` middleware group automatically (see `FirewallServiceProvider`).
 
-1. After installation you need to global_enable the firewall
-2. Set config values or use your environment to adjust it to your needs
-3. Use the backdoor token to log in or append it to your URL like `?backdoor_token=let-me-in`
+## How it works
 
-## Roadmap
+- **Middleware** (`EnsureFirewallAccess`): primary enforcement path.
+- **Plugin** (`FirewallPlugin`): attaches the same middleware to Filament panels and registers `FirewallWhitelistEntryResource` when `firewall.enabled` and `firewall.resource.enabled` are true.
+- **Decision order** (simplified):
+  - firewall disabled → allow
+  - Livewire internal requests → allow
+  - optional `protect` patterns: if set, only those routes are protected
+  - `exclude` patterns → allow
+  - config `whitelist` / DB whitelist entry → allow (optionally limited by `whitelist_allow` or per-entry routes)
+  - valid unlock session (`firewall_authenticated_at` within TTL) → allow
+  - backdoor disabled → 403 access denied
+  - otherwise → inline challenge or redirect to `backdoor_url`, token verified on `POST`
 
-See the [ROADMAP](ROADMAP.md) for more.
+## Key configuration
+
+| Key | Env | Description |
+|-----|-----|-------------|
+| `enabled` | `MOOX_FIREWALL_ENABLED` | Master toggle (default: `false`) |
+| `whitelist` | `MOOX_FIREWALL_WHITELIST` | Comma-separated IPs |
+| `protect` | `MOOX_FIREWALL_PROTECT` | Comma-separated route patterns to protect (empty = all except exclude) |
+| `exclude` | — | Route patterns always allowed (default includes `wilo/*`) |
+| `whitelist_allow` | `MOOX_FIREWALL_WHITELIST_ALLOW` | Limit config whitelist bypass to patterns |
+| `backdoor` | `MOOX_FIREWALL_BACKDOOR` | Enable token challenge |
+| `backdoor_token` | `MOOX_FIREWALL_BACKDOOR_TOKEN` | Shared secret (required when backdoor enabled) |
+| `backdoor_url` | `MOOX_FIREWALL_BACKDOOR_URL` | Challenge path (default `/backdoor`) |
+| `inline_challenge` | `MOOX_FIREWALL_INLINE_CHALLENGE` | Show form on blocked URL vs redirect |
+| `session_ttl_minutes` | `MOOX_FIREWALL_SESSION_TTL_MINUTES` | Unlock session lifetime |
+| `backdoor_rate_limit` | `MOOX_FIREWALL_BACKDOOR_RATE_LIMIT` | Failed attempts per IP per minute |
+| `resource.enabled` | `MOOX_FIREWALL_RESOURCE_ENABLED` | Filament whitelist CRUD |
+| `legacy_listener.enabled` | `MOOX_FIREWALL_LEGACY_LISTENER_ENABLED` | Old `RouteMatched` listener (keep `false`) |
+
+## Whitelist resource (Filament)
+
+When enabled, manage per-IP rules:
+
+- **Allow all protected routes** — full bypass for that IP
+- **Allowed routes** — bypass only for matching patterns (`Request::is` style)
+
+## Security notes
+
+- Backdoor token is checked with `hash_equals` on `POST` (CSRF when using web middleware).
+- Intended redirects after unlock are relative paths only (open-redirect hardening).
+- Legacy `FirewallListener` remains for backward compatibility; keep `legacy_listener.enabled` disabled.
+
+## Changelog
+
+See [CHANGELOG](CHANGELOG.md).
 
 ## Security
 
@@ -93,4 +95,4 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 ## License
 
-The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+The MIT License (MIT). Please see [LICENSE.md](LICENSE.md).

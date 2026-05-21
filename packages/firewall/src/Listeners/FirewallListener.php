@@ -13,6 +13,11 @@ class FirewallListener
         $request = $event->request;
         $config = config('firewall');
 
+        // Legacy listener: keep disabled by default for safety.
+        if (! (bool) config('firewall.legacy_listener.enabled', false)) {
+            return;
+        }
+
         if (! ($config['enabled'] ?? false)) {
             return;
         }
@@ -51,7 +56,8 @@ class FirewallListener
             exit;
         }
 
-        $token = $config['backdoor_token'] ?? 'let-me-in';
+        // Legacy listener: never fall back to a weak default token.
+        $token = (string) ($config['backdoor_token'] ?? '');
         $requestToken = $request->get('backdoor_token') ?? $request->header('X-Backdoor-Token');
 
         if ($token && $requestToken === $token) {
