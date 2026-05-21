@@ -17,9 +17,8 @@ use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
 use Override;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class CoreServiceProvider extends PackageServiceProvider
+class CoreServiceProvider extends MooxServiceProvider
 {
     use HasGoogleIcons;
     use HasTranslatableConfig;
@@ -54,7 +53,7 @@ class CoreServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('core')
