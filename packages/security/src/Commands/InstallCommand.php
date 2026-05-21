@@ -112,7 +112,7 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Security";
+            $namespace = '\Moox\Security\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',

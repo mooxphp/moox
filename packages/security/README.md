@@ -18,7 +18,7 @@ The install command publishes config and migrations, runs migrations, and can re
 Register the plugin on every panel that should support password reset (for example the admin panel):
 
 ```php
-use Moox\Security\ResetPasswordPlugin;
+use Moox\Security\Plugins\ResetPasswordPlugin;
 
 $panel->plugins([
     // ...

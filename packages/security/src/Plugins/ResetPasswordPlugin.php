@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security;
+namespace Moox\Security\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
