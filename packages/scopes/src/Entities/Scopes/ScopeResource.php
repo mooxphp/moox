@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Scopes\Moox\Entities\Scopes;
+namespace Moox\Scopes\Entities\Scopes;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

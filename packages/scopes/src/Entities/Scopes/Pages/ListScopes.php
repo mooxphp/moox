@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Scopes\Moox\Entities\Scopes\Pages;
+namespace Moox\Scopes\Entities\Scopes\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Scopes\Moox\Entities\Scopes\ScopeResource;
+use Moox\Scopes\Entities\Scopes\ScopeResource;
 
 class ListScopes extends ListRecords
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Moox\Scopes\Moox\Plugins;
+namespace Moox\Scopes\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Core\Support\Resources\ResourceNavigationRegistrar;
-use Moox\Scopes\Moox\Entities\Scopes\ScopeResource;
+use Moox\Scopes\Entities\Scopes\ScopeResource;
 
 class ScopesPlugin implements Plugin
 {

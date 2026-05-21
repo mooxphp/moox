@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Moox\Scopes\Moox\Entities\Scopes\Pages;
+namespace Moox\Scopes\Entities\Scopes\Pages;
 
 use Filament\Resources\Pages\EditRecord;
-use Moox\Scopes\Moox\Entities\Scopes\ScopeResource;
+use Moox\Scopes\Entities\Scopes\ScopeResource;
 
 class EditScope extends EditRecord
 {
