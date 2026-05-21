@@ -1,0 +1,49 @@
+# Environment
+.env
+.env.backup
+
+# Composer
+/vendor
+composer.lock
+auth.json
+
+# NPM / Node
+/node_modules
+npm-debug.log
+package-lock.json
+
+# Laravel
+/public/hot
+/public/storage
+/storage/*.key
+
+# PHPUnit
+.phpunit.result.cache
+phpunit.xml
+
+# Yarn
+yarn-error.log
+
+# PHPStan
+/build
+phpstan.neon
+
+# Testbench
+testbench.yaml
+
+# PHP CS Fixer
+.php-cs-fixer.cache
+
+# Homestead
+Homestead.json
+Homestead.yaml
+
+# IDEs
+/.idea
+/.vscode
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db

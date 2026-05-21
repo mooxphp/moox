@@ -84,7 +84,10 @@
         "moox/trainings": "dev-main",
         "moox/tree": "dev-main",
         "moox/user": "dev-main",
-        "moox/user-session": "dev-main"
+        "moox/user-session": "dev-main",
+        "moox/cache": "dev-main",
+        "moox/cache-static": "dev-main",
+        "moox/cloudflare": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"

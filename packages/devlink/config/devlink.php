@@ -135,6 +135,16 @@ return [
             'path' => $public_base_path.'/build',
             'type' => 'public',
         ],
+        'cache' => [
+            'active' => false,
+            'path' => $public_base_path.'/cache',
+            'type' => 'public',
+        ],
+        'cache-static' => [
+            'active' => false,
+            'path' => $public_base_path.'/cache-static',
+            'type' => 'public',
+        ],
         'calendar' => [
             'active' => false,
             'path' => $public_base_path.'/calendar',
@@ -153,6 +163,11 @@ return [
         'clipboard' => [
             'active' => false,
             'path' => $public_base_path.'/clipboard',
+            'type' => 'public',
+        ],
+        'cloudflare' => [
+            'active' => false,
+            'path' => $public_base_path.'/cloudflare',
             'type' => 'public',
         ],
         'components' => [
