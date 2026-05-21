@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Permission;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\Permission\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class PermissionServiceProvider extends PackageServiceProvider
+class PermissionServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
-            ->name('permission')
-            ->hasConfigFile()
+            ->name('moox-permission')
+            ->hasConfigFile('permission')
             ->hasTranslations()
             ->hasMigrations(['create_permissions_table'])
             ->hasCommand(InstallCommand::class);

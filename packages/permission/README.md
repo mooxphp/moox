@@ -29,11 +29,11 @@ Instead of using the install-command `php artisan mooxpermission:install` you ar
 
 ```bash
 // Publish and run the migrations:
-php artisan vendor:publish --tag="permission-migrations"
+php artisan vendor:publish --provider="Moox\Permission\PermissionServiceProvider" --tag="moox-permission-migrations"
 php artisan migrate
 
 // Publish the config file with:
-php artisan vendor:publish --tag="permission-config"
+php artisan vendor:publish --provider="Moox\Permission\PermissionServiceProvider" --tag="moox-permission-config"
 ```
 
 ## Using the Default Policy

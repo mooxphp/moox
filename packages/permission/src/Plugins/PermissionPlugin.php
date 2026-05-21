@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Permission;
+namespace Moox\Permission\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
