@@ -6,7 +6,6 @@ namespace Moox\User;
 
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\MooxServiceProvider;
-use Moox\User\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 
 class UserServiceProvider extends MooxServiceProvider

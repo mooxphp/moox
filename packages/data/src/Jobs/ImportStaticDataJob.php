@@ -192,7 +192,7 @@ class ImportStaticDataJob implements ShouldQueue
         // Variant language codes to skip during import
         // These are regional variants/creoles that aren't needed
         $skipVariantCodes = [
-            //'gsw', (skip german swiss variant for example)
+            // 'gsw', (skip german swiss variant for example)
         ];
 
         try {
