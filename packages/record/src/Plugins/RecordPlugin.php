@@ -11,7 +11,7 @@ class RecordPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'item';
+        return 'record';
     }
 
     public function register(Panel $panel): void
