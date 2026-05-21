@@ -86,9 +86,7 @@
         "moox/user": "dev-main",
         "moox/user-device": "dev-main",
         "moox/user-session": "dev-main",
-        "moox/cache": "dev-main",
-        "moox/cache-static": "dev-main",
-        "moox/cloudflare": "dev-main"
+        "moox/cache": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
