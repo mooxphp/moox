@@ -81,6 +81,17 @@ class Login extends SimplePage
         $this->form->fill();
     }
 
+    protected function afterSuccessfulAuthentication(mixed $user, bool $remember = false): void
+    {
+        if ($this->sessionRelationService) {
+            $this->sessionRelationService->associateUserSession($user);
+        }
+
+        if ($this->userDeviceTracker && config('user-device.enabled', false)) {
+            $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
+        }
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -168,13 +179,7 @@ class Login extends SimplePage
         session()->regenerate();
         session()->save();
 
-        if ($this->sessionRelationService) {
-            $this->sessionRelationService->associateUserSession($user);
-        }
-
-        if ($this->userDeviceTracker && config('user-device.enabled', false)) {
-            $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
-        }
+        $this->afterSuccessfulAuthentication($user, $data['remember'] ?? false);
 
         return app(LoginResponse::class);
     }
