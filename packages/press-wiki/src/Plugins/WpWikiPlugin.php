@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\PressWiki;
+declare(strict_types=1);
+
+namespace Moox\PressWiki\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressWiki\Resources\WpWikiCompanyTopicResource;
+use Moox\PressWiki\Resources\WpWikiResource;
 
-class WpWikiCompanyTopicPlugin implements Plugin
+class WpWikiPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-wiki-company-topic';
+        return 'wp-wiki';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpWikiCompanyTopicResource::class,
+            WpWikiResource::class,
         ]);
     }
 

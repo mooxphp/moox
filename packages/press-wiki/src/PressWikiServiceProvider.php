@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\PressWiki;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\PressWiki\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class PressWikiServiceProvider extends PackageServiceProvider
+class PressWikiServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('press-wiki')

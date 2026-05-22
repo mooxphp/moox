@@ -87,12 +87,26 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\PressWiki";
+            $namespace = '\Moox\PressWiki\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['WpWikiPlugin', 'WpTopicPlugin'],
-                default: ['WpWikiPlugin', 'WpTopicPlugin'],
+                options: [
+                    'WpWikiPlugin',
+                    'WpWikiTopicPlugin',
+                    'WpWikiLetterTopicPlugin',
+                    'WpWikiCompanyTopicPlugin',
+                    'WpWikiDepartmentTopicPlugin',
+                    'WpWikiLocationTopicPlugin',
+                ],
+                default: [
+                    'WpWikiPlugin',
+                    'WpWikiTopicPlugin',
+                    'WpWikiLetterTopicPlugin',
+                    'WpWikiCompanyTopicPlugin',
+                    'WpWikiDepartmentTopicPlugin',
+                    'WpWikiLocationTopicPlugin',
+                ],
             );
 
             $function = '::make(),';

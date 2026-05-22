@@ -1,6 +1,8 @@
 <?php
 
-namespace Moox\PressWiki;
+declare(strict_types=1);
+
+namespace Moox\PressWiki\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;

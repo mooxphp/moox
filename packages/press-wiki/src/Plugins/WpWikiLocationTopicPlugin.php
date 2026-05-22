@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\PressWiki;
+declare(strict_types=1);
+
+namespace Moox\PressWiki\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressWiki\Resources\WpWikiTopicResource;
+use Moox\PressWiki\Resources\WpWikiLocationTopicResource;
 
-class WpWikiTopicPlugin implements Plugin
+class WpWikiLocationTopicPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-wiki-topic';
+        return 'wp-wiki-location-topic';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpWikiTopicResource::class,
+            WpWikiLocationTopicResource::class,
         ]);
     }
 
