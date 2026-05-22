@@ -5,6 +5,7 @@ namespace Moox\UserDevice\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Moox\Core\Models\Concerns\HasScopedModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -12,6 +13,7 @@ use Override;
 
 class UserDevice extends Model
 {
+    use HasScopedModel;
     /**
      * The table associated with the model.
      *

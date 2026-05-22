@@ -94,9 +94,6 @@ return [
                     'user' => [
                         'resource' => UserResource::class,
                     ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
-                    ],
                     // 'user' => [
                     //     'resource' => UserResource::class,
                     // ],

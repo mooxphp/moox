@@ -8,7 +8,6 @@ use Moox\News\Moox\Entities\News\News\NewsResource;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
-use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,9 +92,6 @@ return [
                     ],
                     'user' => [
                         'resource' => UserResource::class,
-                    ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
                     ],
                 ],
                 'registry' => [
