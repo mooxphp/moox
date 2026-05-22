@@ -16,7 +16,7 @@ class ListWpTrainings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [Action::make('new-post')->label('New Post')->url('/wp/wp-admin/post-new.php?post_type=wiki')];
+        return [Action::make('new-post')->label('New Post')->url('/wp/wp-admin/post-new.php?post_type=schulung')];
     }
 
     public function getTabs(): array

@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\PressWiki;
+declare(strict_types=1);
+
+namespace Moox\Training\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressWiki\Resources\WpWikiResource;
+use Moox\Training\Resources\TrainingResource;
 
-class WpWikiPlugin implements Plugin
+class TrainingPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-wiki';
+        return 'trainings';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpWikiResource::class,
+            TrainingResource::class,
         ]);
     }
 

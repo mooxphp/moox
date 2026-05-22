@@ -1,9 +1,9 @@
 <?php
 
-namespace Moox\PressWiki\Resources\WpTopicResource\Pages;
+namespace Moox\PressTrainings\Resources\WpTopicResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Moox\PressWiki\Resources\WpTopicResource;
+use Moox\PressTrainings\Resources\WpTopicResource;
 
 class CreateWpTopic extends CreateRecord
 {

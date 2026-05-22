@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Training;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\Training\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class TrainingServiceProvider extends PackageServiceProvider
+class TrainingServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('trainings')

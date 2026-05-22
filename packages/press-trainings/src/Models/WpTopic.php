@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\PressWiki\Models;
+namespace Moox\PressTrainings\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;

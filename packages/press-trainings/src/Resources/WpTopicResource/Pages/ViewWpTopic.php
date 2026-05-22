@@ -1,11 +1,11 @@
 <?php
 
-namespace Moox\PressWiki\Resources\WpTopicResource\Pages;
+namespace Moox\PressTrainings\Resources\WpTopicResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Moox\PressWiki\Resources\WpTopicResource;
+use Moox\PressTrainings\Resources\WpTopicResource;
 
 class ViewWpTopic extends ViewRecord
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\PressWiki\Resources;
+namespace Moox\PressTrainings\Resources;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,11 +13,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\PressWiki\Models\WpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\CreateWpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\EditWpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\ListWpTopics;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\ViewWpTopic;
+use Moox\PressTrainings\Models\WpTopic;
+use Moox\PressTrainings\Resources\WpTopicResource\Pages\CreateWpTopic;
+use Moox\PressTrainings\Resources\WpTopicResource\Pages\EditWpTopic;
+use Moox\PressTrainings\Resources\WpTopicResource\Pages\ListWpTopics;
+use Moox\PressTrainings\Resources\WpTopicResource\Pages\ViewWpTopic;
 use Override;
 
 class WpTopicResource extends Resource
@@ -117,30 +117,30 @@ class WpTopicResource extends Resource
     #[Override]
     public static function getModelLabel(): string
     {
-        return config('press-wiki.resources.topic.single');
+        return config('press-trainings.resources.topic.single');
     }
 
     #[Override]
     public static function getPluralModelLabel(): string
     {
-        return config('press-wiki.resources.topic.plural');
+        return config('press-trainings.resources.topic.plural');
     }
 
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return config('press-wiki.resources.topic.plural');
+        return config('press-trainings.resources.topic.plural');
     }
 
     #[Override]
     public static function getBreadcrumb(): string
     {
-        return config('press-wiki.resources.topic.single');
+        return config('press-trainings.resources.topic.single');
     }
 
     #[Override]
     public static function getNavigationGroup(): ?string
     {
-        return config('press-wiki.navigation_group');
+        return config('press-trainings.navigation_group');
     }
 }

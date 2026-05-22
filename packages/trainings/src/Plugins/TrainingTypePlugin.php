@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\PressTrainings;
+declare(strict_types=1);
+
+namespace Moox\Training\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressTrainings\Resources\WpTrainingResource;
+use Moox\Training\Resources\TrainingTypeResource;
 
-class WpTrainingPlugin implements Plugin
+class TrainingTypePlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-training';
+        return 'training-types';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpTrainingResource::class,
+            TrainingTypeResource::class,
         ]);
     }
 

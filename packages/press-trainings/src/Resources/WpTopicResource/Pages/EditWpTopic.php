@@ -1,10 +1,10 @@
 <?php
 
-namespace Moox\PressWiki\Resources\WpTopicResource\Pages;
+namespace Moox\PressTrainings\Resources\WpTopicResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Moox\PressWiki\Resources\WpTopicResource;
+use Moox\PressTrainings\Resources\WpTopicResource;
 
 class EditWpTopic extends EditRecord
 {

@@ -87,12 +87,20 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\PressTrainings";
+            $namespace = '\Moox\PressTrainings\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['WpWikiPlugin', 'WpTopicPlugin'],
-                default: ['WpWikiPlugin', 'WpTPlugin'],
+                options: [
+                    'WpTrainingPlugin',
+                    'WpTrainingsTopicPlugin',
+                    'WpTopicPlugin',
+                ],
+                default: [
+                    'WpTrainingPlugin',
+                    'WpTrainingsTopicPlugin',
+                    'WpTopicPlugin',
+                ],
             );
 
             $function = '::make(),';

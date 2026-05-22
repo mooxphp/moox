@@ -1,8 +1,10 @@
 <?php
 
 return [
-    'training' => 'Training',
-    'trainings' => 'Trainings',
-    'trainings-topic' => 'Topic',
-    'trainings-topics' => 'Topics',
+    'training' => 'Moox Training',
+    'trainings' => 'Moox Trainings',
+    'topic' => 'Moox Training topic',
+    'topics' => 'Moox Training topics',
+    'trainings-topic' => 'Moox Training rubric',
+    'trainings-topics' => 'Moox Training rubrics',
 ];

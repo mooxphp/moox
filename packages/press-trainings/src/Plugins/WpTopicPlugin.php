@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Training;
+declare(strict_types=1);
+
+namespace Moox\PressTrainings\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Training\Resources\TrainingInvitationResource;
+use Moox\PressTrainings\Resources\WpTopicResource;
 
-class TrainingInvitationPlugin implements Plugin
+class WpTopicPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'training-invitations';
+        return 'wp-topic';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            TrainingInvitationResource::class,
+            WpTopicResource::class,
         ]);
     }
 
