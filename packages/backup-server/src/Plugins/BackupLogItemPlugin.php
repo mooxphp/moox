@@ -1,6 +1,8 @@
 <?php
 
-namespace Moox\BackupServerUi;
+declare(strict_types=1);
+
+namespace Moox\BackupServerUi\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;

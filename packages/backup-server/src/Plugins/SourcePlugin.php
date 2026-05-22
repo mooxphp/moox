@@ -1,23 +1,25 @@
 <?php
 
-namespace Moox\BackupServerUi;
+declare(strict_types=1);
+
+namespace Moox\BackupServerUi\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Moox\BackupServerUi\Resources\DestinationResource;
+use Moox\BackupServerUi\Resources\SourceResource;
 
-class DestinationPlugin implements Plugin
+class SourcePlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'destination';
+        return 'source';
     }
 
     public function register(Panel $panel): void
     {
         $panel
             ->resources([
-                DestinationResource::class,
+                SourceResource::class,
             ]);
     }
 

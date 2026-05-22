@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Moox\BackupServerUi;
 
 use Moox\BackupServerUi\Commands\InstallCommand;
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class BackupServerUiServiceProvider extends PackageServiceProvider
+class BackupServerUiServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('backup-server-ui')
