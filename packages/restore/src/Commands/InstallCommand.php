@@ -124,7 +124,7 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Restore";
+            $namespace = '\Moox\Restore\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
