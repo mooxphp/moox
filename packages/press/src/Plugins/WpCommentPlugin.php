@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Press;
+declare(strict_types=1);
+
+namespace Moox\Press\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\WpUserResource;
+use Moox\Press\Resources\WpCommentResource;
 
-class WpUserPlugin implements Plugin
+class WpCommentPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-user';
+        return 'wp-comment';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpUserResource::class,
+            WpCommentResource::class,
         ]);
     }
 

@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Press;
+declare(strict_types=1);
+
+namespace Moox\Press\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\WpMediaResource;
+use Moox\Press\Resources\WpCommentMetaResource;
 
-class WpMediaPlugin implements Plugin
+class WpCommentMetaPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-media';
+        return 'wp-commentmeta';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpMediaResource::class,
+            WpCommentMetaResource::class,
         ]);
     }
 

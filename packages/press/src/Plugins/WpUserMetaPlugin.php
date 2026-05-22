@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Press;
+declare(strict_types=1);
+
+namespace Moox\Press\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\WpTagResource;
+use Moox\Press\Resources\WpUserMetaResource;
 
-class WpTagPlugin implements Plugin
+class WpUserMetaPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-tag';
+        return 'wp-usermeta';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpTagResource::class,
+            WpUserMetaResource::class,
         ]);
     }
 

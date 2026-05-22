@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Press;
+declare(strict_types=1);
+
+namespace Moox\Press\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\WpOptionResource;
+use Moox\Press\Resources\WpTermResource;
 
-class WpOptionPlugin implements Plugin
+class WpTermPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-option';
+        return 'wp-term';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpOptionResource::class,
+            WpTermResource::class,
         ]);
     }
 

@@ -1,25 +1,27 @@
 <?php
 
-namespace Moox\Press;
+declare(strict_types=1);
+
+namespace Moox\Press\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\WpCommentResource;
+use Moox\Press\Resources\WpPostMetaResource;
 
-class WpCommentPlugin implements Plugin
+class WpPostMetaPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-comment';
+        return 'wp-postmeta';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpCommentResource::class,
+            WpPostMetaResource::class,
         ]);
     }
 
