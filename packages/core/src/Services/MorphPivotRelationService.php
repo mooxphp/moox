@@ -220,9 +220,6 @@ class MorphPivotRelationService
         return (string) ($this->getPrimaryConfig($relation)['column'] ?? 'id');
     }
 
-    /**
-     * @return mixed
-     */
     public function getPrimaryValue(string $relation, mixed $default = true): mixed
     {
         return $this->getPrimaryConfig($relation)['value'] ?? $default;

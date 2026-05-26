@@ -83,10 +83,11 @@ class AddressablesRelationManager extends RelationManager
                     if ($record->{$morphName} && property_exists($record->{$morphName}, 'name')) {
                         return $record->{$morphName}->name;
                     }
+
                     return (string) ($record->{$morphName.'_id'} ?? '');
                 })
                 ->searchable(),
-        
+
         ];
 
         foreach (AddressRelationConfig::pivotColumns() as $column) {

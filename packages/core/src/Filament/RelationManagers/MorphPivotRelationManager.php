@@ -129,7 +129,7 @@ class MorphPivotRelationManager extends RelationManager
         return parent::getTitle($ownerRecord, $pageClass);
     }
 
-    public function getRelationship(): Relation|\Illuminate\Database\Eloquent\Builder
+    public function getRelationship(): Relation|Builder
     {
         $key = (string) $this->morphRelationConfigKey;
         $relationship = $this->morphPivotService()->getRelationshipMethodName($key);
@@ -182,7 +182,7 @@ class MorphPivotRelationManager extends RelationManager
     protected function makeTable(): Table
     {
         $table = $this->makeBaseTable()
-            ->relationship(fn (): Relation | Builder => $this->getRelationship())
+            ->relationship(fn (): Relation|Builder => $this->getRelationship())
             ->modifyQueryUsing($this->modifyQueryWithActiveTab(...))
             ->queryStringIdentifier(Str::lcfirst(class_basename(static::class)));
 

@@ -11,6 +11,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
 
@@ -18,7 +19,7 @@ class ChildrenRelationManager extends RelationManager
 {
     protected static string $relationship = 'children';
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return (string) config('company.relations.children.label', __('company::fields.children'));
     }

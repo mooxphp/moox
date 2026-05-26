@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Session;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\Company\Pages\CreateCompany;
 use Moox\Company\Resources\Company\Pages\EditCompany;
 use Moox\Company\Resources\Company\Pages\ListCompanies;
 use Moox\DevTools\Models\TestUser;
-use Illuminate\Support\Facades\Session;
 
 use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
-
     Session::start();
     $this->actingAs(TestUser::query()->create([
         'name' => 'Test User',
@@ -75,5 +74,4 @@ it('can edit an existing company via filament', function (): void {
         ->assertHasNoFormErrors();
 
     expect($company->fresh()->display_name)->toBe('New Name');
-
 });

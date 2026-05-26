@@ -21,6 +21,7 @@ class Company extends BaseItemModel
 {
     /** @use HasFactory<CompanyFactory> */
     use HasFactory;
+
     use HasModelTaxonomy;
     use HasMorphPivotRelations;
     use HasUuids;

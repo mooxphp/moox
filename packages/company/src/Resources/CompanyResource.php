@@ -9,6 +9,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Resources\RelationManagers\RelationManagerConfiguration;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -318,7 +320,7 @@ class CompanyResource extends BaseRecordResource
     }
 
     /**
-     * @return array<class-string|\Filament\Resources\RelationManagers\RelationGroup|\Filament\Resources\RelationManagers\RelationManagerConfiguration>
+     * @return array<class-string|RelationGroup|RelationManagerConfiguration>
      */
     protected static function getDeclaredRelations(): array
     {

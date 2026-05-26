@@ -1,8 +1,9 @@
 <?php
 
 declare(strict_types=1);
+use Composer\Autoload\ClassLoader;
 
-if (class_exists(\Composer\Autoload\ClassLoader::class, false)) {
+if (class_exists(ClassLoader::class, false)) {
     return;
 }
 
