@@ -7,11 +7,14 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\HasStatusColors;
+use Moox\Core\Traits\MorphPivot\HasResourceMorphPivotRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
 class BaseRecordResource extends BaseResource
 {
-    use HasResourceTabs, HasStatusColors;
+    use HasResourceMorphPivotRelations;
+    use HasResourceTabs;
+    use HasStatusColors;
 
     protected static function getReadonlyConfig(): bool
     {
