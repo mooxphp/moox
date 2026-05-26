@@ -73,6 +73,20 @@ class AddressablesRelationManager extends RelationManager
             TextColumn::make("{$morphName}_id")
                 ->label('ID')
                 ->searchable(),
+            TextColumn::make("{$morphName}")
+                ->label(__('address::fields.owner_name'))
+                ->formatStateUsing(function ($record) use ($morphName) {
+                    // Versuche, den Namen des zugehörigen Modells zu holen, falls vorhanden
+                    if ($record->{$morphName} && method_exists($record->{$morphName}, 'displayLabel')) {
+                        return $record->{$morphName}->displayLabel();
+                    }
+                    if ($record->{$morphName} && property_exists($record->{$morphName}, 'name')) {
+                        return $record->{$morphName}->name;
+                    }
+                    return (string) ($record->{$morphName.'_id'} ?? '');
+                })
+                ->searchable(),
+        
         ];
 
         foreach (AddressRelationConfig::pivotColumns() as $column) {

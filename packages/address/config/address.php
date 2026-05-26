@@ -126,8 +126,8 @@ return [
                 'delivery_address',
             ],
             'owner_types' => [
-                // Heco\Company\Models\Company::class => 'Company',
-                // Heco\Contact\Models\Contact::class => 'Contact',
+                'Moox\Company\Models\Company' => 'Company',
+                // 'Heco\Contact\Models\Contact' => 'Contact',
             ],
         ],
     ],
@@ -164,6 +164,6 @@ return [
     | and if the panel is enabled.
     |
     */
-    'navigation_group' => 'DEV',
+    'navigation_group' => 'Portal',
 
 ];

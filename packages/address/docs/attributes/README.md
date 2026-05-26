@@ -1,60 +1,6 @@
-![Moox Address](https://github.com/mooxphp/moox/raw/main/art/banner/record.jpg)
+# Address Attributes
 
-# Moox Address
-
-Address is a simple Moox Entity that can be used to create and manage postal addresses and assign them to owners via a morph pivot.
-
-## Features
-
-<!--features-->
-
--   Postal fields (street, city, country, etc.)
--   Optional label and primary flag
--   Custom data (JSON)
--   Duplicate detection (fingerprint)
--   Morph assignments with billing, postal, and delivery roles
--   Soft delete
--   Taxonomies
--   Filament resource with relation manager
-
-<!--/features-->
-
-## Requirements
-
-See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
-
-## Installation
-
-```bash
-composer require moox/address
-php artisan moox:install
-```
-
-Curious what the install command does? See [Installation](https://github.com/mooxphp/moox/blob/main/docs/Installation.md).
-
-## Screenshot
-
-![Moox Address](https://github.com/mooxphp/moox/raw/main/art/screenshots/record.jpg)
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Roadmap
-
-Please see [ROADMAP](ROADMAP.md) for more information on what is planned for this package.
-
-## Security
-
-Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to this package.
-
-## License
-
-The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+This document describes the database fields and pivot attributes of the Moox Address entity.
 
 ## The Address Model
 
@@ -101,7 +47,6 @@ Empty strings are normalized to `null` before comparison. `country_code` is trim
 
 #### Duplicate detection
 
--   `findDuplicate()` - Returns an existing `Address` with the same fingerprint, or null
 -   `scopeWithFingerprint()` - Query scope for fingerprint lookup
 
 ### Relationships
@@ -144,7 +89,7 @@ Models that can own addresses use `Moox\Address\Concerns\HasAddresses`:
 
 Register allowed owner types under `address.relations.addressables.owner_types` in `config/address.php`.
 
-### Translations
+## Translations
 
 Field labels for the admin UI are in `resources/lang/{locale}/fields.php` (e.g. `address::fields.street`). Entity titles use `address::address.*`.
 

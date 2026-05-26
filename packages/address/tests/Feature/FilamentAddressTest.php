@@ -9,7 +9,7 @@ use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\AddressResource;
 use Moox\DevTools\Models\TestUser;
 
-use function Pest\Livewire\livewire;
+    use function Pest\Livewire\livewire;
 
 beforeEach(function (): void {
     $this->actingAs(TestUser::query()->create([
