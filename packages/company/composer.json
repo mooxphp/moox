@@ -1,0 +1,67 @@
+{
+    "name": "moox/company",
+    "description": "Company is a Moox Entity for ERP-style company records (customers, suppliers, subsidiaries) without payment or default-address FKs.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "ERP",
+        "Company"
+    ],
+    "homepage": "https://moox.org/docs/company",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/data": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Company\\": "src",
+            "Moox\\Company\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Company\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Company\\CompanyServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
