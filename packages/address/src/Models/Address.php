@@ -14,6 +14,18 @@ use Moox\Address\Support\AddressFingerprint;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
+/**
+ * @property string|null $label
+ * @property string|null $name
+ * @property string|null $street
+ * @property string|null $street2
+ * @property string|null $postal_code
+ * @property string|null $city
+ * @property string|null $state
+ * @property string|null $country_code
+ * @property bool $is_primary
+ * @property array<string, mixed>|null $data
+ */
 class Address extends BaseItemModel
 {
     /** @use HasFactory<AddressFactory> */
@@ -79,7 +91,7 @@ class Address extends BaseItemModel
 
     public function findDuplicate(): ?self
     {
-        $query = static::query()->withFingerprint(AddressFingerprint::fromAddress($this));
+        $query = static::withFingerprint(AddressFingerprint::fromAddress($this));
 
         if ($this->exists) {
             $query->whereKeyNot($this->getKey());
@@ -89,7 +101,9 @@ class Address extends BaseItemModel
     }
 
     /**
+     * @param  Builder<Address>  $query
      * @param  array<string, ?string>  $fingerprint
+     * @return Builder<Address>
      */
     public function scopeWithFingerprint(Builder $query, array $fingerprint): Builder
     {

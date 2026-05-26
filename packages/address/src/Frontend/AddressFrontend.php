@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Address\Frontend;
 
-use Moox\Frontend\Frontend;
-
-class AddressFrontend extends Frontend
+class AddressFrontend
 {
     public function getTemplate(): string
     {
-        return 'moox::page.default'; // Blade template to render
+        return 'moox::page.default';
     }
 
     public function getContentWidth(): string
     {
-        return config('moox.theme.content_width', 'max-w-full'); // Default content width
+        return config('moox.theme.content_width', 'max-w-full');
     }
 }

@@ -45,7 +45,7 @@ class AddressablesRelationManager extends RelationManager
                 ->label(__('address::fields.owner'))
                 ->types(
                     collect($ownerTypes)
-                        ->map(fn (string $label, string $class): Type => Type::make($class)->title($label))
+                        ->map(fn (string $label, string $class): Type => Type::make($class)->label($label))
                         ->values()
                         ->all()
                 )
