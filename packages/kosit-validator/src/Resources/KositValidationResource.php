@@ -64,7 +64,7 @@ final class KositValidationResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return static::getPluralModelLabel();
+        return self::getPluralModelLabel();
     }
 
     public static function getNavigationGroup(): ?string

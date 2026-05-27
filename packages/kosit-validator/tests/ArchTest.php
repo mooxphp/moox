@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
-
 arch()
     ->expect('Moox\KositValidator')
     ->toUseStrictTypes()
