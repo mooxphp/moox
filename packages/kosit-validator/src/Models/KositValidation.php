@@ -6,7 +6,16 @@ namespace Moox\KositValidator\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property string|null $input_path
+ * @property string|null $report_xml_path
+ * @property string|null $report_html_path
+ * @property bool $passed
+ * @property array<int|string, mixed>|null $errors
+ * @property Carbon|null $validated_at
+ */
 class KositValidation extends Model
 {
     /**
