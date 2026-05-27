@@ -280,31 +280,6 @@ File: `config/company.php`
 
 Changes to `statuses` or `company_types` are picked up automatically in `CompanyRules` and Filament selects/filters.
 
-## Architecture overview
-
-```mermaid
-flowchart TB
-    subgraph admin [Filament Admin]
-        CR[CompanyResource]
-        CRM[ChildrenRelationManager]
-        MPR[Morph Pivot: Addresses]
-    end
-
-    subgraph data [Database]
-        C[(companies)]
-        A[(addressables)]
-        AD[(addresses)]
-    end
-
-    CR --> C
-    CRM --> C
-    MPR --> A
-    C -->|parent_id| C
-    C -->|morph| A
-    A --> AD
-```
-
-**Intentionally not in this package:** payment data, fixed `employee_id`, `default_billing_address_id`, etc. That keeps the master-data model lean and avoids legacy one-to-one foreign keys.
 
 ## Running tests
 
