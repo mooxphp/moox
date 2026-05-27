@@ -166,7 +166,7 @@ class Company extends BaseItemModel
                 $company->parent_id = null;
             }
 
-            if ($company->default_currency_code !== null) {
+            if ($company->default_currency_code !== '') {
                 $company->default_currency_code = strtoupper(trim($company->default_currency_code));
             }
         });

@@ -91,7 +91,10 @@ class Address extends BaseItemModel
 
     public function findDuplicate(): ?self
     {
-        $query = static::withFingerprint(AddressFingerprint::fromAddress($this));
+        $query = $this->scopeWithFingerprint(
+            static::query(),
+            AddressFingerprint::fromAddress($this),
+        );
 
         if ($this->exists) {
             $query->whereKeyNot($this->getKey());
@@ -101,9 +104,9 @@ class Address extends BaseItemModel
     }
 
     /**
-     * @param  Builder<Address>  $query
+     * @param  Builder<covariant Address>  $query
      * @param  array<string, ?string>  $fingerprint
-     * @return Builder<Address>
+     * @return Builder<covariant Address>
      */
     public function scopeWithFingerprint(Builder $query, array $fingerprint): Builder
     {

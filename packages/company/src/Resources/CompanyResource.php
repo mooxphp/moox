@@ -235,12 +235,13 @@ class CompanyResource extends BaseRecordResource
                     ->label(__('company::fields.company_type'))
                     ->badge()
                     ->color(
-                        fn (string $state): string => match ($state) {
+                        fn (?string $state): string => match ($state) {
                             'customer' => 'success',
                             'supplier' => 'warning',
                             'partner' => 'primary',
                             'prospect' => 'warning',
                             'internal' => 'gray',
+                            default => 'gray',
                         }
                     )
                     ->sortable(),
@@ -254,6 +255,7 @@ class CompanyResource extends BaseRecordResource
                             'inactive' => 'warning',
                             'approved' => 'success',
                             'archived' => 'danger',
+                            default => 'gray',
                         }
                     )
                     ->sortable(),
