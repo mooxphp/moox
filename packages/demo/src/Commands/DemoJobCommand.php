@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\DemoJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\DemoJob;
 
 class DemoJobCommand extends Command
 {

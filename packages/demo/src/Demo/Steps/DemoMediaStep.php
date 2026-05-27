@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
+use Moox\Media\Models\Media;
 
 final class DemoMediaStep
 {
@@ -56,7 +57,7 @@ final class DemoMediaStep
 
         $this->console->finishTask('Demo media', count($files).' file(s) copied');
 
-        if (class_exists(\Moox\Media\Models\Media::class)) {
+        if (class_exists(Media::class)) {
             $this->console->detail('moox/media is installed; entity seeders attach media via Mediathek.');
         }
     }

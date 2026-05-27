@@ -9,6 +9,8 @@ use Illuminate\Database\Seeder;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
 use Moox\Demo\Demo\SeederOrderResolver;
+use Moox\Demo\Support\MooxPackageDiscovery;
+use Moox\Localization\Models\Localization;
 
 final class PackageSeedersStep
 {
@@ -99,13 +101,13 @@ final class PackageSeedersStep
     private function shouldSkipSlugForLocalization(string $slug, DemoContext $context): bool
     {
         return $slug === 'localization'
-            && class_exists(\Moox\Localization\Models\Localization::class)
+            && class_exists(Localization::class)
             && $context->locales !== [];
     }
 
     private function dependsOn(string $slug, string $failedSlug): bool
     {
-        $graph = \Moox\Demo\Support\MooxPackageDiscovery::mooxDependencyGraph();
+        $graph = MooxPackageDiscovery::mooxDependencyGraph();
         $visited = [];
         $stack = [$slug];
 

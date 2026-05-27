@@ -15,4 +15,3 @@ final class DemoAssetGate
         return (bool) config('demo.runtime.seeding', false);
     }
 }
-

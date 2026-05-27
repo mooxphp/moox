@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Moox\Demo\Demo\Steps;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
+use Moox\User\Database\Seeders\UserSeeder;
 
 final class DemoUserStep
 {
@@ -17,7 +19,7 @@ final class DemoUserStep
 
     public function run(DemoContext $context): void
     {
-        if (class_exists(\Moox\User\Database\Seeders\UserSeeder::class)) {
+        if (class_exists(UserSeeder::class)) {
             if ($this->command->getOutput()->isVerbose()) {
                 $this->console->detail('Demo user step skipped — UserSeeder handles demo users.');
             }
@@ -57,7 +59,7 @@ final class DemoUserStep
         $userClass::query()->create([
             'name' => $name,
             'email' => $email,
-            'password' => \Illuminate\Support\Facades\Hash::make((string) ($config['password'] ?? 'password')),
+            'password' => Hash::make((string) ($config['password'] ?? 'password')),
             'email_verified_at' => now(),
         ]);
 

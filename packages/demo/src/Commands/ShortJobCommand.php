@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\ShortJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\ShortJob;
 
 class ShortJobCommand extends Command
 {

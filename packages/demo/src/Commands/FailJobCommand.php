@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\FailJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\FailJob;
 
 class FailJobCommand extends Command
 {

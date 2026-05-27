@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
+use Moox\Localization\Models\Localization;
 
 final class DemoLocalizationStep
 {
@@ -18,7 +19,7 @@ final class DemoLocalizationStep
 
     public function run(DemoContext $context): void
     {
-        if (! class_exists(\Moox\Localization\Models\Localization::class)) {
+        if (! class_exists(Localization::class)) {
             $this->console->skip('Localizations', 'moox/localization not installed');
 
             return;
@@ -50,7 +51,7 @@ final class DemoLocalizationStep
             return;
         }
 
-        $modelClass = \Moox\Localization\Models\Localization::class;
+        $modelClass = Localization::class;
 
         $this->console->beginNestedOutput('Localizations');
 

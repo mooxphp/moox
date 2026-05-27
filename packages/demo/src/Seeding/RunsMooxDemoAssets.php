@@ -23,4 +23,3 @@ final class RunsMooxDemoAssets
         $method->invoke($seeder);
     }
 }
-

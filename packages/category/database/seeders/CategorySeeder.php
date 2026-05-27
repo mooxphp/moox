@@ -2,19 +2,20 @@
 
 namespace Moox\Category\Database\Seeders;
 
-use Moox\User\Models\User;
-use Moox\Category\Database\Seeders\Support\AttachExistingMedia;
 use DateTimeImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Category\Database\Seeders\Support\AttachExistingMedia;
 use Moox\Category\Models\Category;
 use Moox\Category\Models\CategoryTranslation;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
+use Moox\User\Models\User;
 
 /**
  * Seeds categories with nested tree, four locales, and existing mediathek via media_usables.
@@ -141,8 +142,8 @@ class CategorySeeder extends Seeder
     {
         $this->seed();
 
-        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
-            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        if (class_exists(RunsMooxDemoAssets::class)) {
+            RunsMooxDemoAssets::invoke($this);
         }
     }
 

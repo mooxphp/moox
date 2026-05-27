@@ -6,6 +6,7 @@ namespace Moox\Demo\Demo\Steps;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
@@ -81,7 +82,7 @@ final class FactoryEntitiesStep
     private function modelUsesFactory(string $modelClass): bool
     {
         return in_array(
-            \Illuminate\Database\Eloquent\Factories\HasFactory::class,
+            HasFactory::class,
             class_uses_recursive($modelClass),
             true
         );

@@ -212,4 +212,3 @@ final class ImportDemoMediaToMediathek
         return pathinfo((string) $media->file_name, PATHINFO_FILENAME);
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\LongJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\LongJob;
 
 class LongJobCommand extends Command
 {

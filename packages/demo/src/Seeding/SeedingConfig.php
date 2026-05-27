@@ -21,4 +21,3 @@ final class SeedingConfig
         return $default;
     }
 }
-

@@ -99,7 +99,7 @@ final class DemoConsole
         $this->stopIndicator();
 
         $bar = new ProgressBar($this->command->getOutput(), max(1, $max));
-        $bar->setFormat("  <fg=gray>│</> %current%/%max% [%bar%] %message%");
+        $bar->setFormat('  <fg=gray>│</> %current%/%max% [%bar%] %message%');
         $bar->setMessage($message);
         $bar->start();
 

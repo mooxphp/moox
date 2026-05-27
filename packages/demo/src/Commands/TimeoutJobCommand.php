@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\TimeoutJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\TimeoutJob;
 
 class TimeoutJobCommand extends Command
 {

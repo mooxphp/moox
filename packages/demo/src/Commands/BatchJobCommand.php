@@ -2,8 +2,8 @@
 
 namespace Moox\Demo\Commands;
 
-use Moox\Demo\Jobs\BatchJob;
 use Illuminate\Console\Command;
+use Moox\Demo\Jobs\BatchJob;
 
 class BatchJobCommand extends Command
 {

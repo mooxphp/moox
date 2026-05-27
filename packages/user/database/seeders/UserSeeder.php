@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\User\Database\Seeders;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Moox\Demo\Seeding\ImportDemoMediaToMediathek;
+use Moox\Demo\Seeding\RunsMooxDemoAssets;
+use Moox\Demo\Seeding\SeedingConfig;
+use Moox\Demo\Seeding\SeedOutput;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
 use Moox\User\Models\User;
@@ -43,8 +48,8 @@ class UserSeeder extends Seeder
     {
         $this->seed();
 
-        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
-            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        if (class_exists(RunsMooxDemoAssets::class)) {
+            RunsMooxDemoAssets::invoke($this);
         }
     }
 
@@ -82,7 +87,7 @@ class UserSeeder extends Seeder
     private function seedExtraUsers(int $extraCount): void
     {
         if ($this->hasSeedOutput()) {
-            $progress = \Moox\Demo\Seeding\SeedOutput::progressBar($extraCount, 'Demo users');
+            $progress = SeedOutput::progressBar($extraCount, 'Demo users');
 
             for ($i = 1; $i <= $extraCount; $i++) {
                 User::query()->create([
@@ -114,7 +119,7 @@ class UserSeeder extends Seeder
     private function reportCreated(string $label): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::created($label);
+            SeedOutput::created($label);
 
             return;
         }
@@ -123,7 +128,7 @@ class UserSeeder extends Seeder
     private function reportDetail(string $line): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::detail($line);
+            SeedOutput::detail($line);
 
             return;
         }
@@ -133,13 +138,13 @@ class UserSeeder extends Seeder
 
     private function hasSeedOutput(): bool
     {
-        return class_exists(\Moox\Demo\Seeding\SeedOutput::class)
-            && \Moox\Demo\Seeding\SeedOutput::isBound();
+        return class_exists(SeedOutput::class)
+            && SeedOutput::isBound();
     }
 
     protected function seedDemoAssets(): void
     {
-        if (! class_exists(\Moox\Demo\Seeding\ImportDemoMediaToMediathek::class)) {
+        if (! class_exists(ImportDemoMediaToMediathek::class)) {
             return;
         }
 
@@ -157,7 +162,7 @@ class UserSeeder extends Seeder
 
         $collectionId = null;
 
-        $imagePaths = \Moox\Demo\Seeding\ImportDemoMediaToMediathek::listImagePaths($sourceDir, count($users));
+        $imagePaths = ImportDemoMediaToMediathek::listImagePaths($sourceDir, count($users));
 
         if ($imagePaths === []) {
             if ($this->command !== null) {
@@ -176,7 +181,7 @@ class UserSeeder extends Seeder
                 continue;
             }
 
-            $media = \Moox\Demo\Seeding\ImportDemoMediaToMediathek::importFromPath($imagePath, $collectionId);
+            $media = ImportDemoMediaToMediathek::importFromPath($imagePath, $collectionId);
 
             if (! $media instanceof Media) {
                 continue;
@@ -189,20 +194,20 @@ class UserSeeder extends Seeder
             ]);
 
             $user->forceFill([
-                'avatar_url' => \Moox\Demo\Seeding\ImportDemoMediaToMediathek::avatarUrlFromMedia($media),
+                'avatar_url' => ImportDemoMediaToMediathek::avatarUrlFromMedia($media),
             ])->saveQuietly();
 
             $withAvatar++;
 
             if ($this->hasSeedOutput()) {
-                \Moox\Demo\Seeding\SeedOutput::created("Avatar for {$user->email}");
+                SeedOutput::created("Avatar for {$user->email}");
             } elseif ($this->command?->getOutput()->isVerbose()) {
                 $this->command->line("  User {$user->email}: mediathek media #{$media->getKey()} ({$media->file_name})");
             }
         }
 
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::detail("Attached avatars for {$withAvatar} user(s)");
+            SeedOutput::detail("Attached avatars for {$withAvatar} user(s)");
         } elseif ($this->command !== null) {
             $this->command->info(sprintf(
                 'Attached avatars for %d user(s).',
@@ -215,17 +220,17 @@ class UserSeeder extends Seeder
     {
         $smallDefault = (int) (config('demo.dataset_sizes.small') ?? 100);
 
-        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
-            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('user', $smallDefault);
+        if (class_exists(SeedingConfig::class)) {
+            return SeedingConfig::resolveCount('user', $smallDefault);
         }
 
         return $smallDefault;
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, User>
+     * @return Collection<int, User>
      */
-    private function seededDemoUsers(): \Illuminate\Database\Eloquent\Collection
+    private function seededDemoUsers(): Collection
     {
         $defaultEmails = array_column(self::DEFAULT_USERS, 'email');
 
