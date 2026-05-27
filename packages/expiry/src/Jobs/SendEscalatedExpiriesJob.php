@@ -33,31 +33,32 @@ class SendEscalatedExpiriesJob implements ShouldQueue
                 $query->whereNull('escalated_to')
                     ->whereNotNull('escalated_at');
             })
+            ->with('notifyUser')
             ->get();
 
         if ($escalatedExpiries->isEmpty()) {
             return;
         }
 
-        $escalatedEntries = $escalatedExpiries->filter(fn ($entry): bool => isset($entry->escalated_at));
+        $escalatedEntries = $escalatedExpiries->filter(fn (Expiry $entry): bool => $entry->escalated_at !== null);
 
         $data = [
-            'escalatedEntries' => $escalatedEntries->map(function (Expiry $entry) {
+            'escalatedEntries' => $escalatedEntries->map(function (Expiry $entry): array {
                 return [
                     'title' => $entry->title,
-                    'expired_at' => Carbon::parse($entry->expired_at)->diffForHumans(),
-                    'processing_deadline' => Carbon::parse($entry->processing_deadline)->diffForHumans(),
-                    'escalated_at' => Carbon::parse($entry->escalated_at)->format('d.m.Y'),
-                    'notified_to' => config('expiry.user_model')::where('ID', $entry->notified_to)->first()?->display_name,
-                    'user_email' => config('expiry.user_model')::where('ID', $entry->notified_to)->first()?->email,
+                    'expired_at' => $entry->expired_at?->diffForHumans(),
+                    'processing_deadline' => $entry->processing_deadline?->diffForHumans(),
+                    'escalated_at' => $entry->escalated_at?->format('d.m.Y'),
+                    'notified_to' => $entry->notifyUser?->display_name,
+                    'user_email' => $entry->notifyUser?->email,
                     'category' => $entry->category,
                 ];
             }),
         ];
 
-        $responsibleEmail = config('expiry.user_model')::where('ID', $escalatedExpiries->first()->notified_to)->first()?->email;
+        $responsibleEmail = $escalatedExpiries->first()->notifyUser?->email;
 
-        Mail::to($responsibleEmail)
+        Mail::to($responsibleEmail ?: $adminEmail)
             ->cc($adminEmail)
             ->send(new EscalatedExpiriesMail($data, $panelPath));
 

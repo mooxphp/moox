@@ -17,6 +17,8 @@ use Override;
 
 /**
  * @property string $user_email
+ * @property string $display_name
+ * @property string $email
  */
 class WpUser extends Authenticatable implements FilamentUser
 {
