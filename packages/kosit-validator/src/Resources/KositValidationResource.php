@@ -64,7 +64,7 @@ final class KositValidationResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return self::getPluralModelLabel();
+        return static::getPluralModelLabel();
     }
 
     public static function getNavigationGroup(): ?string
@@ -118,7 +118,9 @@ final class KositValidationResource extends Resource
                         TextEntry::make('error_counts')
                             ->label(__('kosit-validator::fields.error_counts'))
                             ->state(function (KositValidation $record): string {
-                                $counts = KositValidationMessages::counts($record->errors);
+                                $counts = KositValidationMessages::counts(
+                                    is_array($record->errors) ? $record->errors : null
+                                );
 
                                 return $counts['error'].' / '.$counts['warning'].' / '.$counts['info'];
                             }),
@@ -174,7 +176,9 @@ final class KositValidationResource extends Resource
                     ->grow(false),
                 TextColumn::make('errors_count')
                     ->label(__('kosit-validator::fields.errors'))
-                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts($record->errors)['error'])
+                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts(
+                        is_array($record->errors) ? $record->errors : null
+                    )['error'])
                     ->badge()
                     ->color('danger')
                     ->alignment(Alignment::Center)
@@ -182,7 +186,9 @@ final class KositValidationResource extends Resource
                     ->width('5rem'),
                 TextColumn::make('warnings_count')
                     ->label(__('kosit-validator::fields.warnings'))
-                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts($record->errors)['warning'])
+                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts(
+                        is_array($record->errors) ? $record->errors : null
+                    )['warning'])
                     ->badge()
                     ->color('warning')
                     ->alignment(Alignment::Center)
@@ -190,7 +196,9 @@ final class KositValidationResource extends Resource
                     ->width('5.5rem'),
                 TextColumn::make('infos_count')
                     ->label(__('kosit-validator::fields.infos'))
-                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts($record->errors)['info'])
+                    ->state(fn (KositValidation $record): int => KositValidationMessages::counts(
+                        is_array($record->errors) ? $record->errors : null
+                    )['info'])
                     ->badge()
                     ->color('info')
                     ->alignment(Alignment::Center)

@@ -39,7 +39,7 @@ final class ListKositValidations extends ListRecords
     protected function applyConditions($query, $conditions)
     {
         foreach ($conditions as $condition) {
-            if ($condition['field'] === '__has_message_type') {
+            if (($condition['field'] ?? '') === '__has_message_type') {
                 $query = KositValidationMessages::applyHasMessageType($query, (string) $condition['value']);
 
                 continue;

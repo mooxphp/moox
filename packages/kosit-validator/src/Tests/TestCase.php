@@ -49,7 +49,7 @@ use Livewire\LivewireServiceProvider;
 use Moox\Core\CoreServiceProvider;
 use Moox\DevTools\Models\TestUser;
 use Moox\KositValidator\KositValidatorServiceProvider;
-use Moox\KositValidator\Plugins\KositValidatorPlugin;
+use Moox\KositValidator\Moox\Plugins\KositValidatorPlugin;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
@@ -61,7 +61,7 @@ use Tests\TestCase as ApplicationTestCase;
             continue;
         }
 
-        $loader = $autoloader[0];
+        $loader = $autoloader[0] ?? null;
 
         if ($loader instanceof ClassLoader) {
             $loader->addPsr4('Moox\\KositValidator\\Tests\\', dirname(__DIR__, 2).'/tests');
