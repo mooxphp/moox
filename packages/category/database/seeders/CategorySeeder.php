@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Seeders;
+namespace Moox\Category\Database\Seeders;
 
-use App\Models\User;
-use Database\Seeders\Support\AttachExistingMedia;
+use Moox\User\Models\User;
+use Moox\Category\Database\Seeders\Support\AttachExistingMedia;
 use DateTimeImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -138,6 +138,15 @@ class CategorySeeder extends Seeder
     ) {}
 
     public function run(): void
+    {
+        $this->seed();
+
+        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
+            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        }
+    }
+
+    protected function seed(): void
     {
         $total = $this->resolvedCount();
 

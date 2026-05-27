@@ -27,7 +27,8 @@
     "autoload": {
         "psr-4": {
             "Moox\\Category\\": "src",
-            "Moox\\Category\\Database\\Factories\\": "database/factories"
+            "Moox\\Category\\Database\\Factories\\": "database/factories",
+            "Moox\\Category\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {
