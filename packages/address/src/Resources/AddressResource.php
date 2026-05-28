@@ -237,7 +237,7 @@ class AddressResource extends BaseRecordResource
      */
     protected static function getCountryFilterOptions(): array
     {
-        if (class_exists(StaticCountry::class)) {
+        if (class_exists(StaticCountry::class) && \Illuminate\Support\Facades\Schema::hasTable('static_countries')) {
             $model = StaticCountry::class;
 
             return $model::query()

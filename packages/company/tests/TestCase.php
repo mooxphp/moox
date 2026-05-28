@@ -4,60 +4,33 @@ declare(strict_types=1);
 
 namespace Moox\Company\Tests;
 
-use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
-use BladeUI\Icons\BladeIconsServiceProvider;
-use Codeat3\BladeGoogleMaterialDesignIcons\BladeGoogleMaterialDesignIconsServiceProvider;
-use Filament\Actions\ActionsServiceProvider;
 use Filament\Facades\Filament;
-use Filament\FilamentServiceProvider;
-use Filament\Forms\FormsServiceProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Infolists\InfolistsServiceProvider;
-use Filament\Notifications\NotificationsServiceProvider;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
-use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\SupportServiceProvider;
-use Filament\Tables\TablesServiceProvider;
-use Filament\Widgets\WidgetsServiceProvider;
-use Illuminate\Auth\AuthServiceProvider;
-use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Encryption\EncryptionServiceProvider;
-use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Session\SessionServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
-use Illuminate\Translation\TranslationServiceProvider;
-use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\View\ViewServiceProvider;
-use Livewire\LivewireServiceProvider;
-use Moox\Company\CompanyServiceProvider;
 use Moox\Company\Plugins\CompanyPlugin;
-use Moox\Core\CoreServiceProvider;
 use Moox\DevTools\Models\TestUser;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
-use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 #[WithMigration('laravel', 'cache', 'queue')]
-#[WithMigration('session')]
 class TestCase extends Orchestra
 {
     use InteractsWithLivewire;
@@ -141,33 +114,34 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
-            BladeIconsServiceProvider::class,
-            BladeHeroiconsServiceProvider::class,
-            ActionsServiceProvider::class,
-            BladeGoogleMaterialDesignIconsServiceProvider::class,
-            FilamentServiceProvider::class,
-            FormsServiceProvider::class,
-            InfolistsServiceProvider::class,
-            NotificationsServiceProvider::class,
-            SchemasServiceProvider::class,
-            SupportServiceProvider::class,
-            TablesServiceProvider::class,
-            WidgetsServiceProvider::class,
-            AuthServiceProvider::class,
-            CookieServiceProvider::class,
-            DatabaseServiceProvider::class,
-            EncryptionServiceProvider::class,
-            FilesystemServiceProvider::class,
-            PaginationServiceProvider::class,
-            SessionServiceProvider::class,
-            TranslationServiceProvider::class,
-            ValidationServiceProvider::class,
-            ViewServiceProvider::class,
-            LivewireServiceProvider::class,
-            CompanyServiceProvider::class,
-            CoreServiceProvider::class,
-            BladeCaptureDirectiveServiceProvider::class,
-
+            \BladeUI\Icons\BladeIconsServiceProvider::class,
+            \BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
+            \Filament\Actions\ActionsServiceProvider::class,
+            \Codeat3\BladeGoogleMaterialDesignIcons\BladeGoogleMaterialDesignIconsServiceProvider::class,
+            \Filament\FilamentServiceProvider::class,
+            \Filament\Forms\FormsServiceProvider::class,
+            \Filament\Infolists\InfolistsServiceProvider::class,
+            \Filament\Notifications\NotificationsServiceProvider::class,
+            \Filament\Schemas\SchemasServiceProvider::class,
+            \Filament\Support\SupportServiceProvider::class,
+            \Filament\Tables\TablesServiceProvider::class,
+            \Filament\Widgets\WidgetsServiceProvider::class,
+            \Illuminate\Auth\AuthServiceProvider::class,
+            \Illuminate\Cookie\CookieServiceProvider::class,
+            \Illuminate\Database\DatabaseServiceProvider::class,
+            \Illuminate\Encryption\EncryptionServiceProvider::class,
+            \Illuminate\Filesystem\FilesystemServiceProvider::class,
+            \Illuminate\Pagination\PaginationServiceProvider::class,
+            \Illuminate\Session\SessionServiceProvider::class,
+            \Illuminate\Translation\TranslationServiceProvider::class,
+            \Illuminate\Validation\ValidationServiceProvider::class,
+            \Illuminate\View\ViewServiceProvider::class,
+            \Livewire\LivewireServiceProvider::class,
+            \Moox\Company\CompanyServiceProvider::class,
+            \Moox\Core\CoreServiceProvider::class,
+            \RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider::class,
+       
+       
         ];
     }
 
@@ -206,6 +180,7 @@ class TestCase extends Orchestra
                 }
             })->up();
         }
+
     }
 
     protected function loadPackageMigrations(): void

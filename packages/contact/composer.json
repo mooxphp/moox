@@ -1,0 +1,68 @@
+{
+    "name": "moox/contact",
+    "description": "Contact is a Moox Entity for ERP-style person records linked to companies and addresses via pivots.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "ERP",
+        "Contact"
+    ],
+    "homepage": "https://moox.org/docs/contact",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/data": "dev-main",
+        "moox/company": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Contact\\": "src",
+            "Moox\\Contact\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Contact\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Contact\\ContactServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

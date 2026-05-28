@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Address\Tests;
+namespace Moox\Contact\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
@@ -29,6 +29,8 @@ use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\DatabaseServiceProvider;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Encryption\EncryptionServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -37,6 +39,7 @@ use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Session\SessionServiceProvider;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Translation\TranslationServiceProvider;
@@ -44,13 +47,14 @@ use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
-use Moox\Address\AddressServiceProvider;
-use Moox\Address\Plugins\AddressPlugin;
+use Moox\Contact\ContactServiceProvider;
+use Moox\Contact\Plugins\ContactPlugin;
 use Moox\Core\CoreServiceProvider;
 use Moox\DevTools\Models\TestUser;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
+use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 #[WithMigration('laravel', 'cache', 'queue')]
 class TestCase extends Orchestra
@@ -79,6 +83,7 @@ class TestCase extends Orchestra
 
     protected function defineDatabaseMigrations(): void
     {
+        $this->loadDependencyMigrations();
         $this->loadPackageMigrations();
     }
 
@@ -87,8 +92,9 @@ class TestCase extends Orchestra
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('database.default', 'testing');
         $app['config']->set('session.driver', 'array');
-        $app['config']->set('address.taxonomies', []);
-        $app['config']->set('address.readonly', false);
+        $app['config']->set('session.lottery', [100, 100]);
+        $app['config']->set('company.taxonomies', []);
+        $app['config']->set('company.readonly', false);
 
         $viewErrorBag = new ViewErrorBag;
         $viewErrorBag->put('default', new MessageBag);
@@ -125,7 +131,7 @@ class TestCase extends Orchestra
                 Authenticate::class,
             ])
             ->plugins([
-                AddressPlugin::make(),
+                ContactPlugin::make(),
             ]);
 
         Filament::registerPanel($panel);
@@ -136,41 +142,76 @@ class TestCase extends Orchestra
         return [
             BladeIconsServiceProvider::class,
             BladeHeroiconsServiceProvider::class,
+            ActionsServiceProvider::class,
             BladeGoogleMaterialDesignIconsServiceProvider::class,
-            LivewireServiceProvider::class,
             FilamentServiceProvider::class,
+            FormsServiceProvider::class,
+            InfolistsServiceProvider::class,
+            NotificationsServiceProvider::class,
+            SchemasServiceProvider::class,
+            SupportServiceProvider::class,
+            TablesServiceProvider::class,
+            WidgetsServiceProvider::class,
             AuthServiceProvider::class,
             CookieServiceProvider::class,
             DatabaseServiceProvider::class,
             EncryptionServiceProvider::class,
+            FilesystemServiceProvider::class,
+            PaginationServiceProvider::class,
             SessionServiceProvider::class,
+            TranslationServiceProvider::class,
             ValidationServiceProvider::class,
             ViewServiceProvider::class,
-            PaginationServiceProvider::class,
-            TranslationServiceProvider::class,
-            FilesystemServiceProvider::class,
-            SupportServiceProvider::class,
-            SchemasServiceProvider::class,
-            FormsServiceProvider::class,
-            TablesServiceProvider::class,
-            NotificationsServiceProvider::class,
-            ActionsServiceProvider::class,
-            InfolistsServiceProvider::class,
-            WidgetsServiceProvider::class,
+            LivewireServiceProvider::class,
+            ContactServiceProvider::class,
             CoreServiceProvider::class,
-            AddressServiceProvider::class,
+            BladeCaptureDirectiveServiceProvider::class,
+
         ];
+    }
+
+    protected function loadDependencyMigrations(): void
+    {
+        // users/session tables come from #[WithMigration('laravel', …)] and #[WithMigration('session')]
+
+        if (! Schema::hasTable('static_languages')) {
+            (new class extends Migration
+            {
+                public function up(): void
+                {
+                    Schema::create('static_languages', function (Blueprint $table): void {
+                        $table->id();
+                        $table->string('alpha2', 2);
+                        $table->string('common_name');
+                        $table->timestamps();
+                    });
+                }
+            })->up();
+        }
+
+        if (! Schema::hasTable('localizations')) {
+            (new class extends Migration
+            {
+                public function up(): void
+                {
+                    Schema::create('localizations', function (Blueprint $table): void {
+                        $table->id();
+                        $table->foreignId('language_id')->constrained('static_languages')->cascadeOnDelete();
+                        $table->string('title');
+                        $table->string('slug')->unique();
+                        $table->string('locale_variant');
+                        $table->timestamps();
+                    });
+                }
+            })->up();
+        }
     }
 
     protected function loadPackageMigrations(): void
     {
-        foreach (['create_addresses_table', 'create_addressables_table'] as $migration) {
-            $path = dirname(__DIR__).'/database/migrations/'.$migration.'.php.stub';
+        $path = dirname(__DIR__).'/database/migrations/create_contacts_table.php.stub';
 
-            if (! is_file($path)) {
-                continue;
-            }
-
+        if (is_file($path)) {
             $instance = include $path;
             $instance->up();
         }
@@ -188,17 +229,15 @@ class TestCase extends Orchestra
     /**
      * @return array<string, mixed>
      */
-    protected function sampleAddressAttributes(): array
+    protected function sampleCompanyAttributes(): array
     {
         return [
+            'status' => 'draft',
             'name' => 'Muster GmbH',
-            'street' => 'Musterstraße',
-            'street2' => null,
-            'postal_code' => '10115',
-            'city' => 'Berlin',
-            'state' => null,
-            'country_code' => 'DE',
-            'is_primary' => false,
+            'display_name' => 'Muster GmbH',
+            'company_type' => 'customer',
+            'default_currency_code' => 'EUR',
+            'is_active' => true,
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Address\Tests;
+namespace Moox\Contact\Tests;
 
 use Pest\Livewire\InteractsWithLivewire;
 
@@ -14,7 +14,7 @@ abstract class FeatureTestCase extends TestCase
     {
         parent::setUp();
 
-        config()->set('address.taxonomies', []);
-        config()->set('address.readonly', false);
+        config()->set('company.taxonomies', []);
+        config()->set('company.readonly', false);
     }
 }
