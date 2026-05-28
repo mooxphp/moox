@@ -37,6 +37,7 @@ class DraftSeeder extends Seeder
 
     /** @var list<string> */
     private const TRANSLATION_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
+
     private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void

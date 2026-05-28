@@ -15,6 +15,7 @@ use Moox\Category\Models\Category;
 use Moox\Category\Models\CategoryTranslation;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
+use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\User\Models\User;
@@ -527,8 +528,8 @@ class CategorySeeder extends Seeder
             return max(1, min(5000, $this->count));
         }
 
-        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
-            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('category', 100);
+        if (class_exists(SeedingConfig::class)) {
+            return SeedingConfig::resolveCount('category', 100);
         }
 
         $fromEnv = env('CATEGORY_MOCK_COUNT');

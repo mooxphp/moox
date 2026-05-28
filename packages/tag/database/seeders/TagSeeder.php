@@ -6,10 +6,10 @@ namespace Moox\Tag\Database\Seeders;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
@@ -40,6 +40,7 @@ class TagSeeder extends Seeder
     private const TAG_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
 
     private const MEDIA_ATTACH_PROBABILITY = 0.8;
+
     private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
