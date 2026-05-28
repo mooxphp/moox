@@ -6,6 +6,9 @@ namespace Moox\Item\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\RunsMooxDemoAssets;
+use Moox\Demo\Seeding\SeedingConfig;
+use Moox\Demo\Seeding\SeedOutput;
 use Moox\Item\Models\Item;
 
 class ItemSeeder extends Seeder
@@ -21,8 +24,8 @@ class ItemSeeder extends Seeder
     {
         $this->seed();
 
-        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
-            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        if (class_exists(RunsMooxDemoAssets::class)) {
+            RunsMooxDemoAssets::invoke($this);
         }
     }
 
@@ -72,7 +75,7 @@ class ItemSeeder extends Seeder
     private function reportCreated(string $label): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::created($label);
+            SeedOutput::created($label);
 
             return;
         }
@@ -81,7 +84,7 @@ class ItemSeeder extends Seeder
     private function reportDetail(string $line): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::detail($line);
+            SeedOutput::detail($line);
 
             return;
         }
@@ -91,14 +94,14 @@ class ItemSeeder extends Seeder
 
     private function hasSeedOutput(): bool
     {
-        return class_exists(\Moox\Demo\Seeding\SeedOutput::class)
-            && \Moox\Demo\Seeding\SeedOutput::isBound();
+        return class_exists(SeedOutput::class)
+            && SeedOutput::isBound();
     }
 
     private function resolveItemCount(): int
     {
-        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
-            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('item', self::DEFAULT_ITEM_COUNT);
+        if (class_exists(SeedingConfig::class)) {
+            return SeedingConfig::resolveCount('item', self::DEFAULT_ITEM_COUNT);
         }
 
         return self::DEFAULT_ITEM_COUNT;
