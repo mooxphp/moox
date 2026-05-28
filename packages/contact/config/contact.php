@@ -1,6 +1,9 @@
 <?php
 
 use Moox\Category\Resources\CategoryResource;
+use Moox\Company\Models\Company;
+use Moox\Company\Resources\CompanyResource;
+use Moox\Contact\Models\CompanyContact;
 use Moox\Contact\Models\Contact;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Moox\Entities\News\News\NewsResource;
@@ -125,9 +128,9 @@ return [
             'inverse_label' => 'trans//contact::fields.contacts',
             'relationship' => 'companies',
             'inverse_relationship' => 'contacts',
-            'model' => \Moox\Company\Models\Company::class,
-            'related_resource' => \Moox\Company\Resources\CompanyResource::class,
-            'pivot_model' => \Moox\Contact\Models\CompanyContact::class,
+            'model' => Company::class,
+            'related_resource' => CompanyResource::class,
+            'pivot_model' => CompanyContact::class,
             'pivot_table' => 'company_contact',
             'foreign_key' => 'contact_id',
             'related_key' => 'company_id',

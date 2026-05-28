@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Support;
 
+use Moox\Company\Models\Company;
+use Moox\Contact\Models\CompanyContact;
+
 final class CompanyContactRelationConfig
 {
     public static function config(): array
@@ -32,13 +35,13 @@ final class CompanyContactRelationConfig
     /** @return class-string */
     public static function relatedModel(): string
     {
-        return (string) (self::config()['model'] ?? \Moox\Company\Models\Company::class);
+        return (string) (self::config()['model'] ?? Company::class);
     }
 
     /** @return class-string */
     public static function pivotModel(): string
     {
-        return (string) (self::config()['pivot_model'] ?? \Moox\Contact\Models\CompanyContact::class);
+        return (string) (self::config()['pivot_model'] ?? CompanyContact::class);
     }
 
     public static function contactForeignKey(): string
