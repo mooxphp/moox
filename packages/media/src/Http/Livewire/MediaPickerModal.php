@@ -153,6 +153,13 @@ class MediaPickerModal extends Component implements HasForms
         return ScopeValue::forOriginString($this->model?->getAttribute('scope'), 'media');
     }
 
+    /**
+     * Preserve the model type on the incoming query builder.
+     *
+     * @template TModel of Model
+     * @param  Builder<TModel>  $query
+     * @return Builder<TModel>
+     */
     protected function applyMediaScope(Builder $query): Builder
     {
         $mediaCollectionId = $this->resolveScopedMediaCollectionId();
@@ -174,6 +181,9 @@ class MediaPickerModal extends Component implements HasForms
         return $this->resolveScopedMediaCollectionId() !== null;
     }
 
+    /**
+     * @return Builder<MediaCollection>
+     */
     protected function getCollectionsQuery(): Builder
     {
         $query = MediaCollection::query()->with('translations');
@@ -218,7 +228,7 @@ class MediaPickerModal extends Component implements HasForms
         return $this->getCollectionsQuery()
             ->get()
             ->mapWithKeys(fn (MediaCollection $collection): array => [
-                $collection->getKey() => $this->resolveCollectionLabel($collection, $locale),
+                (string) $collection->getKey() => $this->resolveCollectionLabel($collection, $locale),
             ])
             ->filter(fn (?string $label): bool => filled($label))
             ->toArray();
