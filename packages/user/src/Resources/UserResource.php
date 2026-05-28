@@ -8,8 +8,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -21,6 +19,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -307,7 +306,15 @@ class UserResource extends BaseResource
                 ...($supportsRoles ? [
                     TextColumn::make('roles')
                         ->label(__('core::user.roles'))
-                        ->state(fn (User $record): array => $record->roles->pluck('name')->values()->all())
+                        ->state(function (User $record): array {
+                            $roles = $record->getRelationValue('roles');
+
+                            if ($roles instanceof Collection) {
+                                return $roles->pluck('name')->values()->all();
+                            }
+
+                            return [];
+                        })
                         ->badge()
                         ->separator(', ')
                         ->limitList(3)
@@ -324,14 +331,15 @@ class UserResource extends BaseResource
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                static::getViewTableAction(),
+                static::getEditTableAction(),
                 DeleteAction::make()
+                    ->label(__('core::core.delete'))
                     ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) !== 'deleted'),
                 ForceDeleteAction::make()
+                    ->label(__('core::core.delete_permanently'))
                     ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
-                RestoreAction::make()
-                    ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+                static::getRestoreTableAction(),
             ])
             ->bulkActions(array_filter([
                 BulkActionGroup::make([
@@ -339,8 +347,7 @@ class UserResource extends BaseResource
                         ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) !== 'deleted'),
                     ForceDeleteBulkAction::make()
                         ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
-                    RestoreBulkAction::make()
-                        ->visible(fn ($livewire): bool => ($livewire->activeTab ?? null) === 'deleted'),
+                    static::getRestoreBulkAction(),
                 ]),
                 static::shouldShowSendPasswordResetLinksBulkAction() ?
                     SendPasswordResetLinksBulkAction::make() : null,
@@ -354,7 +361,13 @@ class UserResource extends BaseResource
         $authUser = auth()->user();
 
         if (in_array(SoftDeletes::class, class_uses_recursive($modelClass), true) && $activeTab === 'deleted') {
-            $query = $modelClass::onlyTrashed();
+            $query = static::getEloquentQuery()
+                ->withoutGlobalScopes([SoftDeletingScope::class]);
+
+            $model = new $modelClass;
+            $deletedAtColumn = defined("{$modelClass}::DELETED_AT") ? $modelClass::DELETED_AT : 'deleted_at';
+
+            $query->whereNotNull($model->getTable().'.'.$deletedAtColumn);
             $query = ScopedResourceContext::applyScope($query, static::class);
         } else {
             $query = static::getEloquentQuery();

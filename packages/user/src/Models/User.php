@@ -76,13 +76,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
         }
 
         // The MediaPicker may store JSON objects/arrays in this column.
-        if (is_string($value)) {
-            $trimmed = trim($value);
+        $trimmed = trim((string) $value);
 
-            if ($trimmed !== '' && (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '['))) {
-                $decoded = json_decode($trimmed, true);
+        if ($trimmed !== '' && (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '['))) {
+            $decoded = json_decode($trimmed, true);
 
-                if (json_last_error() === JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE) {
                     // Sometimes the payload is an object with a single numeric key, e.g. {"1": {...}}.
                     // Treat that key as a directory hint (media/{id}/{file_name}), without requiring Spatie Media.
                     if (is_array($decoded) && ! array_is_list($decoded) && count($decoded) === 1) {
@@ -91,13 +90,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
                         if (is_array($first)) {
                             if (
-                                (is_int($firstKey) || (is_string($firstKey) && ctype_digit($firstKey)))
+                                (is_int($firstKey) || ctype_digit((string) $firstKey))
                                 && is_string($first['file_name'] ?? null)
                             ) {
                                 $mediaPath = 'media/'.((int) $firstKey).'/'.$first['file_name'];
 
-                                if (Storage::disk('public')->exists($mediaPath)) {
-                                    return Storage::disk('public')->url($mediaPath);
+                                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+                                $disk = Storage::disk('public');
+
+                                if ($disk->exists($mediaPath)) {
+                                    return $disk->url($mediaPath);
                                 }
                             }
 
@@ -119,7 +121,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
                     } else {
                         $value = null;
                     }
-                }
             }
         }
 
@@ -133,8 +134,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
         $path = ltrim($value, '/');
 
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->url($path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        if ($disk->exists($path)) {
+            return $disk->url($path);
         }
 
         if (str_starts_with($path, 'storage/')) {
@@ -152,8 +156,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
                 $publicRoot = Storage::disk('public')->path('');
                 $relativeMatch = ltrim(str_replace($publicRoot, '', $absoluteMatch), '/');
 
-                if (Storage::disk('public')->exists($relativeMatch)) {
-                    return Storage::disk('public')->url($relativeMatch);
+                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+                $disk = Storage::disk('public');
+
+                if ($disk->exists($relativeMatch)) {
+                    return $disk->url($relativeMatch);
                 }
             }
         }
