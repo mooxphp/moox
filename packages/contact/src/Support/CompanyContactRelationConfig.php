@@ -75,7 +75,7 @@ final class CompanyContactRelationConfig
         }
 
         if (! is_a($class, Pivot::class, true)) {
-            throw new InvalidArgumentException("Configured class for [contact.relations.companies.pivot_model] must extend ".Pivot::class.": {$class}");
+            throw new InvalidArgumentException('Configured class for [contact.relations.companies.pivot_model] must extend '.Pivot::class.": {$class}");
         }
 
         return $class;
