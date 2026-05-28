@@ -7,6 +7,7 @@ use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -82,45 +83,45 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             $decoded = json_decode($trimmed, true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
-                    // Sometimes the payload is an object with a single numeric key, e.g. {"1": {...}}.
-                    // Treat that key as a directory hint (media/{id}/{file_name}), without requiring Spatie Media.
-                    if (is_array($decoded) && ! array_is_list($decoded) && count($decoded) === 1) {
-                        $firstKey = array_key_first($decoded);
-                        $first = $decoded[$firstKey] ?? null;
+                // Sometimes the payload is an object with a single numeric key, e.g. {"1": {...}}.
+                // Treat that key as a directory hint (media/{id}/{file_name}), without requiring Spatie Media.
+                if (is_array($decoded) && ! array_is_list($decoded) && count($decoded) === 1) {
+                    $firstKey = array_key_first($decoded);
+                    $first = $decoded[$firstKey] ?? null;
 
-                        if (is_array($first)) {
-                            if (
-                                (is_int($firstKey) || ctype_digit((string) $firstKey))
-                                && is_string($first['file_name'] ?? null)
-                            ) {
-                                $mediaPath = 'media/'.((int) $firstKey).'/'.$first['file_name'];
+                    if (is_array($first)) {
+                        if (
+                            (is_int($firstKey) || ctype_digit((string) $firstKey))
+                            && is_string($first['file_name'] ?? null)
+                        ) {
+                            $mediaPath = 'media/'.((int) $firstKey).'/'.$first['file_name'];
 
-                                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-                                $disk = Storage::disk('public');
+                            /** @var FilesystemAdapter $disk */
+                            $disk = Storage::disk('public');
 
-                                if ($disk->exists($mediaPath)) {
-                                    return $disk->url($mediaPath);
-                                }
+                            if ($disk->exists($mediaPath)) {
+                                return $disk->url($mediaPath);
                             }
-
-                            $decoded = $first;
                         }
-                    }
 
-                    if (is_array($decoded) && array_is_list($decoded)) {
-                        $decoded = $decoded[0] ?? null;
+                        $decoded = $first;
                     }
+                }
 
-                    if (is_array($decoded)) {
-                        $value = $decoded['path']
-                            ?? $decoded['file_path']
-                            ?? $decoded['file_name']
-                            ?? null;
-                    } elseif (is_string($decoded)) {
-                        $value = $decoded;
-                    } else {
-                        $value = null;
-                    }
+                if (is_array($decoded) && array_is_list($decoded)) {
+                    $decoded = $decoded[0] ?? null;
+                }
+
+                if (is_array($decoded)) {
+                    $value = $decoded['path']
+                        ?? $decoded['file_path']
+                        ?? $decoded['file_name']
+                        ?? null;
+                } elseif (is_string($decoded)) {
+                    $value = $decoded;
+                } else {
+                    $value = null;
+                }
             }
         }
 
@@ -134,7 +135,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 
         $path = ltrim($value, '/');
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        /** @var FilesystemAdapter $disk */
         $disk = Storage::disk('public');
 
         if ($disk->exists($path)) {
@@ -156,7 +157,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
                 $publicRoot = Storage::disk('public')->path('');
                 $relativeMatch = ltrim(str_replace($publicRoot, '', $absoluteMatch), '/');
 
-                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+                /** @var FilesystemAdapter $disk */
                 $disk = Storage::disk('public');
 
                 if ($disk->exists($relativeMatch)) {
