@@ -13,6 +13,13 @@ ERP entity for company master data: customers, suppliers, partners, subsidiaries
 - Filament resource with list tabs, filters, and a relation manager for subsidiaries
 - Factory with states (`customer`, `supplier`, `withParent`, …) and Pest tests
 
+## Responsibility Boundaries
+
+- `moox/company` owns company master data, hierarchy, and company-focused UI.
+- `moox/address` integration is optional and configured via `company.morph_relations.addressables`.
+- The package should not assume concrete address classes in model code; relation targets come from config.
+- Address ownership registration remains in `config/address.php` (`owner_types`).
+
 ## Requirements
 
 | Package     | Purpose                                      |

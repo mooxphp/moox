@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Support;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Moox\Company\Models\Company;
 use Moox\Contact\Models\CompanyContact;
 use Moox\Contact\Models\Contact;
 
 final class CompanyContactRelation
 {
-    /** @return BelongsToMany<Company, Contact, CompanyContact> */
+    /** @return BelongsToMany<Model, Contact, CompanyContact> */
     public static function forContact(Contact $contact): BelongsToMany
     {
         return $contact->belongsToMany(
@@ -25,11 +25,11 @@ final class CompanyContactRelation
             ->withTimestamps();
     }
 
-    /** @return BelongsToMany<Contact, Company, CompanyContact> */
-    public static function forCompany(Company $company): BelongsToMany
+    /** @return BelongsToMany<Model, Model, CompanyContact> */
+    public static function forCompany(Model $company): BelongsToMany
     {
         return $company->belongsToMany(
-            Contact::class,
+            CompanyContactRelationConfig::inverseRelatedModel(),
             CompanyContactRelationConfig::pivotTable(),
             CompanyContactRelationConfig::companyForeignKey(),
             CompanyContactRelationConfig::contactForeignKey(),

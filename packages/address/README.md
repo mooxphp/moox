@@ -17,6 +17,13 @@ Address is a simple Moox Entity that can be used to create and manage postal add
 -   Taxonomies
 -   Filament resource with relation manager
 
+## Responsibility Boundaries
+
+- `moox/address` owns normalized address records and the `addressables` pivot model.
+- Owner packages (`company`, `contact`, etc.) are external and optional.
+- Allowed owner types are declared in `address.relations.addressables.owner_types`.
+- Owner-side models configure their own morph relation target via their package config (`*.morph_relations.addressables`).
+
 <!--/features-->
 
 ## Requirements

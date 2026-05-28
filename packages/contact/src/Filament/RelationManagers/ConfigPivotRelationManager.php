@@ -55,6 +55,9 @@ class ConfigPivotRelationManager extends RelationManager
             ->columns($this->relatedColumns())
             ->headerActions([
                 AttachAction::make()
+                    ->recordTitle(fn (Model $record): string => method_exists($record, 'displayLabel')
+                        ? $record->displayLabel()
+                        : (string) ($record->display_name ?? $record->name ?? $record->getKey()))
                     ->preloadRecordSelect()
                     ->form(fn (AttachAction $action): array => $this->pivotFormFields($action)),
             ])
@@ -76,6 +79,9 @@ class ConfigPivotRelationManager extends RelationManager
         $columns = [
             TextColumn::make('display_name')
                 ->label(__('contact::fields.display_name'))
+                ->formatStateUsing(fn (mixed $state, Model $record): string => method_exists($record, 'displayLabel')
+                    ? $record->displayLabel()
+                    : (string) ($state ?? $record->name ?? $record->getKey()))
                 ->searchable(),
         ];
 
@@ -98,6 +104,11 @@ class ConfigPivotRelationManager extends RelationManager
     protected function pivotFormFields(?AttachAction $action = null): array
     {
         $fields = [];
+
+        if ($action !== null) {
+            // Keep Filament's default record selector so a company can be chosen.
+            $fields[] = $action->getRecordSelect();
+        }
 
         if (in_array('role', CompanyContactRelationConfig::pivotColumns(), true)) {
             $fields[] = Select::make('role')

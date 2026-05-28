@@ -13,6 +13,14 @@ ERP entity for company master data: customers, suppliers, partners, subsidiaries
 - Filament resource with list tabs, filters, and a relation manager for subsidiaries
 - Factory with states (`customer`, `supplier`, `withParent`, …) and Pest tests
 
+## Responsibility Boundaries
+
+- `moox/contact` owns contact data, validation, and UI behavior for contacts.
+- `moox/company` is optional and only required when the `companies` relation is used.
+- `moox/address` is optional and only required when `morph_relations.addressables` is configured.
+- Cross-package relations are config-driven via `contact.relations.companies` and `contact.morph_relations`.
+- `inverse_model` is optional; when omitted it defaults to `Moox\Contact\Models\Contact`.
+
 ## Requirements
 
 | Package     | Purpose                                      |

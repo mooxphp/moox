@@ -151,8 +151,8 @@ return [
         'addressables' => [
             'label' => 'trans//contact::fields.addresses',
             'relationship' => 'addresses',
-            'model' => null,
-            'pivot_model' => null,
+            'model' => \Moox\Address\Models\Address::class,
+            'pivot_model' => \Moox\Address\Models\Addressable::class,
             'pivot_table' => 'addressables',
             'morph_name' => 'addressable',
             'pivot_columns' => [
