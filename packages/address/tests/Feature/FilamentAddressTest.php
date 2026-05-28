@@ -5,9 +5,10 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
-use Moox\Address\Exceptions\DuplicateAddressException;
+use Illuminate\Validation\ValidationException;
 use Moox\Address\Models\Address;
 use Moox\Address\Resources\Address\Pages\CreateAddress;
+use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\AddressResource;
 use Moox\DevTools\Models\TestUser;
@@ -19,6 +20,7 @@ beforeEach(function (): void {
     $errors = new ViewErrorBag;
     $errors->put('default', new MessageBag);
     Session::put('errors', $errors);
+    app('view')->share('errors', $errors);
 
     $this->actingAs(TestUser::query()->create([
         'name' => 'Test User',
@@ -148,12 +150,12 @@ it('cannot save a duplicate address when editing via filament', function (): voi
     ]);
 
     $address = Address::factory()->create([
-        'name' => 'Other GmbH',
-        'street' => 'Nebenstraße 2',
+        'name' => 'Original GmbH',
+        'street' => 'Hauptstraße 2',
         'street2' => null,
         'state' => null,
-        'postal_code' => '20095',
-        'city' => 'Hamburg',
+        'postal_code' => '10115',
+        'city' => 'Berlin',
         'country_code' => 'DE',
     ]);
 
@@ -167,9 +169,46 @@ it('cannot save a duplicate address when editing via filament', function (): voi
         'country_code' => $existing->country_code,
     ]);
 
-    expect(fn () => $address->save())->toThrow(DuplicateAddressException::class);
+    expect(fn () => $address->save())->toThrow(ValidationException::class);
 
-    expect($address->fresh()->name)->toBe('Other GmbH');
+    expect($address->fresh()->street)->toBe('Hauptstraße 2');
+
+});
+it('can save different address with same name but different street', function (): void {
+    $existing = Address::factory()->create([
+        'name' => 'Original GmbH',
+        'street' => 'Hauptstraße 1',
+        'street2' => null,
+        'state' => null,
+        'postal_code' => '10115',
+        'city' => 'Berlin',
+        'country_code' => 'DE',
+    ]);
+
+    $address = Address::factory()->create([
+        'name' => 'Original GmbH',
+        'street' => 'Hauptstraße 2',
+        'street2' => null,
+        'state' => null,
+        'postal_code' => '10115',
+        'city' => 'Berlin',
+        'country_code' => 'DE',
+    ]);
+
+    livewire(CreateAddress::class)
+        ->fillForm([
+            'name' => $existing->name,
+            'street' => 'Hauptstraße 3',
+            'street2' => null,
+            'state' => null,
+            'postal_code' => $existing->postal_code,
+            'city' => $existing->city,
+            'country_code' => $existing->country_code,
+        ], 'form')
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Address::query()->where('street', 'Hauptstraße 3')->exists())->toBeTrue();
 });
 
 it('can edit an existing address via filament', function (): void {

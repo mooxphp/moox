@@ -13,11 +13,15 @@ trait InitializesValidationBag
         $bag = parent::getErrorBag();
 
         if ($bag === null) {
-            $this->resetErrorBag();
+            $this->setErrorBag(new MessageBag);
 
             $bag = parent::getErrorBag();
         }
 
-        return $bag ?? new MessageBag;
+        if ($bag instanceof MessageBag) {
+            return $bag;
+        }
+
+        return new MessageBag;
     }
 }
