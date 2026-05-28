@@ -8,7 +8,6 @@ use Illuminate\Support\ViewErrorBag;
 use Illuminate\Validation\ValidationException;
 use Moox\Address\Models\Address;
 use Moox\Address\Resources\Address\Pages\CreateAddress;
-use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\AddressResource;
 use Moox\DevTools\Models\TestUser;
@@ -172,7 +171,6 @@ it('cannot save a duplicate address when editing via filament', function (): voi
     expect(fn () => $address->save())->toThrow(ValidationException::class);
 
     expect($address->fresh()->street)->toBe('Hauptstraße 2');
-
 });
 it('can save different address with same name but different street', function (): void {
     $existing = Address::factory()->create([
