@@ -14,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Schema as DbSchema;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
