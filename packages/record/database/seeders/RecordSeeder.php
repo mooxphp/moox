@@ -9,6 +9,9 @@ use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\RunsMooxDemoAssets;
+use Moox\Demo\Seeding\SeedingConfig;
+use Moox\Demo\Seeding\SeedOutput;
 use Moox\Record\Enums\RecordStatus;
 use Moox\Record\Models\Record;
 use Moox\User\Models\User;
@@ -36,8 +39,8 @@ class RecordSeeder extends Seeder
     {
         $this->seed();
 
-        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
-            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        if (class_exists(RunsMooxDemoAssets::class)) {
+            RunsMooxDemoAssets::invoke($this);
         }
     }
 
@@ -103,7 +106,7 @@ class RecordSeeder extends Seeder
     private function reportCreated(string $label): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::created($label);
+            SeedOutput::created($label);
 
             return;
         }
@@ -112,7 +115,7 @@ class RecordSeeder extends Seeder
     private function reportDetail(string $line): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::detail($line);
+            SeedOutput::detail($line);
 
             return;
         }
@@ -122,14 +125,14 @@ class RecordSeeder extends Seeder
 
     private function hasSeedOutput(): bool
     {
-        return class_exists(\Moox\Demo\Seeding\SeedOutput::class)
-            && \Moox\Demo\Seeding\SeedOutput::isBound();
+        return class_exists(SeedOutput::class)
+            && SeedOutput::isBound();
     }
 
     private function resolveRecordCount(): int
     {
-        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
-            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('record', self::DEFAULT_RECORD_COUNT);
+        if (class_exists(SeedingConfig::class)) {
+            return SeedingConfig::resolveCount('record', self::DEFAULT_RECORD_COUNT);
         }
 
         return self::DEFAULT_RECORD_COUNT;

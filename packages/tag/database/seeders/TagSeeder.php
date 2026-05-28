@@ -9,7 +9,11 @@ use Faker\Generator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\RunsMooxDemoAssets;
+use Moox\Demo\Seeding\SeedingConfig;
+use Moox\Demo\Seeding\SeedOutput;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
 use Moox\Tag\Models\Tag;
@@ -42,8 +46,8 @@ class TagSeeder extends Seeder
     {
         $this->seed();
 
-        if (class_exists(\Moox\Demo\Seeding\RunsMooxDemoAssets::class)) {
-            \Moox\Demo\Seeding\RunsMooxDemoAssets::invoke($this);
+        if (class_exists(RunsMooxDemoAssets::class)) {
+            RunsMooxDemoAssets::invoke($this);
         }
     }
 
@@ -142,7 +146,7 @@ class TagSeeder extends Seeder
     private function reportCreated(string $label): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::created($label);
+            SeedOutput::created($label);
 
             return;
         }
@@ -151,7 +155,7 @@ class TagSeeder extends Seeder
     private function reportDetail(string $line): void
     {
         if ($this->hasSeedOutput()) {
-            \Moox\Demo\Seeding\SeedOutput::detail($line);
+            SeedOutput::detail($line);
 
             return;
         }
@@ -161,14 +165,14 @@ class TagSeeder extends Seeder
 
     private function hasSeedOutput(): bool
     {
-        return class_exists(\Moox\Demo\Seeding\SeedOutput::class)
-            && \Moox\Demo\Seeding\SeedOutput::isBound();
+        return class_exists(SeedOutput::class)
+            && SeedOutput::isBound();
     }
 
     private function resolveTagCount(): int
     {
-        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
-            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('tag', self::DEFAULT_TAG_COUNT);
+        if (class_exists(SeedingConfig::class)) {
+            return SeedingConfig::resolveCount('tag', self::DEFAULT_TAG_COUNT);
         }
 
         return self::DEFAULT_TAG_COUNT;
