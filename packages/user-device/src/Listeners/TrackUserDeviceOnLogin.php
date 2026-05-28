@@ -17,10 +17,6 @@ class TrackUserDeviceOnLogin
             return;
         }
 
-        if (! $event->user instanceof Authenticatable) {
-            return;
-        }
-
         app(UserDeviceTracker::class)->addUserDevice(request(), $event->user, app(Agent::class));
     }
 }

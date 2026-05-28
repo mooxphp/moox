@@ -54,9 +54,11 @@ class EnsureTrustedDevice
         }
 
         // Fallback: resolve device by user+ip (covers session-regeneration edge cases).
-        if (blank($deviceId) && method_exists($user, 'getAuthIdentifier')) {
-            /** @var mixed $userId */
-            $userId = $user->getAuthIdentifier();
+        if (blank($deviceId)) {
+            $userId = Auth::id();
+            if (blank($userId)) {
+                return $next($request);
+            }
 
             $deviceId = UserDevice::query()
                 ->where('user_id', $userId)
@@ -143,7 +145,6 @@ class EnsureTrustedDevice
 
         $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
 
-        /** @phpstan-ignore-next-line */
         return (bool) $user->hasRole($roleName);
     }
 
