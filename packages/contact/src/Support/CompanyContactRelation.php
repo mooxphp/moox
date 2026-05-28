@@ -6,12 +6,12 @@ namespace Moox\Contact\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Moox\Contact\Models\CompanyContact;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Moox\Contact\Models\Contact;
 
 final class CompanyContactRelation
 {
-    /** @return BelongsToMany<Model, Contact, CompanyContact> */
+    /** @return BelongsToMany<Model, Contact, Pivot> */
     public static function forContact(Contact $contact): BelongsToMany
     {
         return $contact->belongsToMany(
@@ -25,7 +25,7 @@ final class CompanyContactRelation
             ->withTimestamps();
     }
 
-    /** @return BelongsToMany<Model, Model, CompanyContact> */
+    /** @return BelongsToMany<Model, Model, Pivot> */
     public static function forCompany(Model $company): BelongsToMany
     {
         return $company->belongsToMany(

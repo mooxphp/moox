@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Company\Models\Company;
 use Moox\Contact\Database\Factories\ContactFactory;
 use Moox\Contact\Support\CompanyContactRelation;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
@@ -78,7 +78,7 @@ class Contact extends BaseItemModel
         return ContactFactory::new();
     }
 
-    /** @return BelongsToMany<Company, $this, CompanyContact> */
+    /** @return BelongsToMany<Model, Contact, Pivot> */
     public function companies(): BelongsToMany
     {
         return CompanyContactRelation::forContact($this);

@@ -248,11 +248,18 @@ class ContactResource extends BaseRecordResource
      */
     protected static function configOptions(string $configKey): array
     {
-        $values = config($configKey, []);
+        /** @var mixed $configured */
+        $configured = config($configKey, []);
+        $values = is_array($configured) ? $configured : [];
 
-        return collect($values)
-            ->mapWithKeys(fn (string $value): array => [$value => $value])
-            ->all();
+        $options = [];
+        foreach ($values as $value) {
+            if (is_string($value) && $value !== '') {
+                $options[$value] = $value;
+            }
+        }
+
+        return $options;
     }
 
     /**

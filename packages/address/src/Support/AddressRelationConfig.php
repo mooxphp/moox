@@ -6,6 +6,9 @@ namespace Moox\Address\Support;
 
 class AddressRelationConfig
 {
+    /**
+     * @return array<string, mixed>
+     */
     public static function addressables(): array
     {
         /** @var array<string, mixed> $config */

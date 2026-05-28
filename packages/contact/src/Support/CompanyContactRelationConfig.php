@@ -11,6 +11,9 @@ use Moox\Contact\Models\CompanyContact;
 
 final class CompanyContactRelationConfig
 {
+    /**
+     * @return array<string, mixed>
+     */
     public static function config(): array
     {
         /** @var array<string, mixed> $config */
