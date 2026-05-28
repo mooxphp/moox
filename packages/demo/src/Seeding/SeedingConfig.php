@@ -8,7 +8,7 @@ final class SeedingConfig
 {
     public static function resolveCount(string $packageSlug, int $default): int
     {
-        if (! DemoAssetGate::enabled()) {
+        if ((bool) config('demo.runtime.seeding', false) !== true) {
             return $default;
         }
 

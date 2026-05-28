@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Item\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Moox\Item\Models\Item;
 
@@ -16,6 +19,16 @@ class ItemSeeder extends Seeder
 
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
+
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
+    ];
+
+    private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
     {
@@ -34,25 +47,29 @@ class ItemSeeder extends Seeder
         $count = $this->resolveItemCount();
         $created = 0;
 
-        for ($index = 1; $index <= $count; $index++) {
-            $locale = self::LOCALES[array_rand(self::LOCALES)];
-            $title = $this->localizedTitle($locale);
+        DB::transaction(function () use ($count, $faker, &$created): void {
+            for ($index = 1; $index <= $count; $index++) {
+                $locale = self::LOCALES[array_rand(self::LOCALES)];
+                $title = $this->localizedTitle($locale);
 
-            $item = Item::query()->create([
-                'title' => $title,
-                'description' => $this->localizedDescription($locale),
-                'custom_properties' => [
-                    'seed_source' => 'item_seeder_v1',
-                    'seed_index' => $index,
-                    'seed_locale' => $locale,
-                    'seed_key' => Str::slug($title).'-'.sprintf('%04d', $index),
-                    'is_featured' => $faker->boolean(25),
-                ],
-            ]);
+                $item = Item::query()->create([
+                    'title' => $title,
+                    'description' => $this->localizedDescription($locale),
+                    'custom_properties' => [
+                        'seed_source' => 'item_seeder_v1',
+                        'seed_index' => $index,
+                        'seed_locale' => $locale,
+                        'seed_key' => Str::slug($title).'-'.sprintf('%04d', $index),
+                        'is_featured' => $faker->boolean(25),
+                    ],
+                ]);
 
-            $created++;
-            $this->reportCreated("Item {$item->getKey()}");
-        }
+                $created++;
+                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+                    $this->reportCreated("Item {$item->getKey()}");
+                }
+            }
+        });
 
         $this->reportDetail(sprintf(
             '%d faker item(s) seeded across %d locale(s).',
@@ -106,72 +123,23 @@ class ItemSeeder extends Seeder
 
     private function localizedTitle(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => self::DEMO_TITLE_PREFIX.' '.$this->randomElement([
-                'Einstellung',
-                'Vorlage',
-                'Konfiguration',
-                'Baustein',
-                'Eintrag',
-            ]),
-            'fr_FR' => self::DEMO_TITLE_PREFIX.' '.$this->randomElement([
-                'Parametre',
-                'Modele',
-                'Configuration',
-                'Bloc',
-                'Entree',
-            ]),
-            'es_ES' => self::DEMO_TITLE_PREFIX.' '.$this->randomElement([
-                'Parametro',
-                'Plantilla',
-                'Configuracion',
-                'Bloque',
-                'Entrada',
-            ]),
-            default => self::DEMO_TITLE_PREFIX.' '.$this->randomElement([
-                'Setting',
-                'Template',
-                'Configuration',
-                'Block',
-                'Entry',
-            ]),
-        };
+        return self::DEMO_TITLE_PREFIX.' '.Str::title($this->fakerForLocale($locale)->words(random_int(2, 5), true));
     }
 
     private function localizedDescription(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => $this->randomElement([
-                'Dieser Demo-Item-Eintrag dient als Beispiel fuer strukturierte Inhalte.',
-                'Dieser Datensatz kann als Vorlage fuer eigene Item-Objekte genutzt werden.',
-                'Dieser Eintrag simuliert reale Daten fuer Tests und Demos.',
-            ]),
-            'fr_FR' => $this->randomElement([
-                'Cet element de demonstration sert d exemple pour des contenus structures.',
-                'Cet enregistrement peut etre utilise comme modele pour vos propres elements.',
-                'Cette entree simule des donnees reelles pour les tests et demos.',
-            ]),
-            'es_ES' => $this->randomElement([
-                'Este item de demostracion sirve como ejemplo de contenido estructurado.',
-                'Este registro puede usarse como plantilla para tus propios items.',
-                'Esta entrada simula datos reales para pruebas y demos.',
-            ]),
-            default => $this->randomElement([
-                'This demo item serves as an example for structured content.',
-                'This record can be used as a template for your own item entities.',
-                'This entry simulates real data for tests and demos.',
-            ]),
-        };
+        return $this->fakerForLocale($locale)->paragraph();
     }
 
-    /**
-     * @template T
-     *
-     * @param  list<T>  $items
-     * @return T
-     */
-    private function randomElement(array $items): mixed
+    private function fakerForLocale(string $locale): Generator
     {
-        return $items[array_rand($items)];
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 }

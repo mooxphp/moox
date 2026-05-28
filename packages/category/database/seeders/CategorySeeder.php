@@ -3,6 +3,8 @@
 namespace Moox\Category\Database\Seeders;
 
 use DateTimeImmutable;
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -31,108 +33,17 @@ class CategorySeeder extends Seeder
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
+    ];
+
     private const MAX_TREE_DEPTH = 4;
 
     private const MEDIA_ATTACH_PROBABILITY = 0.85;
-
-    /** @var list<string> */
-    private const ROOT_LABELS_EN = [
-        'Pumps & Pumping Systems',
-        'Building Services',
-        'Water Treatment',
-        'HVAC & Climate',
-        'Industrial Valves',
-        'Measurement & Control',
-        'Drainage & Wastewater',
-        'Fire Protection',
-        'Solar & Renewables',
-        'Installation Technology',
-        'Spare Parts',
-        'Service & Maintenance',
-    ];
-
-    /**
-     * Localized subcategory titles per root (index 0 = first sub, etc.).
-     *
-     * @return array<string, array<string, list<string>>>
-     */
-    private static function subcategoryCatalog(): array
-    {
-        return [
-            'Pumps & Pumping Systems' => [
-                'en_US' => ['Circulator Pumps', 'Submersible Pumps', 'Booster Sets', 'Drainage Pumps', 'Well Pumps'],
-                'de_DE' => ['Heizungsumwälzpumpen', 'Tauchmotorpumpen', 'Druckerhöhungsanlagen', 'Entwässerungspumpen', 'Brunnenpumpen'],
-                'cs_CZ' => ['Oběhová čerpadla', 'Ponorná čerpadla', 'Posilovací systémy', 'Drenážní čerpadla', 'Studniční čerpadla'],
-                'pl_PL' => ['Pompy obiegowe', 'Pompy zanurzeniowe', 'Zestawy podciśnieniowe', 'Pompy drenażowe', 'Pompy studzienne'],
-            ],
-            'Building Services' => [
-                'en_US' => ['Heating Technology', 'Sanitary Systems', 'Building Automation', 'Smart Home', 'Pipe Systems'],
-                'de_DE' => ['Heiztechnik', 'Sanitärtechnik', 'Gebäudeautomation', 'Smart Home', 'Rohrsysteme'],
-                'cs_CZ' => ['Tepelná technika', 'Sanitární technika', 'Automatizace budov', 'Chytrá domácnost', 'Potrubní systémy'],
-                'pl_PL' => ['Technika grzewcza', 'Instalacje sanitarne', 'Automatyka budynkowa', 'Smart home', 'Systemy rurowe'],
-            ],
-            'Water Treatment' => [
-                'en_US' => ['Filtration', 'Softening Systems', 'UV Disinfection', 'Reverse Osmosis', 'Dosing Technology'],
-                'de_DE' => ['Filtration', 'Enthärtungsanlagen', 'UV-Desinfektion', 'Umkehrosmose', 'Dosiertechnik'],
-                'cs_CZ' => ['Filtrace', 'Změkčovací systémy', 'UV dezinfekce', 'Reverzní osmóza', 'Dávkovací technika'],
-                'pl_PL' => ['Filtracja', 'Systemy zmiękczania', 'Dezynfekcja UV', 'Osmoza odwrotna', 'Technika dozowania'],
-            ],
-            'HVAC & Climate' => [
-                'en_US' => ['Ventilation', 'Air Conditioning', 'Heat Recovery', 'Duct Systems', 'Climate Controls'],
-                'de_DE' => ['Lüftung', 'Klimatisierung', 'Wärmerückgewinnung', 'Kanalsysteme', 'Klimaregelung'],
-                'cs_CZ' => ['Větrání', 'Klimatizace', 'Rekuperace', 'Potrubní systémy VZT', 'Regulace klimatu'],
-                'pl_PL' => ['Wentylacja', 'Klimatyzacja', 'Rekuperacja', 'Systemy kanałowe', 'Sterowanie klimatem'],
-            ],
-            'Industrial Valves' => [
-                'en_US' => ['Gate Valves', 'Ball Valves', 'Butterfly Valves', 'Check Valves', 'Control Valves'],
-                'de_DE' => ['Schieber', 'Kugelhähne', 'Klappen', 'Rückflussverhinderer', 'Regelventile'],
-                'cs_CZ' => ['Šoupátka', 'Kulové kohouty', 'Klapky', 'Zpětné klapky', 'Regulační ventily'],
-                'pl_PL' => ['Zasuwy', 'Zawory kulowe', 'Zawory zwrotne', 'Zawory zwrotne odcinające', 'Zawory regulacyjne'],
-            ],
-            'Measurement & Control' => [
-                'en_US' => ['Pressure Sensors', 'Flow Meters', 'Temperature Sensors', 'Controllers', 'Data Loggers'],
-                'de_DE' => ['Drucksensoren', 'Durchflussmessgeräte', 'Temperatursensoren', 'Regler', 'Datenlogger'],
-                'cs_CZ' => ['Senzory tlaku', 'Průtokoměry', 'Teplotní senzory', 'Regulátory', 'Záznamníky dat'],
-                'pl_PL' => ['Czujniki ciśnienia', 'Przepływomierze', 'Czujniki temperatury', 'Regulatory', 'Rejestratory danych'],
-            ],
-            'Drainage & Wastewater' => [
-                'en_US' => ['House Drainage', 'Lifting Stations', 'Wastewater Pumps', 'Grease Separators', 'Rainwater Systems'],
-                'de_DE' => ['Gebäudeentwässerung', 'Hebeanlagen', 'Abwasserpumpen', 'Fettabscheider', 'Regenwassersysteme'],
-                'cs_CZ' => ['Domovní odvodnění', 'Přečerpávací stanice', 'Čerpadla odpadních vod', 'Lapáky tuku', 'Systémy dešťové vody'],
-                'pl_PL' => ['Odprowadzenie budynkowe', 'Przepompownie', 'Pompy ściekowe', 'Osadniki tłuszczu', 'Systemy wód deszczowych'],
-            ],
-            'Fire Protection' => [
-                'en_US' => ['Sprinkler Systems', 'Fire Pumps', 'Hydrants', 'Alarm Technology', 'Smoke Extraction'],
-                'de_DE' => ['Sprinkleranlagen', 'Löschwasserpumpen', 'Hydranten', 'Alarmtechnik', 'Rauchabzug'],
-                'cs_CZ' => ['Sprinklerové systémy', 'Požární čerpadla', 'Hydranty', 'Požární signalizace', 'Odtah kouře'],
-                'pl_PL' => ['Systemy tryskaczowe', 'Pompo pożarowe', 'Hydranty', 'Technika alarmowa', 'Oddymianie'],
-            ],
-            'Solar & Renewables' => [
-                'en_US' => ['Photovoltaic', 'Solar Thermal', 'Heat Pumps', 'Storage Systems', 'Inverters'],
-                'de_DE' => ['Photovoltaik', 'Solarthermie', 'Wärmepumpen', 'Speichersysteme', 'Wechselrichter'],
-                'cs_CZ' => ['Fotovoltaika', 'Solární termika', 'Tepelná čerpadla', 'Akumulační systémy', 'Střídače'],
-                'pl_PL' => ['Fotowoltaika', 'Kolektory słoneczne', 'Pompy ciepła', 'Systemy magazynowania', 'Falowniki'],
-            ],
-            'Installation Technology' => [
-                'en_US' => ['Mounting Systems', 'Tools & Consumables', 'Sealing Technology', 'Fasteners', 'Chemical Anchors'],
-                'de_DE' => ['Befestigungssysteme', 'Werkzeuge & Verbrauchsmaterial', 'Dichttechnik', 'Befestigungselemente', 'Chemische Dübel'],
-                'cs_CZ' => ['Montážní systémy', 'Nářadí a spotřební materiál', 'Těsnicí technika', 'Spojovací prvky', 'Chemické kotvy'],
-                'pl_PL' => ['Systemy mocowań', 'Narzędzia i materiały eksploatacyjne', 'Technika uszczelniania', 'Elementy złączne', 'Kotwy chemiczne'],
-            ],
-            'Spare Parts' => [
-                'en_US' => ['Pump Spare Parts', 'Seal Kits', 'Impellers', 'Motors', 'Wear Parts'],
-                'de_DE' => ['Pumpenersatzteile', 'Dichtungssätze', 'Laufräder', 'Motoren', 'Verschleißteile'],
-                'cs_CZ' => ['Náhradní díly čerpadel', 'Sady těsnění', 'Oběžná kola', 'Motory', 'Opotřebitelné díly'],
-                'pl_PL' => ['Części zamienne pomp', 'Zestawy uszczelek', 'Łopatki wirnika', 'Silniki', 'Części eksploatacyjne'],
-            ],
-            'Service & Maintenance' => [
-                'en_US' => ['Commissioning', 'Maintenance Contracts', 'Repair Service', 'Training', 'Technical Support'],
-                'de_DE' => ['Inbetriebnahme', 'Wartungsverträge', 'Reparaturservice', 'Schulungen', 'Technischer Support'],
-                'cs_CZ' => ['Uvedení do provozu', 'Servisní smlouvy', 'Opravárenský servis', 'Školení', 'Technická podpora'],
-                'pl_PL' => ['Uruchomienie', 'Umowy serwisowe', 'Serwis naprawczy', 'Szkolenia', 'Wsparcie techniczne'],
-            ],
-        ];
-    }
 
     public function __construct(
         private readonly ?int $count = null,
@@ -205,7 +116,7 @@ class CategorySeeder extends Seeder
                 $category->basedata = [
                     'seed_batch' => self::SEED_BATCH,
                     'seed_index' => $i,
-                    'seed_label_en' => self::labelForIndex($i),
+                    'seed_label_en' => $this->labelForIndex($i),
                 ];
 
                 if ($parentId !== null) {
@@ -228,17 +139,6 @@ class CategorySeeder extends Seeder
                 }
 
                 $category->save();
-                $category->refresh();
-                $category->load('translations');
-
-                $resolvedStatus = self::resolveCategoryStatusFromTranslationStatuses(
-                    $category->translations->pluck('translation_status')->all()
-                );
-
-                if ($category->status !== $resolvedStatus) {
-                    $category->status = $resolvedStatus;
-                    $category->saveQuietly();
-                }
 
                 $idByIndex[$i] = (int) $category->getKey();
 
@@ -250,12 +150,27 @@ class CategorySeeder extends Seeder
 
             Category::fixTree();
 
-            Category::query()
-                ->whereIn('basedata->seed_batch', [self::SEED_BATCH])
-                ->each(function (Category $category): void {
-                    $category->count = $category->children()->count();
-                    $category->saveQuietly();
-                });
+            $seededIds = Category::query()
+                ->where('basedata->seed_batch', self::SEED_BATCH)
+                ->pluck('id');
+
+            if ($seededIds->isNotEmpty()) {
+                $childrenCountByParent = Category::query()
+                    ->whereIn('parent_id', $seededIds)
+                    ->selectRaw('parent_id, COUNT(*) as aggregate')
+                    ->groupBy('parent_id')
+                    ->pluck('aggregate', 'parent_id');
+
+                $updates = [];
+                foreach ($seededIds as $seededId) {
+                    $updates[] = [
+                        'id' => (int) $seededId,
+                        'count' => (int) ($childrenCountByParent[$seededId] ?? 0),
+                    ];
+                }
+
+                Category::query()->upsert($updates, ['id'], ['count']);
+            }
         });
 
         Auth::logout();
@@ -285,7 +200,7 @@ class CategorySeeder extends Seeder
             return [];
         }
 
-        $rootCount = min(count(self::ROOT_LABELS_EN), max(5, (int) round(sqrt($total) * 1.2)));
+        $rootCount = max(5, (int) round(sqrt($total) * 1.2));
         $rootCount = min($rootCount, $total);
 
         $map = [];
@@ -295,10 +210,7 @@ class CategorySeeder extends Seeder
 
         for ($i = $rootCount + 1; $i <= $total; $i++) {
             $candidates = self::parentCandidatesForChild($map, $i);
-            $targetRoot = (($i - 1) % count(self::ROOT_LABELS_EN)) + 1;
-            if ($targetRoot > $rootCount) {
-                $targetRoot = (($targetRoot - 1) % $rootCount) + 1;
-            }
+            $targetRoot = (($i - 1) % $rootCount) + 1;
 
             $sameBranch = array_values(array_filter(
                 $candidates,
@@ -392,33 +304,16 @@ class CategorySeeder extends Seeder
         return $current;
     }
 
-    private static function labelForIndex(int $index): string
+    private function labelForIndex(int $index): string
     {
-        return self::titleForLocaleStatic('en_US', $index);
+        return $this->titleForLocale('en_US', $index);
     }
 
     private function titleForLocale(string $locale, int $index): string
     {
-        return self::titleForLocaleStatic($locale, $index);
-    }
+        $title = $this->fakerForLocale($locale)->sentence(random_int(2, 4), true);
 
-    private static function titleForLocaleStatic(string $locale, int $index): string
-    {
-        $roots = self::ROOT_LABELS_EN;
-        $rootKey = $roots[($index - 1) % count($roots)];
-        $tier = intdiv($index - 1, count($roots));
-
-        if ($tier === 0 && $index <= count($roots)) {
-            return self::rootTitle($rootKey, $locale);
-        }
-
-        $catalog = self::subcategoryCatalog()[$rootKey][$locale]
-            ?? self::subcategoryCatalog()[$rootKey]['en_US']
-            ?? [self::rootTitle($rootKey, $locale)];
-
-        $subIndex = $tier - 1;
-
-        return $catalog[$subIndex % count($catalog)];
+        return Str::title(Str::lower(trim($title, " \t\n\r\0\x0B.")));
     }
 
     private function slugForTitle(string $title, int $index, string $locale): string
@@ -432,190 +327,30 @@ class CategorySeeder extends Seeder
         return Str::limit($base, 72, '').'-'.sprintf('%03d', $index);
     }
 
-    /**
-     * @return array<string, string>
-     */
-    private static function germanTitleMap(): array
-    {
-        return [
-            'Pumps & Pumping Systems' => 'Pumpen & Pumpensysteme',
-            'Building Services' => 'Gebäudetechnik',
-            'Water Treatment' => 'Wasseraufbereitung',
-            'HVAC & Climate' => 'HLK & Klimatechnik',
-            'Industrial Valves' => 'Industrieventile',
-            'Measurement & Control' => 'Mess- & Regeltechnik',
-            'Drainage & Wastewater' => 'Entwässerung & Abwasser',
-            'Fire Protection' => 'Brandschutz',
-            'Solar & Renewables' => 'Solar & Erneuerbare',
-            'Installation Technology' => 'Installationstechnik',
-            'Spare Parts' => 'Ersatzteile',
-            'Service & Maintenance' => 'Service & Wartung',
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function czechTitleMap(): array
-    {
-        return [
-            'Pumps & Pumping Systems' => 'Čerpadla a čerpací systémy',
-            'Building Services' => 'Technika budov',
-            'Water Treatment' => 'Úprava vody',
-            'HVAC & Climate' => 'VZT a klimatizace',
-            'Industrial Valves' => 'Průmyslové ventily',
-            'Measurement & Control' => 'Měření a regulace',
-            'Drainage & Wastewater' => 'Odvodnění a odpadní vody',
-            'Fire Protection' => 'Požární ochrana',
-            'Solar & Renewables' => 'Solární a obnovitelné zdroje',
-            'Installation Technology' => 'Instalační technika',
-            'Spare Parts' => 'Náhradní díly',
-            'Service & Maintenance' => 'Servis a údržba',
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private static function polishTitleMap(): array
-    {
-        return [
-            'Pumps & Pumping Systems' => 'Pompy i systemy pompowania',
-            'Building Services' => 'Technika budowlana',
-            'Water Treatment' => 'Uzdatnianie wody',
-            'HVAC & Climate' => 'HVAC i klimatyzacja',
-            'Industrial Valves' => 'Zawory przemysłowe',
-            'Measurement & Control' => 'Pomiar i sterowanie',
-            'Drainage & Wastewater' => 'Odprowadzanie i ścieki',
-            'Fire Protection' => 'Ochrona przeciwpożarowa',
-            'Solar & Renewables' => 'Energia słoneczna i OZE',
-            'Installation Technology' => 'Technika instalacyjna',
-            'Spare Parts' => 'Części zamienne',
-            'Service & Maintenance' => 'Serwis i konserwacja',
-        ];
-    }
-
-    private static function rootTitle(string $rootKey, string $locale): string
-    {
-        $map = match ($locale) {
-            'de_DE' => self::germanTitleMap(),
-            'cs_CZ' => self::czechTitleMap(),
-            'pl_PL' => self::polishTitleMap(),
-            default => [],
-        };
-
-        return $map[$rootKey] ?? $rootKey;
-    }
-
     private function descriptionForLocale(string $title, string $locale): string
     {
-        $intro = match ($locale) {
-            'de_DE' => "Entdecken Sie Produkte, Systeme und Services für „{$title}“. Unsere Lösungen sind auf Zuverlässigkeit, Effizienz und einfache Integration ausgelegt.",
-            'cs_CZ' => "V této kategorii najdete produkty, systémy a služby pro oblast „{$title}“. Řešení klademe důraz na spolehlivost, efektivitu a snadnou integraci.",
-            'pl_PL' => "W tej kategorii znajdziesz produkty, systemy i usługi dla „{$title}“. Stawiamy na niezawodność, efektywność i łatwą integrację.",
-            default => "Explore products, systems, and services for “{$title}”. Our solutions focus on reliability, efficiency, and straightforward integration.",
-        };
-
-        $tail = $this->randomElement($this->descriptionTails($locale));
-
-        return $intro.' '.$tail;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function descriptionTails(string $locale): array
-    {
-        return match ($locale) {
-            'de_DE' => [
-                'Technische Beratung und Planungssupport sind auf Anfrage verfügbar.',
-                'Typische Einsatzgebiete: Gewerbe, Industrie und moderne Wohngebäude.',
-                'Dokumentation, Ersatzteile und Serviceleistungen runden das Portfolio ab.',
-            ],
-            'cs_CZ' => [
-                'Technické poradenství a podpora projektování jsou k dispozici na vyžádání.',
-                'Typické aplikace: komerční budovy, průmysl a moderní bydlení.',
-                'Dokumentace, náhradní díly a servis doplňují nabídku.',
-            ],
-            'pl_PL' => [
-                'Doradztwo techniczne i wsparcie projektowe dostępne są na życzenie.',
-                'Typowe zastosowania: budynki komercyjne, przemysł i nowoczesne domy.',
-                'Dokumentacja, części zamienne i serwis uzupełniają ofertę.',
-            ],
-            default => [
-                'Technical consulting and planning support are available on request.',
-                'Typical applications include commercial buildings, industry, and modern residential projects.',
-                'Documentation, spare parts, and service offerings complete the portfolio.',
-            ],
-        };
+        return $this->fakerForLocale($locale)->realTextBetween(130, 220);
     }
 
     private function markdownContentForLocale(string $title, string $locale): string
     {
-        $overview = match ($locale) {
-            'de_DE' => "Die Kategorie **{$title}** bündelt bewährte Komponenten und Komplettlösungen für Planer, Installateure und Betreiber.",
-            'cs_CZ' => "Kategorie **{$title}** sdružuje ověřené komponenty a kompletní řešení pro projektanty, montéry i provozovatele.",
-            'pl_PL' => "Kategoria **{$title}** łączy sprawdzone komponenty i kompletne rozwiązania dla projektantów, instalatorów i operatorów.",
-            default => "The **{$title}** category brings together proven components and complete solutions for planners, installers, and operators.",
-        };
+        $faker = $this->fakerForLocale($locale);
+        $heading = Str::title(Str::lower(trim($faker->sentence(random_int(2, 4), true), " \t\n\r\0\x0B.")));
+        $paragraphs = $faker->paragraphs(random_int(3, 6));
 
-        $bullets = collect($this->contentBullets($locale))
-            ->map(fn (string $line): string => '- '.$line)
-            ->implode("\n");
-
-        $closing = match ($locale) {
-            'de_DE' => 'Kontaktieren Sie unser Team für Auslegung, Lieferumfang und passende Zubehörteile.',
-            'cs_CZ' => 'Obraťte se na náš tým ohledně dimenzování, rozsahu dodávky a vhodného příslušenství.',
-            'pl_PL' => 'Skontaktuj się z naszym zespołem w sprawie doboru, zakresu dostawy i odpowiednich akcesoriów.',
-            default => 'Contact our team for sizing, scope of supply, and suitable accessories.',
-        };
-
-        return <<<MD
-        # {$title}
-
-        {$overview}
-
-        ## Highlights
-
-        {$bullets}
-
-        ## Details
-
-        {$closing}
-        MD;
+        return '## '.$heading."\n\n".implode("\n\n", $paragraphs);
     }
 
-    /**
-     * @return list<string>
-     */
-    private function contentBullets(string $locale): array
+    private function fakerForLocale(string $locale): Generator
     {
-        return match ($locale) {
-            'de_DE' => [
-                'Auswahl an Standard- und Sonderausführungen',
-                'Kompatibel mit gängigen Schnittstellen und Normen',
-                'Schnelle Verfügbarkeit und übersichtliche Dokumentation',
-                'Service- und Wartungsoptionen aus einer Hand',
-            ],
-            'cs_CZ' => [
-                'Široká nabídka standardních i speciálních provedení',
-                'Kompatibilita s běžnými rozhraními a normami',
-                'Rychlá dostupnost a přehledná dokumentace',
-                'Servis a údržba z jednoho zdroje',
-            ],
-            'pl_PL' => [
-                'Wybór wersji standardowych i specjalnych',
-                'Zgodność z popularnymi interfejsami i normami',
-                'Szybka dostępność i przejrzysta dokumentacja',
-                'Serwis i konserwacja z jednego źródła',
-            ],
-            default => [
-                'Range of standard and special configurations',
-                'Compatible with common interfaces and standards',
-                'Fast availability and clear documentation',
-                'Service and maintenance options from a single source',
-            ],
-        };
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 
     /**
@@ -790,6 +525,10 @@ class CategorySeeder extends Seeder
     {
         if ($this->count !== null) {
             return max(1, min(5000, $this->count));
+        }
+
+        if (class_exists(\Moox\Demo\Seeding\SeedingConfig::class)) {
+            return \Moox\Demo\Seeding\SeedingConfig::resolveCount('category', 100);
         }
 
         $fromEnv = env('CATEGORY_MOCK_COUNT');

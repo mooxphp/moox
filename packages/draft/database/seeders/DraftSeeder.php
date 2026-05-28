@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Draft\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Moox\Draft\Models\Draft;
 use Moox\User\Models\User;
@@ -18,11 +21,20 @@ class DraftSeeder extends Seeder
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
+    ];
+
     /** @var list<string> */
     private const TYPES = ['article', 'page', 'post', 'news', 'tutorial'];
 
     /** @var list<string> */
     private const TRANSLATION_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
+    private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
     {
@@ -42,50 +54,54 @@ class DraftSeeder extends Seeder
         $created = 0;
         $faker = fake();
 
-        for ($index = 1; $index <= $count; $index++) {
-            $status = $faker->randomElement(self::TRANSLATION_STATUSES);
-            $draft = Draft::query()->create([
-                'is_active' => $faker->boolean(85),
-                'type' => $faker->randomElement(self::TYPES),
-                'color' => $faker->hexColor(),
-                'status' => $status,
-                'due_at' => $faker->optional(0.4)->dateTimeBetween('now', '+45 days'),
-                'image' => [
-                    'url' => $faker->imageUrl(1200, 630),
-                    'alt' => $faker->sentence(4),
-                ],
-                'data' => json_encode([
-                    'seed_source' => 'draft_seeder_v1',
-                    'seed_index' => $index,
-                ], JSON_THROW_ON_ERROR),
-            ]);
+        DB::transaction(function () use ($count, $faker, $author, &$created): void {
+            for ($index = 1; $index <= $count; $index++) {
+                $status = $faker->randomElement(self::TRANSLATION_STATUSES);
+                $draft = Draft::query()->create([
+                    'is_active' => $faker->boolean(85),
+                    'type' => $faker->randomElement(self::TYPES),
+                    'color' => $faker->hexColor(),
+                    'status' => $status,
+                    'due_at' => $faker->optional(0.4)->dateTimeBetween('now', '+45 days'),
+                    'image' => [
+                        'url' => $faker->imageUrl(1200, 630),
+                        'alt' => $faker->sentence(4),
+                    ],
+                    'data' => json_encode([
+                        'seed_source' => 'draft_seeder_v1',
+                        'seed_index' => $index,
+                    ], JSON_THROW_ON_ERROR),
+                ]);
 
-            foreach (self::LOCALES as $locale) {
-                $title = $this->localizedTitle($locale);
-                $slug = self::DEMO_SLUG_PREFIX
-                    .'-'.Str::slug($title)
-                    .'-'.Str::lower($locale)
-                    .'-'.sprintf('%04d', $index);
+                foreach (self::LOCALES as $locale) {
+                    $title = $this->localizedTitle($locale);
+                    $slug = self::DEMO_SLUG_PREFIX
+                        .'-'.Str::slug($title)
+                        .'-'.Str::lower($locale)
+                        .'-'.sprintf('%04d', $index);
 
-                $translation = $draft->translateOrNew($locale);
-                $translation->title = $title;
-                $translation->slug = Str::limit($slug, 180, '');
-                $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
-                $translation->description = $this->localizedDescription($locale);
-                $translation->content = $this->localizedContent($locale);
-                $translation->translation_status = $status;
+                    $translation = $draft->translateOrNew($locale);
+                    $translation->title = $title;
+                    $translation->slug = Str::limit($slug, 180, '');
+                    $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
+                    $translation->description = $this->localizedDescription($locale);
+                    $translation->content = $this->localizedContent($locale);
+                    $translation->translation_status = $status;
 
-                if ($author !== null) {
-                    $translation->author_id = $author->getKey();
-                    $translation->author_type = $author->getMorphClass();
+                    if ($author !== null) {
+                        $translation->author_id = $author->getKey();
+                        $translation->author_type = $author->getMorphClass();
+                    }
+                }
+
+                $draft->save();
+                $created++;
+
+                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+                    $this->reportCreated("Draft {$draft->getKey()}");
                 }
             }
-
-            $draft->save();
-            $created++;
-
-            $this->reportCreated("Draft {$draft->getKey()}");
-        }
+        });
 
         $this->reportDetail(sprintf(
             '%d faker draft(s) seeded across %d locale(s).',
@@ -140,152 +156,28 @@ class DraftSeeder extends Seeder
 
     private function localizedTitle(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Entwurf', 'Notiz', 'Artikel', 'Dokument', 'Beitrag']),
-                $this->randomElement(['zur', 'fuer', 'mit', 'ohne']),
-                $this->randomElement(['Freigabe', 'Abstimmung', 'Redaktion', 'Kampagne', 'Planung'])
-            ),
-            'fr_FR' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Brouillon', 'Article', 'Note', 'Document', 'Publication']),
-                $this->randomElement(['pour', 'avec', 'sans', 'sur']),
-                $this->randomElement(['validation', 'revision', 'campagne', 'publication', 'planification'])
-            ),
-            'es_ES' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Borrador', 'Articulo', 'Nota', 'Documento', 'Publicacion']),
-                $this->randomElement(['para', 'con', 'sin', 'sobre']),
-                $this->randomElement(['revision', 'aprobacion', 'campana', 'publicacion', 'planificacion'])
-            ),
-            default => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Draft', 'Article', 'Note', 'Document', 'Post']),
-                $this->randomElement(['for', 'with', 'without', 'about']),
-                $this->randomElement(['review', 'approval', 'campaign', 'publication', 'planning'])
-            ),
-        };
+        return Str::title($this->fakerForLocale($locale)->words(random_int(3, 7), true));
     }
 
     private function localizedDescription(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Dieser Entwurf dient als Arbeitsgrundlage fuer die naechste Version.',
-                    'Dieser Inhalt wurde fuer eine interne Redaktionsrunde vorbereitet.',
-                    'Dieser Text ist fuer einen spaeteren Freigabeprozess vorgesehen.',
-                ]),
-                $this->randomElement([
-                    'Bitte Struktur, Tonalitaet und Vollstaendigkeit pruefen.',
-                    'Bitte offene Punkte markieren und priorisieren.',
-                    'Bitte Fakten und Quellen vor der Veroeffentlichung verifizieren.',
-                ])
-            ),
-            'fr_FR' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Ce brouillon sert de base de travail pour la prochaine version.',
-                    'Ce contenu a ete prepare pour une revue editoriale interne.',
-                    'Ce texte est prevu pour une validation ulterieure.',
-                ]),
-                $this->randomElement([
-                    'Merci de verifier la structure, le ton et la coherence.',
-                    'Merci de signaler les points ouverts et les priorites.',
-                    'Merci de confirmer les faits et les sources avant publication.',
-                ])
-            ),
-            'es_ES' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Este borrador sirve como base de trabajo para la siguiente version.',
-                    'Este contenido fue preparado para una revision editorial interna.',
-                    'Este texto esta previsto para una aprobacion posterior.',
-                ]),
-                $this->randomElement([
-                    'Por favor revisa estructura, tono y coherencia.',
-                    'Por favor marca los puntos abiertos y sus prioridades.',
-                    'Por favor verifica datos y fuentes antes de publicar.',
-                ])
-            ),
-            default => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'This draft serves as a working base for the next revision.',
-                    'This content was prepared for an internal editorial review.',
-                    'This text is intended for a later approval step.',
-                ]),
-                $this->randomElement([
-                    'Please review structure, tone, and completeness.',
-                    'Please mark open points and priorities.',
-                    'Please verify facts and sources before publishing.',
-                ])
-            ),
-        };
+        return $this->fakerForLocale($locale)->paragraph(2);
     }
 
     private function localizedContent(string $locale): string
     {
-        $lines = match ($locale) {
-            'de_DE' => [
-                '# '.$this->localizedTitle($locale),
-                '',
-                '## Zusammenfassung',
-                $this->localizedDescription($locale),
-                '',
-                '## Naechste Schritte',
-                '- Inhalt redaktionell abstimmen',
-                '- Rueckmeldungen aus dem Team einarbeiten',
-                '- Freigabetermin planen',
-            ],
-            'fr_FR' => [
-                '# '.$this->localizedTitle($locale),
-                '',
-                '## Resume',
-                $this->localizedDescription($locale),
-                '',
-                '## Prochaines etapes',
-                '- Aligner le contenu avec la redaction',
-                '- Integrer les retours de l equipe',
-                '- Planifier la date de validation',
-            ],
-            'es_ES' => [
-                '# '.$this->localizedTitle($locale),
-                '',
-                '## Resumen',
-                $this->localizedDescription($locale),
-                '',
-                '## Siguientes pasos',
-                '- Alinear el contenido con el equipo editorial',
-                '- Integrar los comentarios del equipo',
-                '- Planificar la fecha de aprobacion',
-            ],
-            default => [
-                '# '.$this->localizedTitle($locale),
-                '',
-                '## Summary',
-                $this->localizedDescription($locale),
-                '',
-                '## Next steps',
-                '- Align content with the editorial team',
-                '- Integrate team feedback',
-                '- Plan the approval date',
-            ],
-        };
-
-        return implode("\n", $lines);
+        return $this->fakerForLocale($locale)->paragraphs(random_int(3, 6), true);
     }
 
-    /**
-     * @template T
-     *
-     * @param  list<T>  $items
-     * @return T
-     */
-    private function randomElement(array $items): mixed
+    private function fakerForLocale(string $locale): Generator
     {
-        return $items[array_rand($items)];
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 }

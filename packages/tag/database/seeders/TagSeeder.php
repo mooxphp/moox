@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -21,10 +24,19 @@ class TagSeeder extends Seeder
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
+    ];
+
     /** @var list<string> */
     private const TAG_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
 
     private const MEDIA_ATTACH_PROBABILITY = 0.8;
+    private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
     {
@@ -50,61 +62,65 @@ class TagSeeder extends Seeder
             $this->command?->warn('No images in media table - tags will be seeded without media_usables.');
         }
 
-        for ($index = 1; $index <= $count; $index++) {
-            $status = $faker->randomElement(self::TAG_STATUSES);
+        DB::transaction(function () use ($count, $faker, $author, $mediaPool, &$created, &$withMedia): void {
+            for ($index = 1; $index <= $count; $index++) {
+                $status = $faker->randomElement(self::TAG_STATUSES);
 
-            $tag = Tag::query()->create([
-                'is_active' => $faker->boolean(85),
-                'color' => $faker->hexColor(),
-                'weight' => $faker->numberBetween(1, 10),
-                'count' => $faker->numberBetween(0, 100),
-                'status' => $status,
-                'due_at' => $faker->optional(0.25)->dateTimeBetween('now', '+60 days'),
-                'custom_properties' => [
-                    'seed_source' => 'tag_seeder_v1',
-                    'seed_index' => $index,
-                ],
-            ]);
-
-            foreach (self::LOCALES as $locale) {
-                $title = $this->localizedTitle($locale);
-                $slug = self::DEMO_SLUG_PREFIX
-                    .'-'.Str::slug($title)
-                    .'-'.Str::lower($locale)
-                    .'-'.sprintf('%04d', $index);
-
-                $translation = $tag->translateOrNew($locale);
-                $translation->title = $title;
-                $translation->slug = Str::limit($slug, 180, '');
-                $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
-                $translation->description = $this->localizedDescription($locale);
-                $translation->content = $this->localizedContent($locale);
-                $translation->translation_status = $status;
-
-                if ($author !== null) {
-                    $translation->author_id = $author->getKey();
-                    $translation->author_type = $author->getMorphClass();
-                }
-            }
-
-            $tag->save();
-
-            if ($mediaPool->isNotEmpty() && $faker->boolean((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
-                /** @var Media $media */
-                $media = $mediaPool->random();
-
-                MediaUsable::query()->firstOrCreate([
-                    'media_id' => $media->getKey(),
-                    'media_usable_id' => $tag->getKey(),
-                    'media_usable_type' => Tag::class,
+                $tag = Tag::query()->create([
+                    'is_active' => $faker->boolean(85),
+                    'color' => $faker->hexColor(),
+                    'weight' => $faker->numberBetween(1, 10),
+                    'count' => $faker->numberBetween(0, 100),
+                    'status' => $status,
+                    'due_at' => $faker->optional(0.25)->dateTimeBetween('now', '+60 days'),
+                    'custom_properties' => [
+                        'seed_source' => 'tag_seeder_v1',
+                        'seed_index' => $index,
+                    ],
                 ]);
 
-                $withMedia++;
-            }
+                foreach (self::LOCALES as $locale) {
+                    $title = $this->localizedTitle($locale);
+                    $slug = self::DEMO_SLUG_PREFIX
+                        .'-'.Str::slug($title)
+                        .'-'.Str::lower($locale)
+                        .'-'.sprintf('%04d', $index);
 
-            $created++;
-            $this->reportCreated("Tag {$tag->getKey()}");
-        }
+                    $translation = $tag->translateOrNew($locale);
+                    $translation->title = $title;
+                    $translation->slug = Str::limit($slug, 180, '');
+                    $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
+                    $translation->description = $this->localizedDescription($locale);
+                    $translation->content = $this->localizedContent($locale);
+                    $translation->translation_status = $status;
+
+                    if ($author !== null) {
+                        $translation->author_id = $author->getKey();
+                        $translation->author_type = $author->getMorphClass();
+                    }
+                }
+
+                $tag->save();
+
+                if ($mediaPool->isNotEmpty() && $faker->boolean((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
+                    /** @var Media $media */
+                    $media = $mediaPool->random();
+
+                    MediaUsable::query()->firstOrCreate([
+                        'media_id' => $media->getKey(),
+                        'media_usable_id' => $tag->getKey(),
+                        'media_usable_type' => Tag::class,
+                    ]);
+
+                    $withMedia++;
+                }
+
+                $created++;
+                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+                    $this->reportCreated("Tag {$tag->getKey()}");
+                }
+            }
+        });
 
         $this->reportDetail(sprintf(
             '%d faker tag(s) seeded across %d locale(s), %d with media link(s).',
@@ -180,94 +196,28 @@ class TagSeeder extends Seeder
 
     private function localizedTitle(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => sprintf(
-                '%s %s',
-                $this->randomElement(['Thema', 'Schlagwort', 'Merkmal', 'Label', 'Kategoriehinweis']),
-                $this->randomElement(['Marketing', 'System', 'Freigabe', 'Monitoring', 'Import'])
-            ),
-            'fr_FR' => sprintf(
-                '%s %s',
-                $this->randomElement(['Sujet', 'Etiquette', 'Motcle', 'Repere', 'Tag']),
-                $this->randomElement(['marketing', 'systeme', 'validation', 'monitoring', 'import'])
-            ),
-            'es_ES' => sprintf(
-                '%s %s',
-                $this->randomElement(['Tema', 'Etiqueta', 'Palabraclave', 'Marca', 'Tag']),
-                $this->randomElement(['marketing', 'sistema', 'aprobacion', 'monitorizacion', 'importacion'])
-            ),
-            default => sprintf(
-                '%s %s',
-                $this->randomElement(['Topic', 'Tag', 'Label', 'Marker', 'Keyword']),
-                $this->randomElement(['marketing', 'system', 'approval', 'monitoring', 'import'])
-            ),
-        };
+        return Str::title($this->fakerForLocale($locale)->words(random_int(1, 3), true));
     }
 
     private function localizedDescription(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => $this->randomElement([
-                'Dieser Tag klassifiziert Inhalte fuer bessere Filterung und Navigation.',
-                'Dieser Tag wird zur thematischen Zuordnung in Listen und Uebersichten genutzt.',
-                'Dieser Tag dient als organisatorischer Marker fuer redaktionelle Inhalte.',
-            ]),
-            'fr_FR' => $this->randomElement([
-                'Ce tag classe les contenus pour une meilleure navigation.',
-                'Ce tag est utilise pour organiser les listes par sujet.',
-                'Ce tag sert de repere organisationnel pour les contenus editoriaux.',
-            ]),
-            'es_ES' => $this->randomElement([
-                'Este tag clasifica contenidos para mejorar la navegacion.',
-                'Este tag se usa para organizar listados por tema.',
-                'Este tag funciona como marcador organizativo para contenidos editoriales.',
-            ]),
-            default => $this->randomElement([
-                'This tag classifies content for better filtering and navigation.',
-                'This tag is used to organize list views by topic.',
-                'This tag acts as an organizational marker for editorial content.',
-            ]),
-        };
+        return $this->fakerForLocale($locale)->paragraph();
     }
 
     private function localizedContent(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => implode("\n", [
-                '## Einsatz',
-                '- Gruppierung verwandter Inhalte',
-                '- Verbesserte Suche und Filter',
-                '- Konsistente redaktionelle Kennzeichnung',
-            ]),
-            'fr_FR' => implode("\n", [
-                '## Utilisation',
-                '- Regrouper les contenus lies',
-                '- Ameliorer recherche et filtres',
-                '- Uniformiser le marquage editorial',
-            ]),
-            'es_ES' => implode("\n", [
-                '## Uso',
-                '- Agrupar contenidos relacionados',
-                '- Mejorar busqueda y filtros',
-                '- Estandarizar el marcado editorial',
-            ]),
-            default => implode("\n", [
-                '## Usage',
-                '- Group related content',
-                '- Improve search and filters',
-                '- Standardize editorial labeling',
-            ]),
-        };
+        return $this->fakerForLocale($locale)->paragraphs(random_int(2, 4), true);
     }
 
-    /**
-     * @template T
-     *
-     * @param  list<T>  $items
-     * @return T
-     */
-    private function randomElement(array $items): mixed
+    private function fakerForLocale(string $locale): Generator
     {
-        return $items[array_rand($items)];
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 }

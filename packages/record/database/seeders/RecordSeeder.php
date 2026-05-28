@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Record\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Moox\Record\Enums\RecordStatus;
 use Moox\Record\Models\Record;
@@ -18,6 +21,16 @@ class RecordSeeder extends Seeder
 
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
+
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
+    ];
+
+    private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
     {
@@ -37,37 +50,41 @@ class RecordSeeder extends Seeder
         $faker = fake();
         $created = 0;
 
-        for ($index = 1; $index <= $count; $index++) {
-            $locale = self::LOCALES[array_rand(self::LOCALES)];
-            $title = $this->localizedTitle($locale);
-            $slug = self::DEMO_SLUG_PREFIX
-                .'-'.Str::slug($title)
-                .'-'.Str::lower($locale)
-                .'-'.sprintf('%04d', $index);
-            $status = $faker->randomElement([
-                RecordStatus::ACTIVE->value,
-                RecordStatus::INACTIVE->value,
-                RecordStatus::ARCHIVED->value,
-            ]);
+        DB::transaction(function () use ($count, $author, $faker, &$created): void {
+            for ($index = 1; $index <= $count; $index++) {
+                $locale = self::LOCALES[array_rand(self::LOCALES)];
+                $title = $this->localizedTitle($locale);
+                $slug = self::DEMO_SLUG_PREFIX
+                    .'-'.Str::slug($title)
+                    .'-'.Str::lower($locale)
+                    .'-'.sprintf('%04d', $index);
+                $status = $faker->randomElement([
+                    RecordStatus::ACTIVE->value,
+                    RecordStatus::INACTIVE->value,
+                    RecordStatus::ARCHIVED->value,
+                ]);
 
-            $record = Record::query()->create([
-                'title' => $title,
-                'slug' => Str::limit($slug, 180, ''),
-                'description' => $this->localizedDescription($locale),
-                'permalink' => rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$slug,
-                'status' => $status,
-                'custom_properties' => [
-                    'seed_source' => 'record_seeder_v1',
-                    'seed_index' => $index,
-                    'seed_locale' => $locale,
-                ],
-                'author_id' => $author?->getKey(),
-                'author_type' => $author?->getMorphClass(),
-            ]);
+                $record = Record::query()->create([
+                    'title' => $title,
+                    'slug' => Str::limit($slug, 180, ''),
+                    'description' => $this->localizedDescription($locale),
+                    'permalink' => rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$slug,
+                    'status' => $status,
+                    'custom_properties' => [
+                        'seed_source' => 'record_seeder_v1',
+                        'seed_index' => $index,
+                        'seed_locale' => $locale,
+                    ],
+                    'author_id' => $author?->getKey(),
+                    'author_type' => $author?->getMorphClass(),
+                ]);
 
-            $created++;
-            $this->reportCreated("Record {$record->getKey()}");
-        }
+                $created++;
+                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+                    $this->reportCreated("Record {$record->getKey()}");
+                }
+            }
+        });
 
         $this->reportDetail(sprintf(
             '%d faker record(s) seeded across %d locale(s).',
@@ -120,100 +137,23 @@ class RecordSeeder extends Seeder
 
     private function localizedTitle(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Einstellung', 'Eintrag', 'Datensatz', 'Konfiguration', 'Parameter']),
-                $this->randomElement(['fuer', 'mit', 'ohne', 'zu']),
-                $this->randomElement(['System', 'Freigabe', 'Import', 'Export', 'Monitoring'])
-            ),
-            'fr_FR' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Parametre', 'Entree', 'Configuration', 'Jeu', 'Reglage']),
-                $this->randomElement(['pour', 'avec', 'sans', 'sur']),
-                $this->randomElement(['systeme', 'validation', 'import', 'export', 'monitoring'])
-            ),
-            'es_ES' => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Parametro', 'Entrada', 'Configuracion', 'Registro', 'Ajuste']),
-                $this->randomElement(['para', 'con', 'sin', 'sobre']),
-                $this->randomElement(['sistema', 'aprobacion', 'importacion', 'exportacion', 'monitorizacion'])
-            ),
-            default => sprintf(
-                '%s %s %s',
-                $this->randomElement(['Setting', 'Entry', 'Record', 'Configuration', 'Parameter']),
-                $this->randomElement(['for', 'with', 'without', 'about']),
-                $this->randomElement(['system', 'approval', 'import', 'export', 'monitoring'])
-            ),
-        };
+        return Str::title($this->fakerForLocale($locale)->words(random_int(2, 6), true));
     }
 
     private function localizedDescription(string $locale): string
     {
-        return match ($locale) {
-            'de_DE' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Dieser Record speichert Konfigurationen fuer interne Prozesse.',
-                    'Dieser Datensatz dokumentiert einen systemweiten Einstellungsstand.',
-                    'Dieser Eintrag bildet eine fachliche Vorgabe fuer den Betrieb ab.',
-                ]),
-                $this->randomElement([
-                    'Bitte Werte und Auswirkungen vor Aktivierung pruefen.',
-                    'Bitte Aenderungen im Team abstimmen und dokumentieren.',
-                    'Bitte gueltige Abhaengigkeiten im Vorfeld verifizieren.',
-                ])
-            ),
-            'fr_FR' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Ce record stocke des configurations pour des processus internes.',
-                    'Cet enregistrement documente un etat de parametrage global.',
-                    'Cette entree formalise une regle metier pour l exploitation.',
-                ]),
-                $this->randomElement([
-                    'Merci de verifier les valeurs avant activation.',
-                    'Merci de valider les changements avec l equipe.',
-                    'Merci de confirmer les dependances en amont.',
-                ])
-            ),
-            'es_ES' => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'Este registro almacena configuraciones para procesos internos.',
-                    'Este dato documenta un estado global de parametrizacion.',
-                    'Esta entrada define una regla funcional para la operacion.',
-                ]),
-                $this->randomElement([
-                    'Por favor revisa los valores antes de activar.',
-                    'Por favor valida los cambios con el equipo.',
-                    'Por favor confirma las dependencias previamente.',
-                ])
-            ),
-            default => sprintf(
-                '%s %s',
-                $this->randomElement([
-                    'This record stores configuration values for internal processes.',
-                    'This entry documents a global settings state.',
-                    'This record defines a business rule for operations.',
-                ]),
-                $this->randomElement([
-                    'Please review values before activation.',
-                    'Please align related changes with the team.',
-                    'Please verify dependencies beforehand.',
-                ])
-            ),
-        };
+        return $this->fakerForLocale($locale)->paragraph(2);
     }
 
-    /**
-     * @template T
-     *
-     * @param  list<T>  $items
-     * @return T
-     */
-    private function randomElement(array $items): mixed
+    private function fakerForLocale(string $locale): Generator
     {
-        return $items[array_rand($items)];
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 }
