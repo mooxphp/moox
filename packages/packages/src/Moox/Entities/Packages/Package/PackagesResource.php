@@ -120,7 +120,6 @@ class PackagesResource extends BaseItemResource
                             Grid::make(2)
                                 ->schema([
                                     // TODO: exactly same as getFormActions(), why?
-                                    /** @phpstan-ignore-next-line */
                                     static::getFooterActions()->columnSpan(1),
                                 ]),
                         ])
