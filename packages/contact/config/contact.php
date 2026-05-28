@@ -1,5 +1,7 @@
 <?php
 
+use Moox\Address\Models\Address;
+use Moox\Address\Models\Addressable;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
@@ -151,8 +153,8 @@ return [
         'addressables' => [
             'label' => 'trans//contact::fields.addresses',
             'relationship' => 'addresses',
-            'model' => \Moox\Address\Models\Address::class,
-            'pivot_model' => \Moox\Address\Models\Addressable::class,
+            'model' => Address::class,
+            'pivot_model' => Addressable::class,
             'pivot_table' => 'addressables',
             'morph_name' => 'addressable',
             'pivot_columns' => [

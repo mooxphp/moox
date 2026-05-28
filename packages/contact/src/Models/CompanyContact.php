@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Contact\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Moox\Contact\Support\CompanyContactRelationConfig;
@@ -30,7 +31,7 @@ class CompanyContact extends Pivot
         ];
     }
 
-    /** @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this> */
+    /** @return BelongsTo<Model, $this> */
     public function company(): BelongsTo
     {
         return $this->belongsTo(
@@ -39,7 +40,7 @@ class CompanyContact extends Pivot
         );
     }
 
-    /** @return BelongsTo<\Illuminate\Database\Eloquent\Model, $this> */
+    /** @return BelongsTo<Model, $this> */
     public function contact(): BelongsTo
     {
         return $this->belongsTo(
