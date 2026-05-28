@@ -15,10 +15,11 @@ ERP entity for company master data: customers, suppliers, partners, subsidiaries
 
 ## Responsibility Boundaries
 
-- `moox/company` owns company master data, hierarchy, and company-focused UI.
-- `moox/address` integration is optional and configured via `company.morph_relations.addressables`.
-- The package should not assume concrete address classes in model code; relation targets come from config.
-- Address ownership registration remains in `config/address.php` (`owner_types`).
+- `moox/contact` owns contact data, validation, and UI behavior for contacts.
+- `moox/company` is optional and only required when the `companies` relation is used.
+- `moox/address` is optional and only required when `morph_relations.addressables` is configured.
+- Cross-package relations are config-driven via `contact.relations.companies` and `contact.morph_relations`.
+- `inverse_model` is optional; when omitted it defaults to `Moox\Contact\Models\Contact`.
 
 ## Requirements
 
@@ -32,7 +33,7 @@ For addresses in the admin and API you also need **`moox/address`**, wired in yo
 ## Installation
 
 ```bash
-composer require moox/company
+composer require moox/contact
 php artisan moox:install
 ```
 
@@ -44,21 +45,21 @@ php artisan vendor:publish --tag=company-config
 
 ## Registering with Filament
 
-The package registers via `CompanyPlugin`. In your panel provider (e.g. `MooxPanelProvider`):
+The package registers via `ContactPlugin`. In your panel provider (e.g. `MooxPanelProvider`):
 
 ```php
-use Moox\Company\Plugins\CompanyPlugin;
+use Moox\Contact\Plugins\ContactPlugin;
 
 $panel->plugins([
-    CompanyPlugin::make(),
+    ContactPlugin::make(),
 ]);
 ```
 
-`CompanyPlugin` uses `ChildResourceRegistrar` to register the resource together with tabs, scopes, and morph relations from `config('company.resources.company')`.
+`ContactPlugin` uses `ChildResourceRegistrar` to register the resource together with tabs, scopes, and morph relations from `config('contact.resources.company')`.
 
 ## The Company Model
 
-Class: `Moox\Company\Models\Company`  
+Class: `Moox\Contact\Models\Company`  
 Extends `Moox\Core\Entities\Items\Item\BaseItemModel`.
 
 ### Traits
@@ -67,7 +68,7 @@ Extends `Moox\Core\Entities\Items\Item\BaseItemModel`.
 |-------|---------|
 | `HasUuids` | String UUID as `id` |
 | `SoftDeletes` | Soft delete |
-| `HasModelTaxonomy` | Taxonomies from `config('company.taxonomies')` |
+| `HasModelTaxonomy` | Taxonomies from `config('contact.taxonomies')` |
 | `HasMorphPivotRelations` | Dynamic morph-pivot relations (e.g. addresses) |
 
 ### Fields
@@ -120,7 +121,7 @@ On save, `parent_id` equal to the record’s own id is cleared to `null`.
 | `no_marketing_action_reason` | string(255) | Reason (visible when marketing is off) |
 | `data` | json | Arbitrary extra data |
 
-Validation rules live in `Moox\Company\Support\CompanyRules` and are used in the Filament resource.
+Validation rules live in `Moox\Contact\Support\ContactRules` and are used in the Filament resource.
 
 ### Methods
 
@@ -138,14 +139,14 @@ $company->addresses();  // MorphToMany via addressables pivot (all)
 $company->address();    // “Primary” address(es) per pivot config
 ```
 
-Taxonomy methods are resolved dynamically from `config('company.taxonomies')` (e.g. `$company->tags()`).
+Taxonomy methods are resolved dynamically from `config('contact.taxonomies')` (e.g. `$company->tags()`).
 
 ## Usage
 
 ### Creating a company
 
 ```php
-use Moox\Company\Models\Company;
+use Moox\Contact\Models\Company;
 
 $customer = Company::create([
     'status' => 'active',
@@ -219,7 +220,7 @@ In **`config/address.php`**, register the company as an allowed owner:
 
 ```php
 'owner_types' => [
-    \Moox\Company\Models\Company::class => 'Company',
+    \Moox\Contact\Models\Company::class => 'Company',
 ],
 ```
 
@@ -239,7 +240,7 @@ In Filament, address management appears as a **morph-pivot relation manager** (M
 
 ## Filament admin
 
-Resource: `Moox\Company\Resources\CompanyResource`
+Resource: `Moox\Contact\Resources\ContactResource`
 
 | Page | Route (relative) | Description |
 |------|------------------|-------------|
@@ -250,7 +251,7 @@ Resource: `Moox\Company\Resources\CompanyResource`
 
 ### List tabs
 
-Tabs come from `config('company.resources.company.tabs')`. Typical app defaults include:
+Tabs come from `config('contact.resources.company.tabs')`. Typical app defaults include:
 
 - **All** — not soft-deleted
 - **Suppliers** / **Customers** — filter on `company_type`
@@ -259,10 +260,10 @@ Tabs come from `config('company.resources.company.tabs')`. Typical app defaults 
 
 ### Subsidiaries
 
-`ChildrenRelationManager` lists `children` of the current company. “Create” opens the create page with `parent_id` pre-filled:
+`CompaniesRelationManager` lists `children` of the current company. “Create” opens the create page with `parent_id` pre-filled:
 
 ```php
-CompanyResource::getUrl('create', ['parent_id' => $company->getKey()]);
+ContactResource::getUrl('create', ['parent_id' => $company->getKey()]);
 ```
 
 ### Scopes (cross-entity)
@@ -285,7 +286,7 @@ File: `config/company.php`
 | `taxonomies` | Taxonomy integration |
 | `navigation_group` | Filament navigation group (e.g. `Portal`) |
 
-Changes to `statuses` or `company_types` are picked up automatically in `CompanyRules` and Filament selects/filters.
+Changes to `statuses` or `company_types` are picked up automatically in `ContactRules` and Filament selects/filters.
 
 
 ## Running tests

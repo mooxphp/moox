@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Company\Tests;
+namespace Moox\Contact\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
@@ -47,8 +47,8 @@ use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
-use Moox\Company\CompanyServiceProvider;
-use Moox\Company\Plugins\CompanyPlugin;
+use Moox\Contact\ContactServiceProvider;
+use Moox\Contact\Plugins\ContactPlugin;
 use Moox\Core\CoreServiceProvider;
 use Moox\DevTools\Models\TestUser;
 use Orchestra\Testbench\Attributes\WithMigration;
@@ -131,7 +131,7 @@ class TestCase extends Orchestra
                 Authenticate::class,
             ])
             ->plugins([
-                CompanyPlugin::make(),
+                ContactPlugin::make(),
             ]);
 
         Filament::registerPanel($panel);
@@ -163,7 +163,7 @@ class TestCase extends Orchestra
             ValidationServiceProvider::class,
             ViewServiceProvider::class,
             LivewireServiceProvider::class,
-            CompanyServiceProvider::class,
+            ContactServiceProvider::class,
             CoreServiceProvider::class,
             BladeCaptureDirectiveServiceProvider::class,
 
@@ -209,7 +209,7 @@ class TestCase extends Orchestra
 
     protected function loadPackageMigrations(): void
     {
-        $path = dirname(__DIR__).'/database/migrations/create_companies_table.php.stub';
+        $path = dirname(__DIR__).'/database/migrations/create_contacts_table.php.stub';
 
         if (is_file($path)) {
             $instance = include $path;

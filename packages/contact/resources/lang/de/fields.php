@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'status' => 'Status',
+    'first_name' => 'Vorname',
+    'last_name' => 'Nachname',
+    'display_name' => 'Anzeigename',
+    'contact_type' => 'Kontakttyp',
+    'gender' => 'Geschlecht',
+    'mobile' => 'Mobil',
+    'is_system_user' => 'Systembenutzer',
+    'companies' => 'Firmen',
+    'contacts' => 'Kontakte',
+    'role' => 'Rolle',
+    'is_primary' => 'Primär',
+    'note' => 'Notiz',
+    'addresses' => 'Adressen',
+    'external_reference' => 'Externe Referenz',
+    'phone' => 'Telefon',
+    'email' => 'E-Mail',
+    'language_id' => 'Sprache',
+    'is_active' => 'Aktiv',
+    'data' => 'Zusätzliche Daten',
+    'identity' => 'Stammdaten',
+    'contact' => 'Kontakt',
+    'settings' => 'Einstellungen',
+    'active' => 'Aktiv',
+];
