@@ -8,6 +8,7 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -66,7 +67,7 @@ class SendPasswordResetLinkAction extends Action
                     return;
                 }
 
-                /** @var \Illuminate\Auth\Passwords\PasswordBroker $broker */
+                /** @var PasswordBroker $broker */
                 $broker = Password::broker(Filament::getAuthPasswordBroker());
 
                 $token = $broker->createToken($record);

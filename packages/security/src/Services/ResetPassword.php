@@ -38,9 +38,9 @@ use Override;
 class ResetPassword extends SimplePage
 {
     use InteractsWithFormActions;
-    use RestrictsFileUploadsToSchemaComponents;
     use ResetsUserPassword;
     use ResolvesPasswordResetRules;
+    use RestrictsFileUploadsToSchemaComponents;
     use WithRateLimiting;
 
     #[Locked]

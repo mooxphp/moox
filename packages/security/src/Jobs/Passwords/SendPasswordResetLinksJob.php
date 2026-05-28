@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Security\Jobs\Passwords;
 
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -52,7 +53,7 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
         $brokerName = config('security.password_reset_links.broker', config('auth.defaults.passwords', 'users'));
         $panelId = config('security.password_reset_links.panel', 'admin');
-        /** @var \Illuminate\Auth\Passwords\PasswordBroker $broker */
+        /** @var PasswordBroker $broker */
         $broker = Password::broker($brokerName);
 
         /** @var array<string, true> $processedEmails */

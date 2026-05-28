@@ -51,7 +51,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
             ->action(__('security::translations.mail_action'), $this->resetUrl($notifiable))
             ->line(__('security::translations.mail_expire_prefix').' '.$this->getReadableExpiryTime().'.')
             ->line(__('security::translations.mail_outro'))
-            ->salutation(__('security::translations.mail_salutation') . '<br>' . config('mail.from.name'));
+            ->salutation(__('security::translations.mail_salutation').'<br>'.config('mail.from.name'));
     }
 
     protected function resetUrl(CanResetPassword|Model|Authenticatable $notifiable): string
