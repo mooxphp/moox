@@ -143,7 +143,8 @@ class LocalizationResource extends BaseRecordResource
                                     ->default(true)
                                     ->disabled(function ($get, $livewire) {
                                         // Disabled when this localization is set as default
-                                        $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
+                                        $record = $livewire->record;
+                                        $isDefault = $get('is_default') ?? ($record !== null ? $record->is_default : false);
 
                                         return $isDefault;
                                     }),
@@ -155,8 +156,9 @@ class LocalizationResource extends BaseRecordResource
                                     ->default(false)
                                     ->disabled(function ($get, $livewire) {
                                         // Disabled when English is selected as default
-                                        $localeVariant = $get('locale_variant') ?? $livewire->record?->locale_variant ?? '';
-                                        $isDefault = $get('is_default') ?? $livewire->record?->is_default ?? false;
+                                        $record = $livewire->record;
+                                        $localeVariant = $get('locale_variant') ?? ($record !== null ? $record->locale_variant : '');
+                                        $isDefault = $get('is_default') ?? ($record !== null ? $record->is_default : false);
 
                                         // If it is an English localization AND already set as default
                                         if (strpos($localeVariant, 'en_') === 0 && $isDefault) {

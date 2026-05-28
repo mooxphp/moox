@@ -104,7 +104,13 @@ class UserPolicy
 
     protected function permissionExists(string $permissionName): bool
     {
-        return Permission::query()
+        if (! class_exists(Permission::class)) {
+            return false;
+        }
+
+        $permissionModel = Permission::class;
+
+        return $permissionModel::query()
             ->where('name', $permissionName)
             ->exists();
     }

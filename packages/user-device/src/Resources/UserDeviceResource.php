@@ -14,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Schema as DbSchema;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
@@ -38,7 +37,7 @@ class UserDeviceResource extends BaseResource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        $query->with(['user' => fn (MorphTo $morphTo) => $morphTo]);
+        $query->with('user');
 
         if (! static::shouldScopeToAuthenticatedUser()) {
             return $query;
@@ -105,7 +104,6 @@ class UserDeviceResource extends BaseResource
 
         $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
 
-        /** @phpstan-ignore-next-line */
         return (bool) $user->hasRole($roleName);
     }
 
@@ -213,7 +211,7 @@ class UserDeviceResource extends BaseResource
                         return $query->whereHasMorph('user', '*', function (Builder $userQuery) use ($q): void {
                             $userQuery->where(function (Builder $sub) use ($q): void {
                                 if (is_numeric($q)) {
-                                    $sub->orWhereKey((int) $q);
+                                    $sub->orWhere($sub->getModel()->getQualifiedKeyName(), (int) $q);
                                 }
 
                                 $sub

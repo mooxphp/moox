@@ -183,7 +183,7 @@ class EnsureFirewallAccess
             return true;
         }
 
-        $allowedRoutes = is_array($entry->allowed_routes) ? $entry->allowed_routes : [];
+        $allowedRoutes = (array) $entry->allowed_routes;
         if ($allowedRoutes === []) {
             return false;
         }

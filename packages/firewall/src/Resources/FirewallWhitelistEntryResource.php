@@ -91,13 +91,13 @@ class FirewallWhitelistEntryResource extends Resource
         $prefixes = array_values(array_unique($prefixes));
         sort($prefixes);
 
-        return array_filter([
+        return [
             '/' => '/',
             'admin/*' => 'admin/*',
             'api/*' => 'api/*',
             'connect/*' => 'connect/*',
             ...array_combine($prefixes, $prefixes) ?: [],
-        ]);
+        ];
     }
 
     /**
@@ -133,7 +133,7 @@ class FirewallWhitelistEntryResource extends Resource
      */
     private static function iterRouteUris(): \Generator
     {
-        foreach (Route::getRoutes() as $route) {
+        foreach (Route::getRoutes()->getRoutes() as $route) {
             $middleware = $route->gatherMiddleware();
 
             // Filter out API-only routes, keep everything else (Filament routes don't always

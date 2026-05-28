@@ -5,6 +5,7 @@ namespace Moox\Media\Models;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Models\Concerns\HasScopedModel;
@@ -62,7 +63,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
         return $this->morphTo();
     }
 
-    public function collection()
+    public function collection(): BelongsTo
     {
         return $this->belongsTo(MediaCollection::class, 'media_collection_id');
     }

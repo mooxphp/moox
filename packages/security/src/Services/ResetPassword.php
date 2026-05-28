@@ -14,8 +14,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\EmbeddedSchema;
+use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Concerns\RestrictsFileUploadsToSchemaComponents;
 use Filament\Schemas\Schema;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
@@ -34,12 +40,8 @@ class ResetPassword extends SimplePage
     use InteractsWithFormActions;
     use ResetsUserPassword;
     use ResolvesPasswordResetRules;
+    use RestrictsFileUploadsToSchemaComponents;
     use WithRateLimiting;
-
-    /**
-     * @var view-string
-     */
-    protected string $view = 'filament-panels::pages.auth.password-reset.reset-password';
 
     #[Locked]
     public ?string $email = null;
@@ -70,11 +72,11 @@ class ResetPassword extends SimplePage
             $this->rateLimit(2);
         } catch (TooManyRequestsException $tooManyRequestsException) {
             Notification::make()
-                ->title(__('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled.title', [
+                ->title(__('filament-panels::auth/pages/password-reset/reset-password.notifications.throttled.title', [
                     'seconds' => $tooManyRequestsException->secondsUntilAvailable,
                     'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]))
-                ->body(array_key_exists('body', __('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled.body', [
+                ->body(array_key_exists('body', __('filament-panels::auth/pages/password-reset/reset-password.notifications.throttled') ?: []) ? __('filament-panels::auth/pages/password-reset/reset-password.notifications.throttled.body', [
                     'seconds' => $tooManyRequestsException->secondsUntilAvailable,
                     'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]) : null)
@@ -126,7 +128,7 @@ class ResetPassword extends SimplePage
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label(__('filament-panels::pages/auth/password-reset/reset-password.form.email.label'))
+            ->label(__('filament-panels::auth/pages/password-reset/reset-password.form.email.label'))
             ->disabled()
             ->autofocus();
     }
@@ -134,20 +136,20 @@ class ResetPassword extends SimplePage
     protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
-            ->label(__('filament-panels::pages/auth/password-reset/reset-password.form.password.label'))
+            ->label(__('filament-panels::auth/pages/password-reset/reset-password.form.password.label'))
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
             ->rules($this->getPasswordResetValidationRules())
             ->same('passwordConfirmation')
-            ->validationAttribute(__('filament-panels::pages/auth/password-reset/reset-password.form.password.validation_attribute'))
+            ->validationAttribute(__('filament-panels::auth/pages/password-reset/reset-password.form.password.validation_attribute'))
             ->helperText($this->getPasswordResetHelperText());
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
     {
         return TextInput::make('passwordConfirmation')
-            ->label(__('filament-panels::pages/auth/password-reset/reset-password.form.password_confirmation.label'))
+            ->label(__('filament-panels::auth/pages/password-reset/reset-password.form.password_confirmation.label'))
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
@@ -157,13 +159,13 @@ class ResetPassword extends SimplePage
     #[Override]
     public function getTitle(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/password-reset/reset-password.title');
+        return __('filament-panels::auth/pages/password-reset/reset-password.title');
     }
 
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/password-reset/reset-password.heading');
+        return __('filament-panels::auth/pages/password-reset/reset-password.heading');
     }
 
     /**
@@ -179,12 +181,35 @@ class ResetPassword extends SimplePage
     public function getResetPasswordFormAction(): Action
     {
         return Action::make('resetPassword')
-            ->label(__('filament-panels::pages/auth/password-reset/reset-password.form.actions.reset.label'))
+            ->label(__('filament-panels::auth/pages/password-reset/reset-password.form.actions.reset.label'))
             ->submit('resetPassword');
     }
 
     protected function hasFullWidthFormActions(): bool
     {
         return true;
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                RenderHook::make(PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_BEFORE),
+                $this->getFormContentComponent(),
+                RenderHook::make(PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_AFTER),
+            ]);
+    }
+
+    public function getFormContentComponent(): Component
+    {
+        return Form::make([EmbeddedSchema::make('form')])
+            ->id('form')
+            ->livewireSubmitHandler('resetPassword')
+            ->footer([
+                Actions::make($this->getFormActions())
+                    ->alignment($this->getFormActionsAlignment())
+                    ->fullWidth($this->hasFullWidthFormActions())
+                    ->key('form-actions'),
+            ]);
     }
 }

@@ -24,7 +24,7 @@ class SyncDeviceIdToSessionRow
 
         $user = filament()->auth()->user() ?? Auth::user();
 
-        if (! $user || ! method_exists($user, 'getAuthIdentifier')) {
+        if (! $user) {
             return $response;
         }
 
@@ -41,8 +41,10 @@ class SyncDeviceIdToSessionRow
         $deviceId = session()->get('user_device_id');
 
         if (blank($deviceId)) {
-            /** @var mixed $userId */
-            $userId = $user->getAuthIdentifier();
+            $userId = Auth::id();
+            if (blank($userId)) {
+                return $response;
+            }
 
             $deviceId = UserDevice::query()
                 ->where('user_id', $userId)
