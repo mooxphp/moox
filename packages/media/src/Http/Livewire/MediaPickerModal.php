@@ -157,6 +157,7 @@ class MediaPickerModal extends Component implements HasForms
      * Preserve the model type on the incoming query builder.
      *
      * @template TModel of Model
+     *
      * @param  Builder<TModel>  $query
      * @return Builder<TModel>
      */

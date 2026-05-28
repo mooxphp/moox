@@ -73,9 +73,6 @@ class MediaItemResource extends JsonResource
         }
     }
 
-    /**
-     * @param  Media|MediaCollection  $model
-     */
     protected function translatedValue(Media|MediaCollection $model, string $key): ?string
     {
         $locales = $this->getLocaleFallbackChain();
