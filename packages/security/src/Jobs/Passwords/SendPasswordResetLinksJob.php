@@ -8,7 +8,6 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Password;
@@ -53,6 +52,7 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
         $brokerName = config('security.password_reset_links.broker', config('auth.defaults.passwords', 'users'));
         $panelId = config('security.password_reset_links.panel', 'admin');
+        /** @var \Illuminate\Auth\Passwords\PasswordBroker $broker */
         $broker = Password::broker($brokerName);
 
         /** @var array<string, true> $processedEmails */
@@ -63,7 +63,7 @@ class SendPasswordResetLinksJob implements ShouldQueue
                 continue;
             }
 
-            if (! $user instanceof Notifiable) {
+            if (! method_exists($user, 'notify')) {
                 continue;
             }
 

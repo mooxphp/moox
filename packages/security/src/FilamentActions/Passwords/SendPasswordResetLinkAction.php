@@ -10,11 +10,15 @@ use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Password;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 use Override;
+
+interface CanNotifyForPasswordReset
+{
+    public function notify(\Illuminate\Notifications\Notification $notification): void;
+}
 
 class SendPasswordResetLinkAction extends Action
 {
@@ -62,9 +66,12 @@ class SendPasswordResetLinkAction extends Action
                     return;
                 }
 
-                $token = Password::broker(Filament::getAuthPasswordBroker())->createToken($record);
+                /** @var \Illuminate\Auth\Passwords\PasswordBroker $broker */
+                $broker = Password::broker(Filament::getAuthPasswordBroker());
 
-                /** @var CanResetPassword&Notifiable $record */
+                $token = $broker->createToken($record);
+
+                /** @var CanResetPassword&CanNotifyForPasswordReset $record */
                 $record->notify(PasswordResetNotification::forToken(
                     $token,
                     Filament::getCurrentOrDefaultPanel()->getId(),
