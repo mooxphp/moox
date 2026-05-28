@@ -23,7 +23,8 @@
     "autoload": {
         "psr-4": {
             "Moox\\Item\\": "src",
-            "Moox\\Item\\Database\\Factories\\": "database/factories"
+            "Moox\\Item\\Database\\Factories\\": "database/factories",
+            "Moox\\Item\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
@@ -46,6 +47,7 @@
             "type": "moox-plugin",
             "install": {
                 "auto_migrate": "database/migrations",
+                "seed": "database/seeders/ItemSeeder.php",
                 "auto_entities": {
                     "Item": true
                 },
