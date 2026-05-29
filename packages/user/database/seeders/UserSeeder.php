@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\User\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Moox\Demo\Seeding\ImportDemoMediaToMediathek;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
@@ -17,31 +20,44 @@ use Moox\User\Models\User;
 
 class UserSeeder extends Seeder
 {
+    use ReportsMooxSeederProgress;
+
     public const DEMO_EMAIL_DOMAIN = 'moox.org';
 
     public const DEMO_EXTRA_PASSWORD = 'password';
 
     /**
-     * Standard demo users created on every seed run (in addition to dataset-sized extras).
+     * Fixed demo login accounts (name, email, password per entry).
      *
      * @var list<array{name: string, email: string, password: string}>
      */
     public const DEFAULT_USERS = [
         [
-            'name' => 'Reinhold',
+            'name' => 'Reinhold Jesse',
             'email' => 'reinhold.jesse@heco.de',
             'password' => '123456789',
         ],
         [
-            'name' => 'Demo Admin',
+            'name' => 'Moox Admin',
             'email' => 'admin@moox.org',
             'password' => 'password',
         ],
         [
-            'name' => 'Demo Editor',
+            'name' => 'Moox Editor',
             'email' => 'editor@moox.org',
             'password' => 'password',
         ],
+    ];
+
+    /** @var list<string> */
+    public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
+
+    /** @var array<string, string> */
+    private const FAKER_LOCALE_MAP = [
+        'cs_CZ' => 'cs_CZ',
+        'en_US' => 'en_US',
+        'de_DE' => 'de_DE',
+        'pl_PL' => 'pl_PL',
     ];
 
     public function run(): void
@@ -59,27 +75,30 @@ class UserSeeder extends Seeder
 
         $this->purgeDemoUsers();
 
-        foreach (self::DEFAULT_USERS as $definition) {
+        $seededFixed = 0;
+
+        foreach (self::DEFAULT_USERS as $user) {
             User::query()->create([
-                'name' => $definition['name'],
-                'email' => $definition['email'],
-                'password' => Hash::make($definition['password']),
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'password' => Hash::make($user['password']),
                 'email_verified_at' => now(),
             ]);
 
-            $this->reportCreated("User {$definition['email']}");
+            $seededFixed++;
+            $this->reportCreated("User {$user['email']}");
         }
 
         if ($extraCount > 0) {
             $this->seedExtraUsers($extraCount);
         }
 
-        $total = count(self::DEFAULT_USERS) + $extraCount;
+        $total = $seededFixed + $extraCount;
 
         $this->reportDetail(sprintf(
-            '%d user(s) total (%d default + %d from dataset)',
+            '%d user(s) total (%d default account(s) + %d from dataset)',
             $total,
-            count(self::DEFAULT_USERS),
+            $seededFixed,
             $extraCount
         ));
     }
@@ -90,12 +109,7 @@ class UserSeeder extends Seeder
             $progress = SeedOutput::progressBar($extraCount, 'Demo users');
 
             for ($i = 1; $i <= $extraCount; $i++) {
-                User::query()->create([
-                    'name' => sprintf('Demo User %03d', $i),
-                    'email' => sprintf('demo-user-%03d@%s', $i, self::DEMO_EMAIL_DOMAIN),
-                    'password' => Hash::make(self::DEMO_EXTRA_PASSWORD),
-                    'email_verified_at' => now(),
-                ]);
+                $this->createExtraUser($i);
                 $progress->advance();
             }
 
@@ -105,41 +119,38 @@ class UserSeeder extends Seeder
         }
 
         for ($i = 1; $i <= $extraCount; $i++) {
-            User::query()->create([
-                'name' => sprintf('Demo User %03d', $i),
-                'email' => sprintf('demo-user-%03d@%s', $i, self::DEMO_EMAIL_DOMAIN),
-                'password' => Hash::make(self::DEMO_EXTRA_PASSWORD),
-                'email_verified_at' => now(),
-            ]);
+            $this->createExtraUser($i);
         }
 
         $this->command?->info(sprintf('Seeded %d extra demo user(s).', $extraCount));
     }
 
-    private function reportCreated(string $label): void
+    private function createExtraUser(int $index): void
     {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::created($label);
-
-            return;
-        }
+        User::query()->create([
+            'name' => $this->displayNameForDemoAuthor(),
+            'email' => sprintf('demo-user-%03d@%s', $index, self::DEMO_EMAIL_DOMAIN),
+            'password' => Hash::make(self::DEMO_EXTRA_PASSWORD),
+            'email_verified_at' => now(),
+        ]);
     }
 
-    private function reportDetail(string $line): void
+    /**
+     * User has no translations — names use de_DE Faker so author labels stay German in ?lang=de_DE.
+     */
+    private function displayNameForDemoAuthor(): string
     {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail($line);
+        $faker = $this->fakerForLocale('de_DE');
 
-            return;
-        }
-
-        $this->command?->info($line);
+        return trim($faker->firstName().' '.$faker->lastName());
     }
 
-    private function hasSeedOutput(): bool
+    /**
+     * @return list<string>
+     */
+    private function defaultUserEmails(): array
     {
-        return class_exists(SeedOutput::class)
-            && SeedOutput::isBound();
+        return array_column(self::DEFAULT_USERS, 'email');
     }
 
     protected function seedDemoAssets(): void
@@ -160,8 +171,6 @@ class UserSeeder extends Seeder
             return;
         }
 
-        $collectionId = null;
-
         $imagePaths = ImportDemoMediaToMediathek::listImagePaths($sourceDir, count($users));
 
         if ($imagePaths === []) {
@@ -181,7 +190,7 @@ class UserSeeder extends Seeder
                 continue;
             }
 
-            $media = ImportDemoMediaToMediathek::importFromPath($imagePath, $collectionId);
+            $media = ImportDemoMediaToMediathek::importFromPath($imagePath, null);
 
             if (! $media instanceof Media) {
                 continue;
@@ -206,14 +215,7 @@ class UserSeeder extends Seeder
             }
         }
 
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail("Attached avatars for {$withAvatar} user(s)");
-        } elseif ($this->command !== null) {
-            $this->command->info(sprintf(
-                'Attached avatars for %d user(s).',
-                $withAvatar
-            ));
-        }
+        $this->reportDetail(sprintf('Attached avatars for %d user(s).', $withAvatar));
     }
 
     private function resolveExtraUserCount(): int
@@ -232,10 +234,8 @@ class UserSeeder extends Seeder
      */
     private function seededDemoUsers(): Collection
     {
-        $defaultEmails = array_column(self::DEFAULT_USERS, 'email');
-
         return User::query()
-            ->whereIn('email', $defaultEmails)
+            ->whereIn('email', $this->defaultUserEmails())
             ->orWhere('email', 'like', 'demo-user-%@'.self::DEMO_EMAIL_DOMAIN)
             ->orderBy('id')
             ->get()
@@ -244,11 +244,21 @@ class UserSeeder extends Seeder
 
     private function purgeDemoUsers(): void
     {
-        $emails = array_column(self::DEFAULT_USERS, 'email');
-
         User::query()
-            ->whereIn('email', $emails)
+            ->whereIn('email', $this->defaultUserEmails())
             ->orWhere('email', 'like', 'demo-user-%@'.self::DEMO_EMAIL_DOMAIN)
             ->forceDelete();
+    }
+
+    private function fakerForLocale(string $locale): Generator
+    {
+        static $cache = [];
+        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+
+        if (! isset($cache[$resolvedLocale])) {
+            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
+        }
+
+        return $cache[$resolvedLocale];
     }
 }
