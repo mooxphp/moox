@@ -16,6 +16,7 @@ use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Record\Enums\RecordStatus;
 use Moox\Record\Models\Record;
+
 class RecordSeeder extends Seeder
 {
     use FormatsFakerLocaleText;

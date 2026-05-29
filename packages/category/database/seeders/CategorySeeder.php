@@ -8,7 +8,6 @@ use DateTimeImmutable;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -24,6 +23,7 @@ use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
+
 /**
  * Seeds categories with nested tree, four locales, and existing mediathek via media_usables.
  *

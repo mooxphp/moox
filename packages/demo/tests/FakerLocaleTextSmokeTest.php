@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Demo\Tests;
 
 use Faker\Factory;
-use Faker\Generator;
 use Moox\Demo\Seeding\FormatsFakerLocaleText;
 use PHPUnit\Framework\TestCase;
 

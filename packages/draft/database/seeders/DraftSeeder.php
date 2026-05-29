@@ -17,6 +17,7 @@ use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Draft\Models\Draft;
+
 class DraftSeeder extends Seeder
 {
     use FormatsFakerLocaleText;

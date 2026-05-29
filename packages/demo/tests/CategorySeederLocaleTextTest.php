@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Demo\Tests;
 
 use Faker\Factory;
+use Faker\Generator;
 use Moox\Demo\Seeding\FormatsFakerLocaleText;
 use PHPUnit\Framework\TestCase;
 
@@ -37,7 +38,7 @@ class CategorySeederLocaleTextTest extends TestCase
 
     public function test_missing_real_text_throws_for_moox_locales(): void
     {
-        $faker = new class extends \Faker\Generator
+        $faker = new class extends Generator
         {
             public function __construct() {}
         };

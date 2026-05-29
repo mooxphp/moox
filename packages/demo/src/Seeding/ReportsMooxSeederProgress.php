@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Demo\Seeding;
 
+use Moox\Localization\Models\Localization;
+
 trait ReportsMooxSeederProgress
 {
     use SeedsMooxDemoRelations;
+
     protected function hasSeedOutput(): bool
     {
         return class_exists(SeedOutput::class) && SeedOutput::isBound();
@@ -41,13 +44,13 @@ trait ReportsMooxSeederProgress
      */
     protected function assertRequiredLocalizations(array $locales): bool
     {
-        if (! class_exists(\Moox\Localization\Models\Localization::class)) {
+        if (! class_exists(Localization::class)) {
             return true;
         }
 
         $missing = collect($locales)
             ->filter(
-                fn (string $locale): bool => ! \Moox\Localization\Models\Localization::query()
+                fn (string $locale): bool => ! Localization::query()
                     ->where('locale_variant', $locale)
                     ->exists()
             );

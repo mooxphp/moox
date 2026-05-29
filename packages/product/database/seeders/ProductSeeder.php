@@ -16,7 +16,9 @@ use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
+use Moox\Media\Models\Media;
 use Moox\Product\Models\Product;
+
 class ProductSeeder extends Seeder
 {
     use FormatsFakerLocaleText;
@@ -163,10 +165,10 @@ class ProductSeeder extends Seeder
     }
 
     /**
-     * @param  Collection<int, \Moox\Media\Models\Media>  $mediaPool
+     * @param  Collection<int, Media>  $mediaPool
      * @return array<string, mixed>|null
      */
-    private function resolveProductImage(\Faker\Generator $faker, Collection $mediaPool, string $locale): ?array
+    private function resolveProductImage(Generator $faker, Collection $mediaPool, string $locale): ?array
     {
         if ($mediaPool->isNotEmpty() && $faker->boolean((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
             return $this->randomImageFieldFromPool($mediaPool, $locale);
