@@ -70,7 +70,7 @@ class DraftSeeder extends Seeder
         $created = 0;
 
         if ($mediaPool->isEmpty()) {
-            $this->command?->warn('No images in `media` table — drafts will be seeded without mediathek images.');
+            $this->command->warn('No images in `media` table — drafts will be seeded without mediathek images.');
         }
 
         $progress = $this->hasSeedOutput()
