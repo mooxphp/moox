@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Category\Database\Seeders;
 
 use DateTimeImmutable;
@@ -14,12 +16,14 @@ use Moox\Category\Database\Seeders\Support\AttachExistingMedia;
 use Moox\Category\Models\Category;
 use Moox\Category\Models\CategoryTranslation;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\LoadsImageMediaPool;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
+use Moox\Demo\Seeding\SeedOutput;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
-use Moox\User\Models\User;
-
 /**
  * Seeds categories with nested tree, four locales, and existing mediathek via media_usables.
  *
@@ -29,6 +33,10 @@ use Moox\User\Models\User;
  */
 class CategorySeeder extends Seeder
 {
+    use FormatsFakerLocaleText;
+    use LoadsImageMediaPool;
+    use ReportsMooxSeederProgress;
+
     public const SEED_BATCH = 'category_seeder_v1';
 
     /** @var list<string> */
@@ -45,6 +53,8 @@ class CategorySeeder extends Seeder
     private const MAX_TREE_DEPTH = 4;
 
     private const MEDIA_ATTACH_PROBABILITY = 0.85;
+
+    private const PROGRESS_LOG_EVERY = 100;
 
     public function __construct(
         private readonly ?int $count = null,
@@ -63,10 +73,10 @@ class CategorySeeder extends Seeder
     {
         $total = $this->resolvedCount();
 
-        $user = User::query()->first();
-        if ($user === null) {
-            $this->command?->error('No user found. Create at least one user (e.g. UserSeeder) before seeding mock categories.');
+        $this->purgeSeededCategories();
 
+        $user = $this->requireDemoAuthor();
+        if ($user === null) {
             return;
         }
 
@@ -94,7 +104,11 @@ class CategorySeeder extends Seeder
         /** @var array<int, int> $idByIndex */
         $idByIndex = [];
 
-        DB::transaction(function () use ($baseUrl, $total, $parentMap, $mediaPool, $user, &$idByIndex): void {
+        $progress = $this->hasSeedOutput()
+            ? SeedOutput::progressBar($total, 'Demo categories')
+            : null;
+
+        DB::transaction(function () use ($baseUrl, $total, $parentMap, $mediaPool, $user, $progress, &$idByIndex): void {
             for ($i = 1; $i <= $total; $i++) {
                 $parentIndex = $parentMap[$i] ?? null;
                 $parentId = $parentIndex !== null ? ($idByIndex[$parentIndex] ?? null) : null;
@@ -117,35 +131,43 @@ class CategorySeeder extends Seeder
                 $category->basedata = [
                     'seed_batch' => self::SEED_BATCH,
                     'seed_index' => $i,
-                    'seed_label_en' => $this->labelForIndex($i),
                 ];
 
                 if ($parentId !== null) {
                     $category->parent_id = $parentId;
                 }
 
+                $attachMedia = $mediaPool->isNotEmpty()
+                    && $this->randomChance((int) (self::MEDIA_ATTACH_PROBABILITY * 100));
+
                 foreach (self::LOCALES as $locale) {
-                    $title = $this->titleForLocale($locale, $i);
+                    $localeFaker = $this->fakerForLocale($locale);
+                    $title = $this->fakerLocaleTitle($locale, $localeFaker, 'title');
                     $slug = $this->slugForTitle($title, $i, $locale);
 
                     $translation = $category->translateOrNew($locale);
                     $translation->title = $title;
                     $translation->slug = $slug;
                     $translation->permalink = $baseUrl.'/'.Str::lower(str_replace('_', '-', $locale)).'/categories/'.$slug;
-                    $translation->description = $this->descriptionForLocale($title, $locale);
-                    $translation->content = $this->markdownContentForLocale($title, $locale);
+                    $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
+                    $translation->content = $this->markdownContentFromLocale($locale, $localeFaker);
                     $this->applyTranslationStatus($translation, $translationStatuses[$locale]);
-                    $translation->author_id = $user->getKey();
-                    $translation->author_type = $user->getMorphClass();
+                    $this->assignTranslationAuthor($translation, $user);
+
+                    if ($attachMedia && $locale === $this->primaryMediaLocale()) {
+                        AttachExistingMedia::attach($category, $mediaPool->random(), 'image', $locale);
+                        $attachMedia = false;
+                    }
                 }
 
                 $category->save();
 
                 $idByIndex[$i] = (int) $category->getKey();
 
-                if ($mediaPool->isNotEmpty() && $this->randomChance((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
-                    $media = $mediaPool->random();
-                    AttachExistingMedia::attach($category, $media, 'image', 'en_US');
+                if ($progress !== null) {
+                    $progress->advance();
+                } elseif ($total > 50 && ($i % self::PROGRESS_LOG_EVERY === 0 || $i === $total)) {
+                    $this->reportCreated("Category {$category->getKey()}");
                 }
             }
 
@@ -162,19 +184,19 @@ class CategorySeeder extends Seeder
                     ->groupBy('parent_id')
                     ->pluck('aggregate', 'parent_id');
 
-                $updates = [];
                 foreach ($seededIds as $seededId) {
-                    $updates[] = [
-                        'id' => (int) $seededId,
-                        'count' => (int) ($childrenCountByParent[$seededId] ?? 0),
-                    ];
+                    Category::query()
+                        ->whereKey((int) $seededId)
+                        ->update([
+                            'count' => (int) ($childrenCountByParent[$seededId] ?? 0),
+                        ]);
                 }
-
-                Category::query()->upsert($updates, ['id'], ['count']);
             }
         });
 
         Auth::logout();
+
+        $progress?->finish("{$total} demo categories");
 
         $withMedia = DB::table('media_usables')
             ->where('media_usable_type', Category::class)
@@ -183,7 +205,7 @@ class CategorySeeder extends Seeder
                 ->pluck('id'))
             ->count();
 
-        $this->command?->info(sprintf(
+        $this->reportDetail(sprintf(
             'Seeded %d categories (%d locales each), %d media_usables links, tree depth up to %d.',
             $total,
             count(self::LOCALES),
@@ -267,33 +289,6 @@ class CategorySeeder extends Seeder
         return $depths;
     }
 
-    /**
-     * @return Collection<int, Media>
-     */
-    private function loadImageMediaPool(): Collection
-    {
-        $query = Media::query()
-            ->where(function ($builder): void {
-                $builder
-                    ->where('mime_type', 'like', 'image/%')
-                    ->orWhereIn('mime_type', [
-                        'image/jpeg',
-                        'image/png',
-                        'image/webp',
-                        'image/gif',
-                        'image/svg+xml',
-                    ]);
-            });
-
-        $ids = $query->pluck('id');
-
-        if ($ids->isEmpty()) {
-            $ids = Media::query()->limit(500)->pluck('id');
-        }
-
-        return Media::query()->whereIn('id', $ids)->get();
-    }
-
     private static function rootAncestorIndex(array $map, int $index): int
     {
         $current = $index;
@@ -305,41 +300,40 @@ class CategorySeeder extends Seeder
         return $current;
     }
 
-    private function labelForIndex(int $index): string
-    {
-        return $this->titleForLocale('en_US', $index);
-    }
-
-    private function titleForLocale(string $locale, int $index): string
-    {
-        $title = $this->fakerForLocale($locale)->sentence(random_int(2, 4), true);
-
-        return Str::title(Str::lower(trim($title, " \t\n\r\0\x0B.")));
-    }
-
     private function slugForTitle(string $title, int $index, string $locale): string
     {
         $base = Str::slug($title);
 
         if ($base === '') {
-            $base = 'category';
+            $base = 'item-'.sprintf('%03d', $index);
         }
 
         return Str::limit($base, 72, '').'-'.sprintf('%03d', $index);
     }
 
-    private function descriptionForLocale(string $title, string $locale): string
+    /**
+     * Remove prior demo categories so re-runs replace Latin/legacy rows (repeatable moox:demo).
+     */
+    private function purgeSeededCategories(): void
     {
-        return $this->fakerForLocale($locale)->realTextBetween(130, 220);
-    }
+        $ids = Category::query()
+            ->where('basedata->seed_batch', self::SEED_BATCH)
+            ->pluck('id');
 
-    private function markdownContentForLocale(string $title, string $locale): string
-    {
-        $faker = $this->fakerForLocale($locale);
-        $heading = Str::title(Str::lower(trim($faker->sentence(random_int(2, 4), true), " \t\n\r\0\x0B.")));
-        $paragraphs = $faker->paragraphs(random_int(3, 6));
+        if ($ids->isEmpty()) {
+            return;
+        }
 
-        return '## '.$heading."\n\n".implode("\n\n", $paragraphs);
+        CategoryTranslation::query()
+            ->whereIn('category_id', $ids)
+            ->forceDelete();
+
+        Category::query()
+            ->whereIn('id', $ids)
+            ->orderByDesc('_lft')
+            ->each(static fn (Category $category): bool => (bool) $category->forceDelete());
+
+        $this->reportDetail(sprintf('Purged %d prior demo categor(ies) (seed_batch %s).', $ids->count(), self::SEED_BATCH));
     }
 
     private function fakerForLocale(string $locale): Generator
