@@ -9,6 +9,8 @@ use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
@@ -16,7 +18,8 @@ use Moox\Item\Models\Item;
 
 class ItemSeeder extends Seeder
 {
-    public const DEMO_TITLE_PREFIX = 'Demo Item';
+    use FormatsFakerLocaleText;
+    use ReportsMooxSeederProgress;
 
     public const DEFAULT_ITEM_COUNT = 100;
 
@@ -44,20 +47,29 @@ class ItemSeeder extends Seeder
 
     protected function seed(): void
     {
+        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+            return;
+        }
+
         $this->purgeDemoItems();
 
         $faker = fake();
         $count = $this->resolveItemCount();
         $created = 0;
 
-        DB::transaction(function () use ($count, $faker, &$created): void {
+        $progress = $this->hasSeedOutput()
+            ? SeedOutput::progressBar($count, 'Demo items')
+            : null;
+
+        DB::transaction(function () use ($count, $faker, $progress, &$created): void {
             for ($index = 1; $index <= $count; $index++) {
                 $locale = self::LOCALES[array_rand(self::LOCALES)];
-                $title = $this->localizedTitle($locale);
+                $localeFaker = $this->fakerForLocale($locale);
+                $title = $this->formatFakerWords($locale, $localeFaker, 2, 5);
 
                 $item = Item::query()->create([
                     'title' => $title,
-                    'description' => $this->localizedDescription($locale),
+                    'description' => $this->fakerLocaleText($locale, $localeFaker, preset: 'description'),
                     'custom_properties' => [
                         'seed_source' => 'item_seeder_v1',
                         'seed_index' => $index,
@@ -68,14 +80,19 @@ class ItemSeeder extends Seeder
                 ]);
 
                 $created++;
-                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+
+                if ($progress !== null) {
+                    $progress->advance();
+                } elseif ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
                     $this->reportCreated("Item {$item->getKey()}");
                 }
             }
         });
 
+        $progress?->finish("{$count} demo item(s)");
+
         $this->reportDetail(sprintf(
-            '%d faker item(s) seeded across %d locale(s).',
+            '%d faker item(s) seeded (one random locale per item from %d configured locale(s)).',
             $created,
             count(self::LOCALES)
         ));
@@ -85,34 +102,7 @@ class ItemSeeder extends Seeder
     {
         Item::query()
             ->where('custom_properties->seed_source', 'item_seeder_v1')
-            ->orWhere('title', 'like', self::DEMO_TITLE_PREFIX.'%')
             ->delete();
-    }
-
-    private function reportCreated(string $label): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::created($label);
-
-            return;
-        }
-    }
-
-    private function reportDetail(string $line): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail($line);
-
-            return;
-        }
-
-        $this->command?->info($line);
-    }
-
-    private function hasSeedOutput(): bool
-    {
-        return class_exists(SeedOutput::class)
-            && SeedOutput::isBound();
     }
 
     private function resolveItemCount(): int
@@ -122,16 +112,6 @@ class ItemSeeder extends Seeder
         }
 
         return self::DEFAULT_ITEM_COUNT;
-    }
-
-    private function localizedTitle(string $locale): string
-    {
-        return self::DEMO_TITLE_PREFIX.' '.Str::title($this->fakerForLocale($locale)->words(random_int(2, 5), true));
-    }
-
-    private function localizedDescription(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraph();
     }
 
     private function fakerForLocale(string $locale): Generator
