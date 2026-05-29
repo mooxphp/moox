@@ -2,6 +2,8 @@
 
 Diese Anleitung beschreibt, wie Moox-Pakete **Eintrags-Seeder** schreiben und registrieren, damit sie von `php artisan moox:demo` ausgeführt werden — und wie sie **ohne** Demo-Paket weiterhin per `db:seed` laufen. Als Referenz dienen die produktiven Implementierungen in **`moox/user`** (`UserSeeder`) und **`moox/category`** (`CategorySeeder`).
 
+**Agent-Skill (vollständige Regeln, Checklisten):** [moox-seeders/SKILL.md](../../.cursor/skills/moox-seeders/SKILL.md) · [examples.md](../../.cursor/skills/moox-seeders/examples.md)
+
 ---
 
 ## Inhaltsverzeichnis
@@ -15,7 +17,8 @@ Diese Anleitung beschreibt, wie Moox-Pakete **Eintrags-Seeder** schreiben und re
 7. [Eigenen Seeder anlegen](#eigenen-seeder-anlegen)
 8. [Standalone vs. Demo-Pipeline](#standalone-vs-demo-pipeline)
 9. [Konfiguration](#konfiguration)
-10. [Fehlersuche](#fehlersuche)
+10. [Locale-sprachiger Demo-Text](#locale-sprachiger-demo-text)
+11. [Fehlersuche](#fehlersuche)
 
 ---
 
@@ -148,16 +151,19 @@ public function run(): void
 - **`seed()`** — Kernlogik; funktioniert auch ohne installiertes `moox/demo`.
 - **`RunsMooxDemoAssets::invoke($this)`** — ruft optional `seedDemoAssets()` auf (nur wenn Demo seedet und `--skip-media` nicht gesetzt ist).
 
-### Feste Definitionen: `DEFAULT_USERS`
+### Feste Definitionen: `SEED_USER_EMAILS`
 
 ```php
-public const DEFAULT_USERS = [
-    ['name' => '…', 'email' => '…', 'password' => '…'],
-    // …
+public const SEED_USER_EMAILS = [
+    'reinhold.jesse@heco.de',
+    'admin@moox.org',
+    'editor@moox.org',
 ];
 ```
 
-Diese Accounts werden **bei jedem Lauf** neu angelegt (nach `purgeDemoUsers()`). E-Mails mit Domain `@moox.org` und `demo-user-*@moox.org` werden vor dem Seed gelöscht, damit Wiederholungen idempotent bleiben.
+Anzeigenamen kommen per Faker (`de_DE` für `firstName`/`lastName`), damit Autor-Labels in `?lang=de_DE` deutsch wirken. Passwörter: `passwordForEmail()` (z. B. `123456789` für `heco.de`, sonst `password`).
+
+Diese Accounts werden **bei jedem Lauf** neu angelegt (nach `purgeDemoUsers()`). Feste E-Mails, `@moox.org`-Accounts und `demo-user-*@moox.org` werden vor dem Seed gelöscht, damit Wiederholungen idempotent bleiben.
 
 ### Dataset: Anzahl Zusatz-Benutzer
 
@@ -220,7 +226,7 @@ Datei: `packages/category/database/seeders/CategorySeeder.php`
 ### Ziele
 
 - Verschachtelter Kategoriebaum (Nested Set, max. Tiefe 4).
-- Vier Locales mit echten Übersetzungstexten (Pumpen-/Gebäudetechnik-Thema).
+- Vier Locales mit **locale-sprachigem** Fließtext (Faker `realText*`, siehe [Locale-sprachiger Demo-Text](#locale-sprachiger-demo-text)).
 - Zufällige Übersetzungs-Status (`published`, `draft`, `scheduled`, …).
 - Verknüpfung mit **bestehenden** Mediathek-Einträgen (`media_usables`), nicht Upload im Seeder.
 
@@ -228,7 +234,7 @@ Datei: `packages/category/database/seeders/CategorySeeder.php`
 
 Vor `CategorySeeder` müssen existieren:
 
-1. **Mindestens ein User** — sonst Abbruch mit Fehlermeldung.
+1. **Mindestens ein User** — `requireDemoAuthor()`; sonst `error` und Abbruch (zuerst `UserSeeder`).
 2. **Localizations** für alle `CategorySeeder::LOCALES`:
 
    ```php
@@ -245,7 +251,7 @@ Vor `CategorySeeder` müssen existieren:
 public const SEED_BATCH = 'category_seeder_v1';
 ```
 
-Jede Kategorie erhält `basedata.seed_batch` und `basedata.seed_index`. So lassen sich Demo-Kategorien in Abfragen filtern. Der Seeder **löscht** alte Demo-Kategorien nicht automatisch — bei erneutem Lauf entstehen zusätzliche Bäume mit gleichem Batch-Namen. Für saubere Tests: DB leeren oder gezielt per `basedata->seed_batch` löschen.
+Jede Kategorie erhält `basedata.seed_batch` und `basedata.seed_index`. Vor jedem Lauf ruft `purgeSeededCategories()` alle Kategorien mit `basedata->seed_batch = category_seeder_v1` ab (inkl. Übersetzungen), damit `moox:demo` wiederholbar bleibt und **keine alten Lorem-/Legacy-Texte** in der DB bleiben.
 
 ### Anzahl Kategorien
 
@@ -267,17 +273,17 @@ private function resolvedCount(): int
 
 | Steuerung | Beispiel |
 |-----------|----------|
+| `moox:demo --dataset=medium` | `SeedingConfig::resolveCount('category', 100)` |
 | Konstruktor | `new CategorySeeder(count: 250)` (bei manuellem Resolve aus Container) |
-| `.env` | `CATEGORY_MOCK_COUNT=500` |
+| `.env` | `CATEGORY_MOCK_COUNT=500` (Fallback ohne Demo) |
 | Standard | `100` |
-
-**Hinweis:** Im Gegensatz zu `UserSeeder` nutzt `CategorySeeder` derzeit **noch nicht** `SeedingConfig::resolveCount()`. `--dataset=medium` bei `moox:demo` erhöht daher die Kategorie-Anzahl **nicht** automatisch — nur User-Extras und Factory-Entities. Für gleiches Verhalten wie beim User-Seeder kann `resolvedCount()` analog `SeedingConfig` anbinden (siehe [Eigenen Seeder anlegen](#eigenen-seeder-anlegen)).
 
 ### Datenmodell (Kurz)
 
-- **Baum:** `buildParentIndexMap($total)` verteilt Kinder auf Wurzeln aus `ROOT_LABELS_EN`.
-- **Übersetzungen:** pro Locale `title`, `slug`, `permalink`, `description`, `content`, `translation_status`, `author_id`.
-- **Medien:** `AttachExistingMedia::attach($category, $media, 'image', 'en_US')` mit Wahrscheinlichkeit 85 %, wenn Bilder in der DB sind.
+- **Traits:** `FormatsFakerLocaleText`, `ReportsMooxSeederProgress`, `LoadsImageMediaPool`, `RunsMooxDemoAssets` (optional).
+- **Baum:** `buildParentIndexMap($total)` — verschachtelte `parent_id` im selben Lauf.
+- **Übersetzungen:** pro Locale `fakerLocaleTitle`, `fakerLocaleText` (Preset `description`), `markdownContentFromLocale` für `content`; `assignTranslationAuthor`.
+- **Medien:** `AttachExistingMedia::attach(..., $locale)` mit Pivot-Locale `de_DE` (`primaryMediaLocale()`), Wahrscheinlichkeit 85 %, wenn Bilder in der DB sind.
 - Abschluss: `Category::fixTree()` und Aktualisierung von `count` (Kinderzahl).
 
 ### `run()`-Muster
@@ -343,6 +349,71 @@ private function hasSeedOutput(): bool
 - `importFromPath($path, $collectionId)` — Dedupe per SHA-256 in `custom_properties.file_hash`
 - `avatarUrlFromMedia($media)` — JSON für `User.avatar_url`
 
+### Shared Seeding-Traits (`Moox\Demo\Seeding`)
+
+| Trait | Zweck |
+|-------|--------|
+| `FormatsFakerLocaleText` | Locale-Lock-Fließtext via Faker `realTextBetween` (siehe unten) |
+| `ReportsMooxSeederProgress` | `reportDetail`, `reportCreated`, `assertRequiredLocalizations`, `requireDemoAuthor` |
+| `LoadsImageMediaPool` | Medien-Pool für `media_usables` |
+
+---
+
+## Locale-sprachiger Demo-Text
+
+**Regel:** Zeile `locale = de_DE` → alle sichtbaren Textfelder **deutsch** (gleiches für `en_US`, `cs_CZ`, `pl_PL`). Mehrere Locale-Zeilen pro Entity sind ok; **eine Zeile = eine Sprache**.
+
+### Warum nicht `sentence()` / `paragraph()`?
+
+Faker-Lorem liefert bei `Factory::create('de_DE')` oft **Pseudo-Latein** (`Doloremque`, `Voluptat`, …). Nur der **Text-Provider** (`realText`, `realTextBetween`) erzeugt sprachige Auszüge. Details und Anti-Patterns: [Cursor-Skill `moox-seeders`](../../../.cursor/skills/moox-seeders/SKILL.md) (Abschnitt Locale-Lock).
+
+### API (`FormatsFakerLocaleText`)
+
+```php
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+
+class ProductSeeder extends Seeder
+{
+    use FormatsFakerLocaleText;
+
+    // In foreach (self::LOCALES as $locale):
+    $localeFaker = $this->fakerForLocale($locale);
+
+    $translation->title = $this->fakerLocaleTitle($locale, $localeFaker, 'title');
+    $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
+    $translation->content = $this->markdownContentFromLocale($locale, $localeFaker, 3, 6);
+    // Kurztext mit fester DB-Grenze:
+  // $translation->excerpt = $this->fakerLocaleText($locale, $localeFaker, 80, 180, limit: 180);
+}
+```
+
+| Methode | Zweck |
+|---------|--------|
+| `fakerLocaleTitle()` | Titel (Preset `title` / `tag_title`) |
+| `fakerLocaleText()` | Fließtext; Presets: `description`, `body`, `content`, … oder eigene `minChars`/`maxChars` |
+| `fakerLocaleSentence()` | Erster Satz aus einem Textblock |
+| `fakerLocaleParagraphs()` | Liste von Absätzen |
+| `markdownContentFromLocale()` | `##` Überschrift + Absätze |
+| `formatFakerWords()` / `formatFakerSentence()` | BC-Wrapper → intern `fakerLocaleTitle` |
+
+**Presets** (Zeichen min/max, intern `random_int`): `title`, `tag_title`, `subtitle`, `excerpt`, `description`, `body`, `content`.
+
+**Erkennung:** `localeSupportsRealText()` probeert `realTextBetween` (nicht `method_exists`). Fehlt `realText` für Moox-Locales → `RuntimeException`, kein stilles Lorem.
+
+Referenz-Seeder mit diesem Muster: `CategorySeeder`, `ProductSeeder`, `TagSeeder`, `DraftSeeder`, `ItemSeeder`, `RecordSeeder`.
+
+### Prüfung nach Seed
+
+```sql
+SELECT locale, title, LEFT(description, 60), LEFT(content, 60)
+FROM category_translations
+WHERE locale = 'de_DE'
+ORDER BY id DESC
+LIMIT 5;
+```
+
+In Filament (`?lang=de_DE`) müssen Formularwerte der DB-Zeile `de_DE` entsprechen (UI-Fallback auf andere Locales ist ein separates Thema).
+
 ---
 
 ## Eigenen Seeder anlegen
@@ -356,10 +427,18 @@ Checkliste am Beispiel eines fiktiven Pakets `moox/shop`:
 ```php
 namespace Moox\Shop\Database\Seeders;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
 
 class ShopSeeder extends Seeder
 {
+    use FormatsFakerLocaleText;
+
+    /** @var list<string> */
+    public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
+
     public function run(): void
     {
         $this->seed();
@@ -380,7 +459,17 @@ class ShopSeeder extends Seeder
             );
         }
 
-        // … idempotente Logik, Abhängigkeiten prüfen …
+        foreach (self::LOCALES as $locale) {
+            $localeFaker = $this->fakerForLocale($locale);
+            // … translateOrNew($locale), fakerLocaleText / fakerLocaleTitle …
+        }
+    }
+
+    private function fakerForLocale(string $locale): Generator
+    {
+        static $cache = [];
+
+        return $cache[$locale] ??= FakerFactory::create($locale);
     }
 
     protected function seedDemoAssets(): void
@@ -420,9 +509,9 @@ Wie `CategorySeeder`: früh `return` mit `$this->command?->error('…')`, wenn T
 
 | Muster (`UserSeeder`) | Muster (`CategorySeeder`) |
 |----------------------|---------------------------|
-| `DEFAULT_USERS` — feste Datensätze | `LOCALES`, `ROOT_LABELS_EN`, Katalog-Methoden |
-| `purgeDemoUsers()` — idempotent | `SEED_BATCH` in `basedata` — filterbar |
-| Domain-Konstante `DEMO_EMAIL_DOMAIN` | `SEED_BATCH` für Auswertungen |
+| `SEED_USER_EMAILS` — feste Logins | `LOCALES`, `SEED_BATCH`, Faker pro Locale |
+| `purgeDemoUsers()` — idempotent | `purgeSeededCategories()` — idempotent |
+| `DEMO_EMAIL_DOMAIN` | `FormatsFakerLocaleText` für Übersetzungen |
 
 ### 6. Keine harte Abhängigkeit auf `moox/demo`
 
@@ -494,7 +583,8 @@ Runtime (nur während `moox:demo`, nicht in Config-Datei publiziert):
 | Kategorien ohne Bilder | Leere `media`-Tabelle | Mediathek befüllen oder Demo-Medien importieren |
 | Avatare fehlen | `--skip-media`, kein `moox/media`, leerer `users_path` | Option weglassen, Media-Paket, Bilder unter `assets/images/users` |
 | Zu viele/wenige User | Dataset | `--dataset=`; standalone: Default 100 Extras |
-| Zu viele/wenige Kategorien | Kein Dataset-Bezug | `CATEGORY_MOCK_COUNT` oder Konstruktor; ggf. `SeedingConfig` nachrüsten |
+| Zu viele/wenige Kategorien | Dataset / Env | `--dataset=` oder `CATEGORY_MOCK_COUNT` |
+| `de_DE` mit lateinischen Titeln | Alter DB-Stand oder Lorem-Formatter | `purgeSeededCategories` + neu seeden; nur `fakerLocale*` / `realText*` nutzen |
 | Seeder-Klasse not found | Falscher Namespace / Autoload | PSR-4 in `composer.json`, `composer dump-autoload` |
 
 ---
@@ -504,9 +594,10 @@ Runtime (nur während `moox:demo`, nicht in Config-Datei publiziert):
 | Aspekt | `UserSeeder` | `CategorySeeder` |
 |--------|--------------|------------------|
 | Registrierung | `extra.moox.install.seed` | gleich |
-| Dataset-Anbindung | `SeedingConfig::resolveCount()` | `env` / Konstruktor, Default 100 |
-| Idempotenz | `purgeDemoUsers()` | Kein automatisches Purge |
-| Demo-Medien | `seedDemoAssets()` (Avatare) | nutzt vorhandene `media`-Zeilen |
+| Dataset-Anbindung | `SeedingConfig::resolveCount('user')` | `SeedingConfig::resolveCount('category')` |
+| Idempotenz | `purgeDemoUsers()` | `purgeSeededCategories()` |
+| Locale-Text | Faker `de_DE` Namen (Autor) | `FormatsFakerLocaleText` / `realText*` |
+| Demo-Medien | `seedDemoAssets()` (Avatare) | vorhandene `media`-Zeilen, Pivot `de_DE` |
 | Locales | — | feste `LOCALES` (4) |
 | `RunsMooxDemoAssets` | ja | ja (ohne `seedDemoAssets`) |
 
@@ -514,6 +605,9 @@ Runtime (nur während `moox:demo`, nicht in Config-Datei publiziert):
 
 ## Weiterführend
 
+- [Cursor-Skill `moox-seeders`](../../../.cursor/skills/moox-seeders/SKILL.md) — Locale-Lock, Relationen, Performance, Terminal-UX
+- [Skill-Beispiele `examples.md`](../../../.cursor/skills/moox-seeders/examples.md) — Minimal-Seeder mit `fakerLocaleText`
 - [README des Demo-Pakets](../README.md) — Installation, CLI-Optionen, Medienordner
 - [MEDIA_SOURCES.md](../resources/demo/assets/MEDIA_SOURCES.md) — Lizenzen der Demo-Assets
+- [Faker Formatters](https://fakerphp.org/formatters/) / [de_DE](https://fakerphp.org/locales/de_DE/) — `realText*` vs. Lorem
 - `php artisan moox:demo -vv` — ausführliche Reihenfolge und übersprungene Schritte
