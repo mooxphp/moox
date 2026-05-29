@@ -70,7 +70,7 @@ class ProductSeeder extends Seeder
         $mediaPool = $this->loadImageMediaPool();
 
         if ($mediaPool->isEmpty()) {
-            $this->command?->warn('No images in `media` table — products will be seeded without mediathek images.');
+            $this->command->warn('No images in `media` table — products will be seeded without mediathek images.');
         }
 
         $created = 0;
