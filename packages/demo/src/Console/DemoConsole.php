@@ -12,6 +12,8 @@ final class DemoConsole
 {
     private ?ProgressIndicator $indicator = null;
 
+    private ?string $indicatorLabel = null;
+
     public function __construct(
         private readonly Command $command,
     ) {}
@@ -28,12 +30,12 @@ final class DemoConsole
     {
         $this->stopIndicator();
 
+        $this->indicatorLabel = $label;
         $this->indicator = new ProgressIndicator(
             $this->command->getOutput(),
             '🌱 %message%'
         );
-        $this->indicator->setMessage($label);
-        $this->indicator->start();
+        $this->indicator->start($label);
     }
 
     /**
@@ -58,15 +60,17 @@ final class DemoConsole
             return;
         }
 
-        $this->indicator->finish(true, $detail ?? $label);
+        $this->indicator->finish($detail ?? $label, '✓');
         $this->indicator = null;
+        $this->indicatorLabel = null;
     }
 
     public function failTask(string $label, string $error): void
     {
         if ($this->indicator !== null) {
-            $this->indicator->finish(false, $label);
+            $this->indicator->finish($label, '✗');
             $this->indicator = null;
+            $this->indicatorLabel = null;
         }
 
         $this->command->error("  ✗ {$label}: {$error}");
@@ -91,9 +95,6 @@ final class DemoConsole
         $this->command->line("  <fg=gray>│</> <fg=green>+</> {$label}");
     }
 
-    /**
-     * @return callable(): void Returns a finisher that completes the bar and prints a summary.
-     */
     public function progressBar(int $max, string $message): DemoProgressBar
     {
         $this->stopIndicator();
@@ -112,7 +113,8 @@ final class DemoConsole
             return;
         }
 
-        $this->indicator->finish(true);
+        $this->indicator->finish($this->indicatorLabel ?? '');
         $this->indicator = null;
+        $this->indicatorLabel = null;
     }
 }

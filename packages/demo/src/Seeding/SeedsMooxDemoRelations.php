@@ -20,7 +20,7 @@ trait SeedsMooxDemoRelations
     protected function requireDemoAuthor(): ?User
     {
         if (! class_exists(User::class)) {
-            $this->command?->error('User model not available. Install moox/user and run UserSeeder first.');
+            $this->command->error('User model not available. Install moox/user and run UserSeeder first.');
 
             return null;
         }
@@ -28,7 +28,7 @@ trait SeedsMooxDemoRelations
         $author = User::query()->first();
 
         if ($author === null) {
-            $this->command?->error('No user found. Run UserSeeder before this seeder.');
+            $this->command->error('No user found. Run UserSeeder before this seeder.');
 
             return null;
         }
@@ -38,7 +38,7 @@ trait SeedsMooxDemoRelations
 
     protected function assignTranslationAuthor(Model $translation, User $author): void
     {
-        $translation->author_id = $author->getKey();
-        $translation->author_type = $author->getMorphClass();
+        $translation->setAttribute('author_id', $author->getKey());
+        $translation->setAttribute('author_type', $author->getMorphClass());
     }
 }

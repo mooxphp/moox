@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaCollectionTranslation;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 final class ImportDemoMediaToMediathek
@@ -109,7 +110,7 @@ final class ImportDemoMediaToMediathek
         $uploadedFile = new UploadedFile(
             $path,
             $originalName,
-            is_string($mimeType) ? $mimeType : 'image/jpeg',
+            $mimeType,
             null,
             true,
         );
@@ -131,12 +132,12 @@ final class ImportDemoMediaToMediathek
         $media->model_type = Media::class;
         $media->setCustomProperty('file_hash', $fileHash);
 
-        if (is_string($media->mime_type) && str_starts_with($media->mime_type, 'image/')) {
+        if (str_starts_with($media->mime_type, 'image/')) {
             try {
                 $mediaPath = $media->getPath();
-                if (is_string($mediaPath) && $mediaPath !== '') {
+                if ($mediaPath !== '') {
                     $size = @getimagesize($mediaPath);
-                    if (is_array($size) && isset($size[0], $size[1])) {
+                    if (is_array($size)) {
                         $media->setCustomProperty('dimensions', [
                             'width' => (int) $size[0],
                             'height' => (int) $size[1],
@@ -166,9 +167,7 @@ final class ImportDemoMediaToMediathek
 
     private static function resolveMediaCollection(?int $mediaCollectionId): ?MediaCollection
     {
-        if (method_exists(MediaCollection::class, 'ensureUncategorizedExists')) {
-            MediaCollection::ensureUncategorizedExists();
-        }
+        MediaCollection::ensureUncategorizedExists();
 
         if ($mediaCollectionId !== null) {
             $collection = MediaCollection::query()->find($mediaCollectionId);
@@ -188,19 +187,36 @@ final class ImportDemoMediaToMediathek
 
         foreach ([$locale, $fallback, 'en_US'] as $candidate) {
             $translation = $collection->translate($candidate, false);
-            if ($translation && is_string($translation->name) && trim($translation->name) !== '') {
-                return trim($translation->name);
+            $name = self::translationName($translation);
+            if ($name !== null) {
+                return $name;
             }
         }
 
         if ($collection->relationLoaded('translations') && $collection->translations->isNotEmpty()) {
-            $first = $collection->translations->first();
-            if ($first && is_string($first->name) && trim($first->name) !== '') {
-                return trim($first->name);
+            $name = self::translationName($collection->translations->first());
+            if ($name !== null) {
+                return $name;
             }
         }
 
         return (string) $collection->getKey();
+    }
+
+    private static function translationName(?\Illuminate\Database\Eloquent\Model $translation): ?string
+    {
+        if (! $translation instanceof MediaCollectionTranslation) {
+            return null;
+        }
+
+        $name = $translation->getAttribute('name');
+        if (! is_string($name)) {
+            return null;
+        }
+
+        $trimmed = trim($name);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 
     private static function resolveTitle(Media $media): string

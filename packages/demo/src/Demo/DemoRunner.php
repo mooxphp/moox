@@ -45,7 +45,7 @@ final class DemoRunner
         $seeders->run($context, onlySlugs: ['data']);
 
         $this->console->phase('Localizations');
-        (new DemoLocalizationStep($this->command, $this->console))->run($context);
+        (new DemoLocalizationStep($this->console))->run($context);
 
         $this->console->phase('Media');
         (new DemoMediaStep($this->command, $this->console))->run($context);
@@ -58,7 +58,7 @@ final class DemoRunner
         $seeders->run($context, exceptSlugs: ['data', 'demo', 'user']);
 
         $this->console->phase('Factory entities');
-        (new FactoryEntitiesStep($this->command, $this->console))->run($context);
+        (new FactoryEntitiesStep($this->console))->run($context);
 
         SeedOutput::bind(null);
 

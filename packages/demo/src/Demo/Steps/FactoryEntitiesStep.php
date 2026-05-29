@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Demo\Demo\Steps;
 
-use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +14,6 @@ use Moox\Demo\Support\MooxPackageDiscovery;
 final class FactoryEntitiesStep
 {
     public function __construct(
-        private readonly Command $command,
         private readonly DemoConsole $console,
     ) {}
 

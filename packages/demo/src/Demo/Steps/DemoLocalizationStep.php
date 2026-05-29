@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Demo\Demo\Steps;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
@@ -13,7 +12,6 @@ use Moox\Localization\Models\Localization;
 final class DemoLocalizationStep
 {
     public function __construct(
-        private readonly Command $command,
         private readonly DemoConsole $console,
     ) {}
 

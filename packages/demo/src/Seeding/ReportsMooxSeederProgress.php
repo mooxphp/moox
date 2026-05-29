@@ -23,7 +23,7 @@ trait ReportsMooxSeederProgress
             return;
         }
 
-        if ($this->command?->getOutput()->isVerbose()) {
+        if ($this->command->getOutput()->isVerbose()) {
             $this->command->line("  + {$label}");
         }
     }
@@ -36,7 +36,7 @@ trait ReportsMooxSeederProgress
             return;
         }
 
-        $this->command?->info($line);
+        $this->command->info($line);
     }
 
     /**
@@ -59,7 +59,7 @@ trait ReportsMooxSeederProgress
             return true;
         }
 
-        $this->command?->error(
+        $this->command->error(
             'Missing `localizations` rows for: '.$missing->implode(', ').
             '. Run moox:demo or add those locale_variant values before running this seeder.'
         );

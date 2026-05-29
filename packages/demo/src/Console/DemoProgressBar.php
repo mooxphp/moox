@@ -27,9 +27,7 @@ final class DemoProgressBar
 
     public function finish(?string $summary = null): void
     {
-        if ($summary !== null) {
-            $this->bar->setMessage($summary);
-        }
+        $this->bar->setMessage($summary ?? $this->defaultMessage);
 
         $this->bar->finish();
         $this->command->newLine();

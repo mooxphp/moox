@@ -92,7 +92,7 @@ trait FormatsFakerLocaleText
         Generator $faker,
         string $preset = 'title',
     ): string {
-        [$minChars, $maxChars] = self::TEXT_PRESET_CHARS[$preset] ?? self::TEXT_PRESET_CHARS['title'];
+        [$minChars, $maxChars] = self::TEXT_PRESET_CHARS[$preset];
 
         return $this->fakerLocaleSentence($locale, $faker, $minChars, $maxChars);
     }
@@ -109,7 +109,7 @@ trait FormatsFakerLocaleText
         ?int $limit = null,
     ): string {
         if ($preset !== null) {
-            [$presetMin, $presetMax] = self::TEXT_PRESET_CHARS[$preset] ?? self::TEXT_PRESET_CHARS['body'];
+            [$presetMin, $presetMax] = self::TEXT_PRESET_CHARS[$preset];
             $minChars ??= $presetMin;
             $maxChars ??= $presetMax;
         }
