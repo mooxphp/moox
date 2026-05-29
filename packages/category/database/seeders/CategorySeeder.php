@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Category\Database\Seeders;
 
 use Faker\Factory as FakerFactory;
-use Illuminate\Support\Carbon;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Demo\Seeding;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Moox\Media\Models\Media;
@@ -203,7 +204,7 @@ final class ImportDemoMediaToMediathek
         return (string) $collection->getKey();
     }
 
-    private static function translationName(?\Illuminate\Database\Eloquent\Model $translation): ?string
+    private static function translationName(?Model $translation): ?string
     {
         if (! $translation instanceof MediaCollectionTranslation) {
             return null;

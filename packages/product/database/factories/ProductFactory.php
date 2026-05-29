@@ -59,9 +59,6 @@ class ProductFactory extends Factory
         });
     }
 
-    /**
-     * @param  string  ...$locales
-     */
     public function withTranslationLocales(string ...$locales): static
     {
         $locales = array_values(array_unique($locales));
