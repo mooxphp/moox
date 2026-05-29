@@ -52,14 +52,6 @@ class UserSeeder extends Seeder
     /** @var list<string> */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
-    /** @var array<string, string> */
-    private const FAKER_LOCALE_MAP = [
-        'cs_CZ' => 'cs_CZ',
-        'en_US' => 'en_US',
-        'de_DE' => 'de_DE',
-        'pl_PL' => 'pl_PL',
-    ];
-
     public function run(): void
     {
         $this->seed();
@@ -253,7 +245,7 @@ class UserSeeder extends Seeder
     private function fakerForLocale(string $locale): Generator
     {
         static $cache = [];
-        $resolvedLocale = self::FAKER_LOCALE_MAP[$locale] ?? 'en_US';
+        $resolvedLocale = in_array($locale, self::LOCALES, true) ? $locale : 'en_US';
 
         if (! isset($cache[$resolvedLocale])) {
             $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
