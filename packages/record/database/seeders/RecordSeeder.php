@@ -9,15 +9,18 @@ use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Record\Enums\RecordStatus;
 use Moox\Record\Models\Record;
-use Moox\User\Models\User;
-
 class RecordSeeder extends Seeder
 {
+    use FormatsFakerLocaleText;
+    use ReportsMooxSeederProgress;
+
     public const DEMO_SLUG_PREFIX = 'demo-record';
 
     public const DEFAULT_RECORD_COUNT = 100;
@@ -46,17 +49,31 @@ class RecordSeeder extends Seeder
 
     protected function seed(): void
     {
+        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+            return;
+        }
+
         $this->purgeDemoRecords();
 
+        $author = $this->requireDemoAuthor();
+        if ($author === null) {
+            return;
+        }
+
         $count = $this->resolveRecordCount();
-        $author = User::query()->first();
         $faker = fake();
+        $baseUrl = rtrim((string) config('app.url'), '/');
         $created = 0;
 
-        DB::transaction(function () use ($count, $author, $faker, &$created): void {
+        $progress = $this->hasSeedOutput()
+            ? SeedOutput::progressBar($count, 'Demo records')
+            : null;
+
+        DB::transaction(function () use ($count, $author, $faker, $baseUrl, $progress, &$created): void {
             for ($index = 1; $index <= $count; $index++) {
                 $locale = self::LOCALES[array_rand(self::LOCALES)];
-                $title = $this->localizedTitle($locale);
+                $localeFaker = $this->fakerForLocale($locale);
+                $title = $this->formatFakerWords($locale, $localeFaker, 2, 6);
                 $slug = self::DEMO_SLUG_PREFIX
                     .'-'.Str::slug($title)
                     .'-'.Str::lower($locale)
@@ -70,27 +87,32 @@ class RecordSeeder extends Seeder
                 $record = Record::query()->create([
                     'title' => $title,
                     'slug' => Str::limit($slug, 180, ''),
-                    'description' => $this->localizedDescription($locale),
-                    'permalink' => rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$slug,
+                    'description' => $this->fakerLocaleText($locale, $localeFaker, 150, 260),
+                    'permalink' => $baseUrl.'/'.$locale.'/'.$slug,
                     'status' => $status,
                     'custom_properties' => [
                         'seed_source' => 'record_seeder_v1',
                         'seed_index' => $index,
                         'seed_locale' => $locale,
                     ],
-                    'author_id' => $author?->getKey(),
-                    'author_type' => $author?->getMorphClass(),
+                    'author_id' => $author->getKey(),
+                    'author_type' => $author->getMorphClass(),
                 ]);
 
                 $created++;
-                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+
+                if ($progress !== null) {
+                    $progress->advance();
+                } elseif ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
                     $this->reportCreated("Record {$record->getKey()}");
                 }
             }
         });
 
+        $progress?->finish("{$count} demo record(s)");
+
         $this->reportDetail(sprintf(
-            '%d faker record(s) seeded across %d locale(s).',
+            '%d faker record(s) seeded (one random locale per record from %d configured locale(s)).',
             $created,
             count(self::LOCALES)
         ));
@@ -103,32 +125,6 @@ class RecordSeeder extends Seeder
             ->forceDelete();
     }
 
-    private function reportCreated(string $label): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::created($label);
-
-            return;
-        }
-    }
-
-    private function reportDetail(string $line): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail($line);
-
-            return;
-        }
-
-        $this->command?->info($line);
-    }
-
-    private function hasSeedOutput(): bool
-    {
-        return class_exists(SeedOutput::class)
-            && SeedOutput::isBound();
-    }
-
     private function resolveRecordCount(): int
     {
         if (class_exists(SeedingConfig::class)) {
@@ -136,16 +132,6 @@ class RecordSeeder extends Seeder
         }
 
         return self::DEFAULT_RECORD_COUNT;
-    }
-
-    private function localizedTitle(string $locale): string
-    {
-        return Str::title($this->fakerForLocale($locale)->words(random_int(2, 6), true));
-    }
-
-    private function localizedDescription(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraph(2);
     }
 
     private function fakerForLocale(string $locale): Generator
