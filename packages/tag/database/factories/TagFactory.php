@@ -9,6 +9,9 @@ use InvalidArgumentException;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
 
+/**
+ * @extends Factory<Tag>
+ */
 class TagFactory extends Factory
 {
     protected $model = Tag::class;

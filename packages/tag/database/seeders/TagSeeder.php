@@ -68,7 +68,7 @@ class TagSeeder extends Seeder
         $withMedia = 0;
 
         if ($mediaPool->isEmpty()) {
-            $this->command?->warn('No images in media table - tags will be seeded without media_usables.');
+            $this->command->warn('No images in media table - tags will be seeded without media_usables.');
         }
 
         $progress = $this->hasSeedOutput()
