@@ -7,16 +7,22 @@ namespace Moox\Draft\Database\Seeders;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\LoadsImageMediaPool;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Draft\Models\Draft;
-use Moox\User\Models\User;
-
 class DraftSeeder extends Seeder
 {
+    use FormatsFakerLocaleText;
+    use LoadsImageMediaPool;
+    use ReportsMooxSeederProgress;
+
     public const DEMO_SLUG_PREFIX = 'demo-draft';
 
     public const DEFAULT_DRAFT_COUNT = 100;
@@ -38,6 +44,8 @@ class DraftSeeder extends Seeder
     /** @var list<string> */
     private const TRANSLATION_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
 
+    private const MEDIA_ATTACH_PROBABILITY = 0.75;
+
     private const PROGRESS_LOG_EVERY = 100;
 
     public function run(): void
@@ -51,26 +59,44 @@ class DraftSeeder extends Seeder
 
     protected function seed(): void
     {
+        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+            return;
+        }
+
         $this->purgeDemoDrafts();
 
-        $count = $this->resolveDraftCount();
-        $author = User::query()->first();
-        $created = 0;
-        $faker = fake();
+        $author = $this->requireDemoAuthor();
+        if ($author === null) {
+            return;
+        }
 
-        DB::transaction(function () use ($count, $faker, $author, &$created): void {
+        $count = $this->resolveDraftCount();
+        $faker = fake();
+        $baseUrl = rtrim((string) config('app.url'), '/');
+        $mediaPool = $this->loadImageMediaPool();
+        $created = 0;
+
+        if ($mediaPool->isEmpty()) {
+            $this->command?->warn('No images in `media` table — drafts will be seeded without mediathek images.');
+        }
+
+        $progress = $this->hasSeedOutput()
+            ? SeedOutput::progressBar($count, 'Demo drafts')
+            : null;
+
+        DB::transaction(function () use ($count, $faker, $author, $baseUrl, $mediaPool, $progress, &$created): void {
             for ($index = 1; $index <= $count; $index++) {
                 $status = $faker->randomElement(self::TRANSLATION_STATUSES);
+                $contentLocale = self::LOCALES[array_rand(self::LOCALES)];
+                $image = $this->resolveDraftImage($faker, $mediaPool, $contentLocale);
+
                 $draft = Draft::query()->create([
                     'is_active' => $faker->boolean(85),
                     'type' => $faker->randomElement(self::TYPES),
                     'color' => $faker->hexColor(),
                     'status' => $status,
                     'due_at' => $faker->optional(0.4)->dateTimeBetween('now', '+45 days'),
-                    'image' => [
-                        'url' => $faker->imageUrl(1200, 630),
-                        'alt' => $faker->sentence(4),
-                    ],
+                    'image' => $image,
                     'data' => json_encode([
                         'seed_source' => 'draft_seeder_v1',
                         'seed_index' => $index,
@@ -78,7 +104,8 @@ class DraftSeeder extends Seeder
                 ]);
 
                 foreach (self::LOCALES as $locale) {
-                    $title = $this->localizedTitle($locale);
+                    $localeFaker = $this->fakerForLocale($locale);
+                    $title = $this->formatFakerWords($locale, $localeFaker, 3, 7);
                     $slug = self::DEMO_SLUG_PREFIX
                         .'-'.Str::slug($title)
                         .'-'.Str::lower($locale)
@@ -87,31 +114,51 @@ class DraftSeeder extends Seeder
                     $translation = $draft->translateOrNew($locale);
                     $translation->title = $title;
                     $translation->slug = Str::limit($slug, 180, '');
-                    $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
-                    $translation->description = $this->localizedDescription($locale);
-                    $translation->content = $this->localizedContent($locale);
+                    $translation->permalink = $baseUrl.'/'.$locale.'/'.$translation->slug;
+                    $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
+                    $translation->content = implode("\n\n", $this->fakerLocaleParagraphs(
+                        $locale,
+                        $localeFaker,
+                        3,
+                        6,
+                        120,
+                        280,
+                    ));
                     $translation->translation_status = $status;
 
-                    if ($author !== null) {
-                        $translation->author_id = $author->getKey();
-                        $translation->author_type = $author->getMorphClass();
-                    }
+                    $this->assignTranslationAuthor($translation, $author);
                 }
 
                 $draft->save();
                 $created++;
 
-                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+                if ($progress !== null) {
+                    $progress->advance();
+                } elseif ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
                     $this->reportCreated("Draft {$draft->getKey()}");
                 }
             }
         });
 
+        $progress?->finish("{$count} demo draft(s)");
+
         $this->reportDetail(sprintf(
-            '%d faker draft(s) seeded across %d locale(s).',
+            '%d faker draft(s) seeded with %d locale(s) each.',
             $created,
             count(self::LOCALES)
         ));
+    }
+
+    /**
+     * @return array{media_id: int, locale: string}|null
+     */
+    private function resolveDraftImage(Generator $faker, Collection $mediaPool, string $locale): ?array
+    {
+        if ($mediaPool->isNotEmpty() && $faker->boolean((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
+            return $this->randomImageFieldFromPool($mediaPool, $locale);
+        }
+
+        return null;
     }
 
     private function purgeDemoDrafts(): void
@@ -123,32 +170,6 @@ class DraftSeeder extends Seeder
             ->forceDelete();
     }
 
-    private function reportCreated(string $label): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::created($label);
-
-            return;
-        }
-    }
-
-    private function reportDetail(string $line): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail($line);
-
-            return;
-        }
-
-        $this->command?->info($line);
-    }
-
-    private function hasSeedOutput(): bool
-    {
-        return class_exists(SeedOutput::class)
-            && SeedOutput::isBound();
-    }
-
     private function resolveDraftCount(): int
     {
         if (class_exists(SeedingConfig::class)) {
@@ -156,21 +177,6 @@ class DraftSeeder extends Seeder
         }
 
         return self::DEFAULT_DRAFT_COUNT;
-    }
-
-    private function localizedTitle(string $locale): string
-    {
-        return Str::title($this->fakerForLocale($locale)->words(random_int(3, 7), true));
-    }
-
-    private function localizedDescription(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraph(2);
-    }
-
-    private function localizedContent(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraphs(random_int(3, 6), true);
     }
 
     private function fakerForLocale(string $locale): Generator
