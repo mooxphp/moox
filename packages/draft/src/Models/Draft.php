@@ -3,6 +3,7 @@
 namespace Moox\Draft\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
@@ -27,9 +28,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read string $description
  * @property-read string $content
  * @property-read string $status
- * @property-read int $author_id
- * @property-read string $author_type
- * @property-read User|null $author
+ * @property-read int|null $author_id
+ * @property-read string|null $author_type
 
  * @property-read Collection<int, Media> $media
  */

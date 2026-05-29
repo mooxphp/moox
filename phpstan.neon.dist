@@ -9,6 +9,10 @@ parameters:
             message: "#^Called 'env' outside of the config directory#"
             paths:
                 - packages/*/config/*
+        -
+            identifier: trait.unused
+            paths:
+                - packages/login-link/src/Concerns/InteractsWithLoginLinks.php
     paths:
         - packages
     excludePaths:

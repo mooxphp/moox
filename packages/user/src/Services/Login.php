@@ -6,7 +6,6 @@ use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Auth\Contracts\HasBeforeChallengeHook;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Facades\Filament;
@@ -156,7 +155,7 @@ class Login extends SimplePage
 
                 $this->userUndertakingMultiFactorAuthentication = encrypt($user->getAuthIdentifier());
 
-                if ($multiFactorAuthenticationProvider instanceof HasBeforeChallengeHook) {
+                if (method_exists($multiFactorAuthenticationProvider, 'beforeChallenge')) {
                     $multiFactorAuthenticationProvider->beforeChallenge($user);
                 }
 
@@ -299,11 +298,9 @@ class Login extends SimplePage
                             ->getChildSchema()
                             ->fill();
 
-                        if (! ($provider instanceof HasBeforeChallengeHook)) {
-                            return;
+                        if (method_exists($provider, 'beforeChallenge')) {
+                            $provider->beforeChallenge($user);
                         }
-
-                        $provider->beforeChallenge($user);
                     })
                     ->default(array_key_first($enabledMultiFactorAuthenticationProviders))
                     ->required()

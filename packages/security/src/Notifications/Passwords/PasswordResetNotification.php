@@ -17,7 +17,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\HtmlString;
 
 class PasswordResetNotification extends Notification implements ShouldQueue
 {
@@ -31,9 +30,9 @@ class PasswordResetNotification extends Notification implements ShouldQueue
         protected string $panelId,
     ) {}
 
-    public static function forToken(string $token, ?string $panelId = null): static
+    public static function forToken(string $token, ?string $panelId = null): self
     {
-        return new static($token, $panelId ?? Filament::getCurrentOrDefaultPanel()->getId());
+        return new self($token, $panelId ?? Filament::getCurrentOrDefaultPanel()->getId());
     }
 
     public function via($notifiable): array
@@ -52,7 +51,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
             ->action(__('security::translations.mail_action'), $this->resetUrl($notifiable))
             ->line(__('security::translations.mail_expire_prefix').' '.$this->getReadableExpiryTime().'.')
             ->line(__('security::translations.mail_outro'))
-            ->salutation(new HtmlString(__('security::translations.mail_salutation').'<br>'.config('mail.from.name')));
+            ->salutation(__('security::translations.mail_salutation').'<br>'.config('mail.from.name'));
     }
 
     protected function resetUrl(CanResetPassword|Model|Authenticatable $notifiable): string

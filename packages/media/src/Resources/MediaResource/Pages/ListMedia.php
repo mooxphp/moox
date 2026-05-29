@@ -159,7 +159,7 @@ class ListMedia extends BaseListDrafts
 
                                     if (empty($name)) {
                                         $anyTranslation = $collection->translations()->whereNotNull('name')->first();
-                                        $name = $anyTranslation?->name;
+                                        $name = $anyTranslation?->getAttribute('name');
                                     }
 
                                     if (empty($name)) {

@@ -139,12 +139,12 @@ class MediaController extends Controller
         $media->model_type = Media::class;
 
         $media->setCustomProperty('file_hash', $fileHash);
-        if (is_string($media->mime_type) && str_starts_with($media->mime_type, 'image/')) {
+        if (str_starts_with((string) $media->mime_type, 'image/')) {
             try {
                 $path = $media->getPath();
-                if (is_string($path) && $path !== '') {
+                if ($path !== '') {
                     $size = @getimagesize($path);
-                    if (is_array($size) && isset($size[0], $size[1])) {
+                    if ($size !== false) {
                         $media->setCustomProperty('dimensions', [
                             'width' => (int) $size[0],
                             'height' => (int) $size[1],
@@ -218,15 +218,17 @@ class MediaController extends Controller
 
         foreach ($locales as $locale) {
             $translation = $collection->translate($locale, false);
-            if ($translation && is_string($translation->name) && trim($translation->name) !== '') {
-                return trim($translation->name);
+            $name = is_object($translation) ? $translation->getAttribute('name') : null;
+            if (is_string($name) && trim($name) !== '') {
+                return trim($name);
             }
         }
 
         if ($collection->translations->isNotEmpty()) {
             $first = $collection->translations->first();
-            if ($first && isset($first->name) && is_string($first->name) && trim($first->name) !== '') {
-                return trim($first->name);
+            $name = $first->getAttribute('name');
+            if (is_string($name) && trim($name) !== '') {
+                return trim($name);
             }
         }
 
@@ -242,7 +244,7 @@ class MediaController extends Controller
             $locale,
             $fallbackLocale,
             'en_US',
-        ], static fn (mixed $value): bool => is_string($value) && trim($value) !== '');
+        ], static fn (string $value): bool => trim($value) !== '');
 
         $expanded = [];
         foreach ($locales as $locale) {
@@ -257,6 +259,6 @@ class MediaController extends Controller
             }
         }
 
-        return array_values(array_unique(array_filter($expanded, static fn (mixed $value): bool => is_string($value) && trim($value) !== '')));
+        return array_values(array_unique(array_filter($expanded, static fn (string $value): bool => trim($value) !== '')));
     }
 }

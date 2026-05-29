@@ -108,24 +108,19 @@ class TitleWithSlugInput
         }
 
         if ($titleRuleUniqueParameters) {
-            if (is_array($titleRuleUniqueParameters)) {
-                $table = $titleRuleUniqueParameters['table'] ?? null;
-                $column = $titleRuleUniqueParameters['column'] ?? null;
-                $ignorable = $titleRuleUniqueParameters['ignorable'] ?? null;
-                $ignoreRecord = $titleRuleUniqueParameters['ignoreRecord'] ?? false;
-                $modifyRuleUsing = $titleRuleUniqueParameters['modifyRuleUsing'] ?? null;
+            $table = $titleRuleUniqueParameters['table'] ?? null;
+            $column = $titleRuleUniqueParameters['column'] ?? null;
+            $ignorable = $titleRuleUniqueParameters['ignorable'] ?? null;
+            $ignoreRecord = $titleRuleUniqueParameters['ignoreRecord'] ?? false;
+            $modifyRuleUsing = $titleRuleUniqueParameters['modifyRuleUsing'] ?? null;
 
-                $textInput->unique(
-                    table: $table,
-                    column: $column,
-                    ignorable: $ignorable,
-                    ignoreRecord: $ignoreRecord,
-                    modifyRuleUsing: $modifyRuleUsing,
-                );
-            } else {
-                // Fallback for non-array usage
-                $textInput->unique($titleRuleUniqueParameters);
-            }
+            $textInput->unique(
+                table: $table,
+                column: $column,
+                ignorable: $ignorable,
+                ignoreRecord: $ignoreRecord,
+                modifyRuleUsing: $modifyRuleUsing,
+            );
         }
 
         /** Input: "Slug" (+ view) */
@@ -183,24 +178,19 @@ class TitleWithSlugInput
             );
 
         if ($slugRuleUniqueParameters) {
-            if (is_array($slugRuleUniqueParameters)) {
-                $table = $slugRuleUniqueParameters['table'] ?? null;
-                $column = $slugRuleUniqueParameters['column'] ?? null;
-                $ignorable = $slugRuleUniqueParameters['ignorable'] ?? null;
-                $ignoreRecord = $slugRuleUniqueParameters['ignoreRecord'] ?? false;
-                $modifyRuleUsing = $slugRuleUniqueParameters['modifyRuleUsing'] ?? null;
+            $table = $slugRuleUniqueParameters['table'] ?? null;
+            $column = $slugRuleUniqueParameters['column'] ?? null;
+            $ignorable = $slugRuleUniqueParameters['ignorable'] ?? null;
+            $ignoreRecord = $slugRuleUniqueParameters['ignoreRecord'] ?? false;
+            $modifyRuleUsing = $slugRuleUniqueParameters['modifyRuleUsing'] ?? null;
 
-                $slugInput->unique(
-                    table: $table,
-                    column: $column,
-                    ignorable: $ignorable,
-                    ignoreRecord: $ignoreRecord,
-                    modifyRuleUsing: $modifyRuleUsing,
-                );
-            } else {
-                // Fallback for non-array usage
-                $slugInput->unique($slugRuleUniqueParameters);
-            }
+            $slugInput->unique(
+                table: $table,
+                column: $column,
+                ignorable: $ignorable,
+                ignoreRecord: $ignoreRecord,
+                modifyRuleUsing: $modifyRuleUsing,
+            );
         }
 
         /** Input: "Slug Auto Update Disabled" (Hidden) */

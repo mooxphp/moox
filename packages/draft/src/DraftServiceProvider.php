@@ -8,7 +8,7 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Core\MooxServiceProvider;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
+use Moox\Draft\Resources\DraftResource\Pages\ListDrafts;
 use Spatie\LaravelPackageTools\Package;
 
 class DraftServiceProvider extends MooxServiceProvider

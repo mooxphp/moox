@@ -57,7 +57,6 @@ use Pest\Livewire\InteractsWithLivewire;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 #[WithMigration('laravel', 'cache', 'queue')]
-#[WithMigration('session')]
 class TestCase extends Orchestra
 {
     use InteractsWithLivewire;

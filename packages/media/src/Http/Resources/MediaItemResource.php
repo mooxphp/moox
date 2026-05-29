@@ -26,6 +26,7 @@ class MediaItemResource extends JsonResource
         $title = $this->translatedValue($media, 'title');
         $alt = $this->translatedValue($media, 'alt');
 
+        /** @var MediaCollection|null $collection */
         $collection = $media->relationLoaded('collection') ? $media->collection : $media->collection()->first();
 
         return [
@@ -66,24 +67,17 @@ class MediaItemResource extends JsonResource
         try {
             $url = $media->getUrl($conversion);
 
-            return is_string($url) && $url !== '' ? $url : null;
+            return $url !== '' ? $url : null;
         } catch (\Throwable) {
             return null;
         }
     }
 
-    /**
-     * @param  Media|MediaCollection  $model
-     */
-    protected function translatedValue(object $model, string $key): ?string
+    protected function translatedValue(Media|MediaCollection $model, string $key): ?string
     {
         $locales = $this->getLocaleFallbackChain();
 
         foreach ($locales as $locale) {
-            if (! method_exists($model, 'translate')) {
-                break;
-            }
-
             $translation = $model->translate($locale, false);
 
             if ($translation && isset($translation->{$key}) && is_string($translation->{$key}) && trim($translation->{$key}) !== '') {
@@ -91,7 +85,7 @@ class MediaItemResource extends JsonResource
             }
         }
 
-        if (method_exists($model, 'translations') && $model->relationLoaded('translations')) {
+        if ($model->relationLoaded('translations')) {
             $first = $model->translations->first();
             if ($first && isset($first->{$key}) && is_string($first->{$key}) && trim($first->{$key}) !== '') {
                 return $first->{$key};
@@ -110,7 +104,7 @@ class MediaItemResource extends JsonResource
             app()->getLocale(),
             config('app.fallback_locale'),
             'en_US',
-        ], static fn (mixed $value): bool => is_string($value) && trim($value) !== '');
+        ], static fn (string $value): bool => trim($value) !== '');
 
         $expanded = [];
         foreach ($locales as $locale) {
@@ -125,6 +119,6 @@ class MediaItemResource extends JsonResource
             }
         }
 
-        return array_values(array_unique(array_filter($expanded, static fn (mixed $value): bool => is_string($value) && trim($value) !== '')));
+        return array_values(array_unique(array_filter($expanded, static fn (string $value): bool => trim($value) !== '')));
     }
 }

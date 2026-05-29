@@ -78,7 +78,6 @@ class UserDevicePolicy
 
         $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
 
-        /** @phpstan-ignore-next-line */
         return (bool) $user->hasRole($roleName);
     }
 }
