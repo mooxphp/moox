@@ -114,7 +114,7 @@ class UserSeeder extends Seeder
             $this->createExtraUser($i);
         }
 
-        $this->command?->info(sprintf('Seeded %d extra demo user(s).', $extraCount));
+        $this->command->info(sprintf('Seeded %d extra demo user(s).', $extraCount));
     }
 
     private function createExtraUser(int $index): void
@@ -202,7 +202,7 @@ class UserSeeder extends Seeder
 
             if ($this->hasSeedOutput()) {
                 SeedOutput::created("Avatar for {$user->email}");
-            } elseif ($this->command?->getOutput()->isVerbose()) {
+            } elseif ($this->command->getOutput()->isVerbose()) {
                 $this->command->line("  User {$user->email}: mediathek media #{$media->getKey()} ({$media->file_name})");
             }
         }
