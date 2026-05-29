@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Category\Database\Seeders;
 
-use DateTimeImmutable;
 use Faker\Factory as FakerFactory;
+use Illuminate\Support\Carbon;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Auth;
@@ -76,7 +76,7 @@ class CategorySeeder extends Seeder
             ->filter(fn (string $locale): bool => ! Localization::query()->where('locale_variant', $locale)->exists());
 
         if ($missingLocales->isNotEmpty()) {
-            $this->command?->error(
+            $this->command->error(
                 'Missing `localizations` rows for: '.$missingLocales->implode(', ').
                 '. Add those locale_variant values before running this seeder.'
             );
@@ -86,7 +86,7 @@ class CategorySeeder extends Seeder
 
         $mediaPool = $this->loadImageMediaPool();
         if ($mediaPool->isEmpty()) {
-            $this->command?->warn('No images in `media` table — categories will be seeded without images / media_usables.');
+            $this->command->warn('No images in `media` table — categories will be seeded without images / media_usables.');
         }
 
         Auth::login($user);
@@ -129,7 +129,7 @@ class CategorySeeder extends Seeder
                     $category->parent_id = $parentId;
                 }
 
-                $attachMedia = $mediaPool->isNotEmpty()
+                $shouldAttachMedia = $mediaPool->isNotEmpty()
                     && $this->randomChance((int) (self::MEDIA_ATTACH_PROBABILITY * 100));
 
                 foreach (self::LOCALES as $locale) {
@@ -145,14 +145,18 @@ class CategorySeeder extends Seeder
                     $translation->content = $this->markdownContentFromLocale($locale, $localeFaker);
                     $this->applyTranslationStatus($translation, $translationStatuses[$locale]);
                     $this->assignTranslationAuthor($translation, $user);
-
-                    if ($attachMedia && $locale === $this->primaryMediaLocale()) {
-                        AttachExistingMedia::attach($category, $mediaPool->random(), 'image', $locale);
-                        $attachMedia = false;
-                    }
                 }
 
                 $category->save();
+
+                if ($shouldAttachMedia) {
+                    AttachExistingMedia::attach(
+                        $category,
+                        $mediaPool->random(),
+                        'image',
+                        $this->primaryMediaLocale(),
+                    );
+                }
 
                 $idByIndex[$i] = (int) $category->getKey();
 
@@ -344,13 +348,13 @@ class CategorySeeder extends Seeder
      * Mirrors {@see BaseDraftTranslationModel::checkAndUpdateMainEntryStatus()}
      * for multi-locale categories after translations are saved.
      *
-     * @param  list<string>  $translationStatuses
+     * @param  array<string, string>  $translationStatuses
      */
     public static function resolveCategoryStatusFromTranslationStatuses(array $translationStatuses): string
     {
         $translationStatuses = array_values(array_filter(
             $translationStatuses,
-            static fn (mixed $status): bool => is_string($status) && $status !== ''
+            static fn (string $status): bool => $status !== ''
         ));
 
         $count = count($translationStatuses);
@@ -483,7 +487,7 @@ class CategorySeeder extends Seeder
     }
 
     private function applyTranslationStatus(
-        CategoryTranslation $translation,
+        BaseDraftTranslationModel $translation,
         string $status,
     ): void {
         $translation->translation_status = $status;
@@ -518,9 +522,9 @@ class CategorySeeder extends Seeder
             return SeedingConfig::resolveCount('category', 100);
         }
 
-        $fromEnv = env('CATEGORY_MOCK_COUNT');
-        if ($fromEnv !== null && $fromEnv !== '') {
-            return max(1, min(5000, (int) $fromEnv));
+        $fromConfig = config('category.seeder_count');
+        if (is_numeric($fromConfig)) {
+            return max(1, min(5000, (int) $fromConfig));
         }
 
         return 100;
@@ -547,11 +551,11 @@ class CategorySeeder extends Seeder
         return sprintf('#%06x', random_int(0, 0xFFFFFF));
     }
 
-    private function randomDateTimeBetween(string $from, string $to): DateTimeImmutable
+    private function randomDateTimeBetween(string $from, string $to): Carbon
     {
         $min = strtotime($from);
         $max = strtotime($to);
 
-        return (new DateTimeImmutable)->setTimestamp(random_int($min, $max));
+        return Carbon::createFromTimestamp(random_int($min, $max));
     }
 }

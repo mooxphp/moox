@@ -12,6 +12,10 @@ final class AttachExistingMedia
 {
     public static function attach(Model $model, Media $media, string $field, string $locale): void
     {
+        if (! $model->exists || $model->getKey() === null) {
+            return;
+        }
+
         DB::table('media_usables')->insertOrIgnore([
             'media_id' => $media->getKey(),
             'media_usable_id' => $model->getKey(),
