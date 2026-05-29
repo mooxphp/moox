@@ -7,19 +7,23 @@ namespace Moox\Tag\Database\Seeders;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\LoadsImageMediaPool;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
 use Moox\Demo\Seeding\SeedingConfig;
 use Moox\Demo\Seeding\SeedOutput;
 use Moox\Media\Models\Media;
-use Moox\Media\Models\MediaUsable;
 use Moox\Tag\Models\Tag;
-use Moox\User\Models\User;
 
 class TagSeeder extends Seeder
 {
+    use FormatsFakerLocaleText;
+    use LoadsImageMediaPool;
+    use ReportsMooxSeederProgress;
+
     public const DEMO_SLUG_PREFIX = 'demo-tag';
 
     public const DEFAULT_TAG_COUNT = 100;
@@ -53,11 +57,20 @@ class TagSeeder extends Seeder
 
     protected function seed(): void
     {
+        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+            return;
+        }
+
         $this->purgeDemoTags();
 
+        $author = $this->requireDemoAuthor();
+        if ($author === null) {
+            return;
+        }
+
         $faker = fake();
-        $author = User::query()->first();
         $count = $this->resolveTagCount();
+        $baseUrl = rtrim((string) config('app.url'), '/');
         $mediaPool = $this->loadImageMediaPool();
         $created = 0;
         $withMedia = 0;
@@ -66,7 +79,11 @@ class TagSeeder extends Seeder
             $this->command?->warn('No images in media table - tags will be seeded without media_usables.');
         }
 
-        DB::transaction(function () use ($count, $faker, $author, $mediaPool, &$created, &$withMedia): void {
+        $progress = $this->hasSeedOutput()
+            ? SeedOutput::progressBar($count, 'Demo tags')
+            : null;
+
+        DB::transaction(function () use ($count, $faker, $author, $baseUrl, $mediaPool, $progress, &$created, &$withMedia): void {
             for ($index = 1; $index <= $count; $index++) {
                 $status = $faker->randomElement(self::TAG_STATUSES);
 
@@ -84,7 +101,8 @@ class TagSeeder extends Seeder
                 ]);
 
                 foreach (self::LOCALES as $locale) {
-                    $title = $this->localizedTitle($locale);
+                    $localeFaker = $this->fakerForLocale($locale);
+                    $title = $this->formatFakerWords($locale, $localeFaker, 1, 3);
                     $slug = self::DEMO_SLUG_PREFIX
                         .'-'.Str::slug($title)
                         .'-'.Str::lower($locale)
@@ -93,15 +111,19 @@ class TagSeeder extends Seeder
                     $translation = $tag->translateOrNew($locale);
                     $translation->title = $title;
                     $translation->slug = Str::limit($slug, 180, '');
-                    $translation->permalink = rtrim((string) config('app.url'), '/').'/'.$locale.'/'.$translation->slug;
-                    $translation->description = $this->localizedDescription($locale);
-                    $translation->content = $this->localizedContent($locale);
+                    $translation->permalink = $baseUrl.'/'.$locale.'/'.$translation->slug;
+                    $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
+                    $translation->content = implode("\n\n", $this->fakerLocaleParagraphs(
+                        $locale,
+                        $localeFaker,
+                        2,
+                        4,
+                        120,
+                        280,
+                    ));
                     $translation->translation_status = $status;
 
-                    if ($author !== null) {
-                        $translation->author_id = $author->getKey();
-                        $translation->author_type = $author->getMorphClass();
-                    }
+                    $this->assignTranslationAuthor($translation, $author);
                 }
 
                 $tag->save();
@@ -110,24 +132,31 @@ class TagSeeder extends Seeder
                     /** @var Media $media */
                     $media = $mediaPool->random();
 
-                    MediaUsable::query()->firstOrCreate([
+                    DB::table('media_usables')->insertOrIgnore([
                         'media_id' => $media->getKey(),
                         'media_usable_id' => $tag->getKey(),
                         'media_usable_type' => Tag::class,
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]);
 
                     $withMedia++;
                 }
 
                 $created++;
-                if ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
+
+                if ($progress !== null) {
+                    $progress->advance();
+                } elseif ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
                     $this->reportCreated("Tag {$tag->getKey()}");
                 }
             }
         });
 
+        $progress?->finish("{$count} demo tag(s)");
+
         $this->reportDetail(sprintf(
-            '%d faker tag(s) seeded across %d locale(s), %d with media link(s).',
+            '%d faker tag(s) seeded with %d locale(s) each, %d with media link(s).',
             $created,
             count(self::LOCALES),
             $withMedia
@@ -143,32 +172,6 @@ class TagSeeder extends Seeder
             ->forceDelete();
     }
 
-    private function reportCreated(string $label): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::created($label);
-
-            return;
-        }
-    }
-
-    private function reportDetail(string $line): void
-    {
-        if ($this->hasSeedOutput()) {
-            SeedOutput::detail($line);
-
-            return;
-        }
-
-        $this->command?->info($line);
-    }
-
-    private function hasSeedOutput(): bool
-    {
-        return class_exists(SeedOutput::class)
-            && SeedOutput::isBound();
-    }
-
     private function resolveTagCount(): int
     {
         if (class_exists(SeedingConfig::class)) {
@@ -176,41 +179,6 @@ class TagSeeder extends Seeder
         }
 
         return self::DEFAULT_TAG_COUNT;
-    }
-
-    /**
-     * @return Collection<int, Media>
-     */
-    private function loadImageMediaPool(): Collection
-    {
-        $ids = Media::query()
-            ->where(function ($query): void {
-                $query
-                    ->where('mime_type', 'like', 'image/%')
-                    ->orWhereIn('mime_type', ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']);
-            })
-            ->pluck('id');
-
-        if ($ids->isEmpty()) {
-            return collect();
-        }
-
-        return Media::query()->whereIn('id', $ids)->get();
-    }
-
-    private function localizedTitle(string $locale): string
-    {
-        return Str::title($this->fakerForLocale($locale)->words(random_int(1, 3), true));
-    }
-
-    private function localizedDescription(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraph();
-    }
-
-    private function localizedContent(string $locale): string
-    {
-        return $this->fakerForLocale($locale)->paragraphs(random_int(2, 4), true);
     }
 
     private function fakerForLocale(string $locale): Generator
