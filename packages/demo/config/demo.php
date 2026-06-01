@@ -13,17 +13,11 @@ return [
 
     'default_language_count' => 3,
 
-    'default_locales' => [
-        'de_DE',
-        'en_US',
-        'es_ES',
-    ],
-
     /**
-     * Always created by DemoLocalizationStep (merged with --locales / default_locales).
-     * Required by CategorySeeder and other seeders with fixed locale lists.
+     * Locale variants for moox:demo (without --locales: first --languages entries).
+     * DemoLocalizationStep always merges these with CLI locales so entry seeders find rows.
      */
-    'ensure_locales' => [
+    'default_locales' => [
         'cs_CZ',
         'en_US',
         'de_DE',

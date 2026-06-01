@@ -29,7 +29,7 @@ class ProductSeeder extends Seeder
 
     public const DEFAULT_PRODUCT_COUNT = 100;
 
-    /** @var list<string> */
+    /** Fallback when moox/demo is not installed; otherwise {@see locales()}. */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
     /** @var list<string> */
@@ -53,7 +53,7 @@ class ProductSeeder extends Seeder
 
     protected function seed(): void
     {
-        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+        if (! $this->assertRequiredLocalizations($this->locales())) {
             return;
         }
 
@@ -82,7 +82,7 @@ class ProductSeeder extends Seeder
             for ($index = 1; $index <= $count; $index++) {
                 $status = $faker->randomElement(self::PRODUCT_STATUSES);
                 $sku = 'DEMO-'.strtoupper($faker->unique()->bothify('??###??'));
-                $imageLocale = self::LOCALES[array_rand(self::LOCALES)];
+                $imageLocale = $this->locales()[array_rand($this->locales())];
 
                 $product = Product::query()->create([
                     'is_active' => $faker->boolean(88),
@@ -106,7 +106,7 @@ class ProductSeeder extends Seeder
                     ],
                 ]);
 
-                foreach (self::LOCALES as $locale) {
+                foreach ($this->locales() as $locale) {
                     $localeFaker = $this->fakerForLocale($locale);
                     $title = $this->formatFakerWords($locale, $localeFaker, 2, 5);
                     $slug = self::DEMO_SLUG_PREFIX
@@ -152,7 +152,7 @@ class ProductSeeder extends Seeder
         $this->reportDetail(sprintf(
             '%d faker product(s) seeded with %d locale(s) each (Locale-Lock per translation).',
             $created,
-            count(self::LOCALES)
+            count($this->locales())
         ));
     }
 
@@ -190,7 +190,7 @@ class ProductSeeder extends Seeder
     private function fakerForLocale(string $locale): Generator
     {
         static $cache = [];
-        $resolvedLocale = in_array($locale, self::LOCALES, true) ? $locale : 'en_US';
+        $resolvedLocale = in_array($locale, $this->locales(), true) ? $locale : 'en_US';
 
         if (! isset($cache[$resolvedLocale])) {
             $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);

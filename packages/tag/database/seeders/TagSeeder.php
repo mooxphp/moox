@@ -28,7 +28,7 @@ class TagSeeder extends Seeder
 
     public const DEFAULT_TAG_COUNT = 100;
 
-    /** @var list<string> */
+    /** Fallback when moox/demo is not installed; otherwise {@see locales()}. */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
     /** @var list<string> */
@@ -49,7 +49,7 @@ class TagSeeder extends Seeder
 
     protected function seed(): void
     {
-        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+        if (! $this->assertRequiredLocalizations($this->locales())) {
             return;
         }
 
@@ -92,7 +92,7 @@ class TagSeeder extends Seeder
                     ],
                 ]);
 
-                foreach (self::LOCALES as $locale) {
+                foreach ($this->locales() as $locale) {
                     $localeFaker = $this->fakerForLocale($locale);
                     $title = $this->formatFakerWords($locale, $localeFaker, 1, 3);
                     $slug = self::DEMO_SLUG_PREFIX
@@ -150,7 +150,7 @@ class TagSeeder extends Seeder
         $this->reportDetail(sprintf(
             '%d faker tag(s) seeded with %d locale(s) each, %d with media link(s).',
             $created,
-            count(self::LOCALES),
+            count($this->locales()),
             $withMedia
         ));
     }
@@ -176,7 +176,7 @@ class TagSeeder extends Seeder
     private function fakerForLocale(string $locale): Generator
     {
         static $cache = [];
-        $resolvedLocale = in_array($locale, self::LOCALES, true) ? $locale : 'en_US';
+        $resolvedLocale = in_array($locale, $this->locales(), true) ? $locale : 'en_US';
 
         if (! isset($cache[$resolvedLocale])) {
             $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);

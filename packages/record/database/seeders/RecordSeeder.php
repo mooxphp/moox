@@ -26,7 +26,7 @@ class RecordSeeder extends Seeder
 
     public const DEFAULT_RECORD_COUNT = 100;
 
-    /** @var list<string> */
+    /** Fallback when moox/demo is not installed; otherwise {@see locales()}. */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
     private const PROGRESS_LOG_EVERY = 100;
@@ -42,7 +42,7 @@ class RecordSeeder extends Seeder
 
     protected function seed(): void
     {
-        if (! $this->assertRequiredLocalizations(self::LOCALES)) {
+        if (! $this->assertRequiredLocalizations($this->locales())) {
             return;
         }
 
@@ -64,7 +64,7 @@ class RecordSeeder extends Seeder
 
         DB::transaction(function () use ($count, $author, $faker, $baseUrl, $progress, &$created): void {
             for ($index = 1; $index <= $count; $index++) {
-                $locale = self::LOCALES[array_rand(self::LOCALES)];
+                $locale = $this->locales()[array_rand($this->locales())];
                 $localeFaker = $this->fakerForLocale($locale);
                 $title = $this->formatFakerWords($locale, $localeFaker, 2, 6);
                 $slug = self::DEMO_SLUG_PREFIX
@@ -107,7 +107,7 @@ class RecordSeeder extends Seeder
         $this->reportDetail(sprintf(
             '%d faker record(s) seeded (one random locale per record from %d configured locale(s)).',
             $created,
-            count(self::LOCALES)
+            count($this->locales())
         ));
     }
 
@@ -130,7 +130,7 @@ class RecordSeeder extends Seeder
     private function fakerForLocale(string $locale): Generator
     {
         static $cache = [];
-        $resolvedLocale = in_array($locale, self::LOCALES, true) ? $locale : 'en_US';
+        $resolvedLocale = in_array($locale, $this->locales(), true) ? $locale : 'en_US';
 
         if (! isset($cache[$resolvedLocale])) {
             $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);

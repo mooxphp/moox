@@ -96,7 +96,7 @@ flowchart TD
     B -->|nein| D["Static data"]
     C --> D
     D --> E["DataSeeder · moox/data"]
-    E --> F["Localizations\n(--locales + ensure_locales)"]
+    E --> F["Localizations\n(--locales + default_locales)"]
     F --> G["Demo media\n(Storage-Kopie)"]
     G --> H["UserSeeder · moox/user"]
     H --> I["Demo-User\n(falls konfiguriert)"]
@@ -109,7 +109,7 @@ Wichtig für eure Seeder:
 | Phase | Relevanz für `UserSeeder` / `CategorySeeder` |
 |-------|-----------------------------------------------|
 | `DataSeeder` | `static_languages`, Länder, Währungen — Voraussetzung für Localizations. |
-| Localizations | `CategorySeeder::LOCALES` müssen als `locale_variant` existieren; `ensure_locales` in `demo.php` ergänzt `cs_CZ`, `de_DE`, `en_US`, `pl_PL`. |
+| Localizations | `CategorySeeder::LOCALES` müssen als `locale_variant` existieren; `default_locales` in `demo.php` wird mit CLI-Locales gemerged. |
 | Demo media | Kopiert Dateien aus `resources/demo/media/`; Mediathek-Befüllung für Kategorien kommt oft aus `media`-Tabelle (vorher importieren oder `moox/media` nutzen). |
 | `UserSeeder` | Läuft **eigenständig** in der User-Phase (vor den übrigen Paket-Seedern). |
 | `CategorySeeder` | Läuft in „Package seeders“, wenn `moox/category` installiert ist — **nach** User und Localizations. |
@@ -235,13 +235,14 @@ Datei: `packages/category/database/seeders/CategorySeeder.php`
 Vor `CategorySeeder` müssen existieren:
 
 1. **Mindestens ein User** — `requireDemoAuthor()`; sonst `error` und Abbruch (zuerst `UserSeeder`).
-2. **Localizations** für alle `CategorySeeder::LOCALES`:
+2. **Localizations** für alle Locales aus `$this->locales()` (Fallback-Konstante `LOCALES`, sonst `config/demo.php`):
 
    ```php
    public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
+   // In seed(): foreach ($this->locales() as $locale) { … }
    ```
 
-   `moox:demo` legt diese über `ensure_locales` plus `--locales` an.
+   `moox:demo` legt diese über `default_locales` plus `--locales` an.
 
 3. **Optional, empfohlen:** Einträge in `media` (Bilder). Ohne Medien: Warnung, Kategorien ohne Bild.
 
@@ -431,12 +432,14 @@ use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Moox\Demo\Seeding\FormatsFakerLocaleText;
+use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 
 class ShopSeeder extends Seeder
 {
     use FormatsFakerLocaleText;
+    use ReportsMooxSeederProgress;
 
-    /** @var list<string> */
+    /** Fallback when moox/demo is not installed. */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
     public function run(): void
@@ -459,7 +462,7 @@ class ShopSeeder extends Seeder
             );
         }
 
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $localeFaker = $this->fakerForLocale($locale);
             // … translateOrNew($locale), fakerLocaleText / fakerLocaleTitle …
         }
@@ -557,7 +560,7 @@ Nach `php artisan vendor:publish --tag=demo-config` in der Host-App:
 | Schlüssel | Wirkung auf Seeder |
 |-----------|-------------------|
 | `dataset_sizes` | Grenzen für `SeedingConfig` / Factory |
-| `ensure_locales` | Wird mit CLI-Locales gemerged — **wichtig für CategorySeeder** |
+| `default_locales` | Wird mit CLI-Locales gemerged — **wichtig für CategorySeeder** |
 | `seeder_order` | Priorität bei topological sort |
 | `seeder_skip` | Paket-Slug wird übersprungen |
 | `nested_seeder_basenames` | Nur Parent-Seeder (z. B. `DataSeeder`) |
@@ -579,7 +582,7 @@ Runtime (nur während `moox:demo`, nicht in Config-Datei publiziert):
 |---------|---------|----------|
 | Paket-Seeder wird nicht ausgeführt | Nicht installiert, in `seeder_skip`, oder kein `extra.moox.install.seed` | `composer require`, `composer.json` prüfen |
 | `CategorySeeder`: No user found | `UserSeeder` nicht gelaufen | `moox:demo` komplett oder zuerst `UserSeeder` |
-| Missing `localizations` rows | Locales fehlen | `moox:demo` mit `ensure_locales` oder LocalizationSeeder |
+| Missing `localizations` rows | Locales fehlen | `moox:demo` mit `default_locales` oder LocalizationSeeder |
 | Kategorien ohne Bilder | Leere `media`-Tabelle | Mediathek befüllen oder Demo-Medien importieren |
 | Avatare fehlen | `--skip-media`, kein `moox/media`, leerer `users_path` | Option weglassen, Media-Paket, Bilder unter `assets/images/users` |
 | Zu viele/wenige User | Dataset | `--dataset=`; standalone: Default 100 Extras |

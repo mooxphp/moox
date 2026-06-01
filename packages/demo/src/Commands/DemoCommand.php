@@ -57,7 +57,7 @@ class DemoCommand extends Command
             )));
         }
 
-        $defaults = config('demo.default_locales', ['de_DE', 'en_US', 'es_ES']);
+        $defaults = config('demo.default_locales', ['cs_CZ', 'en_US', 'de_DE', 'pl_PL']);
         $count = max(1, (int) $this->option('languages'));
 
         return array_slice($defaults, 0, $count);

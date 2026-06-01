@@ -39,7 +39,7 @@ class CategorySeeder extends Seeder
 
     public const SEED_BATCH = 'category_seeder_v1';
 
-    /** @var list<string> */
+    /** Fallback when moox/demo is not installed; otherwise {@see locales()}. */
     public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
 
     private const MAX_TREE_DEPTH = 4;
@@ -72,7 +72,7 @@ class CategorySeeder extends Seeder
             return;
         }
 
-        $missingLocales = collect(self::LOCALES)
+        $missingLocales = collect($this->locales())
             ->filter(fn (string $locale): bool => ! Localization::query()->where('locale_variant', $locale)->exists());
 
         if ($missingLocales->isNotEmpty()) {
@@ -132,7 +132,7 @@ class CategorySeeder extends Seeder
                 $shouldAttachMedia = $mediaPool->isNotEmpty()
                     && $this->randomChance((int) (self::MEDIA_ATTACH_PROBABILITY * 100));
 
-                foreach (self::LOCALES as $locale) {
+                foreach ($this->locales() as $locale) {
                     $localeFaker = $this->fakerForLocale($locale);
                     $title = $this->fakerLocaleTitle($locale, $localeFaker, 'title');
                     $slug = $this->slugForTitle($title, $i, $locale);
@@ -204,7 +204,7 @@ class CategorySeeder extends Seeder
         $this->reportDetail(sprintf(
             'Seeded %d categories (%d locales each), %d media_usables links, tree depth up to %d.',
             $total,
-            count(self::LOCALES),
+            count($this->locales()),
             $withMedia,
             self::MAX_TREE_DEPTH
         ));
@@ -335,7 +335,7 @@ class CategorySeeder extends Seeder
     private function fakerForLocale(string $locale): Generator
     {
         static $cache = [];
-        $resolvedLocale = in_array($locale, self::LOCALES, true) ? $locale : 'en_US';
+        $resolvedLocale = in_array($locale, $this->locales(), true) ? $locale : 'en_US';
 
         if (! isset($cache[$resolvedLocale])) {
             $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
@@ -396,15 +396,15 @@ class CategorySeeder extends Seeder
         $roll = random_int(1, 100);
 
         if ($roll <= 28) {
-            return array_fill_keys(self::LOCALES, 'published');
+            return array_fill_keys($this->locales(), 'published');
         }
 
         if ($roll <= 48) {
-            return array_fill_keys(self::LOCALES, 'draft');
+            return array_fill_keys($this->locales(), 'draft');
         }
 
         if ($roll <= 58) {
-            return array_fill_keys(self::LOCALES, 'waiting');
+            return array_fill_keys($this->locales(), 'waiting');
         }
 
         if ($roll <= 78) {
@@ -425,12 +425,12 @@ class CategorySeeder extends Seeder
     {
         $statuses = [];
 
-        foreach (self::LOCALES as $locale) {
+        foreach ($this->locales() as $locale) {
             $statuses[$locale] = $this->weightedTranslationStatus();
         }
 
         if (count(array_unique($statuses)) < 2) {
-            $statuses[self::LOCALES[1]] = $statuses[self::LOCALES[0]] === 'published' ? 'draft' : 'published';
+            $statuses[$this->locales()[1]] = $statuses[$this->locales()[0]] === 'published' ? 'draft' : 'published';
         }
 
         return $statuses;
@@ -441,8 +441,8 @@ class CategorySeeder extends Seeder
      */
     private function mostlyPublishedTranslationStatuses(): array
     {
-        $statuses = array_fill_keys(self::LOCALES, 'published');
-        $outlierLocale = self::LOCALES[array_rand(self::LOCALES)];
+        $statuses = array_fill_keys($this->locales(), 'published');
+        $outlierLocale = $this->locales()[array_rand($this->locales())];
         $statuses[$outlierLocale] = $this->randomElement(['draft', 'waiting', 'scheduled', 'privat']);
 
         return $statuses;
@@ -453,11 +453,11 @@ class CategorySeeder extends Seeder
      */
     private function oneScheduledTranslationStatuses(): array
     {
-        $statuses = array_fill_keys(self::LOCALES, 'published');
-        $statuses[self::LOCALES[array_rand(self::LOCALES)]] = 'scheduled';
+        $statuses = array_fill_keys($this->locales(), 'published');
+        $statuses[$this->locales()[array_rand($this->locales())]] = 'scheduled';
 
-        if (count(array_filter($statuses, static fn (string $s): bool => $s === 'published')) === count(self::LOCALES)) {
-            $statuses[self::LOCALES[0]] = 'draft';
+        if (count(array_filter($statuses, static fn (string $s): bool => $s === 'published')) === count($this->locales())) {
+            $statuses[$this->locales()[0]] = 'draft';
         }
 
         return $statuses;

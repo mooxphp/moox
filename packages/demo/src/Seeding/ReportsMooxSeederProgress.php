@@ -10,6 +10,22 @@ trait ReportsMooxSeederProgress
 {
     use SeedsMooxDemoRelations;
 
+    /**
+     * @return list<string>
+     */
+    protected function locales(): array
+    {
+        $fallback = defined(static::class.'::LOCALES')
+            ? constant(static::class.'::LOCALES')
+            : MooxSeederLocales::DEFAULT;
+
+        if (! is_array($fallback)) {
+            $fallback = MooxSeederLocales::DEFAULT;
+        }
+
+        return MooxSeederLocales::resolve($fallback);
+    }
+
     protected function hasSeedOutput(): bool
     {
         return class_exists(SeedOutput::class) && SeedOutput::isBound();

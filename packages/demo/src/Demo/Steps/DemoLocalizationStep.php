@@ -7,6 +7,7 @@ namespace Moox\Demo\Demo\Steps;
 use Illuminate\Support\Facades\DB;
 use Moox\Demo\Console\DemoConsole;
 use Moox\Demo\Demo\DemoContext;
+use Moox\Demo\Seeding\MooxSeederLocales;
 use Moox\Localization\Models\Localization;
 
 final class DemoLocalizationStep
@@ -29,11 +30,7 @@ final class DemoLocalizationStep
             return;
         }
 
-        $ensureLocales = config('demo.ensure_locales', []);
-        $locales = array_values(array_unique(array_merge(
-            $context->locales,
-            is_array($ensureLocales) ? $ensureLocales : [],
-        )));
+        $locales = MooxSeederLocales::mergeForDemoRun($context->locales);
 
         if ($locales === []) {
             $this->console->skip('Localizations', 'no locales configured');
