@@ -358,5 +358,4 @@ class LocalizationResource extends BaseRecordResource
             'view' => ViewLocalization::route('/{record}'),
         ];
     }
-
 }
