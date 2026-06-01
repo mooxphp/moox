@@ -44,7 +44,10 @@ return new class extends Migration {
             $table->string('routing_domain')->nullable()->unique();
 
             $table->unsignedInteger('translation_status')->nullable();
-            $table->json('language_settings')->nullable();
+
+            $table->boolean('use_native_names')->default(true);
+            $table->boolean('show_regional_variants')->default(true);
+            $table->boolean('use_country_translations')->default(true);
             $table->boolean('use_country_icon')->default(false);
 
             $table->unique(['language_id', 'locale_variant'], 'unique_language_locale');

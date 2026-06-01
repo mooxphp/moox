@@ -36,33 +36,7 @@ return [
     |
     */
     'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [],
-        ],
-        '0' => [
-            'label' => 'LTR',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'LTR',
-                ],
-            ],
-        ],
-        '1' => [
-            'label' => 'RTL',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'RTL',
-                ],
-            ],
-        ],
+        
     ],
 
     /*
@@ -76,28 +50,5 @@ return [
     */
     'navigation_group' => 'trans//core::core.system',
     'enable-panel' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Language Selector
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for the language selector component.
-    |
-    */
-    /*
-    | Defaults for display_name (language selector labels). Can be overridden per
-    | localization row in language_settings. Does NOT control flags — see use_country_icon.
-    |
-    | See README: Language selector section
-    */
-    'language_selector' => [
-        // Native name (Deutsch) vs English name (German)
-        'use_native_names' => true,
-        // Append country from locale_variant: Deutsch (Schweiz) for de_CH
-        'show_regional_variants' => true,
-        // Translated country in parentheses: Schweiz vs Switzerland
-        'use_country_translations' => true,
-    ],
 
 ];

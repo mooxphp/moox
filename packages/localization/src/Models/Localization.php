@@ -27,7 +27,9 @@ use Moox\Data\Models\StaticLanguage;
  * @property string $routing_subdomain
  * @property string $routing_domain
  * @property int $translation_status
- * @property array $language_settings
+ * @property bool $use_native_names
+ * @property bool $show_regional_variants
+ * @property bool $use_country_translations
  * @property bool $use_country_icon
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -51,7 +53,9 @@ class Localization extends Model
         'routing_subdomain',
         'routing_domain',
         'translation_status',
-        'language_settings',
+        'use_native_names',
+        'show_regional_variants',
+        'use_country_translations',
         'use_country_icon',
     ];
 
@@ -59,10 +63,35 @@ class Localization extends Model
         'is_active_admin' => 'boolean',
         'is_active_frontend' => 'boolean',
         'is_default' => 'boolean',
+        'use_native_names' => 'boolean',
+        'show_regional_variants' => 'boolean',
+        'use_country_translations' => 'boolean',
         'use_country_icon' => 'boolean',
         'translation_status' => 'integer',
-        'language_settings' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Localization $localization): void {
+            if ($localization->is_default) {
+                $localization->is_active_admin = true;
+            }
+
+            if (! $localization->show_regional_variants) {
+                $localization->use_country_translations = false;
+            }
+        });
+
+        static::saved(function (Localization $localization): void {
+            if (! $localization->is_default) {
+                return;
+            }
+
+            static::query()
+                ->where('id', '!=', $localization->id)
+                ->update(['is_default' => false]);
+        });
+    }
 
     public function language(): BelongsTo
     {
@@ -92,31 +121,13 @@ class Localization extends Model
     }
 
     /**
-     * Get a language setting from this localization's language_settings
-     */
-    public function getLanguageSetting(string $key): bool
-    {
-        $settings = $this->language_settings ?? [];
-
-        if (! isset($settings[$key])) {
-            return config("localization.language_selector.{$key}", true);
-        }
-
-        return $settings[$key];
-    }
-
-    /**
      * Get the display name for this localization
      */
     public function getDisplayNameAttribute(): string
     {
-        $useNativeNames = $this->getLanguageSetting('use_native_names');
-        $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
-        $useCountryTranslations = $this->getLanguageSetting('use_country_translations');
+        $baseName = $this->use_native_names ? $this->language->native_name : $this->language->common_name;
 
-        $baseName = $useNativeNames ? $this->language->native_name : $this->language->common_name;
-
-        if (! $showRegionalVariants) {
+        if (! $this->show_regional_variants) {
             return $baseName;
         }
 
@@ -130,9 +141,9 @@ class Localization extends Model
                 return $baseName.' ('.strtoupper($countryCode).')';
             }
 
-            $countryName = $country->common_name; // Default fallback
+            $countryName = $country->common_name;
 
-            if ($useCountryTranslations && $country->translations) {
+            if ($this->use_country_translations && $country->translations) {
                 $currentLanguageAlpha3 = request()->get('lang') ?
                     StaticLanguage::where('alpha2', substr(request()->get('lang'), 0, 2))->first()?->alpha3_b :
                     null;
@@ -221,7 +232,6 @@ class Localization extends Model
     {
         try {
             $factory = app(Factory::class);
-            // Icons use the flag-icons-circle set prefix "flag" (e.g. flag-ch), not flag-icons-circle-ch.
             $factory->svg('flag-'.strtolower($flagCode));
 
             return true;

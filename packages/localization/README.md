@@ -67,10 +67,10 @@ display_flag  ←  use_country_icon
 | Column | Type | Default | Role |
 |--------|------|---------|------|
 | `locale_variant` | string | required | e.g. `de_CH`, `en_US`, `fr_CH` |
-| `language_settings` | JSON | `null` | Per-row overrides for name settings |
-| `use_country_icon` | boolean | `false` | Per-row: country vs language icon |
-
-Global defaults for `language_settings` keys: `config/localization.php` → `language_selector`.
+| `use_native_names` | boolean | `true` | Native vs English language name |
+| `show_regional_variants` | boolean | `true` | Append country from locale in name |
+| `use_country_translations` | boolean | `true` | Translated country name in parentheses |
+| `use_country_icon` | boolean | `false` | Country vs language flag icon |
 
 ### Display name (`display_name`)
 
@@ -83,8 +83,6 @@ Built by `Localization::getDisplayNameAttribute()`.
 | `StaticLanguage::native_name` | `StaticLanguage::common_name` (usually English) |
 | Deutsch | German |
 
-Config: `language_selector.use_native_names` (default: `true`).
-
 #### Regional (`show_regional_variants`)
 
 When **on** and `locale_variant` contains `_` (e.g. `de_CH`), appends the country in parentheses:
@@ -94,7 +92,7 @@ When **on** and `locale_variant` contains `_` (e.g. `de_CH`), appends the countr
 | Deutsch (Schweiz) | Deutsch |
 | English (United States) | English |
 
-No effect when the locale has no region suffix (`de` only). Config: `language_selector.show_regional_variants` (default: `true`).
+No effect when the locale has no region suffix (`de` only).
 
 #### Country names (`use_country_translations`)
 
@@ -104,8 +102,6 @@ Only when **Regional** is on. Turning Regional off also turns Country names off.
 |----|-----|
 | Translated name from `static_countries.translations` | `StaticCountry::common_name` |
 | Deutsch (Schweiz) | Deutsch (Switzerland) |
-
-Config: `language_selector.use_country_translations` (default: `true`).
 
 #### Name examples for `de_CH`
 
@@ -147,29 +143,12 @@ With `use_country_icon` on all three, all show CH—usually not desired for a mu
 
 ### Filament resource toggles
 
-| Column label | Setting | Affects |
-|--------------|---------|---------|
-| Native | `language_settings.use_native_names` | Name |
-| Regional | `language_settings.show_regional_variants` | Name |
-| Country names | `language_settings.use_country_translations` | Name (parentheses) |
-| Country flag | `use_country_icon` (DB column) | Flag icon |
-
-Per-row `language_settings` override global config when a key is set on that record.
-
-### Global configuration
-
-```php
-// config/localization.php
-'language_selector' => [
-    'use_native_names' => true,
-    'show_regional_variants' => true,
-    'use_country_translations' => true,
-],
-```
-
-Publish: `php artisan vendor:publish --tag=localization-config`
-
-`use_country_icon` is only per localization row (migration default: `false`).
+| Column label | Database column | Affects |
+|--------------|-----------------|---------|
+| Native | `use_native_names` | Name |
+| Regional | `show_regional_variants` | Name |
+| Country names | `use_country_translations` | Name (parentheses) |
+| Country flag | `use_country_icon` | Flag icon |
 
 ### Programmatic access
 
@@ -182,7 +161,8 @@ $localization->display_name; // e.g. "Deutsch (Schweiz)"
 $localization->display_flag; // e.g. "flag-de"
 $localization->table_flag;    // same as display_flag
 
-$localization->getLanguageSetting('show_regional_variants'); // row or config fallback
+$localization->show_regional_variants;
+$localization->use_country_icon;
 ```
 
 ### Recommended defaults
@@ -200,7 +180,7 @@ $localization->getLanguageSetting('show_regional_variants'); // row or config fa
 | `src/Models/Localization.php` | Names + flag resolution |
 | `resources/views/lang-selector.blade.php` | Admin dropdown |
 | `src/Filament/Resources/LocalizationResource.php` | Form and table toggles |
-| `config/localization.php` | Global name defaults |
+| `config/localization.php` | Filament labels, navigation, panel |
 | `database/migrations/create_localizations_table.php.stub` | Schema |
 
 ## Localization panel
