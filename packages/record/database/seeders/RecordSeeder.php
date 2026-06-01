@@ -80,7 +80,7 @@ class RecordSeeder extends Seeder
                 $record = Record::query()->create([
                     'title' => $title,
                     'slug' => Str::limit($slug, 180, ''),
-                    'description' => $this->fakerLocaleText($locale, $localeFaker, 150, 260),
+                    'description' => $this->fakerLocaleText($locale, $localeFaker, preset: 'description'),
                     'permalink' => $baseUrl.'/'.$locale.'/'.$slug,
                     'status' => $status,
                     'custom_properties' => [

@@ -110,8 +110,6 @@ class TagSeeder extends Seeder
                         $localeFaker,
                         2,
                         4,
-                        120,
-                        280,
                     ));
                     $translation->translation_status = $status;
 

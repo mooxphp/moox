@@ -118,16 +118,14 @@ class ProductSeeder extends Seeder
                     $translation->title = $title;
                     $translation->slug = Str::limit($slug, 180, '');
                     $translation->permalink = $baseUrl.'/'.$locale.'/products/'.$translation->slug;
-                    $translation->subtitle = $this->fakerLocaleSentence($locale, $localeFaker, 40, 100);
-                    $translation->excerpt = $this->fakerLocaleText($locale, $localeFaker, 80, 180, limit: 180);
+                    $translation->subtitle = $this->fakerLocaleSentence($locale, $localeFaker, 20, 50);
+                    $translation->excerpt = $this->fakerLocaleText($locale, $localeFaker, preset: 'excerpt', limit: 90);
                     $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
                     $translation->content = implode("\n\n", $this->fakerLocaleParagraphs(
                         $locale,
                         $localeFaker,
                         2,
                         5,
-                        120,
-                        280,
                     ));
                     $translation->meta_title = $title.' - '.$localeFaker->company();
                     $translation->meta_description = Str::limit($translation->description ?? '', 140, '');

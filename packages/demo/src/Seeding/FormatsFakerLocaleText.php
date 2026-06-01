@@ -15,13 +15,13 @@ trait FormatsFakerLocaleText
 
     /** @var array<string, array{0: int, 1: int}> */
     private const TEXT_PRESET_CHARS = [
-        'title' => [25, 70],
-        'tag_title' => [15, 45],
-        'subtitle' => [40, 100],
-        'excerpt' => [80, 180],
-        'description' => [130, 220],
-        'body' => [120, 280],
-        'content' => [200, 450],
+        'title' => [13, 35],
+        'tag_title' => [8, 23],
+        'subtitle' => [20, 50],
+        'excerpt' => [40, 90],
+        'description' => [40, 70],
+        'body' => [35, 80],
+        'content' => [55, 120],
     ];
 
     protected function formatFakerWords(string $locale, Generator $faker, int $minWords, int $maxWords): string
@@ -114,7 +114,7 @@ trait FormatsFakerLocaleText
             $maxChars ??= $presetMax;
         }
 
-        [$minChars, $maxChars] = $this->normalizeCharRange($minChars ?? 120, $maxChars ?? 280);
+        [$minChars, $maxChars] = $this->normalizeCharRange($minChars ?? 35, $maxChars ?? 80);
 
         $text = trim($this->generateLocaleFließtext($locale, $faker, $minChars, $maxChars));
 
@@ -128,8 +128,8 @@ trait FormatsFakerLocaleText
     protected function fakerLocaleSentence(
         string $locale,
         Generator $faker,
-        int $minChars = 25,
-        int $maxChars = 70,
+        int $minChars = 13,
+        int $maxChars = 35,
     ): string {
         $chunk = $this->generateLocaleFließtext($locale, $faker, $minChars, $maxChars);
         $sentence = $this->extractFirstSentence($chunk);
@@ -145,8 +145,8 @@ trait FormatsFakerLocaleText
         Generator $faker,
         int $minParagraphs = 3,
         int $maxParagraphs = 6,
-        int $minChars = 120,
-        int $maxChars = 280,
+        int $minChars = 35,
+        int $maxChars = 80,
     ): array {
         $count = random_int(min($minParagraphs, $maxParagraphs), max($minParagraphs, $maxParagraphs));
         $paragraphs = [];

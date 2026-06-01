@@ -114,8 +114,6 @@ class DraftSeeder extends Seeder
                         $localeFaker,
                         3,
                         6,
-                        120,
-                        280,
                     ));
                     $translation->translation_status = $status;
 
