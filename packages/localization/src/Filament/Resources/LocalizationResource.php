@@ -151,6 +151,10 @@ class LocalizationResource extends BaseRecordResource
                                 Toggle::make('is_active_frontend')
                                     ->label(__('localization::fields.is_activ_frontend'))
                                     ->default(false),
+                                Toggle::make('use_country_icon')
+                                    ->label(__('localization::fields.use_country_icon'))
+                                    ->default(false)
+                                    ->helperText(__('localization::fields.use_country_icon_help')),
                                 Toggle::make('is_default')
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false)
@@ -296,40 +300,29 @@ class LocalizationResource extends BaseRecordResource
                             }
                         }
                     }),
-                // Config Toggles Group
-                ToggleColumn::make('language_settings->use_native_names')
-                    ->label('Native')
+                // Display name & flag toggles (order: Native → Regional → Country names → Country flag)
+                ToggleColumn::make('use_native_names_setting')
+                    ->label(__('localization::fields.native'))
                     ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('use_native_names');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['use_native_names'] = $state;
-                        $record->update(['language_settings' => $settings]);
-                    }),
-                ToggleColumn::make('language_settings->show_regional_variants')
-                    ->label('Regional')
+                    ->getStateUsing(fn (Localization $record): bool => $record->getLanguageSetting('use_native_names'))
+                    ->updateStateUsing(fn (Localization $record, bool $state): bool => static::persistLanguageSetting($record, 'use_native_names', $state)),
+                ToggleColumn::make('show_regional_variants_setting')
+                    ->label(__('localization::fields.regional'))
                     ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('show_regional_variants');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['show_regional_variants'] = $state;
-                        $record->update(['language_settings' => $settings]);
-                    }),
-                ToggleColumn::make('language_settings->use_country_translations')
-                    ->label('Country')
-                    ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('use_country_translations');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['use_country_translations'] = $state;
-                        $record->update(['language_settings' => $settings]);
-                    }),
+                    ->getStateUsing(fn (Localization $record): bool => $record->getLanguageSetting('show_regional_variants'))
+                    ->updateStateUsing(fn (Localization $record, bool $state): bool => static::persistLanguageSetting($record, 'show_regional_variants', $state)),
+                ToggleColumn::make('use_country_translations_setting')
+                    ->label(__('localization::fields.country_names'))
+                    ->width(95)
+                    ->tooltip(fn (Localization $record): ?string => $record->getLanguageSetting('show_regional_variants')
+                        ? null
+                        : __('localization::fields.country_names_requires_regional'))
+                    ->disabled(fn (Localization $record): bool => ! $record->getLanguageSetting('show_regional_variants'))
+                    ->getStateUsing(fn (Localization $record): bool => $record->getLanguageSetting('use_country_translations'))
+                    ->updateStateUsing(fn (Localization $record, bool $state): bool => static::persistLanguageSetting($record, 'use_country_translations', $state)),
+                ToggleColumn::make('use_country_icon')
+                    ->label(__('localization::fields.country_flag'))
+                    ->width(95),
                 TextColumn::make('fallback_behaviour')
                     ->label(__('localization::fields.fallback_behaviour')),
                 TextColumn::make('language_routing')
@@ -357,5 +350,19 @@ class LocalizationResource extends BaseRecordResource
             'edit' => EditLocalization::route('/{record}/edit'),
             'view' => ViewLocalization::route('/{record}'),
         ];
+    }
+
+    protected static function persistLanguageSetting(Localization $record, string $key, bool $state): bool
+    {
+        $settings = $record->language_settings ?? [];
+        $settings[$key] = $state;
+
+        if ($key === 'show_regional_variants' && ! $state) {
+            $settings['use_country_translations'] = false;
+        }
+
+        $record->update(['language_settings' => $settings]);
+
+        return $state;
     }
 }

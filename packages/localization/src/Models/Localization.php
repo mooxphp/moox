@@ -28,6 +28,7 @@ use Moox\Data\Models\StaticLanguage;
  * @property string $routing_domain
  * @property int $translation_status
  * @property array $language_settings
+ * @property bool $use_country_icon
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read StaticLanguage $language
@@ -51,12 +52,14 @@ class Localization extends Model
         'routing_domain',
         'translation_status',
         'language_settings',
+        'use_country_icon',
     ];
 
     protected $casts = [
         'is_active_admin' => 'boolean',
         'is_active_frontend' => 'boolean',
         'is_default' => 'boolean',
+        'use_country_icon' => 'boolean',
         'translation_status' => 'integer',
         'language_settings' => 'array',
     ];
@@ -157,34 +160,21 @@ class Localization extends Model
      */
     public function getDisplayFlagAttribute(): string
     {
-        $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
-
-        if (in_array($this->language->alpha2, $languagesWithOwnFlag)) {
-            return $this->language->flag_icon;
-        }
-
-        $showRegionalVariants = $this->getLanguageSetting('show_regional_variants');
-
-        if (! $showRegionalVariants) {
-            return $this->language->flag_icon;
-        }
-
-        $locale = $this->locale;
-        if (str_contains($locale, '_')) {
-            $parts = explode('_', $locale, 2);
-            $countryCode = strtolower($parts[1] ?? '');
-            if ($countryCode && $this->flagExists($countryCode)) {
-                return 'flag-'.$countryCode;
-            }
-        }
-
-        return $this->language->flag_icon;
+        return $this->resolveFlagIcon();
     }
 
     /**
-     * Get the table flag for this localization (always shows regional variant)
+     * Get the table flag for this localization (same logic as display_flag)
      */
     public function getTableFlagAttribute(): string
+    {
+        return $this->resolveFlagIcon();
+    }
+
+    /**
+     * Resolve the flag icon for admin, frontend, and table views.
+     */
+    protected function resolveFlagIcon(): string
     {
         $languagesWithOwnFlag = ['ku', 'bo', 'eo', 'eu', 'cy', 'br', 'co', 'ar', 'aa'];
 
@@ -192,16 +182,36 @@ class Localization extends Model
             return $this->language->flag_icon;
         }
 
-        $locale = $this->locale;
-        if (str_contains($locale, '_')) {
-            $parts = explode('_', $locale, 2);
-            $countryCode = strtolower($parts[1] ?? '');
-            if ($countryCode && $this->flagExists($countryCode)) {
-                return 'flag-'.$countryCode;
+        if ($this->use_country_icon) {
+            $countryFlag = $this->resolveCountryFlagFromLocale();
+
+            if ($countryFlag !== null) {
+                return $countryFlag;
             }
         }
 
         return $this->language->flag_icon;
+    }
+
+    /**
+     * Get the country flag from the locale variant (e.g. de_CH -> flag-ch).
+     */
+    protected function resolveCountryFlagFromLocale(): ?string
+    {
+        $locale = $this->locale;
+
+        if (! str_contains($locale, '_')) {
+            return null;
+        }
+
+        $parts = explode('_', $locale, 2);
+        $countryCode = strtolower($parts[1] ?? '');
+
+        if ($countryCode && $this->flagExists($countryCode)) {
+            return 'flag-'.$countryCode;
+        }
+
+        return null;
     }
 
     /**
@@ -211,7 +221,8 @@ class Localization extends Model
     {
         try {
             $factory = app(Factory::class);
-            $factory->svg("flag-icons-circle-{$flagCode}");
+            // Icons use the flag-icons-circle set prefix "flag" (e.g. flag-ch), not flag-icons-circle-ch.
+            $factory->svg('flag-'.strtolower($flagCode));
 
             return true;
         } catch (SvgNotFound $e) {

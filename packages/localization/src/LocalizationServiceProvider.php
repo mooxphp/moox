@@ -43,7 +43,6 @@ class LocalizationServiceProvider extends MooxServiceProvider
             ->hasConfigFile(['localization'])
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations()
             ->hasCommands()
             ->hasMigration('create_localizations_table');
     }

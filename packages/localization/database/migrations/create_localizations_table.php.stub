@@ -45,6 +45,7 @@ return new class extends Migration {
 
             $table->unsignedInteger('translation_status')->nullable();
             $table->json('language_settings')->nullable();
+            $table->boolean('use_country_icon')->default(false);
 
             $table->unique(['language_id', 'locale_variant'], 'unique_language_locale');
             $table->timestamps();

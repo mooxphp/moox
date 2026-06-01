@@ -17,175 +17,246 @@ Curious what the install command does? See manual installation below.
 
 ## What it does
 
-- Will create a new table `localizations` with the following columns:
-    - `language_id`
-    - `routing_path`
-    - `title`
-    - `description`
-    - `keywords`
-    - `author`
-    - `created_at`
-    - `updated_at`
+- Creates the `localizations` table (language/locale routing, admin/frontend visibility, fallback behaviour, per-row display settings).
+- Integrates with `astrotomic/laravel-translatable` and `moox/core`.
+- Provides a **language selector** for Filament (flags + display names) and a Livewire **language switch** component.
+- Optional Localization Filament panel (`enable-panel` in config).
 
-- Has dependencies to the `astrotomic/laravel-translatable` and `moox/core` package.
-- Has Language Switcher Livewire Component and LocalizationPanelProvider.
+## Language selector: names, flags, and settings
 
+How Moox builds **display names** and **flag icons** for each localization, and how the Filament toggles relate to each other.
 
-#### LocalizationPanelProvider
+### Where this appears
 
-To use the LocalizationPanelProvider, you need to enable it in the config file:
+| Place | Attribute | Purpose |
+|-------|-----------|---------|
+| Admin language dropdown (`lang-selector` blade) | `display_name`, `display_flag` | Current language + list of alternatives |
+| Localization index table | `display_name`, `table_flag` | Overview of all locales |
+| Translation columns (Draft, News, Media, …) | `display_flag` | Per-locale flag in translation UI |
+| Filament create/edit form | Toggles + `use_country_icon` | Configure each localization |
 
-```php
-    'enable-panel' => true,
-``` 
-now the panel will be available at `/localization`
+The Livewire `language-switch` component currently shows **language codes only** (no flags). Use `display_flag` when adding flags there.
 
+### Admin language selector (`lang-selector`)
 
-#### Language Switcher
-Include a Language switcher which wil rely on your created locales. 
-To include it in filament panel 
-```
-->renderHook(
-                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
-            );
+For Filament resources with translations (Draft, News, Category, Media, etc.):
 
-```
-or just use the livewire component in your blade view:
 ```blade
-@livewire('language-switch',['context'=>'backend'])
+@include('localization::lang-selector')
 ```
 
-#### LanguageMiddleware
+Or register a render hook on your panel. The view loads active localizations (`is_active_admin` or `is_active_frontend`), shows `display_flag` and `display_name` on the trigger, and lists alternatives the same way. Pass `locale_variant` as the `lang` query parameter so the correct regional entry is selected.
 
-The LanguageMiddleware is used to set a session cookie for the language.
+### Two separate concerns
 
-#### Tabs and Translation
+**Names** and **flags** are configured independently:
 
-Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
+```
+display_name  ←  use_native_names
+                  show_regional_variants
+                  use_country_translations
+
+display_flag  ←  use_country_icon
+                  (+ language-specific exceptions, see below)
+```
+
+**Regional** affects **names only**, not flags. Country vs language flags are controlled only by **Country flag** (`use_country_icon`).
+
+### Database: `localizations` table
+
+| Column | Type | Default | Role |
+|--------|------|---------|------|
+| `locale_variant` | string | required | e.g. `de_CH`, `en_US`, `fr_CH` |
+| `language_settings` | JSON | `null` | Per-row overrides for name settings |
+| `use_country_icon` | boolean | `false` | Per-row: country vs language icon |
+
+Global defaults for `language_settings` keys: `config/localization.php` → `language_selector`.
+
+### Display name (`display_name`)
+
+Built by `Localization::getDisplayNameAttribute()`.
+
+#### Native (`use_native_names`)
+
+| On | Off |
+|----|-----|
+| `StaticLanguage::native_name` | `StaticLanguage::common_name` (usually English) |
+| Deutsch | German |
+
+Config: `language_selector.use_native_names` (default: `true`).
+
+#### Regional (`show_regional_variants`)
+
+When **on** and `locale_variant` contains `_` (e.g. `de_CH`), appends the country in parentheses:
+
+| On | Off |
+|----|-----|
+| Deutsch (Schweiz) | Deutsch |
+| English (United States) | English |
+
+No effect when the locale has no region suffix (`de` only). Config: `language_selector.show_regional_variants` (default: `true`).
+
+#### Country names (`use_country_translations`)
+
+Only when **Regional** is on. Turning Regional off also turns Country names off. Controls the country part in parentheses:
+
+| On | Off |
+|----|-----|
+| Translated name from `static_countries.translations` | `StaticCountry::common_name` |
+| Deutsch (Schweiz) | Deutsch (Switzerland) |
+
+Config: `language_selector.use_country_translations` (default: `true`).
+
+#### Name examples for `de_CH`
+
+| Native | Regional | Country names | Result |
+|--------|----------|---------------|--------|
+| off | off | — | German |
+| on | off | — | Deutsch |
+| on | on | off | Deutsch (Switzerland) |
+| on | on | on | Deutsch (Schweiz) |
+
+### Display flag (`display_flag` / `table_flag`)
+
+Built by `Localization::resolveFlagIcon()`. `display_flag` and `table_flag` always use the **same logic**.
+
+#### Country flag (`use_country_icon`)
+
+| Value | Behaviour for `de_CH` |
+|-------|------------------------|
+| `false` (default) | Language flag → `flag-de` |
+| `true` | Country flag from locale suffix → `flag-ch` |
+
+Country code = part after `_` in `locale_variant`, lowercased. Icon is used only if it exists (`flagExists()`).
+
+#### Languages with a dedicated flag
+
+Always use their language-specific icon, regardless of `use_country_icon`:
+
+`ku`, `bo`, `eo`, `eu`, `cy`, `br`, `co`, `ar`, `aa`
+
+#### Swiss site example (`de_CH`, `it_CH`, `fr_CH`)
+
+| locale_variant | `use_country_icon` | Flag shown |
+|----------------|--------------------|------------|
+| `de_CH` | `false` | DE |
+| `it_CH` | `false` | IT |
+| `fr_CH` | `false` | FR |
+
+With `use_country_icon` on all three, all show CH—usually not desired for a multilingual Swiss site.
+
+### Filament resource toggles
+
+| Column label | Setting | Affects |
+|--------------|---------|---------|
+| Native | `language_settings.use_native_names` | Name |
+| Regional | `language_settings.show_regional_variants` | Name |
+| Country names | `language_settings.use_country_translations` | Name (parentheses) |
+| Country flag | `use_country_icon` (DB column) | Flag icon |
+
+Per-row `language_settings` override global config when a key is set on that record.
+
+### Global configuration
 
 ```php
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-        ],
+// config/localization.php
+'language_selector' => [
+    'use_native_names' => true,
+    'show_regional_variants' => true,
+    'use_country_translations' => true,
+],
 ```
 
-All options for Tabs are explained in [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs).
+Publish: `php artisan vendor:publish --tag=localization-config`
 
-## Manual Installation
+`use_country_icon` is only per localization row (migration default: `false`).
 
-Instead of using the install-command `php artisan localization:install` you are able to install this package manually step by step:
+### Programmatic access
+
+```php
+use Moox\Localization\Models\Localization;
+
+$localization = Localization::where('locale_variant', 'de_CH')->first();
+
+$localization->display_name; // e.g. "Deutsch (Schweiz)"
+$localization->display_flag; // e.g. "flag-de"
+$localization->table_flag;    // same as display_flag
+
+$localization->getLanguageSetting('show_regional_variants'); // row or config fallback
+```
+
+### Recommended defaults
+
+| Scenario | Native | Regional | Country names | Country flag |
+|----------|--------|----------|---------------|--------------|
+| Swiss multilingual (`de_CH`, `it_CH`, `fr_CH`) | on | on | on | **off** |
+| Simple list, no region in UI | on | off | — | off |
+| Emphasize country over language (rare) | on | on | on | **on** |
+
+### Related code
+
+| File | Responsibility |
+|------|----------------|
+| `src/Models/Localization.php` | Names + flag resolution |
+| `resources/views/lang-selector.blade.php` | Admin dropdown |
+| `src/Filament/Resources/LocalizationResource.php` | Form and table toggles |
+| `config/localization.php` | Global name defaults |
+| `database/migrations/create_localizations_table.php.stub` | Schema |
+
+## Localization panel
+
+Enable in config:
+
+```php
+'enable-panel' => true,
+```
+
+Panel URL: `/localization`
+
+## Language Switcher (Livewire)
+
+Relies on locales marked active for admin or frontend. Text codes only today.
+
+Filament panel hook:
+
+```php
+->renderHook(
+    \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
+    fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
+)
+```
+
+Blade:
+
+```blade
+@livewire('language-switch', ['context' => 'backend'])
+```
+
+## Tabs and translation
+
+Moox Core features like Dynamic Tabs and Translatable Config. See the config file; [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs) explain tabs.
+
+## Manual installation
 
 ```bash
-// Publish and run the migrations:
 php artisan vendor:publish --tag="localization-migrations"
 php artisan migrate
 
-// Publish the config file with:
 php artisan vendor:publish --tag="localization-config"
 ```
-## use it 
 
-We are requiring astrotomic/laravel-translatable
-to use it see doc: https://docs.astrotomic.info/laravel-translatable
+## Astrotomic translatable
+
+We require [astrotomic/laravel-translatable](https://docs.astrotomic.info/laravel-translatable).
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+See [CHANGELOG](CHANGELOG.md).
 
-## Security Vulnerabilities
+## Security
 
-Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
-
-## Credits
-
--   [All Contributors](../../contributors)
+See [security policy](https://github.com/mooxphp/moox/security/policy).
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT — see [LICENSE](LICENSE.md).

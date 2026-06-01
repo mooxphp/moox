@@ -85,10 +85,19 @@ return [
     | Configuration for the language selector component.
     |
     */
+    /*
+    | Defaults for display_name (language selector labels). Can be overridden per
+    | localization row in language_settings. Does NOT control flags — see use_country_icon.
+    |
+    | See README: Language selector section
+    */
     'language_selector' => [
-        'use_native_names' => true, // Use native language names instead of English names
-        'show_regional_variants' => true, // Show regional variants (e.g., de_CH, en_US)
-        'use_country_translations' => true, // Use translated country names (e.g., Österreich for German, Austria for English)
+        // Native name (Deutsch) vs English name (German)
+        'use_native_names' => true,
+        // Append country from locale_variant: Deutsch (Schweiz) for de_CH
+        'show_regional_variants' => true,
+        // Translated country in parentheses: Schweiz vs Switzerland
+        'use_country_translations' => true,
     ],
 
 ];
