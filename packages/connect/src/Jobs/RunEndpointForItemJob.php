@@ -154,7 +154,6 @@ final class RunEndpointForItemJob implements ShouldQueue
                 }
             }
         }
-
     }
 
     public function failed(Throwable $e): void
