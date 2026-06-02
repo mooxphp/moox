@@ -122,8 +122,14 @@ return [
                 'delivery_address',
             ],
             'owner_types' => [
-                'Moox\Company\Models\Company' => 'Company',
-                // 'Heco\Contact\Models\Contact' => 'Contact',
+                // 'Moox\Company\Models\Company' => [
+                //     'label' => 'Company',
+                //     'title_attribute' => 'display_name',
+                // ],
+                // 'Moox\Contact\Models\Contact' => [
+                //     'label' => 'Contact',
+                //     'title_attribute' => 'display_name',
+                // ],
             ],
         ],
     ],
