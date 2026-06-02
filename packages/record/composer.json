@@ -23,7 +23,8 @@
     "autoload": {
         "psr-4": {
             "Moox\\Record\\": "src",
-            "Moox\\Record\\Database\\Factories\\": "database/factories"
+            "Moox\\Record\\Database\\Factories\\": "database/factories",
+            "Moox\\Record\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {
@@ -33,7 +34,10 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "stable",
+            "install": {
+                "seed": "database/seeders/RecordSeeder.php"
+            }
         }
     },
     "minimum-stability": "stable",

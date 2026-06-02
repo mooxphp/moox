@@ -52,6 +52,7 @@
             "type": "moox-plugin",
             "install": {
                 "auto_migrate": "database/migrations",
+                "seed": "database/seeders/ProductSeeder.php",
                 "auto_publish": "moox-product-config",
                 "auto_entities": {
                     "Product": true

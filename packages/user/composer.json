@@ -17,14 +17,16 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "moox/media": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\User\\": "src"
+            "Moox\\User\\": "src",
+            "Moox\\User\\Database\\Seeders\\": "database/seeders"
         }
     },
     "extra": {
@@ -34,7 +36,10 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "stable",
+            "install": {
+                "seed": "database/seeders/UserSeeder.php"
+            }
         }
     },
     "prefer-stable": true

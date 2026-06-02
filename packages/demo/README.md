@@ -1,69 +1,195 @@
 # Moox Demo
 
-Demo jobs and Artisan commands for testing [Moox Jobs](../jobs/README.md) (progress, batches, failures, timeouts).
+Seed demo data for **installed** Moox packages: static reference data, localizations, package seeders (dependency-aware order), factory-generated entities, and optional demo media files.
 
-Copy the jobs and commands into your Laravel app (`app/Jobs/`, `app/Console/Commands/`), then register the schedule in `app/Console/Kernel.php` (or your scheduler of choice).
+Requires **`moox/core`**. Package discovery for `moox:demo` lives in this package (`Moox\Demo\Support\MooxPackageDiscovery`). Other Moox packages are used at runtime when installed (`moox/data`, `moox/localization`, `moox/media`, `moox/draft`, etc.).
 
-## What each job simulates
+For queue job examples, see **[Moox Jobs](../jobs/README.md)**.
 
-### DemoJob (`moox:demojob`)
+## Requirements
 
-A long-running job with a progress bar (`JobProgress`): 10 steps of 10% each, with a 10-second pause between steps — useful for seeing “Running” jobs and progress in Filament.
+- PHP 8.2+
+- Laravel 12+ (Moox dev app)
+- `moox/core`
+- Migrations for packages you want to seed (`php artisan moox:install` recommended)
 
-### BatchJob (`moox:batchjob`)
+### Optional packages (features)
 
-Dispatches a Laravel job batch with 14× `ShortJob` — exercises the Batches view in Moox Jobs.
+| Package | Used for |
+|---------|----------|
+| `moox/data` | Countries, languages, currencies (`DataSeeder`) |
+| `moox/localization` | Localization records |
+| `moox/media` | Mediathek + demo file import |
+| `moox/category`, `moox/draft`, `moox/product`, … | Package seeders + factory entities |
 
-### ShortJob
-
-A fast job with progress, batch-aware (exits early if the batch was cancelled).
-
-### LongJob (`moox:longjob`)
-
-A very long run (20 seconds per percentage step, 1200 s timeout) — simulates a slow or “stuck” long-running job.
-
-### FailJob (`moox:failjob`)
-
-Throws an exception on purpose — ends up in Failed Jobs; useful for testing retries and backoff.
-
-### TimeoutJob (`moox:timeoutjob`)
-
-10 s timeout but runs longer (progress + `sleep`) — useful for testing timeout behavior.
-
-Each job sets `$tries`, `$timeout`, and `$backoff` so you can also observe retry logic in the UI.
-
-## Commands
-
-| Command | Description |
-| --- | --- |
-| `moox:demojob` | Dispatch the demo job (progress) |
-| `moox:batchjob` | Dispatch the batch job |
-| `moox:failjob` | Dispatch a job that fails |
-| `moox:longjob` | Dispatch a long-running job |
-| `moox:shortjob` | Dispatch a short job |
-| `moox:timeoutjob` | Dispatch a job that times out |
-
-Run manually, for example:
+## Installation
 
 ```bash
-php artisan moox:demojob
+composer require moox/demo
 ```
 
-## Schedule
+In the Moox monorepo dev app, enable `demo` in `config/devlink.php` and run `composer update`.
 
-Add this to the `schedule()` method in `app/Console/Kernel.php`:
+No Filament entity is registered by this package. You do **not** need a separate `moox:install` step for `moox/demo` itself.
 
-```php
-protected function schedule(Schedule $schedule): void
-{
-    $schedule->command('moox:batchjob')->daily();
-    $schedule->command('moox:demojob')->hourly();
+## Prerequisites
 
-    // Optional demo schedules (uncomment as needed):
-    // $schedule->command('moox:failjob')->cron('0 */3 * * *');        // Every 3 minutes
-    // $schedule->command('moox:longjob')->cron('0 */45 * * *');       // Every 45 minutes
-    // $schedule->command('moox:timeoutjob')->cron('0 */20 * * *');    // Every 20 minutes
-}
+1. Install Moox packages you need (`php artisan moox:install`).
+2. For category seeding, a user must exist — `moox:demo` can create a demo user (see [Configuration](#configuration)).
+
+## Command: `php artisan moox:demo`
+
+Seeds the application using installed Moox packages. Packages that are not installed are skipped.
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--languages` | integer | `3` | Number of localizations when `--locales` is omitted |
+| `--locales` | string | — | Comma-separated locale variants (e.g. `de_DE,en_GB,fr_FR`). Overrides `--languages` |
+| `--dataset` | string | `small` | Records per entity for factory seeding: `small`, `medium`, `large`, `huge` |
+| `--fresh` | flag | `false` | Runs `migrate:fresh` before seeding (**destroys all data**) |
+| `--skip-seeders` | flag | `false` | Skips package entry seeders |
+| `--skip-factories` | flag | `false` | Skips factory-based entity seeding |
+| `--skip-media` | flag | `false` | Skips copying files from `resources/demo/media/` |
+| `-v`, `-vv` | flag | — | Verbose output (seeder order, skipped steps) |
+
+### Dataset sizes
+
+| `--dataset` | Records per factory entity |
+|-------------|----------------------------|
+| `small` | 100 |
+| `medium` | 1,000 |
+| `large` | 10,000 |
+| `huge` | 100,000 |
+
+Configured in `config/demo.php` under `dataset_sizes`.
+
+### What the command does (pipeline)
+
+1. **`--fresh`** — optional `migrate:fresh --force` (with confirmation in interactive mode).
+2. **`moox/data`** — runs `DataSeeder` only (static countries, languages, currencies, …).
+3. **Localizations** — creates/updates rows for `--locales` or default locales (`de_DE`, `en_US`, `es_ES`).
+4. **Demo media** — copies `resources/demo/media/*` to the configured storage disk.
+5. **Demo user** — creates `demo@moox.org` if no user exists (when enabled in config).
+6. **Other package seeders** — runs one **entry seeder** per installed Moox package in **dependency order** (topological sort + `config/demo.php` priorities). Skips nested seeders already called by `DataSeeder`.
+7. **Factory seeding** — for packages with `extra.moox.install.auto_entities` and a model factory, creates `--dataset` records (with locales when factories support `withLocales()` / `withTranslationLocales()`).
+
+### Examples
+
+Minimal demo (3 locales, 100 records per factory entity):
+
+```bash
+php artisan moox:demo
 ```
 
-Ensure the Laravel scheduler runs (`php artisan schedule:work` locally, or a cron entry for `schedule:run` in production).
+Custom locales and medium dataset:
+
+```bash
+php artisan moox:demo --locales=de_DE,en_GB,fr_FR,ar_IR,es_ES --dataset=medium
+```
+
+Reset database and seed:
+
+```bash
+php artisan moox:demo --fresh --dataset=small
+```
+
+Only seeders and localizations (no factories, no media files):
+
+```bash
+php artisan moox:demo --skip-factories --skip-media
+```
+
+Large stress test (can take a long time and use significant memory):
+
+```bash
+php artisan moox:demo --dataset=huge
+```
+
+## Seeder documentation
+
+**German, in-depth guide** (registration, pipeline, `UserSeeder` + `CategorySeeder` as reference implementations, Demo API, troubleshooting):
+
+→ **[docs/SEEDERS.md](docs/SEEDERS.md)**
+
+## Seeder order and dependencies
+
+Seeders are **not** run in alphabetical file order. `moox:demo` uses:
+
+- **Topological sort** of `moox/*` composer dependencies
+- **One entry seeder per package** (`extra.moox.install.seed`, e.g. `DataSeeder`, not `StaticLanguageSeeder` alone)
+- **Manual priority** via `seeder_order` in `config/demo.php`
+
+Typical order:
+
+```text
+moox/data (DataSeeder)
+  → localizations (CLI step or LocalizationSeeder)
+  → demo media / moox/media
+  → demo user
+  → moox/attribute, moox/tag, moox/category, moox/draft, …
+  → factory loops (product, draft, …)
+```
+
+`CategorySeeder` expects users, localizations, and media — run `moox:demo` after `moox/data` and prefer having `moox/media` installed.
+
+## Demo media
+
+### Static asset packs (offline)
+
+Bundled under `resources/demo/assets/`:
+
+```text
+assets/images/products/   # product / category photos
+assets/images/users/      # user avatar photos
+assets/files/pdf/         # PDF samples
+assets/files/documents/   # txt, docx, xlsx
+assets/files/audio/       # mp3 sample
+assets/videos/short/      # mp4 / webm clips
+```
+
+Sources and licenses: [`resources/demo/assets/MEDIA_SOURCES.md`](resources/demo/assets/MEDIA_SOURCES.md).
+
+### Storage copy (root media folder)
+
+Files placed directly in `resources/demo/media/` (not subfolders) are copied to `storage` on the disk defined in `config/demo.php` (`media.disk`, `media.directory`). When `moox/media` is installed, attach media to entities via category/draft seeders or the Mediathek UI.
+
+## Configuration
+
+Publish config:
+
+```bash
+php artisan vendor:publish --tag=demo-config
+```
+
+Key settings in `config/demo.php`:
+
+- `dataset_sizes` — map dataset name → record count
+- `default_locales` / `default_language_count`
+- `seeder_order` — slug priority list
+- `seeder_skip` — packages never seeded by demo (e.g. `demo`, `core`)
+- `nested_seeder_basenames` — seeders only invoked by a parent seeder
+- `demo_user` — auto-create demo user for category seeding
+
+Factories can read `config('demo.locales')` and `config('demo.dataset_count')` during the factory step.
+
+## Troubleshooting
+
+| Issue | Action |
+|-------|--------|
+| No languages in `static_languages` | Install `moox/data`, run `moox:demo` (or `DataSeeder` first) |
+| Category seeder fails / no user | Enable `demo_user` in config or run `php artisan make:filament-user` |
+| `huge` runs out of memory or time | Use `medium` or `small`, or `--skip-factories` |
+| Seeder class not found | Ensure `extra.moox.install.seed` points to a class under `Moox\{Package}\Database\Seeders` |
+| Nothing seeded for a package | Package may not be installed or listed in `seeder_skip` |
+
+## Related commands
+
+| Command | Description |
+|---------|-------------|
+| `php artisan moox:install` | Install Moox packages (migrations, configs, plugins) |
+
+## License
+
+MIT. See [LICENSE.md](LICENSE.md) when present.

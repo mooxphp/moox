@@ -44,6 +44,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read Category|null $parent
  *
  * @method static CategoryFactory factory($count = null, $state = [])
+ * @method static void fixTree()
  */
 class Category extends BaseDraftModel implements HasMedia
 {
@@ -90,6 +91,7 @@ class Category extends BaseDraftModel implements HasMedia
         'is_active' => 'boolean',
         'weight' => 'integer',
         'count' => 'integer',
+        'image' => 'json',
         'basedata' => 'json',
         'due_at' => 'datetime',
         'uuid' => 'string',

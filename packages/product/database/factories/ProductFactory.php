@@ -59,9 +59,6 @@ class ProductFactory extends Factory
         });
     }
 
-    /**
-     * @param  list<string>  $locales
-     */
     public function withTranslationLocales(string ...$locales): static
     {
         $locales = array_values(array_unique($locales));
@@ -141,12 +138,12 @@ class ProductFactory extends Factory
             'title' => $title,
             'slug' => $slug,
             'permalink' => 'https://example.test/products/'.$slug,
-            'subtitle' => $this->faker->optional(0.7)->sentence(4) ?? '',
-            'excerpt' => $this->faker->optional(0.8)->text(180) ?? '',
+            'subtitle' => $this->faker->optional(0.7)->sentence(4) ?: '',
+            'excerpt' => $this->faker->optional(0.8)->text(180) ?: '',
             'description' => $this->faker->paragraph(),
             'content' => $this->faker->paragraphs(2, true),
-            'meta_title' => $this->faker->optional(0.6)->sentence(6) ?? '',
-            'meta_description' => $this->faker->optional(0.6)->text(140) ?? '',
+            'meta_title' => $this->faker->optional(0.6)->sentence(6) ?: '',
+            'meta_description' => $this->faker->optional(0.6)->text(140) ?: '',
         ];
     }
 }
