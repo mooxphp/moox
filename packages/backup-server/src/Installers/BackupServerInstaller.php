@@ -33,7 +33,7 @@ class BackupServerInstaller extends AbstractAssetInstaller
     protected function getDefaultConfig(): array
     {
         $config = parent::getDefaultConfig();
-        $config['priority'] =10;
+        $config['priority'] = 10;
 
         return $config;
     }

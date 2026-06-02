@@ -113,7 +113,6 @@ final class RunDetailForListJob implements ShouldQueue
             'status_code' => '202',
             'error_message' => null,
         ]);
-
     }
 
     public function failed(Throwable $e): void
