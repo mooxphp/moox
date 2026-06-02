@@ -10,7 +10,7 @@
             compact
         >
             <x-slot name="afterHeader">
-                <div class="flex gap-1">
+                <div class="fi-tree-actions">
                     <x-filament::icon-button
                         type="button"
                         icon="heroicon-m-arrows-pointing-out"
@@ -34,7 +34,7 @@
             </x-slot>
 
             <div
-                class="fi-tabs fi-vertical fi-contained w-full max-h-[calc(100vh-22rem)] overflow-y-auto"
+                class="fi-tabs fi-vertical fi-contained fi-tree-scroll-panel"
                 wire:key="resource-tree-{{ md5(json_encode($treeBranchIdsWithChildren)) }}"
                 x-data
                 x-init="$store.filamentTreeIndex.configure(@js($treeBranchIdsWithChildren), @js($treeAncestorIdsForSelection))"
@@ -53,7 +53,7 @@
                     type="button"
                     wire:click="createRootNode"
                     icon="heroicon-m-plus"
-                    class="w-full"
+                    class="fi-tree-full-width"
                 >
                     {{ $configuration->createRootLabel() }}
                 </x-filament::button>
@@ -81,7 +81,7 @@
                 compact
             >
                 <div
-                    class="max-h-[calc(100vh-14rem)] overflow-y-auto"
+                    class="fi-tree-inspector-scroll"
                     wire:key="tree-index-inspector-{{ $selectedRecordId }}"
                 >
                     @livewire($inspectorPageClass, ['record' => $selectedRecordId], key('tree-inspector-'.$selectedRecordId))
@@ -105,7 +105,11 @@
                 icon="heroicon-o-pencil-square"
                 compact
             >
-                <form id="tree-index-inspector-form" wire:submit="saveSelectedRecord" class="fi-sc fi-sc-has-gap flex flex-col">
+                <form
+                    id="tree-index-inspector-form"
+                    wire:submit="saveSelectedRecord"
+                    class="fi-sc fi-sc-has-gap fi-tree-form"
+                >
                     <x-filament::section compact secondary>
                         @include('filament-tree-index::livewire.tree-index-form', [
                             'configuration' => $configuration,
@@ -115,8 +119,8 @@
                 </form>
 
                 <x-slot name="footer">
-                    <div class="fi-sc fi-sc-has-gap flex flex-wrap items-center justify-between">
-                        <div class="flex flex-wrap gap-2">
+                    <div class="fi-sc fi-sc-has-gap fi-tree-footer">
+                        <div class="fi-tree-footer-actions">
                             <x-filament::button
                                 type="submit"
                                 form="tree-index-inspector-form"

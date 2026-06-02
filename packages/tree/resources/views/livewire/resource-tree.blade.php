@@ -9,9 +9,9 @@
         wire:sort:group-id="{{ $parentId ?? 'root' }}"
     @endif
     @class([
-        'fi-sc fi-sc-has-gap flex flex-col',
-        'min-h-10' => $isRoot ?? false,
-        'mt-1' => ! ($isRoot ?? false),
+        'fi-sc fi-sc-has-gap fi-tree-list',
+        'fi-tree-list-root' => $isRoot ?? false,
+        'fi-tree-list-child' => ! ($isRoot ?? false),
     ])
     @if ($isRoot ?? false)
         role="tree"

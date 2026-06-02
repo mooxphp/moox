@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Tree;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\HtmlString;
@@ -21,6 +23,10 @@ class TreeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-tree-index');
+
+        FilamentAsset::register([
+            Css::make('tree-index', __DIR__.'/../resources/css/tree.css'),
+        ], 'moox/tree');
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::SCRIPTS_BEFORE,

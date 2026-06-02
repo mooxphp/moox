@@ -1,0 +1,84 @@
+.fi-tree-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.fi-tree-list-root {
+    min-height: 2.5rem;
+}
+
+.fi-tree-list-child {
+    margin-top: 0.25rem;
+}
+
+.fi-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.fi-tree-item-content {
+    min-width: 0;
+    flex: 1 1 0%;
+}
+
+.fi-tree-item-button {
+    width: 100%;
+    text-align: start;
+}
+
+.fi-tree-item-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fi-tree-branch {
+    padding-inline-start: 1rem;
+}
+
+.fi-tree-chevron {
+    transition: transform 150ms ease-in-out;
+}
+
+.fi-tree-chevron-open {
+    transform: rotate(90deg);
+}
+
+.fi-tree-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.fi-tree-scroll-panel {
+    max-height: calc(100vh - 22rem);
+    overflow-y: auto;
+}
+
+.fi-tree-inspector-scroll {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+}
+
+.fi-tree-full-width {
+    width: 100%;
+}
+
+.fi-tree-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.fi-tree-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fi-tree-footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
