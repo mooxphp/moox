@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Resources;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -142,7 +142,6 @@ class LocalizationResource extends BaseRecordResource
                                     ->label(__('localization::fields.is_activ_admin'))
                                     ->default(true)
                                     ->disabled(function ($get, $livewire) {
-                                        // Disabled when this localization is set as default
                                         $record = $livewire->record;
                                         $isDefault = $get('is_default') ?? ($record !== null ? $record->is_default : false);
 
@@ -155,39 +154,55 @@ class LocalizationResource extends BaseRecordResource
                                     ->label(__('localization::fields.is_default'))
                                     ->default(false)
                                     ->disabled(function ($get, $livewire) {
-                                        // Disabled when English is selected as default
                                         $record = $livewire->record;
                                         $localeVariant = $get('locale_variant') ?? ($record !== null ? $record->locale_variant : '');
                                         $isDefault = $get('is_default') ?? ($record !== null ? $record->is_default : false);
 
-                                        // If it is an English localization AND already set as default
                                         if (strpos($localeVariant, 'en_') === 0 && $isDefault) {
                                             return true;
                                         }
 
                                         return false;
                                     })
-                                    ->afterStateUpdated(function ($state, $set, $get, $livewire) {
+                                    ->afterStateUpdated(function ($state, $set, $livewire) {
                                         if ($state) {
-                                            // When activated as default, automatically set is_active_admin to true
                                             $set('is_active_admin', true);
 
                                             $currentRecordId = $livewire->record?->id;
-                                            $languageId = $get('language_id');
 
-                                            Localization::where('language_id', $languageId)
-                                                ->when($currentRecordId, function ($query) use ($currentRecordId) {
-                                                    $query->where('id', '!=', $currentRecordId);
-                                                })
+                                            Localization::query()
+                                                ->when($currentRecordId, fn ($query) => $query->where('id', '!=', $currentRecordId))
                                                 ->update(['is_default' => false]);
                                         } else {
-                                            // When default is deactivated, always set en_US as default
                                             $enUsLocale = Localization::where('locale_variant', 'en_US')->first();
-                                            if ($enUsLocale) {
+                                            if ($enUsLocale && $enUsLocale->id !== $livewire->record?->id) {
                                                 $enUsLocale->update(['is_default' => true, 'is_active_admin' => true]);
                                             }
                                         }
                                     }),
+                                Toggle::make('use_native_names')
+                                    ->label(__('localization::fields.use_native_names'))
+                                    ->default(true),
+                                Toggle::make('show_regional_variants')
+                                    ->label(__('localization::fields.show_regional_variants'))
+                                    ->default(true)
+                                    ->live()
+                                    ->afterStateUpdated(function (bool $state, Set $set): void {
+                                        if (! $state) {
+                                            $set('use_country_translations', false);
+                                        }
+                                    }),
+                                Toggle::make('use_country_translations')
+                                    ->label(__('localization::fields.use_country_translations'))
+                                    ->default(true)
+                                    ->disabled(fn (Get $get): bool => ! $get('show_regional_variants'))
+                                    ->helperText(fn (Get $get): ?string => $get('show_regional_variants')
+                                        ? null
+                                        : __('localization::fields.country_names_requires_regional')),
+                                Toggle::make('use_country_icon')
+                                    ->label(__('localization::fields.use_country_icon'))
+                                    ->default(false)
+                                    ->helperText(__('localization::fields.use_country_icon_help')),
                                 TextInput::make('routing_path')
                                     ->label(__('localization::fields.routing_path'))
                                     ->nullable(),
@@ -201,9 +216,6 @@ class LocalizationResource extends BaseRecordResource
                                     ->label(__('localization::fields.translation_status'))
                                     ->numeric()
                                     ->nullable(),
-                                Textarea::make('language_settings')
-                                    ->label(__('localization::fields.language_settings'))
-                                    ->json(),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -296,40 +308,28 @@ class LocalizationResource extends BaseRecordResource
                             }
                         }
                     }),
-                // Config Toggles Group
-                ToggleColumn::make('language_settings->use_native_names')
-                    ->label('Native')
+                // Display name & flag toggles (order: Native → Regional → Country names → Country flag)
+                ToggleColumn::make('use_native_names')
+                    ->label(__('localization::fields.native'))
+                    ->width(80),
+                ToggleColumn::make('show_regional_variants')
+                    ->label(__('localization::fields.regional'))
                     ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('use_native_names');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['use_native_names'] = $state;
-                        $record->update(['language_settings' => $settings]);
+                    ->afterStateUpdated(function (bool $state, Localization $record): void {
+                        if (! $state) {
+                            $record->update(['use_country_translations' => false]);
+                        }
                     }),
-                ToggleColumn::make('language_settings->show_regional_variants')
-                    ->label('Regional')
-                    ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('show_regional_variants');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['show_regional_variants'] = $state;
-                        $record->update(['language_settings' => $settings]);
-                    }),
-                ToggleColumn::make('language_settings->use_country_translations')
-                    ->label('Country')
-                    ->width(80)
-                    ->getStateUsing(function ($record) {
-                        return $record->getLanguageSetting('use_country_translations');
-                    })
-                    ->afterStateUpdated(function ($state, $record) {
-                        $settings = $record->language_settings ?? [];
-                        $settings['use_country_translations'] = $state;
-                        $record->update(['language_settings' => $settings]);
-                    }),
+                ToggleColumn::make('use_country_translations')
+                    ->label(__('localization::fields.country_names'))
+                    ->width(95)
+                    ->tooltip(fn (Localization $record): ?string => $record->show_regional_variants
+                        ? null
+                        : __('localization::fields.country_names_requires_regional'))
+                    ->disabled(fn (Localization $record): bool => ! $record->show_regional_variants),
+                ToggleColumn::make('use_country_icon')
+                    ->label(__('localization::fields.country_flag'))
+                    ->width(95),
                 TextColumn::make('fallback_behaviour')
                     ->label(__('localization::fields.fallback_behaviour')),
                 TextColumn::make('language_routing')
