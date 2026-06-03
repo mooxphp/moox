@@ -149,9 +149,9 @@ class PromptFlowRunner
 
             $now = now();
 
-            $steps = $state->steps ?? [];
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
+            $steps = $state->steps;
+            $stepOutputs = $state->stepOutputs;
+            $context = $state->context;
 
             $userId = Auth::check() ? Auth::id() : null;
             $userType = Auth::check() ? Auth::user()::class : null;
@@ -186,8 +186,8 @@ class PromptFlowRunner
         }
 
         try {
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
+            $stepOutputs = $state->stepOutputs;
+            $context = $state->context;
 
             DB::table('command_executions')
                 ->where('flow_id', $state->flowId)
@@ -211,8 +211,8 @@ class PromptFlowRunner
             $command = $this->resolveCommand($state->commandName);
             $this->ensureExecutionExists($state, $command);
 
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
+            $stepOutputs = $state->stepOutputs;
+            $context = $state->context;
 
             DB::table('command_executions')
                 ->where('flow_id', $state->flowId)
@@ -246,8 +246,8 @@ class PromptFlowRunner
             $errorMessage = $this->formatThrowableMessage($exception);
             $fullError = $errorMessage."\n\n".$exception->getTraceAsString();
 
-            $stepOutputs = $state->stepOutputs ?? [];
-            $context = $state->context ?? [];
+            $stepOutputs = $state->stepOutputs;
+            $context = $state->context;
 
             DB::table('command_executions')
                 ->where('flow_id', $state->flowId)

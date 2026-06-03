@@ -36,33 +36,7 @@ return [
     |
     */
     'tabs' => [
-        'all' => [
-            'label' => 'trans//core::core.all',
-            'icon' => 'gmdi-filter-list',
-            'query' => [],
-        ],
-        '0' => [
-            'label' => 'LTR',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'LTR',
-                ],
-            ],
-        ],
-        '1' => [
-            'label' => 'RTL',
-            'icon' => 'gmdi-filter-list',
-            'query' => [
-                [
-                    'field' => 'type',
-                    'operator' => '=',
-                    'value' => 'RTL',
-                ],
-            ],
-        ],
+
     ],
 
     /*
@@ -76,19 +50,5 @@ return [
     */
     'navigation_group' => 'trans//core::core.system',
     'enable-panel' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Language Selector
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for the language selector component.
-    |
-    */
-    'language_selector' => [
-        'use_native_names' => true, // Use native language names instead of English names
-        'show_regional_variants' => true, // Show regional variants (e.g., de_CH, en_US)
-        'use_country_translations' => true, // Use translated country names (e.g., Österreich for German, Austria for English)
-    ],
 
 ];

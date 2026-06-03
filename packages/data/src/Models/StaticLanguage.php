@@ -190,13 +190,7 @@ class StaticLanguage extends Model
      */
     public function getDisplayNameAttribute(): string
     {
-        $useNativeNames = config('localization.language_selector.use_native_names', true);
-
-        if (! $useNativeNames) {
-            return $this->common_name;
-        }
-
-        if (is_string($this->native_name) && ! empty($this->native_name)) {
+        if (is_string($this->native_name) && $this->native_name !== '') {
             return $this->native_name;
         }
 

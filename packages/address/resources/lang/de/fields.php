@@ -17,5 +17,8 @@ return [
     'assignments' => 'Zuordnungen',
     'owner' => 'Besitzer',
     'add_assignment' => 'Zuordnung hinzufügen',
+    'attach_address' => 'Adresse zuordnen',
+    'create_address' => 'Adresse anlegen',
     'duplicate_address' => 'Eine Adresse mit derselben Straße, PLZ und demselben Land existiert bereits.',
+    'owner_name' => 'Name',
 ];

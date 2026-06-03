@@ -27,6 +27,18 @@ return [
     */
 
     'resources' => [
+        'topic' => [
+            'single' => 'trans//press-trainings::translations.topic',
+            'plural' => 'trans//press-trainings::translations.topics',
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+            ],
+        ],
         'trainings-topic' => [
 
             /*

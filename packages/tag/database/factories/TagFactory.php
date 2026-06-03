@@ -4,11 +4,15 @@ namespace Moox\Tag\Database\Factories;
 
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Models\TagTranslation;
 
+/**
+ * @extends Factory<Tag>
+ */
 class TagFactory extends Factory
 {
     protected $model = Tag::class;
@@ -80,7 +84,11 @@ class TagFactory extends Factory
      */
     public function configure(): static
     {
-        return $this->afterCreating(function (Tag $tag) {
+        return $this->afterCreating(function (Model $tag): void {
+            if (! $tag instanceof Tag) {
+                return;
+            }
+
             // Always create English translation by default
             $title = $this->generateLocalizedTitle('en');
             $slug = $this->uniqueTranslationSlug($title, 'en');
@@ -134,7 +142,11 @@ class TagFactory extends Factory
             throw new InvalidArgumentException("Locale {$locale} is not supported");
         }
 
-        return $this->afterCreating(function (Tag $tag) use ($locale) {
+        return $this->afterCreating(function (Model $tag) use ($locale): void {
+            if (! $tag instanceof Tag) {
+                return;
+            }
+
             $title = $this->generateLocalizedTitle($locale);
             $slug = $this->uniqueTranslationSlug($title, $locale);
 
@@ -191,7 +203,11 @@ class TagFactory extends Factory
      */
     public function withAllTranslations(): self
     {
-        return $this->afterCreating(function (Tag $tag) {
+        return $this->afterCreating(function (Model $tag): void {
+            if (! $tag instanceof Tag) {
+                return;
+            }
+
             foreach ($this->availableLocales as $locale => $config) {
                 if ($locale === 'en') {
                     continue;
@@ -214,7 +230,11 @@ class TagFactory extends Factory
      */
     public function withRandomTranslations(int $count = 2): self
     {
-        return $this->afterCreating(function (Tag $tag) use ($count) {
+        return $this->afterCreating(function (Model $tag) use ($count): void {
+            if (! $tag instanceof Tag) {
+                return;
+            }
+
             $locales = array_keys($this->availableLocales);
             unset($locales[array_search('en', $locales)]); // Remove English
             $selectedLocales = array_rand(array_flip($locales), min($count, count($locales)));

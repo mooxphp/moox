@@ -4,13 +4,12 @@ use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
-use Moox\News\Moox\Entities\News\News\NewsResource;
+use Moox\News\Resources\NewsResource;
 use Moox\Record\Models\Record;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
-use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,9 +94,6 @@ return [
                     ],
                     'user' => [
                         'resource' => UserResource::class,
-                    ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
                     ],
                 ],
                 'registry' => [

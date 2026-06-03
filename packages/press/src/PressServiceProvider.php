@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Press;
 
 use Illuminate\Support\Facades\Auth;
+use Moox\Core\MooxServiceProvider;
 use Moox\Press\Commands\InstallCommand;
 use Moox\Press\Commands\InstallWordPress;
 use Moox\Press\Commands\UpdateWordPressPlugin;
@@ -12,11 +13,10 @@ use Moox\Press\Commands\UpdateWordPressURL;
 use Moox\Press\Providers\WordPressUserProvider;
 use Override;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class PressServiceProvider extends PackageServiceProvider
+class PressServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('press')

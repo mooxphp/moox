@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Address\Tests;
 
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
+use Codeat3\BladeGoogleMaterialDesignIcons\BladeGoogleMaterialDesignIconsServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\Facades\Filament;
 use Filament\FilamentServiceProvider;
@@ -50,7 +53,6 @@ use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
 
 #[WithMigration('laravel', 'cache', 'queue')]
-#[WithMigration('session')]
 class TestCase extends Orchestra
 {
     use InteractsWithLivewire;
@@ -132,6 +134,9 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
+            BladeIconsServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
+            BladeGoogleMaterialDesignIconsServiceProvider::class,
             LivewireServiceProvider::class,
             FilamentServiceProvider::class,
             AuthServiceProvider::class,

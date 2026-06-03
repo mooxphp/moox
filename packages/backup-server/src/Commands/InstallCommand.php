@@ -84,7 +84,7 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\BackupServerUi";
+            $namespace = '\Moox\BackupServerUi\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',

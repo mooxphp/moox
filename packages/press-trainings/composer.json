@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "moox/press": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"

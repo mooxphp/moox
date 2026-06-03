@@ -111,12 +111,36 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Press";
+            $namespace = '\Moox\Press\Plugins';
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['WpPostPlugin', 'WpPagePlugin', 'WpMediaPlugin', 'WpCategoryPlugin', 'WpTagPlugin', 'WpUserPlugin', 'WpOptionPlugin'],
-                default: ['WpPostPlugin', 'WpPagePlugin', 'WpMediaPlugin', 'WpCategoryPlugin', 'WpTagPlugin', 'WpUserPlugin', 'WpOptionPlugin'],
+                options: [
+                    'WpPostPlugin',
+                    'WpPagePlugin',
+                    'WpMediaPlugin',
+                    'WpCategoryPlugin',
+                    'WpTagPlugin',
+                    'WpUserPlugin',
+                    'WpUserMetaPlugin',
+                    'WpOptionPlugin',
+                    'WpCommentPlugin',
+                    'WpCommentMetaPlugin',
+                    'WpPostMetaPlugin',
+                    'WpTermPlugin',
+                    'WpTermMetaPlugin',
+                    'WpTermTaxonomyPlugin',
+                    'WpTermRelationshipPlugin',
+                ],
+                default: [
+                    'WpPostPlugin',
+                    'WpPagePlugin',
+                    'WpMediaPlugin',
+                    'WpCategoryPlugin',
+                    'WpTagPlugin',
+                    'WpUserPlugin',
+                    'WpOptionPlugin',
+                ],
             );
 
             $function = '::make(),';

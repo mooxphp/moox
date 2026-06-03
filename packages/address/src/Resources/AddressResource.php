@@ -14,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Moox\Address\Models\Address;
 use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
@@ -238,8 +237,7 @@ class AddressResource extends BaseRecordResource
      */
     protected static function getCountryFilterOptions(): array
     {
-        if (class_exists(StaticCountry::class)) {
-            /** @var class-string<Model> $model */
+        if (class_exists(StaticCountry::class) && \Illuminate\Support\Facades\Schema::hasTable('static_countries')) {
             $model = StaticCountry::class;
 
             return $model::query()
@@ -247,7 +245,7 @@ class AddressResource extends BaseRecordResource
                 ->orderBy('common_name')
                 ->get(['alpha2', 'common_name'])
                 ->mapWithKeys(fn ($country): array => [
-                    strtoupper((string) $country->alpha2) => sprintf('%s %s', $country->name, strtoupper((string) $country->alpha2)),
+                    strtoupper((string) $country->alpha2) => sprintf('%s %s', $country->common_name, strtoupper((string) $country->alpha2)),
 
                 ])
                 ->all();

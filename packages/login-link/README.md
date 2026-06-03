@@ -51,6 +51,12 @@ The plugin automatically extends **your panel's configured login class** (Filame
 
 If your login page does not use `getLoginFormComponent()` or `getEmailFormComponent()`, add `Moox\LoginLink\Concerns\InteractsWithLoginLinks` yourself and call `configureLoginFormWithMagicLink()` on the identifier field.
 
+## Why we use a trait (and a note about PHPStan)
+
+The passwordless UI/behavior is implemented as a trait (`Moox\LoginLink\Concerns\InteractsWithLoginLinks`) so it can be **mixed into any panel login page** (Filament default or a custom `->login(...)`) without forcing a fixed replacement class.
+
+The plugin applies the trait dynamically via `PanelLoginEnhancer` (it generates an enhanced login class at runtime). Because of that, PHPStan may report `trait.unused` even though the trait **is used at runtime** (PHPStan cannot see the `use ...` inside the runtime-generated class).
+
 ## Key configuration knobs
 
 - `login-link.passwordless.enabled`: enable/disable the passwordless integration.

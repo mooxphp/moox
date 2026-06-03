@@ -126,9 +126,10 @@ class DefaultEnglishLocalizationInstaller extends AbstractAssetInstaller
                 'routing_subdomain' => null,
                 'routing_domain' => null,
                 'translation_status' => 100,
-                'language_settings' => [
-                    'locale' => 'en_US',
-                ],
+                'use_native_names' => true,
+                'show_regional_variants' => true,
+                'use_country_translations' => true,
+                'use_country_icon' => false,
             ]);
 
             note('✅ Default English localization created ('.$localization->locale.').');

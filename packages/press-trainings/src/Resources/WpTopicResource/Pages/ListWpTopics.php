@@ -1,12 +1,12 @@
 <?php
 
-namespace Moox\PressWiki\Resources\WpTopicResource\Pages;
+namespace Moox\PressTrainings\Resources\WpTopicResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\PressWiki\Models\WpTopic;
-use Moox\PressWiki\Resources\WpTopicResource;
+use Moox\PressTrainings\Models\WpTopic;
+use Moox\PressTrainings\Resources\WpTopicResource;
 
 class ListWpTopics extends ListRecords
 {
@@ -21,6 +21,6 @@ class ListWpTopics extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('press-wiki.resources.theme.tabs', WpTopic::class);
+        return $this->getDynamicTabs('press-trainings.resources.topic.tabs', WpTopic::class);
     }
 }

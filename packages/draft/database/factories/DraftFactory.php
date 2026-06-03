@@ -3,8 +3,13 @@
 namespace Moox\Draft\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use Moox\Draft\Models\Draft;
+use Moox\Draft\Models\DraftTranslation;
 
+/**
+ * @extends Factory<Draft>
+ */
 class DraftFactory extends Factory
 {
     protected $model = Draft::class;
@@ -146,8 +151,14 @@ class DraftFactory extends Factory
         })->afterCreating(function (Draft $draft) {
             // Override translation status for published
             foreach ($draft->translations as $translation) {
+                if (! $translation instanceof DraftTranslation) {
+                    continue;
+                }
+
                 $translation->translation_status = 'published';
-                $translation->published_at = $this->faker->dateTimeBetween('-30 days', 'now');
+                $translation->published_at = Carbon::instance(
+                    $this->faker->dateTimeBetween('-30 days', 'now')
+                );
                 $translation->save();
             }
         });
@@ -165,8 +176,14 @@ class DraftFactory extends Factory
         })->afterCreating(function (Draft $draft) {
             // Override translation status for scheduled
             foreach ($draft->translations as $translation) {
+                if (! $translation instanceof DraftTranslation) {
+                    continue;
+                }
+
                 $translation->translation_status = 'scheduled';
-                $translation->to_publish_at = $this->faker->dateTimeBetween('now', '+7 days');
+                $translation->to_publish_at = Carbon::instance(
+                    $this->faker->dateTimeBetween('now', '+7 days')
+                );
                 $translation->save();
             }
         });

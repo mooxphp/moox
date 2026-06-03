@@ -2,15 +2,39 @@
 
 namespace Moox\Expiry\Models;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
+use Moox\Press\Models\WpUser;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
 use Override;
 
+/**
+ * @property int $id
+ * @property string|null $title
+ * @property string|null $slug
+ * @property int|null $item_id
+ * @property int|null $meta_id
+ * @property string|null $link
+ * @property string|null $expiry_job
+ * @property string|null $category
+ * @property string|null $status
+ * @property Carbon|null $expired_at
+ * @property Carbon|null $processing_deadline
+ * @property string|null $cycle
+ * @property Carbon|null $notified_at
+ * @property int|null $notified_to
+ * @property Carbon|null $escalated_at
+ * @property int|null $escalated_to
+ * @property int|null $handled_by
+ * @property Carbon|null $done_at
+ * @property-read WpUser|null $notifyUser
+ * @property-read WpUser|null $escalateUser
+ */
 class Expiry extends Model
 {
     use HasFactory;

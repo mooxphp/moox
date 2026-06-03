@@ -44,6 +44,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read Category|null $parent
  *
  * @method static CategoryFactory factory($count = null, $state = [])
+ * @method static void fixTree()
  */
 class Category extends BaseDraftModel implements HasMedia
 {
@@ -90,6 +91,7 @@ class Category extends BaseDraftModel implements HasMedia
         'is_active' => 'boolean',
         'weight' => 'integer',
         'count' => 'integer',
+        'image' => 'json',
         'basedata' => 'json',
         'due_at' => 'datetime',
         'uuid' => 'string',
@@ -145,19 +147,19 @@ class Category extends BaseDraftModel implements HasMedia
     public function getDisplayTitleAttribute(): string
     {
         $defaultLocalization = Localization::where('is_default', true)->first();
-        $mainLocale = $defaultLocalization?->locale_variant ?? config('app.locale', 'en');
+        $mainLocale = $defaultLocalization !== null
+            ? ($defaultLocalization->locale_variant ?? config('app.locale', 'en'))
+            : config('app.locale', 'en');
         $currentLocale = request()->query('lang') ?? $mainLocale;
 
-        if (method_exists($this, 'translate')) {
-            $translation = $this->translate($currentLocale);
-            if ($translation && ! empty($translation->title)) {
-                return $translation->title;
-            }
+        $translation = $this->translate($currentLocale);
+        if ($translation && ! empty($translation->title)) {
+            return $translation->title;
+        }
 
-            $mainTranslation = $this->translate($mainLocale);
-            if ($mainTranslation && ! empty($mainTranslation->title)) {
-                return $mainTranslation->title.' ('.$mainLocale.')';
-            }
+        $mainTranslation = $this->translate($mainLocale);
+        if ($mainTranslation && ! empty($mainTranslation->title)) {
+            return $mainTranslation->title.' ('.$mainLocale.')';
         }
 
         return $this->attributes['title'] ?? ('ID: '.$this->id);

@@ -59,7 +59,6 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                     $media->save();
                 }
 
-                // @phpstan-ignore-next-line staticMethod.notFound (Eloquent Model::firstOrCreate)
                 MediaUsable::firstOrCreate([
                     'media_id' => $media->getKey(),
                     'media_usable_id' => $record->getKey(),

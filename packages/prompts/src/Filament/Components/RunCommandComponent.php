@@ -148,7 +148,7 @@ class RunCommandComponent extends Component implements HasForms
                 $state = $result['state'];
 
                 if (! empty($result['prompt'])) {
-                    $this->currentStepOutput = $this->output ?? '';
+                    $this->currentStepOutput = $this->output;
                     $this->currentPrompt = $result['prompt'];
                     $this->executionStep++;
                     $this->prefillPromptForm($result['prompt']);

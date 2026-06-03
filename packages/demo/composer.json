@@ -1,0 +1,55 @@
+{
+    "name": "moox/demo",
+    "description": "Seed demo data for installed Moox packages (localizations, seeders, factories, media).",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "demo",
+        "seeder",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/demo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Demo\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Demo\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Demo\\DemoServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Demo",
+            "stability": "dev",
+            "type": "moox-package"
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

@@ -5,7 +5,7 @@ use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Draft\Models\Draft;
 use Moox\Media\Resources\MediaResource;
-use Moox\News\Moox\Entities\News\News\NewsResource;
+use Moox\News\Resources\NewsResource;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
@@ -93,9 +93,6 @@ return [
                     ],
                     'user' => [
                         'resource' => UserResource::class,
-                    ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
                     ],
                     // 'user' => [
                     //     'resource' => UserResource::class,

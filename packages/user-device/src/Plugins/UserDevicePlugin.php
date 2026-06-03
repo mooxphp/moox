@@ -20,6 +20,7 @@ class UserDevicePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        // Origin only — scoped children appear under User (source), not here.
         $panel->resources([
             UserDeviceResource::class,
         ]);

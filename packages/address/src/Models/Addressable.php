@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property bool $billing_address
+ * @property bool $postal_address
+ * @property bool $delivery_address
+ */
 class Addressable extends MorphPivot
 {
     protected $table = 'addressables';

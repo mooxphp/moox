@@ -8,26 +8,26 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Schema as DbSchema;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
+use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
+use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Override;
 use Spatie\Permission\PermissionRegistrar;
 
-class UserDeviceResource extends Resource
+class UserDeviceResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
+    use HasScopedChildResource;
 
     protected static ?string $model = UserDevice::class;
 
@@ -37,7 +37,7 @@ class UserDeviceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        $query->with(['user' => fn (MorphTo $morphTo) => $morphTo]);
+        $query->with('user');
 
         if (! static::shouldScopeToAuthenticatedUser()) {
             return $query;
@@ -104,7 +104,6 @@ class UserDeviceResource extends Resource
 
         $roleName = (string) config('filament-shield.super_admin.name', 'super_admin');
 
-        /** @phpstan-ignore-next-line */
         return (bool) $user->hasRole($roleName);
     }
 
@@ -119,6 +118,12 @@ class UserDeviceResource extends Resource
         }
 
         return static::isShieldAdmin($user);
+    }
+
+    #[Override]
+    protected static function resolveDefaultNavigationGroup(): ?string
+    {
+        return config('user-device.navigation_group');
     }
 
     #[Override]
@@ -174,18 +179,10 @@ class UserDeviceResource extends Resource
                     ->label(__('core::user.user_id'))
                     ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
+                static::getScopeTableColumn(),
                 TextColumn::make('ip_address')
                     ->label('IP')
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                // TODO: Not implemented yet, must be editable then
-                // TODO: Is misleading, should be activated, enabled or similar, because active would better be recently been in use
-                /*
-                IconColumn::make('active')
-                    ->label(__('core::core.active'))
-                    ->toggleable()
-                    ->boolean(),
-                */
                 TextColumn::make('updated_at')
                     ->label(__('core::core.updated_at'))
                     ->since()
@@ -214,7 +211,7 @@ class UserDeviceResource extends Resource
                         return $query->whereHasMorph('user', '*', function (Builder $userQuery) use ($q): void {
                             $userQuery->where(function (Builder $sub) use ($q): void {
                                 if (is_numeric($q)) {
-                                    $sub->orWhereKey((int) $q);
+                                    $sub->orWhere($sub->getModel()->getQualifiedKeyName(), (int) $q);
                                 }
 
                                 $sub
@@ -265,6 +262,7 @@ class UserDeviceResource extends Resource
                     }),
             ])
             ->toolbarActions([
+                static::getAssignScopeBulkAction(),
                 DeleteBulkAction::make()
                     ->label(__('user-device::translations.device_delete'))
                     ->requiresConfirmation()
@@ -314,6 +312,11 @@ class UserDeviceResource extends Resource
     #[Override]
     public static function getNavigationLabel(): string
     {
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'navigation_label');
+        if ($scoped !== null) {
+            return (string) $scoped;
+        }
+
         return config('user-device.resources.devices.plural');
     }
 
@@ -326,12 +329,8 @@ class UserDeviceResource extends Resource
     #[Override]
     public static function shouldRegisterNavigation(): bool
     {
-        return true;
-    }
+        $scoped = ScopedResourceContext::getDefinitionValue(static::class, 'should_register_navigation');
 
-    #[Override]
-    public static function getNavigationGroup(): ?string
-    {
-        return config('user-device.navigation_group');
+        return $scoped !== null ? (bool) $scoped : true;
     }
 }

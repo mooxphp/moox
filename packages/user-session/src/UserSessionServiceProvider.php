@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Moox\UserSession;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\UserSession\Commands\InstallCommand;
 use Moox\UserSession\Services\SessionRelationService;
 use Override;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class UserSessionServiceProvider extends PackageServiceProvider
+class UserSessionServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('user-session')
             ->hasConfigFile()
             ->hasTranslations()
+            ->hasMigrations([
+                'create_sessions_table',
+                'extend_sessions_table',
+            ])
             ->hasCommand(InstallCommand::class);
     }
 
@@ -27,21 +31,5 @@ class UserSessionServiceProvider extends PackageServiceProvider
         parent::register();
 
         $this->app->singleton(SessionRelationService::class, fn ($app): SessionRelationService => new SessionRelationService);
-    }
-
-    #[Override]
-    public function boot(): void
-    {
-        parent::boot();
-
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_sessions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_01_create_sessions_table.php'),
-            ], 'create-sessions-table');
-
-            $this->publishes([
-                __DIR__.'/../database/migrations/extend_sessions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_02_extend_sessions_table.php'),
-            ], 'extend-sessions-table');
-        }
     }
 }

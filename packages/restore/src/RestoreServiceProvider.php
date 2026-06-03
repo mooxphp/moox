@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Restore;
 
 use Illuminate\Support\Facades\Event;
+use Moox\Core\MooxServiceProvider;
 use Moox\Restore\Commands\DispatchRestoreCommand;
 use Moox\Restore\Commands\InstallCommand;
 use Moox\Restore\Commands\RestoreCommand;
@@ -14,11 +15,10 @@ use Moox\Restore\Events\RestoreFailedEvent;
 use Moox\Restore\Events\RestoreStartedEvent;
 use Moox\Restore\Listeners\RestoreBackupListener;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class RestoreServiceProvider extends PackageServiceProvider
+class RestoreServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('restore')
@@ -26,14 +26,18 @@ class RestoreServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_restore_table'])
-            ->hasCommands([InstallCommand::class, RestoreCommand::class, DispatchRestoreCommand::class, ServerSummaryCommand::class]);
+            ->hasCommands([
+                InstallCommand::class,
+                RestoreCommand::class,
+                DispatchRestoreCommand::class,
+                ServerSummaryCommand::class,
+            ]);
     }
 
     public function bootingPackage(): void
     {
         parent::bootingPackage();
 
-        // Register events and listeners
         Event::listen(
             RestoreCompletedEvent::class,
             [RestoreBackupListener::class, 'handle']

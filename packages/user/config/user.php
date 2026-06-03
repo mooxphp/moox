@@ -1,6 +1,7 @@
 <?php
 
 use Moox\User\Models\User;
+use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,8 +98,16 @@ return [
             */
 
             'scopes' => [
+                'allowed' => [
+                    'user-device' => [
+                        'resource' => UserDeviceResource::class,
+                    ],
+                ],
                 'registry' => [
                     'origins' => [
+                        'user' => User::class,
+                    ],
+                    'sources' => [
                         'user' => User::class,
                     ],
                 ],

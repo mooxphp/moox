@@ -1,0 +1,97 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\Connect;
+
+use Moox\Connect\Console\PurgeImportRecordsCommand;
+use Moox\Connect\Filament\Providers\ConnectPanelProvider;
+use Moox\Connect\Models\ApiConnection;
+use Moox\Connect\Support\ConnectionHealthChecker;
+use Moox\Core\MooxServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+
+class ConnectServiceProvider extends MooxServiceProvider
+{
+    public function register(): void
+    {
+        parent::register();
+
+        $this->mergeConfigFiles();
+
+        if (config('connect.enable-panel')) {
+            $this->app->register(ConnectPanelProvider::class);
+        }
+    }
+
+    public function mergeConfigFiles()
+    {
+        $configs = [
+            'connect' => 'connect/connect',
+            'api-connection' => 'connect/api-connection',
+            'api-log' => 'connect/api-log',
+            'api-endpoint' => 'connect/api-endpoint',
+        ];
+
+        foreach ($configs as $file => $namespace) {
+            $this->mergeConfigFrom(__DIR__."/../config/{$file}.php", $namespace);
+        }
+    }
+
+    public function configureMoox(Package $package): void
+    {
+        $package
+            ->name('connect')
+            ->hasRoutes(['web'])
+            ->hasConfigFile(['connect', 'api-connection', 'api-log', 'api-endpoint'])
+            ->hasMigrations([
+                'create_api_connections_table',
+                'create_api_logs_table',
+                'create_api_endpoints_table',
+                'create_api_import_records_table',
+                'create_api_import_payload_chunks_table',
+            ])
+            ->hasCommand(PurgeImportRecordsCommand::class)
+            ->hasTranslations()
+            ->hasViews();
+    }
+
+    public function bootingPackage(): void
+    {
+        ApiConnection::saved(function (ApiConnection $connection): void {
+            if ($connection->status === 'Disabled') {
+                return;
+            }
+
+            $authType = strtolower((string) $connection->auth_type);
+
+            $baseOrHealthChanged = $connection->wasChanged('base_url') || $connection->wasChanged('health_path');
+
+            // Filament can trigger multiple saves for a single "submit".
+            // Only re-run the healthcheck when it can actually change the request.
+            if (! $baseOrHealthChanged) {
+                if ($connection->wasChanged('auth_type')) {
+                    app(ConnectionHealthChecker::class)->check($connection);
+
+                    return;
+                }
+
+                // When auth is disabled (`auth_type = None`), changes to auth_credentials/headers should not trigger
+                // health requests.
+                if ($authType === 'none') {
+                    return;
+                }
+
+                $authRelatedChanged = $connection->wasChanged('auth_credentials')
+                    || $connection->wasChanged('login_method')
+                    || $connection->wasChanged('headers');
+
+                if (! $authRelatedChanged) {
+                    return;
+                }
+            }
+
+            app(ConnectionHealthChecker::class)->check($connection);
+        });
+    }
+}

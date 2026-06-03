@@ -16,6 +16,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Moox\Address\Support\AddressRelationConfig;
 use Override;
 
@@ -45,7 +46,12 @@ class AddressablesRelationManager extends RelationManager
                 ->label(__('address::fields.owner'))
                 ->types(
                     collect($ownerTypes)
-                        ->map(fn (string $label, string $class): Type => Type::make($class)->title($label))
+                        ->map(fn (string $label, string $class): Type => Type::make($class)
+                            ->label($label)
+                            ->titleAttribute($this->resolveTitleAttributeForMorphType($class))
+                            ->getOptionLabelFromRecordUsing(
+                                fn (Model $record): string => $this->resolveOptionLabel($record)
+                            ))
                         ->values()
                         ->all()
                 )
@@ -73,6 +79,21 @@ class AddressablesRelationManager extends RelationManager
             TextColumn::make("{$morphName}_id")
                 ->label('ID')
                 ->searchable(),
+            TextColumn::make("{$morphName}")
+                ->label(__('address::fields.owner_name'))
+                ->formatStateUsing(function ($record) use ($morphName) {
+                    // Versuche, den Namen des zugehörigen Modells zu holen, falls vorhanden
+                    if ($record->{$morphName} && method_exists($record->{$morphName}, 'displayLabel')) {
+                        return $record->{$morphName}->displayLabel();
+                    }
+                    if ($record->{$morphName} && property_exists($record->{$morphName}, 'name')) {
+                        return $record->{$morphName}->name;
+                    }
+
+                    return (string) ($record->{$morphName.'_id'} ?? '');
+                })
+                ->searchable(),
+
         ];
 
         foreach (AddressRelationConfig::pivotColumns() as $column) {
@@ -92,5 +113,43 @@ class AddressablesRelationManager extends RelationManager
                 EditAction::make(),
                 DeleteAction::make(),
             ]);
+    }
+
+    private function resolveTitleAttributeForMorphType(string $class): string
+    {
+        $configured = AddressRelationConfig::titleAttributeForOwnerType($class);
+
+        if ($configured !== null) {
+            return $configured;
+        }
+
+        $model = app($class);
+        $table = $model->getTable();
+        $schema = DatabaseSchema::connection($model->getConnectionName());
+
+        foreach (['display_name', 'name', 'title'] as $column) {
+            if ($schema->hasColumn($table, $column)) {
+                return $column;
+            }
+        }
+
+        return $model->getKeyName();
+    }
+
+    private function resolveOptionLabel(Model $record): string
+    {
+        if (method_exists($record, 'displayLabel')) {
+            return (string) $record->displayLabel();
+        }
+
+        foreach (['display_name', 'name', 'title'] as $attribute) {
+            $value = $record->getAttribute($attribute);
+
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+
+        return (string) $record->getKey();
     }
 }

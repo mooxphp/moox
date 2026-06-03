@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\UserDevice\Listeners;
 
 use Illuminate\Auth\Events\Login;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Services\UserDeviceTracker;
 
@@ -14,10 +13,6 @@ class TrackUserDeviceOnLogin
     public function handle(Login $event): void
     {
         if (! config('user-device.enabled', false)) {
-            return;
-        }
-
-        if (! $event->user instanceof Authenticatable) {
             return;
         }
 

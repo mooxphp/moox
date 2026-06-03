@@ -4,11 +4,9 @@ use Moox\Address\Models\Address;
 use Moox\Address\Models\Addressable;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
-use Moox\News\Moox\Entities\News\News\NewsResource;
 use Moox\Tag\Resources\TagResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
-use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,9 +77,6 @@ return [
 
             'scopes' => [
                 'allowed' => [
-                    'news' => [
-                        'resource' => NewsResource::class,
-                    ],
                     'media' => [
                         'resource' => MediaResource::class,
                     ],
@@ -93,9 +88,6 @@ return [
                     ],
                     'user' => [
                         'resource' => UserResource::class,
-                    ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
                     ],
                 ],
                 'registry' => [
@@ -130,8 +122,14 @@ return [
                 'delivery_address',
             ],
             'owner_types' => [
-                // Heco\Company\Models\Company::class => 'Company',
-                // Heco\Contact\Models\Contact::class => 'Contact',
+                // 'Moox\Company\Models\Company' => [
+                //     'label' => 'Company',
+                //     'title_attribute' => 'display_name',
+                // ],
+                // 'Moox\Contact\Models\Contact' => [
+                //     'label' => 'Contact',
+                //     'title_attribute' => 'display_name',
+                // ],
             ],
         ],
     ],
@@ -168,6 +166,6 @@ return [
     | and if the panel is enabled.
     |
     */
-    'navigation_group' => 'DEV',
+    'navigation_group' => 'Portal',
 
 ];

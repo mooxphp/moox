@@ -17,5 +17,8 @@ return [
     'assignments' => 'Assignments',
     'owner' => 'Owner',
     'add_assignment' => 'Add assignment',
+    'attach_address' => 'Attach address',
+    'create_address' => 'Create address',
     'duplicate_address' => 'An address with the same street, postal code and country already exists.',
+    'owner_name' => 'Name',
 ];

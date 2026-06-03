@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\PressTrainings;
 
+use Moox\Core\MooxServiceProvider;
 use Moox\PressTrainings\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class PressTrainingServiceProvider extends PackageServiceProvider
+class PressTrainingServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('press-trainings')

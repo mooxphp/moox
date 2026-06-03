@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('contacts', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->string('status', 30)->default('draft')->index();
+
+            $table->string('gender', 20)->default('unknown')->index();
+            $table->string('salutation_code', 30)->nullable()->index();
+            $table->string('academic_title', 80)->nullable();
+
+            $table->string('first_name', 80)->nullable();
+            $table->string('last_name', 80)->nullable();
+            $table->string('display_name', 160)->nullable()->index();
+            $table->string('job_title', 120)->nullable();
+            $table->string('department', 120)->nullable();
+
+            $table->string('email', 120)->nullable()->index();
+            $table->string('phone', 30)->nullable();
+            $table->string('mobile', 30)->nullable();
+
+            $table->foreignId('language_id')->nullable()->constrained('static_languages')->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->string('contact_type', 30)->default('external')->index();
+            $table->boolean('is_active')->default(true)->index();
+            $table->boolean('is_system_user')->default(false)->index();
+            $table->text('note')->nullable();
+
+            $table->string('external_reference', 100)->nullable()->index();
+            $table->json('data')->nullable();
+
+            $table->softDeletes();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('contacts');
+    }
+};
