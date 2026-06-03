@@ -6,17 +6,16 @@ namespace Moox\BackupServerUi\Installers;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
 use Moox\Core\Installer\AbstractAssetInstaller;
 
 use function Moox\Prompts\error;
 use function Moox\Prompts\note;
 
 /**
- * Installer für das Backup-Server-Package.
+ * Installer for the Backup Server package.
  *
- * Publiziert die Spatie Laravel Backup Server Konfiguration und Migrationen
- * und führt die Migrationen aus. Wird vom Moox-Installer ausgeführt.
+ * Publishes Spatie Laravel Backup Server configuration and migration files,
+ * then runs only the backup-server migration (not all pending migrations).
  */
 class BackupServerInstaller extends AbstractAssetInstaller
 {
@@ -33,7 +32,7 @@ class BackupServerInstaller extends AbstractAssetInstaller
     protected function getDefaultConfig(): array
     {
         $config = parent::getDefaultConfig();
-        $config['priority'] = 10;
+        $config['priority'] = 8;
 
         return $config;
     }
@@ -49,7 +48,7 @@ class BackupServerInstaller extends AbstractAssetInstaller
             return false;
         }
 
-        return $this->hasBackupServerMigration() || Schema::hasTable('backup_server_sources');
+        return $this->hasBackupServerMigration();
     }
 
     public function install(array $assets): bool
@@ -69,7 +68,7 @@ class BackupServerInstaller extends AbstractAssetInstaller
 
             note('✅ Spatie Laravel Backup Server config published.');
 
-            if (! $this->hasBackupServerMigration() && ! Schema::hasTable('backup_server_sources')) {
+            if (! $this->hasBackupServerMigration()) {
                 note('📦 Publishing Spatie Laravel Backup Server migrations…');
                 $this->publish('backup-server-migrations', $force);
 
@@ -84,19 +83,27 @@ class BackupServerInstaller extends AbstractAssetInstaller
                 note('ℹ️ Backup Server migrations already present, skipping publish.');
             }
 
-            if (! Schema::hasTable('backup_server_sources')) {
-                note('🔄 Running Backup Server migrations…');
+            $migrationPath = $this->getBackupServerMigrationPath();
+            if ($migrationPath === null) {
+                error('⚠️ Backup Server migration file not found.');
 
-                if ($this->command) {
-                    $this->command->call('migrate', ['--force' => true]);
-                } else {
-                    Artisan::call('migrate', ['--force' => true]);
-                }
-
-                note('✅ Backup Server migrations executed.');
-            } else {
-                note('ℹ️ Backup Server tables already exist, skipping migrate.');
+                return false;
             }
+
+            note('🔄 Running Backup Server migration…');
+
+            $migrateOptions = [
+                '--force' => true,
+                '--path' => $migrationPath,
+            ];
+
+            if ($this->command) {
+                $this->command->call('migrate', $migrateOptions);
+            } else {
+                Artisan::call('migrate', $migrateOptions);
+            }
+
+            note('✅ Backup Server migration executed.');
 
             return true;
         } catch (\Throwable $e) {
@@ -123,18 +130,23 @@ class BackupServerInstaller extends AbstractAssetInstaller
 
     private function hasBackupServerMigration(): bool
     {
+        return $this->getBackupServerMigrationPath() !== null;
+    }
+
+    private function getBackupServerMigrationPath(): ?string
+    {
         $migrationPath = database_path('migrations');
 
         if (! File::isDirectory($migrationPath)) {
-            return false;
+            return null;
         }
 
         foreach (File::files($migrationPath) as $file) {
             if (str_contains($file->getFilename(), 'create_backup_server_tables')) {
-                return true;
+                return 'database/migrations/'.$file->getFilename();
             }
         }
 
-        return false;
+        return null;
     }
 }
