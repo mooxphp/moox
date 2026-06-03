@@ -1,0 +1,43 @@
+{
+    "name": "moox/transform",
+    "description": "Lightweight transformation pipeline with validation and traceability for Laravel models.",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Transform\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Transform\\TransformServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Transform\\Tests\\": "tests"
+        }
+    }
+}

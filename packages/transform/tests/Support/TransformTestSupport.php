@@ -1,0 +1,254 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
+use Moox\Transform\Models\TransformDefinition;
+use Moox\Transform\Support\TransformRunner;
+use Moox\Transform\Support\TransformValidator;
+
+/**
+ * @property string|null $title
+ * @property int|null $stock
+ * @property string|null $price_label
+ */
+final class TransformDummyModel extends Model
+{
+    protected $table = 'transform_dummy_models';
+
+    protected $fillable = [
+        'title',
+        'stock',
+        'price_label',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'stock' => 'integer',
+        ];
+    }
+}
+
+/**
+ * @property string|null $code
+ * @property array<string, mixed>|null $meta
+ */
+final class TransformJsonDummyModel extends Model
+{
+    protected $table = 'transform_json_dummy_models';
+
+    protected $fillable = [
+        'code',
+        'meta',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'meta' => 'array',
+        ];
+    }
+}
+
+/**
+ * @property int|null $id
+ * @property string|null $status
+ */
+final class TransformDraftMainModel extends BaseDraftModel
+{
+    protected $table = 'transform_draft_main_models';
+
+    public $incrementing = true;
+
+    protected $keyType = 'int';
+
+    public string $translationModel = TransformDraftMainTranslationModel::class;
+
+    public string $translationForeignKey = 'transform_draft_main_model_id';
+
+    public string $localeKey = 'locale';
+
+    public bool $useTranslationFallback = true;
+
+    protected $fillable = [
+        'status',
+    ];
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getCustomTranslatedAttributes(): array
+    {
+        return [
+            'title',
+        ];
+    }
+}
+
+/**
+ * @property string|null $title
+ */
+final class TransformDraftMainTranslationModel extends BaseDraftTranslationModel
+{
+    protected $table = 'transform_draft_main_model_translations';
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getCustomFillable(): array
+    {
+        return [
+            'transform_draft_main_model_id',
+            'title',
+        ];
+    }
+}
+
+function createTestTables(): void
+{
+    Schema::dropIfExists('transform_dummy_models');
+    Schema::dropIfExists('transform_json_dummy_models');
+    Schema::dropIfExists('transform_draft_main_model_translations');
+    Schema::dropIfExists('transform_draft_main_models');
+    Schema::dropIfExists('transform_records');
+    Schema::dropIfExists('transform_definitions');
+
+    Schema::create('transform_definitions', function (Blueprint $table): void {
+        $table->id();
+        $table->timestamps();
+        $table->softDeletes();
+        $table->string('name')->unique();
+        $table->string('destination_model');
+        $table->json('destination_match')->nullable();
+        $table->json('source_references');
+        $table->json('field_map');
+        $table->json('validation_rules')->nullable();
+        $table->boolean('is_active')->default(true);
+    });
+
+    Schema::create('transform_records', function (Blueprint $table): void {
+        $table->id();
+        $table->timestamps();
+        $table->softDeletes();
+        $table->foreignId('transform_definition_id')->constrained('transform_definitions');
+        $table->string('destination_key')->nullable();
+        $table->json('source_projection')->nullable();
+        $table->json('source_references')->nullable();
+        $table->string('input_hash', 64)->nullable();
+        $table->string('status')->default('pending');
+        $table->string('validation_status')->default('pending');
+        $table->json('validation_errors')->nullable();
+        $table->json('warnings')->nullable();
+        $table->unsignedInteger('attempts')->default(0);
+        $table->boolean('degraded')->default(false);
+        $table->timestamp('last_run_at')->nullable();
+        $table->timestamp('last_success_at')->nullable();
+        $table->text('error_message')->nullable();
+    });
+
+    Schema::create('transform_dummy_models', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title')->nullable();
+        $table->integer('stock')->nullable();
+        $table->string('price_label')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_json_dummy_models', function (Blueprint $table): void {
+        $table->id();
+        $table->string('code')->nullable();
+        $table->json('meta')->nullable();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_draft_main_models', function (Blueprint $table): void {
+        $table->id();
+        $table->uuid('uuid')->nullable();
+        $table->ulid('ulid')->nullable();
+        $table->string('status')->nullable();
+        $table->softDeletes();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_draft_main_model_translations', function (Blueprint $table): void {
+        $table->id();
+        $table->foreignId('transform_draft_main_model_id')->constrained('transform_draft_main_models')->cascadeOnDelete();
+        $table->string('locale');
+        $table->string('title')->nullable();
+        $table->string('translation_status')->nullable();
+        $table->timestamp('to_publish_at')->nullable();
+        $table->timestamp('published_at')->nullable();
+        $table->timestamp('to_unpublish_at')->nullable();
+        $table->timestamp('unpublished_at')->nullable();
+        $table->unsignedBigInteger('published_by_id')->nullable();
+        $table->string('published_by_type')->nullable();
+        $table->unsignedBigInteger('unpublished_by_id')->nullable();
+        $table->string('unpublished_by_type')->nullable();
+        $table->unsignedBigInteger('deleted_by_id')->nullable();
+        $table->string('deleted_by_type')->nullable();
+        $table->timestamp('restored_at')->nullable();
+        $table->unsignedBigInteger('restored_by_id')->nullable();
+        $table->string('restored_by_type')->nullable();
+        $table->unsignedBigInteger('created_by_id')->nullable();
+        $table->string('created_by_type')->nullable();
+        $table->unsignedBigInteger('updated_by_id')->nullable();
+        $table->string('updated_by_type')->nullable();
+        $table->softDeletes();
+        $table->timestamps();
+    });
+}
+
+function makeRunner(): TransformRunner
+{
+    return new TransformRunner(new TransformValidator);
+}
+
+/**
+ * @param  array<string, mixed>  $overrides
+ */
+function createDefinition(array $overrides = []): TransformDefinition
+{
+    return TransformDefinition::query()->create(array_replace_recursive([
+        'name' => 'Test Definition',
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [],
+        'source_references' => [],
+        'field_map' => [
+            'title' => 'legacy.title',
+        ],
+        'validation_rules' => [],
+        'is_active' => true,
+    ], $overrides));
+}
+
+function createFilamentTestUser(): User
+{
+    if (! Schema::hasTable('users')) {
+        Schema::create('users', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+    /** @var User $user */
+    $user = User::query()->create([
+        'name' => 'Transform Test User',
+        'email' => 'transform-test-'.uniqid().'@example.com',
+        'email_verified_at' => now(),
+        'password' => Hash::make('password'),
+    ]);
+
+    return $user;
+}

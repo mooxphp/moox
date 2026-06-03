@@ -1,0 +1,45 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('transform_records', function (Blueprint $table): void {
+            $table->id();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->nullableMorphs('deleted_by');
+
+            $table->foreignId('transform_definition_id')->constrained('transform_definitions')->cascadeOnDelete();
+            $table->string('destination_key')->nullable()->index();
+            $table->json('source_projection')->nullable();
+            $table->json('source_references')->nullable();
+            $table->string('input_hash', 64)->nullable()->index();
+
+            $table->string('status')->default('pending')->index();
+            $table->string('validation_status')->default('pending')->index();
+            $table->json('validation_errors')->nullable();
+            $table->json('warnings')->nullable();
+
+            $table->unsignedInteger('attempts')->default(0);
+            $table->boolean('degraded')->default(false);
+            $table->timestamp('last_run_at')->nullable()->index();
+            $table->timestamp('last_success_at')->nullable()->index();
+            $table->text('error_message')->nullable();
+        });
+
+        DB::statement(
+            'ALTER TABLE transform_records ADD CONSTRAINT chk_transform_records_has_source CHECK (source_projection IS NOT NULL OR source_references IS NOT NULL)'
+        );
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('transform_records');
+    }
+};
