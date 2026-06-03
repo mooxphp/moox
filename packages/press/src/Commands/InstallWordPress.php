@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\warning;
 
 class InstallWordPress extends Command
@@ -376,16 +377,49 @@ class InstallWordPress extends Command
         info('A secure password has been generated: '.$adminPassword);
         warning('Please make sure to save this password as it will not be shown again.');
 
-        $command = [
-            $this->wpCliPath,
-            'core',
-            'install',
+        $installType = select(
+            label: 'Install Type',
+            options: [
+                'multisite' => 'Multisite / Network',
+                'single' => 'Single Site (legacy)',
+            ],
+            default: 'multisite',
+        );
+
+        $commonArgs = [
             '--url='.$siteUrl,
             '--title='.$siteTitle,
             '--admin_user='.$adminUser,
             '--admin_password='.$adminPassword,
             '--admin_email='.$adminEmail,
         ];
+
+        if ($installType === 'multisite') {
+            $networkMode = select(
+                label: 'Network mode',
+                options: [
+                    'subdirectory' => 'Subdirectory',
+                    'subdomain' => 'Subdomain',
+                ],
+                default: 'subdirectory',
+            );
+
+            $command = array_merge([
+                $this->wpCliPath,
+                'core',
+                'multisite-install',
+            ], $commonArgs);
+
+            if ($networkMode === 'subdomain') {
+                $command[] = '--subdomains';
+            }
+        } else {
+            $command = array_merge([
+                $this->wpCliPath,
+                'core',
+                'install',
+            ], $commonArgs);
+        }
 
         foreach ($env as $key => $value) {
             if (is_bool($value)) {
