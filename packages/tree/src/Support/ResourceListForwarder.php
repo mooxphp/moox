@@ -34,7 +34,7 @@ final class ResourceListForwarder
             return $query;
         }
 
-        static::syncLanguage($lang);
+        self::syncLanguage($lang);
 
         if (method_exists($resourceClass, 'applyListSearchToQuery')) {
             return $resourceClass::applyListSearchToQuery($query, $search);
@@ -80,7 +80,7 @@ final class ResourceListForwarder
      */
     public static function applyLanguage(string $resourceClass, Builder $query, string $lang): Builder
     {
-        static::syncLanguage($lang);
+        self::syncLanguage($lang);
 
         return $query;
     }

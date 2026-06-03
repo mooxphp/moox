@@ -13,8 +13,10 @@ final class TreeIndexConfiguration
 {
     /** @var (\Closure(Builder): Builder)|null */
     private readonly ?\Closure $modifyQuery;
+
     /** @var (\Closure(Builder, string, self): Builder)|null */
     private readonly ?\Closure $applySearchUsing;
+
     /** @var (\Closure(Builder, string, self): Builder)|null */
     private readonly ?\Closure $applyLanguageUsing;
 

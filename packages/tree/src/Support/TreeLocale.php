@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Tree\Support;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 final class TreeLocale
 {
@@ -112,7 +113,7 @@ final class TreeLocale
             return [];
         }
 
-        /** @var class-string<\Illuminate\Database\Eloquent\Model> $localizationClass */
+        /** @var class-string<Model> $localizationClass */
         return $localizationClass::query()
             ->where('is_active_admin', true)
             ->whereHas('language', fn (Builder $languageQuery): Builder => $languageQuery->where('alpha2', $baseLanguage))

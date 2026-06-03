@@ -12,7 +12,6 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use Moox\Tree\Support\ResourceListForwarder;
 use Moox\Localization\Models\Localization;
 use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
 use Moox\Tree\Actions\Tree\DeleteTreeNodeAction;
@@ -514,5 +513,4 @@ class ResourceTreeIndex extends Component
 
         return (string) config('app.locale');
     }
-
 }

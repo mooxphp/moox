@@ -46,5 +46,4 @@ abstract class TreeIndexListRecords extends ListRecords
     {
         return [];
     }
-
 }

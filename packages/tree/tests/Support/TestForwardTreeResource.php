@@ -25,7 +25,7 @@ final class TestForwardTreeResource extends Resource implements ConfiguresTreeIn
     {
         return $table
             ->columns([
-                static::getTitleColumn(),
+                self::getTitleColumn(),
             ])
             ->filters([
                 TernaryFilter::make('is_visible'),
