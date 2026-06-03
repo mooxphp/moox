@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Moox\Demo\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

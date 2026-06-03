@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Moox\Demo\Jobs;
 
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
