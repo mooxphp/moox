@@ -1,0 +1,80 @@
+---
+description: Architektur und Konventionen für packages/tree (Moox Tree / filament-tree-index)
+globs: packages/tree/**
+alwaysApply: false
+---
+
+# Moox Tree Package
+
+Internes Filament-Resource-Index-UI für hierarchische Eloquent-Modelle (Baum links, Inspector rechts). Namespace: `Moox\Tree`. Views/Config-Tag: `filament-tree-index`.
+
+## Zentrale Tree-Funktionen (Single Source of Truth)
+
+**Alle Baum-Funktionen liegen in `packages/tree`** und werden von Consumer-Resources nur **konfiguriert**, nicht neu implementiert:
+
+| Bereich | Zentrale Klassen/Komponenten |
+|--------|------------------------------|
+| CRUD / Verschieben | `Actions/Tree/*` |
+| Baumstruktur | `Support/TreeStructure` |
+| UI / Interaktion | `Livewire/ResourceTreeIndex`, Blade-Views, Alpine `$store.filamentTreeIndex` |
+| Filament-Anbindung | `TreeIndexListRecords`, `ConfiguresTreeIndex`, Inspector-Trait |
+| Anpassung | `TreeIndexConfiguration` (Spalten, Modus, Hooks, Labels, Toolbar) |
+| Locale / Toolbar-i18n | `Support/TreeLocale`, `toolbarLocalizedTranslations()` |
+| List-Forwarding | `forwardFromResource()`, `Support/ResourceListForwarder` |
+
+**Flexibel nutzbar** heißt: gleicher Code für jedes hierarchische Model — Unterschiede nur über `TreeIndexConfiguration::make()` (Spaltennamen, `nestedSet()`, `reorderable`, `inspectorPage`, Closures). Fehlt eine generische Fähigkeit (z. B. Toolbar-Suche), **im Package erweitern** und per Config/API freischalten — nicht in `category`, `menu-builder` o. Ä. duplizieren.
+
+## Architektur (nicht verletzen)
+
+- **Geschäftslogik in Actions**, nicht in Livewire oder Blade: `CreateTreeNodeAction`, `UpdateTreeNodeAction`, `MoveTreeNodeAction`, `DeleteTreeNodeAction`. Bei `nestedSet()` delegieren Create/Move an `*NestedSet*`-Actions (Kalnoy `NodeTrait`).
+- **`ResourceTreeIndex`** orchestriert nur (Auth, Query, Delegation an Actions, Events). Keine neuen CRUD-Pfade direkt im Component.
+- **Baumaufbau** nur über `TreeStructure` + `TreeIndexConfiguration`. Konfiguration ist **immutable** (Fluent API mit `cloneWith`); neue Optionen brauchen Unit-Tests in `TreeIndexConfigurationTest`.
+- **Registry**: List-Pages registrieren Config unter dem **Resource-Klassennamen** (`TreeIndexConfigurationRegistry`). Schlüssel nicht umbenennen ohne Migration aller Aufrufer.
+
+## Zwei Baum-Modi
+
+| Modus | Spalten | Konfiguration |
+|-------|---------|---------------|
+| Adjacency List (Default) | `parent_id`, `sort_order`, Label-Spalte | Standard-`make()` |
+| Nested Set | `_lft`, `_rgt`, optional `parent_id` | `->nestedSet()->sortColumn('_lft')`, Model mit `NodeTrait` |
+
+Adjacency- und Nested-Set-Logik **nicht mischen** in einer Action.
+
+## UI & Frontend
+
+- Blade unter `resources/views`, Prefix `filament-tree-index::`.
+- **Filament-Komponenten** (`x-filament::*`) und `fi-*`-Klassen; Layout/Scroll in `resources/css/tree.css` (Klassen `fi-tree-*`). Kein separates Theme-CSS außerhalb des Packages für Tree-Layout.
+- Alpine-Baumzustand nur über **`$store.filamentTreeIndex`** (`scripts/alpine-tree-store.blade.php`). Keinen zweiten Store oder duplizierte Expand/Collapse-Logik in Partials.
+- Drag & Drop nur wenn `reorderable(true)`; Verschiebe-Validierung (nicht unter sich selbst / eigenes Kind) beibehalten.
+
+## Eloquent-Models (Vertrag)
+
+Das Package darf **keine eigenen Model-Methoden, Interfaces oder Contracts** voraussetzen. Nutzung nur über:
+
+- **Spalten/Attribute**: `parent_id`, Sort-Spalte, Label-Spalte (konfigurierbar), bei Nested Set `_lft`/`_rgt`
+- **Eloquent-Standard**: `getKey()`, `getAttribute()`, `update()`, `delete()`, `setAttribute()`
+- **Nested Set**: ausschließlich Kalnoy `NodeTrait` (`appendToNode`, `beforeNode`, …) — kein zusätzliches Tree-Trait im Moox-Package
+
+Neue Features im Package müssen über **Config/Actions/Resource-Hooks** lösbar sein, nicht über `if (method_exists($model, …))` oder Model-APIs.
+
+## Package-Grenzen
+
+- **Keine domänenspezifischen Daten** im Package (keine `Category`-, `Localization`- oder Mandanten-Queries). Domänenfilter nur über **konfigurierbare Closures** (`modifyQuery`, `applySearchUsing`, `applyLanguageUsing`).
+- **Generische Tree-UI und -Abläufe** (Toolbar, Reorder, Expand, Inspector-Einbettung, Validierung) gehören ins Package — auch wenn heute nur eine Resource sie nutzt.
+- Abhängigkeit `moox/core` ist erlaubt; weitere Moox-Packages nur wenn unvermeidbar und zyklusfrei.
+
+## Code-Stil
+
+- `declare(strict_types=1);` in jeder PHP-Datei.
+- PHP ^8.3, Laravel ^12, Filament ^4/5 wie im Host-Projekt, Livewire ^3/4.
+- Typisierte Closures für Query-Hooks: `fn (Builder $query): Builder`.
+
+## Tests
+
+- Tests nur unter `packages/tree/tests/` (Pest). Feature = Livewire `ResourceTreeIndex`; Unit = Config, `TreeStructure`, Registry.
+- Auth in Tests: `config(['filament-tree-index.authorization.enabled' => false])` und Registry-Register mit Test-Key.
+- Nach Verhalten ändern: `php artisan test --compact packages/tree/tests`
+
+## Referenz-Integration (außerhalb des Packages)
+
+Consumer-Resources (`implements ConfiguresTreeIndex`) gehören **nicht** in dieses Package — siehe Regel `moox-tree-integration`. Referenz: `CategoryTreeResource`, `TreeListCategories`, `TreeInspectorCategory`.

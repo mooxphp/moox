@@ -218,12 +218,32 @@ Ohne `inspectorPage()` zeigt das Package rechts nur ein **Minimalformular** (Lab
 | `reorderable(true)`              | `true`                 | Drag & Drop (Livewire `wire:sort`)                                                                   |
 | `inspectorPage(EditPage::class)` | `null`                 | Volles Filament-Formular rechts                                                                      |
 | `modifyQuery(Closure)`           | –                      | z. B. Resource-Scopes, Soft-Deletes, Mandanten                                                       |
+| `toolbarSearch(true)`            | `false`                | Blendet ein Suchfeld im Tree-Header ein                                                              |
+| `toolbarLanguageSwitcher(true)`  | `false`                | Blendet den Language-Switcher im Tree-Header ein (falls `localization::lang-selector` vorhanden)    |
+| `applySearchUsing(Closure)`      | –                      | Eigene Suchlogik: `fn (Builder $query, string $search, TreeIndexConfiguration $config): Builder`    |
+| `applyLanguageUsing(Closure)`    | –                      | Eigene Sprachlogik: `fn (Builder $query, string $lang, TreeIndexConfiguration $config): Builder`     |
 | `authorizationAbility('update')` | `null`                 | Gate-Ability für das Model; ohne Wert nur `auth()->check()`                                          |
 | `labels(...)`                    | deutsche Standardtexte | UI-Texte (siehe unten)                                                                               |
 
 Parameter von `labels()`: `treeHeading`, `treeSubheading`, `inspectorHeading`, `createRootLabel`, `createChildLabel`, `saveLabel`, `newRecordLabel`, `deleteConfirmMessage`.
 
 `modifyQuery` sollte dieselbe Query-Logik wie `Resource::getEloquentQuery()` widerspiegeln (Policies, globale Scopes, Mandanten).
+
+### Toolbar Features (optional)
+
+Wenn du Suchfeld und/oder Language-Switcher wie in klassischen Filament-Listen brauchst, kannst du sie pro Tree-Resource aktivieren:
+
+```php
+return TreeIndexConfiguration::make(Category::class)
+    ->toolbarSearch()
+    ->toolbarLanguageSwitcher()
+    ->applyLanguageUsing(
+        fn (Builder $query, string $lang, TreeIndexConfiguration $config): Builder
+            => $query->whereHas('translations', fn (Builder $translationQuery): Builder => $translationQuery->where('locale', $lang))
+    );
+```
+
+Ohne `applyLanguageUsing()` setzt der Switcher nur den Livewire-`lang`-State und Query-String, verändert aber die Query nicht.
 
 ### Beispiel: Einfacher Baum (Adjacency List, verschiebbar)
 

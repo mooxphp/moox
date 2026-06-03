@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\Tree\Tests\Support;
+
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Tests\Models\TreeNode;
+
+final class TestForwardTreeResource extends Resource implements ConfiguresTreeIndex
+{
+    protected static ?string $model = TreeNode::class;
+
+    public static function getTitleColumn(): TextColumn
+    {
+        return TextColumn::make('label')->searchable();
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                static::getTitleColumn(),
+            ])
+            ->filters([
+                TernaryFilter::make('is_visible'),
+            ]);
+    }
+
+    public static function treeIndex(): TreeIndexConfiguration
+    {
+        return TreeIndexConfiguration::make(TreeNode::class);
+    }
+}

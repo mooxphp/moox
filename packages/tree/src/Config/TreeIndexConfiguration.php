@@ -6,17 +6,25 @@ namespace Moox\Tree\Config;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Tree\Support\ResourceListForwarder;
+use Moox\Tree\Support\TreeLocale;
 
 final class TreeIndexConfiguration
 {
     /** @var (\Closure(Builder): Builder)|null */
     private readonly ?\Closure $modifyQuery;
+    /** @var (\Closure(Builder, string, self): Builder)|null */
+    private readonly ?\Closure $applySearchUsing;
+    /** @var (\Closure(Builder, string, self): Builder)|null */
+    private readonly ?\Closure $applyLanguageUsing;
 
     /**
+     * @param  class-string|null  $sourceResourceClass
      * @param  class-string|null  $inspectorPageClass
      */
     private function __construct(
         private readonly string $modelClass,
+        private readonly ?string $sourceResourceClass,
         private readonly string $parentColumn,
         private readonly string $sortColumn,
         private readonly string $labelColumn,
@@ -33,15 +41,23 @@ final class TreeIndexConfiguration
         private readonly string $saveLabel,
         private readonly string $newRecordLabel,
         private readonly string $deleteConfirmMessage,
+        private readonly bool $toolbarSearchEnabled,
+        private readonly bool $toolbarLanguageSwitcherEnabled,
+        private readonly bool $useFilamentTableToolbar,
         ?\Closure $modifyQuery = null,
+        ?\Closure $applySearchUsing = null,
+        ?\Closure $applyLanguageUsing = null,
     ) {
         $this->modifyQuery = $modifyQuery;
+        $this->applySearchUsing = $applySearchUsing;
+        $this->applyLanguageUsing = $applyLanguageUsing;
     }
 
     public static function make(string $modelClass): self
     {
         return new self(
             modelClass: $modelClass,
+            sourceResourceClass: null,
             parentColumn: 'parent_id',
             sortColumn: 'sort_order',
             labelColumn: 'label',
@@ -58,6 +74,9 @@ final class TreeIndexConfiguration
             saveLabel: 'Speichern',
             newRecordLabel: 'Neuer Eintrag',
             deleteConfirmMessage: 'Diesen Eintrag inklusive Untereinträge löschen?',
+            toolbarSearchEnabled: false,
+            toolbarLanguageSwitcherEnabled: false,
+            useFilamentTableToolbar: false,
         );
     }
 
@@ -123,6 +142,127 @@ final class TreeIndexConfiguration
     public function modifyQuery(\Closure $modifyQuery): self
     {
         return $this->cloneWith(modifyQuery: $modifyQuery);
+    }
+
+    public function toolbarSearch(bool $enabled = true): self
+    {
+        return $this->cloneWith(toolbarSearchEnabled: $enabled);
+    }
+
+    public function toolbarLanguageSwitcher(bool $enabled = true): self
+    {
+        return $this->cloneWith(toolbarLanguageSwitcherEnabled: $enabled);
+    }
+
+    /**
+     * @param  \Closure(Builder, string, self): Builder  $callback
+     */
+    public function applySearchUsing(\Closure $callback): self
+    {
+        return $this->cloneWith(applySearchUsing: $callback);
+    }
+
+    /**
+     * @param  \Closure(Builder, string, self): Builder  $callback
+     */
+    public function applyLanguageUsing(\Closure $callback): self
+    {
+        return $this->cloneWith(applyLanguageUsing: $callback);
+    }
+
+    /**
+     * Reuse list capabilities from a Filament resource (query, search, language, table filters).
+     *
+     * @param  class-string  $resourceClass
+     * @param  bool  $useFilamentTableToolbar  Use Filament table toolbar for search, filters, and language switcher (1:1 with list).
+     */
+    public function forwardFromResource(string $resourceClass, bool $useFilamentTableToolbar = false): self
+    {
+        $configuration = $this
+            ->cloneWith(
+                sourceResourceClass: $resourceClass,
+                useFilamentTableToolbar: $useFilamentTableToolbar,
+            )
+            ->modifyQuery(fn (Builder $query): Builder => ResourceListForwarder::baseQuery($resourceClass))
+            ->applyLanguageUsing(
+                fn (Builder $query, string $lang, self $config): Builder => ResourceListForwarder::applyLanguage(
+                    $resourceClass,
+                    $query,
+                    $lang,
+                ),
+            );
+
+        if ($useFilamentTableToolbar) {
+            return $configuration->applySearchUsing(
+                fn (Builder $query, string $search, self $config): Builder => ResourceListForwarder::applySearch(
+                    $resourceClass,
+                    $query,
+                    $search,
+                    TreeLocale::resolveActiveLanguage(),
+                ),
+            );
+        }
+
+        $configuration = $configuration->toolbarLanguageSwitcher();
+
+        return $configuration
+            ->toolbarSearch()
+            ->applySearchUsing(
+                fn (Builder $query, string $search, self $config): Builder => ResourceListForwarder::applySearch(
+                    $resourceClass,
+                    $query,
+                    $search,
+                    TreeLocale::resolveActiveLanguage(),
+                ),
+            );
+    }
+
+    /**
+     * @return class-string|null
+     */
+    public function getSourceResourceClass(): ?string
+    {
+        return $this->sourceResourceClass;
+    }
+
+    /**
+     * Toolbar search + language switcher scoped to a translations relation (Moox Localization aware).
+     */
+    public function toolbarLocalizedTranslations(
+        string $translationsRelation = 'translations',
+        string $localeColumn = 'locale',
+        ?string $translationSearchColumn = null,
+    ): self {
+        $searchColumn = $translationSearchColumn ?? $this->getLabelColumn();
+
+        return $this
+            ->toolbarSearch()
+            ->toolbarLanguageSwitcher()
+            ->applySearchUsing(function (Builder $query, string $search) use ($translationsRelation, $localeColumn, $searchColumn): Builder {
+                $localeCandidates = TreeLocale::localeCandidates(TreeLocale::resolveActiveLanguage());
+
+                return $query->whereHas($translationsRelation, function (Builder $translationQuery) use ($search, $localeCandidates, $localeColumn, $searchColumn): Builder {
+                    return $translationQuery
+                        ->when(
+                            $localeCandidates !== [],
+                            fn (Builder $localizedQuery): Builder => $localizedQuery->whereIn($localeColumn, $localeCandidates),
+                        )
+                        ->where($searchColumn, 'like', '%'.$search.'%');
+                });
+            })
+            ->applyLanguageUsing(function (Builder $query, string $lang) use ($translationsRelation, $localeColumn): Builder {
+                TreeLocale::syncApplicationLocale($lang);
+
+                $localeCandidates = TreeLocale::localeCandidates($lang);
+
+                if ($localeCandidates === []) {
+                    return $query;
+                }
+
+                return $query->whereHas($translationsRelation, function (Builder $translationQuery) use ($localeCandidates, $localeColumn): Builder {
+                    return $translationQuery->whereIn($localeColumn, $localeCandidates);
+                });
+            });
     }
 
     public function labels(
@@ -286,8 +426,58 @@ final class TreeIndexConfiguration
         return $query;
     }
 
+    public function isToolbarSearchEnabled(): bool
+    {
+        return $this->toolbarSearchEnabled;
+    }
+
+    public function isToolbarLanguageSwitcherEnabled(): bool
+    {
+        return $this->toolbarLanguageSwitcherEnabled;
+    }
+
+    public function usesFilamentTableToolbar(): bool
+    {
+        return $this->useFilamentTableToolbar;
+    }
+
+    public function applySearch(Builder $query, string $search): Builder
+    {
+        $search = trim($search);
+
+        if ($search === '') {
+            return $query;
+        }
+
+        if ($this->applySearchUsing !== null) {
+            return ($this->applySearchUsing)($query, $search, $this);
+        }
+
+        if (! $this->isLabelColumnQueryable()) {
+            return $query;
+        }
+
+        return $query->where($this->getLabelColumn(), 'like', '%'.$search.'%');
+    }
+
+    public function applyLanguage(Builder $query, string $lang): Builder
+    {
+        $lang = trim($lang);
+
+        if ($lang === '') {
+            return $query;
+        }
+
+        if ($this->applyLanguageUsing === null) {
+            return $query;
+        }
+
+        return ($this->applyLanguageUsing)($query, $lang, $this);
+    }
+
     private function cloneWith(
         ?string $modelClass = null,
+        ?string $sourceResourceClass = null,
         ?string $parentColumn = null,
         ?string $sortColumn = null,
         ?string $labelColumn = null,
@@ -304,10 +494,16 @@ final class TreeIndexConfiguration
         ?string $saveLabel = null,
         ?string $newRecordLabel = null,
         ?string $deleteConfirmMessage = null,
+        ?bool $toolbarSearchEnabled = null,
+        ?bool $toolbarLanguageSwitcherEnabled = null,
+        ?bool $useFilamentTableToolbar = null,
         ?\Closure $modifyQuery = null,
+        ?\Closure $applySearchUsing = null,
+        ?\Closure $applyLanguageUsing = null,
     ): self {
         return new self(
             modelClass: $modelClass ?? $this->modelClass,
+            sourceResourceClass: $sourceResourceClass ?? $this->sourceResourceClass,
             parentColumn: $parentColumn ?? $this->parentColumn,
             sortColumn: $sortColumn ?? $this->sortColumn,
             labelColumn: $labelColumn ?? $this->labelColumn,
@@ -324,7 +520,12 @@ final class TreeIndexConfiguration
             saveLabel: $saveLabel ?? $this->saveLabel,
             newRecordLabel: $newRecordLabel ?? $this->newRecordLabel,
             deleteConfirmMessage: $deleteConfirmMessage ?? $this->deleteConfirmMessage,
+            toolbarSearchEnabled: $toolbarSearchEnabled ?? $this->toolbarSearchEnabled,
+            toolbarLanguageSwitcherEnabled: $toolbarLanguageSwitcherEnabled ?? $this->toolbarLanguageSwitcherEnabled,
+            useFilamentTableToolbar: $useFilamentTableToolbar ?? $this->useFilamentTableToolbar,
             modifyQuery: $modifyQuery ?? $this->modifyQuery,
+            applySearchUsing: $applySearchUsing ?? $this->applySearchUsing,
+            applyLanguageUsing: $applyLanguageUsing ?? $this->applyLanguageUsing,
         );
     }
 }

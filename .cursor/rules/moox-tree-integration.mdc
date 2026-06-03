@@ -1,0 +1,64 @@
+---
+description: Filament-Resources an Moox Tree anbinden (Consumer außerhalb packages/tree)
+globs: "**/*TreeResource.php,**/TreeList*.php,**/TreeInspector*.php"
+alwaysApply: false
+---
+
+# Moox Tree – Resource-Integration
+
+Wenn eine Resource einen Baum-Index statt einer Tabelle nutzt.
+
+## Zentrale Nutzung (keine Duplikation)
+
+**Tree-Funktionen nicht in Consumer-Packages neu bauen** — kein eigenes Livewire für Baum-CRUD, keine kopierten Move/Reorder-Skripte, keine parallelen Action-Klassen.
+
+Consumer liefert nur:
+
+- `treeIndex(): TreeIndexConfiguration` mit `->forwardFromResource(static::class, useFilamentTableToolbar: true)` — **1:1** wie die Liste: Filament-`EmbeddedTable` (Tabs, Filter, Suche, Language-Switcher in `TOOLBAR_SEARCH_BEFORE`) + `applyFiltersToTableQuery()` / `applySearchToTableQuery()` auf der List-Page; kein separater Lang-Switcher in der Baum-Spalte
+- dünne Filament-Pages (`TreeIndexListRecords`, optional Inspector mit **Domänen-Formular**)
+- ggf. `modifyQuery` / `applySearchUsing` / `applyLanguageUsing` als **Closures** (nur Datenfilter, keine Tree-Mechanik)
+
+Braucht eine Resource ein Verhalten, das andere Bäume auch brauchen könnten → **Feature ins `packages/tree`**, dann per Config aktivieren.
+
+## Eloquent-Models
+
+**Models nicht um Tree-Funktionen erweitern** — keine Hilfsmethoden, Interfaces oder Traits nur für das Tree-Package (z. B. `getTreeLabel()`, `toTreeNode()`, `implements TreeNodeContract`).
+
+Erlaubt am Model:
+
+- Spalten/`$fillable` für `parent_id`, Sortierung, Label (oder konfigurierte Namen)
+- Bei Nested Set: Kalnoy **`NodeTrait`** (Pflicht für `nestedSet()`, sonst nichts Tree-spezifisches)
+- Domänen-Relations/Accessors, die ohnehin zur App gehören; Label-Accessor → `->labelColumnQueryable(false)` in der Resource
+
+Tree-Mechanik gehört ins **Tree-Package**; die Resource **verdrahtet** nur über `treeIndex()`. Domänen-Inhalte (Tabs, Relationen, Medien) nur im **Inspector** (Filament Edit-Page), nicht als eigene Baum-Logik.
+
+## Pflichten
+
+1. Resource: `implements Moox\Tree\Contracts\ConfiguresTreeIndex` + `treeIndex(): TreeIndexConfiguration`.
+2. List-Page: `extends Moox\Tree\Filament\Pages\TreeIndexListRecords` (registriert Config in `mount()`).
+3. Routing: `'index' => TreeListXxx::route('/')`. Bei Moox-Parent-Resources: `...Arr::except(parent::getPages(), ['index'])` beibehalten.
+4. `modifyQuery` muss dieselbe Sicht wie `Resource::getEloquentQuery()` abbilden (Policies, Soft-Deletes, Mandanten).
+
+## Inspector (empfohlen)
+
+- Eigene Edit-Page mit `RendersAsTreeIndexInspector` + Route `tree-inspector` (Policies/URLs).
+- In Config: `->inspectorPage(TreeInspectorXxx::class)`.
+- Ohne Inspector: nur eingebautes Minimalformular (Label + Parent).
+
+## Nested Set & Label
+
+- Accessor-Labels (z. B. `title` aus Translation): `->labelColumnQueryable(false)`.
+- Nested Set: `->nestedSet()->sortColumn('_lft')->reorderable(true)` und `kalnoy/nestedset` am Model.
+
+## Toolbar (Suche / Sprache)
+
+- Mit `useFilamentTableToolbar: true`: Suche, Filter und `localization::lang-selector` in der **Filament-Tabellen-Toolbar** (Render-Hook im Tree-Package); keine Tabellen-Sortierung („Sort by“), keine Zeilen-/Bulk-Actions — Reihenfolge nur im Baum (`sortColumn` / Drag).
+- Ohne Table-Toolbar: `toolbarSearch` / `toolbarLanguageSwitcher` in der Baum-Spalte; Resource liefert ggf. `applySearchUsing` / `applyLanguageUsing` — keine zweite Toolbar-Implementierung.
+
+## Trait-Shortcut
+
+`Moox\Tree\Filament\Concerns\ConfiguresTreeIndex`: `getTreeIndexListPage()` + optional `getAdditionalResourcePages()` für Inspector-Routen.
+
+## Checkliste neue Resource
+
+Model-Spalten (ohne Tree-Methoden) → `treeIndex()` → `TreeIndexListRecords` → Pages/Routes → optional Inspector → Feature-Test für Config oder Livewire.

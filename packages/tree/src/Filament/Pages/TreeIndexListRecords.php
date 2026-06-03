@@ -6,18 +6,20 @@ namespace Moox\Tree\Filament\Pages;
 
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
-use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Filament\Concerns\InteractsWithTreeIndexListPage;
 
 abstract class TreeIndexListRecords extends ListRecords
 {
-    protected string $view = 'filament-tree-index::filament.pages.tree-index';
+    use InteractsWithTreeIndexListPage;
 
     public string $treeIndexConfigurationKey = '';
 
     public function mount(): void
     {
         parent::mount();
+
+        $this->mountInteractsWithTreeIndexListPage();
 
         $resource = static::getResource();
 
@@ -27,10 +29,7 @@ abstract class TreeIndexListRecords extends ListRecords
 
         $this->treeIndexConfigurationKey = $resource;
 
-        TreeIndexConfigurationRegistry::register(
-            $this->treeIndexConfigurationKey,
-            $resource::treeIndex(),
-        );
+        $this->refreshTreeIndexConfiguration();
     }
 
     public function getMaxContentWidth(): Width|string|null
@@ -38,18 +37,14 @@ abstract class TreeIndexListRecords extends ListRecords
         return Width::Full;
     }
 
+    public function hydrate(): void
+    {
+        $this->hydrateInteractsWithTreeIndexListPage();
+    }
+
     protected function getHeaderActions(): array
     {
         return [];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getViewData(): array
-    {
-        return [
-            'treeIndexConfigurationKey' => $this->treeIndexConfigurationKey,
-        ];
-    }
 }

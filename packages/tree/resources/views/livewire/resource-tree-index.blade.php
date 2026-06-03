@@ -34,18 +34,30 @@
             </x-slot>
 
             <div
-                class="fi-tabs fi-vertical fi-contained fi-tree-scroll-panel"
-                wire:key="resource-tree-{{ md5(json_encode($treeBranchIdsWithChildren)) }}"
-                x-data
-                x-init="$store.filamentTreeIndex.configure(@js($treeBranchIdsWithChildren), @js($treeAncestorIdsForSelection))"
+                class="fi-sc fi-sc-has-gap fi-grid"
+                style="--cols-default: repeat(1, minmax(0, 1fr));"
             >
-                @include('filament-tree-index::livewire.resource-tree', [
-                    'items' => $tree,
-                    'parentId' => null,
-                    'selectedRecordId' => $selectedRecordId,
-                    'configuration' => $configuration,
-                    'isRoot' => true,
-                ])
+                @if ($isToolbarSearchEnabled || $isToolbarLanguageSwitcherEnabled)
+                    @include('filament-tree-index::livewire.partials.tree-toolbar', [
+                        'isToolbarSearchEnabled' => $isToolbarSearchEnabled,
+                        'isToolbarLanguageSwitcherEnabled' => $isToolbarLanguageSwitcherEnabled,
+                    ])
+                @endif
+
+                <div
+                    class="fi-tabs fi-vertical fi-tree-scroll-panel"
+                    wire:key="resource-tree-{{ md5(json_encode($treeBranchIdsWithChildren)) }}"
+                    x-data
+                    x-init="$store.filamentTreeIndex.configure(@js($treeBranchIdsWithChildren), @js($treeAncestorIdsForSelection))"
+                >
+                    @include('filament-tree-index::livewire.resource-tree', [
+                        'items' => $tree,
+                        'parentId' => null,
+                        'selectedRecordId' => $selectedRecordId,
+                        'configuration' => $configuration,
+                        'isRoot' => true,
+                    ])
+                </div>
             </div>
 
             <x-slot name="footer">

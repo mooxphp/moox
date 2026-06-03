@@ -10,7 +10,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
+use Moox\Tree\Support\ResourceListForwarder;
+use Moox\Localization\Models\Localization;
 use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
 use Moox\Tree\Actions\Tree\DeleteTreeNodeAction;
 use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
@@ -26,15 +29,43 @@ class ResourceTreeIndex extends Component
 
     public ?int $selectedRecordId = null;
 
+    #[Reactive]
+    public string $search = '';
+
+    #[Reactive]
+    public string $lang = '';
+
     /** @var array<string, mixed> */
     public array $form = [];
 
-    public function mount(string $configurationKey): void
-    {
+    public function mount(
+        string $configurationKey,
+        string $search = '',
+        string $lang = '',
+    ): void {
         $this->configurationKey = $configurationKey;
         $this->authorizeTreeIndex();
+
+        if ($search !== '') {
+            $this->search = $search;
+        } elseif ($this->search === '' && $this->usesStandaloneToolbarSearch()) {
+            $this->search = (string) request()->input('search', request()->input('tableSearch', ''));
+        }
+
+        if ($lang !== '') {
+            $this->lang = $lang;
+        } elseif ($this->lang === '') {
+            $this->lang = (string) request()->input('lang', $this->getDefaultLocale());
+        }
+
+        $this->syncLangToRequest();
         $this->resetForm();
         $this->loadSelectedRecord();
+    }
+
+    public function hydrate(): void
+    {
+        $this->syncLangToRequest();
     }
 
     public function render(): View
@@ -52,7 +83,27 @@ class ResourceTreeIndex extends Component
             'parentOptions' => $this->getParentOptions(),
             'selectedRecord' => $this->getSelectedRecord(),
             'inspectorPageClass' => $this->configuration()->getInspectorPageClass(),
+            'isToolbarSearchEnabled' => $this->configuration()->isToolbarSearchEnabled(),
+            'isToolbarLanguageSwitcherEnabled' => $this->configuration()->isToolbarLanguageSwitcherEnabled(),
         ]);
+    }
+
+    public function changeLanguage(string $lang): void
+    {
+        $this->lang = $lang;
+        $this->syncLangToRequest();
+
+        $resourceClass = $this->configuration()->getSourceResourceClass();
+
+        if ($resourceClass !== null && method_exists($resourceClass, 'getUrl')) {
+            $parameters = ['lang' => $lang];
+
+            if (filled(request()->query('tab'))) {
+                $parameters['tab'] = request()->query('tab');
+            }
+
+            $this->redirect($resourceClass::getUrl('index', $parameters));
+        }
     }
 
     #[On('tree-index-record-saved')]
@@ -274,7 +325,14 @@ class ResourceTreeIndex extends Component
     private function loadTreeRecords(): Collection
     {
         $configuration = $this->configuration();
-        $query = $configuration->applyTreeOrdering($this->query());
+        $query = $this->query();
+        $query = $configuration->applyLanguage($query, $this->lang);
+
+        if ($this->shouldApplySearchToTreeQuery()) {
+            $query = $configuration->applySearch($query, $this->search);
+        }
+
+        $query = $configuration->applyTreeOrdering($query);
 
         if ($configuration->isLabelColumnQueryable() || $configuration->usesNestedSet()) {
             $query->select($configuration->treeSelectColumns());
@@ -416,4 +474,45 @@ class ResourceTreeIndex extends Component
 
         return (new $modelClass)->getTable();
     }
+
+    private function shouldApplySearchToTreeQuery(): bool
+    {
+        $configuration = $this->configuration();
+
+        if ($configuration->usesFilamentTableToolbar()) {
+            return true;
+        }
+
+        return $this->usesStandaloneToolbarSearch();
+    }
+
+    private function usesStandaloneToolbarSearch(): bool
+    {
+        return $this->configuration()->getSourceResourceClass() === null
+            || $this->configuration()->isToolbarSearchEnabled();
+    }
+
+    private function syncLangToRequest(): void
+    {
+        if ($this->lang !== '') {
+            request()->merge(['lang' => $this->lang]);
+        }
+    }
+
+    private function getDefaultLocale(): string
+    {
+        if (class_exists(Localization::class)) {
+            $defaultLocale = Localization::query()
+                ->where('is_default', true)
+                ->where('is_active_admin', true)
+                ->first();
+
+            if ($defaultLocale !== null) {
+                return (string) ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2 ?: config('app.locale'));
+            }
+        }
+
+        return (string) config('app.locale');
+    }
+
 }
