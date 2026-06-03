@@ -33,9 +33,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
-        "orchestra/testbench": "^9.5",
-        "pestphp/pest": "^3.2",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "moox/devtools": "dev-main"
     },
     "autoload-dev": {
         "psr-4": {
