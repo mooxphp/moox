@@ -29,6 +29,8 @@ class InstallWordPress extends Command
      */
     protected $description = 'Installs WordPress with PHPdotenv for Moox Press.';
 
+    protected string $wpCliPath = 'wp';
+
     /**
      * Execute the console command.
      */
@@ -308,24 +310,46 @@ class InstallWordPress extends Command
                 $this->error('Failed to move wp-cli.phar to '.$targetDir);
                 exit(1);
             } else {
+                $this->wpCliPath = $targetPath;
                 $this->info('wp-cli installed successfully in '.$targetDir);
             }
         } else {
-            $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
-            $moveProcess = new Process([
-                'mv',
-                base_path('wp-cli.phar'),
-                '/usr/local/bin/wp',
-            ]);
+            $home = getenv('HOME') ?: '';
 
-            $moveProcess->run();
-
-            if ($moveProcess->isSuccessful()) {
-                $this->info('wp-cli installed successfully.');
-            } else {
-                $this->error('Failed to move wp-cli.phar to /usr/local/bin/wp.');
-                $this->line($moveProcess->getErrorOutput());
+            if ($home === '') {
+                $this->error('Could not determine the home directory.');
                 exit(1);
+            }
+
+            $targetDir = $home.'/.local/bin';
+
+            if (! is_dir($targetDir) && ! mkdir($targetDir, 0755, true) && ! is_dir($targetDir)) {
+                $this->error('Failed to create directory '.$targetDir);
+                exit(1);
+            }
+
+            $targetPath = $targetDir.'/wp';
+
+            $this->info('Moving wp-cli.phar to '.$targetPath.'...');
+
+            if (! @rename(base_path('wp-cli.phar'), $targetPath)) {
+                $this->error('Failed to move wp-cli.phar to '.$targetPath);
+                exit(1);
+            }
+
+            if (! @chmod($targetPath, 0755)) {
+                $this->error('Failed to make '.$targetPath.' executable.');
+                exit(1);
+            }
+
+            $this->wpCliPath = $targetPath;
+
+            $this->info('wp-cli installed successfully.');
+
+            $pathDirs = explode(PATH_SEPARATOR, (string) getenv('PATH'));
+
+            if (! in_array($targetDir, $pathDirs, true)) {
+                $this->warn('Ensure '.$targetDir.' is in your PATH to use the "wp" command.');
             }
         }
     }
@@ -353,7 +377,7 @@ class InstallWordPress extends Command
         warning('Please make sure to save this password as it will not be shown again.');
 
         $command = [
-            'wp',
+            $this->wpCliPath,
             'core',
             'install',
             '--url='.$siteUrl,
@@ -390,7 +414,7 @@ class InstallWordPress extends Command
         $this->info('Ensuring a default theme is installed and activated...');
 
         $checkThemeProcess = new Process([
-            'wp',
+            $this->wpCliPath,
             'theme',
             'is-installed',
             'twentytwentyfour',
@@ -401,7 +425,7 @@ class InstallWordPress extends Command
             $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
 
             $installThemeProcess = new Process([
-                'wp',
+                $this->wpCliPath,
                 'theme',
                 'install',
                 'twentytwentyfour',
@@ -454,7 +478,7 @@ class InstallWordPress extends Command
         File::copyDirectory($pluginSource, $pluginDestination);
 
         info('Activating the Moox Press plugin...');
-        $activateCommand = ['wp', 'plugin', 'activate', 'moox-press'];
+        $activateCommand = [$this->wpCliPath, 'plugin', 'activate', 'moox-press'];
         $process = new Process($activateCommand, $fullWpPath);
         $process->setTimeout(null);
         $process->run();
