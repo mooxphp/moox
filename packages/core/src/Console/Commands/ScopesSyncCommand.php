@@ -111,6 +111,10 @@ class ScopesSyncCommand extends Command
 
                 $scopes = $resourceDefinition['scopes'] ?? $resourceDefinition['children'] ?? null;
 
+                if (! is_array($scopes)) {
+                    continue;
+                }
+
                 // If scopes contain registry metadata, treat the remaining keys as scope definitions.
                 if (is_array($scopes) && array_key_exists('registry', $scopes)) {
                     $allowed = is_array($scopes['allowed'] ?? null) ? $scopes['allowed'] : null;

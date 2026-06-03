@@ -1,9 +1,6 @@
 <?php
 
-use Moox\Category\Resources\CategoryResource;
 use Moox\Item\Models\Item;
-use Moox\Media\Resources\MediaResource;
-use Moox\Tag\Resources\TagResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,18 +38,8 @@ return [
                 ],
             ],
 
+            // No scopes.allowed: Item has no taxonomies/tags/media scoping (dev skeleton).
             'scopes' => [
-                'allowed' => [
-                    'media' => [
-                        'resource' => MediaResource::class,
-                    ],
-                    'tag' => [
-                        'resource' => TagResource::class,
-                    ],
-                    'category' => [
-                        'resource' => CategoryResource::class,
-                    ],
-                ],
                 'registry' => [
                     'sources' => [
                         'item' => Item::class,

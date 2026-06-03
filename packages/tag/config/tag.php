@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\Tag\Models\Tag;
 
@@ -86,9 +85,6 @@ return [
                 'allowed' => [
                     'media' => [
                         'resource' => MediaResource::class,
-                    ],
-                    'category' => [
-                        'resource' => CategoryResource::class,
                     ],
                 ],
                 'registry' => [

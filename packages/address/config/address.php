@@ -2,11 +2,6 @@
 
 use Moox\Address\Models\Address;
 use Moox\Address\Models\Addressable;
-use Moox\Category\Resources\CategoryResource;
-use Moox\Media\Resources\MediaResource;
-use Moox\Tag\Resources\TagResource;
-use Moox\User\Models\User;
-use Moox\User\Resources\UserResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,20 +71,6 @@ return [
             ],
 
             'scopes' => [
-                'allowed' => [
-                    'media' => [
-                        'resource' => MediaResource::class,
-                    ],
-                    'tag' => [
-                        'resource' => TagResource::class,
-                    ],
-                    'category' => [
-                        'resource' => CategoryResource::class,
-                    ],
-                    'user' => [
-                        'resource' => UserResource::class,
-                    ],
-                ],
                 'registry' => [
                     'sources' => [
                         'address' => Address::class,
