@@ -22,8 +22,8 @@ use Moox\EBilling\Services\ParsedInvoiceMapper;
 use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
-use Moox\Zugferd\ZugferdConverter;
 use Moox\MailInbox\Models\InboxAttachment;
+use Moox\Zugferd\ZugferdConverter;
 use Throwable;
 
 class GenerateXmlJob implements ShouldQueue

@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\Invoice\Models\Invoice;
 
 final class ListInvoices extends ListRecords
 {

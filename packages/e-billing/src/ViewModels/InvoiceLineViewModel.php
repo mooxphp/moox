@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
-use Moox\Invoice\Models\InvoiceLine;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
 
 final class InvoiceLineViewModel

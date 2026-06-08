@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
-use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
+use Moox\Invoice\Models\InvoiceLine;
 
 final class LineAllowanceChargeResolver
 {

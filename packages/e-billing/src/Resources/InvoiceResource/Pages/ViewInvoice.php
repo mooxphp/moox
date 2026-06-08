@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Computed;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
-use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\EBilling\ViewModels\InvoiceViewModel;
+use Moox\Invoice\Models\Invoice;
 
 final class ViewInvoice extends ViewRecord
 {

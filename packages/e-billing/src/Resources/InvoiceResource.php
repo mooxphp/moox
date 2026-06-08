@@ -26,10 +26,10 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
-use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\Invoice\Models\Invoice;
 
 final class InvoiceResource extends Resource
 {

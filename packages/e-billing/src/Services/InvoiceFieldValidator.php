@@ -8,10 +8,10 @@ use Moox\Company\Models\Company;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\Invoice\Models\Invoice;
-use Moox\Invoice\Models\InvoiceLine;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
 use RuntimeException;
 

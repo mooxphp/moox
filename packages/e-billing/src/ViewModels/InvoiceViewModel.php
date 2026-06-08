@@ -6,10 +6,10 @@ namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
-use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\BankAccount;
 

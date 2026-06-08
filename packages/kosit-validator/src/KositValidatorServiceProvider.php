@@ -7,10 +7,10 @@ namespace Moox\KositValidator;
 use Moox\Core\MooxServiceProvider;
 use Moox\Core\Support\MorphPivot\MorphPivotRelationRegistry;
 use Moox\KositValidator\Commands\DoctorCommand;
-use Moox\KositValidator\Models\KositValidation;
-use Moox\KositValidator\Resources\KositValidationResource;
 use Moox\KositValidator\Commands\InstallKositCommand;
 use Moox\KositValidator\Commands\ValidateCommand;
+use Moox\KositValidator\Models\KositValidation;
+use Moox\KositValidator\Resources\KositValidationResource;
 use Moox\KositValidator\Services\KositService;
 use Spatie\LaravelPackageTools\Package;
 

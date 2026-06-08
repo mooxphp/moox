@@ -6,8 +6,8 @@ namespace Moox\EBilling\Actions;
 
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceManuallyConfirmed;
-use Moox\Invoice\Models\Invoice;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\Invoice\Models\Invoice;
 
 final class ConfirmInvoiceAction
 {
