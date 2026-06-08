@@ -56,6 +56,10 @@ class TreeServiceProvider extends ServiceProvider
                     return '';
                 }
 
+                if (! $resource::treeIndex()->isFilamentTableLanguageSwitcherEnabled()) {
+                    return '';
+                }
+
                 if (! view()->exists('localization::lang-selector')) {
                     return '';
                 }

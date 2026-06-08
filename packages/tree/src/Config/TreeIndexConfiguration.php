@@ -45,6 +45,7 @@ final class TreeIndexConfiguration
         private readonly string $deleteConfirmMessage,
         private readonly bool $toolbarSearchEnabled,
         private readonly bool $toolbarLanguageSwitcherEnabled,
+        private readonly bool $filamentTableLanguageSwitcherEnabled,
         private readonly bool $useFilamentTableToolbar,
         ?\Closure $modifyQuery = null,
         ?\Closure $applySearchUsing = null,
@@ -78,6 +79,7 @@ final class TreeIndexConfiguration
             deleteConfirmMessage: 'Diesen Eintrag inklusive Untereinträge löschen?',
             toolbarSearchEnabled: false,
             toolbarLanguageSwitcherEnabled: false,
+            filamentTableLanguageSwitcherEnabled: false,
             useFilamentTableToolbar: false,
         );
     }
@@ -156,6 +158,11 @@ final class TreeIndexConfiguration
         return $this->cloneWith(toolbarLanguageSwitcherEnabled: $enabled);
     }
 
+    public function filamentTableLanguageSwitcher(bool $enabled = true): self
+    {
+        return $this->cloneWith(filamentTableLanguageSwitcherEnabled: $enabled);
+    }
+
     /**
      * @param  \Closure(Builder, string, self): Builder  $callback
      */
@@ -184,6 +191,7 @@ final class TreeIndexConfiguration
             ->cloneWith(
                 sourceResourceClass: $resourceClass,
                 useFilamentTableToolbar: $useFilamentTableToolbar,
+                filamentTableLanguageSwitcherEnabled: $useFilamentTableToolbar,
             )
             ->modifyQuery(fn (Builder $query): Builder => ResourceListForwarder::baseQuery($resourceClass))
             ->applyLanguageUsing(
@@ -438,6 +446,11 @@ final class TreeIndexConfiguration
         return $this->toolbarLanguageSwitcherEnabled;
     }
 
+    public function isFilamentTableLanguageSwitcherEnabled(): bool
+    {
+        return $this->filamentTableLanguageSwitcherEnabled;
+    }
+
     public function usesFilamentTableToolbar(): bool
     {
         return $this->useFilamentTableToolbar;
@@ -498,6 +511,7 @@ final class TreeIndexConfiguration
         ?string $deleteConfirmMessage = null,
         ?bool $toolbarSearchEnabled = null,
         ?bool $toolbarLanguageSwitcherEnabled = null,
+        ?bool $filamentTableLanguageSwitcherEnabled = null,
         ?bool $useFilamentTableToolbar = null,
         ?\Closure $modifyQuery = null,
         ?\Closure $applySearchUsing = null,
@@ -524,6 +538,7 @@ final class TreeIndexConfiguration
             deleteConfirmMessage: $deleteConfirmMessage ?? $this->deleteConfirmMessage,
             toolbarSearchEnabled: $toolbarSearchEnabled ?? $this->toolbarSearchEnabled,
             toolbarLanguageSwitcherEnabled: $toolbarLanguageSwitcherEnabled ?? $this->toolbarLanguageSwitcherEnabled,
+            filamentTableLanguageSwitcherEnabled: $filamentTableLanguageSwitcherEnabled ?? $this->filamentTableLanguageSwitcherEnabled,
             useFilamentTableToolbar: $useFilamentTableToolbar ?? $this->useFilamentTableToolbar,
             modifyQuery: $modifyQuery ?? $this->modifyQuery,
             applySearchUsing: $applySearchUsing ?? $this->applySearchUsing,

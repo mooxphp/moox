@@ -93,7 +93,8 @@ it('places language switcher in the filament table toolbar when forwarding with 
 
     expect($configuration->usesFilamentTableToolbar())->toBeTrue()
         ->and($configuration->isToolbarSearchEnabled())->toBeFalse()
-        ->and($configuration->isToolbarLanguageSwitcherEnabled())->toBeFalse();
+        ->and($configuration->isToolbarLanguageSwitcherEnabled())->toBeFalse()
+        ->and($configuration->isFilamentTableLanguageSwitcherEnabled())->toBeTrue();
 
     $sql = $configuration->applySearch(TreeNode::query(), 'Alpha')->toSql();
 
@@ -110,6 +111,14 @@ it('can enable localized translation toolbar scopes', function (): void {
     $sql = $configuration->applySearch(TreeNode::query(), 'Root')->toSql();
 
     expect($sql)->toContain('"label" like');
+});
+
+it('can disable the filament table language switcher', function (): void {
+    $configuration = TreeIndexConfiguration::make(TreeNode::class)
+        ->forwardFromResource(TestForwardTreeResource::class, useFilamentTableToolbar: true)
+        ->filamentTableLanguageSwitcher(false);
+
+    expect($configuration->isFilamentTableLanguageSwitcherEnabled())->toBeFalse();
 });
 
 it('can apply custom search and language scopes', function (): void {
