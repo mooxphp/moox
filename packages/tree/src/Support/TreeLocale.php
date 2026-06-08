@@ -6,6 +6,7 @@ namespace Moox\Tree\Support;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 final class TreeLocale
 {
@@ -25,6 +26,66 @@ final class TreeLocale
         }
 
         return (string) config('app.locale');
+    }
+
+    /**
+     * Default tree language from Moox Localization or app config.
+     */
+    public static function resolveDefaultLocale(): string
+    {
+        $localizationClass = 'Moox\Localization\Models\Localization';
+
+        if (class_exists($localizationClass)) {
+            /** @var class-string<Model> $localizationClass */
+            $model = new $localizationClass;
+
+            if (Schema::hasTable($model->getTable())) {
+                $defaultLocale = $localizationClass::query()
+                    ->where('is_default', true)
+                    ->where('is_active_admin', true)
+                    ->first();
+
+                if ($defaultLocale !== null) {
+                    $variant = $defaultLocale->locale_variant ?? null;
+                    $alpha2 = $defaultLocale->language?->alpha2 ?? null;
+
+                    if (filled($variant)) {
+                        return (string) $variant;
+                    }
+
+                    if (filled($alpha2)) {
+                        return (string) $alpha2;
+                    }
+                }
+            }
+        }
+
+        return (string) config('app.locale');
+    }
+
+    public static function syncToRequest(string $lang): void
+    {
+        $lang = trim($lang);
+
+        if ($lang !== '') {
+            request()->merge(['lang' => $lang]);
+        }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function languageChangeParameters(string $lang, ?string $tab = null): array
+    {
+        $parameters = ['lang' => $lang];
+
+        if ($tab !== null && $tab !== '') {
+            $parameters['tab'] = $tab;
+        } elseif (filled(request()->query('tab'))) {
+            $parameters['tab'] = (string) request()->query('tab');
+        }
+
+        return $parameters;
     }
 
     public static function syncApplicationLocale(string $lang): void
@@ -110,6 +171,13 @@ final class TreeLocale
         $localizationClass = 'Moox\Localization\Models\Localization';
 
         if (! class_exists($localizationClass)) {
+            return [];
+        }
+
+        /** @var class-string<Model> $localizationClass */
+        $model = new $localizationClass;
+
+        if (! Schema::hasTable($model->getTable())) {
             return [];
         }
 

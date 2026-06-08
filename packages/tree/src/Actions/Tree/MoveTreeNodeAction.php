@@ -7,6 +7,7 @@ namespace Moox\Tree\Actions\Tree;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Support\TreeGraphValidator;
 
 final class MoveTreeNodeAction
 {
@@ -14,6 +15,9 @@ final class MoveTreeNodeAction
 
     public function handle(Model $record, ?int $newParentId, int $position): void
     {
+        app(TreeGraphValidator::class, ['configuration' => $this->configuration])
+            ->validateMove($record, $newParentId);
+
         DB::transaction(function () use ($record, $newParentId, $position): void {
             if ($this->configuration->usesNestedSet()) {
                 app(MoveNestedSetTreeNodeAction::class, ['configuration' => $this->configuration])
@@ -33,9 +37,7 @@ final class MoveTreeNodeAction
     private function reorderSiblings(?int $parentId, Model $movedRecord, int $position): void
     {
         $siblings = $this->configuration
-            ->applyTreeOrdering(
-                $this->configuration->siblingsQuery($parentId)->whereKeyNot($movedRecord->getKey()),
-            )
+            ->siblingsExcept($parentId, $movedRecord->getKey())
             ->get();
 
         $position = max(0, min($position, $siblings->count()));

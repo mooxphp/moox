@@ -8,10 +8,10 @@ use Filament\Tables\Columns\Column;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Localization\Models\Localization;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Support\TreeLocale;
 use ReflectionProperty;
 
 trait InteractsWithTreeIndexListPage
@@ -41,16 +41,13 @@ trait InteractsWithTreeIndexListPage
     {
         $this->mountInteractsWithTable();
 
-        $defaultLocalization = Localization::where('is_default', true)->first();
-        $defaultLang = $defaultLocalization->locale_variant ?? config('app.locale');
-
-        $this->lang = (string) request()->input('lang', $defaultLang);
-        $this->syncLangToRequest();
+        $this->lang = (string) request()->input('lang', TreeLocale::resolveDefaultLocale());
+        TreeLocale::syncToRequest($this->lang);
     }
 
     public function hydrateInteractsWithTreeIndexListPage(): void
     {
-        $this->syncLangToRequest();
+        TreeLocale::syncToRequest($this->lang);
     }
 
     public function table(Table $table): Table
@@ -136,6 +133,16 @@ trait InteractsWithTreeIndexListPage
         TreeIndexConfigurationRegistry::register($this->treeIndexConfigurationKey, $configuration);
     }
 
+    public function updatedActiveTab(): void
+    {
+        $this->afterActiveTabChanged();
+    }
+
+    protected function afterActiveTabChanged(): void
+    {
+        $this->refreshTreeIndexConfiguration();
+    }
+
     public function updatedTableSearch(): void
     {
         $this->refreshTreeIndexConfiguration();
@@ -149,21 +156,15 @@ trait InteractsWithTreeIndexListPage
     public function changeLanguage(string $lang): void
     {
         $this->lang = $lang;
-        $this->syncLangToRequest();
+        TreeLocale::syncToRequest($this->lang);
 
-        $parameters = ['lang' => $lang];
+        $tab = property_exists($this, 'activeTab') && filled($this->activeTab ?? null)
+            ? (string) $this->activeTab
+            : null;
 
-        if (property_exists($this, 'activeTab') && filled($this->activeTab ?? null)) {
-            $parameters['tab'] = $this->activeTab;
-        }
-
-        $this->redirect(static::getResource()::getUrl('index', $parameters));
-    }
-
-    protected function syncLangToRequest(): void
-    {
-        if ($this->lang !== '') {
-            request()->merge(['lang' => $this->lang]);
-        }
+        $this->redirect(static::getResource()::getUrl(
+            'index',
+            TreeLocale::languageChangeParameters($lang, $tab),
+        ));
     }
 }

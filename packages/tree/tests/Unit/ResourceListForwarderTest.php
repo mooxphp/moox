@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 use Moox\Tree\Support\ResourceListForwarder;
 use Moox\Tree\Tests\Models\TreeNode;
+use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
 use Moox\Tree\Tests\Support\TestForwardTreeResource;
+use Moox\Tree\Tests\TestCase;
+
+uses(TestCase::class, CreatesTreeNodesTable::class);
+
+beforeEach(function (): void {
+    $this->createTreeNodesTable();
+});
 
 it('syncs language without narrowing the query', function (): void {
     request()->merge(['lang' => '']);

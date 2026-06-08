@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Moox\Tree\Support\TreeLocale;
+use Moox\Tree\Tests\TestCase;
+
+uses(TestCase::class);
 
 it('resolves active language from request input', function (): void {
     request()->merge(['lang' => 'de_DE']);
@@ -22,6 +25,23 @@ it('syncs application locale from language code', function (): void {
     TreeLocale::syncApplicationLocale('en_US');
 
     expect(app()->getLocale())->toBe('en_US');
+});
+
+it('syncs language to request', function (): void {
+    TreeLocale::syncToRequest('de_DE');
+
+    expect(request()->input('lang'))->toBe('de_DE');
+});
+
+it('falls back to app locale when no request language is set', function (): void {
+    config(['app.locale' => 'en']);
+
+    expect(TreeLocale::resolveDefaultLocale())->toBe('en');
+});
+
+it('builds language change parameters with tab', function (): void {
+    expect(TreeLocale::languageChangeParameters('de', 'deleted'))
+        ->toBe(['lang' => 'de', 'tab' => 'deleted']);
 });
 
 it('returns empty candidates for blank language', function (): void {

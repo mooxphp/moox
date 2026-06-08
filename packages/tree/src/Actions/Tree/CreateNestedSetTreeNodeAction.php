@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Moox\Tree\Actions\Tree;
 
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
-use Kalnoy\Nestedset\NodeTrait;
 use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Support\NestedSetGuard;
 
 final class CreateNestedSetTreeNodeAction
 {
@@ -18,11 +17,7 @@ final class CreateNestedSetTreeNodeAction
         /** @var class-string<Model> $modelClass */
         $modelClass = $this->configuration->modelClass();
 
-        if (! in_array(NodeTrait::class, class_uses_recursive($modelClass), true)) {
-            throw new InvalidArgumentException(
-                'Nested set tree index requires Kalnoy\Nestedset\NodeTrait on the model.',
-            );
-        }
+        NestedSetGuard::assertCapable($modelClass);
 
         $labelColumn = $this->configuration->getLabelColumn();
         $attributes = [];

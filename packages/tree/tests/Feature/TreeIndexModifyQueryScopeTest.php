@@ -13,6 +13,9 @@ use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Tests\Models\NestedSetTreeNode;
 use Moox\Tree\Tests\Models\TreeNode;
+use Moox\Tree\Tests\TestCase;
+
+uses(TestCase::class);
 
 beforeEach(function (): void {
     Schema::dropIfExists('tree_nodes');

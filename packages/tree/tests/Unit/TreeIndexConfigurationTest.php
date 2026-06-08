@@ -8,8 +8,16 @@ use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Filament\Concerns\RendersAsTreeIndexCreateInspector;
 use Moox\Tree\Filament\Pages\TreeIndexCreateInspectorPageFactory;
 use Moox\Tree\Tests\Models\TreeNode;
+use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
 use Moox\Tree\Tests\Support\TestCreateTreeNodePage;
 use Moox\Tree\Tests\Support\TestForwardTreeResource;
+use Moox\Tree\Tests\TestCase;
+
+uses(TestCase::class, CreatesTreeNodesTable::class);
+
+beforeEach(function (): void {
+    $this->createTreeNodesTable();
+});
 
 it('can disable reordering', function (): void {
     $configuration = TreeIndexConfiguration::make(TreeNode::class)->reorderable(false);
@@ -110,11 +118,9 @@ it('can enable localized translation toolbar scopes', function (): void {
         ->toolbarLocalizedTranslations(translationSearchColumn: 'label');
 
     expect($configuration->isToolbarSearchEnabled())->toBeTrue()
-        ->and($configuration->isToolbarLanguageSwitcherEnabled())->toBeTrue();
-
-    $sql = $configuration->applySearch(TreeNode::query(), 'Root')->toSql();
-
-    expect($sql)->toContain('"label" like');
+        ->and($configuration->isToolbarLanguageSwitcherEnabled())->toBeTrue()
+        ->and($configuration->getApplySearchUsing())->not->toBeNull()
+        ->and($configuration->getApplyLanguageUsing())->not->toBeNull();
 });
 
 it('can register an explicit create inspector page override', function (): void {

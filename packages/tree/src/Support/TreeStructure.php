@@ -7,6 +7,7 @@ namespace Moox\Tree\Support;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Support\TreeNodeLabelResolver;
 
 final class TreeStructure
 {
@@ -97,6 +98,28 @@ final class TreeStructure
     }
 
     /**
+     * @return array<int, int>
+     */
+    public function ancestorIds(int $recordId): array
+    {
+        $parentColumn = $this->configuration->getParentColumn();
+
+        /** @var array<int|string, int|string|null> $parentMap */
+        $parentMap = $this->configuration->newQuery()->pluck($parentColumn, 'id')->all();
+
+        $ids = [];
+        $parentId = $parentMap[$recordId] ?? null;
+
+        while ($parentId !== null && $parentId !== '') {
+            $parentId = (int) $parentId;
+            $ids[] = $parentId;
+            $parentId = $parentMap[$parentId] ?? null;
+        }
+
+        return $ids;
+    }
+
+    /**
      * @param  Collection<string, Collection<int, Model>>  $recordsByParent
      * @return array<int, int>
      */
@@ -168,29 +191,11 @@ final class TreeStructure
         return [
             'id' => (int) $record->getKey(),
             $parentColumn => $this->parentId($record),
-            'label' => $this->resolveLabel($record),
+            'label' => TreeNodeLabelResolver::resolve($record, $this->configuration),
             'children' => $recordsByParent === null
                 ? []
                 : $this->buildBranch($recordsByParent, (int) $record->getKey()),
         ];
-    }
-
-    private function resolveLabel(Model $record): string
-    {
-        $labelColumn = $this->configuration->getLabelColumn();
-        $value = $record->getAttribute($labelColumn);
-
-        if (filled($value)) {
-            return (string) $value;
-        }
-
-        $fallback = data_get($record, 'display_title');
-
-        if (filled($fallback)) {
-            return (string) $fallback;
-        }
-
-        return '';
     }
 
     /**

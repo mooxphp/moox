@@ -7,6 +7,7 @@ namespace Moox\Tree\Config;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tree\Support\ResourceListForwarder;
+use Moox\Tree\Support\TreeIndexQueryBuilder;
 use Moox\Tree\Support\TreeIndexResourcePages;
 use Moox\Tree\Support\TreeLocale;
 
@@ -33,6 +34,7 @@ final class TreeIndexConfiguration
         private readonly string $sortColumn,
         private readonly string $labelColumn,
         private readonly bool $labelColumnQueryable,
+        private readonly ?string $labelFallbackColumn,
         private readonly bool $nestedSet,
         private readonly bool $reorderable,
         private readonly ?string $inspectorPageClass,
@@ -69,6 +71,7 @@ final class TreeIndexConfiguration
             sortColumn: 'sort_order',
             labelColumn: 'label',
             labelColumnQueryable: true,
+            labelFallbackColumn: 'display_title',
             nestedSet: false,
             reorderable: true,
             inspectorPageClass: null,
@@ -108,6 +111,11 @@ final class TreeIndexConfiguration
     public function labelColumnQueryable(bool $labelColumnQueryable = true): self
     {
         return $this->cloneWith(labelColumnQueryable: $labelColumnQueryable);
+    }
+
+    public function labelFallbackColumn(?string $labelFallbackColumn): self
+    {
+        return $this->cloneWith(labelFallbackColumn: $labelFallbackColumn);
     }
 
     public function nestedSet(bool $nestedSet = true): self
@@ -250,28 +258,26 @@ final class TreeIndexConfiguration
             );
 
         if ($useFilamentTableToolbar) {
-            return $configuration->applySearchUsing(
-                fn (Builder $query, string $search, self $config): Builder => ResourceListForwarder::applySearch(
-                    $resourceClass,
-                    $query,
-                    $search,
-                    TreeLocale::resolveActiveLanguage(),
-                ),
-            );
+            return self::bindForwardedSearch($configuration);
         }
 
         $configuration = $configuration->toolbarLanguageSwitcher();
 
-        return $configuration
-            ->toolbarSearch()
-            ->applySearchUsing(
-                fn (Builder $query, string $search, self $config): Builder => ResourceListForwarder::applySearch(
-                    $resourceClass,
-                    $query,
-                    $search,
-                    TreeLocale::resolveActiveLanguage(),
-                ),
-            );
+        return self::bindForwardedSearch($configuration->toolbarSearch());
+    }
+
+    private static function bindForwardedSearch(self $configuration): self
+    {
+        $resourceClass = $configuration->getSourceResourceClass();
+
+        return $configuration->applySearchUsing(
+            fn (Builder $query, string $search, self $config): Builder => ResourceListForwarder::applySearch(
+                $resourceClass,
+                $query,
+                $search,
+                TreeLocale::resolveActiveLanguage(),
+            ),
+        );
     }
 
     /**
@@ -369,6 +375,11 @@ final class TreeIndexConfiguration
         return $this->labelColumnQueryable;
     }
 
+    public function getLabelFallbackColumn(): ?string
+    {
+        return $this->labelFallbackColumn;
+    }
+
     public function usesNestedSet(): bool
     {
         return $this->nestedSet;
@@ -381,6 +392,11 @@ final class TreeIndexConfiguration
 
     public function applyQuery(Builder $query): Builder
     {
+        return $this->queries()->applyQuery($query);
+    }
+
+    public function applyQueryClosure(Builder $query): Builder
+    {
         if ($this->modifyQuery === null) {
             return $query;
         }
@@ -390,23 +406,43 @@ final class TreeIndexConfiguration
 
     public function newQuery(): Builder
     {
-        /** @var class-string<Model> $modelClass */
-        $modelClass = $this->modelClass;
-
-        return $this->applyQuery($modelClass::query());
+        return $this->queries()->newQuery();
     }
 
     public function siblingsQuery(int|string|null $parentId): Builder
     {
-        $parentColumn = $this->getParentColumn();
-        $parentId = $parentId === null ? null : (int) $parentId;
+        return $this->queries()->siblingsQuery($parentId);
+    }
 
-        return $this->newQuery()
-            ->when(
-                $parentId === null,
-                fn (Builder $query): Builder => $query->whereNull($parentColumn),
-                fn (Builder $query): Builder => $query->where($parentColumn, $parentId),
-            );
+    public function siblingsExcept(int|string|null $parentId, int|string|null $excludeId): Builder
+    {
+        return $this->queries()->siblingsExcept($parentId, $excludeId);
+    }
+
+    public function nextSortOrder(int|string|null $parentId): int
+    {
+        return $this->queries()->nextSortOrder($parentId);
+    }
+
+    /**
+     * @return (\Closure(Builder, string, self): Builder)|null
+     */
+    public function getApplySearchUsing(): ?\Closure
+    {
+        return $this->applySearchUsing;
+    }
+
+    /**
+     * @return (\Closure(Builder, string, self): Builder)|null
+     */
+    public function getApplyLanguageUsing(): ?\Closure
+    {
+        return $this->applyLanguageUsing;
+    }
+
+    public function queries(): TreeIndexQueryBuilder
+    {
+        return new TreeIndexQueryBuilder($this);
     }
 
     public function getAuthorizationAbility(): ?string
@@ -474,13 +510,7 @@ final class TreeIndexConfiguration
 
     public function applyTreeOrdering(Builder $query): Builder
     {
-        $query->orderBy($this->getSortColumn());
-
-        if ($this->isLabelColumnQueryable()) {
-            $query->orderBy($this->getLabelColumn());
-        }
-
-        return $query;
+        return $this->queries()->applyTreeOrdering($query);
     }
 
     public function isToolbarSearchEnabled(): bool
@@ -505,36 +535,12 @@ final class TreeIndexConfiguration
 
     public function applySearch(Builder $query, string $search): Builder
     {
-        $search = trim($search);
-
-        if ($search === '') {
-            return $query;
-        }
-
-        if ($this->applySearchUsing !== null) {
-            return ($this->applySearchUsing)($query, $search, $this);
-        }
-
-        if (! $this->isLabelColumnQueryable()) {
-            return $query;
-        }
-
-        return $query->where($this->getLabelColumn(), 'like', '%'.$search.'%');
+        return $this->queries()->applySearch($query, $search);
     }
 
     public function applyLanguage(Builder $query, string $lang): Builder
     {
-        $lang = trim($lang);
-
-        if ($lang === '') {
-            return $query;
-        }
-
-        if ($this->applyLanguageUsing === null) {
-            return $query;
-        }
-
-        return ($this->applyLanguageUsing)($query, $lang, $this);
+        return $this->queries()->applyLanguage($query, $lang);
     }
 
     private function cloneWith(
@@ -544,6 +550,7 @@ final class TreeIndexConfiguration
         ?string $sortColumn = null,
         ?string $labelColumn = null,
         ?bool $labelColumnQueryable = null,
+        ?string $labelFallbackColumn = null,
         ?bool $nestedSet = null,
         ?bool $reorderable = null,
         ?string $inspectorPageClass = null,
@@ -573,6 +580,7 @@ final class TreeIndexConfiguration
             sortColumn: $sortColumn ?? $this->sortColumn,
             labelColumn: $labelColumn ?? $this->labelColumn,
             labelColumnQueryable: $labelColumnQueryable ?? $this->labelColumnQueryable,
+            labelFallbackColumn: $labelFallbackColumn ?? $this->labelFallbackColumn,
             nestedSet: $nestedSet ?? $this->nestedSet,
             reorderable: $reorderable ?? $this->reorderable,
             inspectorPageClass: $inspectorPageClass ?? $this->inspectorPageClass,

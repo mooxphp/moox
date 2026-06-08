@@ -10,37 +10,26 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use Moox\Localization\Models\Localization;
 use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
-use Moox\Tree\Actions\Tree\DeleteTreeNodeAction;
 use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
-use Moox\Tree\Actions\Tree\UpdateTreeNodeAction;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Exceptions\InvalidTreeParentException;
 use Moox\Tree\Filament\Pages\TreeIndexCreateInspectorPageFactory;
+use Moox\Tree\Livewire\Concerns\ManagesTreeForm;
+use Moox\Tree\Livewire\Concerns\ManagesTreeSelection;
+use Moox\Tree\Livewire\Concerns\ManagesTreeToolbar;
 use Moox\Tree\Support\TreeIndexAuthorizer;
 use Moox\Tree\Support\TreeStructure;
 
 class ResourceTreeIndex extends Component
 {
+    use ManagesTreeForm;
+    use ManagesTreeSelection;
+    use ManagesTreeToolbar;
+
     public string $configurationKey = '';
-
-    public ?int $selectedRecordId = null;
-
-    public bool $isCreatingInspector = false;
-
-    public ?int $creatingParentId = null;
-
-    #[Reactive]
-    public string $search = '';
-
-    #[Reactive]
-    public string $lang = '';
-
-    /** @var array<string, mixed> */
-    public array $form = [];
 
     public function mount(
         string $configurationKey,
@@ -49,27 +38,14 @@ class ResourceTreeIndex extends Component
     ): void {
         $this->configurationKey = $configurationKey;
         $this->authorizeTreeIndex();
-
-        if ($search !== '') {
-            $this->search = $search;
-        } elseif ($this->search === '' && $this->usesStandaloneToolbarSearch()) {
-            $this->search = (string) request()->input('search', request()->input('tableSearch', ''));
-        }
-
-        if ($lang !== '') {
-            $this->lang = $lang;
-        } elseif ($this->lang === '') {
-            $this->lang = (string) request()->input('lang', $this->getDefaultLocale());
-        }
-
-        $this->syncLangToRequest();
+        $this->mountTreeToolbar($search, $lang);
         $this->resetForm();
         $this->loadSelectedRecord();
     }
 
     public function hydrate(): void
     {
-        $this->syncLangToRequest();
+        $this->hydrateTreeToolbar();
     }
 
     public function render(): View
@@ -83,7 +59,7 @@ class ResourceTreeIndex extends Component
             'treeBranchIdsWithChildren' => $structure->branchIdsWithChildren($tree),
             'treeAncestorIdsForSelection' => $this->selectedRecordId === null
                 ? []
-                : $this->getAncestorIds($this->selectedRecordId),
+                : $structure->ancestorIds($this->selectedRecordId),
             'parentOptions' => $this->getParentOptions(),
             'selectedRecord' => $this->getSelectedRecord(),
             'inspectorPageClass' => $this->configuration()->getInspectorPageClass(),
@@ -96,24 +72,6 @@ class ResourceTreeIndex extends Component
             'isToolbarSearchEnabled' => $this->configuration()->isToolbarSearchEnabled(),
             'isToolbarLanguageSwitcherEnabled' => $this->configuration()->isToolbarLanguageSwitcherEnabled(),
         ]);
-    }
-
-    public function changeLanguage(string $lang): void
-    {
-        $this->lang = $lang;
-        $this->syncLangToRequest();
-
-        $resourceClass = $this->configuration()->getSourceResourceClass();
-
-        if ($resourceClass !== null && method_exists($resourceClass, 'getUrl')) {
-            $parameters = ['lang' => $lang];
-
-            if (filled(request()->query('tab'))) {
-                $parameters['tab'] = request()->query('tab');
-            }
-
-            $this->redirect($resourceClass::getUrl('index', $parameters));
-        }
     }
 
     #[On('tree-index-record-saved')]
@@ -130,15 +88,6 @@ class ResourceTreeIndex extends Component
         $this->selectedRecordId = $recordId;
     }
 
-    public function selectRecord(int $recordId): void
-    {
-        $this->authorizeTreeIndex();
-        $this->isCreatingInspector = false;
-        $this->creatingParentId = null;
-        $this->selectedRecordId = $recordId;
-        $this->loadSelectedRecord();
-    }
-
     public function createRootNode(): void
     {
         $this->authorizeTreeIndex();
@@ -149,58 +98,6 @@ class ResourceTreeIndex extends Component
     {
         $this->authorizeTreeIndex();
         $this->createNode($this->selectedRecordId);
-    }
-
-    public function saveSelectedRecord(): void
-    {
-        $this->authorizeTreeIndex();
-
-        if ($this->selectedRecordId === null) {
-            return;
-        }
-
-        $validated = $this->validate($this->validationRules());
-
-        if ($this->hasInvalidParentAssignment((int) $this->selectedRecordId, $validated)) {
-            return;
-        }
-
-        app(UpdateTreeNodeAction::class, ['configuration' => $this->configuration()])
-            ->handle(
-                $this->query()->findOrFail($this->selectedRecordId),
-                $validated['form'],
-            );
-
-        $this->loadSelectedRecord();
-
-        Notification::make()
-            ->title('Eintrag gespeichert')
-            ->success()
-            ->send();
-    }
-
-    public function deleteSelectedRecord(): void
-    {
-        $this->authorizeTreeIndex();
-
-        if ($this->selectedRecordId === null) {
-            return;
-        }
-
-        app(DeleteTreeNodeAction::class, ['configuration' => $this->configuration()])
-            ->handle($this->query()->findOrFail($this->selectedRecordId));
-
-        $nextId = $this->configuration()
-            ->applyTreeOrdering($this->query())
-            ->value('id');
-
-        $this->selectedRecordId = $nextId === null ? null : (int) $nextId;
-        $this->loadSelectedRecord();
-
-        Notification::make()
-            ->title('Eintrag gelöscht')
-            ->success()
-            ->send();
     }
 
     public function moveTreeNode(int|string $recordId, int|string $position, int|string|null $parentId = null): void
@@ -215,18 +112,18 @@ class ResourceTreeIndex extends Component
         $newParentId = $this->normalizeParentGroup($parentId);
         $recordKey = (int) $record->getKey();
 
-        if ($newParentId === $recordKey || ($newParentId !== null && $this->isDescendantOf($newParentId, $recordKey))) {
+        try {
+            app(MoveTreeNodeAction::class, ['configuration' => $this->configuration()])
+                ->handle($record, $newParentId, (int) $position);
+        } catch (InvalidTreeParentException $exception) {
             Notification::make()
                 ->title('Verschieben nicht möglich')
-                ->body('Ein Eintrag kann nicht unter sich selbst oder einem eigenen Kind liegen.')
+                ->body($exception->getMessage())
                 ->danger()
                 ->send();
 
             return;
         }
-
-        app(MoveTreeNodeAction::class, ['configuration' => $this->configuration()])
-            ->handle($record, $newParentId, (int) $position);
 
         if ($this->selectedRecordId === $recordKey) {
             $this->loadSelectedRecord();
@@ -235,7 +132,7 @@ class ResourceTreeIndex extends Component
 
     protected function configuration(): TreeIndexConfiguration
     {
-        return TreeIndexConfigurationRegistry::get($this->configurationKey);
+        return TreeIndexConfigurationRegistry::resolve($this->configurationKey);
     }
 
     protected function authorizeTreeIndex(): void
@@ -267,69 +164,6 @@ class ResourceTreeIndex extends Component
             ->title('Eintrag erstellt')
             ->success()
             ->send();
-    }
-
-    private function loadSelectedRecord(): void
-    {
-        $record = $this->getSelectedRecord();
-
-        if ($record === null) {
-            $this->resetForm();
-
-            return;
-        }
-
-        $this->hydrateFormFromRecord($record);
-    }
-
-    private function hydrateFormFromRecord(Model $record): void
-    {
-        $configuration = $this->configuration();
-        $parentColumn = $configuration->getParentColumn();
-        $labelColumn = $configuration->getLabelColumn();
-
-        $this->form = [
-            $parentColumn => $this->parentId($record),
-            $labelColumn => $this->resolveRecordLabel($record, $labelColumn),
-        ];
-    }
-
-    private function resolveRecordLabel(Model $record, string $labelColumn): string
-    {
-        $value = $record->getAttribute($labelColumn);
-
-        if (filled($value)) {
-            return (string) $value;
-        }
-
-        $fallback = data_get($record, 'display_title');
-
-        if (filled($fallback)) {
-            return (string) $fallback;
-        }
-
-        return '';
-    }
-
-    private function resetForm(): void
-    {
-        $configuration = $this->configuration();
-        $parentColumn = $configuration->getParentColumn();
-        $labelColumn = $configuration->getLabelColumn();
-
-        $this->form = [
-            $parentColumn => null,
-            $labelColumn => '',
-        ];
-    }
-
-    private function getSelectedRecord(): ?Model
-    {
-        if ($this->selectedRecordId === null) {
-            return null;
-        }
-
-        return $this->query()->find($this->selectedRecordId);
     }
 
     /**
@@ -369,108 +203,6 @@ class ResourceTreeIndex extends Component
         return $query->get();
     }
 
-    /**
-     * @return array<string, array<int, string>>
-     */
-    private function validationRules(): array
-    {
-        $configuration = $this->configuration();
-        $parentColumn = $configuration->getParentColumn();
-        $labelColumn = $configuration->getLabelColumn();
-        $table = $this->tableName();
-
-        $this->form[$parentColumn] = blank($this->form[$parentColumn] ?? null)
-            ? null
-            : (int) $this->form[$parentColumn];
-
-        return [
-            "form.{$parentColumn}" => ['nullable', 'integer', "exists:{$table},id"],
-            "form.{$labelColumn}" => ['required', 'string', 'max:255'],
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function hasInvalidParentAssignment(int $recordId, array $validated): bool
-    {
-        $parentColumn = $this->configuration()->getParentColumn();
-        $parentId = $validated['form'][$parentColumn] ?? null;
-
-        if ($parentId === $recordId) {
-            $this->addError("form.{$parentColumn}", 'Ein Eintrag kann nicht sein eigener Elterneintrag sein.');
-
-            return true;
-        }
-
-        if ($parentId !== null && $this->isDescendantOf((int) $parentId, $recordId)) {
-            $this->addError("form.{$parentColumn}", 'Ein Eintrag kann nicht unter einem eigenen Kind verschoben werden.');
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function getParentOptions(): array
-    {
-        $labelColumn = $this->configuration()->getLabelColumn();
-        $excludedIds = $this->selectedRecordId === null
-            ? []
-            : [$this->selectedRecordId, ...$this->getDescendantIds($this->selectedRecordId)];
-
-        $columns = ['id'];
-
-        if ($this->configuration()->isLabelColumnQueryable()) {
-            $columns[] = $labelColumn;
-        }
-
-        return $this->configuration()
-            ->applyTreeOrdering($this->query())
-            ->get($columns)
-            ->reject(fn (Model $record): bool => in_array((int) $record->getKey(), $excludedIds, true))
-            ->mapWithKeys(fn (Model $record): array => [
-                (int) $record->getKey() => $this->resolveRecordLabel($record, $labelColumn),
-            ])
-            ->all();
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    private function getDescendantIds(int $recordId): array
-    {
-        $records = $this->query()->get(['id', $this->configuration()->getParentColumn()]);
-        $structure = $this->treeStructure();
-
-        return $structure->descendantIds($structure->groupByParent($records), $recordId);
-    }
-
-    private function isDescendantOf(int $candidateRecordId, int $parentRecordId): bool
-    {
-        return in_array($candidateRecordId, $this->getDescendantIds($parentRecordId), true);
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    private function getAncestorIds(int $recordId): array
-    {
-        $parentColumn = $this->configuration()->getParentColumn();
-        $ids = [];
-        $parentId = $this->query()->whereKey($recordId)->value($parentColumn);
-
-        while ($parentId !== null) {
-            $ids[] = (int) $parentId;
-            $parentId = $this->query()->whereKey((int) $parentId)->value($parentColumn);
-        }
-
-        return $ids;
-    }
-
     private function normalizeParentGroup(int|string|null $parentId): ?int
     {
         if ($parentId === null || $parentId === '' || $parentId === 'root') {
@@ -480,66 +212,26 @@ class ResourceTreeIndex extends Component
         return (int) $parentId;
     }
 
-    private function parentId(Model $record): ?int
+    protected function parentId(Model $record): ?int
     {
         return $this->treeStructure()->parentId($record);
     }
 
-    private function treeStructure(): TreeStructure
+    protected function treeStructure(): TreeStructure
     {
         return new TreeStructure($this->configuration());
     }
 
-    private function query(): Builder
+    protected function query(): Builder
     {
         return $this->configuration()->newQuery();
     }
 
-    private function tableName(): string
+    protected function tableName(): string
     {
         /** @var class-string<Model> $modelClass */
         $modelClass = $this->configuration()->modelClass();
 
         return (new $modelClass)->getTable();
-    }
-
-    private function shouldApplySearchToTreeQuery(): bool
-    {
-        $configuration = $this->configuration();
-
-        if ($configuration->usesFilamentTableToolbar()) {
-            return true;
-        }
-
-        return $this->usesStandaloneToolbarSearch();
-    }
-
-    private function usesStandaloneToolbarSearch(): bool
-    {
-        return $this->configuration()->getSourceResourceClass() === null
-            || $this->configuration()->isToolbarSearchEnabled();
-    }
-
-    private function syncLangToRequest(): void
-    {
-        if ($this->lang !== '') {
-            request()->merge(['lang' => $this->lang]);
-        }
-    }
-
-    private function getDefaultLocale(): string
-    {
-        if (class_exists(Localization::class)) {
-            $defaultLocale = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->first();
-
-            if ($defaultLocale !== null) {
-                return (string) ($defaultLocale->locale_variant ?: $defaultLocale->language?->alpha2 ?: config('app.locale'));
-            }
-        }
-
-        return (string) config('app.locale');
     }
 }

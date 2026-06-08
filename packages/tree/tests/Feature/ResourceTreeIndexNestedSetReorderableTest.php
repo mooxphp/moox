@@ -10,6 +10,9 @@ use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Livewire\ResourceTreeIndex;
 use Moox\Tree\Tests\Models\NestedSetTreeNode;
+use Moox\Tree\Tests\TestCase;
+
+uses(TestCase::class);
 
 beforeEach(function (): void {
     Schema::dropIfExists('nested_set_tree_nodes');
@@ -64,7 +67,11 @@ it('reorders nested set siblings via livewire moveTreeNode', function (): void {
 
     expect($rootA->_lft)->toBeLessThan($rootB->_lft);
 
-    Livewire::test(ResourceTreeIndex::class, ['configurationKey' => 'nested-set-reorderable'])
+    Livewire::test(ResourceTreeIndex::class, [
+        'configurationKey' => 'nested-set-reorderable',
+        'lang' => 'en',
+        'search' => '',
+    ])
         ->call('moveTreeNode', $rootB->id, 0, null)
         ->assertHasNoErrors();
 
@@ -83,7 +90,11 @@ it('shows the inspector form when a tree node is selected', function (): void {
 
     $rootA = NestedSetTreeNode::query()->where('label', 'Root A')->firstOrFail();
 
-    Livewire::test(ResourceTreeIndex::class, ['configurationKey' => 'nested-set-reorderable'])
+    Livewire::test(ResourceTreeIndex::class, [
+        'configurationKey' => 'nested-set-reorderable',
+        'lang' => 'en',
+        'search' => '',
+    ])
         ->call('selectRecord', $rootA->id)
         ->assertSet('selectedRecordId', $rootA->id)
         ->assertSee('Bezeichnung');
@@ -94,7 +105,11 @@ it('creates nested set child nodes under the selected parent', function (): void
 
     $rootA = NestedSetTreeNode::query()->where('label', 'Root A')->firstOrFail();
 
-    Livewire::test(ResourceTreeIndex::class, ['configurationKey' => 'nested-set-reorderable'])
+    Livewire::test(ResourceTreeIndex::class, [
+        'configurationKey' => 'nested-set-reorderable',
+        'lang' => 'en',
+        'search' => '',
+    ])
         ->call('selectRecord', $rootA->id)
         ->call('createChildNode')
         ->assertHasNoErrors();

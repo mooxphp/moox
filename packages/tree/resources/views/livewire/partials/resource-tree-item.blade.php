@@ -41,34 +41,11 @@
     </div>
 
     @if ($hasTreeChildren)
-        @if ($reorderable)
-            <x-filament::icon-button
-                type="button"
-                icon="heroicon-m-chevron-right"
-                color="gray"
-                size="sm"
-                :label="'Untereinträge von '.$item['label']"
-                tooltip="Untereinträge ein-/ausklappen"
-                wire:sort:ignore
-                class="fi-tree-chevron"
-                x-on:click.stop="$store.filamentTreeIndex.toggle({{ $item['id'] }})"
-                x-bind:aria-expanded="$store.filamentTreeIndex.open[{{ $item['id'] }}] ? 'true' : 'false'"
-                x-bind:class="$store.filamentTreeIndex.open[{{ $item['id'] }}] ? 'fi-tree-chevron-open' : ''"
-            />
-        @else
-            <x-filament::icon-button
-                type="button"
-                icon="heroicon-m-chevron-right"
-                color="gray"
-                size="sm"
-                :label="'Untereinträge von '.$item['label']"
-                tooltip="Untereinträge ein-/ausklappen"
-                class="fi-tree-chevron"
-                x-on:click.stop="$store.filamentTreeIndex.toggle({{ $item['id'] }})"
-                x-bind:aria-expanded="$store.filamentTreeIndex.open[{{ $item['id'] }}] ? 'true' : 'false'"
-                x-bind:class="$store.filamentTreeIndex.open[{{ $item['id'] }}] ? 'fi-tree-chevron-open' : ''"
-            />
-        @endif
+        @include('filament-tree-index::livewire.partials.tree-chevron', [
+            'itemLabel' => $item['label'],
+            'itemId' => $item['id'],
+            'reorderable' => $reorderable,
+        ])
     @endif
 </li>
 
