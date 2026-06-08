@@ -47,7 +47,7 @@ final class TestForwardTreeResource extends Resource implements ConfiguresTreeIn
     public static function treeIndexWithInspector(): TreeIndexConfiguration
     {
         return TreeIndexConfiguration::make(TreeNode::class)
-            ->forwardFromResource(static::class)
+            ->forwardFromResource(self::class)
             ->inspectorPage(TestTreeInspectorPage::class);
     }
 }

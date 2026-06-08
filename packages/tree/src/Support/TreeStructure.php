@@ -7,7 +7,6 @@ namespace Moox\Tree\Support;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Tree\Config\TreeIndexConfiguration;
-use Moox\Tree\Support\TreeNodeLabelResolver;
 
 final class TreeStructure
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Tree\Filament\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Tree\Config;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Moox\Tree\Support\ResourceListForwarder;
 use Moox\Tree\Support\TreeIndexQueryBuilder;
 use Moox\Tree\Support\TreeIndexResourcePages;

@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Livewire\ResourceTreeIndex;
+use Moox\Tree\Support\TreeIndexAuthorizer;
 use Moox\Tree\Tests\Models\TreeNode;
 use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
 use Moox\Tree\Tests\TestCase;
@@ -98,8 +100,8 @@ it('requires authorization when enabled', function (): void {
     Gate::define('updateTree', fn (): bool => false);
 
     $configuration = TreeIndexConfiguration::make(TreeNode::class)->authorizationAbility('updateTree');
-    $authorizer = new \Moox\Tree\Support\TreeIndexAuthorizer($configuration);
+    $authorizer = new TreeIndexAuthorizer($configuration);
 
     expect(fn () => $authorizer->authorize())
-        ->toThrow(\Illuminate\Auth\Access\AuthorizationException::class);
+        ->toThrow(AuthorizationException::class);
 });
