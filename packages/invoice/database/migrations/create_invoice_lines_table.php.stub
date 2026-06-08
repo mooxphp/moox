@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('invoice_lines', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->integer('position')->default(0);
+            $table->string('unit');
+            $table->decimal('quantity', 12, 3)->default(0);
+            $table->text('description')->nullable();
+            $table->text('description_detail')->nullable();
+            $table->string('article_number')->nullable();
+            $table->string('customs_tariff_number')->nullable();
+            $table->decimal('unit_price', 12, 2)->default(0);
+            $table->decimal('line_total', 12, 2)->default(0);
+            $table->json('delivery')->nullable();
+            $table->string('delivery_date')->nullable();
+            $table->string('delivery_note_number')->nullable();
+            $table->string('order_number')->nullable();
+            $table->string('order_date')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->string('scope')->nullable()->index();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('invoice_lines');
+    }
+};

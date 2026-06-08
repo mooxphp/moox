@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('kosit_validations', function (Blueprint $table) {
+            $table->id();
+            $table->string('input_path', 1024)->nullable();
+            $table->boolean('passed');
+            $table->json('errors')->nullable();
+            $table->string('report_xml_path', 1024)->nullable();
+            $table->string('report_html_path', 1024)->nullable();
+            $table->timestamp('validated_at');
+            $table->timestamps();
+            $table->string('scope')->nullable()->index();
+
+            $table->index('passed');
+            $table->index('validated_at');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('kosit_validations');
+    }
+};

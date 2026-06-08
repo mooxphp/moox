@@ -1,0 +1,25 @@
+{
+    "_source": "UNCL 5189 (UN/CEFACT) — allowance reason codes",
+    "_todo": "verify/complete against official UNCL 5189",
+    "codes": [
+        {"code": "41", "common_name": "Bonus for works ahead of schedule"},
+        {"code": "42", "common_name": "Other bonus"},
+        {"code": "60", "common_name": "Manufacturer's consumer discount"},
+        {"code": "62", "common_name": "Due to military status"},
+        {"code": "63", "common_name": "Due to work accident"},
+        {"code": "64", "common_name": "Special agreement"},
+        {"code": "65", "common_name": "Production error discount"},
+        {"code": "66", "common_name": "New outlet discount"},
+        {"code": "67", "common_name": "Sample discount"},
+        {"code": "68", "common_name": "End-of-range discount"},
+        {"code": "70", "common_name": "Incoterm discount"},
+        {"code": "71", "common_name": "Point of sales threshold allowance"},
+        {"code": "88", "common_name": "Material surcharge/deduction"},
+        {"code": "95", "common_name": "Discount"},
+        {"code": "100", "common_name": "Special rebate"},
+        {"code": "102", "common_name": "Fixed long term"},
+        {"code": "103", "common_name": "Temporary"},
+        {"code": "104", "common_name": "Standard"},
+        {"code": "105", "common_name": "Yearly turnover"}
+    ]
+}

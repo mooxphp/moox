@@ -1,0 +1,74 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('inbox_attachments', function (Blueprint $table): void {
+            $table->id();
+            $table->string('scope')->index();
+            $table->foreignId('inbox_message_id')->nullable()->constrained('inbox_messages')->nullOnDelete();
+            $table->string('external_attachment_id')->nullable();
+            $table->string('storage_disk');
+            $table->string('storage_path');
+            $table->string('filename');
+            $table->string('mime_type');
+            $table->string('extension')->nullable();
+            $table->unsignedBigInteger('filesize')->nullable();
+            $table->string('checksum')->nullable();
+            $table->boolean('is_pdf')->default(false);
+            $table->string('attachment_role')->nullable();
+            $table->string('processing_status')->default('new');
+            $table->string('zugferd_storage_disk')->nullable();
+            $table->string('zugferd_storage_path')->nullable();
+            $table->timestamp('processed_at')->nullable();
+            $table->text('error_message')->nullable();
+            $table->timestamps();
+        });
+
+        $this->applyBinaryCollation('inbox_attachments', ['external_attachment_id']);
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('inbox_attachments');
+    }
+
+    /**
+     * @param  list<string>  $columns
+     */
+    private function applyBinaryCollation(string $table, array $columns): void
+    {
+        if (! in_array(Schema::getConnection()->getDriverName(), ['mysql', 'mariadb'], true)) {
+            return;
+        }
+
+        if (! Schema::hasTable($table)) {
+            return;
+        }
+
+        $physicalTable = $this->backtickIdentifier($this->physicalTableName($table));
+
+        foreach ($columns as $column) {
+            $columnSql = $this->backtickIdentifier($column);
+            DB::statement("ALTER TABLE {$physicalTable} MODIFY {$columnSql} VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL");
+        }
+    }
+
+    private function physicalTableName(string $table): string
+    {
+        return Schema::getConnection()->getTablePrefix().$table;
+    }
+
+    private function backtickIdentifier(string $identifier): string
+    {
+        return '`'.str_replace('`', '``', $identifier).'`';
+    }
+};

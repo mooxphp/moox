@@ -69,7 +69,7 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/devtools          | moox          | Stable       | No    | ...             |
 | moox/docs              | moox          | Idea         | No    | ...             |
 | moox/draft             | moox          | Stable       | Yes   | ...             |
-| moox/ebilling-gateway  | moox          | Idea         | No    | ...             |
+| moox/e-billing  | moox          | Idea         | No    | ...             |
 | moox/expiry            | moox          | Stable       | Todo  | ...             |
 | moox/featherlight      | moox          | Stable       | No    | ...             |
 | moox/file-icons        | moox          | Stable       | No    | ...             |

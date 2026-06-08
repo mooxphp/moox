@@ -1,0 +1,16 @@
+{
+    "_source": "CEF VATEX — VAT exemption reason codes (EN 16931 / Peppol)",
+    "_todo": "core EN subset + FR codes; complete remaining FR/country-specific codes from official CEF VATEX list",
+    "codes": [
+        {"code": "VATEX-EU-AE", "common_name": "Reverse charge", "vat_category_code": "AE", "description": "Only use with VAT category code AE (reverse charge)."},
+        {"code": "VATEX-EU-D", "common_name": "Travel agents VAT scheme", "vat_category_code": "E", "description": "Only use with VAT category code E."},
+        {"code": "VATEX-EU-F", "common_name": "Second hand goods VAT scheme", "vat_category_code": "E", "description": "Only use with VAT category code E."},
+        {"code": "VATEX-EU-G", "common_name": "Export outside the EU", "vat_category_code": "G", "description": "Only use with VAT category code G."},
+        {"code": "VATEX-EU-I", "common_name": "Works of art VAT scheme", "vat_category_code": "E", "description": "Only use with VAT category code E."},
+        {"code": "VATEX-EU-IC", "common_name": "Intra-community supply", "vat_category_code": "K", "description": "Only use with VAT category code K."},
+        {"code": "VATEX-EU-J", "common_name": "Collectors items and antiques VAT scheme", "vat_category_code": "E", "description": "Only use with VAT category code E."},
+        {"code": "VATEX-EU-O", "common_name": "Not subject to VAT", "vat_category_code": "O", "description": "Only use with VAT category code O."},
+        {"code": "VATEX-FR-FRANCHISE", "common_name": "France domestic VAT franchise in base", "vat_category_code": null, "description": "For domestic invoicing in France."},
+        {"code": "VATEX-FR-CNWVAT", "common_name": "France domestic Credit Notes without VAT, due to supplier forfeit of VAT for discount", "vat_category_code": null, "description": "For domestic Credit Notes only in France."}
+    ]
+}

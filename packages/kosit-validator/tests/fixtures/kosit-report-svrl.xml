@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports xmlns:svrl="http://purl.oclc.org/dml/schematron">
+    <svrl:schematron-output>
+        <svrl:failed-assert location="/invoice" id="BR-DE-01">
+            <svrl:text>Invoice total is wrong</svrl:text>
+        </svrl:failed-assert>
+        <svrl:successful-report location="/invoice" id="INFO-01" role="info">
+            <svrl:text>Optional notice</svrl:text>
+        </svrl:successful-report>
+        <svrl:successful-report location="/invoice" id="WARN-01" role="warning">
+            <svrl:text>Deprecated field used</svrl:text>
+        </svrl:successful-report>
+    </svrl:schematron-output>
+</reports>
