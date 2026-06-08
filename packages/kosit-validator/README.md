@@ -128,7 +128,7 @@ In `moox/e-billing`, `ValidateXmlJob`:
 4. Links the validation to the `EbillingDocument` via `kositValidations()->attach()` on the `kosit_validatables` morph pivot (no `kosit_validation_id` column on inbox attachments or documents)
 5. Dispatches `MergeZugferdPdfJob` on success
 
-`RecordKositValidation` does **not** create `kosit_validatables` rows. For morph history, configure `owner_types` and link from the owner model (`morphPivotRelation('kosit_validatables')`) or e-billing’s `morph_relations.kosit_validatables`.
+`RecordKositValidation` does **not** create `kosit_validatables` rows. For morph history, configure `owner_types` and link from the owner model (`morphPivotRelation('kosit_validatables')`) or e-billing's `morph_relations.kosit_validatables`.
 
 ## Database schema
 
