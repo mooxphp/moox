@@ -19,6 +19,7 @@ use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
 use Moox\Tree\Actions\Tree\UpdateTreeNodeAction;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
+use Moox\Tree\Filament\Pages\TreeIndexCreateInspectorPageFactory;
 use Moox\Tree\Support\TreeIndexAuthorizer;
 use Moox\Tree\Support\TreeStructure;
 
@@ -27,6 +28,10 @@ class ResourceTreeIndex extends Component
     public string $configurationKey = '';
 
     public ?int $selectedRecordId = null;
+
+    public bool $isCreatingInspector = false;
+
+    public ?int $creatingParentId = null;
 
     #[Reactive]
     public string $search = '';
@@ -82,6 +87,12 @@ class ResourceTreeIndex extends Component
             'parentOptions' => $this->getParentOptions(),
             'selectedRecord' => $this->getSelectedRecord(),
             'inspectorPageClass' => $this->configuration()->getInspectorPageClass(),
+            'inspectorCreatePageClass' => $this->configuration()->usesResourceCreateInspector()
+                ? TreeIndexCreateInspectorPageFactory::resolve($this->configurationKey)
+                : null,
+            'configurationKey' => $this->configurationKey,
+            'isCreatingInspector' => $this->isCreatingInspector,
+            'creatingParentId' => $this->creatingParentId,
             'isToolbarSearchEnabled' => $this->configuration()->isToolbarSearchEnabled(),
             'isToolbarLanguageSwitcherEnabled' => $this->configuration()->isToolbarLanguageSwitcherEnabled(),
         ]);
@@ -111,9 +122,19 @@ class ResourceTreeIndex extends Component
         $this->loadSelectedRecord();
     }
 
+    #[On('tree-index-record-created')]
+    public function refreshAfterInspectorCreate(int $recordId): void
+    {
+        $this->isCreatingInspector = false;
+        $this->creatingParentId = null;
+        $this->selectedRecordId = $recordId;
+    }
+
     public function selectRecord(int $recordId): void
     {
         $this->authorizeTreeIndex();
+        $this->isCreatingInspector = false;
+        $this->creatingParentId = null;
         $this->selectedRecordId = $recordId;
         $this->loadSelectedRecord();
     }
@@ -228,6 +249,14 @@ class ResourceTreeIndex extends Component
 
     private function createNode(?int $parentId = null): void
     {
+        if ($this->configuration()->usesResourceCreateInspector()) {
+            $this->isCreatingInspector = true;
+            $this->creatingParentId = $parentId;
+            $this->selectedRecordId = null;
+
+            return;
+        }
+
         $record = app(CreateTreeNodeAction::class, ['configuration' => $this->configuration()])
             ->handle($parentId);
 

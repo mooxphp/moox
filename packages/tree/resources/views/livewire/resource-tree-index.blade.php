@@ -74,7 +74,23 @@
     </div>
 
     <div class="fi-grid-col" style="grid-column: span 9 / span 9;">
-        @if ($selectedRecordId === null)
+        @if ($isCreatingInspector && $inspectorCreatePageClass)
+            <x-filament::section
+                :heading="$configuration->inspectorHeading()"
+                icon="heroicon-o-plus-circle"
+                compact
+            >
+                <div
+                    class="fi-tree-inspector-scroll"
+                    wire:key="tree-index-inspector-create-{{ $creatingParentId ?? 'root' }}"
+                >
+                    @livewire($inspectorCreatePageClass, [
+                        'configurationKey' => $configurationKey,
+                        'parentId' => $creatingParentId,
+                    ], key('tree-inspector-create-'.($creatingParentId ?? 'root')))
+                </div>
+            </x-filament::section>
+        @elseif ($selectedRecordId === null)
             <x-filament::section
                 :heading="$configuration->inspectorHeading()"
                 icon="heroicon-o-pencil-square"

@@ -32,8 +32,22 @@ final class TestForwardTreeResource extends Resource implements ConfiguresTreeIn
             ]);
     }
 
+    public static function getPages(): array
+    {
+        return [
+            'create' => TestCreateTreeNodePage::route('/create'),
+        ];
+    }
+
     public static function treeIndex(): TreeIndexConfiguration
     {
         return TreeIndexConfiguration::make(TreeNode::class);
+    }
+
+    public static function treeIndexWithInspector(): TreeIndexConfiguration
+    {
+        return TreeIndexConfiguration::make(TreeNode::class)
+            ->forwardFromResource(static::class)
+            ->inspectorPage(TestTreeInspectorPage::class);
     }
 }

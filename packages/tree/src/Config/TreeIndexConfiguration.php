@@ -7,6 +7,7 @@ namespace Moox\Tree\Config;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tree\Support\ResourceListForwarder;
+use Moox\Tree\Support\TreeIndexResourcePages;
 use Moox\Tree\Support\TreeLocale;
 
 final class TreeIndexConfiguration
@@ -23,6 +24,7 @@ final class TreeIndexConfiguration
     /**
      * @param  class-string|null  $sourceResourceClass
      * @param  class-string|null  $inspectorPageClass
+     * @param  class-string|null  $inspectorCreatePageClass
      */
     private function __construct(
         private readonly string $modelClass,
@@ -34,6 +36,8 @@ final class TreeIndexConfiguration
         private readonly bool $nestedSet,
         private readonly bool $reorderable,
         private readonly ?string $inspectorPageClass,
+        private readonly ?string $inspectorCreatePageClass,
+        private readonly bool $stubCreate,
         private readonly ?string $authorizationAbility,
         private readonly string $treeHeading,
         private readonly string $treeSubheading,
@@ -68,6 +72,8 @@ final class TreeIndexConfiguration
             nestedSet: false,
             reorderable: true,
             inspectorPageClass: null,
+            inspectorCreatePageClass: null,
+            stubCreate: false,
             authorizationAbility: null,
             treeHeading: 'Struktur',
             treeSubheading: 'Baum',
@@ -128,6 +134,22 @@ final class TreeIndexConfiguration
     }
 
     /**
+     * @param  class-string  $inspectorCreatePageClass
+     */
+    public function inspectorCreatePage(string $inspectorCreatePageClass): self
+    {
+        return $this->cloneWith(inspectorCreatePageClass: $inspectorCreatePageClass);
+    }
+
+    /**
+     * Use the stub create flow (minimal label node + edit inspector) instead of the resource create form.
+     */
+    public function stubCreate(bool $enabled = true): self
+    {
+        return $this->cloneWith(stubCreate: $enabled);
+    }
+
+    /**
      * @return class-string|null
      */
     public function getInspectorPageClass(): ?string
@@ -135,9 +157,34 @@ final class TreeIndexConfiguration
         return $this->inspectorPageClass;
     }
 
+    /**
+     * @return class-string|null
+     */
+    public function getInspectorCreatePageClass(): ?string
+    {
+        return $this->inspectorCreatePageClass;
+    }
+
     public function usesResourceInspector(): bool
     {
         return $this->inspectorPageClass !== null;
+    }
+
+    public function usesResourceCreateInspector(): bool
+    {
+        if ($this->stubCreate) {
+            return false;
+        }
+
+        if ($this->inspectorCreatePageClass !== null) {
+            return true;
+        }
+
+        if (! $this->usesResourceInspector()) {
+            return false;
+        }
+
+        return TreeIndexResourcePages::resolveCreatePageClass($this) !== null;
     }
 
     /**
@@ -500,6 +547,8 @@ final class TreeIndexConfiguration
         ?bool $nestedSet = null,
         ?bool $reorderable = null,
         ?string $inspectorPageClass = null,
+        ?string $inspectorCreatePageClass = null,
+        ?bool $stubCreate = null,
         ?string $authorizationAbility = null,
         ?string $treeHeading = null,
         ?string $treeSubheading = null,
@@ -527,6 +576,8 @@ final class TreeIndexConfiguration
             nestedSet: $nestedSet ?? $this->nestedSet,
             reorderable: $reorderable ?? $this->reorderable,
             inspectorPageClass: $inspectorPageClass ?? $this->inspectorPageClass,
+            inspectorCreatePageClass: $inspectorCreatePageClass ?? $this->inspectorCreatePageClass,
+            stubCreate: $stubCreate ?? $this->stubCreate,
             authorizationAbility: $authorizationAbility ?? $this->authorizationAbility,
             treeHeading: $treeHeading ?? $this->treeHeading,
             treeSubheading: $treeSubheading ?? $this->treeSubheading,
