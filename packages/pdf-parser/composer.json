@@ -1,0 +1,55 @@
+{
+    "name": "moox/pdf-parser",
+    "description": "Moox PDF Parser extracts text content from PDF files for further processing.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "PDF",
+        "Parser",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/pdf-parser",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "spatie/pdf-to-text": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\PdfParser\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\PdfParser\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\PdfParser\\PdfParserServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
