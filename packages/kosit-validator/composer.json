@@ -40,9 +40,20 @@
             "stability": "dev"
         }
     },
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml --bootstrap=tests/bootstrap-arch.php tests/ArchTest.php"
+        ]
     },
     "config": {
         "allow-plugins": {

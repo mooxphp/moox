@@ -45,7 +45,7 @@ class KositResult
 
         if ($xml === false) {
             return $this->failed()
-                ? [['type' => 'error', 'text' => 'Could not parse report XML', 'location' => null, 'rule' => null]]
+                ? [['type' => 'error', 'text' => __('kosit-validator::fields.could_not_parse_report_xml'), 'location' => null, 'rule' => null]]
                 : [];
         }
 

@@ -27,6 +27,7 @@ use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ListKositValidations;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ViewKositValidation;
+use Moox\KositValidator\Resources\KositValidationResource\RelationManagers\KositValidatablesRelationManager;
 use Moox\KositValidator\Support\KositValidationMessages;
 
 final class KositValidationResource extends Resource
@@ -229,7 +230,9 @@ final class KositValidationResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            KositValidatablesRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

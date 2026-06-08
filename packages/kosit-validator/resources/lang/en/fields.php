@@ -36,4 +36,11 @@ return [
     'severity_error' => 'Error',
     'severity_warning' => 'Warning',
     'severity_info' => 'Info',
+    'validatables' => 'Assignments',
+    'owner' => 'Owner',
+    'owner_name' => 'Name',
+    'add_validatable' => 'Add assignment',
+    'filename_empty' => '—',
+    'kosit_report_not_found' => 'KOSIT report not found',
+    'could_not_parse_report_xml' => 'Could not parse report XML',
 ];

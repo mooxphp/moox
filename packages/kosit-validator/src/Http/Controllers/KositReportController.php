@@ -14,7 +14,7 @@ final class KositReportController
         $htmlPath = $validation->report_html_path;
 
         if ($htmlPath === null || ! is_file($htmlPath)) {
-            abort(404, 'KOSIT report not found');
+            abort(404, __('kosit-validator::fields.kosit_report_not_found'));
         }
 
         return response()->file($htmlPath, [

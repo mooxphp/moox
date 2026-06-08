@@ -2,12 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\KositValidator\Tests\Support\TestEnvironment;
-use Moox\KositValidator\Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 test('guests are redirected from the KOSIT HTML report route', function (): void {
     $validation = KositValidation::query()->create([

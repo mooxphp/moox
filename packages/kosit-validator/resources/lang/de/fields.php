@@ -36,4 +36,11 @@ return [
     'severity_error' => 'Fehler',
     'severity_warning' => 'Warnung',
     'severity_info' => 'Hinweis',
+    'validatables' => 'Zuordnungen',
+    'owner' => 'Besitzer',
+    'owner_name' => 'Name',
+    'add_validatable' => 'Zuordnung hinzufügen',
+    'filename_empty' => '—',
+    'kosit_report_not_found' => 'KoSIT-Prüfbericht nicht gefunden',
+    'could_not_parse_report_xml' => 'Prüfbericht-XML konnte nicht gelesen werden',
 ];

@@ -1,5 +1,7 @@
 <?php
 
+use Moox\KositValidator\Models\KositValidatable;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -194,6 +196,29 @@ return [
                         ],
                     ],
                 ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relations (registry)
+    |--------------------------------------------------------------------------
+    |
+    | Declarative list of notable Eloquent relations for this entity.
+    | Register owner_types when EbillingDocument (or other owners) are wired.
+    |
+    */
+    'relations' => [
+        'kosit_validatables' => [
+            'label' => 'trans//kosit-validator::fields.validatables',
+            'relationship' => 'kositValidatables',
+            'pivot_model' => KositValidatable::class,
+            'pivot_table' => 'kosit_validatables',
+            'morph_name' => 'validatable',
+            'pivot_columns' => [],
+            'owner_types' => [
+                // \Moox\EBilling\Models\EbillingDocument::class => 'Invoice document',
             ],
         ],
     ],

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Moox\KositValidator\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Moox\Core\Entities\Items\Item\BaseItemModel;
 
 /**
  * @property string|null $input_path
@@ -16,7 +17,7 @@ use Illuminate\Support\Carbon;
  * @property array<int|string, mixed>|null $errors
  * @property Carbon|null $validated_at
  */
-class KositValidation extends Model
+class KositValidation extends BaseItemModel
 {
     /**
      * @var list<string>
@@ -42,6 +43,19 @@ class KositValidation extends Model
         ];
     }
 
+    public static function getResourceName(): string
+    {
+        return 'kosit-validation';
+    }
+
+    /**
+     * @return HasMany<KositValidatable, $this>
+     */
+    public function kositValidatables(): HasMany
+    {
+        return $this->hasMany(KositValidatable::class);
+    }
+
     /**
      * @param  Builder<static>  $query
      * @return Builder<static>
@@ -64,7 +78,7 @@ class KositValidation extends Model
     {
         return $this->input_path !== null
             ? basename($this->input_path)
-            : '—';
+            : __('kosit-validator::fields.filename_empty');
     }
 
     public function reportHtmlPath(): ?string
