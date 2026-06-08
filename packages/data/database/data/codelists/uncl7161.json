@@ -1,0 +1,42 @@
+{
+    "_source": "UNCL 7161 (UN/CEFACT) — charge reason codes",
+    "_todo": "incomplete — fill full list from official CEF/Peppol UNCL 7161 publication",
+    "codes": [
+        {
+            "code": "AA",
+            "common_name": "Advertising"
+        },
+        {
+            "code": "AAA",
+            "common_name": "Telecommunication"
+        },
+        {
+            "code": "FC",
+            "common_name": "Freight charge"
+        },
+        {
+            "code": "HD",
+            "common_name": "Handling"
+        },
+        {
+            "code": "WH",
+            "common_name": "Warehousing"
+        },
+        {
+            "code": "PC",
+            "common_name": "Packing"
+        },
+        {
+            "code": "DL",
+            "common_name": "Delivery"
+        },
+        {
+            "code": "SH",
+            "common_name": "Special handling"
+        },
+        {
+            "code": "ZZZ",
+            "common_name": "Mutually defined"
+        }
+    ]
+}

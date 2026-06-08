@@ -47,6 +47,12 @@ return [
     'symbol' => 'Symbol',
     'currency_name' => 'Währungsname',
 
+    // EN 16931 codelists
+    'description' => 'Beschreibung',
+    'en16931_interpretation' => 'EN-16931-Interpretation',
+    'vat_category_code' => 'Umsatzsteuerkategorie-Code',
+    'version' => 'Version',
+
     // Static Locale
     'locale' => 'Sprache',
     'name' => 'Name',

@@ -47,6 +47,12 @@ return [
     'symbol' => 'Symbol',
     'currency_name' => 'Currency Name',
 
+    // EN 16931 codelists
+    'description' => 'Description',
+    'en16931_interpretation' => 'EN 16931 interpretation',
+    'vat_category_code' => 'VAT category code',
+    'version' => 'Version',
+
     // Static Locale
     'locale' => 'Locale',
     'name' => 'Name',

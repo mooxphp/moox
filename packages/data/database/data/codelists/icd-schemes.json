@@ -1,0 +1,22 @@
+{
+    "_source": "ISO/IEC 6523 ICD — International Code Designator (Peppol / EN 16931 subset)",
+    "_todo": "complete ~230 entries from official ISO/IEC 6523 ICD / CEF code list — partial seed",
+    "codes": [
+        {
+            "code": "0002",
+            "common_name": "System Information et Repertoire des Entreprise et des Etablissements: SIRENE",
+            "description": "Notes on Use of Code: Identification of an organization or establishment in France. Issuing agency: Institut national de la statistique et des études économiques (INSEE)."
+        },
+        {"code": "0060", "common_name": "Data Universal Numbering System (D-U-N-S Number)"},
+        {"code": "0088", "common_name": "EAN Location Code"},
+        {"code": "0096", "common_name": "The Danish Business Authority - P-number (DK:P)"},
+        {"code": "0184", "common_name": "DIGSTORG"},
+        {"code": "0204", "common_name": "Leitweg-ID"},
+        {"code": "9918", "common_name": "SOCIETY FOR WORLDWIDE INTERBANK FINANCIAL, TELECOMMUNICATION S.W.I.F.T"},
+        {
+            "code": "9930",
+            "common_name": "Germany VAT number",
+            "description": "Notes on Use of Code: German value added tax identification number. Issuing agency: Bundeszentralamt für Steuern."
+        }
+    ]
+}
