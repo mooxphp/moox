@@ -1,11 +1,12 @@
 {
     "name": "moox/permission",
-    "description": "This is my package permission",
+    "description": "Moox layer for Filament Shield and shared authorization defaults.",
     "keywords": [
         "Laravel",
         "Filament",
-        "Filament plugin",
-        "Laravel package"
+        "permissions",
+        "roles",
+        "shield"
     ],
     "homepage": "https://moox.org/",
     "license": "MIT",
@@ -18,7 +19,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "spatie/laravel-permission": "^7.0"
+        "bezhansalleh/filament-shield": "^4.0"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
@@ -35,7 +36,12 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "stable",
+            "install": {
+                "plugins": [
+                    "BezhanSalleh\\FilamentShield\\FilamentShieldPlugin"
+                ]
+            }
         }
     },
     "minimum-stability": "stable",

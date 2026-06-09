@@ -6,27 +6,49 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-        /**
-     * Run the migrations.
-     */
-    public function up()
+    public function up(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->string('user_type')->nullable()->after('id');
-            $table->unsignedBigInteger('device_id')->nullable()->after('user_id');
-            $table->boolean('whitlisted')->nullable()->after('last_activity');
+        if (! Schema::hasTable('sessions')) {
+            return;
+        }
 
-            $table->timestamps();
+        Schema::table('sessions', function (Blueprint $table): void {
+            if (! Schema::hasColumn('sessions', 'user_type')) {
+                $table->string('user_type')->nullable()->after('id');
+            }
+
+            if (! Schema::hasColumn('sessions', 'device_id')) {
+                $table->unsignedBigInteger('device_id')->nullable()->after('user_id');
+            }
+
+            if (! Schema::hasColumn('sessions', 'whitlisted')) {
+                $table->boolean('whitlisted')->nullable()->after('last_activity');
+            }
+
+            if (! Schema::hasColumn('sessions', 'created_at')) {
+                $table->timestamps();
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down()
+    public function down(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn(['user_type', 'device_id', 'whitlisted']);
+        if (! Schema::hasTable('sessions')) {
+            return;
+        }
+
+        Schema::table('sessions', function (Blueprint $table): void {
+            $columns = array_filter([
+                Schema::hasColumn('sessions', 'user_type') ? 'user_type' : null,
+                Schema::hasColumn('sessions', 'device_id') ? 'device_id' : null,
+                Schema::hasColumn('sessions', 'whitlisted') ? 'whitlisted' : null,
+                Schema::hasColumn('sessions', 'created_at') ? 'created_at' : null,
+                Schema::hasColumn('sessions', 'updated_at') ? 'updated_at' : null,
+            ]);
+
+            if ($columns !== []) {
+                $table->dropColumn($columns);
+            }
         });
     }
 };
