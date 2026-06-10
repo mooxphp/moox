@@ -35,6 +35,20 @@ it('creates a root tree node', function (): void {
     expect(TreeNode::query()->where('label', 'Neuer Eintrag')->exists())->toBeTrue();
 });
 
+it('creates a root tree node when the list page header dispatches create', function (): void {
+    config(['filament-tree-index.authorization.enabled' => false]);
+
+    Livewire::test(ResourceTreeIndex::class, [
+        'configurationKey' => 'test-tree',
+        'lang' => 'en',
+        'search' => '',
+    ])
+        ->dispatch('tree-index-create-root')
+        ->assertHasNoErrors();
+
+    expect(TreeNode::query()->where('label', 'Neuer Eintrag')->exists())->toBeTrue();
+});
+
 it('filters visible nodes by search term', function (): void {
     config(['filament-tree-index.authorization.enabled' => false]);
 

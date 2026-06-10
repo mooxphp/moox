@@ -95,6 +95,7 @@ class ResourceTreeIndex extends Component
         $this->syncTreeSelectionToParent();
     }
 
+    #[On('tree-index-create-root')]
     public function createRootNode(): void
     {
         $this->authorizeTreeIndex();

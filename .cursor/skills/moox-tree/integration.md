@@ -1,15 +1,19 @@
-# Integration — Code-Templates & Checkliste
+# Integration — Code Templates & Checklist
 
-Platzhalter: `Xxx` = Domäne (z. B. `Category`), `XxxResource` = Basis-Resource, `XxxTreeResource` = Baum-Resource.
+Placeholder: `Xxx` = domain (e.g. `Category`), `XxxResource` = base resource, `XxxTreeResource` = tree resource.
 
-## Voraussetzungen
+## Prerequisites
+
+Complete **[installation.md](installation.md)** first (Composer, service provider, `php artisan filament:assets`, optional `kalnoy/nestedset` / `moox/localization`).
+
+Minimum commands:
 
 ```bash
 composer require moox/tree:@dev
 php artisan filament:assets
 ```
 
-Bei Nested Set: `composer require kalnoy/nestedset`
+Do **not** add tree CSS, Alpine store scripts, or Livewire aliases in the consumer — the package registers them via `TreeServiceProvider`.
 
 ---
 
@@ -319,22 +323,24 @@ return TreeIndexConfiguration::make(Xxx::class)
 
 ---
 
-## Verifikations-Checkliste
+## Verification checklist
 
-Nach jeder Integration abarbeiten:
+After every integration:
 
-- [ ] `moox/tree` eingebunden; `php artisan filament:assets` ausgeführt
-- [ ] Model-Spalten passen zum gewählten Baum-Modus (Adjacency oder Nested Set + `NodeTrait`)
-- [ ] Toolbar-Wahl dokumentiert: Suche / Filter / Sprache (§6 — per `AskQuestion` oder explizite User-Vorgabe)
-- [ ] Resource: `implements ConfiguresTreeIndex` + `treeIndex()` mit gewähltem Pfad aus [decisions.md](decisions.md)
-- [ ] Bei Suche Ja: `getTitleColumn()` oder `applyListSearchToQuery()` vorhanden
-- [ ] Bei Sprache Nein + Filament-Toolbar: `filamentTableLanguageSwitcher(false)` gesetzt
-- [ ] `TreeListXxx extends TreeIndexListRecords` mit korrektem `$resource`
-- [ ] `getPages()`: `'index'` → TreeList; bei Inspector Route `'tree-inspector'`
-- [ ] Inspector (falls genutzt): `$resource` = Basis-Resource; Trait `RendersAsTreeIndexInspector`
-- [ ] `XxxTreePlugin` registriert Tree-Resource im Panel (Muster A)
-- [ ] Bei Tabs: `updatedActiveTab()` ruft `refreshTreeIndexConfiguration()` auf
-- [ ] Keine duplizierte Tree-Mechanik im Consumer (kein eigenes Livewire/Move-Actions)
-- [ ] Keine Model-Traits/Methoden nur für Tree
+- [ ] [installation.md](installation.md) complete: `moox/tree` in Composer, provider discovered, `php artisan filament:assets` run; tree renders styled in browser
+- [ ] No duplicate tree CSS/JS/Alpine store in consumer package
+- [ ] Model columns match chosen tree mode (adjacency or nested set + `NodeTrait`)
+- [ ] Toolbar choice documented: search / filters / language (§6 — via `AskQuestion` or explicit user input)
+- [ ] Resource: `implements ConfiguresTreeIndex` + `treeIndex()` with path from [decisions.md](decisions.md)
+- [ ] If search yes: `getTitleColumn()` or `applyListSearchToQuery()` present
+- [ ] If language no + Filament toolbar: `filamentTableLanguageSwitcher(false)` set
+- [ ] `TreeListXxx extends TreeIndexListRecords` with correct `$resource`
+- [ ] Create button in page header (`Action::make('create')` on `TreeIndexListRecords`, dispatches `tree-index-create-root` — no modal or `/create` navigation); root create opens resource create form in the right inspector when `inspectorPage` + `forwardFromResource` are set
+- [ ] `getPages()`: `'index'` → TreeList; inspector route `'tree-inspector'` when used
+- [ ] Inspector (if used): `$resource` = base resource; trait `RendersAsTreeIndexInspector`
+- [ ] `XxxTreePlugin` registers tree resource in panel (pattern A)
+- [ ] With tabs: `updatedActiveTab()` calls `refreshTreeIndexConfiguration()`
+- [ ] No duplicated tree mechanics in consumer (no custom Livewire/move actions)
+- [ ] No model traits/methods added only for tree
 
-Weitere API-Details: `packages/tree/README.md`
+Further API details: `packages/tree/README.md`

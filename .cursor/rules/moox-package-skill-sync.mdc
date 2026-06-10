@@ -1,0 +1,64 @@
+---
+description: After package changes, review and update the matching Cursor skill (registry-driven)
+globs: packages/**
+alwaysApply: false
+---
+
+# Package ↔ Skill sync
+
+When you **change or finish work** under `packages/{package}/**`, check whether that package has a Cursor skill. **Only packages listed in `.cursor/skills/registry.yaml` require sync.**
+
+## 1. Resolve package name
+
+From the edited path: `packages/tree/src/...` → `tree`.
+
+## 2. Look up the registry
+
+Read `.cursor/skills/registry.yaml`. If `{package}` is **not** listed under `packages:`, **stop** — no skill sync for this package.
+
+If listed, note `skill`, `skill_path`, `package_readme`, and `skill_files`.
+
+## 3. Decide if the skill needs updates
+
+**Update the skill** when the package change affects anything documented for integrators:
+
+| Change in package | Review / update in skill |
+|-------------------|--------------------------|
+| `TreeServiceProvider`, Filament assets, CSS/JS, publish tags, Composer `require` | `installation.md`, verification checklists |
+| Public API: config fluent methods, traits, contracts, Livewire alias, hooks | `integration.md` templates, `decisions.md`, `SKILL.md` references |
+| New toolbar / locale / inspector behavior or decision branches | `decisions.md`, `integration.md` § toolbar |
+| Renames, removals, breaking behavior | All listed `skill_files` + checklists |
+| Gold-standard consumer pattern changed | `SKILL.md` references table, `integration.md` examples |
+
+**Skip skill updates** when:
+
+- Internal refactor with **no** public API, install, or integrator-facing behavior change
+- Tests-only, comments-only, or formatting-only diffs
+
+When unsure, read the changed classes and compare against the skill docs — update if anything integrators rely on is now wrong or missing.
+
+## 4. How to update (minimal scope)
+
+1. Read the skill's `SKILL.md` and the files listed in `skill_files`.
+2. Read `{package_readme}` for canonical package documentation.
+3. Patch **only** sections that are stale — do not rewrite unrelated skill content.
+4. Keep skill language consistent with existing files in that skill (e.g. `moox-tree` uses English for install/integration checklists).
+5. If install/API sections in `{package_readme}` changed materially, mirror the facts in the skill; do not duplicate the full README.
+
+## 5. Report in the session
+
+If a registry package was edited and the skill was updated, briefly state which skill files changed and why. If no skill update was needed, no extra report required.
+
+## 6. Adding a new package skill (future)
+
+When creating a skill for another package:
+
+1. Add folder `.cursor/skills/{skill-name}/` with `SKILL.md`.
+2. Add an entry under `packages:` in `registry.yaml` (`skill`, `skill_path`, `package_readme`, `skill_files`).
+3. Optionally add a package-specific rule under `.cursor/rules/` — it does **not** replace this sync rule.
+
+## Current registry
+
+| Package | Skill |
+|---------|-------|
+| `tree` | `moox-tree` |

@@ -8,20 +8,40 @@ use Filament\Tables\Columns\Column;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
-use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Moox\Tree\Support\TreeLocale;
 use ReflectionProperty;
 
 trait InteractsWithTreeIndexListPage
 {
+    #[Url(as: 'lang', except: '')]
     public string $lang = '';
 
     #[Url(as: 'selected', except: null)]
     public ?int $treeSelectedId = null;
+
+    public function bootInteractsWithTreeIndexListPage(): void
+    {
+        if (! TreeLocale::isFullPageRequest()) {
+            return;
+        }
+
+        $missingParameters = TreeLocale::missingCanonicalIndexParameters(
+            ensureTab: $this->usesListPageTabs(),
+            defaultTab: $this->defaultListPageTab(),
+        );
+
+        if ($missingParameters === null) {
+            return;
+        }
+
+        $this->redirect(static::getResource()::getUrl('index', $missingParameters));
+    }
 
     public function getTable(): Table
     {
@@ -177,5 +197,15 @@ trait InteractsWithTreeIndexListPage
             'index',
             TreeLocale::languageChangeParameters($lang, $tab, $this->treeSelectedId),
         ));
+    }
+
+    protected function usesListPageTabs(): bool
+    {
+        return in_array(HasListPageTabs::class, class_uses_recursive(static::class), true);
+    }
+
+    protected function defaultListPageTab(): string
+    {
+        return 'all';
     }
 }

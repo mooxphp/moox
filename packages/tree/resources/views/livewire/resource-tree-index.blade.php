@@ -59,17 +59,6 @@
                     ])
                 </div>
             </div>
-
-            <x-slot name="footer">
-                <x-filament::button
-                    type="button"
-                    wire:click="createRootNode"
-                    icon="heroicon-m-plus"
-                    class="fi-tree-full-width"
-                >
-                    {{ $configuration->createRootLabel() }}
-                </x-filament::button>
-            </x-slot>
         </x-filament::section>
     </div>
 

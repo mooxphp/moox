@@ -29,7 +29,7 @@ final class TreeLocale
     }
 
     /**
-     * Default tree language from Moox Localization or app config.
+     * Default locale for tree URLs — matches BaseListDrafts / categories list (`locale_variant`).
      */
     public static function resolveDefaultLocale(): string
     {
@@ -42,25 +42,65 @@ final class TreeLocale
             if (Schema::hasTable($model->getTable())) {
                 $defaultLocale = $localizationClass::query()
                     ->where('is_default', true)
-                    ->where('is_active_admin', true)
                     ->first();
 
-                if ($defaultLocale !== null) {
-                    $variant = $defaultLocale->locale_variant ?? null;
-                    $alpha2 = $defaultLocale->language?->alpha2 ?? null;
-
-                    if (filled($variant)) {
-                        return (string) $variant;
-                    }
-
-                    if (filled($alpha2)) {
-                        return (string) $alpha2;
-                    }
+                if ($defaultLocale !== null && filled($defaultLocale->locale_variant)) {
+                    return (string) $defaultLocale->locale_variant;
                 }
             }
         }
 
         return (string) config('app.locale');
+    }
+
+    /**
+     * Index URL query parameters with a guaranteed `lang` value (same default as categories list).
+     *
+     * @param  array<string, string>  $overrides
+     * @return array<string, string>
+     */
+    public static function indexUrlParameters(array $overrides = []): array
+    {
+        $parameters = self::currentQueryParameters();
+
+        if (! isset($parameters['lang']) || $parameters['lang'] === '') {
+            $parameters['lang'] = self::resolveDefaultLocale();
+        }
+
+        return array_merge($parameters, $overrides);
+    }
+
+    public static function isFullPageRequest(): bool
+    {
+        return request()->isMethod('GET')
+            && ! request()->hasHeader('X-Livewire')
+            && ! request()->hasHeader('X-Livewire-Navigate');
+    }
+
+    /**
+     * Query parameters to add when `lang` and/or default tab are missing from the index URL.
+     *
+     * @return array<string, string>|null
+     */
+    public static function missingCanonicalIndexParameters(
+        bool $ensureTab = false,
+        string $defaultTab = 'all',
+    ): ?array {
+        $overrides = [];
+
+        if (! request()->has('lang')) {
+            $overrides['lang'] = self::resolveDefaultLocale();
+        }
+
+        if ($ensureTab && ! request()->has('tab')) {
+            $overrides['tab'] = $defaultTab;
+        }
+
+        if ($overrides === []) {
+            return null;
+        }
+
+        return self::indexUrlParameters($overrides);
     }
 
     public static function syncToRequest(string $lang): void

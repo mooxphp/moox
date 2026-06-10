@@ -65,10 +65,6 @@
     overflow-y: auto;
 }
 
-.fi-tree-full-width {
-    width: 100%;
-}
-
 .fi-tree-form {
     display: flex;
     flex-direction: column;

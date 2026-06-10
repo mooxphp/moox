@@ -79,6 +79,10 @@ Neue Features im Package müssen über **Config/Actions/Resource-Hooks** lösbar
 
 Consumer-Resources (`implements ConfiguresTreeIndex`) gehören **nicht** in dieses Package — siehe Regel `moox-tree-integration`. Referenz: `CategoryTreeResource`, `TreeListCategories`, `TreeInspectorCategory`.
 
+## Skill-Sync (nach Package-Änderungen)
+
+`packages/tree` ist in `.cursor/skills/registry.yaml` eingetragen. Nach Änderungen an **öffentlicher API**, **Installation/Assets** (`TreeServiceProvider`, CSS, Alpine-Store, `filament:assets`) oder **integrator-relevantem Verhalten**: Regel **`moox-package-skill-sync`** anwenden und Skill **`moox-tree`** (`installation.md`, `integration.md`, `decisions.md`, `SKILL.md`) auf den aktuellen Stand bringen.
+
 ## UI-Schaltflächen & Formular (verbindlich)
 
 - **Keine neuen Buttons, Footer-Actions oder Blade-`wire:click`-Schaltflächen** im Tree-Package oder in Consumer-Tree-Pages hinzufügen, ändern oder duplizieren — **ohne vorherige Rückfrage und ausdrückliche Bestätigung** durch den Nutzer.

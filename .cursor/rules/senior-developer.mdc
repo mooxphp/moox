@@ -17,3 +17,4 @@ Vollständige Agent-Anweisungen: `AGENTS.md` im Repo-Root.
 6. **Filament 4** — Moox-Basisklassen (`BaseResource`, `BaseItemResource`, …), `Schema` statt `Form`, Actions aus `Filament\Actions\*`.
 7. **Git** — nur auf Anfrage committen/PR; kurze imperative Messages, ein Commit = eine Änderung.
 8. Package-Regeln in `.cursor/rules/` (z. B. `moox-tree-*`) ergänzen diese Regel, ersetzen sie nicht.
+9. **Package-Skills** — Packages mit Eintrag in `.cursor/skills/registry.yaml`: nach relevanten Änderungen Skill prüfen/anpassen (Regel `moox-package-skill-sync`).

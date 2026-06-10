@@ -566,7 +566,7 @@ return TreeIndexConfiguration::make(Category::class)
 ### Baum (links)
 
 - Eintrag wählen → Inspector rechts
-- Root-Eintrag und Untereinträge anlegen
+- Root-Eintrag anlegen über **Create** in den Page-Header-Actions (wie `ListRecords`); öffnet das Resource-Create-Formular **rechts im Inspector** (kein Modal, keine `/create`-Navigation); Untereinträge im Inspector
 - Alle aufklappen / einklappen
 - Optional: Verschieben per Drag & Drop (`reorderable(true)`), inkl. Validierung (nicht unter sich selbst / eigenes Kind)
 

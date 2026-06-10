@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Tree\Filament\Pages;
 
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
@@ -44,6 +45,19 @@ abstract class TreeIndexListRecords extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Action::make('create')
+                ->label(fn (): string => __('filament-actions::create.single.label', [
+                    'label' => static::getResource()::getModelLabel(),
+                ]))
+                ->action(fn (): mixed => $this->dispatch('tree-index-create-root'))
+                ->hidden(fn (): bool => $this->shouldHideTreeCreateHeaderAction()),
+        ];
+    }
+
+    protected function shouldHideTreeCreateHeaderAction(): bool
+    {
+        return property_exists($this, 'activeTab')
+            && ($this->activeTab ?? null) === 'deleted';
     }
 }
