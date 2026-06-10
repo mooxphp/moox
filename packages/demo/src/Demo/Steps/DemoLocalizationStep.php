@@ -25,7 +25,7 @@ final class DemoLocalizationStep
         }
 
         if (! $this->tableExists('static_languages')) {
-            $this->console->failTask('Localizations', 'static_languages table missing — run moox/data first');
+            $this->console->failTask('Localizations', 'static_languages table missing — run moox/data-legacy first');
 
             return;
         }
@@ -41,7 +41,7 @@ final class DemoLocalizationStep
         $languages = DB::table('static_languages')->pluck('id', 'alpha2');
 
         if ($languages->isEmpty()) {
-            $this->console->failTask('Localizations', 'no rows in static_languages — seed moox/data first');
+            $this->console->failTask('Localizations', 'no rows in static_languages — seed moox/data-legacy first');
 
             return;
         }

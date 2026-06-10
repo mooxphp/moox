@@ -19,7 +19,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "moox/data": "dev-main"
+        "moox/data-legacy": "dev-main"
     },
     "autoload": {
         "psr-4": {

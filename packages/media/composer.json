@@ -20,7 +20,7 @@
         "moox/core": "dev-main ",
         "filament/spatie-laravel-media-library-plugin": "^5.0",
         "moox/localization": "dev-main",
-        "moox/data": "dev-main",
+        "moox/data-legacy": "dev-main",
         "moox/file-icons": "dev-main"
     },
     "autoload": {

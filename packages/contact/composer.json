@@ -21,7 +21,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "moox/data": "dev-main",
+        "moox/data-legacy": "dev-main",
         "moox/company": "dev-main"
     },
     "autoload": {

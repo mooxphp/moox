@@ -34,7 +34,7 @@ Some of our packages:
 | [Moox Flag Icons Rect](https://github.com/mooxphp/flag-icons-rect)     | moox/flag-icons-rect   | x    |     | Stable |
 | [Moox Laravel Icons](https://github.com/mooxphp/laravel-icons)         | moox/laravel-icons     | x    |     | Stable |
 | [Moox Media](https://github.com/mooxphp/media)                         | moox/media             | x    |     | Beta   |
-| [Moox Data](https://github.com/mooxphp/data)                           | moox/data              | x    |     | Beta   |
+| [Moox Data Legacy](https://github.com/mooxphp/data-legacy)             | moox/data-legacy       | x    |     | Beta   |
 | [Moox Localization](https://github.com/mooxphp/localization)           | moox/localization      | x    |     | Beta   |
 | [Moox Press](https://github.com/mooxphp/press)                         | moox/press             | x    |     | Beta   |
 | [Moox Build](https://github.com/mooxphp/build)                         | moox/build             | x    |     | Beta   |

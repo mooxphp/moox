@@ -26,7 +26,7 @@ ERP entity for company master data: customers, suppliers, partners, subsidiaries
 | Package     | Purpose                                      |
 |------------|-----------------------------------------------|
 | `moox/core` | Base model, Filament resource, morph pivots   |
-| `moox/data` | Moox data integration                         |
+| `moox/data-legacy` | Moox data integration                         |
 
 For addresses in the admin and API you also need **`moox/address`**, wired in your app config (see [Addresses](#addresses-mooxaddress)).
 

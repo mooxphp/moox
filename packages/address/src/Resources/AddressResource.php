@@ -24,7 +24,7 @@ use Moox\Address\Support\AddressRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
-use Moox\Data\Models\StaticCountry;
+use Moox\DataLegacy\Models\StaticCountry;
 
 class AddressResource extends BaseRecordResource
 {

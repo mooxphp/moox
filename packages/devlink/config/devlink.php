@@ -206,9 +206,9 @@ return [
             'path' => $public_base_path.'/customer',
             'type' => 'public',
         ],
-        'data' => [
+        'data-legacy' => [
             'active' => false,
-            'path' => $public_base_path.'/data',
+            'path' => $public_base_path.'/data-legacy',
             'type' => 'public',
         ],
         'demo' => [

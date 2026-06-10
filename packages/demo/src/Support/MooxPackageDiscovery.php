@@ -165,13 +165,20 @@ final class MooxPackageDiscovery
         return $parts[1] ?? $packageName;
     }
 
+    public static function packageNamespace(string $packageName): string
+    {
+        $slug = self::packageSlug($packageName);
+
+        return 'Moox\\'.str_replace(' ', '', ucwords(str_replace('-', ' ', $slug)));
+    }
+
     public static function resolveSeederClass(string $packageName, string $seeder): ?string
     {
         if (class_exists($seeder)) {
             return $seeder;
         }
 
-        $packageNamespace = 'Moox\\'.ucfirst(self::packageSlug($packageName));
+        $packageNamespace = self::packageNamespace($packageName);
 
         $possibleClasses = [
             $packageNamespace.'\\Database\\Seeders\\'.ucfirst($seeder),

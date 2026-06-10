@@ -9,8 +9,8 @@ use BladeUI\Icons\Factory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Moox\Data\Models\StaticCountry;
-use Moox\Data\Models\StaticLanguage;
+use Moox\DataLegacy\Models\StaticCountry;
+use Moox\DataLegacy\Models\StaticLanguage;
 
 /**
  * @property int $id

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\TextColumn;
-use Moox\Data\Models\StaticLanguage;
+use Moox\DataLegacy\Models\StaticLanguage;
 use Moox\Localization\Models\Localization;
 
 class TranslationColumn extends TextColumn

@@ -27,7 +27,7 @@ Diese Anleitung beschreibt, wie Moox-Pakete **Eintrags-Seeder** schreiben und re
 | Begriff | Bedeutung |
 |--------|-----------|
 | **Eintrags-Seeder** | Genau **eine** Seeder-Klasse pro Moox-Paket, die `moox:demo` aufruft (nicht jede `Static*Seeder`-Datei einzeln). |
-| **Nested Seeder** | Werden nur von einem Parent aufgerufen (z. B. `StaticLanguageSeeder` durch `DataSeeder`) und erscheinen in `demo.nested_seeder_basenames`. |
+| **Nested Seeder** | Werden nur von einem Parent aufgerufen (z. B. `StaticLanguageSeeder` durch `DataLegacySeeder`) und erscheinen in `demo.nested_seeder_basenames`. |
 | **Dataset** | CLI-Option `--dataset=small\|medium\|large\|huge` — steuert u. a. Zusatzdaten und Factory-Läufe (`demo.dataset_count`). |
 | **Demo-Assets** | Optionale Medien aus `packages/demo/resources/demo/assets/` (Avatare, Produktbilder, …), nur wenn `moox/demo` aktiv seedet. |
 
@@ -95,7 +95,7 @@ flowchart TD
     B -->|ja| C["migrate:fresh"]
     B -->|nein| D["Static data"]
     C --> D
-    D --> E["DataSeeder · moox/data"]
+    D --> E["DataLegacySeeder · moox/data-legacy"]
     E --> F["Localizations\n(--locales + default_locales)"]
     F --> G["Demo media\n(Storage-Kopie)"]
     G --> H["UserSeeder · moox/user"]
@@ -108,7 +108,7 @@ Wichtig für eure Seeder:
 
 | Phase | Relevanz für `UserSeeder` / `CategorySeeder` |
 |-------|-----------------------------------------------|
-| `DataSeeder` | `static_languages`, Länder, Währungen — Voraussetzung für Localizations. |
+| `DataLegacySeeder` | `static_languages`, Länder, Währungen — Voraussetzung für Localizations. |
 | Localizations | `CategorySeeder::LOCALES` müssen als `locale_variant` existieren; `default_locales` in `demo.php` wird mit CLI-Locales gemerged. |
 | Demo media | Kopiert Dateien aus `resources/demo/media/`; Mediathek-Befüllung für Kategorien kommt oft aus `media`-Tabelle (vorher importieren oder `moox/media` nutzen). |
 | `UserSeeder` | Läuft **eigenständig** in der User-Phase (vor den übrigen Paket-Seedern). |
@@ -543,7 +543,7 @@ php artisan db:seed --class=Moox\\Category\\Database\\Seeders\\CategorySeeder --
 
 Reihenfolge manuell einhalten:
 
-1. `DataSeeder` (oder `moox:demo` bis nach Static data)
+1. `DataLegacySeeder` (oder `moox:demo` bis nach Static data)
 2. Localizations (`cs_CZ`, `en_US`, `de_DE`, `pl_PL` für Category)
 3. Optional Mediathek befüllen
 4. `UserSeeder`
@@ -563,7 +563,7 @@ Nach `php artisan vendor:publish --tag=demo-config` in der Host-App:
 | `default_locales` | Wird mit CLI-Locales gemerged — **wichtig für CategorySeeder** |
 | `seeder_order` | Priorität bei topological sort |
 | `seeder_skip` | Paket-Slug wird übersprungen |
-| `nested_seeder_basenames` | Nur Parent-Seeder (z. B. `DataSeeder`) |
+| `nested_seeder_basenames` | Nur Parent-Seeder (z. B. `DataLegacySeeder`) |
 | `demo_user` | Zusätzlicher User in Demo-Phase (zusätzlich zu `UserSeeder`) |
 | `media.users_path` | Avatare für `UserSeeder::seedDemoAssets` |
 | `media.disk` / `media.directory` | Storage-Kopie in `DemoMediaStep` |

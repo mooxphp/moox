@@ -1,0 +1,49 @@
+{
+    "name": "moox/data-legacy",
+    "description": "Some Static Data",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main"
+    },
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\DataLegacy\\": "src",
+            "Moox\\DataLegacy\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\DataLegacy\\DataLegacyServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "prefer-stable": true
+}

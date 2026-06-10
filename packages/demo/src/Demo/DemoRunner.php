@@ -42,7 +42,7 @@ final class DemoRunner
         $seeders = new PackageSeedersStep($this->command, $this->resolver, $this->console);
 
         $this->console->phase('Static data');
-        $seeders->run($context, onlySlugs: ['data']);
+        $seeders->run($context, onlySlugs: ['data-legacy']);
 
         $this->console->phase('Localizations');
         (new DemoLocalizationStep($this->console))->run($context);
@@ -55,7 +55,7 @@ final class DemoRunner
         (new DemoUserStep($this->command, $this->console))->run($context);
 
         $this->console->phase('Package seeders');
-        $seeders->run($context, exceptSlugs: ['data', 'demo', 'user']);
+        $seeders->run($context, exceptSlugs: ['data-legacy', 'demo', 'user']);
 
         $this->console->phase('Factory entities');
         (new FactoryEntitiesStep($this->console))->run($context);

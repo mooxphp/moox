@@ -62,7 +62,7 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/components        | moox          | Beta         | No    | ...             |
 | moox/core              | moox          | Stable       | No    | ...             |
 | moox/customer          | moox          | Idea         | Yes   | ...             |
-| moox/data              | moox          | Stable       | Todo  | ...             |
+| moox/data-legacy       | moox          | Stable       | Todo  | ...             |
 | moox/demo              | moox          | Idea         | No    | ...             |
 | moox/devlink           | moox          | Stable       | No    | ...             |
 | moox/devops            | moox          | Stable       | No    | ...             |

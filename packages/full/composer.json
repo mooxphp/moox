@@ -33,7 +33,7 @@
         "moox/contact": "dev-main",
         "moox/core": "dev-main",
         "moox/customer": "dev-main",
-        "moox/data": "dev-main",
+        "moox/data-legacy": "dev-main",
         "moox/demo": "dev-main",
         "moox/devops": "dev-main",
         "moox/devtools": "dev-main",

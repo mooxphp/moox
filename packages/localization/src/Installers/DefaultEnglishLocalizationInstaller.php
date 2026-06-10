@@ -7,7 +7,7 @@ namespace Moox\Localization\Installers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Installer\AbstractAssetInstaller;
-use Moox\Data\Models\StaticLanguage;
+use Moox\DataLegacy\Models\StaticLanguage;
 use Moox\Localization\Models\Localization;
 
 use function Moox\Prompts\note;

@@ -53,7 +53,7 @@ Moox is modular: each package has a single responsibility. Most packages contain
 | iconset      | Blade icons                          | moox/laravel-icons                       |
 | server       | Central server package               | moox/devops                              |
 | press        | Moox Press + WordPress plugin        | moox/press                               |
-| data         | Data provider                        | moox/data, moox/data-germany             |
+| data-legacy  | Data provider (legacy static data)   | moox/data-legacy    |
 
 ## Build command
 

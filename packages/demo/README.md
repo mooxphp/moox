@@ -2,7 +2,7 @@
 
 Seed demo data for **installed** Moox packages: static reference data, localizations, package seeders (dependency-aware order), factory-generated entities, and optional demo media files.
 
-Requires **`moox/core`**. Package discovery for `moox:demo` lives in this package (`Moox\Demo\Support\MooxPackageDiscovery`). Other Moox packages are used at runtime when installed (`moox/data`, `moox/localization`, `moox/media`, `moox/draft`, etc.).
+Requires **`moox/core`**. Package discovery for `moox:demo` lives in this package (`Moox\Demo\Support\MooxPackageDiscovery`). Other Moox packages are used at runtime when installed (`moox/data-legacy`, `moox/localization`, `moox/media`, `moox/draft`, etc.).
 
 For queue job examples, see **[Moox Jobs](../jobs/README.md)**.
 
@@ -17,7 +17,7 @@ For queue job examples, see **[Moox Jobs](../jobs/README.md)**.
 
 | Package | Used for |
 |---------|----------|
-| `moox/data` | Countries, languages, currencies (`DataSeeder`) |
+| `moox/data-legacy` | Countries, languages, currencies (`DataLegacySeeder`) |
 | `moox/localization` | Localization records |
 | `moox/media` | Mediathek + demo file import |
 | `moox/category`, `moox/draft`, `moox/product`, … | Package seeders + factory entities |
@@ -68,11 +68,11 @@ Configured in `config/demo.php` under `dataset_sizes`.
 ### What the command does (pipeline)
 
 1. **`--fresh`** — optional `migrate:fresh --force` (with confirmation in interactive mode).
-2. **`moox/data`** — runs `DataSeeder` only (static countries, languages, currencies, …).
+2. **`moox/data-legacy`** — runs `DataLegacySeeder` only (static countries, languages, currencies, …).
 3. **Localizations** — creates/updates rows for `--locales` or default locales (`de_DE`, `en_US`, `es_ES`).
 4. **Demo media** — copies `resources/demo/media/*` to the configured storage disk.
 5. **Demo user** — creates `demo@moox.org` if no user exists (when enabled in config).
-6. **Other package seeders** — runs one **entry seeder** per installed Moox package in **dependency order** (topological sort + `config/demo.php` priorities). Skips nested seeders already called by `DataSeeder`.
+6. **Other package seeders** — runs one **entry seeder** per installed Moox package in **dependency order** (topological sort + `config/demo.php` priorities). Skips nested seeders already called by `DataLegacySeeder`.
 7. **Factory seeding** — for packages with `extra.moox.install.auto_entities` and a model factory, creates `--dataset` records (with locales when factories support `withLocales()` / `withTranslationLocales()`).
 
 ### Examples
@@ -118,13 +118,13 @@ php artisan moox:demo --dataset=huge
 Seeders are **not** run in alphabetical file order. `moox:demo` uses:
 
 - **Topological sort** of `moox/*` composer dependencies
-- **One entry seeder per package** (`extra.moox.install.seed`, e.g. `DataSeeder`, not `StaticLanguageSeeder` alone)
+- **One entry seeder per package** (`extra.moox.install.seed`, e.g. `DataLegacySeeder`, not `StaticLanguageSeeder` alone)
 - **Manual priority** via `seeder_order` in `config/demo.php`
 
 Typical order:
 
 ```text
-moox/data (DataSeeder)
+moox/data-legacy (DataLegacySeeder)
   → localizations (CLI step or LocalizationSeeder)
   → demo media / moox/media
   → demo user
@@ -132,7 +132,7 @@ moox/data (DataSeeder)
   → factory loops (product, draft, …)
 ```
 
-`CategorySeeder` expects users, localizations, and media — run `moox:demo` after `moox/data` and prefer having `moox/media` installed.
+`CategorySeeder` expects users, localizations, and media — run `moox:demo` after `moox/data-legacy` and prefer having `moox/media` installed.
 
 ## Demo media
 
@@ -178,7 +178,7 @@ Factories can read `config('demo.locales')` and `config('demo.dataset_count')` d
 
 | Issue | Action |
 |-------|--------|
-| No languages in `static_languages` | Install `moox/data`, run `moox:demo` (or `DataSeeder` first) |
+| No languages in `static_languages` | Install `moox/data-legacy`, run `moox:demo` (or `DataLegacySeeder` first) |
 | Category seeder fails / no user | Enable `demo_user` in config or run `php artisan make:filament-user` |
 | `huge` runs out of memory or time | Use `medium` or `small`, or `--skip-factories` |
 | Seeder class not found | Ensure `extra.moox.install.seed` points to a class under `Moox\{Package}\Database\Seeders` |

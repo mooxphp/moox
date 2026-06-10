@@ -28,7 +28,7 @@ return [
      * Explicit package slug order before topological sort (earlier = higher priority).
      */
     'seeder_order' => [
-        'data',
+        'data-legacy',
         'localization',
         'media',
         'user',
