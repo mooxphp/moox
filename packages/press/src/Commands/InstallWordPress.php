@@ -386,6 +386,8 @@ class InstallWordPress extends Command
             default: 'multisite',
         );
 
+        $this->setEnvValue('MULTISITE', $installType === 'multisite' ? 'true' : 'false');
+
         $commonArgs = [
             '--url='.$siteUrl,
             '--title='.$siteTitle,
@@ -441,6 +443,26 @@ class InstallWordPress extends Command
         }
 
         $this->installAndActivateDefaultTheme($wpPath);
+    }
+
+    protected function setEnvValue(string $key, string $value): void
+    {
+        $envPath = base_path('.env');
+
+        if (! File::exists($envPath)) {
+            return;
+        }
+
+        $contents = (string) file_get_contents($envPath);
+        $line = $key.'='.$value;
+
+        if (preg_match('/^'.preg_quote($key, '/').'=.*$/m', $contents) === 1) {
+            $contents = (string) preg_replace('/^'.preg_quote($key, '/').'=.*$/m', $line, $contents);
+        } else {
+            $contents = rtrim($contents, "\n")."\n".$line."\n";
+        }
+
+        file_put_contents($envPath, $contents);
     }
 
     protected function installAndActivateDefaultTheme(string $fullWpPath): void

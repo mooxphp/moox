@@ -977,6 +977,74 @@ return [
                 */
             ],
         ],
+
+        'site' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::core.site',
+            'plural' => 'trans//core::core.sites',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+            ],
+        ],
+
+        'siteMeta' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::core.wp_site_meta',
+            'plural' => 'trans//core::core.wp_site_metas',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+            ],
+        ],
     ],
 
     /*
@@ -1020,6 +1088,37 @@ return [
     */
 
     'wordpress_prefix' => env('WP_PREFIX', 'wp_'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | WordPress Multisite
+    |--------------------------------------------------------------------------
+    |
+    | Enable this when your WordPress installation is a multisite network.
+    | Only then the WpSite and WpSiteMeta resources are registered.
+    | The wpinstall command sets this based on the install type.
+    |
+    */
+
+    'multisite' => env('MULTISITE', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Site Meta
+    |--------------------------------------------------------------------------
+    |
+    | These are the network meta keys stored in the sitemeta table. Defined
+    | keys are editable in the WpSite resource and appended to the model.
+    |
+    */
+
+    'default_site_meta' => [
+        'site_name' => '',
+        'admin_email' => '',
+        'siteurl' => '',
+        'registration' => 'none',
+        'upload_filetypes' => 'jpg jpeg png gif webp',
+    ],
 
     /*
     |--------------------------------------------------------------------------
