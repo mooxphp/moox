@@ -84,6 +84,8 @@ Moox\Tree\TreeServiceProvider::class,
 
 **Do not** copy `tree.css` or the Alpine store into the consumer package. The tree UI is a single source of truth in `packages/tree`.
 
+**Generated PHP classes** under `packages/tree/src/Filament/Pages/Generated/` are runtime wrappers from `TreeIndexCreateInspectorPageFactory` — gitignored, not part of the distributable package. Do not commit or copy them into consumer packages.
+
 ---
 
 ## Step 3 — Publish Filament assets (required)
@@ -174,7 +176,7 @@ php artisan config:clear
 | Livewire component not found | Missing require or cache | `composer require moox/tree:@dev`, `php artisan optimize:clear` |
 | Language switcher missing | `moox/localization` not installed or view missing | `composer require moox/localization`, or set `filamentTableLanguageSwitcher(false)` |
 | Stale CSS after package edit | Asset cache | `php artisan filament:assets` + hard refresh browser |
-| 419 on inspector form | Unrelated to assets — see `packages/tree/README.md` embedded form transport | Use `RendersAsTreeIndexInspector` trait |
+| 419 on inspector form | Unrelated to assets — embedded page without redirect suppression | Use `RendersAsTreeIndexInspector` (extends `RendersAsTreeIndexEmbeddedPage`) |
 
 ---
 

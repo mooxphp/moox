@@ -16,11 +16,6 @@ use Override;
 
 class CategoryTreeResource extends MooxCategoryResource implements ConfiguresTreeIndex
 {
-    public static function getTreeIndexListPage(): string
-    {
-        return TreeListCategories::class;
-    }
-
     public static function treeIndex(): TreeIndexConfiguration
     {
         return TreeIndexConfiguration::make(Category::class)

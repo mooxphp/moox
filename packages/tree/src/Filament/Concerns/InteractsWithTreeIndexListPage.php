@@ -14,6 +14,7 @@ use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Support\TreeIndexSelection;
 use Moox\Tree\Support\TreeLocale;
 use ReflectionProperty;
 
@@ -27,20 +28,19 @@ trait InteractsWithTreeIndexListPage
 
     public function bootInteractsWithTreeIndexListPage(): void
     {
+        $this->syncDefaultListPageTab();
+
         if (! TreeLocale::isFullPageRequest()) {
             return;
         }
 
-        $missingParameters = TreeLocale::missingCanonicalIndexParameters(
-            ensureTab: $this->usesListPageTabs(),
-            defaultTab: $this->defaultListPageTab(),
-        );
+        $missingLang = TreeLocale::missingLangIndexParameters();
 
-        if ($missingParameters === null) {
+        if ($missingLang === null) {
             return;
         }
 
-        $this->redirect(static::getResource()::getUrl('index', $missingParameters));
+        $this->redirect(static::getResource()::getUrl('index', $missingLang));
     }
 
     public function getTable(): Table
@@ -73,6 +73,7 @@ trait InteractsWithTreeIndexListPage
     public function hydrateInteractsWithTreeIndexListPage(): void
     {
         TreeLocale::syncToRequest($this->lang);
+        $this->syncActiveTabToRequest();
     }
 
     public function table(Table $table): Table
@@ -139,6 +140,8 @@ trait InteractsWithTreeIndexListPage
 
     protected function refreshTreeIndexConfiguration(): void
     {
+        $this->syncActiveTabToRequest();
+
         if ($this->treeIndexConfigurationKey === '') {
             return;
         }
@@ -158,14 +161,44 @@ trait InteractsWithTreeIndexListPage
         TreeIndexConfigurationRegistry::register($this->treeIndexConfigurationKey, $configuration);
     }
 
-    public function updatedActiveTab(): void
+    /**
+     * Always runs on tab change — even when consumers override {@see updatedActiveTab()}.
+     * Syncs `tab` into the request for {@see getEloquentQuery()} and clears {@see ?selected=}.
+     */
+    public function updated(mixed $property): void
     {
-        $this->afterActiveTabChanged();
+        if ($property !== 'activeTab') {
+            return;
+        }
+
+        $this->syncActiveTabToRequest();
+        $this->clearTreeSelection();
     }
 
-    protected function afterActiveTabChanged(): void
+    protected function clearTreeSelection(): void
     {
-        $this->refreshTreeIndexConfiguration();
+        if ($this->treeSelectedId === null) {
+            return;
+        }
+
+        $this->treeSelectedId = null;
+        $this->dispatch('tree-index-selection-changed', selectedRecordId: null);
+    }
+
+    protected function clearTreeSelectionUnlessVisibleInCurrentQuery(): void
+    {
+        if (TreeIndexSelection::isVisibleInQuery($this->treeSelectedId, $this->treeIndexListQuery())) {
+            return;
+        }
+
+        $this->clearTreeSelection();
+    }
+
+    protected function treeIndexListQuery(): Builder
+    {
+        $query = static::getResource()::getEloquentQuery();
+
+        return $this->applyFiltersToTableQuery($query);
     }
 
     public function updatedTableSearch(): void
@@ -207,5 +240,31 @@ trait InteractsWithTreeIndexListPage
     protected function defaultListPageTab(): string
     {
         return 'all';
+    }
+
+    protected function syncDefaultListPageTab(): void
+    {
+        if (! $this->usesListPageTabs() || request()->has('tab')) {
+            return;
+        }
+
+        $defaultTab = $this->defaultListPageTab();
+
+        if (property_exists($this, 'activeTab')) {
+            $this->activeTab = $defaultTab;
+        }
+
+        TreeLocale::syncTabToRequest($defaultTab);
+    }
+
+    protected function syncActiveTabToRequest(): void
+    {
+        if (! $this->usesListPageTabs()) {
+            return;
+        }
+
+        if (property_exists($this, 'activeTab') && filled($this->activeTab ?? null)) {
+            TreeLocale::syncTabToRequest((string) $this->activeTab);
+        }
     }
 }

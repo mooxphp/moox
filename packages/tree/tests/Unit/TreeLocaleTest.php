@@ -58,25 +58,22 @@ it('merges overrides when building index url parameters', function (): void {
         ->toBe(['lang' => 'cs_CZ', 'tab' => 'all']);
 });
 
-it('detects missing canonical index parameters for lang and tab', function (): void {
+it('detects missing lang index parameters', function (): void {
     config(['app.locale' => 'cs_CZ']);
 
-    expect(TreeLocale::missingCanonicalIndexParameters(ensureTab: true))
-        ->toBe(['lang' => 'cs_CZ', 'tab' => 'all']);
+    expect(TreeLocale::missingLangIndexParameters())->toBe(['lang' => 'cs_CZ']);
 });
 
-it('detects only missing lang when tab is already present', function (): void {
-    request()->query->replace(['tab' => 'all']);
-    config(['app.locale' => 'cs_CZ']);
-
-    expect(TreeLocale::missingCanonicalIndexParameters(ensureTab: true))
-        ->toBe(['tab' => 'all', 'lang' => 'cs_CZ']);
-});
-
-it('returns null when canonical index parameters are already present', function (): void {
+it('returns null when lang index parameter is already present', function (): void {
     request()->query->replace(['lang' => 'de_DE', 'tab' => 'all']);
 
-    expect(TreeLocale::missingCanonicalIndexParameters(ensureTab: true))->toBeNull();
+    expect(TreeLocale::missingLangIndexParameters())->toBeNull();
+});
+
+it('syncs tab to request', function (): void {
+    TreeLocale::syncTabToRequest('all');
+
+    expect(request()->input('tab'))->toBe('all');
 });
 
 it('builds language change parameters with tab', function (): void {

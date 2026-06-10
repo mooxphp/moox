@@ -66,12 +66,8 @@ final class TreeStructure
      * @param  Collection<string, Collection<int, Model>>  $recordsByParent
      * @return array<int, array<string, mixed>>
      */
-    public function buildTree(Collection $recordsByParent, ?int $parentId = null): array
+    public function buildTree(Collection $recordsByParent): array
     {
-        if ($parentId !== null) {
-            return $this->buildBranch($recordsByParent, $parentId);
-        }
-
         $allRecords = $recordsByParent->flatten()->unique(
             fn (Model $record): int => (int) $record->getKey(),
         );
@@ -152,7 +148,7 @@ final class TreeStructure
         return $ids;
     }
 
-    public function parentKey(?int $parentId): string
+    private function parentKey(?int $parentId): string
     {
         return $parentId === null ? 'root' : (string) $parentId;
     }

@@ -31,6 +31,7 @@ abstract class TreeIndexListRecords extends ListRecords
         $this->treeIndexConfigurationKey = $resource;
 
         $this->refreshTreeIndexConfiguration();
+        $this->clearTreeSelectionUnlessVisibleInCurrentQuery();
     }
 
     public function getMaxContentWidth(): Width|string|null

@@ -30,7 +30,7 @@ Für jede Gabelung: `AskQuestion`, wenn der Kontext die Wahl nicht eindeutig mac
 | Option | Wann wählen | Dateien | Routing |
 |--------|-------------|---------|---------|
 | **Muster A: Separate `XxxTreeResource`** | Bestehende Tabellen-Resource bleibt; zweite Navigation für Baum-UI (Moox-Standard) | `XxxTreeResource`, `TreeListXxx`, optional `TreeInspectorXxx`, `XxxTreePlugin` | `getPages()` mit `Arr::except(parent::getPages(), ['index'])` |
-| **Muster B: Eine Resource + Trait** | Neues Modul nur mit Baum, keine parallele Listen-Resource | Resource mit `use ConfiguresTreeIndex` | Trait setzt `index`-Route; `getAdditionalResourcePages()` für Inspector |
+| **Muster B: Eine Resource** | Neues Modul nur mit Baum, keine parallele Listen-Resource | Resource `implements ConfiguresTreeIndex` | `getPages()` mit `index` → TreeList und optional `tree-inspector` |
 
 **Konsequenzen Muster A:**
 
@@ -40,8 +40,7 @@ Für jede Gabelung: `AskQuestion`, wenn der Kontext die Wahl nicht eindeutig mac
 
 **Konsequenzen Muster B:**
 
-- `protected static function getTreeIndexListPage(): string`
-- `protected static function getAdditionalResourcePages(): array` für `tree-inspector`
+- `getPages()`: `'index' => TreeListXxx::route('/')`, optional `'tree-inspector' => TreeInspectorXxx::route(...)`
 
 **Referenz Muster A:** `packages/category` — `CategoryTreeResource`, `CategoryTreePlugin`
 
@@ -119,7 +118,7 @@ Referenz: `UserTreeResource::applyListSearchToQuery()`.
 ### Filter / Tabs
 
 - **Filter Ja:** `useFilamentTableToolbar: true` + List-Page `extends TreeIndexListRecords`; Filter aus `Resource::table()`.
-- **Tabs Ja:** `HasListPageTabs` auf `TreeListXxx`; `updatedActiveTab()` → `refreshTreeIndexConfiguration()`; ggf. `getTableQuery()` in `applyForwardedListQuery()` (siehe `TreeListUsers`).
+- **Tabs Ja:** `HasListPageTabs` auf `TreeListXxx`; in `updatedActiveTab()` `refreshTreeIndexConfiguration()`; Tab-Sync/Selection-Clear über `InteractsWithTreeIndexListPage` (`updated('activeTab')`); ggf. `applyForwardedListQuery()` für tab-spezifische Queries.
 
 ### Sprach-Switcher
 

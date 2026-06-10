@@ -55,10 +55,6 @@ Tree-Mechanik gehört ins **Tree-Package**; die Resource **verdrahtet** nur übe
 - Mit `useFilamentTableToolbar: true`: Suche, Filter und `localization::lang-selector` in der **Filament-Tabellen-Toolbar** (Render-Hook im Tree-Package); keine Tabellen-Sortierung („Sort by“), keine Zeilen-/Bulk-Actions — Reihenfolge nur im Baum (`sortColumn` / Drag).
 - Ohne Table-Toolbar: `toolbarSearch` / `toolbarLanguageSwitcher` in der Baum-Spalte; Resource liefert ggf. `applySearchUsing` / `applyLanguageUsing` — keine zweite Toolbar-Implementierung.
 
-## Trait-Shortcut
-
-`Moox\Tree\Filament\Concerns\ConfiguresTreeIndex`: `getTreeIndexListPage()` + optional `getAdditionalResourcePages()` für Inspector-Routen.
-
 ## Checkliste neue Resource
 
 Model-Spalten (ohne Tree-Methoden) → `treeIndex()` → `TreeIndexListRecords` → Pages/Routes → optional Inspector → Feature-Test für Config oder Livewire.

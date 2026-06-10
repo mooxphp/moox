@@ -66,7 +66,7 @@ final class TreeIndexCreateInspectorPageFactory
         $parentClass = ltrim($createPageClass, '\\');
         $traitClass = ltrim(RendersAsTreeIndexCreateInspector::class, '\\');
 
-        $directory = dirname(__DIR__).'/Generated';
+        $directory = __DIR__.'/Generated';
 
         if (! is_dir($directory)) {
             mkdir($directory, 0755, true);

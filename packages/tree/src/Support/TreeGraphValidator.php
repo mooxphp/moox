@@ -44,18 +44,7 @@ final class TreeGraphValidator
         }
     }
 
-    public function wouldCreateCycle(Model $record, int|string|null $newParentId): bool
-    {
-        try {
-            $this->validateParentAssignment($record, $newParentId);
-
-            return false;
-        } catch (InvalidTreeParentException) {
-            return true;
-        }
-    }
-
-    public function isDescendantOf(int $candidateRecordId, int $parentRecordId): bool
+    private function isDescendantOf(int $candidateRecordId, int $parentRecordId): bool
     {
         $structure = new TreeStructure($this->configuration);
         $parentColumn = $this->configuration->getParentColumn();

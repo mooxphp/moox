@@ -12,7 +12,7 @@ final class AssignTreeNodePositionAction
 {
     public function __construct(private readonly TreeIndexConfiguration $configuration) {}
 
-    public function nextSortOrder(int|string|null $parentId): int
+    private function nextSortOrder(int|string|null $parentId): int
     {
         return $this->configuration->nextSortOrder($parentId);
     }

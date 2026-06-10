@@ -198,7 +198,7 @@ Plugin im Panel-Provider aktivieren:
 | Muster | Wann | Aufbau |
 | --- | --- | --- |
 | **Separate Tree-Resource** (empfohlen bei Moox) | Bestehende Tabellen-Resource bleibt, zusätzliche Baum-UI | `CategoryTreeResource extends CategoryResource` + eigenes Plugin |
-| **Eine Resource** | Neues, nur-baumbasiertes Modul | Resource implementiert `ConfiguresTreeIndex`, Trait `ProvidesTreeIndexRouting` für Routing |
+| **Eine Resource** | Neues, nur-baumbasiertes Modul | Resource implementiert `ConfiguresTreeIndex`, `getPages()` mit TreeList + optional Inspector |
 
 Bei Moox: Die **Tabellen-Resource** (`CategoryResource`) und die **Baum-Resource** (`CategoryTreeResource`) koexistieren. Der Inspector verweist auf die Tabellen-Resource, weil dort das vollständige Formular definiert ist.
 
@@ -254,8 +254,25 @@ List Page (TreeIndexListRecords + InteractsWithTreeIndexListPage)
 | `NestedSetGuard` | Prüft Kalnoy `NodeTrait` auf dem Model |
 | `TreeIndexAuthorizer` | Gate-Ability oder `auth()->check()` |
 | `ResourceListForwarder` | Query/Suche/Sprache von Filament-Resources |
+| `TreeIndexSelection` | Prüft, ob gewählter Knoten noch in der gefilterten Query sichtbar ist |
+| `TreeIndexResourcePages` | Löst Create-/Edit-Page-Klassen der Forward-Resource auf |
 
 Geschäftslogik liegt in **Actions**, nicht in Livewire oder Blade. `ResourceTreeIndex` orchestriert nur (Auth, Query, Delegation, Events).
+
+### Package-Struktur (was liegt wo?)
+
+| Verzeichnis | Dateien (ca.) | Zweck |
+| --- | --- | --- |
+| `src/Actions/Tree/` | 7 | CRUD + Verschieben (Adjacency + Nested Set) |
+| `src/Support/` | 10 | Query, Locale, Labels, Validierung, Auth |
+| `src/Filament/Concerns/` | 5 | Traits für List-/Inspector-/Create-Pages |
+| `src/Filament/Pages/` | 2 + Factory | `TreeIndexListRecords`, Create-Inspector-Factory |
+| `src/Livewire/` | 1 + 3 Traits | `ResourceTreeIndex` + Toolbar/Selection/Form |
+| `src/Config/`, `Contracts/`, `Exceptions/` | 4 | Konfiguration, Vertrag, Fehler |
+| `resources/views/` | 9 Blade + 1 CSS | UI-Partials, Alpine-Store |
+| `tests/` | ~30 | Pest Feature/Unit + Fixtures |
+
+**Nicht ins Repository committen:** `src/Filament/Pages/Generated/TreeCreateInspector_*.php` — Laufzeit-Wrapper, die `TreeIndexCreateInspectorPageFactory` bei Bedarf erzeugt (`.gitignore` im Ordner). Nach Tests oder erstem Create-Flow können sie lokal liegen; sie sind kein fester Bestandteil des Packages.
 
 Registry: List-Pages registrieren die Config unter dem **Resource-Klassennamen** (`TreeIndexConfigurationRegistry::register()` / `resolve()`).
 
@@ -380,32 +397,44 @@ Beim `mount()` registriert die Page die Konfiguration in der `TreeIndexConfigura
 
 #### Tabs (Moox)
 
-Wenn die List-Page Tabs nutzt (`HasListPageTabs`), bei Tab-Wechsel Tabellen- und Baum-Query aktualisieren. Das Package ruft intern `afterActiveTabChanged()` auf (Hook in `InteractsWithTreeIndexListPage`).
+Tree-List-Pages mit Moox-Tabs nutzen `HasListPageTabs` wie gewohnt. Das Package (`InteractsWithTreeIndexListPage`) übernimmt über Livewire `updated('activeTab')`:
 
-**Minimal** — nur Baum-Config neu laden (wenn `getEloquentQuery()` für alle Tabs reicht):
+- `tab` in den Request syncen (damit `getEloquentQuery()` den richtigen Tab filtert)
+- `?selected=` bei jedem Tab-Wechsel entfernen
+
+In `updatedActiveTab()` zusätzlich `refreshTreeIndexConfiguration()` aufrufen (siehe `TreeListCategories`).
 
 ```php
-protected function afterActiveTabChanged(): void
-{
-    parent::afterActiveTabChanged();
+use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\Tree\Filament\Pages\TreeIndexListRecords;
 
-    static::getResource()::setCurrentTab($this->activeTab);
-    $this->tableFilters = null;
-    $this->resetTable();
+class TreeListMyModels extends TreeIndexListRecords
+{
+    use HasListPageTabs;
+
+    public function mount(): void
+    {
+        parent::mount();
+        $this->mountTabsInListPage();
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('my-package.resources.model.tabs', MyModel::class);
+    }
+
+    public function updatedActiveTab(): void
+    {
+        static::getResource()::setCurrentTab($this->activeTab);
+        $this->resetTable();
+        $this->refreshTreeIndexConfiguration();
+    }
 }
 ```
 
-**Tab-spezifische Query** — wenn die Basis-Resource `getTableQuery(?string $activeTab)` o. Ä. nutzt (Referenz: `TreeListUsers`):
+**Tab-spezifische Query** — wenn die Basis-Resource eine eigene Tab-Query hat:
 
 ```php
-public function updatedActiveTab(): void
-{
-    static::getResource()::setCurrentTab($this->activeTab);
-    $this->tableFilters = null;
-    $this->resetTable();
-    $this->refreshTreeIndexConfiguration();
-}
-
 protected function applyForwardedListQuery(TreeIndexConfiguration $configuration): TreeIndexConfiguration
 {
     if ($configuration->getSourceResourceClass() === null) {
@@ -413,7 +442,7 @@ protected function applyForwardedListQuery(TreeIndexConfiguration $configuration
     }
 
     return $configuration->modifyQuery(function (Builder $query): Builder {
-        $query = UserResource::getTableQuery($this->activeTab ?? null);
+        $query = MyResource::getEloquentQuery();
 
         return $this->applyFiltersToTableQuery($query);
     });
@@ -422,7 +451,7 @@ protected function applyForwardedListQuery(TreeIndexConfiguration $configuration
 
 ### 4. Routing
 
-**Mit Parent-Resource** (Moox-Muster):
+**Mit Parent-Resource** (Moox-Muster, Referenz `CategoryTreeResource`):
 
 ```php
 use Illuminate\Support\Arr;
@@ -437,26 +466,15 @@ public static function getPages(): array
 }
 ```
 
-**Schlanke Resource** – Trait-Shortcut (bevorzugt `ProvidesTreeIndexRouting`; `ConfiguresTreeIndex` ist deprecated Alias):
+**Eine Resource ohne Parent** — `getPages()` direkt definieren:
 
 ```php
-use Moox\Tree\Filament\Concerns\ProvidesTreeIndexRouting;
-
-class MyTreeResource extends Resource implements ConfiguresTreeIndex
+public static function getPages(): array
 {
-    use ProvidesTreeIndexRouting;
-
-    protected static function getTreeIndexListPage(): string
-    {
-        return TreeListMyModels::class;
-    }
-
-    protected static function getAdditionalResourcePages(): array
-    {
-        return [
-            'tree-inspector' => TreeInspectorMyModel::route('/{record}/tree-inspector'),
-        ];
-    }
+    return [
+        'index' => TreeListMyModels::route('/'),
+        'tree-inspector' => TreeInspectorMyModel::route('/{record}/tree-inspector'),
+    ];
 }
 ```
 

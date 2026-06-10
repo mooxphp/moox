@@ -136,14 +136,13 @@ class TreeListXxx extends TreeIndexListRecords
     public function updatedActiveTab(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
-        $this->tableFilters = null;
-        $this->tableSortColumn = null;
-        $this->tableSortDirection = null;
         $this->resetTable();
         $this->refreshTreeIndexConfiguration();
     }
 }
 ```
+
+`InteractsWithTreeIndexListPage` syncs `tab` into the request and clears `?selected=` via Livewire `updated('activeTab')`. Call `refreshTreeIndexConfiguration()` in `updatedActiveTab()` so the tree query matches the active tab. Reference: `TreeListCategories`.
 
 ### TreeInspectorXxx.php (optional)
 
@@ -164,6 +163,8 @@ class TreeInspectorXxx extends EditXxx
     protected static string $resource = XxxResource::class; // Basis-Resource, nicht XxxTreeResource
 }
 ```
+
+`RendersAsTreeIndexInspector` baut auf `RendersAsTreeIndexEmbeddedPage` (schlanke View, keine Redirects nach Save) und `InteractsWithTreeIndexInspectorLocale` auf. Für Create im Inspector: `RendersAsTreeIndexCreateInspector` auf der Resource-Create-Page — sonst erzeugt `TreeIndexCreateInspectorPageFactory` zur Laufzeit einen Wrapper unter `packages/tree/src/Filament/Pages/Generated/` (gitignored, nicht committen).
 
 ### XxxTreePlugin.php
 
@@ -211,7 +212,7 @@ Panel-Provider:
 
 ---
 
-## Muster B — Eine Resource mit Trait
+## Muster B — Eine Resource ohne Parent
 
 ```php
 <?php
@@ -222,23 +223,16 @@ namespace Moox\Xxx\Resources;
 
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
-use Moox\Tree\Filament\Concerns\ConfiguresTreeIndex as ConfiguresTreeIndexTrait;
 use Moox\Xxx\Models\Xxx;
 use Moox\Xxx\Resources\XxxResource\Pages\TreeInspectorXxx;
 use Moox\Xxx\Resources\XxxResource\Pages\TreeListXxx;
 
 class XxxResource extends Resource implements ConfiguresTreeIndex
 {
-    use ConfiguresTreeIndexTrait;
-
-    protected static function getTreeIndexListPage(): string
-    {
-        return TreeListXxx::class;
-    }
-
-    protected static function getAdditionalResourcePages(): array
+    public static function getPages(): array
     {
         return [
+            'index' => TreeListXxx::route('/'),
             'tree-inspector' => TreeInspectorXxx::route('/{record}/tree-inspector'),
         ];
     }
@@ -339,7 +333,7 @@ After every integration:
 - [ ] `getPages()`: `'index'` → TreeList; inspector route `'tree-inspector'` when used
 - [ ] Inspector (if used): `$resource` = base resource; trait `RendersAsTreeIndexInspector`
 - [ ] `XxxTreePlugin` registers tree resource in panel (pattern A)
-- [ ] With tabs: `updatedActiveTab()` calls `refreshTreeIndexConfiguration()`
+- [ ] With tabs: `HasListPageTabs` + `updatedActiveTab()` calling `refreshTreeIndexConfiguration()` (see `TreeListCategories`)
 - [ ] No duplicated tree mechanics in consumer (no custom Livewire/move actions)
 - [ ] No model traits/methods added only for tree
 

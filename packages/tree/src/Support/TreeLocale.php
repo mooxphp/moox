@@ -78,29 +78,17 @@ final class TreeLocale
     }
 
     /**
-     * Query parameters to add when `lang` and/or default tab are missing from the index URL.
+     * Query parameters to add when `lang` is missing from the index URL.
      *
      * @return array<string, string>|null
      */
-    public static function missingCanonicalIndexParameters(
-        bool $ensureTab = false,
-        string $defaultTab = 'all',
-    ): ?array {
-        $overrides = [];
-
-        if (! request()->has('lang')) {
-            $overrides['lang'] = self::resolveDefaultLocale();
-        }
-
-        if ($ensureTab && ! request()->has('tab')) {
-            $overrides['tab'] = $defaultTab;
-        }
-
-        if ($overrides === []) {
+    public static function missingLangIndexParameters(): ?array
+    {
+        if (request()->has('lang')) {
             return null;
         }
 
-        return self::indexUrlParameters($overrides);
+        return self::indexUrlParameters();
     }
 
     public static function syncToRequest(string $lang): void
@@ -109,6 +97,15 @@ final class TreeLocale
 
         if ($lang !== '') {
             request()->merge(['lang' => $lang]);
+        }
+    }
+
+    public static function syncTabToRequest(string $tab): void
+    {
+        $tab = trim($tab);
+
+        if ($tab !== '') {
+            request()->merge(['tab' => $tab]);
         }
     }
 
@@ -262,7 +259,7 @@ final class TreeLocale
     /**
      * @return array<int, string>
      */
-    public static function adminLocaleVariantsForBaseLanguage(string $baseLanguage): array
+    private static function adminLocaleVariantsForBaseLanguage(string $baseLanguage): array
     {
         $baseLanguage = trim($baseLanguage);
 
