@@ -12,9 +12,17 @@ use Filament\Resources\Pages\EditRecord;
  */
 trait RendersAsTreeIndexInspector
 {
+    use InteractsWithTreeIndexInspectorLocale;
     use RendersAsTreeIndexEmbeddedPage;
 
     protected bool $embeddedInTreeIndexInspector = true;
+
+    public function mount($record): void
+    {
+        $this->syncTreeInspectorLocaleToRequest();
+
+        parent::mount($record);
+    }
 
     protected function isEmbeddedInTreeIndex(): bool
     {

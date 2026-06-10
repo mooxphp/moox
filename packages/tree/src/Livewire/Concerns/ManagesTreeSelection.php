@@ -21,7 +21,13 @@ trait ManagesTreeSelection
         $this->isCreatingInspector = false;
         $this->creatingParentId = null;
         $this->selectedRecordId = $recordId;
+        $this->syncTreeSelectionToParent();
         $this->loadSelectedRecord();
+    }
+
+    protected function syncTreeSelectionToParent(): void
+    {
+        $this->dispatch('tree-index-selection-changed', selectedRecordId: $this->selectedRecordId);
     }
 
     protected function getSelectedRecord(): ?Model

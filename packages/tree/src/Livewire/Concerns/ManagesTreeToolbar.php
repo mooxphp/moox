@@ -17,12 +17,16 @@ trait ManagesTreeToolbar
         $this->lang = $lang;
         TreeLocale::syncToRequest($this->lang);
 
+        if ($this->selectedRecordId !== null || $this->isCreatingInspector) {
+            return;
+        }
+
         $resourceClass = $this->configuration()->getSourceResourceClass();
 
         if ($resourceClass !== null && method_exists($resourceClass, 'getUrl')) {
             $this->redirect($resourceClass::getUrl(
                 'index',
-                TreeLocale::languageChangeParameters($lang),
+                TreeLocale::languageChangeParameters($lang, null, $this->selectedRecordId),
             ));
         }
     }

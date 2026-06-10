@@ -11,12 +11,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Moox\Tree\Support\TreeLocale;
 use ReflectionProperty;
 
 trait InteractsWithTreeIndexListPage
 {
     public string $lang = '';
+
+    #[Url(as: 'selected', except: null)]
+    public ?int $treeSelectedId = null;
 
     public function getTable(): Table
     {
@@ -153,6 +158,12 @@ trait InteractsWithTreeIndexListPage
         $this->refreshTreeIndexConfiguration();
     }
 
+    #[On('tree-index-selection-changed')]
+    public function syncTreeSelected(?int $selectedRecordId = null): void
+    {
+        $this->treeSelectedId = $selectedRecordId;
+    }
+
     public function changeLanguage(string $lang): void
     {
         $this->lang = $lang;
@@ -164,7 +175,7 @@ trait InteractsWithTreeIndexListPage
 
         $this->redirect(static::getResource()::getUrl(
             'index',
-            TreeLocale::languageChangeParameters($lang, $tab),
+            TreeLocale::languageChangeParameters($lang, $tab, $this->treeSelectedId),
         ));
     }
 }

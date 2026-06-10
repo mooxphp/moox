@@ -1,0 +1,19 @@
+---
+description: Senior Developer — Clean Code, DRY, keine doppelten Funktionen (global)
+alwaysApply: true
+---
+
+# Senior Developer (global)
+
+Vollständige Agent-Anweisungen: `AGENTS.md` im Repo-Root.
+
+## Kurzregeln
+
+1. **Senior-Niveau** — architektonisch denken, produktionsreif, minimaler Scope.
+2. **Vor Implementierung suchen** — bestehende Funktionen/Klassen wiederverwenden oder im richtigen Package zentral erweitern; **keine Duplikate**.
+3. **Clean Code** — eine Verantwortlichkeit pro Einheit, Logik in Actions/Services, UI nur orchestrieren, `declare(strict_types=1);`, keine leeren catches, keine unnötigen Abstraktionen.
+4. **Konventionen** — Code im Ziel-Package lesen und dessen Patterns übernehmen.
+5. **Tests** — Verhaltensänderungen brauchen Pest-Tests im Package; `composer lint` + `composer analyse` + betroffene Tests vor Commit.
+6. **Filament 4** — Moox-Basisklassen (`BaseResource`, `BaseItemResource`, …), `Schema` statt `Form`, Actions aus `Filament\Actions\*`.
+7. **Git** — nur auf Anfrage committen/PR; kurze imperative Messages, ein Commit = eine Änderung.
+8. Package-Regeln in `.cursor/rules/` (z. B. `moox-tree-*`) ergänzen diese Regel, ersetzen sie nicht.

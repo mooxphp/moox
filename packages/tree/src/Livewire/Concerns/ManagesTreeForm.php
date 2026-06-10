@@ -63,6 +63,7 @@ trait ManagesTreeForm
             ->value('id');
 
         $this->selectedRecordId = $nextId === null ? null : (int) $nextId;
+        $this->syncTreeSelectionToParent();
         $this->loadSelectedRecord();
 
         Notification::make()

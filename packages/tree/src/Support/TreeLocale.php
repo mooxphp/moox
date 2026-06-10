@@ -73,19 +73,81 @@ final class TreeLocale
     }
 
     /**
+     * Current page query parameters for redirects (falls back to the referer on Livewire subrequests).
+     *
      * @return array<string, string>
      */
-    public static function languageChangeParameters(string $lang, ?string $tab = null): array
+    public static function currentQueryParameters(): array
     {
-        $parameters = ['lang' => $lang];
+        $query = request()->query();
+
+        if ($query !== []) {
+            return self::normalizeQueryParameters($query);
+        }
+
+        $referer = request()->header('Referer');
+
+        if (! is_string($referer) || $referer === '') {
+            return [];
+        }
+
+        $refererQueryString = parse_url($referer, PHP_URL_QUERY);
+
+        if (! is_string($refererQueryString) || $refererQueryString === '') {
+            return [];
+        }
+
+        parse_str($refererQueryString, $refererQuery);
+
+        return self::normalizeQueryParameters($refererQuery);
+    }
+
+    /**
+     * Merge the current query string, override `lang`, and optionally `tab` / `selected`.
+     *
+     * @return array<string, string>
+     */
+    public static function languageChangeParameters(string $lang, ?string $tab = null, ?int $selectedRecordId = null): array
+    {
+        $parameters = self::currentQueryParameters();
+        $parameters['lang'] = $lang;
 
         if ($tab !== null && $tab !== '') {
             $parameters['tab'] = $tab;
-        } elseif (filled(request()->query('tab'))) {
-            $parameters['tab'] = (string) request()->query('tab');
+        }
+
+        if (func_num_args() >= 3) {
+            if ($selectedRecordId !== null && $selectedRecordId > 0) {
+                $parameters['selected'] = (string) $selectedRecordId;
+            } else {
+                unset($parameters['selected']);
+            }
         }
 
         return $parameters;
+    }
+
+    /**
+     * @param  array<string, mixed>  $query
+     * @return array<string, string>
+     */
+    private static function normalizeQueryParameters(array $query): array
+    {
+        $normalized = [];
+
+        foreach ($query as $key => $value) {
+            if (! is_string($key) || $key === '' || is_array($value)) {
+                continue;
+            }
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $normalized[$key] = (string) $value;
+        }
+
+        return $normalized;
     }
 
     public static function syncApplicationLocale(string $lang): void

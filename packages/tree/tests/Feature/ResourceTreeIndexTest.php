@@ -56,6 +56,23 @@ it('filters visible nodes by search term', function (): void {
         ->assertDontSee('Beta');
 });
 
+it('keeps the selected record when changing language from the tree toolbar', function (): void {
+    config(['filament-tree-index.authorization.enabled' => false]);
+
+    $record = TreeNode::query()->create(['label' => 'Selected', 'sort_order' => 10]);
+
+    Livewire::test(ResourceTreeIndex::class, [
+        'configurationKey' => 'test-tree',
+        'lang' => 'en',
+        'search' => '',
+    ])
+        ->call('selectRecord', (int) $record->getKey())
+        ->assertSet('selectedRecordId', (int) $record->getKey())
+        ->call('changeLanguage', 'de')
+        ->assertSet('selectedRecordId', (int) $record->getKey())
+        ->assertSet('lang', 'de');
+});
+
 it('applies a custom language callback when language changes', function (): void {
     config(['filament-tree-index.authorization.enabled' => false]);
 

@@ -82,12 +82,13 @@
             >
                 <div
                     class="fi-tree-inspector-scroll"
-                    wire:key="tree-index-inspector-create-{{ $creatingParentId ?? 'root' }}"
+                    wire:key="tree-index-inspector-create-{{ $creatingParentId ?? 'root' }}-{{ $lang }}"
                 >
                     @livewire($inspectorCreatePageClass, [
                         'configurationKey' => $configurationKey,
                         'parentId' => $creatingParentId,
-                    ], key('tree-inspector-create-'.($creatingParentId ?? 'root')))
+                        'lang' => $lang,
+                    ], key('tree-inspector-create-'.($creatingParentId ?? 'root').'-'.$lang))
                 </div>
             </x-filament::section>
         @elseif ($selectedRecordId === null)
@@ -110,9 +111,12 @@
             >
                 <div
                     class="fi-tree-inspector-scroll"
-                    wire:key="tree-index-inspector-{{ $selectedRecordId }}"
+                    wire:key="tree-index-inspector-{{ $selectedRecordId }}-{{ $lang }}"
                 >
-                    @livewire($inspectorPageClass, ['record' => $selectedRecordId], key('tree-inspector-'.$selectedRecordId))
+                    @livewire($inspectorPageClass, [
+                        'record' => $selectedRecordId,
+                        'lang' => $lang,
+                    ], key('tree-inspector-'.$selectedRecordId.'-'.$lang))
                 </div>
             </x-filament::section>
         @elseif ($selectedRecord === null)

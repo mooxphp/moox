@@ -44,6 +44,33 @@ it('builds language change parameters with tab', function (): void {
         ->toBe(['lang' => 'de', 'tab' => 'deleted']);
 });
 
+it('builds language change parameters with selected record', function (): void {
+    expect(TreeLocale::languageChangeParameters('de', null, 42))
+        ->toBe(['lang' => 'de', 'selected' => '42']);
+});
+
+it('preserves existing query parameters when building language change parameters', function (): void {
+    request()->query->replace([
+        'lang' => 'de_DE',
+        'tab' => 'all',
+        'selected' => '7',
+    ]);
+
+    expect(TreeLocale::languageChangeParameters('en'))
+        ->toBe([
+            'lang' => 'en',
+            'tab' => 'all',
+            'selected' => '7',
+        ]);
+});
+
+it('clears selected when an explicit null selected record is provided', function (): void {
+    request()->query->set('selected', '7');
+
+    expect(TreeLocale::languageChangeParameters('en', null, null))
+        ->toBe(['lang' => 'en']);
+});
+
 it('returns empty candidates for blank language', function (): void {
     expect(TreeLocale::localeCandidates(''))->toBe([]);
 });

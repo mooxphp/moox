@@ -15,6 +15,7 @@ use Moox\Tree\Config\TreeIndexConfigurationRegistry;
  */
 trait RendersAsTreeIndexCreateInspector
 {
+    use InteractsWithTreeIndexInspectorLocale;
     use RendersAsTreeIndexEmbeddedPage;
 
     protected bool $embeddedInTreeIndexCreateInspector = true;
@@ -25,6 +26,8 @@ trait RendersAsTreeIndexCreateInspector
 
     public function mount(): void
     {
+        $this->syncTreeInspectorLocaleToRequest();
+
         parent::mount();
 
         $this->applyTreeCreateParentToForm();

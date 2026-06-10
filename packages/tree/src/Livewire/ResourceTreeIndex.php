@@ -35,10 +35,16 @@ class ResourceTreeIndex extends Component
         string $configurationKey,
         string $search = '',
         string $lang = '',
+        ?int $selectedRecordId = null,
     ): void {
         $this->configurationKey = $configurationKey;
         $this->authorizeTreeIndex();
         $this->mountTreeToolbar($search, $lang);
+
+        if ($selectedRecordId !== null) {
+            $this->selectedRecordId = $selectedRecordId;
+        }
+
         $this->resetForm();
         $this->loadSelectedRecord();
     }
@@ -86,6 +92,7 @@ class ResourceTreeIndex extends Component
         $this->isCreatingInspector = false;
         $this->creatingParentId = null;
         $this->selectedRecordId = $recordId;
+        $this->syncTreeSelectionToParent();
     }
 
     public function createRootNode(): void
@@ -150,6 +157,7 @@ class ResourceTreeIndex extends Component
             $this->isCreatingInspector = true;
             $this->creatingParentId = $parentId;
             $this->selectedRecordId = null;
+            $this->syncTreeSelectionToParent();
 
             return;
         }

@@ -4,6 +4,7 @@
         'configurationKey' => $configurationKey,
         'lang' => $this->lang,
         'search' => $this->tableSearch ?? '',
+        'selectedRecordId' => $this->treeSelectedId ?? null,
     ],
     key('filament-tree-index-'.$configurationKey.'-'.md5(json_encode([$this->tableFilters ?? [], $this->tableSearch ?? '', $this->activeTab ?? '', $this->lang ?? ''])))
 )
