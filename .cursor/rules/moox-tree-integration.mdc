@@ -62,3 +62,7 @@ Tree-Mechanik gehört ins **Tree-Package**; die Resource **verdrahtet** nur übe
 ## Checkliste neue Resource
 
 Model-Spalten (ohne Tree-Methoden) → `treeIndex()` → `TreeIndexListRecords` → Pages/Routes → optional Inspector → Feature-Test für Config oder Livewire.
+
+## UI-Schaltflächen & Formular
+
+Inspector nutzt **1:1** `CategoryResource::form()` (bzw. `::form()` der Quell-Resource) — gleiche Felder, gleiche Actions, gleiches Verhalten (Save, Cancel, Redirects). Keine zusätzlichen Buttons und **keine** Form-/Action-Overrides in Tree-Pages ohne **ausdrückliche Nutzerfreigabe** (siehe `moox-tree-package.mdc`).

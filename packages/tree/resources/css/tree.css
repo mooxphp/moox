@@ -38,6 +38,10 @@
     padding-inline-start: 1rem;
 }
 
+.fi-tree-chevron-wrap {
+    flex-shrink: 0;
+}
+
 .fi-tree-chevron {
     transition: transform 150ms ease-in-out;
 }

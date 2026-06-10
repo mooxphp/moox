@@ -78,3 +78,9 @@ Neue Features im Package müssen über **Config/Actions/Resource-Hooks** lösbar
 ## Referenz-Integration (außerhalb des Packages)
 
 Consumer-Resources (`implements ConfiguresTreeIndex`) gehören **nicht** in dieses Package — siehe Regel `moox-tree-integration`. Referenz: `CategoryTreeResource`, `TreeListCategories`, `TreeInspectorCategory`.
+
+## UI-Schaltflächen & Formular (verbindlich)
+
+- **Keine neuen Buttons, Footer-Actions oder Blade-`wire:click`-Schaltflächen** im Tree-Package oder in Consumer-Tree-Pages hinzufügen, ändern oder duplizieren — **ohne vorherige Rückfrage und ausdrückliche Bestätigung** durch den Nutzer.
+- Inspector-Formular = **unverändert** `Resource::form()` der Quell-Resource (Felder + Actions 1:1). **Keine** Action-Umverdrahtung, **keine** zusätzlichen Buttons.
+- Erlaubte Einbettungs-Anpassung (unsichtbar): `InteractsWithTreeIndexEmbeddedFormTransport` / `EmbeddedInspectorForm` (nur `live()` abschalten gegen 419), minimale Inspector-View, Create/Edit-Tree-Traits (Position, Events, `lang`).
