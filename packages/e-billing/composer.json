@@ -1,0 +1,74 @@
+{
+    "name": "moox/e-billing",
+    "description": "Moox eBilling extracts invoice data from PDF text, maps it to a canonical bill model and prepares it for e-invoicing conversion.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "eBilling",
+        "Invoice",
+        "XRechnung",
+        "ZUGFeRD",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/e-billing",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/company": "dev-main",
+        "moox/core": "dev-main",
+        "moox/invoice": "dev-main",
+        "moox/jobs": "dev-main",
+        "moox/kosit-validator": "dev-main",
+        "moox/mail-inbox": "dev-main",
+        "moox/pdf-parser": "dev-main",
+        "moox/zugferd": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\EBilling\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\EBilling\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\EBilling\\EBillingServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

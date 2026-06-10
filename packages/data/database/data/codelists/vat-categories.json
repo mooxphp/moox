@@ -1,0 +1,15 @@
+{
+    "_source": "UNTDID 5305 — VAT category codes (EN 16931 subset)",
+    "_todo": "verify/complete against official UNTDID 5305",
+    "codes": [
+        {"code": "S", "common_name": "Standard rate"},
+        {"code": "Z", "common_name": "Zero rated"},
+        {"code": "E", "common_name": "Exempt from tax"},
+        {"code": "AE", "common_name": "VAT Reverse Charge"},
+        {"code": "K", "common_name": "VAT exempt for EEA intra-community supply"},
+        {"code": "G", "common_name": "Free export item, tax not charged"},
+        {"code": "O", "common_name": "Services outside scope of tax"},
+        {"code": "L", "common_name": "Canary Islands general indirect tax"},
+        {"code": "M", "common_name": "Tax for production, services and importation in Ceuta and Melilla"}
+    ]
+}

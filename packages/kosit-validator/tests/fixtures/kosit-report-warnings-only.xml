@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reports xmlns:svrl="http://purl.oclc.org/dml/schematron">
+    <svrl:schematron-output>
+        <svrl:successful-report id="W-1" role="warning">
+            <svrl:text>Heads up only</svrl:text>
+        </svrl:successful-report>
+    </svrl:schematron-output>
+</reports>

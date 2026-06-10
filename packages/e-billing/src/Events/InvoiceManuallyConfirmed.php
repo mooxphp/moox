@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\EBilling\Events;
+
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use Moox\EBilling\Models\EbillingDocument;
+
+final class InvoiceManuallyConfirmed
+{
+    use Dispatchable;
+    use SerializesModels;
+
+    public function __construct(
+        public readonly EbillingDocument $document,
+        public readonly ?string $confirmedBy = null,
+        public readonly bool $wasAutoValidatedFirst = false,
+    ) {}
+}

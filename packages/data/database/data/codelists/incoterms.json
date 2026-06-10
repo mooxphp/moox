@@ -1,0 +1,17 @@
+{
+    "_source": "Incoterms 2020 (ICC)",
+    "_todo": "verify against official ICC Incoterms 2020",
+    "codes": [
+        {"code": "EXW", "version": "2020", "common_name": "Ex Works"},
+        {"code": "FCA", "version": "2020", "common_name": "Free Carrier"},
+        {"code": "CPT", "version": "2020", "common_name": "Carriage Paid To"},
+        {"code": "CIP", "version": "2020", "common_name": "Carriage and Insurance Paid To"},
+        {"code": "DAP", "version": "2020", "common_name": "Delivered At Place"},
+        {"code": "DPU", "version": "2020", "common_name": "Delivered at Place Unloaded"},
+        {"code": "DDP", "version": "2020", "common_name": "Delivered Duty Paid"},
+        {"code": "FAS", "version": "2020", "common_name": "Free Alongside Ship"},
+        {"code": "FOB", "version": "2020", "common_name": "Free On Board"},
+        {"code": "CFR", "version": "2020", "common_name": "Cost and Freight"},
+        {"code": "CIF", "version": "2020", "common_name": "Cost, Insurance and Freight"}
+    ]
+}

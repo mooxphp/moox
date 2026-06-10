@@ -1,0 +1,16 @@
+{
+    "_source": "CEF EAS — Electronic Address Scheme (EN 16931 / Peppol)",
+    "_todo": "complete from official CEF EAS code list — partial seed",
+    "codes": [
+        {"code": "0002", "common_name": "System Information et Repertoire des Entreprise et des Etablissements: SIRENE"},
+        {"code": "0060", "common_name": "Data Universal Numbering System (D-U-N-S Number)"},
+        {"code": "0088", "common_name": "EAN Location Code"},
+        {"code": "0096", "common_name": "The Danish Business Authority - P-number (DK:P)"},
+        {"code": "0184", "common_name": "DIGSTORG"},
+        {"code": "0192", "common_name": "Enhetsregisteret ved Bronnoysundregisterne"},
+        {"code": "0204", "common_name": "Leitweg-ID"},
+        {"code": "0208", "common_name": "Numero d'entreprise / ondernemingsnummer / Unternehmensnummer"},
+        {"code": "9918", "common_name": "SOCIETY FOR WORLDWIDE INTERBANK FINANCIAL, TELECOMMUNICATION S.W.I.F.T"},
+        {"code": "9930", "common_name": "Germany VAT number"}
+    ]
+}

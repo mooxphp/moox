@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns:rep="http://www.xoev.de/de/validator/varl/1">
+    <rep:message level="error" xpathLocation="/invoice" code="BR-SCENARIO">Scenario not applicable</rep:message>
+</report>

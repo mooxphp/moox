@@ -64,6 +64,7 @@
         "moox/notifications": "dev-main",
         "moox/packagist": "dev-main",
         "moox/page": "dev-main",
+        "moox/permission": "dev-main",
         "moox/post": "dev-main",
         "moox/press": "dev-main",
         "moox/press-trainings": "dev-main",

@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('invoice_allowance_charges', function (Blueprint $table): void {
+            $table->id();
+            $table->uuidMorphs('chargeable');
+            $table->boolean('is_charge');
+            $table->decimal('amount', 12, 2);
+            $table->string('reason_code')->nullable();
+            $table->string('reason_text')->nullable();
+            $table->decimal('base_amount', 12, 2)->nullable();
+            $table->decimal('percentage', 5, 2)->nullable();
+            $table->timestamps();
+            $table->string('scope')->nullable()->index();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('invoice_allowance_charges');
+    }
+};
