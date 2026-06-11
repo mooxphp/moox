@@ -9,8 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\RelationManagers\RelationGroup;
-use Filament\Resources\RelationManagers\RelationManagerConfiguration;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -24,7 +22,6 @@ use Moox\Company\Resources\Company\Pages\CreateCompany;
 use Moox\Company\Resources\Company\Pages\EditCompany;
 use Moox\Company\Resources\Company\Pages\ListCompanies;
 use Moox\Company\Resources\Company\Pages\ViewCompany;
-use Moox\Company\Resources\Company\RelationManagers\ChildrenRelationManager;
 use Moox\Company\Support\CompanyRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -225,6 +222,9 @@ class CompanyResource extends BaseRecordResource
             ->columns([
                 TextColumn::make('name')
                     ->label(__('company::fields.name'))
+                    ->formatStateUsing(fn (?string $state, Company $record): string => ($record->parent_id ? '↳ ' : '').($state ?? '')
+                    )
+                    ->description(fn (Company $record): ?string => $record->parent?->displayLabel())
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('display_name')
@@ -326,16 +326,6 @@ class CompanyResource extends BaseRecordResource
         }
 
         return $options;
-    }
-
-    /**
-     * @return array<class-string|RelationGroup|RelationManagerConfiguration>
-     */
-    protected static function getDeclaredRelations(): array
-    {
-        return [
-            ChildrenRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

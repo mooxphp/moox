@@ -9,6 +9,8 @@ return [
     'search_terms' => 'Suchbegriffe',
     'parent' => 'Muttergesellschaft',
     'children' => 'Tochtergesellschaften',
+    'contacts' => 'Kontakte',
+    'addresses' => 'Adressen',
     'external_reference' => 'Externe Referenz',
     'phone' => 'Telefon',
     'fax' => 'Fax',
