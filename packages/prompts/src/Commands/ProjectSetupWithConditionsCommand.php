@@ -33,6 +33,10 @@ class ProjectSetupWithConditionsCommand extends FlowCommand
 
     public ?bool $publishConfig = null;
 
+    public ?bool $summaryConfirmed = null;
+
+    public ?bool $persistConfig = null;
+
     public function promptFlowSteps(): array
     {
         return [
@@ -46,6 +50,8 @@ class ProjectSetupWithConditionsCommand extends FlowCommand
             'stepWebhookUrl',
             'stepSummaryOverview',
             'stepSummaryConfirm',
+            'stepPersistConfigConfirm',
+            'stepPersistConfigExecute',
             'stepOutro',
         ];
     }
@@ -173,23 +179,39 @@ class ProjectSetupWithConditionsCommand extends FlowCommand
 
     public function stepSummaryConfirm(): void
     {
-        $confirm = confirm(
+        $this->summaryConfirmed = confirm(
             label: 'Passt diese Konfiguration?',
             default: true,
         );
 
-        if (! $confirm) {
+        if (! $this->summaryConfirmed) {
             $this->warn('Demo abgebrochen — keine Änderungen vorgenommen.');
+        } else {
+            $this->info('✅ Konfiguration bestätigt.');
+        }
+    }
 
+    public function stepPersistConfigConfirm(): void
+    {
+        if (! $this->summaryConfirmed) {
             return;
         }
 
-        $persist = confirm(
+        $this->persistConfig = confirm(
             label: 'Demo: Konfiguration nach storage/app/moox/prompts/project-setup.json schreiben?',
             default: false,
         );
 
-        if (! $persist) {
+        $this->info('✅ Persist config: '.($this->persistConfig ? 'ja' : 'nein'));
+    }
+
+    public function stepPersistConfigExecute(): void
+    {
+        if (! $this->summaryConfirmed) {
+            return;
+        }
+
+        if (! $this->persistConfig) {
             $this->info('⚪ Demo-Konfiguration nicht gespeichert (nur Vorschau).');
 
             return;
