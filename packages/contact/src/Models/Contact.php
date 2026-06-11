@@ -9,21 +9,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Contact\Database\Factories\ContactFactory;
 use Moox\Contact\Support\CompanyContactRelation;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
-class Contact extends BaseItemModel
+class Contact extends BaseRecordModel
 {
     /** @use HasFactory<ContactFactory> */
     use HasFactory;
 
     use HasModelTaxonomy;
-    use HasMorphPivotRelations;
     use HasUuids;
     use SoftDeletes;
 
@@ -87,25 +84,13 @@ class Contact extends BaseItemModel
     /** @return MorphToMany<Model, $this> */
     public function addresses(): MorphToMany
     {
-        return $this->morphPivotRelation('addressables');
+        return $this->relation('addressables');
     }
 
     /** @return MorphToMany<Model, $this> */
     public function address(): MorphToMany
     {
-        return $this->primaryMorphPivotRelation('addressables');
-    }
-
-    /** @param  array<int, mixed>  $parameters */
-    public function __call($method, $parameters): mixed
-    {
-        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
-
-        if (array_key_exists($method, $taxonomies)) {
-            return $this->taxonomy($method);
-        }
-
-        return $this->morphPivotCall($method, $parameters);
+        return $this->primaryRelation('addressables');
     }
 
     public function displayLabel(): string
