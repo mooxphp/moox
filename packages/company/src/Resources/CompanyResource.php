@@ -116,6 +116,17 @@ class CompanyResource extends BaseRecordResource
                                 ->label(__('company::fields.note'))
                                 ->rules(CompanyRules::for('note'))
                                 ->columnSpanFull(),
+                            Textarea::make('data')
+                                ->label(__('company::fields.data'))
+                                ->rules(CompanyRules::for('data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                                }),
+
                             Textarea::make('search_terms')
                                 ->label(__('company::fields.search_terms'))
                                 ->rules(CompanyRules::for('search_terms'))
@@ -222,9 +233,10 @@ class CompanyResource extends BaseRecordResource
             ->columns([
                 TextColumn::make('name')
                     ->label(__('company::fields.name'))
-                    ->formatStateUsing(fn (?string $state, Company $record): string => ($record->parent_id ? '↳ ' : '').($state ?? '')
-                    )
-                    ->description(fn (Company $record): ?string => $record->parent?->displayLabel())
+                    ->formatStateUsing(fn (?string $state, Company $record): string => 
+                    ($record->parent_id ? '↳ ' : '').($state ?? '')
+                )
+                ->description(fn (Company $record): ?string => $record->parent?->displayLabel())
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('display_name')

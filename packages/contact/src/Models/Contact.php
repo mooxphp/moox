@@ -7,14 +7,16 @@ namespace Moox\Contact\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Contact\Database\Factories\ContactFactory;
-use Moox\Contact\Support\CompanyContactRelation;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> companies()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> addresses()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> address()
+ */
 class Contact extends BaseRecordModel
 {
     /** @use HasFactory<ContactFactory> */
@@ -73,24 +75,6 @@ class Contact extends BaseRecordModel
     public static function newFactory(): ContactFactory
     {
         return ContactFactory::new();
-    }
-
-    /** @return BelongsToMany<Model, Contact, Pivot> */
-    public function companies(): BelongsToMany
-    {
-        return CompanyContactRelation::forContact($this);
-    }
-
-    /** @return MorphToMany<Model, $this> */
-    public function addresses(): MorphToMany
-    {
-        return $this->relation('addressables');
-    }
-
-    /** @return MorphToMany<Model, $this> */
-    public function address(): MorphToMany
-    {
-        return $this->primaryRelation('addressables');
     }
 
     public function displayLabel(): string

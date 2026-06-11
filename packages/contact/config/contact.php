@@ -112,6 +112,11 @@ return [
                 'role',
                 'is_primary',
             ],
+            'actions' => [
+                'header' => ['attach'],
+                'record' => ['edit_pivot', 'detach'],
+                'toolbar' => ['detach_bulk'],
+            ],
         ],
         'addressables' => [
             'kind' => 'morph_pivot',
@@ -121,6 +126,11 @@ return [
             'translation_prefix' => 'address::fields',
             'relationship' => 'addresses',
             'primary_relationship' => 'address',
+            'actions' => [
+                'header' => ['attach', 'create'],
+                'record' => ['edit_related', 'edit_pivot', 'detach'],
+                'toolbar' => ['detach_bulk'],
+            ],
         ],
     ],
 

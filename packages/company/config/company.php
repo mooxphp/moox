@@ -1,6 +1,7 @@
 <?php
 
 use Moox\Company\Models\Company;
+use Moox\Company\Resources\CompanyResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +98,18 @@ return [
             'label' => 'trans//company::fields.parent',
             'relationship' => 'parent',
             'model' => Company::class,
+            'related_resource' => CompanyResource::class,
             'foreign_key' => 'parent_id',
+            'display_columns' => ['name', 'company_type', 'status'],
+            'badge_columns' => ['company_type', 'status'],
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
+            'actions' => [
+                'header' => ['associate'],
+                'record' => ['view', 'edit', 'dissociate'],
+            ],
+            'associate' => [
+                'exclude' => ['self', 'inverse'],
+            ],
         ],
         'children' => [
             'kind' => 'has_many',
@@ -106,9 +118,21 @@ return [
             'relationship' => 'children',
             'inverse_relationship' => 'parent',
             'model' => Company::class,
+            'related_resource' => CompanyResource::class,
             'foreign_key' => 'parent_id',
+            'display_columns' => ['name', 'company_type', 'status'],
+            'badge_columns' => ['company_type', 'status'],
             'create_prefill' => [
                 'parent_id' => 'owner.id',
+            ],
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
+            'actions' => [
+                'header' => ['associate', 'create'],
+                'record' => ['view', 'edit', 'dissociate'],
+            ],
+            'associate' => [
+                'strategy' => 'inverse',
+                'multiple' => true,
             ],
         ],
     ],

@@ -78,6 +78,8 @@ trait HasResourceRelations
             RelationKind::MorphPivot => $relation->perspective === RelationPerspective::Owner,
             RelationKind::PivotHasMany => $relation->perspective === RelationPerspective::Related,
             RelationKind::BelongsToMany => true,
+            RelationKind::BelongsTo => true,
+            RelationKind::HasMany => true,
             default => false,
         };
     }

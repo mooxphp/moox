@@ -7,8 +7,6 @@ namespace Moox\Core\Filament\RelationManagers;
 use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\CreateAction;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
@@ -25,13 +23,12 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\MorphToSelect\Type;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Illuminate\Support\Facades\Schema as DatabaseSchema;
+use Moox\Core\Filament\RelationManagers\Concerns\BuildsConfiguredRelationTableActions;
 use Moox\Core\Relations\Enums\RelationKind;
 use Moox\Core\Relations\Enums\RelationPerspective;
 use Moox\Core\Relations\ResolvedRelation;
@@ -41,6 +38,7 @@ use RuntimeException;
 
 class ConfigRelationManager extends RelationManager
 {
+    use BuildsConfiguredRelationTableActions;
     public ?string $relationKey = null;
 
     /** @deprecated Use {@see $relationKey} */
@@ -205,6 +203,25 @@ class ConfigRelationManager extends RelationManager
     #[Override]
     protected function makeTable(): Table
     {
+        $resolved = $this->resolvedRelation();
+
+        if ($resolved->kind === RelationKind::BelongsTo) {
+            $table = $this->makeBaseTable()
+                ->query(fn (): Builder => $this->belongsToTableQuery($resolved))
+                ->modifyQueryUsing($this->modifyQueryWithActiveTab(...))
+                ->queryStringIdentifier(Str::lcfirst(class_basename(static::class)));
+
+            $table->authorizeReorder(fn (): bool => false);
+
+            if ($relatedResource = static::getRelatedResource() ?? $this->getResolvedRelatedResource()) {
+                $table
+                    ->modelLabel($relatedResource::getModelLabel())
+                    ->pluralModelLabel($relatedResource::getPluralModelLabel());
+            }
+
+            return $table->heading($this->getTableHeading() ?? static::getTitle($this->getOwnerRecord(), $this->getPageClass()));
+        }
+
         $table = $this->makeBaseTable()
             ->relationship(fn (): Relation|Builder => $this->getRelationship())
             ->modifyQueryUsing($this->modifyQueryWithActiveTab(...))
@@ -212,7 +229,7 @@ class ConfigRelationManager extends RelationManager
 
         $table->authorizeReorder(fn (): bool => $this->canReorder());
 
-        if ($relatedResource = static::getRelatedResource()) {
+        if ($relatedResource = static::getRelatedResource() ?? $this->getResolvedRelatedResource()) {
             $table
                 ->modelLabel($relatedResource::getModelLabel())
                 ->pluralModelLabel($relatedResource::getPluralModelLabel());
@@ -228,6 +245,8 @@ class ConfigRelationManager extends RelationManager
         return match ($resolved->kind) {
             RelationKind::PivotHasMany => $this->pivotHasManyTable($table, $resolved),
             RelationKind::BelongsToMany => $this->belongsToManyTable($table, $resolved),
+            RelationKind::HasMany => $this->hasManyTable($table, $resolved),
+            RelationKind::BelongsTo => $this->belongsToTable($table, $resolved),
             default => $this->morphPivotTable($table, $resolved),
         };
     }
@@ -265,63 +284,21 @@ class ConfigRelationManager extends RelationManager
                 ->boolean();
         }
 
-        $relatedResource = $this->getResolvedRelatedResource();
-        $attachAction = $this->configureAttachAction(
-            AttachAction::make()
-                ->preloadRecordSelect()
-                ->schema(fn (AttachAction $action): array => [
-                    $action->getRecordSelect(),
-                    ...$this->pivotFormFields(),
-                ]),
-            $config,
-        );
-
-        $searchColumns = $config['record_select_search_columns'] ?? null;
-
-        if (is_array($searchColumns) && $searchColumns !== []) {
-            $attachAction->recordSelectSearchColumns(array_values(array_map(strval(...), $searchColumns)));
-        }
-
-        $headerActions = [$attachAction];
-
-        if ($relatedResource !== null) {
-            $headerActions[] = CreateAction::make()
-                ->label($this->getCreateActionLabel($relatedResource));
-        }
-
         $table = $table
             ->columns($columns)
-            ->headerActions($headerActions);
+            ->headerActions($this->buildConfiguredHeaderActions($resolved))
+            ->recordActions($this->buildConfiguredRecordActions($resolved))
+            ->toolbarActions($this->buildConfiguredToolbarActions($resolved));
 
         $inverseRelationship = $config['inverse_relationship'] ?? null;
 
         if (is_string($inverseRelationship) && $inverseRelationship !== '') {
             $table->inverseRelationship($inverseRelationship);
         } else {
-            // Morph pivots: Filament would guess e.g. Address::companies() — use pivot keys instead.
             $table->allowDuplicates();
         }
 
-        $recordActions = [];
-
-        if ($relatedResource !== null && $relatedResource::hasPage('edit')) {
-            $recordActions[] = EditAction::make('editRelated')
-                ->label(__('filament-actions::edit.single.label', [
-                    'label' => $relatedResource::getModelLabel(),
-                ]))
-                ->url(fn (Model $record): string => $this->getRelatedRecordResourceUrl($record, 'edit'));
-        }
-
-        $recordActions[] = EditAction::make('editPivot')
-            ->label($this->getPivotSectionLabel())
-            ->schema(fn (Schema $schema): Schema => $schema->components($this->pivotFormFields()));
-        $recordActions[] = DetachAction::make();
-
-        return $table
-            ->recordActions($recordActions)
-            ->toolbarActions([
-                DetachBulkAction::make(),
-            ]);
+        return $table;
     }
 
     /**
@@ -668,16 +645,41 @@ class ConfigRelationManager extends RelationManager
                 ->boolean();
         }
 
+        $headerActions = $this->buildConfiguredHeaderActions($resolved);
+
+        foreach ($headerActions as $headerAction) {
+            if ($headerAction instanceof CreateAction) {
+                $headerAction->visible(fn (): bool => $resolved->ownerTypes !== []);
+            }
+        }
+
         return $table
             ->columns($columns)
-            ->headerActions([
-                CreateAction::make()
-                    ->visible(fn (): bool => $resolved->ownerTypes !== []),
-            ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ]);
+            ->headerActions($headerActions)
+            ->recordActions($this->buildConfiguredRecordActions($resolved));
+    }
+
+    protected function belongsToTable(Table $table, ResolvedRelation $resolved): Table
+    {
+        $prefix = (string) ($resolved->translationPrefix ?? '');
+
+        return $table
+            ->columns($this->buildModelDisplayColumns($resolved, $prefix))
+            ->headerActions($this->buildConfiguredHeaderActions($resolved))
+            ->recordActions($this->buildConfiguredRecordActions($resolved));
+    }
+
+    protected function hasManyTable(Table $table, ResolvedRelation $resolved): Table
+    {
+        $prefix = (string) ($resolved->translationPrefix ?? '');
+
+        return $this->applyConfiguredInverseRelationship(
+            $table
+                ->columns($this->buildModelDisplayColumns($resolved, $prefix))
+                ->headerActions($this->buildConfiguredHeaderActions($resolved))
+                ->recordActions($this->buildConfiguredRecordActions($resolved)),
+            $resolved,
+        );
     }
 
     protected function belongsToManyTable(Table $table, ResolvedRelation $resolved): Table
@@ -708,25 +710,9 @@ class ConfigRelationManager extends RelationManager
 
         return $table
             ->columns($columns)
-            ->headerActions([
-                AttachAction::make()
-                    ->recordTitle(fn (Model $record): string => $this->formatOwnerOptionLabel($record))
-                    ->preloadRecordSelect()
-                    ->schema(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
-                        ...$this->belongsToManyPivotFields(),
-                    ]),
-            ])
-            ->recordActions([
-                EditAction::make()
-                    ->schema(fn (): array => $this->belongsToManyPivotFields()),
-                DetachAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DetachBulkAction::make(),
-                ]),
-            ]);
+            ->headerActions($this->buildConfiguredHeaderActions($resolved))
+            ->recordActions($this->buildConfiguredRecordActions($resolved))
+            ->toolbarActions($this->buildConfiguredToolbarActions($resolved));
     }
 
     /**
@@ -803,5 +789,71 @@ class ConfigRelationManager extends RelationManager
         }
 
         return $fields;
+    }
+
+    protected function belongsToTableQuery(ResolvedRelation $resolved): Builder
+    {
+        $relatedModel = $resolved->relatedModel;
+
+        if ($relatedModel === null) {
+            return Model::query()->whereRaw('1 = 0');
+        }
+
+        $foreignKey = $this->resolveBelongsToForeignKey($resolved);
+        $relatedId = $this->getOwnerRecord()->getAttribute($foreignKey);
+
+        if (! filled($relatedId)) {
+            return $relatedModel::query()->whereRaw('1 = 0');
+        }
+
+        return $relatedModel::query()->whereKey($relatedId);
+    }
+
+    /**
+     * @return list<TextColumn>
+     */
+    protected function buildModelDisplayColumns(ResolvedRelation $resolved, string $prefix): array
+    {
+        $columns = [];
+        $displayColumns = $resolved->displayColumns !== [] ? $resolved->displayColumns : ['display_name', 'name'];
+        $badgeColumns = array_values(array_filter(
+            (array) ($resolved->config['badge_columns'] ?? []),
+            fn (mixed $column): bool => is_string($column) && $column !== '',
+        ));
+
+        foreach ($displayColumns as $column) {
+            if (! is_string($column) || $column === '') {
+                continue;
+            }
+
+            $columnDefinition = TextColumn::make($column)
+                ->label($this->fieldLabel($prefix, $column))
+                ->searchable();
+
+            if (in_array($column, $badgeColumns, true)) {
+                $columnDefinition->badge();
+            }
+
+            $columns[] = $columnDefinition;
+        }
+
+        foreach ($badgeColumns as $column) {
+            if (in_array($column, $displayColumns, true)) {
+                continue;
+            }
+
+            $columns[] = TextColumn::make($column)
+                ->label($this->fieldLabel($prefix, $column))
+                ->badge();
+        }
+
+        if ($columns === []) {
+            $columns[] = TextColumn::make('display_name')
+                ->label($this->fieldLabel($prefix, 'display_name'))
+                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record))
+                ->searchable();
+        }
+
+        return $columns;
     }
 }

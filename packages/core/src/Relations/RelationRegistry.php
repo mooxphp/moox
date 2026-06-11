@@ -100,13 +100,37 @@ final class RelationRegistry
         $uses = $config['uses'] ?? $config['extends'] ?? null;
 
         if (is_string($uses) && $uses !== '') {
-            $config = array_replace_recursive(static::blueprintDefinition($uses), $config);
+            $config = self::mergeDefinition(static::blueprintDefinition($uses), $config);
+        }
+
+        $kind = $config['kind'] ?? null;
+
+        if (is_string($kind) && $kind !== '') {
+            $config = self::mergeDefinition(static::blueprintDefinition($kind), $config);
         }
 
         $relatedModel = $config['related_model'] ?? $config['model'] ?? null;
 
         if (is_string($relatedModel) && $relatedModel !== '') {
-            $config = array_replace_recursive(static::defaultsForRelatedModel($relatedModel), $config);
+            $config = self::mergeDefinition(static::defaultsForRelatedModel($relatedModel), $config);
+        }
+
+        return $config;
+    }
+
+    /**
+     * @param  array<string, mixed>  $definition
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    private static function mergeDefinition(array $definition, array $config): array
+    {
+        $actions = array_key_exists('actions', $config) ? $config['actions'] : null;
+
+        $config = array_replace_recursive($definition, $config);
+
+        if (is_array($actions)) {
+            $config['actions'] = $actions;
         }
 
         return $config;

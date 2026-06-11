@@ -111,7 +111,11 @@ return [
 
     'relations' => [
         'addressables' => [
+            'kind' => 'pivot_has_many',
+            'perspective' => 'related',
+            'presentation' => 'tab',
             'label' => 'trans//address::fields.assignments',
+            'translation_prefix' => 'address::fields',
             'relationship' => 'addressables',
             'pivot_model' => Addressable::class,
             'pivot_table' => 'addressables',
@@ -120,6 +124,10 @@ return [
                 'billing_address',
                 'postal_address',
                 'delivery_address',
+            ],
+            'actions' => [
+                'header' => ['create'],
+                'record' => ['edit', 'delete'],
             ],
             'owner_types' => [
                 // 'Moox\Company\Models\Company' => [
