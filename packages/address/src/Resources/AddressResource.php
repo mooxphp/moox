@@ -19,7 +19,6 @@ use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\Address\Pages\ViewAddress;
-use Moox\Address\Resources\Address\RelationManagers\AddressablesRelationManager;
 use Moox\Address\Support\AddressRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -151,6 +150,7 @@ class AddressResource extends BaseRecordResource
 
     public static function table(Table $table): Table
     {
+
         return $table
             ->columns([
                 TextColumn::make('label')
@@ -252,16 +252,6 @@ class AddressResource extends BaseRecordResource
         }
 
         return static::getDistinctFilterOptions('country_code');
-    }
-
-    /**
-     * @return array<class-string>
-     */
-    public static function getRelations(): array
-    {
-        return [
-            AddressablesRelationManager::class,
-        ];
     }
 
     public static function getPages(): array
