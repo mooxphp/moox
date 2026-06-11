@@ -21,10 +21,12 @@ return [
     | the web interface. Only commands listed here will be available in the
     | Command Runner page.
     |
-    | Example:
+    | The package ships demo commands for CLI (see README). They are not
+    | enabled for the web UI by default — add signatures here when needed:
+    |
     | 'allowed_commands' => [
-    |     'prompts:test-flow',
-    |     'prompts:test-web',
+    |     'prompts:project-setup',
+    |     'prompts:test-failed',
     | ],
     |
     */
@@ -32,7 +34,6 @@ return [
     'allowed_commands' => [
         'prompts:project-setup',
         'prompts:test-failed',
-        // Add more commands here as needed
     ],
 
     /*
