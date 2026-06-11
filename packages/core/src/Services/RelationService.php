@@ -278,7 +278,7 @@ class RelationService
         }
     }
 
-  /**
+    /**
      * @param  array<string, mixed>  $config
      */
     private function resolve(string $key, array $config): ResolvedRelation

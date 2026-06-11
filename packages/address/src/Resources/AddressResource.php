@@ -150,7 +150,6 @@ class AddressResource extends BaseRecordResource
 
     public static function table(Table $table): Table
     {
-
         return $table
             ->columns([
                 TextColumn::make('label')

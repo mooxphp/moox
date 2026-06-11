@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Address;
 
-use Moox\Address\Models\Address;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 

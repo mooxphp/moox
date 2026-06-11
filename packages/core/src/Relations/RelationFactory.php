@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Moox\Core\Relations\Enums\RelationKind;
 use Moox\Core\Relations\Exceptions\UnsupportedRelationException;
-use Moox\Core\Relations\ResolvedRelation;
 use Moox\Core\Services\RelationService;
 
 final class RelationFactory
@@ -107,7 +106,7 @@ final class RelationFactory
         $foreignKey = $relation->config['pivot_foreign_key'] ?? null;
 
         if (! is_string($foreignKey) || $foreignKey === '') {
-            $foreignKey = \Illuminate\Support\Str::snake(class_basename($owner)).'_id';
+            $foreignKey = Str::snake(class_basename($owner)).'_id';
         }
 
         return $owner->hasMany($pivotModel, $foreignKey);

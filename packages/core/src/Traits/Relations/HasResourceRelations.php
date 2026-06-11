@@ -11,7 +11,6 @@ use Moox\Core\Relations\Enums\RelationKind;
 use Moox\Core\Relations\Enums\RelationPerspective;
 use Moox\Core\Relations\Enums\RelationPresentation;
 use Moox\Core\Relations\ResolvedRelation;
-use Moox\Core\Services\RelationService;
 
 trait HasResourceRelations
 {

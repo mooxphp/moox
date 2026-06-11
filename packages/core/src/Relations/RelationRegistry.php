@@ -17,8 +17,8 @@ final class RelationRegistry
      */
     public static function blueprint(string $name, array $definition): void
     {
-        static::$blueprints[$name] = array_replace(
-            static::$blueprints[$name] ?? [],
+        self::$blueprints[$name] = array_replace(
+            self::$blueprints[$name] ?? [],
             $definition,
         );
     }
@@ -31,8 +31,8 @@ final class RelationRegistry
      */
     public static function relatedDefaults(string $relatedModel, array $defaults): void
     {
-        static::$relatedDefaults[$relatedModel] = array_replace(
-            static::$relatedDefaults[$relatedModel] ?? [],
+        self::$relatedDefaults[$relatedModel] = array_replace(
+            self::$relatedDefaults[$relatedModel] ?? [],
             $defaults,
         );
     }
@@ -46,9 +46,9 @@ final class RelationRegistry
             return [];
         }
 
-        $defaults = static::$relatedDefaults[$relatedModel] ?? [];
+        $defaults = self::$relatedDefaults[$relatedModel] ?? [];
 
-        $resource = static::resourceNameForModel($relatedModel);
+        $resource = self::resourceNameForModel($relatedModel);
 
         if ($resource === null) {
             return $defaults;
@@ -74,7 +74,7 @@ final class RelationRegistry
             $fromConfig = [];
         }
 
-        return array_replace_recursive($fromConfig, static::$blueprints[$name] ?? []);
+        return array_replace_recursive($fromConfig, self::$blueprints[$name] ?? []);
     }
 
     /**
@@ -100,19 +100,19 @@ final class RelationRegistry
         $uses = $config['uses'] ?? $config['extends'] ?? null;
 
         if (is_string($uses) && $uses !== '') {
-            $config = self::mergeDefinition(static::blueprintDefinition($uses), $config);
+            $config = self::mergeDefinition(self::blueprintDefinition($uses), $config);
         }
 
         $kind = $config['kind'] ?? null;
 
         if (is_string($kind) && $kind !== '') {
-            $config = self::mergeDefinition(static::blueprintDefinition($kind), $config);
+            $config = self::mergeDefinition(self::blueprintDefinition($kind), $config);
         }
 
         $relatedModel = $config['related_model'] ?? $config['model'] ?? null;
 
         if (is_string($relatedModel) && $relatedModel !== '') {
-            $config = self::mergeDefinition(static::defaultsForRelatedModel($relatedModel), $config);
+            $config = self::mergeDefinition(self::defaultsForRelatedModel($relatedModel), $config);
         }
 
         return $config;

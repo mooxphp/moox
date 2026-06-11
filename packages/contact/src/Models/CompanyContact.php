@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Moox\Contact\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Moox\Company\Models\Company;
 
 /**
  * Pivot row for company ↔ contact (see config contact.relations.companies / company.relations.contacts).
- * Sides are resolved dynamically on {@see Contact} / {@see \Moox\Company\Models\Company} via HasRelations — not here.
+ * Sides are resolved dynamically on {@see Contact} / {@see Company} via HasRelations — not here.
  */
 class CompanyContact extends Pivot
 {
