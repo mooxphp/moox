@@ -43,7 +43,11 @@
         initializeState();
     ">
 
-        @if ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord)
+        @if (
+            $this instanceof \Filament\Resources\Pages\EditRecord
+            || $this instanceof \Filament\Resources\Pages\CreateRecord
+            || method_exists($this, 'isCreatingInlineResourceRecord')
+        )
             <x-filament::button color="primary" size="sm" icon="heroicon-o-photo" style="width: 100%;" x-on:click="
                                                                             $dispatch('set-media-picker-model', {
                                                                             modelId: {{ $getRecord()?->id ?? 0 }},
@@ -86,7 +90,10 @@
                         </div>
                     </template>
 
-                    @if ($this instanceof \Filament\Resources\Pages\EditRecord)
+                    @if (
+                        $this instanceof \Filament\Resources\Pages\EditRecord
+                        || (method_exists($this, 'isCreatingInlineResourceRecord') && ! $this->isCreatingInlineResourceRecord())
+                    )
                         <div style="position: absolute; top: 0; left: 0;">
                             <x-filament::button color="danger" size="xs" icon="heroicon-o-x-mark"
                                 x-on:click="selectedMedia.splice(index, 1); initializeState();">
