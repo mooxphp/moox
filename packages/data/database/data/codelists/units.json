@@ -1,0 +1,21 @@
+{
+    "_source": "UN/ECE Recommendation 20 + 21 — units of measure (EN 16931 subset)",
+    "_todo": "complete from EN 16931 Rec 20/21 subset",
+    "codes": [
+        {"code": "C62", "common_name": "One (piece)", "symbol": null},
+        {"code": "MTR", "common_name": "Metre", "symbol": "m"},
+        {"code": "KGM", "common_name": "Kilogram", "symbol": "kg"},
+        {"code": "GRM", "common_name": "Gram", "symbol": "g"},
+        {"code": "LTR", "common_name": "Litre", "symbol": "l"},
+        {"code": "MTK", "common_name": "Square metre", "symbol": "m²"},
+        {"code": "MTQ", "common_name": "Cubic metre", "symbol": "m³"},
+        {"code": "TNE", "common_name": "Tonne", "symbol": "t"},
+        {"code": "H87", "common_name": "Piece", "symbol": null},
+        {"code": "PR", "common_name": "Pair", "symbol": null},
+        {"code": "NPR", "common_name": "Number of pairs", "symbol": null},
+        {"code": "SET", "common_name": "Set", "symbol": null},
+        {"code": "HUR", "common_name": "Hour", "symbol": "h"},
+        {"code": "DAY", "common_name": "Day", "symbol": "d"},
+        {"code": "KWH", "common_name": "Kilowatt hour", "symbol": "kWh"}
+    ]
+}

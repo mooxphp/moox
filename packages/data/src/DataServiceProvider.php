@@ -6,13 +6,22 @@ namespace Moox\Data;
 
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
+use Moox\Data\Console\Commands\ImportCodelistsCommand;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Moox\Data\Filament\Providers\DataPanelProvider;
+use Moox\Data\Installers\StaticCodelistsInstaller;
 use Moox\Data\Installers\StaticDataInstaller;
 use Spatie\LaravelPackageTools\Package;
 
 class DataServiceProvider extends MooxServiceProvider
 {
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'data');
+    }
+
     public function register(): void
     {
         parent::register();
@@ -35,6 +44,16 @@ class DataServiceProvider extends MooxServiceProvider
             'static-language' => 'data/static-language',
             'static-locale' => 'data/static-locale',
             'static-timezone' => 'data/static-timezones',
+            'static-charge-reason' => 'data/static-charge-reason',
+            'static-allowance-reason' => 'data/static-allowance-reason',
+            'static-document-type' => 'data/static-document-type',
+            'static-vat-category' => 'data/static-vat-category',
+            'static-payment-mean' => 'data/static-payment-mean',
+            'static-unit' => 'data/static-unit',
+            'static-incoterm' => 'data/static-incoterm',
+            'static-vat-exemption-reason' => 'data/static-vat-exemption-reason',
+            'static-icd-scheme' => 'data/static-icd-scheme',
+            'static-eas-scheme' => 'data/static-eas-scheme',
         ];
 
         foreach ($configs as $file => $namespace) {
@@ -46,10 +65,13 @@ class DataServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('data')
-            ->hasConfigFile(['data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone'])
+            ->hasConfigFile(['data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone', 'static-charge-reason', 'static-allowance-reason', 'static-document-type', 'static-vat-category', 'static-payment-mean', 'static-unit', 'static-incoterm', 'static-vat-exemption-reason', 'static-icd-scheme', 'static-eas-scheme'])
             ->hasViews()
             ->hasTranslations()
-            ->hasCommand(ImportStaticDataCommand::class)
+            ->hasCommands([
+                ImportStaticDataCommand::class,
+                ImportCodelistsCommand::class,
+            ])
             ->hasMigrations([
                 'create_static_countries_table',
                 'create_static_languages_table',
@@ -58,6 +80,16 @@ class DataServiceProvider extends MooxServiceProvider
                 'create_static_timezones_table',
                 'create_static_countries_static_currencies_table',
                 'create_static_country_static_timezones_table',
+                'create_static_charge_reasons_table',
+                'create_static_allowance_reasons_table',
+                'create_static_document_types_table',
+                'create_static_vat_categories_table',
+                'create_static_payment_means_table',
+                'create_static_units_table',
+                'create_static_incoterms_table',
+                'create_static_vat_exemption_reasons_table',
+                'create_static_icd_schemes_table',
+                'create_static_eas_schemes_table',
             ]);
     }
 
@@ -70,6 +102,7 @@ class DataServiceProvider extends MooxServiceProvider
     {
         return [
             new StaticDataInstaller,
+            new StaticCodelistsInstaller,
         ];
     }
 
@@ -83,6 +116,12 @@ class DataServiceProvider extends MooxServiceProvider
                 'type' => 'static-data',
                 'data' => [
                     'import-rest-countries-static-data',
+                ],
+            ],
+            [
+                'type' => 'static-codelists',
+                'data' => [
+                    'import-committed-codelists',
                 ],
             ],
         ];

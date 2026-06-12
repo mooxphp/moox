@@ -39,4 +39,40 @@ class PromptFlowState
         $this->failedAt = $step;
         $this->errorMessage = $message;
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'flowId' => $this->flowId,
+            'commandName' => $this->commandName,
+            'steps' => $this->steps,
+            'currentIndex' => $this->currentIndex,
+            'stepOutputs' => $this->stepOutputs,
+            'context' => $this->context,
+            'completed' => $this->completed,
+            'failedAt' => $this->failedAt,
+            'errorMessage' => $this->errorMessage,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            flowId: (string) $data['flowId'],
+            commandName: (string) $data['commandName'],
+            steps: (array) $data['steps'],
+            currentIndex: (int) ($data['currentIndex'] ?? 0),
+            stepOutputs: (array) ($data['stepOutputs'] ?? []),
+            context: (array) ($data['context'] ?? []),
+            completed: (bool) ($data['completed'] ?? false),
+            failedAt: isset($data['failedAt']) ? (string) $data['failedAt'] : null,
+            errorMessage: isset($data['errorMessage']) ? (string) $data['errorMessage'] : null,
+        );
+    }
 }

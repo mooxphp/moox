@@ -398,6 +398,8 @@ class MooxInstallCommand extends FlowCommand
 
         $failedInstallers = [];
 
+        usort($selectedTypes, fn (string $a, string $b): int => ($registry->get($a)?->getPriority() ?? PHP_INT_MAX) <=> ($registry->get($b)?->getPriority() ?? PHP_INT_MAX));
+
         foreach ($selectedTypes as $type) {
             try {
                 $installer = $registry->get($type);

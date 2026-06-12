@@ -91,7 +91,7 @@ class UserPolicy
         }
 
         if (! $this->permissionExists($permissionName)) {
-            return false;
+            return true;
         }
 
         return $authUser->can($permissionName);

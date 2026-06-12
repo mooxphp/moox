@@ -1,0 +1,57 @@
+{
+    "name": "moox/mail-inbox",
+    "description": "Microsoft Graph–based mail inbox for Laravel (Moox package).",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Microsoft Graph",
+        "mail",
+        "inbox",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/mail-inbox",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "microsoft/microsoft-graph": "^2.26",
+        "moox/core": "dev-main",
+        "moox/jobs": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\MailInbox\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\MailInbox\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\MailInbox\\MailInboxServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

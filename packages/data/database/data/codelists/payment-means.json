@@ -1,0 +1,16 @@
+{
+    "_source": "UNTDID 4461 — payment means codes (EN 16931 subset)",
+    "_todo": "verify/complete against official UNTDID 4461",
+    "codes": [
+        {"code": "10", "common_name": "In cash"},
+        {"code": "20", "common_name": "Cheque"},
+        {"code": "30", "common_name": "Credit transfer"},
+        {"code": "42", "common_name": "Payment to bank account"},
+        {"code": "48", "common_name": "Bank card"},
+        {"code": "49", "common_name": "Direct debit"},
+        {"code": "57", "common_name": "Standing agreement"},
+        {"code": "58", "common_name": "SEPA credit transfer"},
+        {"code": "59", "common_name": "SEPA direct debit"},
+        {"code": "97", "common_name": "Clearing between partners"}
+    ]
+}

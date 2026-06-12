@@ -2,17 +2,10 @@
 
 use Moox\Address\Models\Address;
 use Moox\Address\Models\Addressable;
-use Moox\Category\Resources\CategoryResource;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
 use Moox\Contact\Models\CompanyContact;
 use Moox\Contact\Models\Contact;
-use Moox\Media\Resources\MediaResource;
-use Moox\News\Moox\Entities\News\News\NewsResource;
-use Moox\Tag\Resources\TagResource;
-use Moox\User\Models\User;
-use Moox\User\Resources\UserResource;
-use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,26 +88,6 @@ return [
             ],
 
             'scopes' => [
-                'allowed' => [
-                    'news' => [
-                        'resource' => NewsResource::class,
-                    ],
-                    'media' => [
-                        'resource' => MediaResource::class,
-                    ],
-                    'tag' => [
-                        'resource' => TagResource::class,
-                    ],
-                    'category' => [
-                        'resource' => CategoryResource::class,
-                    ],
-                    'user' => [
-                        'resource' => UserResource::class,
-                    ],
-                    'user-device' => [
-                        'resource' => UserDeviceResource::class,
-                    ],
-                ],
                 'registry' => [
                     'sources' => [
                         'contact' => Contact::class,

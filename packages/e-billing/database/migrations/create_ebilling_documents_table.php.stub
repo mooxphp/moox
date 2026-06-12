@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('ebilling_documents', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->nullableMorphs('source');
+            $table->json('bill_data')->nullable();
+            $table->string('xml_storage_path')->nullable();
+            $table->string('zugferd_storage_disk')->nullable();
+            $table->string('zugferd_storage_path')->nullable();
+            $table->json('ignored_reason')->nullable();
+            $table->string('gateway_status')->nullable()->index();
+            $table->string('review_status')->default('parser_created')->index();
+            $table->unsignedTinyInteger('validation_score')->nullable();
+            $table->json('field_validations')->nullable();
+            $table->timestamp('processed_at')->nullable();
+            $table->text('error_message')->nullable();
+            $table->timestamps();
+
+            $table->foreignUuid('company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignUuid('invoice_id')->nullable()->constrained('invoices')->nullOnDelete();
+
+            $table->string('scope')->nullable()->index();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('ebilling_documents');
+    }
+};

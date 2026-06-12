@@ -1,0 +1,54 @@
+{
+    "name": "moox/zugferd",
+    "description": "ZUGFeRD and XRechnung XML conversion, including PDF/A-3 embedding via horstoeko/zugferd.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/zugferd",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "horstoeko/zugferd": "^1",
+        "moox/core": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Zugferd\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Zugferd\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Zugferd\\ZugferdServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

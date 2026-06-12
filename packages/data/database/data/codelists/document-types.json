@@ -1,0 +1,276 @@
+{
+    "_source": "UNTDID 1001 (easyfirma.net subset)",
+    "_todo": "verify\/complete against official UNTDID 1001",
+    "codes": [
+        {
+            "code": "71",
+            "common_name": "Request for payment",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "80",
+            "common_name": "Debit note related to goods\/services",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "81",
+            "common_name": "Credit note related to goods\/services",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "82",
+            "common_name": "Metered services invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "83",
+            "common_name": "Credit note related to financial adjustments",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "84",
+            "common_name": "Debit note related to financial adjustments",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "102",
+            "common_name": "Tax notification",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "130",
+            "common_name": "Invoicing data sheet",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "202",
+            "common_name": "Direct payment valuation",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "203",
+            "common_name": "Provisional payment valuation",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "204",
+            "common_name": "Payment valuation",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "211",
+            "common_name": "Interim application for payment",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "218",
+            "common_name": "Final payment request",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "219",
+            "common_name": "Payment request for completed units",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "261",
+            "common_name": "Self billed credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "262",
+            "common_name": "Consolidated credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "295",
+            "common_name": "Price variation invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "296",
+            "common_name": "Credit note for price variation",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "308",
+            "common_name": "Delcredere credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "325",
+            "common_name": "Proforma invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "326",
+            "common_name": "Partial invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "331",
+            "common_name": "Commercial invoice with packing list",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "380",
+            "common_name": "Commercial invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "381",
+            "common_name": "Credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "382",
+            "common_name": "Commission note",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "383",
+            "common_name": "Debit note",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "384",
+            "common_name": "Corrected invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "385",
+            "common_name": "Consolidated invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "386",
+            "common_name": "Prepayment invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "387",
+            "common_name": "Hire invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "388",
+            "common_name": "Tax invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "389",
+            "common_name": "Self-billed invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "390",
+            "common_name": "Delcredere invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "393",
+            "common_name": "Factored invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "394",
+            "common_name": "Lease invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "395",
+            "common_name": "Consignment invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "396",
+            "common_name": "Factored credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "420",
+            "common_name": "OCR payment credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "456",
+            "common_name": "Debit advice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "457",
+            "common_name": "Reversal of debit",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "458",
+            "common_name": "Reversal of credit",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "527",
+            "common_name": "Self billed debit note",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "532",
+            "common_name": "Forwarder's credit note",
+            "en16931_interpretation": "credit_note"
+        },
+        {
+            "code": "575",
+            "common_name": "Insurer's invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "623",
+            "common_name": "Forwarder's invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "633",
+            "common_name": "Port charges documents",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "751",
+            "common_name": "Invoice information for accounting purposes",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "780",
+            "common_name": "Freight invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "817",
+            "common_name": "Claim notification",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "870",
+            "common_name": "Consular invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "875",
+            "common_name": "Partial construction invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "876",
+            "common_name": "Partial final construction invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "877",
+            "common_name": "Final construction invoice",
+            "en16931_interpretation": "invoice"
+        },
+        {
+            "code": "935",
+            "common_name": "Customs invoice",
+            "en16931_interpretation": "invoice"
+        }
+    ]
+}

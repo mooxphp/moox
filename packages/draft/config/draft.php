@@ -8,8 +8,6 @@ use Moox\Media\Resources\MediaResource;
 use Moox\News\Resources\NewsResource;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
-use Moox\User\Models\User;
-use Moox\User\Resources\UserResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,15 +89,6 @@ return [
                     'category' => [
                         'resource' => CategoryResource::class,
                     ],
-                    'user' => [
-                        'resource' => UserResource::class,
-                    ],
-                    // 'user' => [
-                    //     'resource' => UserResource::class,
-                    // ],
-                    // 'user-device' => [
-                    //     'resource' => UserDeviceResource::class,
-                    // ],
                 ],
                 'registry' => [
                     'sources' => [

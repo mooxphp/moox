@@ -146,6 +146,29 @@ The command behaves like a normal Laravel Artisan command – all prompts are sh
 
 **Note:** All commands executed via the web UI are automatically logged in the database (see [Command Execution Logging](#command-execution-logging)).
 
+**Important:** Commands must be listed in `config/prompts.php` under `allowed_commands` before they appear in the Filament Command Runner. By default this list is empty.
+
+## Bundled demo commands
+
+The package ships example FlowCommands for learning and testing. They are registered like any other Artisan command and are always available via CLI. For the Filament Command Runner, add their signatures to `allowed_commands`.
+
+| Command | Purpose |
+| --- | --- |
+| `prompts:project-setup` | Full wizard with conditional steps, `$this->call()`, optional side effects |
+| `prompts:test-failed` | Tests the `failed` status in Command Executions |
+
+Demo commands are marked with `[Demo]` in their description. Side effects (`vendor:publish`, file writes) are **opt-in** and default to **off**.
+
+```php
+// config/prompts.php
+'allowed_commands' => [
+    'prompts:project-setup',
+    'prompts:test-failed',
+],
+```
+
+Source: `Moox\Prompts\Commands\ProjectSetupWithConditionsCommand`, `Moox\Prompts\Commands\TestFailedCommand`.
+
 ## How and why reflection is used
 
 If you’re just writing commands, you don’t need to care about reflection.  

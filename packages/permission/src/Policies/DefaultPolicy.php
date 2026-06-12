@@ -2,55 +2,69 @@
 
 namespace Moox\Permission\Policies;
 
-use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\PermissionRegistrar;
 
 class DefaultPolicy
 {
-    protected $user;
+    protected mixed $user;
 
     public function __construct($guard = null)
     {
         $guard ??= Auth::getDefaultDriver();
 
         $this->user = Auth::guard($guard)->user();
-
-        if (! method_exists($this->user, 'hasPermissionTo')) {
-            throw new Exception("The user object does not have the method 'hasPermissionTo'.");
-        }
     }
 
-    protected function hasPermission($permission)
+    protected function hasPermission(string $permission): bool
     {
+        if (! $this->permissionSystemAvailable()) {
+            return true;
+        }
+
+        if (! $this->user || ! method_exists($this->user, 'hasPermissionTo')) {
+            return true;
+        }
+
         return $this->user->hasPermissionTo($permission);
     }
 
-    public function view()
+    protected function permissionSystemAvailable(): bool
+    {
+        if (! class_exists(PermissionRegistrar::class)) {
+            return false;
+        }
+
+        return Schema::hasTable('permissions');
+    }
+
+    public function view(): bool
     {
         return $this->hasPermission('view');
     }
 
-    public function edit()
+    public function edit(): bool
     {
         return $this->hasPermission('edit');
     }
 
-    public function create()
+    public function create(): bool
     {
         return $this->hasPermission('create');
     }
 
-    public function delete()
+    public function delete(): bool
     {
         return $this->hasPermission('delete');
     }
 
-    public function restore()
+    public function restore(): bool
     {
         return $this->hasPermission('restore');
     }
 
-    public function publish()
+    public function publish(): bool
     {
         return $this->hasPermission('publish');
     }
@@ -75,17 +89,17 @@ class DefaultPolicy
         return $this->hasPermission('publish own') && $model->user_id === $this->user->id;
     }
 
-    public function bulkModify()
+    public function bulkModify(): bool
     {
         return $this->hasPermission('bulk modify');
     }
 
-    public function timeTravel()
+    public function timeTravel(): bool
     {
         return $this->hasPermission('time travel');
     }
 
-    public function forceDelete()
+    public function forceDelete(): bool
     {
         return $this->hasPermission('force delete');
     }

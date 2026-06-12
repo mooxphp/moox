@@ -105,6 +105,11 @@ return [
         | Single packages from the FOSS repository.
         |
         */
+        'address' => [
+            'active' => false,
+            'path' => $public_base_path.'/address',
+            'type' => 'public',
+        ],
         'attribute' => [
             'active' => false,
             'path' => $public_base_path.'/attribute',
@@ -170,9 +175,19 @@ return [
             'path' => $public_base_path.'/cloudflare',
             'type' => 'public',
         ],
+        'company' => [
+            'active' => false,
+            'path' => $public_base_path.'/company',
+            'type' => 'public',
+        ],
         'components' => [
             'active' => false,
             'path' => $public_base_path.'/components',
+            'type' => 'public',
+        ],
+        'contact' => [
+            'active' => false,
+            'path' => $public_base_path.'/contact',
             'type' => 'public',
         ],
         'connect' => [
@@ -482,6 +497,11 @@ return [
         'themes' => [
             'active' => false,
             'path' => $public_base_path.'/themes',
+            'type' => 'public',
+        ],
+        'transform' => [
+            'active' => false,
+            'path' => $public_base_path.'/transform',
             'type' => 'public',
         ],
         'trainings' => [

@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('invoices', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->string('invoice_number')->index();
+            $table->string('invoice_date');
+            $table->string('document_type');
+            $table->string('due_date')->nullable();
+            $table->string('currency')->default('EUR');
+            $table->string('customer_reference')->nullable();
+            $table->string('order_number')->nullable();
+            $table->string('order_date')->nullable();
+            // Incoterms — no native EN element; serialized as note in e-billing / ZUGFeRD layer.
+            $table->string('pricing_basis')->nullable();
+            $table->json('seller')->nullable();
+            $table->json('buyer')->nullable();
+            $table->json('delivery')->nullable();
+            $table->json('payment_means')->nullable();
+            $table->decimal('net_total', 12, 2)->default(0);
+            $table->decimal('vat_rate', 5, 2)->default(19.00);
+            $table->decimal('vat_amount', 12, 2)->default(0);
+            $table->decimal('gross_total', 12, 2)->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->string('scope')->nullable()->index();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('invoices');
+    }
+};

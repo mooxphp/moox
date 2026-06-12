@@ -6,6 +6,8 @@ use Illuminate\Cache\ArrayStore;
 use Illuminate\Contracts\Console\Kernel;
 use Livewire\Livewire;
 use Moox\Core\MooxServiceProvider;
+use Moox\Prompts\Commands\ProjectSetupWithConditionsCommand;
+use Moox\Prompts\Commands\TestFailedCommand;
 use Moox\Prompts\Filament\Components\RunCommandComponent;
 use Moox\Prompts\Support\CliPromptRuntime;
 use Moox\Prompts\Support\PromptFlowRunner;
@@ -24,7 +26,11 @@ class PromptsServiceProvider extends MooxServiceProvider
             ->hasConfigFile('prompts')
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_command_executions_table']);
+            ->hasMigrations(['create_command_executions_table'])
+            ->hasCommands(
+                ProjectSetupWithConditionsCommand::class,
+                TestFailedCommand::class,
+            );
     }
 
     public function register()

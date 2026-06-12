@@ -29,12 +29,32 @@ class PromptFlowStateStore
 
     public function get(string $flowId): ?PromptFlowState
     {
-        return $this->cache->get($this->key($flowId));
+        $value = $this->cache->get($this->key($flowId));
+
+        if ($value === null) {
+            return null;
+        }
+
+        if ($value instanceof PromptFlowState) {
+            return $value;
+        }
+
+        if ($value instanceof \__PHP_Incomplete_Class) {
+            $this->cache->forget($this->key($flowId));
+
+            return null;
+        }
+
+        if (is_array($value)) {
+            return PromptFlowState::fromArray($value);
+        }
+
+        return null;
     }
 
     public function put(PromptFlowState $state): void
     {
-        $this->cache->put($this->key($state->flowId), $state, $this->ttlSeconds);
+        $this->cache->put($this->key($state->flowId), $state->toArray(), $this->ttlSeconds);
     }
 
     public function reset(string $flowId, ?string $commandName = null): void

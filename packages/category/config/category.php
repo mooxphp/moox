@@ -2,7 +2,6 @@
 
 use Moox\Category\Models\Category;
 use Moox\Media\Resources\MediaResource;
-use Moox\Tag\Resources\TagResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,9 +84,6 @@ return [
                 'allowed' => [
                     'media' => [
                         'resource' => MediaResource::class,
-                    ],
-                    'tag' => [
-                        'resource' => TagResource::class,
                     ],
                 ],
                 'registry' => [
