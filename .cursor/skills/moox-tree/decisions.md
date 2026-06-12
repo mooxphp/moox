@@ -59,8 +59,52 @@ Für jede Gabelung: `AskQuestion`, wenn der Kontext die Wahl nicht eindeutig mac
 
 - `modifyQuery` → `Resource::getEloquentQuery()`; mit Filament-Toolbar zusätzlich Filter der List-Page
 - List-Page mit Tabs: bei Tab-Wechsel `refreshTreeIndexConfiguration()` aufrufen
+- Forward-Resource darf **nicht** `final` sein (`TreeInlineFormResourceAdapter`)
 
 **Ohne `forwardFromResource`:** `modifyQuery` muss dieselbe Sicht wie `getEloquentQuery()` abbilden (Policies, Scopes, Mandanten).
+
+---
+
+## 4. Inspector
+
+**Frage:** Volles Filament-Formular oder Minimalformular?
+
+| Option | Wann wählen | Dateien | Config |
+|--------|-------------|---------|--------|
+| **Volles Formular** | Edit-Page mit Tabs, Relationen, Medien existiert oder geplant | `TreeInspectorXxx extends EditXxx` + `RendersAsTreeIndexInspector`; Route `tree-inspector` | `->inspectorPage(TreeInspectorXxx::class)` |
+| **Minimalformular** | Nur Label + Parent reichen | Keine Inspector-Page nötig | `inspectorPage()` weglassen |
+
+**Konsequenzen volles Formular:**
+
+- **Standalone** Route `tree-inspector`: `$resource` in `TreeInspectorXxx` = **Basis-Resource** (`XxxResource`), nicht `XxxTreeResource`
+- **Inline** auf `TreeIndexListRecords`: Formular aus `forwardFromResource()` (typisch die Tree-Resource); kein Consumer-Trait — `TreeInlineFormResourceAdapter` + `InteractsWithTreeResourceInspectorForm`
+- Route `tree-inspector` empfohlen (Policies, URLs, Page-Hooks)
+- Trait `RendersAsTreeIndexInspector`: kein Redirect nach Save, Event `tree-index-record-saved`
+
+**Create im Inspector** (nur bei vollem Formular):
+
+| Option | Config | Voraussetzung |
+|--------|--------|---------------|
+| Resource-Create inline (Standard) | `inspectorPage()` + `forwardFromResource()` | Create-Route in `getPages()` der Forward-Resource (z. B. von Parent geerbt) |
+| Explizite Create-Page | `->inspectorCreatePage(CreateXxx::class)` | Create-Page-Klasse vorhanden |
+| Stub-Create (Label-Knoten) | `->stubCreate()` | Kein Resource-Formular beim Anlegen |
+
+Header-**Create** auf der List-Page ruft `createRootNode()` auf — öffnet bei `usesResourceCreateInspector()` das Create-Formular rechts, sonst legt `CreateTreeNodeAction` einen Stub-Knoten an.
+
+**Referenz:** `TreeInspectorCategory` → `$resource = CategoryResource::class`; Create: `CreateCategory` über Parent-`getPages()`
+
+---
+
+## 5. Fehlende Fähigkeit
+
+**Frage:** Verhalten nicht über bestehende Config erreichbar — Closure im Consumer oder Package erweitern?
+
+| Option | Wann wählen | Aktion |
+|--------|-------------|--------|
+| **Config-Closures im Consumer** | Nur diese Resource/Domäne betroffen | `modifyQuery`, `applySearchUsing`, `applyLanguageUsing`, `labels()` |
+| **Feature in `packages/tree`** | Andere Bäume würden dasselbe brauchen | **Nicht** im Consumer duplizieren; User bitten, Package-Regel zu nutzen und Skill zu verlassen |
+
+**Regel:** Generische UI/CRUD (Toolbar, Reorder, Expand, Validierung) gehört ins Package. Domänen-Inhalte (Formular-Felder, Relationen) nur im Inspector.
 
 ---
 
@@ -83,7 +127,7 @@ Für jede Gabelung: `AskQuestion`, wenn der Kontext die Wahl nicht eindeutig mac
 | User: „ohne Sprache / kein Language Switcher“ | Sprache = Nein |
 | User: „Suche funktioniert nicht“ / „mit Suche wie Liste“ | Suche = Ja |
 | Model mit `translations` / Category-Pattern | Sprache = Ja |
-| Einfache Hierarchie ohne i18n (z. B. User, Org-Chart) | Sprache = Nein |
+| Einfache Hierarchie ohne i18n (z. B. Org-Chart) | Sprache = Nein |
 | Bestehende Resource mit `table()->filters()` / Tabs | Filter = Ja, wenn User nicht widerspricht |
 
 ### Entscheidungsmatrix → Config
@@ -113,7 +157,7 @@ public static function applyListSearchToQuery(Builder $query, string $search): B
 }
 ```
 
-Referenz: `UserTreeResource::applyListSearchToQuery()`.
+Referenz: `TestForwardTreeResource::getTitleColumn()` (Package-Tests) oder `getTitleColumn()` auf der Forward-Resource.
 
 ### Filter / Tabs
 
@@ -127,40 +171,8 @@ Referenz: `UserTreeResource::applyListSearchToQuery()`.
 | Filament-Table-Toolbar (`useFilamentTableToolbar: true`) | Standard (nichts extra) | `->filamentTableLanguageSwitcher(false)` |
 | Baum-Spalte (`useFilamentTableToolbar: false`) | `->toolbarLanguageSwitcher()` + ggf. `toolbarLocalizedTranslations()` | weglassen |
 
-**Referenz ohne Sprache:** `UserTreeResource::treeIndex()`  
-**Referenz mit Sprache:** `CategoryTreeResource::treeIndex()`
-
----
-
-## 4. Inspector
-
-**Frage:** Volles Filament-Formular oder Minimalformular?
-
-| Option | Wann wählen | Dateien | Config |
-|--------|-------------|---------|--------|
-| **Volles Formular** | Edit-Page mit Tabs, Relationen, Medien existiert oder geplant | `TreeInspectorXxx extends EditXxx` + `RendersAsTreeIndexInspector`; Route `tree-inspector` | `->inspectorPage(TreeInspectorXxx::class)` |
-| **Minimalformular** | Nur Label + Parent reichen | Keine Inspector-Page nötig | `inspectorPage()` weglassen |
-
-**Konsequenzen volles Formular:**
-
-- `$resource` in Inspector = **Basis-Resource** (`XxxResource`), nicht `XxxTreeResource`
-- Route `tree-inspector` empfohlen (Policies, URLs)
-- Trait: kein Redirect nach Save, Event `tree-index-record-saved`
-
-**Referenz:** `TreeInspectorCategory` → `$resource = CategoryResource::class`
-
----
-
-## 5. Fehlende Fähigkeit
-
-**Frage:** Verhalten nicht über bestehende Config erreichbar — Closure im Consumer oder Package erweitern?
-
-| Option | Wann wählen | Aktion |
-|--------|-------------|--------|
-| **Config-Closures im Consumer** | Nur diese Resource/Domäne betroffen | `modifyQuery`, `applySearchUsing`, `applyLanguageUsing`, `labels()` |
-| **Feature in `packages/tree`** | Andere Bäume würden dasselbe brauchen | **Nicht** im Consumer duplizieren; User bitten, Package-Regel zu nutzen und Skill zu verlassen |
-
-**Regel:** Generische UI/CRUD (Toolbar, Reorder, Expand, Validierung) gehört ins Package. Domänen-Inhalte (Formular-Felder, Relationen) nur im Inspector.
+**Referenz mit Sprache:** `CategoryTreeResource::treeIndex()`  
+**Referenz ohne Sprache:** `->filamentTableLanguageSwitcher(false)` in `treeIndex()` (siehe Schnell-Matrix unten)
 
 ---
 
@@ -184,7 +196,7 @@ TreeIndexConfiguration::make(Model::class)
     ->labels(...);
 ```
 
-**Häufig ohne Sprache** (z. B. User, Menü ohne i18n):
+**Häufig ohne Sprache** (z. B. Menü ohne i18n):
 
 ```php
 TreeIndexConfiguration::make(Model::class)

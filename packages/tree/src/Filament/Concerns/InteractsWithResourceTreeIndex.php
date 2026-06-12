@@ -2,110 +2,89 @@
 
 declare(strict_types=1);
 
-namespace Moox\Tree\Livewire;
+namespace Moox\Tree\Filament\Concerns;
 
 use Filament\Notifications\Notification;
-use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Livewire\Attributes\On;
-use Livewire\Component;
 use Moox\Tree\Actions\Tree\CreateTreeNodeAction;
 use Moox\Tree\Actions\Tree\MoveTreeNodeAction;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Exceptions\InvalidTreeParentException;
-use Moox\Tree\Filament\Pages\TreeIndexCreateInspectorPageFactory;
-use Moox\Tree\Livewire\Concerns\ManagesTreeForm;
-use Moox\Tree\Livewire\Concerns\ManagesTreeSelection;
-use Moox\Tree\Livewire\Concerns\ManagesTreeToolbar;
 use Moox\Tree\Support\TreeIndexAuthorizer;
+use Moox\Tree\Support\TreeLocale;
 use Moox\Tree\Support\TreeStructure;
 
-class ResourceTreeIndex extends Component
+trait InteractsWithResourceTreeIndex
 {
+    use InteractsWithTreeResourceInspectorForm;
     use ManagesTreeForm;
     use ManagesTreeSelection;
-    use ManagesTreeToolbar;
 
-    public string $configurationKey = '';
+    public string $search = '';
 
-    public function mount(
-        string $configurationKey,
-        string $search = '',
-        string $lang = '',
-        ?int $selectedRecordId = null,
-    ): void {
-        $this->configurationKey = $configurationKey;
-        $this->authorizeTreeIndex();
-        $this->mountTreeToolbar($search, $lang);
-
-        if ($selectedRecordId !== null) {
-            $this->selectedRecordId = $selectedRecordId;
+    public function mountInteractsWithResourceTreeIndex(): void
+    {
+        if ($this->search === '' && $this->usesStandaloneToolbarSearch()) {
+            $this->search = (string) request()->input('search', request()->input('tableSearch', ''));
         }
 
-        $this->resetForm();
-        $this->loadSelectedRecord();
+        $this->loadInspectorOrStubForm();
     }
 
-    public function hydrate(): void
+    public function hydrateInteractsWithResourceTreeIndex(): void
     {
-        $this->hydrateTreeToolbar();
+        TreeLocale::syncToRequest($this->lang);
     }
 
-    public function render(): View
+    /**
+     * @return array<string, mixed>
+     */
+    public function getTreeIndexViewData(): array
     {
         $tree = $this->getTree();
         $structure = $this->treeStructure();
+        $configuration = $this->configuration();
 
-        return view('filament-tree-index::livewire.resource-tree-index', [
-            'configuration' => $this->configuration(),
+        return [
+            'configuration' => $configuration,
             'tree' => $tree,
             'treeBranchIdsWithChildren' => $structure->branchIdsWithChildren($tree),
-            'treeAncestorIdsForSelection' => $this->selectedRecordId === null
+            'treeAncestorIdsForSelection' => $this->treeSelectedId === null
                 ? []
-                : $structure->ancestorIds($this->selectedRecordId),
+                : $structure->ancestorIds($this->treeSelectedId),
             'parentOptions' => $this->getParentOptions(),
             'selectedRecord' => $this->getSelectedRecord(),
-            'inspectorPageClass' => $this->configuration()->getInspectorPageClass(),
-            'inspectorCreatePageClass' => $this->configuration()->usesResourceCreateInspector()
-                ? TreeIndexCreateInspectorPageFactory::resolve($this->configurationKey)
-                : null,
-            'configurationKey' => $this->configurationKey,
+            'usesResourceInspectorPanel' => $this->usesResourceInspectorPanel(),
+            'usesResourceCreateInspector' => $configuration->usesResourceCreateInspector(),
             'isCreatingInspector' => $this->isCreatingInspector,
             'creatingParentId' => $this->creatingParentId,
-            'isToolbarSearchEnabled' => $this->configuration()->isToolbarSearchEnabled(),
-            'isToolbarLanguageSwitcherEnabled' => $this->configuration()->isToolbarLanguageSwitcherEnabled(),
-        ]);
+            'isToolbarSearchEnabled' => $configuration->isToolbarSearchEnabled(),
+            'isToolbarLanguageSwitcherEnabled' => $configuration->isToolbarLanguageSwitcherEnabled(),
+            'canRenderInspectorForm' => $this->supportsInspectorForm(),
+        ];
     }
 
-    #[On('tree-index-record-saved')]
-    public function refreshAfterInspectorSave(): void
+    public function changeLanguage(string $lang): void
     {
-        $this->loadSelectedRecord();
+        $this->lang = $lang;
+        TreeLocale::syncToRequest($this->lang);
+
+        if ($this->treeSelectedId !== null || $this->isCreatingInspector) {
+            $this->refreshInspectorFormForLanguageChange();
+
+            return;
+        }
+
+        $this->redirectAfterTreeLanguageChange($lang);
     }
 
-    #[On('tree-index-record-created')]
-    public function refreshAfterInspectorCreate(int $recordId): void
-    {
-        $this->isCreatingInspector = false;
-        $this->creatingParentId = null;
-        $this->selectedRecordId = $recordId;
-        $this->syncTreeSelectionToParent();
-    }
-
-    #[On('tree-index-create-root')]
     public function createRootNode(): void
     {
         $this->authorizeTreeIndex();
         $this->createNode();
-    }
-
-    public function createChildNode(): void
-    {
-        $this->authorizeTreeIndex();
-        $this->createNode($this->selectedRecordId);
     }
 
     public function moveTreeNode(int|string $recordId, int|string $position, int|string|null $parentId = null): void
@@ -133,14 +112,23 @@ class ResourceTreeIndex extends Component
             return;
         }
 
-        if ($this->selectedRecordId === $recordKey) {
-            $this->loadSelectedRecord();
+        if ($this->treeSelectedId === $recordKey) {
+            $this->loadInspectorOrStubForm();
         }
+    }
+
+    protected function treeSearch(): string
+    {
+        if ($this->configuration()->usesFilamentTableToolbar()) {
+            return (string) ($this->tableSearch ?? '');
+        }
+
+        return $this->search;
     }
 
     protected function configuration(): TreeIndexConfiguration
     {
-        return TreeIndexConfigurationRegistry::resolve($this->configurationKey);
+        return TreeIndexConfigurationRegistry::resolve($this->treeIndexConfigurationKey);
     }
 
     protected function authorizeTreeIndex(): void
@@ -152,22 +140,22 @@ class ResourceTreeIndex extends Component
         app(TreeIndexAuthorizer::class, ['configuration' => $this->configuration()])->authorize();
     }
 
-    private function createNode(?int $parentId = null): void
+    protected function createNode(): void
     {
         if ($this->configuration()->usesResourceCreateInspector()) {
             $this->isCreatingInspector = true;
-            $this->creatingParentId = $parentId;
-            $this->selectedRecordId = null;
-            $this->syncTreeSelectionToParent();
+            $this->creatingParentId = null;
+            $this->treeSelectedId = null;
+            $this->fillInspectorFormForCreate();
 
             return;
         }
 
         $record = app(CreateTreeNodeAction::class, ['configuration' => $this->configuration()])
-            ->handle($parentId);
+            ->handle();
 
-        $this->selectedRecordId = (int) $record->getKey();
-        $this->loadSelectedRecord();
+        $this->treeSelectedId = (int) $record->getKey();
+        $this->loadInspectorOrStubForm();
 
         Notification::make()
             ->title('Eintrag erstellt')
@@ -178,7 +166,7 @@ class ResourceTreeIndex extends Component
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function getTree(): array
+    protected function getTree(): array
     {
         $records = $this->loadTreeRecords();
         $structure = $this->treeStructure();
@@ -193,14 +181,14 @@ class ResourceTreeIndex extends Component
     /**
      * @return Collection<int, Model>
      */
-    private function loadTreeRecords(): Collection
+    protected function loadTreeRecords(): Collection
     {
         $configuration = $this->configuration();
         $query = $this->query();
         $query = $configuration->applyLanguage($query, $this->lang);
 
         if ($this->shouldApplySearchToTreeQuery()) {
-            $query = $configuration->applySearch($query, $this->search);
+            $query = $configuration->applySearch($query, $this->treeSearch());
         }
 
         $query = $configuration->applyTreeOrdering($query);
@@ -210,6 +198,23 @@ class ResourceTreeIndex extends Component
         }
 
         return $query->get();
+    }
+
+    protected function shouldApplySearchToTreeQuery(): bool
+    {
+        $configuration = $this->configuration();
+
+        if ($configuration->usesFilamentTableToolbar()) {
+            return true;
+        }
+
+        return $this->usesStandaloneToolbarSearch();
+    }
+
+    protected function usesStandaloneToolbarSearch(): bool
+    {
+        return $this->configuration()->getSourceResourceClass() === null
+            || $this->configuration()->isToolbarSearchEnabled();
     }
 
     private function normalizeParentGroup(int|string|null $parentId): ?int
@@ -242,5 +247,38 @@ class ResourceTreeIndex extends Component
         $modelClass = $this->configuration()->modelClass();
 
         return (new $modelClass)->getTable();
+    }
+
+    protected function refreshInspectorFormForLanguageChange(): void
+    {
+        if (! $this->usesResourceInspectorPanel()) {
+            return;
+        }
+
+        if ($this->isCreatingInspector) {
+            $this->fillInspectorFormForCreate($this->creatingParentId);
+
+            return;
+        }
+
+        if ($this->treeSelectedId !== null) {
+            $this->fillInspectorFormForSelectedRecord();
+        }
+    }
+
+    protected function redirectAfterTreeLanguageChange(string $lang): void
+    {
+        if (! method_exists(static::class, 'getResource')) {
+            return;
+        }
+
+        $tab = property_exists($this, 'activeTab') && filled($this->activeTab ?? null)
+            ? (string) $this->activeTab
+            : null;
+
+        $this->redirect(static::getResource()::getUrl(
+            'index',
+            TreeLocale::languageChangeParameters($lang, $tab, $this->treeSelectedId),
+        ));
     }
 }

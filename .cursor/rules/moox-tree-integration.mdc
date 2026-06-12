@@ -15,7 +15,7 @@ Wenn eine Resource einen Baum-Index statt einer Tabelle nutzt.
 Consumer liefert nur:
 
 - `treeIndex(): TreeIndexConfiguration` mit `->forwardFromResource(static::class, useFilamentTableToolbar: true)` — **1:1** wie die Liste: Filament-`EmbeddedTable` (Tabs, Filter, Suche, Language-Switcher in `TOOLBAR_SEARCH_BEFORE`) + `applyFiltersToTableQuery()` / `applySearchToTableQuery()` auf der List-Page; kein separater Lang-Switcher in der Baum-Spalte
-- dünne Filament-Pages (`TreeIndexListRecords`, optional Inspector mit **Domänen-Formular**)
+- dünne Filament-Pages (`TreeIndexListRecords` als einziger Livewire-Host; optional standalone `TreeInspectorXxx` für Route `tree-inspector`)
 - ggf. `modifyQuery` / `applySearchUsing` / `applyLanguageUsing` als **Closures** (nur Datenfilter, keine Tree-Mechanik)
 
 Braucht eine Resource ein Verhalten, das andere Bäume auch brauchen könnten → **Feature ins `packages/tree`**, dann per Config aktivieren.
@@ -41,9 +41,11 @@ Tree-Mechanik gehört ins **Tree-Package**; die Resource **verdrahtet** nur übe
 
 ## Inspector (empfohlen)
 
-- Eigene Edit-Page mit `RendersAsTreeIndexInspector` + Route `tree-inspector` (Policies/URLs).
 - In Config: `->inspectorPage(TreeInspectorXxx::class)`.
-- Ohne Inspector: nur eingebautes Minimalformular (Label + Parent).
+- **Inline** (Standard): `TreeIndexListRecords` rendert `Resource::form()` rechts; Form-Actions via `TreeInlineFormResourceAdapter` — kein Consumer-Trait.
+- **Standalone** Route `tree-inspector`: Edit-Page mit `RendersAsTreeIndexInspector`; `$resource` = Basis-Resource (nicht Tree-Resource).
+- Create: Header-Action `createRootNode()` öffnet Resource-Create inline, wenn Create-Route in `getPages()` der Forward-Resource existiert; sonst `stubCreate()` oder Stub-Knoten.
+- Ohne `inspectorPage()`: eingebautes Minimalformular (Label + Parent).
 
 ## Nested Set & Label
 
@@ -57,7 +59,7 @@ Tree-Mechanik gehört ins **Tree-Package**; die Resource **verdrahtet** nur übe
 
 ## Checkliste neue Resource
 
-Model-Spalten (ohne Tree-Methoden) → `treeIndex()` → `TreeIndexListRecords` → Pages/Routes → optional Inspector → Feature-Test für Config oder Livewire.
+Model-Spalten (ohne Tree-Methoden) → `treeIndex()` → `TreeIndexListRecords` → Pages/Routes → optional Inspector → Feature-Test für Config oder `TreeIndexListRecords` / `TestTreeIndexHost`.
 
 ## UI-Schaltflächen & Formular
 

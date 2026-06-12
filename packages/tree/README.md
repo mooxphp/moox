@@ -1,52 +1,52 @@
 # moox/tree
 
-**`moox/tree`** ist ein internes Laravel-/Filament-Package für hierarchische Eloquent-Modelle. Es ersetzt die klassische **Tabellen-Listenansicht** eines Filament-Resources durch eine **zweispaltige Baum-Oberfläche**:
+**`moox/tree`** is an internal Laravel/Filament package for hierarchical Eloquent models. It replaces the classic **table list view** of a Filament resource with a **two-column tree interface**:
 
-| Bereich    | Funktion                                                            |
+| Area       | Function                                                            |
 | ---------- | ------------------------------------------------------------------- |
-| **Links**  | Hierarchischer Baum (Auswahl, Auf-/Zuklappen, optional Drag & Drop) |
-| **Rechts** | **Inspector** – Bearbeitung des gewählten Datensatzes               |
+| **Left**   | Hierarchical tree (selection, expand/collapse, optional drag & drop) |
+| **Right**  | **Inspector** – edit the selected record                            |
 
-Technisch basiert das Package auf **Livewire**, **Alpine.js** (`$store.filamentTreeIndex`), **Filament Panels** und **Action-Klassen** für CRUD am Baum. Geschäftslogik liegt in Actions (`CreateTreeNodeAction`, `UpdateTreeNodeAction`, `MoveTreeNodeAction`, `AssignTreeNodePositionAction`, …), nicht in der UI.
+Technically, the package is built on **Livewire**, **Alpine.js** (`$store.filamentTreeIndex`), **Filament Panels**, and **Action classes** for CRUD on the tree. Business logic lives in Actions (`CreateTreeNodeAction`, `UpdateTreeNodeAction`, `MoveTreeNodeAction`, `AssignTreeNodePositionAction`, …), not in the UI.
 
-Namespace: `Moox\Tree` · Views/Config-Tag: `filament-tree-index`
+Namespace: `Moox\Tree` · Views/Config tag: `filament-tree-index`
 
-## Schnellstart
+## Quick start
 
-Diese Anleitung führt dich in **5 Schritten** von der Installation bis zur laufenden Baum-Resource.
+This guide walks you through **5 steps** from installation to a running tree resource.
 
-### Schritt 1: Package einbinden
+### Step 1: Install the package
 
 ```bash
 composer require moox/tree:@dev
 ```
 
-Das Package liegt unter `packages/tree`. Im Moox-Monorepo ist das Path-Repository für `packages/*` bereits konfiguriert. Der `TreeServiceProvider` wird per Laravel Auto-Discovery registriert und lädt Views, CSS (`tree.css` via FilamentAsset), die Livewire-Komponente `ResourceTreeIndex` sowie das Alpine-Store-Script.
+The package lives under `packages/tree`. In the Moox monorepo, the path repository for `packages/*` is already configured. The `TreeServiceProvider` is registered via Laravel auto-discovery and loads views, CSS (`tree.css` via FilamentAsset), and the Alpine store script. The tree and inspector run on **one** Livewire component (`TreeIndexListRecords`).
 
-Optional publishen:
+Optional publish:
 
 ```bash
 php artisan vendor:publish --tag=filament-tree-index-config
 php artisan filament:assets
 ```
 
-### Schritt 2: Model vorbereiten
+### Step 2: Prepare the model
 
-**Adjacency List** (Standard) – Spalten `parent_id`, `sort_order`, Label-Spalte (Default: `label`):
+**Adjacency list** (default) – columns `parent_id`, `sort_order`, label column (default: `label`):
 
 ```php
 protected $fillable = ['parent_id', 'label', 'sort_order'];
 ```
 
-**Nested Set** – zusätzlich `_lft`/`_rgt`, Model mit Kalnoy `NodeTrait`:
+**Nested set** – additionally `_lft`/`_rgt`, model with Kalnoy `NodeTrait`:
 
 ```bash
 composer require kalnoy/nestedset
 ```
 
-### Schritt 3: Dateien anlegen
+### Step 3: Create the files
 
-Für jede Baum-Resource brauchst du **genau diese Dateien** (Namen anpassen):
+For each tree resource you need **exactly these files** (adjust names as needed):
 
 ```
 src/
@@ -56,15 +56,16 @@ src/
 │   └── CategoryResource/
 │       └── Pages/
 │           ├── TreeListCategories.php    ← extends TreeIndexListRecords
-│           ├── TreeInspectorCategory.php ← optional: Inspector-Formular
-│           └── EditCategory.php          ← bestehende Edit-Page (Formular-Quelle)
+│           ├── TreeInspectorCategory.php ← optional: standalone inspector route
+│           ├── EditCategory.php          ← existing edit page (form source)
+│           └── CreateCategory.php        ← create page (inline inspector create)
 └── Plugins/
-    └── CategoryTreePlugin.php            ← Resource im Panel registrieren
+    └── CategoryTreePlugin.php            ← register resource in panel
 ```
 
-### Schritt 4: Code einfügen
+### Step 4: Add the code
 
-**`CategoryTreeResource.php`** – Konfiguration und Routing:
+**`CategoryTreeResource.php`** – configuration and routing:
 
 ```php
 use Illuminate\Support\Arr;
@@ -84,12 +85,11 @@ class CategoryTreeResource extends CategoryResource implements ConfiguresTreeInd
             ->reorderable(true)
             ->inspectorPage(TreeInspectorCategory::class)
             ->labels(
-                treeHeading: 'Kategorien',
-                treeSubheading: 'Baum',
-                inspectorHeading: 'Kategorie',
-                createRootLabel: 'Neue Kategorie',
-                createChildLabel: 'Unterkategorie',
-                newRecordLabel: 'Neue Kategorie',
+                treeHeading: 'Categories',
+                treeSubheading: 'Tree',
+                inspectorHeading: 'Category',
+                createRootLabel: 'New category',
+                newRecordLabel: 'New category',
             );
     }
 
@@ -104,7 +104,7 @@ class CategoryTreeResource extends CategoryResource implements ConfiguresTreeInd
 }
 ```
 
-**`TreeListCategories.php`** – List-Page (registriert die Config beim `mount()`):
+**`TreeListCategories.php`** – list page (registers config on `mount()`):
 
 ```php
 use Moox\Tree\Filament\Pages\TreeIndexListRecords;
@@ -115,7 +115,7 @@ class TreeListCategories extends TreeIndexListRecords
 }
 ```
 
-**`TreeInspectorCategory.php`** (optional) – volles Filament-Formular rechts:
+**`TreeInspectorCategory.php`** (optional) – full Filament form on the right:
 
 ```php
 use Moox\Tree\Filament\Concerns\RendersAsTreeIndexInspector;
@@ -124,12 +124,12 @@ class TreeInspectorCategory extends EditCategory
 {
     use RendersAsTreeIndexInspector;
 
-    // Wichtig: auf die Basis-Resource zeigen (Formular-Quelle), nicht auf CategoryTreeResource
+    // Important: point to the base resource (form source), not CategoryTreeResource
     protected static string $resource = CategoryResource::class;
 }
 ```
 
-**`CategoryTreePlugin.php`** – Resource im Filament-Panel registrieren:
+**`CategoryTreePlugin.php`** – register resource in the Filament panel:
 
 ```php
 use Filament\Contracts\Plugin;
@@ -156,7 +156,7 @@ class CategoryTreePlugin implements Plugin
 }
 ```
 
-Plugin im Panel-Provider aktivieren:
+Enable the plugin in the panel provider:
 
 ```php
 ->plugins([
@@ -164,119 +164,123 @@ Plugin im Panel-Provider aktivieren:
 ])
 ```
 
-### Schritt 5: Prüfen
+### Step 5: Verify
 
-1. Panel öffnen → Navigationseintrag der Tree-Resource
-2. Baum links: Einträge anlegen, auf-/zuklappen, optional per Drag & Drop verschieben
-3. Eintrag wählen → Inspector rechts zeigt das Formular
-4. Speichern → Baum aktualisiert sich (Event `tree-index-record-saved`)
-
----
-
-## Was gehört wohin?
-
-Übersicht, **welche Funktion in welcher Datei/Klasse** liegt. Tree-Mechanik gehört ins Package – Consumer-Code nur verdrahten.
-
-| Was | Wo | Aufgabe |
-| --- | --- | --- |
-| `treeIndex()` | **Tree-Resource** (`implements ConfiguresTreeIndex`) | Spalten, Modus, Labels, Inspector, Query-Hooks |
-| `forwardFromResource()` | In `treeIndex()` | Query, Suche, Sprache und Filter 1:1 von der Liste übernehmen |
-| `getPages()` | **Tree-Resource** | `'index'` → Tree-List-Page; optional `'tree-inspector'` |
-| `extends TreeIndexListRecords` | **TreeList-Page** | Registriert Config in Registry; rendert Baum via EmbeddedTable |
-| `use RendersAsTreeIndexInspector` | **TreeInspector-Page** | Schlanke eingebettete Edit-View, kein Redirect nach Save |
-| Formular (Tabs, Relationen, …) | **Edit-Page** (Parent von Inspector) | Domänen-Inhalt; Inspector erbt davon |
-| `$resource` am Inspector | **TreeInspector-Page** | Zeigt auf die **Basis-Resource** (Formular-Quelle), nicht die Tree-Resource |
-| `table()` / `getTitleColumn()` | **Basis-Resource** (oder Tree-Resource bei `forwardFromResource`) | Spalten und Filter für die Toolbar |
-| `getEloquentQuery()` | **Resource** | Scopes, Policies, Mandanten – wird via `forwardFromResource` übernommen |
-| Panel-Registrierung | **Filament-Plugin** | `$panel->resources([XxxTreeResource::class])` |
-| Baum-CRUD, Drag & Drop | **Package** (`ResourceTreeIndex`, Actions) | Nicht im Consumer duplizieren |
-| Label-Auflösung, Locale, Graph-Validierung | **Package** (`TreeNodeLabelResolver`, `TreeLocale`, `TreeGraphValidator`) | Nicht im Consumer duplizieren |
-| Model-Spalten | **Eloquent-Model** | `parent_id`, Sortierung, Label; bei Nested Set `NodeTrait` |
-
-### Zwei Resource-Muster
-
-| Muster | Wann | Aufbau |
-| --- | --- | --- |
-| **Separate Tree-Resource** (empfohlen bei Moox) | Bestehende Tabellen-Resource bleibt, zusätzliche Baum-UI | `CategoryTreeResource extends CategoryResource` + eigenes Plugin |
-| **Eine Resource** | Neues, nur-baumbasiertes Modul | Resource implementiert `ConfiguresTreeIndex`, `getPages()` mit TreeList + optional Inspector |
-
-Bei Moox: Die **Tabellen-Resource** (`CategoryResource`) und die **Baum-Resource** (`CategoryTreeResource`) koexistieren. Der Inspector verweist auf die Tabellen-Resource, weil dort das vollständige Formular definiert ist.
+1. Open the panel → navigation entry for the tree resource
+2. Tree on the left: create entries, expand/collapse, optionally move via drag & drop
+3. **Create** in the page header opens the create form in the right inspector (no `/create` navigation) when a create route exists in `getPages()`
+4. Select an entry → inspector on the right shows the edit form
+5. Save → tree updates (`tree-index-record-saved` event on standalone inspector route)
 
 ---
 
-## Abgrenzung
+## What goes where?
 
-Kein generisches CMS-Plugin, sondern eine **Resource-Index-UI** für hierarchische Eloquent-Modelle (Kategorien, Menüs, Ordnerstrukturen). Referenz im Projekt: `packages/category` (`CategoryTreeResource`, `TreeListCategories`, `TreeInspectorCategory`), tab-aware: `packages/user` (`TreeListUsers` mit `applyForwardedListQuery()`).
+Overview of **which functionality lives in which file/class**. Tree mechanics belong in the package – consumer code only wires things up.
 
-**Regel:** Braucht eine Resource ein Verhalten, das andere Bäume auch nutzen könnten → Feature ins `packages/tree` legen und per Config aktivieren — nicht in Consumer-Packages duplizieren.
+| What | Where | Responsibility |
+| --- | --- | --- |
+| `treeIndex()` | **Tree resource** (`implements ConfiguresTreeIndex`) | Columns, mode, labels, inspector, query hooks |
+| `forwardFromResource()` | In `treeIndex()` | Adopt query, search, language, and filters 1:1 from the list |
+| `getPages()` | **Tree resource** | `'index'` → tree list page; optional `'tree-inspector'` |
+| `extends TreeIndexListRecords` | **Tree list page** | Single Livewire host; tree via `table()->content(tree-index-content)` |
+| `use RendersAsTreeIndexInspector` | **Tree inspector page** (standalone route) | Slim embedded edit view, no redirect after save |
+| Inline inspector form | **Package** (`InteractsWithTreeResourceInspectorForm`, `TreeInlineFormResourceAdapter`) | Renders `Resource::form()` on the list page — no consumer trait |
+| Form (tabs, relations, …) | **Edit/Create pages** | Domain content; inspector inherits edit form; create route enables inline create |
+| `$resource` on standalone inspector | **Tree inspector page** | Points to the **base resource** (form source), not the tree resource |
+| `table()` / `getTitleColumn()` | **Base resource** (or tree resource with `forwardFromResource`) | Columns and filters for the toolbar |
+| `getEloquentQuery()` | **Resource** | Scopes, policies, tenants – adopted via `forwardFromResource` |
+| Panel registration | **Filament plugin** | `$panel->resources([XxxTreeResource::class])` |
+| Tree CRUD, drag & drop | **Package** (`TreeIndexListRecords` + Actions) | Do not duplicate in consumers |
+| Label resolution, locale, graph validation | **Package** (`TreeNodeLabelResolver`, `TreeLocale`, `TreeGraphValidator`) | Do not duplicate in consumers |
+| Model columns | **Eloquent model** | `parent_id`, sort order, label; with nested set `NodeTrait` |
 
-## Anforderungen
+### Two resource patterns
+
+| Pattern | When | Structure |
+| --- | --- | --- |
+| **Separate tree resource** (recommended in Moox) | Existing table resource remains, additional tree UI | `CategoryTreeResource extends CategoryResource` + dedicated plugin |
+| **Single resource** | New, tree-only module | Resource implements `ConfiguresTreeIndex`, `getPages()` with TreeList + optional inspector |
+
+In Moox: the **table resource** (`CategoryResource`) and the **tree resource** (`CategoryTreeResource`) coexist. The standalone inspector page references the table resource; the inline inspector resolves the form from `forwardFromResource()` (typically the tree resource class, which inherits `form()` from the base resource).
+
+---
+
+## Scope
+
+Not a generic CMS plugin, but a **resource index UI** for hierarchical Eloquent models (categories, menus, folder structures). Reference in the project: `packages/category` (`CategoryTreeResource`, `TreeListCategories` with `HasListPageTabs`, `TreeInspectorCategory`, `CreateCategory`).
+
+**Rule:** If a resource needs behavior that other trees could use too → implement the feature in `packages/tree` and enable it via config — do not duplicate in consumer packages.
+
+## Requirements
 
 - PHP ^8.3
 - Laravel ^12
 - Filament ^4/5
 - Livewire ^3/4
 - `moox/core`
-- Optional: [`kalnoy/nestedset`](https://github.com/lazychaser/laravel-nestedset) ^6.0 für Nested-Set-Bäume (`nestedSet()`)
+- Optional: [`kalnoy/nestedset`](https://github.com/lazychaser/laravel-nestedset) ^6.0 for nested-set trees (`nestedSet()`)
 
-## Architektur
+## Architecture
 
 ```
 Filament Resource (implements ConfiguresTreeIndex)
     └── treeIndex() → TreeIndexConfiguration
-        └── TreeIndexQueryBuilder (Query, Suche, Sprache, Geschwister)
+        └── TreeIndexQueryBuilder (query, search, language, siblings)
 
-List Page (TreeIndexListRecords + InteractsWithTreeIndexListPage)
-    └── EmbeddedTable + embedded-tree-content
-        └── Livewire ResourceTreeIndex
-            ├── ManagesTreeToolbar / ManagesTreeSelection / ManagesTreeForm
-            ├── TreeStructure + TreeNodeLabelResolver (Baumaufbau, Labels)
-            ├── Tree Actions (CRUD, Position)
-            │   ├── CreateTreeNodeAction / CreateNestedSetTreeNodeAction
-            │   ├── UpdateTreeNodeAction / MoveTreeNodeAction (+ TreeGraphValidator)
-            │   ├── AssignTreeNodePositionAction (Create-Inspector)
-            │   └── DeleteTreeNodeAction
-            └── Inspector
-                ├── inspectorPage → Edit-Page mit RendersAsTreeIndexInspector
-                ├── Resource-Create-Inspector (RendersAsTreeIndexCreateInspector)
-                └── sonst → eingebautes Formular (Label + Parent)
+List Page (TreeIndexListRecords — one Livewire layer)
+    ├── InteractsWithTreeIndexListPage (toolbar, tabs, URL state)
+    ├── InteractsWithResourceTreeIndex (tree, selection, move)
+    ├── InteractsWithTreeResourceInspectorForm (Resource::form inline)
+    ├── TreeStructure + TreeNodeLabelResolver
+    ├── Tree Actions (CRUD, position, persist)
+    │   ├── CreateTreeNodeAction / CreateNestedSetTreeNodeAction (stubCreate)
+    │   ├── PersistTreeResourceCreateAction / PersistTreeResourceUpdateAction
+    │   ├── TreeResourcePageExecutor (page hooks server-side)
+    │   ├── UpdateTreeNodeAction / MoveTreeNodeAction (+ TreeGraphValidator)
+    │   ├── AssignTreeNodePositionAction
+    │   └── DeleteTreeNodeAction
+    └── Inspector (right, inline — no nested @livewire)
+        ├── Resource::form() via inspectorForm schema
+        └── otherwise → built-in form (label + parent)
+
+Optional: Route `tree-inspector` with RendersAsTreeIndexInspector (standalone, not embedded)
 ```
 
-### Support-Klassen (intern)
+### Support classes (internal)
 
-| Klasse | Aufgabe |
+| Class | Responsibility |
 | --- | --- |
 | `TreeIndexQueryBuilder` | `newQuery`, `siblingsQuery`, `siblingsExcept`, `applySearch`, `applyLanguage` |
-| `TreeStructure` | Baum aus Adjacency List oder Nested Set; `descendantIds`, `ancestorIds` |
-| `TreeNodeLabelResolver` | Label-Spalte + optionaler Fallback (`labelFallbackColumn`) |
-| `TreeGraphValidator` | Zyklus-Prüfung (Self-Parent, Kind als Parent) |
+| `TreeStructure` | Tree from adjacency list or nested set; `descendantIds`, `ancestorIds` |
+| `TreeNodeLabelResolver` | Label column + optional fallback (`labelFallbackColumn`) |
+| `TreeGraphValidator` | Cycle check (self-parent, child as parent) |
 | `TreeLocale` | `resolveDefaultLocale`, `syncToRequest`, `localeCandidates` |
-| `NestedSetGuard` | Prüft Kalnoy `NodeTrait` auf dem Model |
-| `TreeIndexAuthorizer` | Gate-Ability oder `auth()->check()` |
-| `ResourceListForwarder` | Query/Suche/Sprache von Filament-Resources |
-| `TreeIndexSelection` | Prüft, ob gewählter Knoten noch in der gefilterten Query sichtbar ist |
-| `TreeIndexResourcePages` | Löst Create-/Edit-Page-Klassen der Forward-Resource auf |
+| `NestedSetGuard` | Checks Kalnoy `NodeTrait` on the model |
+| `TreeIndexAuthorizer` | Gate ability or `auth()->check()` |
+| `ResourceListForwarder` | Query/search/language from Filament resources |
+| `TreeIndexSelection` | Checks whether the selected node is still visible in the filtered query |
+| `TreeIndexResourcePages` | Resolves create/edit page classes of the forward resource |
+| `TreeResourcePageExecutor` | Calls protected page hooks (`handleRecordCreation`, …) server-side |
+| `TreeInlineFormResourceAdapter` | Wraps the forward resource for inspector form actions (no consumer trait) |
 
-Geschäftslogik liegt in **Actions**, nicht in Livewire oder Blade. `ResourceTreeIndex` orchestriert nur (Auth, Query, Delegation, Events).
+Business logic lives in **Actions**, not in Livewire or Blade. `TreeIndexListRecords` only orchestrates (auth, query, delegation).
 
-### Package-Struktur (was liegt wo?)
+### Package structure (what lives where?)
 
-| Verzeichnis | Dateien (ca.) | Zweck |
+| Directory | Files (approx.) | Purpose |
 | --- | --- | --- |
-| `src/Actions/Tree/` | 7 | CRUD + Verschieben (Adjacency + Nested Set) |
-| `src/Support/` | 10 | Query, Locale, Labels, Validierung, Auth |
-| `src/Filament/Concerns/` | 5 | Traits für List-/Inspector-/Create-Pages |
-| `src/Filament/Pages/` | 2 + Factory | `TreeIndexListRecords`, Create-Inspector-Factory |
-| `src/Livewire/` | 1 + 3 Traits | `ResourceTreeIndex` + Toolbar/Selection/Form |
-| `src/Config/`, `Contracts/`, `Exceptions/` | 4 | Konfiguration, Vertrag, Fehler |
-| `resources/views/` | 9 Blade + 1 CSS | UI-Partials, Alpine-Store |
-| `tests/` | ~30 | Pest Feature/Unit + Fixtures |
+| `src/Actions/Tree/` | 9 | CRUD, move, persist (adjacency + nested set) |
+| `src/Support/` | 12 | Query, locale, labels, validation, auth, inline form adapter |
+| `src/Filament/Concerns/` | 12 | List, tree, selection, and inspector form traits |
+| `src/Filament/Pages/` | 1 | `TreeIndexListRecords` |
+| `src/Config/`, `Contracts/`, `Exceptions/` | 5 | Configuration, `ConfiguresTreeIndex`, `HostsInlineResourceForm`, errors |
+| `resources/views/` | 9 Blade + 1 CSS | UI partials, Alpine store |
+| `tests/` | ~30 | Pest feature/unit + fixtures |
 
-**Nicht ins Repository committen:** `src/Filament/Pages/Generated/TreeCreateInspector_*.php` — Laufzeit-Wrapper, die `TreeIndexCreateInspectorPageFactory` bei Bedarf erzeugt (`.gitignore` im Ordner). Nach Tests oder erstem Create-Flow können sie lokal liegen; sie sind kein fester Bestandteil des Packages.
+Registry: list pages register the config under the **resource class name** (`TreeIndexConfigurationRegistry::register()` / `resolve()`).
 
-Registry: List-Pages registrieren die Config unter dem **Resource-Klassennamen** (`TreeIndexConfigurationRegistry::register()` / `resolve()`).
-
-## Installation (Details)
+## Installation (details)
 
 ### Composer
 
@@ -284,27 +288,27 @@ Registry: List-Pages registrieren die Config unter dem **Resource-Klassennamen**
 composer require moox/tree:@dev
 ```
 
-Alternativ nur PSR-4-Autoload in der Root-`composer.json` (ohne `require`-Eintrag):
+Alternatively, PSR-4 autoload only in the root `composer.json` (without a `require` entry):
 
 ```json
 "Moox\\Tree\\": "packages/tree/src/"
 ```
 
-### Service Provider
+### Service provider
 
-Bei `composer require` registriert sich `Moox\Tree\TreeServiceProvider` automatisch. Manuell in `bootstrap/providers.php`:
+With `composer require`, `Moox\Tree\TreeServiceProvider` registers automatically. Manually in `bootstrap/providers.php`:
 
 ```php
 Moox\Tree\TreeServiceProvider::class,
 ```
 
-Der Provider:
+The provider:
 
-- lädt Views unter `filament-tree-index::`
-- registriert CSS (`resources/css/tree.css`) via FilamentAsset
-- registriert Livewire `ResourceTreeIndex`
-- bindet Alpine-Store `$store.filamentTreeIndex` ein
-- rendert Language-Switcher in der Filament-Table-Toolbar (wenn `useFilamentTableToolbar: true`)
+- loads views under `filament-tree-index::`
+- registers CSS (`resources/css/tree.css`) via FilamentAsset
+- binds the Alpine store `$store.filamentTreeIndex` on every Filament panel page
+- renders the language switcher in the Filament table toolbar (when `useFilamentTableToolbar: true`)
+- does **not** register Livewire component aliases — the tree runs on `TreeIndexListRecords` only
 
 ### Assets
 
@@ -312,34 +316,34 @@ Der Provider:
 php artisan filament:assets
 ```
 
-Kein separates Tailwind-`@source` nötig — Layout-Klassen (`fi-tree-*`) liegen in der Package-CSS-Datei.
+No separate Tailwind `@source` needed — layout classes (`fi-tree-*`) live in the package CSS file.
 
-### Optionale Konfiguration
+### Optional configuration
 
 ```bash
 php artisan vendor:publish --tag=filament-tree-index-config
 php artisan vendor:publish --tag=filament-tree-index-views
 ```
 
-## Voraussetzungen am Model
+## Model requirements
 
-Das Package verlangt **keine eigenen Model-Methoden oder Traits** (außer Kalnoy `NodeTrait` bei Nested Set). Nur Spalten/Attribute:
+The package requires **no custom model methods or traits** (except Kalnoy `NodeTrait` for nested set). Only columns/attributes:
 
-### Variante A: Adjacency List (Standard)
+### Variant A: Adjacency list (default)
 
-| Spalte     | Standardname | Zweck                                  |
-| ---------- | ------------ | -------------------------------------- |
-| Eltern-FK  | `parent_id`  | `nullable`, Verweis auf eigene Tabelle |
-| Sortierung | `sort_order` | Geschwister-Reihenfolge                |
-| Anzeige    | `label`      | Text im Baum (Spaltenname konfigurierbar) |
+| Column     | Default name | Purpose                                  |
+| ---------- | ------------ | ---------------------------------------- |
+| Parent FK  | `parent_id`  | `nullable`, reference to same table      |
+| Sort order | `sort_order` | Sibling order                            |
+| Display    | `label`      | Text in the tree (column name configurable) |
 
-### Variante B: Nested Set
+### Variant B: Nested set
 
-Zusätzlich **`_lft`** und **`_rgt`** mit `kalnoy/nestedset` und `NodeTrait`. Baumaufbau und Verschieben laufen über Kalnoy (`beforeNode` / `afterNode` / `appendToNode`).
+Additionally **`_lft`** and **`_rgt`** with `kalnoy/nestedset` and `NodeTrait`. Tree building and moving use Kalnoy (`beforeNode` / `afterNode` / `appendToNode`).
 
-Label aus Accessor oder Translation → `->labelColumnQueryable(false)` und ggf. `->labelFallbackColumn('display_title')` (Standard-Fallback, wenn die Label-Spalte leer ist).
+Label from accessor or translation → `->labelColumnQueryable(false)` and optionally `->labelFallbackColumn('display_title')` (default fallback when the label column is empty).
 
-## Resource anbinden (ausführlich)
+## Connecting a resource (detailed)
 
 ### 1. Interface `ConfiguresTreeIndex`
 
@@ -360,29 +364,31 @@ class MyTreeResource extends MyResource implements ConfiguresTreeIndex
 }
 ```
 
-### 2. `forwardFromResource()` – Verbindung zur bestehenden Liste
+### 2. `forwardFromResource()` – connection to the existing list
 
-**Wichtigste Methode für die Moox-Integration.** Übernimmt automatisch:
+**Most important method for Moox integration.** Automatically adopts:
 
-| Fähigkeit | Quelle |
+| Capability | Source |
 | --- | --- |
-| Basis-Query | `Resource::getEloquentQuery()` |
-| Suche | `getTitleColumn()` / `applyListSearchToQuery()` |
-| Sprache | `ResourceListForwarder::applyLanguage()` |
-| Tabellen-Filter | `applyFiltersToTableQuery()` auf der List-Page |
+| Base query | `Resource::getEloquentQuery()` |
+| Search | `getTitleColumn()` / `applyListSearchToQuery()` |
+| Language | `ResourceListForwarder::applyLanguage()` |
+| Table filters | `applyFiltersToTableQuery()` on the list page |
 
 ```php
 ->forwardFromResource(static::class, useFilamentTableToolbar: true)
 ```
 
-| Parameter | Verhalten |
+| Parameter | Behavior |
 | --- | --- |
-| `useFilamentTableToolbar: true` | Suche, Filter und Language-Switcher in der **Filament-Tabellen-Toolbar** (1:1 wie Listenansicht) |
-| `useFilamentTableToolbar: false` | Eigene Toolbar in der Baum-Spalte (`toolbarSearch`, `toolbarLanguageSwitcher`) |
+| `useFilamentTableToolbar: true` | Search, filters, and language switcher in the **Filament table toolbar** (1:1 like list view) |
+| `useFilamentTableToolbar: false` | Custom toolbar in the tree column (`toolbarSearch`, `toolbarLanguageSwitcher`) |
 
-Ohne `forwardFromResource()` musst du `modifyQuery`, `applySearchUsing` und `applyLanguageUsing` manuell setzen.
+Without `forwardFromResource()` you must set `modifyQuery`, `applySearchUsing`, and `applyLanguageUsing` manually.
 
-### 3. List-Page
+The forwarded resource class must **not** be `final` — `TreeInlineFormResourceAdapter` generates a runtime subclass under `Filament/Resources/Generated/`.
+
+### 3. List page
 
 ```php
 use Moox\Tree\Filament\Pages\TreeIndexListRecords;
@@ -393,16 +399,16 @@ class TreeListMyModels extends TreeIndexListRecords
 }
 ```
 
-Beim `mount()` registriert die Page die Konfiguration in der `TreeIndexConfigurationRegistry` (Schlüssel = Resource-Klassenname).
+On `mount()`, the page registers the configuration in `TreeIndexConfigurationRegistry` (key = resource class name).
 
 #### Tabs (Moox)
 
-Tree-List-Pages mit Moox-Tabs nutzen `HasListPageTabs` wie gewohnt. Das Package (`InteractsWithTreeIndexListPage`) übernimmt über Livewire `updated('activeTab')`:
+Tree list pages with Moox tabs use `HasListPageTabs` as usual. The package (`InteractsWithTreeIndexListPage`) handles via Livewire `updated('activeTab')`:
 
-- `tab` in den Request syncen (damit `getEloquentQuery()` den richtigen Tab filtert)
-- `?selected=` bei jedem Tab-Wechsel entfernen
+- sync `tab` into the request (so `getEloquentQuery()` filters the correct tab)
+- remove `?selected=` on every tab change
 
-In `updatedActiveTab()` zusätzlich `refreshTreeIndexConfiguration()` aufrufen (siehe `TreeListCategories`).
+Also call `refreshTreeIndexConfiguration()` in `updatedActiveTab()` (see `TreeListCategories`).
 
 ```php
 use Moox\Core\Traits\Tabs\HasListPageTabs;
@@ -426,13 +432,16 @@ class TreeListMyModels extends TreeIndexListRecords
     public function updatedActiveTab(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
+        $this->tableFilters = null;
+        $this->tableSortColumn = null;
+        $this->tableSortDirection = null;
         $this->resetTable();
         $this->refreshTreeIndexConfiguration();
     }
 }
 ```
 
-**Tab-spezifische Query** — wenn die Basis-Resource eine eigene Tab-Query hat:
+**Tab-specific query** — when the base resource has its own tab query:
 
 ```php
 protected function applyForwardedListQuery(TreeIndexConfiguration $configuration): TreeIndexConfiguration
@@ -451,7 +460,7 @@ protected function applyForwardedListQuery(TreeIndexConfiguration $configuration
 
 ### 4. Routing
 
-**Mit Parent-Resource** (Moox-Muster, Referenz `CategoryTreeResource`):
+**With parent resource** (Moox pattern, reference `CategoryTreeResource`):
 
 ```php
 use Illuminate\Support\Arr;
@@ -466,7 +475,7 @@ public static function getPages(): array
 }
 ```
 
-**Eine Resource ohne Parent** — `getPages()` direkt definieren:
+**Single resource without parent** — define `getPages()` directly:
 
 ```php
 public static function getPages(): array
@@ -478,7 +487,7 @@ public static function getPages(): array
 }
 ```
 
-### 5. Inspector (empfohlen)
+### 5. Inspector (recommended)
 
 ```php
 use Moox\Tree\Filament\Concerns\RendersAsTreeIndexInspector;
@@ -487,59 +496,68 @@ class TreeInspectorMyModel extends EditMyModel
 {
     use RendersAsTreeIndexInspector;
 
-    protected static string $resource = MyResource::class; // Basis-Resource, nicht Tree-Resource
+    protected static string $resource = MyResource::class; // base resource, not tree resource
 }
 ```
 
-Das Trait `RendersAsTreeIndexInspector` (basiert auf `RendersAsTreeIndexEmbeddedPage`):
+The `RendersAsTreeIndexInspector` trait (based on `RendersAsTreeIndexEmbeddedPage`):
 
-- blendet die Page aus der Navigation aus
-- nutzt eine schlanke Inspector-View
-- unterdrückt Redirects nach dem Speichern
-- dispatcht `tree-index-record-saved` für Baum-Aktualisierung
+- hides the page from navigation
+- uses a slim inspector view
+- suppresses redirects after save
+- dispatches `tree-index-record-saved` for tree refresh
 
-Für **Create** im Inspector wird automatisch die Resource-Create-Page des Forward-Resources eingebunden (`RendersAsTreeIndexCreateInspector` + `AssignTreeNodePositionAction`), sofern nicht `stubCreate()` gesetzt ist. Fehlt das Trait auf der Create-Page, erzeugt `TreeIndexCreateInspectorPageFactory` eine Wrapper-Klasse unter `Filament/Pages/Generated/` (kein `eval()`).
+For **create/edit** in the inspector, the list page renders `Resource::form()` inline (`InteractsWithTreeResourceInspectorForm`). Persistence delegates to the configured create/edit page classes via `PersistTreeResourceCreateAction` / `PersistTreeResourceUpdateAction` and `TreeResourcePageExecutor`. Form actions without redirect are applied automatically by `TreeInlineFormResourceAdapter` — consumers do **not** add traits to their resources.
 
-Die Route `tree-inspector` ist empfohlen (Policies, URL-Generierung). Der Inspector wird eingebettet per Livewire in der Index-Page.
+**Create modes** (right inspector):
 
-Ohne `inspectorPage()` zeigt das Package rechts nur ein **Minimalformular** (Label + Parent-Select).
+| Config | Behavior |
+| --- | --- |
+| `inspectorPage()` + `forwardFromResource()` + create route in `getPages()` | Header **Create** opens the resource create form inline (`createRootNode()` → `usesResourceCreateInspector()`) |
+| `->inspectorCreatePage(CreateXxx::class)` | Explicit create page instead of auto-resolve |
+| `->stubCreate()` | Minimal create (label node via `CreateTreeNodeAction`), no resource form |
+| No `inspectorPage()` | Built-in stub form (label + parent) for edit |
 
-### 6. Panel-Registrierung
+The `tree-inspector` route is recommended for policies, URL generation, and page hooks. The main path is inline on `TreeIndexListRecords` (one Livewire host).
+
+Without `inspectorPage()`, the package shows only a **minimal form** on the right (label + parent select).
+
+### 6. Panel registration
 
 ```php
 $panel->resources([MyTreeResource::class]);
 ```
 
-Über ein Filament-Plugin (siehe Schnellstart) oder direkt im `PanelProvider`.
+Via a Filament plugin (see quick start) or directly in the `PanelProvider`.
 
 ## `TreeIndexConfiguration`
 
-| Methode | Default | Bedeutung |
+| Method | Default | Meaning |
 | --- | --- | --- |
-| `make(Model::class)` | – | Eloquent-Model |
-| `forwardFromResource(Resource::class, useFilamentTableToolbar: false)` | – | Query, Suche, Sprache von bestehender Resource |
-| `parentColumn('parent_id')` | `parent_id` | Eltern-Spalte |
-| `sortColumn('sort_order')` | `sort_order` | Sortierung; bei Nested Set: `_lft` |
-| `labelColumn('label')` | `label` | Anzeigetext im Baum |
-| `labelColumnQueryable(false)` | `true` | `false` bei Accessor/Translation |
-| `labelFallbackColumn('display_title')` | `display_title` | Fallback-Attribut, wenn Label-Spalte leer |
-| `nestedSet()` | `false` | Baum aus `_lft`/`_rgt` |
-| `reorderable(true)` | `true` | Drag & Drop |
-| `inspectorPage(EditPage::class)` | `null` | Volles Filament-Formular rechts (Edit) |
-| `inspectorCreatePage(CreatePage::class)` | `null` | Explizite Create-Page statt Auto-Resolve |
-| `stubCreate()` | `false` | Minimal-Create (Label-Knoten) statt Resource-Create-Formular |
-| `filamentTableLanguageSwitcher(false)` | `true` bei Table-Toolbar | Language-Switcher in Filament-Toolbar deaktivieren |
-| `modifyQuery(Closure)` | – | Eigene Query (ohne `forwardFromResource`) |
-| `toolbarSearch(true)` | `false` | Suchfeld in Baum-Spalte (ohne Table-Toolbar) |
-| `toolbarLanguageSwitcher(true)` | `false` | Language-Switcher in Baum-Spalte |
-| `applySearchUsing(Closure)` | – | Eigene Suchlogik |
-| `applyLanguageUsing(Closure)` | – | Eigene Sprachlogik |
-| `authorizationAbility('update')` | `null` | Gate-Ability; sonst nur `auth()->check()` |
-| `labels(...)` | deutsche Standardtexte | UI-Texte |
+| `make(Model::class)` | – | Eloquent model |
+| `forwardFromResource(Resource::class, useFilamentTableToolbar: false)` | – | Query, search, language from existing resource |
+| `parentColumn('parent_id')` | `parent_id` | Parent column |
+| `sortColumn('sort_order')` | `sort_order` | Sort order; for nested set: `_lft` |
+| `labelColumn('label')` | `label` | Display text in the tree |
+| `labelColumnQueryable(false)` | `true` | `false` for accessor/translation |
+| `labelFallbackColumn('display_title')` | `display_title` | Fallback attribute when label column is empty |
+| `nestedSet()` | `false` | Tree from `_lft`/`_rgt` |
+| `reorderable(true)` | `true` | Drag & drop |
+| `inspectorPage(EditPage::class)` | `null` | Full Filament form on the right (edit) |
+| `inspectorCreatePage(CreatePage::class)` | `null` | Explicit create page instead of auto-resolve |
+| `stubCreate()` | `false` | Minimal create (label node) instead of resource create form |
+| `filamentTableLanguageSwitcher(false)` | `true` with table toolbar | Disable language switcher in Filament toolbar |
+| `modifyQuery(Closure)` | – | Custom query (without `forwardFromResource`) |
+| `toolbarSearch(true)` | `false` | Search field in tree column (without table toolbar) |
+| `toolbarLanguageSwitcher(true)` | `false` | Language switcher in tree column |
+| `applySearchUsing(Closure)` | – | Custom search logic |
+| `applyLanguageUsing(Closure)` | – | Custom language logic |
+| `authorizationAbility('update')` | `null` | Gate ability; otherwise only `auth()->check()` |
+| `labels(...)` | German default texts | UI texts |
 
-Parameter von `labels()`: `treeHeading`, `treeSubheading`, `inspectorHeading`, `createRootLabel`, `createChildLabel`, `saveLabel`, `newRecordLabel`, `deleteConfirmMessage`.
+Parameters of `labels()`: `treeHeading`, `treeSubheading`, `inspectorHeading`, `createRootLabel`, `saveLabel`, `newRecordLabel`, `deleteConfirmMessage`.
 
-### Beispiel: Einfacher Baum (Adjacency List)
+### Example: Simple tree (adjacency list)
 
 ```php
 return TreeIndexConfiguration::make(TreeNode::class)
@@ -549,7 +567,7 @@ return TreeIndexConfiguration::make(TreeNode::class)
     ->reorderable(true);
 ```
 
-### Beispiel: Nested Set mit Inspector (Moox)
+### Example: Nested set with inspector (Moox)
 
 ```php
 return TreeIndexConfiguration::make(Category::class)
@@ -562,7 +580,7 @@ return TreeIndexConfiguration::make(Category::class)
     ->inspectorPage(TreeInspectorCategory::class);
 ```
 
-### Beispiel: Manuelle Toolbar (ohne `forwardFromResource`)
+### Example: Manual toolbar (without `forwardFromResource`)
 
 ```php
 return TreeIndexConfiguration::make(Category::class)
@@ -579,43 +597,45 @@ return TreeIndexConfiguration::make(Category::class)
     );
 ```
 
-## UI-Funktionen
+## UI features
 
-### Baum (links)
+### Tree (left)
 
-- Eintrag wählen → Inspector rechts
-- Root-Eintrag anlegen über **Create** in den Page-Header-Actions (wie `ListRecords`); öffnet das Resource-Create-Formular **rechts im Inspector** (kein Modal, keine `/create`-Navigation); Untereinträge im Inspector
-- Alle aufklappen / einklappen
-- Optional: Verschieben per Drag & Drop (`reorderable(true)`), inkl. Validierung (nicht unter sich selbst / eigenes Kind)
+- Select entry → inspector on the right
+- Create root entry via **Create** in page header actions (like `ListRecords`); opens the resource create form **on the right in the inspector** (no modal, no `/create` navigation); child entries in the inspector
+- Expand all / collapse all
+- Optional: move via drag & drop (`reorderable(true)`), including validation (not under self / own child)
 
-### Inspector (rechts)
+### Inspector (right)
 
-- Mit `inspectorPage`: bestehende Edit-Page
-- Ohne: Label + Parent, Speichern, Löschen
+- With `inspectorPage`: existing edit page
+- Without: label + parent, save, delete
 
 ### Toolbar
 
-Mit `forwardFromResource(..., useFilamentTableToolbar: true)`:
+With `forwardFromResource(..., useFilamentTableToolbar: true)`:
 
-- Tabs, Filter und Suche aus `Resource::table()` in der Filament-Toolbar
-- Language-Switcher via Render-Hook (wenn `localization::lang-selector` vorhanden)
-- Keine Tabellen-Sortierung oder Zeilen-Actions — Reihenfolge nur im Baum
+- Tabs, filters, and search from `Resource::table()` in the Filament toolbar
+- Language switcher via render hook (when `localization::lang-selector` is present)
+- No table sorting or row actions — order only in the tree
 
 ## Actions
 
-Geschäftslogik in Action-Klassen. `ResourceTreeIndex` delegiert dorthin; Parent-/Zyklus-Validierung über `TreeGraphValidator` in `UpdateTreeNodeAction` und `MoveTreeNodeAction`.
+Business logic in action classes. `TreeIndexListRecords` delegates to them; parent/cycle validation via `TreeGraphValidator` in `UpdateTreeNodeAction` and `MoveTreeNodeAction`.
 
-| Klasse | Aufgabe |
+| Class | Responsibility |
 | --- | --- |
-| `CreateTreeNodeAction` | Neuer Knoten (Adjacency List); bei `nestedSet()` → `CreateNestedSetTreeNodeAction` |
-| `CreateNestedSetTreeNodeAction` | Neuer Knoten per Kalnoy; prüft `NodeTrait` via `NestedSetGuard` |
-| `UpdateTreeNodeAction` | Label/Parent aktualisieren; validiert Parent-Zuweisung |
-| `MoveTreeNodeAction` | Parent + Geschwister-Reihenfolge; bei `nestedSet()` → `MoveNestedSetTreeNodeAction` |
-| `MoveNestedSetTreeNodeAction` | Verschieben per Kalnoy |
-| `AssignTreeNodePositionAction` | Sort-Order / Nested-Set-Position nach Resource-Create-Inspector |
+| `CreateTreeNodeAction` | New node (adjacency list); with `nestedSet()` → `CreateNestedSetTreeNodeAction` |
+| `CreateNestedSetTreeNodeAction` | New node via Kalnoy; checks `NodeTrait` via `NestedSetGuard` |
+| `UpdateTreeNodeAction` | Update label/parent; validates parent assignment |
+| `MoveTreeNodeAction` | Parent + sibling order; with `nestedSet()` → `MoveNestedSetTreeNodeAction` |
+| `MoveNestedSetTreeNodeAction` | Move via Kalnoy |
+| `AssignTreeNodePositionAction` | Sort order / nested-set position after resource create inspector |
+| `PersistTreeResourceCreateAction` | Persists inline create via configured create page hooks |
+| `PersistTreeResourceUpdateAction` | Persists inline edit via configured edit page hooks |
 | `DeleteTreeNodeAction` | `$record->delete()` |
 
-## Konfiguration
+## Configuration
 
 `config/filament-tree-index.php`:
 
@@ -623,9 +643,6 @@ Geschäftslogik in Action-Klassen. `ResourceTreeIndex` delegiert dorthin; Parent
 return [
     'authorization' => [
         'enabled' => true,
-    ],
-    'livewire' => [
-        'alias' => 'filament-tree-index',
     ],
 ];
 ```
@@ -636,16 +653,16 @@ return [
 php artisan test --compact packages/tree/tests
 ```
 
-| Verzeichnis | Inhalt |
+| Directory | Contents |
 | --- | --- |
-| `tests/Feature/` | Livewire `ResourceTreeIndex` (CRUD, Reorder, Move-Validierung, Auth) |
-| `tests/Unit/` | `TreeIndexConfiguration`, `TreeStructure`, `TreeGraphValidator`, `TreeLocale`, Registry |
-| `tests/Support/` | Test-Resources, `CreatesTreeNodesTable` |
+| `tests/Feature/` | `TreeIndexListRecords` / tree CRUD (reorder, move, auth, inline form) |
+| `tests/Unit/` | `TreeIndexConfiguration`, `TreeStructure`, `TreeGraphValidator`, `TreeLocale`, `TreeInlineFormResourceAdapter`, registry |
+| `tests/Support/` | Test resources, `CreatesTreeNodesTable` |
 | `tests/Models/` | `TreeNode`, `NestedSetTreeNode` |
 
-Tests nutzen `Moox\Tree\Tests\TestCase` (extends App `Tests\TestCase`) via `tests/Pest.php`.
+Tests use `Moox\Tree\Tests\TestCase` (extends app `Tests\TestCase`) via `tests/Pest.php`.
 
-Livewire direkt testen:
+Test tree logic in isolation with `TestTreeIndexHost` (uses `InteractsWithResourceTreeIndex` without full Filament list page):
 
 ```php
 config(['filament-tree-index.authorization.enabled' => false]);
@@ -655,27 +672,28 @@ TreeIndexConfigurationRegistry::register(
     TreeIndexConfiguration::make(TreeNode::class),
 );
 
-Livewire::test(ResourceTreeIndex::class, [
-    'configurationKey' => 'test-tree',
+Livewire::test(TestTreeIndexHost::class, [
+    'treeIndexConfigurationKey' => 'test-tree',
     'lang' => 'en',
     'search' => '',
 ])->call('createRootNode');
 ```
 
-`lang` und `search` beim Test mitgeben, damit das Component nicht erst Default-Locale setzen muss.
+For full integration (toolbar, tabs, inline form), test `TreeIndexListRecords` subclasses in `tests/Feature/`. Pass `lang` and `search` in isolated tests so the component does not need to set the default locale first.
 
-## Checkliste für eine neue Resource
+## Checklist for a new resource
 
-1. Model: `parent_id` + `sort_order` **oder** Nested Set (`NodeTrait`, `_lft`/`_rgt`)
-2. Bei Nested Set: `composer require kalnoy/nestedset`
+1. Model: `parent_id` + `sort_order` **or** nested set (`NodeTrait`, `_lft`/`_rgt`)
+2. For nested set: `composer require kalnoy/nestedset`
 3. `composer require moox/tree:@dev` + `php artisan filament:assets`
-4. **Tree-Resource**: `implements ConfiguresTreeIndex` + `treeIndex()` mit `forwardFromResource()`
-5. **TreeList-Page**: `extends TreeIndexListRecords`
+4. **Tree resource**: `implements ConfiguresTreeIndex` + `treeIndex()` with `forwardFromResource()`
+5. **Tree list page**: `extends TreeIndexListRecords`
 6. **getPages()**: `'index'` → TreeList; optional `'tree-inspector'`
-7. **Inspector** (optional): `extends EditPage` + `RendersAsTreeIndexInspector` + `inspectorPage()` in Config
-8. **Plugin**: Resource im Filament-Panel registrieren
-9. Feature-Test für Config oder Livewire `ResourceTreeIndex`
+7. **Inspector** (optional): `extends EditPage` + `RendersAsTreeIndexInspector` + `inspectorPage()` in config; ensure create route in `getPages()` for inline create
+8. Forward resource is **not** `final` (inline form adapter)
+9. **Plugin**: register resource in Filament panel
+10. Feature test for config, `TreeIndexListRecords`, or `TestTreeIndexHost`
 
-## Lizenz
+## License
 
 MIT

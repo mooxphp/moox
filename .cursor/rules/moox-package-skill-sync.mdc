@@ -25,7 +25,7 @@ If listed, note `skill`, `skill_path`, `package_readme`, and `skill_files`.
 | Change in package | Review / update in skill |
 |-------------------|--------------------------|
 | `TreeServiceProvider`, Filament assets, CSS/JS, publish tags, Composer `require` | `installation.md`, verification checklists |
-| Public API: config fluent methods, traits, contracts, Livewire alias, hooks | `integration.md` templates, `decisions.md`, `SKILL.md` references |
+| Public API: config fluent methods, traits, contracts, page classes, hooks | `integration.md` templates, `decisions.md`, `SKILL.md` references |
 | New toolbar / locale / inspector behavior or decision branches | `decisions.md`, `integration.md` § toolbar |
 | Renames, removals, breaking behavior | All listed `skill_files` + checklists |
 | Gold-standard consumer pattern changed | `SKILL.md` references table, `integration.md` examples |

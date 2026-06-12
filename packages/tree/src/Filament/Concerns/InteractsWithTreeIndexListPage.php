@@ -8,7 +8,6 @@ use Filament\Tables\Columns\Column;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tree\Config\TreeIndexConfiguration;
@@ -82,11 +81,7 @@ trait InteractsWithTreeIndexListPage
 
         $table = $this->configureTreeIndexTableToolbar($table);
 
-        return $table->content(fn (): View => view('filament-tree-index::filament.pages.embedded-tree-content', [
-            'configurationKey' => $this->treeIndexConfigurationKey !== ''
-                ? $this->treeIndexConfigurationKey
-                : static::getResource(),
-        ]));
+        return $table->content(fn (): View => view('filament-tree-index::filament.pages.tree-index-content', $this->getTreeIndexViewData()));
     }
 
     /**
@@ -182,7 +177,8 @@ trait InteractsWithTreeIndexListPage
         }
 
         $this->treeSelectedId = null;
-        $this->dispatch('tree-index-selection-changed', selectedRecordId: null);
+        $this->isCreatingInspector = false;
+        $this->creatingParentId = null;
     }
 
     protected function clearTreeSelectionUnlessVisibleInCurrentQuery(): void
@@ -209,27 +205,6 @@ trait InteractsWithTreeIndexListPage
     public function updatedTableFilters(): void
     {
         $this->refreshTreeIndexConfiguration();
-    }
-
-    #[On('tree-index-selection-changed')]
-    public function syncTreeSelected(?int $selectedRecordId = null): void
-    {
-        $this->treeSelectedId = $selectedRecordId;
-    }
-
-    public function changeLanguage(string $lang): void
-    {
-        $this->lang = $lang;
-        TreeLocale::syncToRequest($this->lang);
-
-        $tab = property_exists($this, 'activeTab') && filled($this->activeTab ?? null)
-            ? (string) $this->activeTab
-            : null;
-
-        $this->redirect(static::getResource()::getUrl(
-            'index',
-            TreeLocale::languageChangeParameters($lang, $tab, $this->treeSelectedId),
-        ));
     }
 
     protected function usesListPageTabs(): bool

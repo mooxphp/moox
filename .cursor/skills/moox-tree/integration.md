@@ -13,7 +13,7 @@ composer require moox/tree:@dev
 php artisan filament:assets
 ```
 
-Do **not** add tree CSS, Alpine store scripts, or Livewire aliases in the consumer — the package registers them via `TreeServiceProvider`.
+Do **not** add tree CSS, Alpine store scripts, or custom Livewire components in the consumer — assets and the tree host (`TreeIndexListRecords`) come from `TreeServiceProvider` / the package only.
 
 ---
 
@@ -76,7 +76,6 @@ class XxxTreeResource extends XxxResource implements ConfiguresTreeIndex
                 treeSubheading: 'Baum',
                 inspectorHeading: '...',
                 createRootLabel: '...',
-                createChildLabel: '...',
                 newRecordLabel: '...',
             );
     }
@@ -142,7 +141,7 @@ class TreeListXxx extends TreeIndexListRecords
 }
 ```
 
-`InteractsWithTreeIndexListPage` syncs `tab` into the request and clears `?selected=` via Livewire `updated('activeTab')`. Call `refreshTreeIndexConfiguration()` in `updatedActiveTab()` so the tree query matches the active tab. Reference: `TreeListCategories`.
+`InteractsWithTreeIndexListPage` syncs `tab` into the request and clears `?selected=` via Livewire `updated('activeTab')`. Call `refreshTreeIndexConfiguration()` in `updatedActiveTab()` so the tree query matches the active tab; reset table state when tabs affect filters (see `TreeListCategories`: `tableFilters`, `tableSortColumn`, `resetTable()`). Reference: `TreeListCategories`.
 
 ### TreeInspectorXxx.php (optional)
 
@@ -164,7 +163,20 @@ class TreeInspectorXxx extends EditXxx
 }
 ```
 
-`RendersAsTreeIndexInspector` baut auf `RendersAsTreeIndexEmbeddedPage` (schlanke View, keine Redirects nach Save) und `InteractsWithTreeIndexInspectorLocale` auf. Für Create im Inspector: `RendersAsTreeIndexCreateInspector` auf der Resource-Create-Page — sonst erzeugt `TreeIndexCreateInspectorPageFactory` zur Laufzeit einen Wrapper unter `packages/tree/src/Filament/Pages/Generated/` (gitignored, nicht committen).
+`RendersAsTreeIndexInspector` baut auf `RendersAsTreeIndexEmbeddedPage` (schlanke View, keine Redirects nach Save) und `InteractsWithTreeIndexInspectorLocale` auf — für die Route `tree-inspector` und als Edit-Page-Klasse für Page-Hooks.
+
+**Create/Edit im eingebetteten Inspector:** `TreeIndexListRecords` rendert `Resource::form()` inline in `tree-index-content` (kein nested `@livewire`). Form-Actions (Save/Cancel ohne Redirect) wendet das Package automatisch per `TreeInlineFormResourceAdapter` an — **kein** Trait auf der Consumer-Resource. Persistenz delegiert an die normale Create-/Edit-Page via `PersistTreeResourceCreateAction` / `PersistTreeResourceUpdateAction` und `TreeResourcePageExecutor`.
+
+**Create-Modi** (rechter Inspector):
+
+| Config | Verhalten |
+|--------|-----------|
+| `inspectorPage()` + `forwardFromResource()` + Create-Route in `getPages()` | Header-**Create** öffnet das Resource-Create-Formular inline (`createRootNode()` → `usesResourceCreateInspector()`) |
+| `->inspectorCreatePage(CreateXxx::class)` | Explizite Create-Page statt Auto-Resolve |
+| `->stubCreate()` | Minimal-Create (Label-Knoten via `CreateTreeNodeAction`), kein Resource-Formular |
+| Kein `inspectorPage()` | Eingebautes Stub-Formular (Label + Parent) für Edit |
+
+**Hinweis:** Die an `forwardFromResource()` übergebene Resource-Klasse darf nicht `final` sein (der Adapter erzeugt eine interne Subklasse unter `Filament/Resources/Generated/`).
 
 ### XxxTreePlugin.php
 
@@ -329,7 +341,7 @@ After every integration:
 - [ ] If search yes: `getTitleColumn()` or `applyListSearchToQuery()` present
 - [ ] If language no + Filament toolbar: `filamentTableLanguageSwitcher(false)` set
 - [ ] `TreeListXxx extends TreeIndexListRecords` with correct `$resource`
-- [ ] Create button in page header (`Action::make('create')` on `TreeIndexListRecords`, dispatches `tree-index-create-root` — no modal or `/create` navigation); root create opens resource create form in the right inspector when `inspectorPage` + `forwardFromResource` are set
+- [ ] Create button in page header (`getHeaderActions()` on `TreeIndexListRecords` calls `createRootNode()` — no modal, no `/create` navigation); with `inspectorPage` + `forwardFromResource` + Create route in `getPages()`, opens the resource create form in the right inspector
 - [ ] `getPages()`: `'index'` → TreeList; inspector route `'tree-inspector'` when used
 - [ ] Inspector (if used): `$resource` = base resource; trait `RendersAsTreeIndexInspector`
 - [ ] `XxxTreePlugin` registers tree resource in panel (pattern A)

@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
-use Moox\Tree\Livewire\ResourceTreeIndex;
 use Moox\Tree\Support\TreeIndexAuthorizer;
 use Moox\Tree\Tests\Models\TreeNode;
 use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
+use Moox\Tree\Tests\Support\TestTreeIndexHost;
 use Moox\Tree\Tests\TestCase;
 
 uses(TestCase::class, CreatesTreeNodesTable::class);
@@ -30,8 +30,8 @@ it('reorders siblings when reordering is enabled', function (): void {
     $first = TreeNode::query()->create(['label' => 'First', 'sort_order' => 10]);
     $second = TreeNode::query()->create(['label' => 'Second', 'sort_order' => 20]);
 
-    Livewire::test(ResourceTreeIndex::class, [
-        'configurationKey' => 'reorderable-tree',
+    Livewire::test(TestTreeIndexHost::class, [
+        'treeIndexConfigurationKey' => 'reorderable-tree',
         'lang' => 'en',
         'search' => '',
     ])
@@ -46,8 +46,8 @@ it('saves the selected record', function (): void {
 
     $node = TreeNode::query()->create(['label' => 'Original', 'sort_order' => 10]);
 
-    Livewire::test(ResourceTreeIndex::class, [
-        'configurationKey' => 'reorderable-tree',
+    Livewire::test(TestTreeIndexHost::class, [
+        'treeIndexConfigurationKey' => 'reorderable-tree',
         'lang' => 'en',
         'search' => '',
     ])
@@ -65,8 +65,8 @@ it('deletes the selected record', function (): void {
     TreeNode::query()->create(['label' => 'Keep', 'sort_order' => 0]);
     $remove = TreeNode::query()->create(['label' => 'Remove', 'sort_order' => 10]);
 
-    Livewire::test(ResourceTreeIndex::class, [
-        'configurationKey' => 'reorderable-tree',
+    Livewire::test(TestTreeIndexHost::class, [
+        'treeIndexConfigurationKey' => 'reorderable-tree',
         'lang' => 'en',
         'search' => '',
     ])
@@ -83,8 +83,8 @@ it('blocks move under a descendant', function (): void {
     $root = TreeNode::query()->create(['label' => 'Root', 'sort_order' => 0]);
     $child = TreeNode::query()->create(['label' => 'Child', 'parent_id' => $root->id, 'sort_order' => 10]);
 
-    Livewire::test(ResourceTreeIndex::class, [
-        'configurationKey' => 'reorderable-tree',
+    Livewire::test(TestTreeIndexHost::class, [
+        'treeIndexConfigurationKey' => 'reorderable-tree',
         'lang' => 'en',
         'search' => '',
     ])

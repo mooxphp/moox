@@ -31,7 +31,6 @@ class CategoryTreeResource extends MooxCategoryResource implements ConfiguresTre
                 treeSubheading: 'Baum',
                 inspectorHeading: 'Kategorie',
                 createRootLabel: 'Neue Kategorie',
-                createChildLabel: 'Unterkategorie',
                 newRecordLabel: 'Neue Kategorie',
             );
     }

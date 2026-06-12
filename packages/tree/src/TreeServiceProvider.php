@@ -15,7 +15,6 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
 use Moox\Tree\Filament\Pages\TreeIndexListRecords;
-use Moox\Tree\Livewire\ResourceTreeIndex;
 
 class TreeServiceProvider extends ServiceProvider
 {
@@ -66,11 +65,6 @@ class TreeServiceProvider extends ServiceProvider
 
                 return Blade::render('@include("localization::lang-selector")');
             },
-        );
-
-        Livewire::component(
-            config('filament-tree-index.livewire.alias', 'filament-tree-index'),
-            ResourceTreeIndex::class,
         );
 
         $this->publishes([

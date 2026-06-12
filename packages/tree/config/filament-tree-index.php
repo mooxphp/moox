@@ -6,8 +6,4 @@ return [
     'authorization' => [
         'enabled' => true,
     ],
-
-    'livewire' => [
-        'alias' => 'filament-tree-index',
-    ],
 ];

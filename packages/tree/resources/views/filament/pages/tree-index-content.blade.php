@@ -53,7 +53,7 @@
                     @include('filament-tree-index::livewire.resource-tree', [
                         'items' => $tree,
                         'parentId' => null,
-                        'selectedRecordId' => $selectedRecordId,
+                        'selectedRecordId' => $this->treeSelectedId,
                         'configuration' => $configuration,
                         'isRoot' => true,
                     ])
@@ -63,7 +63,7 @@
     </div>
 
     <div class="fi-grid-col" style="grid-column: span 9 / span 9;">
-        @if ($isCreatingInspector && $inspectorCreatePageClass)
+        @if ($isCreatingInspector && $usesResourceCreateInspector && $canRenderInspectorForm)
             <x-filament::section
                 :heading="$configuration->inspectorHeading()"
                 icon="heroicon-o-plus-circle"
@@ -71,16 +71,12 @@
             >
                 <div
                     class="fi-tree-inspector-scroll"
-                    wire:key="tree-index-inspector-create-{{ $creatingParentId ?? 'root' }}-{{ $lang }}"
+                    wire:key="tree-index-inspector-create-{{ $creatingParentId ?? 'root' }}-{{ $this->lang }}"
                 >
-                    @livewire($inspectorCreatePageClass, [
-                        'configurationKey' => $configurationKey,
-                        'parentId' => $creatingParentId,
-                        'lang' => $lang,
-                    ], key('tree-inspector-create-'.($creatingParentId ?? 'root').'-'.$lang))
+                    {{ $this->inspectorPanel }}
                 </div>
             </x-filament::section>
-        @elseif ($selectedRecordId === null)
+        @elseif ($this->treeSelectedId === null)
             <x-filament::section
                 :heading="$configuration->inspectorHeading()"
                 icon="heroicon-o-pencil-square"
@@ -92,7 +88,7 @@
                     description="Wähle links einen Eintrag oder erstelle einen neuen."
                 />
             </x-filament::section>
-        @elseif ($inspectorPageClass)
+        @elseif ($usesResourceInspectorPanel && $canRenderInspectorForm)
             <x-filament::section
                 :heading="$configuration->inspectorHeading()"
                 icon="heroicon-o-pencil-square"
@@ -100,12 +96,9 @@
             >
                 <div
                     class="fi-tree-inspector-scroll"
-                    wire:key="tree-index-inspector-{{ $selectedRecordId }}-{{ $lang }}"
+                    wire:key="tree-index-inspector-{{ $this->treeSelectedId }}-{{ $this->lang }}"
                 >
-                    @livewire($inspectorPageClass, [
-                        'record' => $selectedRecordId,
-                        'lang' => $lang,
-                    ], key('tree-inspector-'.$selectedRecordId.'-'.$lang))
+                    {{ $this->inspectorPanel }}
                 </div>
             </x-filament::section>
         @elseif ($selectedRecord === null)
@@ -139,43 +132,12 @@
                     </x-filament::section>
                 </form>
 
-                <x-slot name="footer">
-                    <div class="fi-sc fi-sc-has-gap fi-tree-footer">
-                        <div class="fi-tree-footer-actions">
-                            <x-filament::button
-                                type="submit"
-                                form="tree-index-inspector-form"
-                                icon="heroicon-m-check"
-                            >
-                                {{ $configuration->saveLabel() }}
-                            </x-filament::button>
-
-                            <x-filament::button
-                                type="button"
-                                wire:click="createChildNode"
-                                color="gray"
-                                outlined
-                                icon="heroicon-m-plus"
-                            >
-                                {{ $configuration->createChildLabel() }}
-                            </x-filament::button>
-                        </div>
-
-                        <x-filament::button
-                            type="button"
-                            wire:click="deleteSelectedRecord"
-                            wire:confirm="{{ $configuration->deleteConfirmMessage() }}"
-                            color="danger"
-                            outlined
-                            icon="heroicon-m-trash"
-                        >
-                            Löschen
-                        </x-filament::button>
-                    </div>
-                </x-slot>
+                @include('filament-tree-index::livewire.partials.tree-index-inspector-footer', [
+                    'configuration' => $configuration,
+                    'showSave' => true,
+                    'showDelete' => true,
+                ])
             </x-filament::section>
         @endif
     </div>
 </div>
-
-

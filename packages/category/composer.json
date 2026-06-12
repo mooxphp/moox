@@ -22,7 +22,8 @@
         "moox/localization": "dev-main",
         "kalnoy/nestedset": "^7.0",
         "moox/flag-icons-circle": "dev-main",
-        "moox/slug": "dev-main"
+        "moox/slug": "dev-main",
+        "moox/tree": "dev-main"
     },
     "autoload": {
         "psr-4": {

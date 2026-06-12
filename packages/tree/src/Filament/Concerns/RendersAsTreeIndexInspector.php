@@ -8,6 +8,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 /**
+ * Standalone tree-inspector edit page (direct route). Tree index uses inline {@see InteractsWithTreeResourceInspectorForm}.
+ *
  * @mixin EditRecord
  */
 trait RendersAsTreeIndexInspector
@@ -39,10 +41,5 @@ trait RendersAsTreeIndexInspector
         return Notification::make()
             ->title(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
             ->success();
-    }
-
-    protected function afterSave(): void
-    {
-        $this->dispatch('tree-index-record-saved');
     }
 }

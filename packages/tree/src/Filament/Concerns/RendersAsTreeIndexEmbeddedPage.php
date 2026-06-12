@@ -8,6 +8,9 @@ use Filament\Actions\Action;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Standalone tree-inspector resource pages (direct route, not tree index inline form).
+ */
 trait RendersAsTreeIndexEmbeddedPage
 {
     abstract protected function isEmbeddedInTreeIndex(): bool;

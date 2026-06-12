@@ -8,10 +8,13 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Contracts\HostsInlineResourceForm;
+use Moox\Tree\Filament\Concerns\InteractsWithResourceTreeIndex;
 use Moox\Tree\Filament\Concerns\InteractsWithTreeIndexListPage;
 
-abstract class TreeIndexListRecords extends ListRecords
+abstract class TreeIndexListRecords extends ListRecords implements HostsInlineResourceForm
 {
+    use InteractsWithResourceTreeIndex;
     use InteractsWithTreeIndexListPage;
 
     public string $treeIndexConfigurationKey = '';
@@ -31,6 +34,7 @@ abstract class TreeIndexListRecords extends ListRecords
         $this->treeIndexConfigurationKey = $resource;
 
         $this->refreshTreeIndexConfiguration();
+        $this->mountInteractsWithResourceTreeIndex();
         $this->clearTreeSelectionUnlessVisibleInCurrentQuery();
     }
 
@@ -42,6 +46,7 @@ abstract class TreeIndexListRecords extends ListRecords
     public function hydrate(): void
     {
         $this->hydrateInteractsWithTreeIndexListPage();
+        $this->hydrateInteractsWithResourceTreeIndex();
     }
 
     protected function getHeaderActions(): array
@@ -51,7 +56,7 @@ abstract class TreeIndexListRecords extends ListRecords
                 ->label(fn (): string => __('filament-actions::create.single.label', [
                     'label' => static::getResource()::getModelLabel(),
                 ]))
-                ->action(fn (): mixed => $this->dispatch('tree-index-create-root'))
+                ->action(fn (): mixed => $this->createRootNode())
                 ->hidden(fn (): bool => $this->shouldHideTreeCreateHeaderAction()),
         ];
     }

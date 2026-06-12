@@ -44,7 +44,6 @@ final class TreeIndexConfiguration
         private readonly string $treeSubheading,
         private readonly string $inspectorHeading,
         private readonly string $createRootLabel,
-        private readonly string $createChildLabel,
         private readonly string $saveLabel,
         private readonly string $newRecordLabel,
         private readonly string $deleteConfirmMessage,
@@ -81,7 +80,6 @@ final class TreeIndexConfiguration
             treeSubheading: 'Baum',
             inspectorHeading: 'Einstellungen',
             createRootLabel: 'Neuer Eintrag',
-            createChildLabel: 'Untereintrag hinzufügen',
             saveLabel: 'Speichern',
             newRecordLabel: 'Neuer Eintrag',
             deleteConfirmMessage: 'Diesen Eintrag inklusive Untereinträge löschen?',
@@ -332,7 +330,6 @@ final class TreeIndexConfiguration
         ?string $treeSubheading = null,
         ?string $inspectorHeading = null,
         ?string $createRootLabel = null,
-        ?string $createChildLabel = null,
         ?string $saveLabel = null,
         ?string $newRecordLabel = null,
         ?string $deleteConfirmMessage = null,
@@ -342,7 +339,6 @@ final class TreeIndexConfiguration
             treeSubheading: $treeSubheading ?? $this->treeSubheading,
             inspectorHeading: $inspectorHeading ?? $this->inspectorHeading,
             createRootLabel: $createRootLabel ?? $this->createRootLabel,
-            createChildLabel: $createChildLabel ?? $this->createChildLabel,
             saveLabel: $saveLabel ?? $this->saveLabel,
             newRecordLabel: $newRecordLabel ?? $this->newRecordLabel,
             deleteConfirmMessage: $deleteConfirmMessage ?? $this->deleteConfirmMessage,
@@ -469,11 +465,6 @@ final class TreeIndexConfiguration
         return $this->createRootLabel;
     }
 
-    public function createChildLabel(): string
-    {
-        return $this->createChildLabel;
-    }
-
     public function saveLabel(): string
     {
         return $this->saveLabel;
@@ -560,7 +551,6 @@ final class TreeIndexConfiguration
         ?string $treeSubheading = null,
         ?string $inspectorHeading = null,
         ?string $createRootLabel = null,
-        ?string $createChildLabel = null,
         ?string $saveLabel = null,
         ?string $newRecordLabel = null,
         ?string $deleteConfirmMessage = null,
@@ -590,7 +580,6 @@ final class TreeIndexConfiguration
             treeSubheading: $treeSubheading ?? $this->treeSubheading,
             inspectorHeading: $inspectorHeading ?? $this->inspectorHeading,
             createRootLabel: $createRootLabel ?? $this->createRootLabel,
-            createChildLabel: $createChildLabel ?? $this->createChildLabel,
             saveLabel: $saveLabel ?? $this->saveLabel,
             newRecordLabel: $newRecordLabel ?? $this->newRecordLabel,
             deleteConfirmMessage: $deleteConfirmMessage ?? $this->deleteConfirmMessage,

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Tree\Livewire\Concerns;
+namespace Moox\Tree\Filament\Concerns;
 
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +20,7 @@ trait ManagesTreeForm
     {
         $this->authorizeTreeIndex();
 
-        if ($this->selectedRecordId === null) {
+        if ($this->treeSelectedId === null) {
             return;
         }
 
@@ -29,7 +29,7 @@ trait ManagesTreeForm
         try {
             app(UpdateTreeNodeAction::class, ['configuration' => $this->configuration()])
                 ->handle(
-                    $this->query()->findOrFail($this->selectedRecordId),
+                    $this->query()->findOrFail($this->treeSelectedId),
                     $validated['form'],
                 );
         } catch (InvalidTreeParentException $exception) {
@@ -39,7 +39,7 @@ trait ManagesTreeForm
             return;
         }
 
-        $this->loadSelectedRecord();
+        $this->loadInspectorOrStubForm();
 
         Notification::make()
             ->title('Eintrag gespeichert')
@@ -51,25 +51,35 @@ trait ManagesTreeForm
     {
         $this->authorizeTreeIndex();
 
-        if ($this->selectedRecordId === null) {
+        if ($this->treeSelectedId === null) {
             return;
         }
 
         app(DeleteTreeNodeAction::class)
-            ->handle($this->query()->findOrFail($this->selectedRecordId));
+            ->handle($this->query()->findOrFail($this->treeSelectedId));
 
         $nextId = $this->configuration()
             ->applyTreeOrdering($this->query())
             ->value('id');
 
-        $this->selectedRecordId = $nextId === null ? null : (int) $nextId;
-        $this->syncTreeSelectionToParent();
-        $this->loadSelectedRecord();
+        $this->treeSelectedId = $nextId === null ? null : (int) $nextId;
+        $this->loadInspectorOrStubForm();
 
         Notification::make()
             ->title('Eintrag gelöscht')
             ->success()
             ->send();
+    }
+
+    protected function loadInspectorOrStubForm(): void
+    {
+        if ($this->usesResourceInspectorPanel()) {
+            $this->fillInspectorFormForSelectedRecord();
+
+            return;
+        }
+
+        $this->loadSelectedRecord();
     }
 
     protected function loadSelectedRecord(): void

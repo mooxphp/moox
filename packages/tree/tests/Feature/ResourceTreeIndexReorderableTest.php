@@ -5,9 +5,9 @@ declare(strict_types=1);
 use Livewire\Livewire;
 use Moox\Tree\Config\TreeIndexConfiguration;
 use Moox\Tree\Config\TreeIndexConfigurationRegistry;
-use Moox\Tree\Livewire\ResourceTreeIndex;
 use Moox\Tree\Tests\Models\TreeNode;
 use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
+use Moox\Tree\Tests\Support\TestTreeIndexHost;
 use Moox\Tree\Tests\TestCase;
 
 uses(TestCase::class, CreatesTreeNodesTable::class);
@@ -29,8 +29,8 @@ it('ignores moveTreeNode when reordering is disabled', function (): void {
 
     $child = TreeNode::query()->where('label', 'Child')->firstOrFail();
 
-    Livewire::test(ResourceTreeIndex::class, [
-        'configurationKey' => 'non-reorderable',
+    Livewire::test(TestTreeIndexHost::class, [
+        'treeIndexConfigurationKey' => 'non-reorderable',
         'lang' => 'en',
         'search' => '',
     ])

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Tree\Config\TreeIndexConfiguration;
-use Moox\Tree\Config\TreeIndexConfigurationRegistry;
-use Moox\Tree\Filament\Concerns\RendersAsTreeIndexCreateInspector;
-use Moox\Tree\Filament\Pages\TreeIndexCreateInspectorPageFactory;
+use Moox\Tree\Support\TreeIndexResourcePages;
 use Moox\Tree\Tests\Models\TreeNode;
 use Moox\Tree\Tests\Support\CreatesTreeNodesTable;
 use Moox\Tree\Tests\Support\TestCreateTreeNodePage;
@@ -143,16 +141,10 @@ it('can opt out of the resource create inspector with stub create', function ():
     expect($configuration->usesResourceCreateInspector())->toBeFalse();
 });
 
-it('resolves a generated create inspector page from the source resource', function (): void {
-    $configurationKey = 'test-generated-create-inspector';
-    TreeIndexConfigurationRegistry::forget($configurationKey);
-    TreeIndexConfigurationRegistry::register($configurationKey, TestForwardTreeResource::treeIndexWithInspector());
+it('resolves the create page class from the source resource', function (): void {
+    $configuration = TestForwardTreeResource::treeIndexWithInspector();
 
-    $resolvedClass = TreeIndexCreateInspectorPageFactory::resolve($configurationKey);
-
-    expect($resolvedClass)->not->toBe(TestCreateTreeNodePage::class)
-        ->and(is_subclass_of($resolvedClass, TestCreateTreeNodePage::class))->toBeTrue()
-        ->and(in_array(RendersAsTreeIndexCreateInspector::class, class_uses($resolvedClass), true))->toBeTrue();
+    expect(TreeIndexResourcePages::resolveCreatePageClass($configuration))->toBe(TestCreateTreeNodePage::class);
 });
 
 it('can disable the filament table language switcher', function (): void {

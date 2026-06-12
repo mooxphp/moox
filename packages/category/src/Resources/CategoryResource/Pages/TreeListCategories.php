@@ -8,6 +8,7 @@ use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryTreeResource;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tree\Filament\Pages\TreeIndexListRecords;
+use Moox\Tree\Support\TreeLocale;
 
 class TreeListCategories extends TreeIndexListRecords
 {
@@ -18,7 +19,9 @@ class TreeListCategories extends TreeIndexListRecords
     public function mount(): void
     {
         if (! request()->has('tab')) {
-            $this->redirect(CategoryTreeResource::getUrl('index', ['tab' => 'all']));
+            $this->redirect(CategoryTreeResource::getUrl('index', TreeLocale::indexUrlParameters([
+                'tab' => 'all',
+            ])));
         }
 
         parent::mount();

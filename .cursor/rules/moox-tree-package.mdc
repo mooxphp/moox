@@ -16,8 +16,10 @@ Internes Filament-Resource-Index-UI für hierarchische Eloquent-Modelle (Baum li
 |--------|------------------------------|
 | CRUD / Verschieben | `Actions/Tree/*` |
 | Baumstruktur | `Support/TreeStructure` |
-| UI / Interaktion | `Livewire/ResourceTreeIndex`, Blade-Views, Alpine `$store.filamentTreeIndex` |
-| Filament-Anbindung | `TreeIndexListRecords`, `Contracts\ConfiguresTreeIndex`, Inspector-Trait |
+| UI / Interaktion | `TreeIndexListRecords` + Concerns, `tree-index-content` Blade, Alpine `$store.filamentTreeIndex` |
+| Filament-Anbindung | `TreeIndexListRecords`, `Contracts\ConfiguresTreeIndex`, `HostsInlineResourceForm`, `InteractsWithResourceTreeIndex`, `InteractsWithTreeResourceInspectorForm` |
+| Inline Form-Actions | `TreeInlineFormResourceAdapter`, `ProvidesInlineResourceFormActions` (generiert, nicht im Consumer) |
+| Inspector-Persistenz | `PersistTreeResourceCreateAction`, `PersistTreeResourceUpdateAction`, `TreeResourcePageExecutor` |
 | Anpassung | `TreeIndexConfiguration` (Spalten, Modus, Hooks, Labels, Toolbar) |
 | Locale / Toolbar-i18n | `Support/TreeLocale`, `toolbarLocalizedTranslations()` |
 | List-Forwarding | `forwardFromResource()`, `Support/ResourceListForwarder` |
@@ -27,7 +29,7 @@ Internes Filament-Resource-Index-UI für hierarchische Eloquent-Modelle (Baum li
 ## Architektur (nicht verletzen)
 
 - **Geschäftslogik in Actions**, nicht in Livewire oder Blade: `CreateTreeNodeAction`, `UpdateTreeNodeAction`, `MoveTreeNodeAction`, `DeleteTreeNodeAction`. Bei `nestedSet()` delegieren Create/Move an `*NestedSet*`-Actions (Kalnoy `NodeTrait`).
-- **`ResourceTreeIndex`** orchestriert nur (Auth, Query, Delegation an Actions, Events). Keine neuen CRUD-Pfade direkt im Component.
+- **`TreeIndexListRecords`** (einziger Livewire-Host) orchestriert nur (Auth, Query, Delegation an Actions, Events). Baum-UI via `table()->content(tree-index-content)` — **kein** separates Livewire-Component, **keine** Livewire-Aliase im Provider.
 - **Baumaufbau** nur über `TreeStructure` + `TreeIndexConfiguration`. Konfiguration ist **immutable** (Fluent API mit `cloneWith`); neue Optionen brauchen Unit-Tests in `TreeIndexConfigurationTest`.
 - **Registry**: List-Pages registrieren Config unter dem **Resource-Klassennamen** (`TreeIndexConfigurationRegistry`). Schlüssel nicht umbenennen ohne Migration aller Aufrufer.
 
@@ -71,13 +73,9 @@ Neue Features im Package müssen über **Config/Actions/Resource-Hooks** lösbar
 
 ## Tests
 
-- Tests nur unter `packages/tree/tests/` (Pest). Feature = Livewire `ResourceTreeIndex`; Unit = Config, `TreeStructure`, Registry.
+- Tests nur unter `packages/tree/tests/` (Pest). Feature = `TreeIndexListRecords`; isolierte Baum-Logik = `TestTreeIndexHost` (nutzt `InteractsWithResourceTreeIndex`); Unit = Config, `TreeStructure`, `TreeInlineFormResourceAdapter`, Registry.
 - Auth in Tests: `config(['filament-tree-index.authorization.enabled' => false])` und Registry-Register mit Test-Key.
 - Nach Verhalten ändern: `php artisan test --compact packages/tree/tests`
-
-## Generierte Dateien (nicht committen)
-
-`TreeIndexCreateInspectorPageFactory` schreibt bei Bedarf Wrapper unter `src/Filament/Pages/Generated/TreeCreateInspector_*.php` (wenn die Resource-Create-Page `RendersAsTreeIndexCreateInspector` noch nicht nutzt). Der Ordner hat `.gitignore` (`*` + `!.gitignore`) — **keine** generierten Klassen ins Repository. Laufzeit-Artefakte nach Tests dürfen lokal liegen.
 
 ## Referenz-Integration (außerhalb des Packages)
 
@@ -91,4 +89,6 @@ Consumer-Resources (`implements ConfiguresTreeIndex`) gehören **nicht** in dies
 
 - **Keine neuen Buttons, Footer-Actions oder Blade-`wire:click`-Schaltflächen** im Tree-Package oder in Consumer-Tree-Pages hinzufügen, ändern oder duplizieren — **ohne vorherige Rückfrage und ausdrückliche Bestätigung** durch den Nutzer.
 - Inspector-Formular = **unverändert** `Resource::form()` der Quell-Resource (Felder + Actions 1:1). **Keine** Action-Umverdrahtung, **keine** zusätzlichen Buttons.
-- Erlaubte Einbettungs-Anpassung (unsichtbar): `RendersAsTreeIndexEmbeddedPage` (minimale Inspector-View, Redirect-Suppression), `InteractsWithTreeIndexInspectorLocale`, Create/Edit-Traits (`RendersAsTreeIndexCreateInspector` / `RendersAsTreeIndexInspector` — Position, Events, `lang`).
+- Inspector inline auf `TreeIndexListRecords`: `InteractsWithTreeResourceInspectorForm`, `TreeInlineFormResourceAdapter` (Form-Actions ohne Redirect), `PersistTreeResourceCreateAction` / `PersistTreeResourceUpdateAction`. Consumer-Resources **ohne** zusätzliche Traits; Forward-Resource **nicht** `final`.
+- Create inline: `usesResourceCreateInspector()` wenn `inspectorPage` + Create-Route in `getPages()`; sonst `stubCreate()` oder `CreateTreeNodeAction`.
+- Standalone Route `tree-inspector`: `RendersAsTreeIndexInspector` + `RendersAsTreeIndexEmbeddedPage` (Redirect-Suppression, `lang`). Nur für direkte URL — Hauptpfad ist inline auf der List-Page.

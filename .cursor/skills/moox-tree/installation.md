@@ -77,14 +77,12 @@ Moox\Tree\TreeServiceProvider::class,
 |-------------------|-----------|-----------------|
 | **CSS** `tree-index` (`resources/css/tree.css`) | `FilamentAsset::register()` under package `moox/tree` | Run `php artisan filament:assets` (see Step 3) |
 | **Alpine store** `$store.filamentTreeIndex` | `PanelsRenderHook::SCRIPTS_BEFORE` → `scripts/alpine-tree-store` blade | None — loaded on every Filament panel page |
-| **Livewire** `ResourceTreeIndex` | `Livewire::component()` (alias from config, default `filament-tree-index`) | None |
+| **Tree UI** | `TreeIndexListRecords` renders `table()->content(tree-index-content)` | None — no separate Livewire component or alias |
 | **Blade views** `filament-tree-index::*` | `loadViewsFrom()` | None unless you publish overrides |
 | **Config** `filament-tree-index` | `mergeConfigFrom()` | Optional publish (Step 5) |
 | **Language switcher hook** | `TablesRenderHook::TOOLBAR_SEARCH_BEFORE` when toolbar + switcher enabled | Requires `moox/localization` view |
 
 **Do not** copy `tree.css` or the Alpine store into the consumer package. The tree UI is a single source of truth in `packages/tree`.
-
-**Generated PHP classes** under `packages/tree/src/Filament/Pages/Generated/` are runtime wrappers from `TreeIndexCreateInspectorPageFactory` — gitignored, not part of the distributable package. Do not commit or copy them into consumer packages.
 
 ---
 
@@ -145,7 +143,7 @@ php artisan filament:assets
 Only when you need to override defaults:
 
 ```bash
-# Config: authorization, Livewire alias
+# Config: authorization
 php artisan vendor:publish --tag=filament-tree-index-config
 
 # Views: override package Blade templates (rare)
@@ -157,7 +155,6 @@ Default config (`config/filament-tree-index.php`):
 | Key | Default | Purpose |
 |-----|---------|---------|
 | `authorization.enabled` | `true` | Tree CRUD permission checks |
-| `livewire.alias` | `filament-tree-index` | Livewire component name |
 
 After publishing config, clear config cache if enabled:
 
@@ -173,7 +170,7 @@ php artisan config:clear
 |---------|--------------|-----|
 | Unstyled tree, no columns | `filament:assets` not run | `php artisan filament:assets` |
 | Alpine errors, expand/collapse dead | Provider not loaded | `composer dump-autoload` + `php artisan package:discover` |
-| Livewire component not found | Missing require or cache | `composer require moox/tree:@dev`, `php artisan optimize:clear` |
+| Tree page blank / methods missing | Stale autoload or provider | `composer dump-autoload`, `php artisan package:discover`, `php artisan optimize:clear` |
 | Language switcher missing | `moox/localization` not installed or view missing | `composer require moox/localization`, or set `filamentTableLanguageSwitcher(false)` |
 | Stale CSS after package edit | Asset cache | `php artisan filament:assets` + hard refresh browser |
 | 419 on inspector form | Unrelated to assets — embedded page without redirect suppression | Use `RendersAsTreeIndexInspector` (extends `RendersAsTreeIndexEmbeddedPage`) |

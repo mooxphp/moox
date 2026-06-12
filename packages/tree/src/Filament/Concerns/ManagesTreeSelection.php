@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Moox\Tree\Livewire\Concerns;
+namespace Moox\Tree\Filament\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tree\Support\TreeNodeLabelResolver;
 
 trait ManagesTreeSelection
 {
-    public ?int $selectedRecordId = null;
-
     public bool $isCreatingInspector = false;
 
     public ?int $creatingParentId = null;
@@ -20,23 +18,17 @@ trait ManagesTreeSelection
         $this->authorizeTreeIndex();
         $this->isCreatingInspector = false;
         $this->creatingParentId = null;
-        $this->selectedRecordId = $recordId;
-        $this->syncTreeSelectionToParent();
-        $this->loadSelectedRecord();
-    }
-
-    protected function syncTreeSelectionToParent(): void
-    {
-        $this->dispatch('tree-index-selection-changed', selectedRecordId: $this->selectedRecordId);
+        $this->treeSelectedId = $recordId;
+        $this->loadInspectorOrStubForm();
     }
 
     protected function getSelectedRecord(): ?Model
     {
-        if ($this->selectedRecordId === null) {
+        if ($this->treeSelectedId === null) {
             return null;
         }
 
-        return $this->query()->find($this->selectedRecordId);
+        return $this->query()->find($this->treeSelectedId);
     }
 
     /**
@@ -46,9 +38,9 @@ trait ManagesTreeSelection
     {
         $configuration = $this->configuration();
         $labelColumn = $configuration->getLabelColumn();
-        $excludedIds = $this->selectedRecordId === null
+        $excludedIds = $this->treeSelectedId === null
             ? []
-            : [$this->selectedRecordId, ...$this->getDescendantIds($this->selectedRecordId)];
+            : [$this->treeSelectedId, ...$this->getDescendantIds($this->treeSelectedId)];
 
         $columns = ['id'];
 
