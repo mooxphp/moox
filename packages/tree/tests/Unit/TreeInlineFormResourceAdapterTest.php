@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Moox\Tree\Filament\Concerns\ProvidesInlineResourceFormActions;
 use Moox\Tree\Support\TreeInlineFormResourceAdapter;
 use Moox\Tree\Tests\Support\TestForwardTreeResource;
 use Moox\Tree\Tests\TestCase;
@@ -13,7 +14,7 @@ it('wraps a forwarded resource with inline form actions', function (): void {
 
     expect($adaptedClass)->not->toBe(TestForwardTreeResource::class)
         ->and(is_subclass_of($adaptedClass, TestForwardTreeResource::class))->toBeTrue()
-        ->and(in_array(\Moox\Tree\Filament\Concerns\ProvidesInlineResourceFormActions::class, class_uses($adaptedClass), true))->toBeTrue();
+        ->and(in_array(ProvidesInlineResourceFormActions::class, class_uses($adaptedClass), true))->toBeTrue();
 
     $adaptedSaveAction = $adaptedClass::getSaveAction();
 

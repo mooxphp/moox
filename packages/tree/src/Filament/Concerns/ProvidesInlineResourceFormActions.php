@@ -11,11 +11,12 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Tree\Contracts\HostsInlineResourceForm;
+use Moox\Tree\Support\TreeInlineFormResourceAdapter;
 
 /**
  * Adapts BaseResource form actions for inline tree inspector forms (no redirect after save).
  *
- * Applied automatically via {@see \Moox\Tree\Support\TreeInlineFormResourceAdapter} — do not use on consumer resources.
+ * Applied automatically via {@see TreeInlineFormResourceAdapter} — do not use on consumer resources.
  */
 trait ProvidesInlineResourceFormActions
 {
