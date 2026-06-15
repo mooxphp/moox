@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../TestCase.php';
 
-uses(Moox\Builder\Tests\TestCase::class);
+uses(TestCase::class);
 
 use Illuminate\Support\Facades\Cache;
 use Moox\Builder\Data\LocationContext;

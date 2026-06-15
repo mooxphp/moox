@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
-uses(Moox\Builder\Tests\TestCase::class);
+uses(TestCase::class);
 
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Tests\Support\TestItemResource;

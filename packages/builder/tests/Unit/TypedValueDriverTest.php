@@ -6,7 +6,7 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
-uses(Moox\Builder\Tests\TestCase::class);
+uses(TestCase::class);
 
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Models\FieldValue;
