@@ -83,9 +83,15 @@ class CustomFieldsManager
         $values = [];
 
         foreach ($fields as $field) {
-            if (array_key_exists($field->name, $data)) {
-                $values[$field->name] = $data[$field->name];
+            if (! array_key_exists($field->name, $data)) {
+                continue;
             }
+
+            if ($field->type === 'password' && blank($data[$field->name])) {
+                continue;
+            }
+
+            $values[$field->name] = $data[$field->name];
         }
 
         if ($values === []) {

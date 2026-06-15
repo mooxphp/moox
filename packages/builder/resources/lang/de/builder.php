@@ -76,4 +76,10 @@ return [
         'collapse_all' => 'Alle einklappen',
         'expand_all' => 'Alle ausklappen',
     ],
+
+    'validation' => [
+        'invalid_option' => 'Der gewählte Wert ist keine gültige Option.',
+        'duplicate_field_name' => 'Der Feldschlüssel „:name“ wird bereits in der Gruppe „:group“ verwendet.',
+        'duplicate_field_name_internal' => 'Der Feldschlüssel „:name“ ist in dieser Gruppe mehrfach vergeben.',
+    ],
 ];

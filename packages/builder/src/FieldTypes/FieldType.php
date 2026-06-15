@@ -7,6 +7,7 @@ namespace Moox\Builder\FieldTypes;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\Capability;
+use Moox\Builder\Support\OptionValueRules;
 
 abstract class FieldType
 {
@@ -50,6 +51,10 @@ abstract class FieldType
         }
 
         $rules = array_merge($rules, $this->additionalRules($field));
+
+        if ($this->hasOptions()) {
+            $rules = array_merge($rules, OptionValueRules::forField($field));
+        }
 
         if ($rules !== []) {
             $component->rules($rules);

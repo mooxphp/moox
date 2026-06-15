@@ -12,11 +12,17 @@ use Moox\Builder\Models\FieldOption;
 
 class FieldGroupPersistence
 {
+    public function __construct(
+        protected FieldValuePurger $fieldValuePurger,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
     public function sync(FieldGroup $group, array $data): void
     {
+        app(FieldGroupValidator::class)->validate($group, $data);
+
         $group->fill(Arr::only($data, [
             'name',
             'slug',
@@ -157,6 +163,8 @@ class FieldGroupPersistence
                 $field = new Field;
             }
 
+            $previousName = $field->exists ? $field->name : null;
+
             $field->fill([
                 'field_group_id' => $group->getKey(),
                 'name' => (string) $row['name'],
@@ -171,6 +179,12 @@ class FieldGroupPersistence
             ]);
 
             $field->save();
+
+            if ($previousName !== null && $previousName !== $field->name) {
+                $entities = $this->entitiesFromLocationRules($group->location_rules ?? []);
+                $this->fieldValuePurger->purgeForFieldName($previousName, $entities);
+            }
+
             $retainedIds[] = $field->getKey();
 
             $this->syncOptions($field, $row['options'] ?? []);

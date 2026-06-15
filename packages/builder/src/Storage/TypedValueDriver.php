@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\TypedValueColumns;
 
 class TypedValueDriver implements ValueStore
@@ -33,7 +34,7 @@ class TypedValueDriver implements ValueStore
         foreach ($fields as $field) {
             $row = $rows->get($field->name);
 
-            if ($row === null) {
+            if ($row === null || $field->type === 'password') {
                 continue;
             }
 
@@ -51,7 +52,13 @@ class TypedValueDriver implements ValueStore
                 continue;
             }
 
-            $cast = $this->fieldTypeRegistry->get($field->type)->castValue($values[$field->name]);
+            $value = $values[$field->name];
+
+            if ($field->type !== 'password') {
+                OptionValueRules::assertValid($field, $value);
+            }
+
+            $cast = $this->fieldTypeRegistry->get($field->type)->castValue($value);
             $columns = TypedValueColumns::attributesFor($field->type, $cast);
 
             FieldValue::query()->updateOrCreate(

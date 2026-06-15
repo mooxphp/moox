@@ -6,6 +6,7 @@ namespace Moox\Builder\FieldTypes\Types;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
+use Illuminate\Support\Facades\Hash;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\MaxLength;
 use Moox\Builder\FieldTypes\FieldType;
@@ -33,5 +34,20 @@ class PasswordFieldType extends FieldType
             ->dehydrated(fn (?string $state): bool => filled($state));
 
         return $this->applyCapabilitiesAndValidation($component, $field);
+    }
+
+    public function castValue(mixed $raw): mixed
+    {
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+
+        $value = (string) $raw;
+
+        if (Hash::isHashed($value)) {
+            return $value;
+        }
+
+        return Hash::make($value);
     }
 }
