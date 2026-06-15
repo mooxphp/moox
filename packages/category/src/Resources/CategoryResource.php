@@ -258,9 +258,16 @@ class CategoryResource extends BaseDraftResource
     #[Override]
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        $relations = parent::getRelations();
+
+        if (class_exists(\Moox\Audit\Support\AuditResourceRelationRegistry::class)) {
+            $relations = array_merge(
+                $relations,
+                \Moox\Audit\Support\AuditResourceRelationRegistry::for(static::class),
+            );
+        }
+
+        return $relations;
     }
 
     #[Override]
