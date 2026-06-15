@@ -6,7 +6,6 @@ namespace Moox\Builder\Storage;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\TypedValueColumns;
