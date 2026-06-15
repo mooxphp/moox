@@ -2,37 +2,100 @@
 
 # Moox Audit
 
-Moox Audit is a Log Viewer for Laravel and Filament based on [Spatie Laravel Activity Log](https://github.com/spatie/laravel-activitylog).
+Moox Audit provides centralized activity logging and a read-only Filament audit UI on top of [Spatie Laravel Activity Log](https://github.com/spatie/laravel-activitylog).
 
 ## Quick Installation
-
-These two commmands are all you need to install the package:
 
 ```bash
 composer require moox/audit
 php artisan mooxaudit:install
 ```
 
-Curious what the install command does? See manual installation below.
+## How it works
 
-## What it does
+Audit uses three configuration layers (lowest to highest priority):
 
-<!--whatdoes-->
+1. **Presets** in `config/audit.php` (`draft_main`, `draft_translation`, …)
+2. **Package defaults** — each Moox package registers an `audit` block (e.g. `category.audit`)
+3. **App overrides** in published `config/audit.php` (`models`, `hooks`, `filament`)
 
-This is my package audit
+When `audit.enabled=true`, configured models are tracked automatically. **No trait** and **no model changes** in consumer packages.
 
-<!--/whatdoes-->
+## Package integration
+
+In your package config (example `category.php`):
+
+```php
+'audit' => [
+    'models' => [
+        Category::class => [
+            'preset' => 'draft_main',
+            'log_name' => 'category',
+            'attributes' => ['status', 'scope'],
+        ],
+    ],
+],
+```
+
+In your `ServiceProvider`:
+
+```php
+if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+    AuditPackageRegistry::register('category', config('category.audit', []));
+}
+```
+
+For Filament activity tabs, add to your Resource (loose coupling via `class_exists`):
+
+```php
+public static function getRelations(): array
+{
+    $relations = parent::getRelations();
+
+    if (class_exists(\Moox\Audit\Support\AuditResourceRelationRegistry::class)) {
+        $relations = array_merge(
+            $relations,
+            \Moox\Audit\Support\AuditResourceRelationRegistry::for(static::class),
+        );
+    }
+
+    return $relations;
+}
+```
+
+Or use the optional trait `Moox\Audit\Filament\Concerns\InteractsWithAuditResourceRelations`.
+
+## App overrides
+
+Disable a model:
+
+```php
+'models' => [
+    Category::class => ['enabled' => false],
+],
+```
+
+Replace attribute list:
+
+```php
+'models' => [
+    Category::class => ['attributes' => ['status', 'scope']],
+],
+```
+
+Append fields:
+
+```php
+'models' => [
+    Category::class => ['append_attributes' => ['due_at']],
+],
+```
 
 ## Manual Installation
 
-Instead of using the install-command `php artisan mooxaudit:install` you are able to install this package manually step by step:
-
 ```bash
-// Publish and run the migrations:
 php artisan vendor:publish --tag="audit-migrations"
 php artisan migrate
-
-// Publish the config file with:
 php artisan vendor:publish --tag="audit-config"
 ```
 

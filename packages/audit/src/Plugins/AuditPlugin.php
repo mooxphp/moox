@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Audit\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Audit\Resources\AuditResource;
+use Moox\Audit\Support\AuditBootstrap;
 
 class AuditPlugin implements Plugin
 {
@@ -25,7 +28,7 @@ class AuditPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
-        //
+        AuditBootstrap::boot();
     }
 
     public static function make(): static
