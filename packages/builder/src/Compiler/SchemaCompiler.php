@@ -12,6 +12,7 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Storage\ValueStoreResolver;
 
 class SchemaCompiler
@@ -95,7 +96,11 @@ class SchemaCompiler
             $rules[] = 'url';
         }
 
-        return array_values(array_unique($rules));
+        if ($fieldType->hasOptions()) {
+            $rules = array_merge($rules, OptionValueRules::forField($field));
+        }
+
+        return array_values(array_unique($rules, SORT_REGULAR));
     }
 
     /**
@@ -111,7 +116,7 @@ class SchemaCompiler
             : null;
 
         return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $valueStore, $entity): void {
-            if (filled($state) || $record === null || $entity === null) {
+            if ($field->type === 'password' || filled($state) || $record === null || $entity === null) {
                 return;
             }
 

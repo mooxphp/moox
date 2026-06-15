@@ -27,8 +27,10 @@ use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
 use Moox\Builder\Observers\InvalidateDefinitionCacheObserver;
-use Moox\Builder\Registry\EntityRegistry;
+use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Registry\EntityRegistry;
+use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Storage\ValueStoreResolver;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -69,9 +71,14 @@ class BuilderServiceProvider extends MooxServiceProvider
     {
         FieldGroup::observe(InvalidateDefinitionCacheObserver::class);
         Field::observe(InvalidateDefinitionCacheObserver::class);
+        Field::observe(PurgeFieldValuesObserver::class);
         FieldOption::observe(InvalidateDefinitionCacheObserver::class);
 
         Event::listen(RecordSaved::class, PersistCustomFields::class);
+
+        $this->app->booted(function (): void {
+            app(EntityModelDeletionRegistrar::class)->register();
+        });
     }
 
     /**

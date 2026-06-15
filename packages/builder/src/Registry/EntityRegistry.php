@@ -40,6 +40,42 @@ class EntityRegistry
         return is_string($resource) ? $resource : null;
     }
 
+    /**
+     * @return class-string|null
+     */
+    public function modelFor(string $entity): ?string
+    {
+        $resource = $this->resourceFor($entity);
+
+        if ($resource === null || ! method_exists($resource, 'getModel')) {
+            return null;
+        }
+
+        $model = $resource::getModel();
+
+        return is_string($model) ? $model : null;
+    }
+
+    /**
+     * @param  class-string  $modelClass
+     */
+    public function entityForModel(string $modelClass): ?string
+    {
+        foreach ($this->all() as $key => $definition) {
+            $resource = $definition['resource'] ?? null;
+
+            if (! is_string($resource) || ! method_exists($resource, 'getModel')) {
+                continue;
+            }
+
+            if ($resource::getModel() === $modelClass) {
+                return (string) $key;
+            }
+        }
+
+        return null;
+    }
+
     public function labelFor(string $entity): string
     {
         $definition = $this->all()[$entity] ?? [];
