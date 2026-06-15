@@ -151,6 +151,11 @@ return [
             'path' => $public_base_path.'/build',
             'type' => 'public',
         ],
+        'builder' => [
+            'active' => false,
+            'path' => $public_base_path.'/builder',
+            'type' => 'public',
+        ],
         'cache' => [
             'active' => false,
             'path' => $public_base_path.'/cache',

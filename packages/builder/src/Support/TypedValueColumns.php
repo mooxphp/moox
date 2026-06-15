@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\Builder\Support;
+
+use Moox\Builder\Models\FieldValue;
+
+final class TypedValueColumns
+{
+    /**
+     * @return list<string>
+     */
+    public static function valueColumns(): array
+    {
+        return [
+            'value_string',
+            'value_text',
+            'value_decimal',
+            'value_date',
+            'value_datetime',
+            'value_boolean',
+            'value_json',
+        ];
+    }
+
+    public static function columnForType(string $type): string
+    {
+        return match ($type) {
+            'textarea' => 'value_text',
+            'number' => 'value_decimal',
+            'date' => 'value_date',
+            'datetime' => 'value_datetime',
+            'toggle' => 'value_boolean',
+            'multiselect', 'checkbox_list' => 'value_json',
+            default => 'value_string',
+        };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function emptyColumns(): array
+    {
+        return array_fill_keys(self::valueColumns(), null);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function attributesFor(string $type, mixed $value): array
+    {
+        $columns = self::emptyColumns();
+        $column = self::columnForType($type);
+        $columns[$column] = $value;
+
+        return $columns;
+    }
+
+    public static function read(FieldValue $row, string $type): mixed
+    {
+        $column = self::columnForType($type);
+
+        return $row->getAttribute($column);
+    }
+}
