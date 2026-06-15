@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../TestCase.php';
 
-uses(Moox\Builder\Tests\TestCase::class);
+uses(TestCase::class);
 
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Tests\TestCase;
 
 it('rejects invalid scalar option values', function (): void {
     $field = new FieldDefinition(
