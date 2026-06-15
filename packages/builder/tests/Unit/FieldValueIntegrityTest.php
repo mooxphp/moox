@@ -6,16 +6,20 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
-uses(Moox\Builder\Tests\TestCase::class);
+uses(TestCase::class);
 
 use Illuminate\Validation\ValidationException;
+use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Services\FieldValuePurger;
+use Moox\Builder\Storage\TypedValueDriver;
+use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
+use Moox\Builder\Tests\TestCase;
 
 beforeEach(function (): void {
     $this->createItemsTable();
@@ -35,7 +39,7 @@ it('purges values when a record is deleted', function (): void {
         'value_string' => 'red',
     ]);
 
-    app(\Moox\Builder\Support\EntityModelDeletionRegistrar::class)->register();
+    app(EntityModelDeletionRegistrar::class)->register();
 
     $record->delete();
 
@@ -136,12 +140,12 @@ it('rejects duplicate field names across groups for the same entity', function (
 
 it('hashes password values on save', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
-    $driver = app(\Moox\Builder\Storage\TypedValueDriver::class);
+    $driver = app(TypedValueDriver::class);
 
     $driver->save('item', $record, [
         'secret' => 'plain-text',
     ], collect([
-        new \Moox\Builder\Data\FieldDefinition('secret', 'Secret', 'password'),
+        new FieldDefinition('secret', 'Secret', 'password'),
     ]));
 
     $stored = FieldValue::query()->forRecord('item', $record->getKey())->first();
@@ -160,10 +164,10 @@ it('does not load password values back into forms', function (): void {
         'value_string' => bcrypt('hidden'),
     ]);
 
-    $loaded = app(\Moox\Builder\Storage\TypedValueDriver::class)->load(
+    $loaded = app(TypedValueDriver::class)->load(
         'item',
         $record,
-        collect([new \Moox\Builder\Data\FieldDefinition('secret', 'Secret', 'password')]),
+        collect([new FieldDefinition('secret', 'Secret', 'password')]),
     );
 
     expect($loaded)->toBe([]);

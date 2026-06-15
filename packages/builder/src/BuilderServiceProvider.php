@@ -28,10 +28,10 @@ use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
 use Moox\Builder\Observers\InvalidateDefinitionCacheObserver;
 use Moox\Builder\Observers\PurgeFieldValuesObserver;
-use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Registry\EntityRegistry;
-use Moox\Builder\Support\EntityModelDeletionRegistrar;
+use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Storage\ValueStoreResolver;
+use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 

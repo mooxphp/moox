@@ -12,8 +12,8 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
-use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Storage\ValueStoreResolver;
+use Moox\Builder\Support\OptionValueRules;
 
 class SchemaCompiler
 {
