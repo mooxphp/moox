@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
-use Moox\Audit\Support\AuditResourceRelationRegistry;
 
 final class AuditBootstrap
 {
