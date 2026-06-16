@@ -31,6 +31,19 @@ $private_base_path = env('DEVLINK_PRIVATE_PATH', 'disabled');
 */
 $private_repo_url = env('DEVLINK_PRIVATE_REPO_URL', 'https://pkg.moox.pro/');
 
+/*
+|--------------------------------------------------------------------------
+| Export Path
+|--------------------------------------------------------------------------
+|
+| The file the package list is exported to (relative to the project root),
+| used by CI and the export script. Can be set in the .env file.
+|
+*/
+$export_path = env('DEVLINK_EXPORT_PATH', '.github/moox-packages.txt');
+
+
+
 return [
 
     /*
@@ -576,5 +589,6 @@ return [
     'packages_path' => $packages_path,
     'public_base_path' => $public_base_path,
     'private_base_path' => $private_base_path,
+    'export_path' => $export_path,
 
 ];

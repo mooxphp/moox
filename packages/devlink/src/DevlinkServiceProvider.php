@@ -6,8 +6,10 @@ namespace Moox\Devlink;
 
 use Illuminate\Support\ServiceProvider;
 use Moox\Devlink\Console\Commands\DeployCommand;
+use Moox\Devlink\Console\Commands\ExportPackagesCommand;
 use Moox\Devlink\Console\Commands\LinkCommand;
 use Moox\Devlink\Console\Commands\StatusCommand;
+
 
 class DevlinkServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,7 @@ class DevlinkServiceProvider extends ServiceProvider
 
             $this->commands([
                 DeployCommand::class,
+                ExportPackagesCommand::class,
                 LinkCommand::class,
                 StatusCommand::class,
             ]);
