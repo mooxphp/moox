@@ -1,0 +1,14 @@
+# Maps Moox package folders (packages/{name}) to Cursor skills (.cursor/skills/{skill}/).
+# Only packages listed here require skill sync after package changes.
+# See .cursor/rules/moox-package-skill-sync.mdc
+
+packages:
+  tree:
+    skill: moox-tree
+    skill_path: .cursor/skills/moox-tree
+    package_readme: packages/tree/README.md
+    skill_files:
+      - SKILL.md
+      - installation.md
+      - integration.md
+      - decisions.md

@@ -4,20 +4,26 @@ declare(strict_types=1);
 
 namespace Moox\Tree\Filament\Pages;
 
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
-use Moox\Tree\Config\TreeIndexConfigurationRegistry;
 use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Contracts\HostsInlineResourceForm;
+use Moox\Tree\Filament\Concerns\InteractsWithResourceTreeIndex;
+use Moox\Tree\Filament\Concerns\InteractsWithTreeIndexListPage;
 
-abstract class TreeIndexListRecords extends ListRecords
+abstract class TreeIndexListRecords extends ListRecords implements HostsInlineResourceForm
 {
-    protected string $view = 'filament-tree-index::filament.pages.tree-index';
+    use InteractsWithResourceTreeIndex;
+    use InteractsWithTreeIndexListPage;
 
     public string $treeIndexConfigurationKey = '';
 
     public function mount(): void
     {
         parent::mount();
+
+        $this->mountInteractsWithTreeIndexListPage();
 
         $resource = static::getResource();
 
@@ -27,10 +33,9 @@ abstract class TreeIndexListRecords extends ListRecords
 
         $this->treeIndexConfigurationKey = $resource;
 
-        TreeIndexConfigurationRegistry::register(
-            $this->treeIndexConfigurationKey,
-            $resource::treeIndex(),
-        );
+        $this->refreshTreeIndexConfiguration();
+        $this->mountInteractsWithResourceTreeIndex();
+        $this->clearTreeSelectionUnlessVisibleInCurrentQuery();
     }
 
     public function getMaxContentWidth(): Width|string|null
@@ -38,18 +43,27 @@ abstract class TreeIndexListRecords extends ListRecords
         return Width::Full;
     }
 
-    protected function getHeaderActions(): array
+    public function hydrate(): void
     {
-        return [];
+        $this->hydrateInteractsWithTreeIndexListPage();
+        $this->hydrateInteractsWithResourceTreeIndex();
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getViewData(): array
+    protected function getHeaderActions(): array
     {
         return [
-            'treeIndexConfigurationKey' => $this->treeIndexConfigurationKey,
+            Action::make('create')
+                ->label(fn (): string => __('filament-actions::create.single.label', [
+                    'label' => static::getResource()::getModelLabel(),
+                ]))
+                ->action(fn (): mixed => $this->createRootNode())
+                ->hidden(fn (): bool => $this->shouldHideTreeCreateHeaderAction()),
         ];
+    }
+
+    protected function shouldHideTreeCreateHeaderAction(): bool
+    {
+        return property_exists($this, 'activeTab')
+            && ($this->activeTab ?? null) === 'deleted';
     }
 }
