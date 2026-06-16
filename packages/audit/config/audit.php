@@ -1,56 +1,92 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
+declare(strict_types=1);
+
+use App\Models\User;
+use Moox\Audit\Models\Activity;
+use Moox\User\Models\User as MooxUser;
 
 return [
 
+    'enabled' => env('AUDIT_ENABLED', true),
+
+    'activity_model' => Activity::class,
+
+    'system_causer' => null,
+
+    'default_entry_type' => 'audit',
+
+    'user_models' => [
+        MooxUser::class => [
+            'title_attribute' => 'name',
+            'label' => 'Moox User',
+        ],
+        User::class => [
+            'title_attribute' => 'name',
+            'label' => 'App User',
+        ],
+    ],
+
+    'presets' => [
+        'draft_main' => [
+            'entry_type' => 'audit',
+            'events' => ['created', 'updated', 'deleted', 'restored'],
+        ],
+        'draft_translation' => [
+            'entry_type' => 'audit',
+            'events' => ['created', 'updated', 'deleted', 'restored'],
+            'properties' => ['locale'],
+            'hidden_attributes' => [
+                'created_by_id',
+                'created_by_type',
+                'updated_by_id',
+                'updated_by_type',
+                'published_by_id',
+                'published_by_type',
+                'unpublished_by_id',
+                'unpublished_by_type',
+                'deleted_by_id',
+                'deleted_by_type',
+                'restored_by_id',
+                'restored_by_type',
+            ],
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
-    | Resources
+    | App overrides (optional)
     |--------------------------------------------------------------------------
     |
-    | The following configuration is done per Filament resource.
+    | Package defaults register via AuditPackageRegistry. Use these sections to
+    | disable models, replace attribute lists, or append fields.
     |
     */
+
+    'models' => [],
+
+    'hooks' => [],
+
+    'filament' => [],
+
+    'retention' => [
+        'log' => [
+            'live' => 7,
+            'archive' => 30,
+            'backup' => 365,
+        ],
+        'audit' => [
+            'live' => 30,
+            'archive' => 90,
+            'backup' => 3650,
+        ],
+    ],
 
     'resources' => [
         'audit' => [
 
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
             'single' => 'trans//core::audit.audit',
             'plural' => 'trans//core::audit.audits',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
 
             'tabs' => [
                 'all' => [
@@ -58,20 +94,31 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
+                'log' => [
+                    'label' => 'trans//core::audit.entry_type_log',
+                    'icon' => 'gmdi-notes',
+                    'query' => [
+                        [
+                            'field' => 'entry_type',
+                            'operator' => '=',
+                            'value' => 'log',
+                        ],
+                    ],
+                ],
+                'audit' => [
+                    'label' => 'trans//core::audit.entry_type_audit',
+                    'icon' => 'gmdi-fact-check',
+                    'query' => [
+                        [
+                            'field' => 'entry_type',
+                            'operator' => '=',
+                            'value' => 'audit',
+                        ],
+                    ],
+                ],
             ],
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Navigation Group
-    |--------------------------------------------------------------------------
-    |
-    | The translatable title of the navigation group in the
-    | Filament Admin Panel. Instead of a translatable
-    | string, you may also use a simple string.
-    |
-    */
 
     'navigation_group' => 'trans//core::core.system',
 

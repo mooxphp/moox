@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Audit\Resources\AuditResource\Pages;
 
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Audit\Resources\AuditResource;
 
@@ -12,6 +13,6 @@ class ViewAudit extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [DeleteAction::make()];
+        return [];
     }
 }
