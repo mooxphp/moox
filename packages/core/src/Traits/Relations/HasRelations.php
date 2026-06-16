@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Moox\Core\Relations\Enums\RelationKind;
 use Moox\Core\Relations\RelationFactory;
 use Moox\Core\Relations\ResolvedRelation;
+use Moox\Core\Services\RelationService;
 
 trait HasRelations
 {
@@ -97,24 +98,24 @@ trait HasRelations
 
         static::$configuredRelationResolversRegistered[static::class] = true;
 
-        $service = static::relationServiceFor(static::getResourceName());
-
-        foreach ($service->all() as $key => $resolved) {
-            foreach (static::configuredRelationNames($key, $resolved) as $name) {
-                if (method_exists(static::class, $name)) {
-                    continue;
-                }
-
-                static::resolveRelationUsing($name, function (Model $model) use ($key, $name, $resolved): Relation {
-                    /** @var self $model */
-                    if (($resolved->config['primary_relationship'] ?? null) === $name) {
-                        return $model->primaryRelation($key);
+        app(RelationService::class)->withResource(static::getResourceName(), function (RelationService $service): void {
+            foreach ($service->all() as $key => $resolved) {
+                foreach (static::configuredRelationNames($key, $resolved) as $name) {
+                    if (method_exists(static::class, $name)) {
+                        continue;
                     }
 
-                    return $model->relation($key);
-                });
+                    static::resolveRelationUsing($name, function (Model $model) use ($key, $name, $resolved): Relation {
+                        /** @var self $model */
+                        if (($resolved->config['primary_relationship'] ?? null) === $name) {
+                            return $model->primaryRelation($key);
+                        }
+
+                        return $model->relation($key);
+                    });
+                }
             }
-        }
+        });
     }
 
     /**

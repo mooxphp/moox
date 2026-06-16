@@ -40,6 +40,27 @@ class RelationService
     }
 
     /**
+     * @template TReturn
+     *
+     * @param  callable(self): TReturn  $callback
+     * @return TReturn
+     */
+    public function withResource(string $resource, callable $callback): mixed
+    {
+        $previous = $this->currentResource;
+
+        $this->forResource($resource);
+
+        try {
+            return $callback($this);
+        } finally {
+            if (is_string($previous) && $previous !== '') {
+                $this->forResource($previous);
+            }
+        }
+    }
+
+    /**
      * @return array<string, ResolvedRelation>
      */
     public function all(): array
@@ -130,6 +151,37 @@ class RelationService
         }
 
         return $configs;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function applyBelongsToCreatePrefill(array $data): array
+    {
+        foreach ($this->all() as $relation) {
+            if ($relation->kind !== RelationKind::BelongsTo) {
+                continue;
+            }
+
+            $foreignKey = $relation->foreignKey ?? $relation->config['foreign_key'] ?? null;
+
+            if (! is_string($foreignKey) || $foreignKey === '') {
+                continue;
+            }
+
+            if (array_key_exists($foreignKey, $data) && filled($data[$foreignKey])) {
+                continue;
+            }
+
+            $prefill = request()->query($foreignKey);
+
+            if (filled($prefill)) {
+                $data[$foreignKey] = $prefill;
+            }
+        }
+
+        return $data;
     }
 
     public function tabLabel(string $key, bool $inverse = false): string

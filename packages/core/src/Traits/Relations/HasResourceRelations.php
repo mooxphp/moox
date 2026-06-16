@@ -71,6 +71,15 @@ trait HasResourceRelations
         return $managers;
     }
 
+    protected static function hasConfiguredRelation(string $key): bool
+    {
+        if (! method_exists(static::getModel(), 'getResourceName')) {
+            return false;
+        }
+
+        return static::relationServiceFor(static::getResourceName())->has($key);
+    }
+
     protected static function supportsConfiguredRelationManager(ResolvedRelation $relation): bool
     {
         return match ($relation->kind) {

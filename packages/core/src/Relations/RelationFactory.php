@@ -19,47 +19,51 @@ final class RelationFactory
 {
     public static function make(Model $owner, string $key, RelationService $service): Relation
     {
-        $relation = $service->get($key);
+        return self::forOwnerResource($owner, $service, function (RelationService $service) use ($owner, $key): Relation {
+            $relation = $service->get($key);
 
-        return match ($relation->kind) {
-            RelationKind::MorphPivot => self::morphPivot($owner, $key, $service),
-            RelationKind::PivotHasMany => self::pivotHasMany($owner, $key, $service),
-            RelationKind::BelongsToMany => self::belongsToMany($owner, $key, $service),
-            RelationKind::BelongsTo => self::belongsTo($owner, $key, $service),
-            RelationKind::HasMany => self::hasMany($owner, $key, $service),
-            default => throw UnsupportedRelationException::forCombination(
-                (string) $service->getCurrentResource(),
-                $key,
-                $relation->kind,
-                $relation->perspective,
-                $relation->presentation,
-            ),
-        };
+            return match ($relation->kind) {
+                RelationKind::MorphPivot => self::morphPivot($owner, $key, $service),
+                RelationKind::PivotHasMany => self::pivotHasMany($owner, $key, $service),
+                RelationKind::BelongsToMany => self::belongsToMany($owner, $key, $service),
+                RelationKind::BelongsTo => self::belongsTo($owner, $key, $service),
+                RelationKind::HasMany => self::hasMany($owner, $key, $service),
+                default => throw UnsupportedRelationException::forCombination(
+                    (string) $service->getCurrentResource(),
+                    $key,
+                    $relation->kind,
+                    $relation->perspective,
+                    $relation->presentation,
+                ),
+            };
+        });
     }
 
     public static function primary(Model $owner, string $key, RelationService $service): Relation
     {
-        $relation = $service->get($key);
+        return self::forOwnerResource($owner, $service, function (RelationService $service) use ($owner, $key): Relation {
+            $relation = $service->get($key);
 
-        if ($relation->kind !== RelationKind::MorphPivot) {
-            return self::make($owner, $key, $service);
-        }
+            if ($relation->kind !== RelationKind::MorphPivot) {
+                return self::make($owner, $key, $service);
+            }
 
-        $query = self::morphPivot($owner, $key, $service);
+            $query = self::morphPivot($owner, $key, $service);
 
-        if ($service->primaryOn($key) === 'related' && $relation->relatedModel !== null) {
-            $table = (new $relation->relatedModel)->getTable();
+            if ($service->primaryOn($key) === 'related' && $relation->relatedModel !== null) {
+                $table = (new $relation->relatedModel)->getTable();
 
-            return $query->where(
-                "{$table}.{$service->primaryRelatedColumn($key)}",
+                return $query->where(
+                    "{$table}.{$service->primaryRelatedColumn($key)}",
+                    $service->primaryValue($key),
+                );
+            }
+
+            return $query->wherePivot(
+                $service->primaryColumn($key),
                 $service->primaryValue($key),
             );
-        }
-
-        return $query->wherePivot(
-            $service->primaryColumn($key),
-            $service->primaryValue($key),
-        );
+        });
     }
 
     private static function morphPivot(Model $owner, string $key, RelationService $service): MorphToMany
@@ -71,6 +75,9 @@ final class RelationFactory
             return $owner->morphToMany(Model::class, 'missing', 'missing')->whereRaw('1 = 0');
         }
 
+        $pivotAttributes = $service->pivotAttributes($key);
+        $pivotModel = $service->pivotModel($key);
+
         $builder = $owner->morphToMany(
             $relatedModel,
             $service->morphType($key),
@@ -79,13 +86,9 @@ final class RelationFactory
             $service->relatedKey($key),
         );
 
-        $pivotAttributes = $service->pivotAttributes($key);
-
         if ($pivotAttributes !== []) {
             $builder->withPivot($pivotAttributes);
         }
-
-        $pivotModel = $service->pivotModel($key);
 
         if ($pivotModel !== null) {
             $builder->using($pivotModel);
@@ -121,6 +124,9 @@ final class RelationFactory
             return $owner->belongsToMany(Model::class)->whereRaw('1 = 0');
         }
 
+        $pivotAttributes = $service->pivotAttributes($key);
+        $pivotModel = $service->pivotModel($key);
+
         $builder = $owner->belongsToMany(
             $relatedModel,
             (string) $relation->pivotTable,
@@ -128,13 +134,9 @@ final class RelationFactory
             self::nullableString($relation->relatedKey),
         );
 
-        $pivotAttributes = $service->pivotAttributes($key);
-
         if ($pivotAttributes !== []) {
             $builder->withPivot($pivotAttributes);
         }
-
-        $pivotModel = $service->pivotModel($key);
 
         if ($pivotModel !== null) {
             $builder->using($pivotModel);
@@ -190,5 +192,20 @@ final class RelationFactory
     private static function nullableString(mixed $value): ?string
     {
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /**
+     * @template TReturn
+     *
+     * @param  callable(RelationService): TReturn  $callback
+     * @return TReturn
+     */
+    private static function forOwnerResource(Model $owner, RelationService $service, callable $callback): mixed
+    {
+        if (! method_exists($owner, 'getResourceName')) {
+            return $callback($service);
+        }
+
+        return $service->withResource($owner::getResourceName(), $callback);
     }
 }

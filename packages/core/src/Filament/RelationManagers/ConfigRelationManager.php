@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Core\Filament\RelationManagers;
 
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Forms\Components\MorphToSelect\Type;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -25,11 +23,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use Filament\Forms\Components\MorphToSelect;
+use Filament\Forms\Components\MorphToSelect\Type;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Moox\Core\Filament\RelationManagers\Concerns\BuildsConfiguredRelationTableActions;
 use Moox\Core\Relations\Enums\RelationKind;
+use Moox\Core\Relations\Enums\RelationPerspective;
+use Moox\Core\Relations\Enums\RelationTabAction;
+use Moox\Core\Relations\RelationTabActionRegistry;
 use Moox\Core\Relations\ResolvedRelation;
 use Moox\Core\Services\RelationService;
 use Override;
@@ -38,7 +43,6 @@ use RuntimeException;
 class ConfigRelationManager extends RelationManager
 {
     use BuildsConfiguredRelationTableActions;
-
     public ?string $relationKey = null;
 
     /** @deprecated Use {@see $relationKey} */
@@ -181,14 +185,22 @@ class ConfigRelationManager extends RelationManager
     #[Override]
     public function getDefaultActionUrl(Action $action): ?string
     {
-        if ($action instanceof CreateAction) {
+        if ($action instanceof CreateAction || $action instanceof DetachAction) {
+            return null;
+        }
+
+        if ($action instanceof EditAction && $this->isPivotEditAction($action)) {
             return null;
         }
 
         $record = $action->getRecord();
 
         if ($record instanceof Model && ($resource = $this->getResolvedRelatedResource())) {
-            if ($action instanceof EditAction && $resource::hasPage('edit')) {
+            if (
+                $action instanceof EditAction
+                && in_array($action->getName(), ['edit', 'editRelated'], true)
+                && $resource::hasPage('edit')
+            ) {
                 return $this->getRelatedRecordResourceUrl($record, 'edit');
             }
 
@@ -198,6 +210,22 @@ class ConfigRelationManager extends RelationManager
         }
 
         return parent::getDefaultActionUrl($action);
+    }
+
+    #[Override]
+    public function getDefaultActionSchemaResolver(Action $action): ?Closure
+    {
+        if ($action instanceof DetachAction || $this->isPivotEditAction($action)) {
+            return null;
+        }
+
+        return parent::getDefaultActionSchemaResolver($action);
+    }
+
+    protected function isPivotEditAction(Action $action): bool
+    {
+        return $action instanceof EditAction
+            && in_array($action->getName(), ['editPivot', 'edit_pivot'], true);
     }
 
     #[Override]
@@ -244,42 +272,159 @@ class ConfigRelationManager extends RelationManager
 
         return match ($resolved->kind) {
             RelationKind::PivotHasMany => $this->pivotHasManyTable($table, $resolved),
-            RelationKind::BelongsToMany => $this->belongsToManyTable($table, $resolved),
-            RelationKind::HasMany => $this->hasManyTable($table, $resolved),
-            RelationKind::BelongsTo => $this->belongsToTable($table, $resolved),
-            default => $this->morphPivotTable($table, $resolved),
+            RelationKind::MorphPivot => $this->morphPivotTable($table, $resolved),
+            default => $this->configureRelationTable($table, $resolved),
         };
     }
 
-    protected function morphPivotTable(Table $table, ResolvedRelation $resolved): Table
+    protected function configureRelationTable(Table $table, ResolvedRelation $resolved): Table
     {
-        $config = $resolved->config;
-        $prefix = (string) ($config['translation_prefix'] ?? '');
+        $table = $table
+            ->columns($this->buildConfiguredTableColumns($resolved))
+            ->headerActions($this->buildConfiguredHeaderActions($resolved))
+            ->recordActions($this->buildConfiguredRecordActions($resolved));
 
-        $columns = [];
+        if ($resolved->kind === RelationKind::BelongsToMany) {
+            $table->toolbarActions($this->buildConfiguredToolbarActions($resolved));
 
-        foreach ((array) ($config['display_columns'] ?? ['name']) as $column) {
-            if (! is_string($column) || $column === '') {
-                continue;
+            $table = $this->configureBelongsToManyTableQuery($table);
+            $table = $this->configureRelatedRecordUrl($table, $resolved);
+        }
+
+        return $this->applyConfiguredInverseRelationship($table, $resolved);
+    }
+
+    /**
+     * Filament selects pivot.* plus pivot casts (incl. id => int). That collides with
+     * UUID related keys and breaks table record actions (detach, editPivot).
+     */
+    protected function configureBelongsToManyTableQuery(Table $table): Table
+    {
+        return $table->modifyQueryUsing(function (Builder $query): Builder {
+            $relationship = $this->getRelationship();
+
+            if (! $relationship instanceof BelongsToMany) {
+                return $query;
             }
 
-            $field = TextColumn::make($column)
-                ->label($this->fieldLabel($prefix, $column))
-                ->searchable();
+            $pivotTable = $relationship->getTable();
+            $baseQuery = $query->getQuery();
 
+            if (is_array($baseQuery->columns)) {
+                $baseQuery->columns = array_values(array_filter(
+                    $baseQuery->columns,
+                    fn (mixed $column): bool => ! is_string($column) || $column !== "{$pivotTable}.*",
+                ));
+            }
+
+            $query->withCasts([
+                $query->getModel()->getKeyName() => 'string',
+            ]);
+
+            return $query;
+        });
+    }
+
+    #[Override]
+    public function getTableRecordKey(Model | array $record): string
+    {
+        if (
+            ! is_array($record)
+            && $this->getTable()->getRelationship() instanceof BelongsToMany
+            && ! $this->getTable()->allowsDuplicates()
+        ) {
+            /** @var BelongsToMany $relationship */
+            $relationship = $this->getTable()->getRelationship();
+            $relatedPivotKey = $relationship->getRelatedPivotKeyName();
+            $pivotAlias = 'pivot_'.$relatedPivotKey;
+
+            $key = $record->getRawOriginal($pivotAlias)
+                ?? $record->getRawOriginal($relatedPivotKey)
+                ?? $record->getRawOriginal($record->getKeyName());
+
+            if (filled($key)) {
+                return (string) $key;
+            }
+        }
+
+        return parent::getTableRecordKey($record);
+    }
+
+    protected function configureRelatedRecordUrl(Table $table, ResolvedRelation $resolved): Table
+    {
+        $relatedResource = $this->getResolvedRelatedResource();
+
+        if ($relatedResource !== null) {
+            if ($relatedResource::hasPage('edit')) {
+                return $table->recordUrl(
+                    fn (Model $record): ?string => $this->getRelatedRecordResourceUrl($record, 'edit'),
+                );
+            }
+
+            if ($relatedResource::hasPage('view')) {
+                return $table->recordUrl(
+                    fn (Model $record): ?string => $this->getRelatedRecordResourceUrl($record, 'view'),
+                );
+            }
+        }
+
+        $table->recordUrl(null);
+
+        if (RelationTabActionRegistry::hasRecordAction($resolved, RelationTabAction::EditPivot)) {
+            $table->recordAction('editPivot');
+        }
+
+        return $table;
+    }
+
+    /**
+     * @return list<TextColumn|IconColumn>
+     */
+    protected function buildConfiguredTableColumns(ResolvedRelation $resolved): array
+    {
+        $prefix = (string) ($resolved->translationPrefix ?? '');
+
+        $columns = $this->buildModelDisplayColumns($resolved, $prefix);
+
+        if ($resolved->kind === RelationKind::BelongsToMany) {
+            return [...$columns, ...$this->buildBelongsToManyPivotColumns($resolved, $prefix)];
+        }
+
+        return $columns;
+    }
+
+    /**
+     * @return list<TextColumn|IconColumn>
+     */
+    protected function buildBelongsToManyPivotColumns(ResolvedRelation $resolved, string $prefix): array
+    {
+        $columns = [];
+
+        foreach ($resolved->pivotAttributes as $column) {
             if ($column === 'is_primary') {
-                $columns[] = IconColumn::make($column)
+                $columns[] = IconColumn::make('pivot.'.$column)
                     ->label($this->fieldLabel($prefix, $column))
                     ->boolean();
 
                 continue;
             }
 
-            $columns[] = $field;
+            $columns[] = TextColumn::make('pivot.'.$column)
+                ->label($this->fieldLabel($prefix, $column))
+                ->badge();
         }
 
-        foreach ($this->relationService()->pivotAttributes($this->resolvedRelationKey()) as $column) {
-            $columns[] = IconColumn::make($column)
+        return $columns;
+    }
+
+    protected function morphPivotTable(Table $table, ResolvedRelation $resolved): Table
+    {
+        $prefix = (string) ($resolved->translationPrefix ?? '');
+
+        $columns = $this->buildModelDisplayColumns($resolved, $prefix);
+
+        foreach ($resolved->pivotAttributes as $column) {
+            $columns[] = IconColumn::make('pivot.'.$column)
                 ->label($this->fieldLabel($prefix, $column))
                 ->boolean();
         }
@@ -290,10 +435,11 @@ class ConfigRelationManager extends RelationManager
             ->recordActions($this->buildConfiguredRecordActions($resolved))
             ->toolbarActions($this->buildConfiguredToolbarActions($resolved));
 
-        $inverseRelationship = $config['inverse_relationship'] ?? null;
+        $table = $this->configureBelongsToManyTableQuery($table);
+        $table = $this->configureRelatedRecordUrl($table, $resolved);
 
-        if (is_string($inverseRelationship) && $inverseRelationship !== '') {
-            $table->inverseRelationship($inverseRelationship);
+        if (is_string($resolved->inverseRelationship) && $resolved->inverseRelationship !== '') {
+            $table->inverseRelationship($resolved->inverseRelationship);
         } else {
             $table->allowDuplicates();
         }
@@ -304,7 +450,7 @@ class ConfigRelationManager extends RelationManager
     /**
      * @return array<string, mixed>
      */
-    protected static function resolveConfig(Model $ownerRecord, ?string $key): array
+  protected static function resolveConfig(Model $ownerRecord, ?string $key): array
     {
         if ($key === null || $key === '' || ! method_exists($ownerRecord, 'getResourceName')) {
             return [];
@@ -506,12 +652,12 @@ class ConfigRelationManager extends RelationManager
         return $label;
     }
 
-    protected function getRelatedRecordResourceUrl(Model $record, string $page): string
+    protected function getRelatedRecordResourceUrl(Model $record, string $page): ?string
     {
         $resource = $this->getResolvedRelatedResource();
 
         if ($resource === null || ! $resource::hasPage($page)) {
-            return '';
+            return null;
         }
 
         return $resource::getUrl($page, [
@@ -659,62 +805,6 @@ class ConfigRelationManager extends RelationManager
             ->recordActions($this->buildConfiguredRecordActions($resolved));
     }
 
-    protected function belongsToTable(Table $table, ResolvedRelation $resolved): Table
-    {
-        $prefix = (string) ($resolved->translationPrefix ?? '');
-
-        return $table
-            ->columns($this->buildModelDisplayColumns($resolved, $prefix))
-            ->headerActions($this->buildConfiguredHeaderActions($resolved))
-            ->recordActions($this->buildConfiguredRecordActions($resolved));
-    }
-
-    protected function hasManyTable(Table $table, ResolvedRelation $resolved): Table
-    {
-        $prefix = (string) ($resolved->translationPrefix ?? '');
-
-        return $this->applyConfiguredInverseRelationship(
-            $table
-                ->columns($this->buildModelDisplayColumns($resolved, $prefix))
-                ->headerActions($this->buildConfiguredHeaderActions($resolved))
-                ->recordActions($this->buildConfiguredRecordActions($resolved)),
-            $resolved,
-        );
-    }
-
-    protected function belongsToManyTable(Table $table, ResolvedRelation $resolved): Table
-    {
-        $prefix = (string) ($resolved->translationPrefix ?? '');
-        $displayColumn = $resolved->displayColumns[0] ?? 'display_name';
-
-        $columns = [
-            TextColumn::make($displayColumn)
-                ->label($this->fieldLabel($prefix, $displayColumn))
-                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record))
-                ->searchable(),
-        ];
-
-        foreach ($resolved->pivotAttributes as $column) {
-            if ($column === 'is_primary') {
-                $columns[] = IconColumn::make('pivot.'.$column)
-                    ->label($this->fieldLabel($prefix, $column))
-                    ->boolean();
-
-                continue;
-            }
-
-            $columns[] = TextColumn::make('pivot.'.$column)
-                ->label($this->fieldLabel($prefix, $column))
-                ->badge();
-        }
-
-        return $table
-            ->columns($columns)
-            ->headerActions($this->buildConfiguredHeaderActions($resolved))
-            ->recordActions($this->buildConfiguredRecordActions($resolved))
-            ->toolbarActions($this->buildConfiguredToolbarActions($resolved));
-    }
-
     /**
      * @param  array{label: string, title_attribute?: string|null}  $definition
      */
@@ -810,7 +900,7 @@ class ConfigRelationManager extends RelationManager
     }
 
     /**
-     * @return list<TextColumn>
+     * @return list<TextColumn|IconColumn>
      */
     protected function buildModelDisplayColumns(ResolvedRelation $resolved, string $prefix): array
     {
@@ -826,9 +916,19 @@ class ConfigRelationManager extends RelationManager
                 continue;
             }
 
+            if ($column === 'is_primary') {
+                $columns[] = IconColumn::make($column)
+                    ->label($this->fieldLabel($prefix, $column))
+                    ->boolean();
+
+                continue;
+            }
+
+            $attribute = $column;
+
             $columnDefinition = TextColumn::make($column)
                 ->label($this->fieldLabel($prefix, $column))
-                ->searchable();
+                ->formatStateUsing(fn (mixed $state, Model $record): mixed => $record->getAttribute($attribute));
 
             if (in_array($column, $badgeColumns, true)) {
                 $columnDefinition->badge();
@@ -842,16 +942,18 @@ class ConfigRelationManager extends RelationManager
                 continue;
             }
 
+            $attribute = $column;
+
             $columns[] = TextColumn::make($column)
                 ->label($this->fieldLabel($prefix, $column))
+                ->formatStateUsing(fn (mixed $state, Model $record): mixed => $record->getAttribute($attribute))
                 ->badge();
         }
 
         if ($columns === []) {
             $columns[] = TextColumn::make('display_name')
                 ->label($this->fieldLabel($prefix, 'display_name'))
-                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record))
-                ->searchable();
+                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record));
         }
 
         return $columns;

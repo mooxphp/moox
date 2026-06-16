@@ -11,6 +11,7 @@
 namespace Moox\Core\Traits\Taxonomy;
 
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Services\RelationService;
 use Moox\Core\Traits\Relations\HasPagesRelations;
 
 trait HasPagesTaxonomy
@@ -39,7 +40,15 @@ trait HasPagesTaxonomy
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        return $data;
+        $model = static::getModel();
+
+        if (! method_exists($model, 'getResourceName')) {
+            return $data;
+        }
+
+        return app(RelationService::class)
+            ->forResource($model::getResourceName())
+            ->applyBelongsToCreatePrefill($data);
     }
 
     protected function getTaxonomyAttributes(): array
