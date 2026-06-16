@@ -27,12 +27,13 @@ final class TypedValueColumns
     public static function columnForType(string $type): string
     {
         return match ($type) {
-            'textarea' => 'value_text',
-            'number' => 'value_decimal',
+            'textarea', 'rich_text' => 'value_text',
+            'number', 'range' => 'value_decimal',
             'date' => 'value_date',
             'datetime' => 'value_datetime',
             'toggle' => 'value_boolean',
-            'multiselect', 'checkbox_list' => 'value_json',
+            'multiselect', 'checkbox_list', 'link' => 'value_json',
+            'button_group' => 'value_string',
             default => 'value_string',
         };
     }

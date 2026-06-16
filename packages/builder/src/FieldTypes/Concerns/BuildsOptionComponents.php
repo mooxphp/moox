@@ -7,6 +7,7 @@ namespace Moox\Builder\FieldTypes\Concerns;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 
@@ -30,8 +31,12 @@ trait BuildsOptionComponents
     {
         $options = $this->optionsMap($field);
 
-        if ($component instanceof Select || $component instanceof Radio || $component instanceof CheckboxList) {
+        if ($component instanceof Select || $component instanceof Radio || $component instanceof CheckboxList || $component instanceof ToggleButtons) {
             $component->options($options);
+
+            if ($options !== []) {
+                $component->in(array_keys($options));
+            }
         }
 
         return $component;

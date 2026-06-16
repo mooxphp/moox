@@ -12,14 +12,12 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
-use Moox\Builder\Storage\ValueStoreResolver;
 use Moox\Builder\Support\OptionValueRules;
 
 class SchemaCompiler
 {
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
-        protected ValueStoreResolver $valueStoreResolver,
         protected CustomFieldsManager $customFieldsManager,
     ) {}
 
@@ -110,17 +108,16 @@ class SchemaCompiler
     {
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
-        $valueStore = $this->valueStoreResolver->for();
         $entity = $resourceClass !== null
             ? $this->customFieldsManager->locationContextForResource($resourceClass)->entity
             : null;
 
-        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $valueStore, $entity): void {
-            if ($field->type === 'password' || filled($state) || $record === null || $entity === null) {
+        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity): void {
+            if ($field->type === 'password' || $record === null || $entity === null) {
                 return;
             }
 
-            $values = $valueStore->load(
+            $values = $this->customFieldsManager->loadValues(
                 $entity,
                 $record,
                 collect([$field]),

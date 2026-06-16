@@ -8,11 +8,14 @@ use Filament\Resources\Events\RecordSaved;
 use Illuminate\Support\Facades\Event;
 use Moox\Builder\FieldTypes\FieldType;
 use Moox\Builder\FieldTypes\Types\CheckboxListFieldType;
+use Moox\Builder\FieldTypes\Types\ButtonGroupFieldType;
 use Moox\Builder\FieldTypes\Types\ColorFieldType;
 use Moox\Builder\FieldTypes\Types\DateFieldType;
 use Moox\Builder\FieldTypes\Types\DatetimeFieldType;
 use Moox\Builder\FieldTypes\Types\EmailFieldType;
+use Moox\Builder\FieldTypes\Types\LinkFieldType;
 use Moox\Builder\FieldTypes\Types\MultiselectFieldType;
+use Moox\Builder\FieldTypes\Types\RangeFieldType;
 use Moox\Builder\FieldTypes\Types\NumberFieldType;
 use Moox\Builder\FieldTypes\Types\PasswordFieldType;
 use Moox\Builder\FieldTypes\Types\RadioFieldType;
@@ -21,6 +24,7 @@ use Moox\Builder\FieldTypes\Types\TextareaFieldType;
 use Moox\Builder\FieldTypes\Types\TextFieldType;
 use Moox\Builder\FieldTypes\Types\TimeFieldType;
 use Moox\Builder\FieldTypes\Types\ToggleFieldType;
+use Moox\Builder\FieldTypes\Types\RichTextFieldType;
 use Moox\Builder\FieldTypes\Types\UrlFieldType;
 use Moox\Builder\Listeners\PersistCustomFields;
 use Moox\Builder\Models\Field;
@@ -63,7 +67,6 @@ class BuilderServiceProvider extends MooxServiceProvider
             return $registry;
         });
 
-        $this->app->singleton(ValueStoreResolver::class);
         $this->app->singleton(EntityRegistry::class);
     }
 
@@ -102,6 +105,10 @@ class BuilderServiceProvider extends MooxServiceProvider
             new DatetimeFieldType,
             new TimeFieldType,
             new ColorFieldType,
+            new RangeFieldType,
+            new ButtonGroupFieldType,
+            new LinkFieldType,
+            new RichTextFieldType,
         ];
     }
 }
