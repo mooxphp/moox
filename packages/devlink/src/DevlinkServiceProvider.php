@@ -10,7 +10,6 @@ use Moox\Devlink\Console\Commands\ExportPackagesCommand;
 use Moox\Devlink\Console\Commands\LinkCommand;
 use Moox\Devlink\Console\Commands\StatusCommand;
 
-
 class DevlinkServiceProvider extends ServiceProvider
 {
     public function register(): void

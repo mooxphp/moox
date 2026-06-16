@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 class ExportPackagesCommand extends Command
 {
     protected $signature = 'moox:devlink-export {--path= : Override the export path from config}';
+
     protected $description = 'Write the active devlink package folders to a file (for CI/deploy)';
 
     public function handle(): int
@@ -27,9 +28,9 @@ class ExportPackagesCommand extends Command
 
         $target = base_path($path);
         @mkdir(dirname($target), 0755, true);
-        file_put_contents($target, $folders->implode(' ') . PHP_EOL);
+        file_put_contents($target, $folders->implode(' ').PHP_EOL);
 
-        $this->info($folders->count() . " active packages → {$path}");
+        $this->info($folders->count()." active packages → {$path}");
         $this->line($folders->implode(' '));
 
         return self::SUCCESS;
