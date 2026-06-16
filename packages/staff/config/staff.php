@@ -3,7 +3,6 @@
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Resources\ContactResource;
 use Moox\Staff\Models\Staff;
-use Moox\Staff\Resources\StaffResource;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 
