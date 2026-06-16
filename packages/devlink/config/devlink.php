@@ -227,6 +227,11 @@ return [
             'path' => $public_base_path.'/demo',
             'type' => 'public',
         ],
+        'department' => [
+            'active' => false,
+            'path' => $public_base_path.'/department',
+            'type' => 'public',
+        ],
         'devlink' => [
             'active' => false,
             'linked' => false,
