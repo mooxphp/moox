@@ -71,6 +71,7 @@ class RecordResource extends BaseRecordResource
                                 slugRuleUniqueParameters: [
                                     'table' => 'records',
                                     'column' => 'slug',
+                                    'ignoreRecord' => true,
                                 ]
                             ),
                             RichEditor::make('description')
