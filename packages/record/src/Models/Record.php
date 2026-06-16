@@ -13,6 +13,7 @@ class Record extends BaseRecordModel
 
     protected $fillable = [
         'title',
+        'description',
         'content',
         'status',
         'slug',
@@ -29,6 +30,7 @@ class Record extends BaseRecordModel
 
     protected $casts = [
         'title' => 'string',
+        'description' => 'string',
         'status' => RecordStatus::class,
         'slug' => 'string',
         'permalink' => 'string',

@@ -21,6 +21,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Audit\Support\AuditResourceRelationRegistry;
 use Moox\Category\Models\Category;
@@ -117,7 +118,7 @@ class CategoryResource extends BaseDraftResource
                                         TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn (?Model $record): bool => filled($record)),
                                     ]),
                                 Section::make('')
                                     ->schema([

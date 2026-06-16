@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Moox\Tree;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Moox\Tree\Livewire\ResourceTreeIndex;
+use Moox\Tree\Contracts\ConfiguresTreeIndex;
+use Moox\Tree\Filament\Pages\TreeIndexListRecords;
 
 class TreeServiceProvider extends ServiceProvider
 {
@@ -22,14 +27,44 @@ class TreeServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'filament-tree-index');
 
+        FilamentAsset::register([
+            Css::make('tree-index', __DIR__.'/../resources/css/tree.css'),
+        ], 'moox/tree');
+
         FilamentView::registerRenderHook(
             PanelsRenderHook::SCRIPTS_BEFORE,
             fn (): HtmlString => new HtmlString(view('filament-tree-index::scripts.alpine-tree-store')->render()),
         );
 
-        Livewire::component(
-            config('filament-tree-index.livewire.alias', 'filament-tree-index'),
-            ResourceTreeIndex::class,
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            function (): string {
+                $livewire = Livewire::current();
+
+                if (! $livewire instanceof TreeIndexListRecords) {
+                    return '';
+                }
+
+                $resource = $livewire::getResource();
+
+                if (! is_subclass_of($resource, ConfiguresTreeIndex::class)) {
+                    return '';
+                }
+
+                if (! $resource::treeIndex()->usesFilamentTableToolbar()) {
+                    return '';
+                }
+
+                if (! $resource::treeIndex()->isFilamentTableLanguageSwitcherEnabled()) {
+                    return '';
+                }
+
+                if (! view()->exists('localization::lang-selector')) {
+                    return '';
+                }
+
+                return Blade::render('@include("localization::lang-selector")');
+            },
         );
 
         $this->publishes([

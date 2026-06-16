@@ -1,4 +1,6 @@
 # Packages with a Cursor skill — keep in sync after integrator-facing changes.
+# Maps Moox package folders (packages/{name}) to Cursor skills (.cursor/skills/{skill}/).
+# Only packages listed here require skill sync after package changes.
 # See .cursor/rules/moox-package-skill-sync.mdc
 
 packages:

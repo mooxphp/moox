@@ -32,7 +32,7 @@ final class CreateTreeNodeAction
 
         /** @var Model|null $parent */
         $parent = $parentId === null ? null : $this->configuration->newQuery()->find($parentId);
-        $sortOrder = ((int) $this->configuration->siblingsQuery($parent?->getKey())->max($sortColumn)) + 10;
+        $sortOrder = $this->configuration->nextSortOrder($parent?->getKey());
 
         $attributes = [
             $parentColumn => $parent?->getKey(),
