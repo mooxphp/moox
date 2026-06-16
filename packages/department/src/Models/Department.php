@@ -6,7 +6,6 @@ namespace Moox\Department\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;

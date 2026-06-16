@@ -12,6 +12,10 @@ use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\MorphToSelect;
+use Filament\Forms\Components\MorphToSelect\Type;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,16 +27,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Forms\Components\MorphToSelect\Type;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Moox\Core\Filament\RelationManagers\Concerns\BuildsConfiguredRelationTableActions;
 use Moox\Core\Relations\Enums\RelationKind;
-use Moox\Core\Relations\Enums\RelationPerspective;
 use Moox\Core\Relations\Enums\RelationTabAction;
 use Moox\Core\Relations\RelationTabActionRegistry;
 use Moox\Core\Relations\ResolvedRelation;
@@ -43,6 +42,7 @@ use RuntimeException;
 class ConfigRelationManager extends RelationManager
 {
     use BuildsConfiguredRelationTableActions;
+
     public ?string $relationKey = null;
 
     /** @deprecated Use {@see $relationKey} */
@@ -326,7 +326,7 @@ class ConfigRelationManager extends RelationManager
     }
 
     #[Override]
-    public function getTableRecordKey(Model | array $record): string
+    public function getTableRecordKey(Model|array $record): string
     {
         if (
             ! is_array($record)
@@ -450,7 +450,7 @@ class ConfigRelationManager extends RelationManager
     /**
      * @return array<string, mixed>
      */
-  protected static function resolveConfig(Model $ownerRecord, ?string $key): array
+    protected static function resolveConfig(Model $ownerRecord, ?string $key): array
     {
         if ($key === null || $key === '' || ! method_exists($ownerRecord, 'getResourceName')) {
             return [];

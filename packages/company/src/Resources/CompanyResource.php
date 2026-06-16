@@ -124,7 +124,7 @@ class CompanyResource extends BaseRecordResource
                 ->columnSpanFull(),
         ];
 
-        $schema = [ 
+        $schema = [
             Grid::make()
                 ->schema([
                     Section::make(__('company::fields.identity'))
@@ -241,38 +241,38 @@ class CompanyResource extends BaseRecordResource
                 )
                 ->searchable()
                 ->sortable(),
-                TextColumn::make('display_name')
-                    ->label(__('company::fields.display_name'))
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('company_type')
-                    ->label(__('company::fields.company_type'))
-                    ->badge()
-                    ->color(
-                        fn (?string $state): string => match ($state) {
-                            'customer' => 'success',
-                            'supplier' => 'warning',
-                            'partner' => 'primary',
-                            'prospect' => 'warning',
-                            'internal' => 'gray',
-                            default => 'gray',
-                        }
-                    )
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->label(__('company::fields.status'))
-                    ->badge()
-                    ->color(
-                        fn (string $state): string => match ($state) {
-                            'draft' => 'info',
-                            'active' => 'success',
-                            'inactive' => 'warning',
-                            'approved' => 'success',
-                            'archived' => 'danger',
-                            default => 'gray',
-                        }
-                    )
-                    ->sortable(),
+            TextColumn::make('display_name')
+                ->label(__('company::fields.display_name'))
+                ->searchable()
+                ->toggleable(),
+            TextColumn::make('company_type')
+                ->label(__('company::fields.company_type'))
+                ->badge()
+                ->color(
+                    fn (?string $state): string => match ($state) {
+                        'customer' => 'success',
+                        'supplier' => 'warning',
+                        'partner' => 'primary',
+                        'prospect' => 'warning',
+                        'internal' => 'gray',
+                        default => 'gray',
+                    }
+                )
+                ->sortable(),
+            TextColumn::make('status')
+                ->label(__('company::fields.status'))
+                ->badge()
+                ->color(
+                    fn (string $state): string => match ($state) {
+                        'draft' => 'info',
+                        'active' => 'success',
+                        'inactive' => 'warning',
+                        'approved' => 'success',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    }
+                )
+                ->sortable(),
         ];
 
         if ($hasParentRelation) {
@@ -284,12 +284,12 @@ class CompanyResource extends BaseRecordResource
         $columns = [
             ...$columns,
             TextColumn::make('email')
-                    ->label(__('company::fields.email'))
-                    ->searchable()
-                    ->toggleable(),
-                TextColumn::make('default_currency_code')
-                    ->label(__('company::fields.default_currency_code'))
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ->label(__('company::fields.email'))
+                ->searchable()
+                ->toggleable(),
+            TextColumn::make('default_currency_code')
+                ->label(__('company::fields.default_currency_code'))
+                ->toggleable(isToggledHiddenByDefault: true),
             IconColumn::make('is_active')
                 ->label(__('company::fields.is_active'))
                 ->boolean(),
