@@ -44,6 +44,7 @@ return [
         'text' => 'Text (kurz)',
         'textarea' => 'Text (mehrzeilig)',
         'number' => 'Zahl',
+        'range' => 'Bereich',
         'email' => 'E-Mail',
         'url' => 'URL',
         'password' => 'Passwort',
@@ -51,11 +52,20 @@ return [
         'multiselect' => 'Mehrfachauswahl',
         'checkbox_list' => 'Checkbox-Liste',
         'radio' => 'Optionsfelder',
+        'button_group' => 'Button-Gruppe',
         'toggle' => 'Schalter',
         'date' => 'Datum',
         'datetime' => 'Datum & Uhrzeit',
         'time' => 'Uhrzeit',
         'color' => 'Farbe',
+        'link' => 'Link',
+        'rich_text' => 'Rich Text',
+    ],
+
+    'link' => [
+        'url' => 'URL',
+        'label' => 'Bezeichnung',
+        'opens_in_new_tab' => 'In neuem Tab öffnen',
     ],
 
     'capabilities' => [

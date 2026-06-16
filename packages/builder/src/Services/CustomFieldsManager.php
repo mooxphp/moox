@@ -10,15 +10,18 @@ use Illuminate\Support\Str;
 use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
+use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\EntityRegistry;
-use Moox\Builder\Storage\ValueStoreResolver;
+use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Support\TypedValueColumns;
 
 class CustomFieldsManager
 {
     public function __construct(
         protected DefinitionRegistry $definitionRegistry,
-        protected ValueStoreResolver $valueStoreResolver,
+        protected FieldTypeRegistry $fieldTypeRegistry,
         protected EntityRegistry $entityRegistry,
     ) {}
 
@@ -61,11 +64,43 @@ class CustomFieldsManager
             return [];
         }
 
-        return $this->valueStoreResolver->for()->load(
+        return $this->loadValues(
             $this->locationContextForResource($resourceClass)->entity,
             $record,
             $fields,
         );
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    public function loadValues(string $entity, Model $record, Collection $fields): array
+    {
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        $rows = FieldValue::query()
+            ->forRecord($entity, $record->getKey())
+            ->whereIn('field_name', $fields->pluck('name'))
+            ->get()
+            ->keyBy('field_name');
+
+        $values = [];
+
+        foreach ($fields as $field) {
+            $row = $rows->get($field->name);
+
+            if ($row === null || $field->type === 'password') {
+                continue;
+            }
+
+            $raw = TypedValueColumns::read($row, $field->type);
+            $values[$field->name] = $this->fieldTypeRegistry->get($field->type)->castValue($raw);
+        }
+
+        return $values;
     }
 
     /**
@@ -98,12 +133,43 @@ class CustomFieldsManager
             return;
         }
 
-        $this->valueStoreResolver->for()->save(
+        $this->saveValues(
             $this->locationContextForResource($resourceClass)->entity,
             $record,
             $values,
             $fields,
         );
+    }
+
+    /**
+     * @param  array<string, mixed>  $values
+     * @param  Collection<int, FieldDefinition>  $fields
+     */
+    public function saveValues(string $entity, Model $record, array $values, Collection $fields): void
+    {
+        foreach ($fields as $field) {
+            if (! array_key_exists($field->name, $values)) {
+                continue;
+            }
+
+            $value = $values[$field->name];
+
+            if ($field->type !== 'password') {
+                OptionValueRules::assertValid($field, $value);
+            }
+
+            $cast = $this->fieldTypeRegistry->get($field->type)->castValue($value);
+            $columns = TypedValueColumns::attributesFor($field->type, $cast);
+
+            FieldValue::query()->updateOrCreate(
+                [
+                    'entity' => $entity,
+                    'record_id' => $record->getKey(),
+                    'field_name' => $field->name,
+                ],
+                $columns,
+            );
+        }
     }
 
     /**

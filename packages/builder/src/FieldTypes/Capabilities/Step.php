@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\FieldTypes\Capabilities;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Slider;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 
@@ -21,7 +22,7 @@ class Step extends Capability
 
     public function apply(Component $component, FieldDefinition $field): Component
     {
-        if ($component instanceof TextInput && isset($field->config['step'])) {
+        if (isset($field->config['step']) && ($component instanceof TextInput || $component instanceof Slider)) {
             $component->step($field->config['step']);
         }
 

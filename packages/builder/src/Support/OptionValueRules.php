@@ -14,7 +14,7 @@ final class OptionValueRules
      */
     public static function forField(FieldDefinition $field): array
     {
-        if (! in_array($field->type, ['select', 'radio', 'multiselect', 'checkbox_list'], true)) {
+        if (! in_array($field->type, ['select', 'radio', 'button_group', 'multiselect', 'checkbox_list'], true)) {
             return [];
         }
 

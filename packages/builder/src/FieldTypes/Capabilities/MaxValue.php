@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\FieldTypes\Capabilities;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Slider;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 
@@ -30,7 +31,7 @@ class MaxValue extends Capability
 
     public function apply(Component $component, FieldDefinition $field): Component
     {
-        if ($component instanceof TextInput && isset($field->config['max'])) {
+        if (isset($field->config['max']) && ($component instanceof TextInput || $component instanceof Slider)) {
             $component->maxValue($field->config['max']);
         }
 

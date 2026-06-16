@@ -36,7 +36,7 @@ class MaxLength extends Capability
             return $component;
         }
 
-        if ($component instanceof TextInput || $component instanceof Textarea) {
+        if ($component instanceof TextInput || $component instanceof Textarea || method_exists($component, 'maxLength')) {
             $component->maxLength((int) $field->config['maxLength']);
         }
 

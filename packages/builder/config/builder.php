@@ -2,13 +2,7 @@
 
 declare(strict_types=1);
 
-use Moox\Builder\Storage\TypedValueDriver;
-
 return [
-    'default_driver' => env('BUILDER_DRIVER', 'typed'),
-    'drivers' => [
-        'typed' => TypedValueDriver::class,
-    ],
     'navigation_group' => env('BUILDER_NAVIGATION_GROUP', 'Felder'),
 
     /*
