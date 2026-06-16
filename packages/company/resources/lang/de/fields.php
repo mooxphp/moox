@@ -10,6 +10,7 @@ return [
     'parent' => 'Muttergesellschaft',
     'children' => 'Tochtergesellschaften',
     'contacts' => 'Kontakte',
+    'departments' => 'Abteilungen',
     'addresses' => 'Adressen',
     'external_reference' => 'Externe Referenz',
     'phone' => 'Telefon',

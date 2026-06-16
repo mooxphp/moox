@@ -72,65 +72,63 @@ class CompanyResource extends BaseRecordResource
         $statusOptions = static::configOptions('company.statuses');
         $typeOptions = static::configOptions('company.company_types');
 
-        $schema = [
+        $identityFields = [
+            Select::make('status')
+                ->label(__('company::fields.status'))
+                ->options($statusOptions)
+                ->required()
+                ->rules(CompanyRules::for('status'))
+                ->default('draft'),
+            TextInput::make('name')
+                ->label(__('company::fields.name'))
+                ->rules(CompanyRules::for('name'))
+                ->maxLength(120),
+            TextInput::make('display_name')
+                ->label(__('company::fields.display_name'))
+                ->rules(CompanyRules::for('display_name'))
+                ->maxLength(120),
+            TextInput::make('legal_name')
+                ->label(__('company::fields.legal_name'))
+                ->rules(CompanyRules::for('legal_name'))
+                ->maxLength(120),
+            Select::make('company_type')
+                ->label(__('company::fields.company_type'))
+                ->options($typeOptions)
+                ->required()
+                ->rules(CompanyRules::for('company_type'))
+                ->default('customer'),
+        ];
+
+        $identityFields = [
+            ...$identityFields,
+            TextInput::make('external_reference')
+                ->label(__('company::fields.external_reference'))
+                ->rules(CompanyRules::for('external_reference'))
+                ->maxLength(100),
+            Textarea::make('note')
+                ->label(__('company::fields.note'))
+                ->rules(CompanyRules::for('note'))
+                ->columnSpanFull(),
+            Textarea::make('data')
+                ->label(__('company::fields.data'))
+                // ->rules(CompanyRules::for('data'))
+                ->columnSpanFull()
+                ->cols(100)
+                ->rows(10)
+                ->formatStateUsing(function ($state) {
+                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }),
+            Textarea::make('search_terms')
+                ->label(__('company::fields.search_terms'))
+                ->rules(CompanyRules::for('search_terms'))
+                ->columnSpanFull(),
+        ];
+
+        $schema = [ 
             Grid::make()
                 ->schema([
                     Section::make(__('company::fields.identity'))
-                        ->schema([
-                            Select::make('status')
-                                ->label(__('company::fields.status'))
-                                ->options($statusOptions)
-                                ->required()
-                                ->rules(CompanyRules::for('status'))
-                                ->default('draft'),
-                            TextInput::make('name')
-                                ->label(__('company::fields.name'))
-                                ->rules(CompanyRules::for('name'))
-                                ->maxLength(120),
-                            TextInput::make('display_name')
-                                ->label(__('company::fields.display_name'))
-                                ->rules(CompanyRules::for('display_name'))
-                                ->maxLength(120),
-                            TextInput::make('legal_name')
-                                ->label(__('company::fields.legal_name'))
-                                ->rules(CompanyRules::for('legal_name'))
-                                ->maxLength(120),
-                            Select::make('company_type')
-                                ->label(__('company::fields.company_type'))
-                                ->options($typeOptions)
-                                ->required()
-                                ->rules(CompanyRules::for('company_type'))
-                                ->default('customer'),
-                            Select::make('parent_id')
-                                ->label(__('company::fields.parent'))
-                                ->relationship('parent', 'display_name')
-                                ->getOptionLabelFromRecordUsing(fn (Company $record): string => $record->displayLabel())
-                                ->searchable()
-                                ->preload()
-                                ->rules(CompanyRules::for('parent_id')),
-                            TextInput::make('external_reference')
-                                ->label(__('company::fields.external_reference'))
-                                ->rules(CompanyRules::for('external_reference'))
-                                ->maxLength(100),
-                            Textarea::make('note')
-                                ->label(__('company::fields.note'))
-                                ->rules(CompanyRules::for('note'))
-                                ->columnSpanFull(),
-                            Textarea::make('data')
-                                ->label(__('company::fields.data'))
-                                ->rules(CompanyRules::for('data'))
-                                ->columnSpanFull()
-                                ->cols(100)
-                                ->rows(10)
-                                ->formatStateUsing(function ($state) {
-                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                                }),
-
-                            Textarea::make('search_terms')
-                                ->label(__('company::fields.search_terms'))
-                                ->rules(CompanyRules::for('search_terms'))
-                                ->columnSpanFull(),
-                        ])
+                        ->schema($identityFields)
                         ->columnSpan(2),
                     Grid::make()
                         ->schema([
@@ -228,15 +226,21 @@ class CompanyResource extends BaseRecordResource
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label(__('company::fields.name'))
-                    ->formatStateUsing(fn (?string $state, Company $record): string => ($record->parent_id ? '↳ ' : '').($state ?? '')
-                    )
-                    ->description(fn (Company $record): ?string => $record->parent?->displayLabel())
-                    ->searchable()
-                    ->sortable(),
+        $hasParentRelation = static::hasConfiguredRelation('parent');
+        $hasChildrenRelation = static::hasConfiguredRelation('children');
+
+        $columns = [
+            TextColumn::make('name')
+                ->label(__('company::fields.name'))
+                ->formatStateUsing(fn (?string $state, Company $record): string => ($hasParentRelation && $record->parent_id ? '↳ ' : '').($state ?? '')
+                )
+                ->description(
+                    $hasParentRelation
+                        ? fn (Company $record): ?string => $record->parent?->displayLabel()
+                        : null,
+                )
+                ->searchable()
+                ->sortable(),
                 TextColumn::make('display_name')
                     ->label(__('company::fields.display_name'))
                     ->searchable()
@@ -269,22 +273,37 @@ class CompanyResource extends BaseRecordResource
                         }
                     )
                     ->sortable(),
-                TextColumn::make('parent.display_name')
-                    ->label(__('company::fields.parent'))
-                    ->toggleable(),
-                TextColumn::make('email')
+        ];
+
+        if ($hasParentRelation) {
+            $columns[] = TextColumn::make('parent.display_name')
+                ->label(__('company::fields.parent'))
+                ->toggleable();
+        }
+
+        $columns = [
+            ...$columns,
+            TextColumn::make('email')
                     ->label(__('company::fields.email'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('default_currency_code')
                     ->label(__('company::fields.default_currency_code'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_active')
-                    ->label(__('company::fields.is_active'))
-                    ->boolean(),
-                TextColumn::make('children_count')
-                    ->counts('children')
-                    ->label(__('company::fields.children')),
+            IconColumn::make('is_active')
+                ->label(__('company::fields.is_active'))
+                ->boolean(),
+        ];
+
+        if ($hasChildrenRelation) {
+            $columns[] = TextColumn::make('children_count')
+                ->counts('children')
+                ->label(__('company::fields.children'));
+        }
+
+        return $table
+            ->columns([
+                ...$columns,
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
