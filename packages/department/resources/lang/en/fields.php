@@ -18,4 +18,6 @@ return [
     'settings' => 'Settings',
     'data' => 'Additional data',
     'assignments' => 'Assignments',
+    'owner' => 'Owner',
+    'owner_name' => 'Owner name',
 ];
