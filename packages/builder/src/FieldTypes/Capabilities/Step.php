@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\FieldTypes\Capabilities;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Slider;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 
