@@ -46,4 +46,3 @@ class RepeaterItems extends Capability
         return $component;
     }
 }
-
