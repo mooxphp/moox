@@ -6,13 +6,11 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
-use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\TypedValueColumns;
@@ -22,7 +20,6 @@ class CustomFieldsManager
     public function __construct(
         protected DefinitionRegistry $definitionRegistry,
         protected FieldTypeRegistry $fieldTypeRegistry,
-        protected EntityRegistry $entityRegistry,
     ) {}
 
     /**
@@ -30,13 +27,7 @@ class CustomFieldsManager
      */
     public function locationContextForResource(string $resourceClass): LocationContext
     {
-        if (in_array(HasCustomFields::class, class_uses_recursive($resourceClass), true)) {
-            return $resourceClass::customFieldsLocationContext();
-        }
-
-        $modelClass = $resourceClass::getModel();
-
-        return new LocationContext(Str::kebab(class_basename($modelClass)));
+        return new LocationContext($resourceClass::resolveCustomFieldsEntityIdentifier());
     }
 
     /**
@@ -90,6 +81,12 @@ class CustomFieldsManager
         $values = [];
 
         foreach ($fields as $field) {
+            $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+            if (! $fieldType->storesValue()) {
+                continue;
+            }
+
             $row = $rows->get($field->name);
 
             if ($row === null || $field->type === 'password') {
@@ -97,7 +94,7 @@ class CustomFieldsManager
             }
 
             $raw = TypedValueColumns::read($row, $field->type);
-            $values[$field->name] = $this->fieldTypeRegistry->get($field->type)->castValue($raw);
+            $values[$field->name] = $fieldType->castValue($raw);
         }
 
         return $values;
@@ -119,6 +116,10 @@ class CustomFieldsManager
 
         foreach ($fields as $field) {
             if (! array_key_exists($field->name, $data)) {
+                continue;
+            }
+
+            if (! $this->fieldTypeRegistry->get($field->type)->storesValue()) {
                 continue;
             }
 
@@ -152,13 +153,19 @@ class CustomFieldsManager
                 continue;
             }
 
+            $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+            if (! $fieldType->storesValue()) {
+                continue;
+            }
+
             $value = $values[$field->name];
 
             if ($field->type !== 'password') {
                 OptionValueRules::assertValid($field, $value);
             }
 
-            $cast = $this->fieldTypeRegistry->get($field->type)->castValue($value);
+            $cast = $fieldType->castValue($value);
             $columns = TypedValueColumns::attributesFor($field->type, $cast);
 
             FieldValue::query()->updateOrCreate(
@@ -177,7 +184,6 @@ class CustomFieldsManager
      */
     public function usesCustomFields(string $resourceClass): bool
     {
-        return in_array(HasCustomFields::class, class_uses_recursive($resourceClass), true)
-            && $this->entityRegistry->isRegisteredResource($resourceClass);
+        return in_array(HasCustomFields::class, class_uses_recursive($resourceClass), true);
     }
 }

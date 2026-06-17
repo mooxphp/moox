@@ -32,6 +32,11 @@ abstract class FieldType
         return false;
     }
 
+    public function storesValue(): bool
+    {
+        return true;
+    }
+
     public function label(): string
     {
         $key = 'builder::builder.field_types.'.str_replace('-', '_', static::key());

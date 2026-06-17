@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Item;
 
 use Moox\Core\MooxServiceProvider;
-use Moox\Item\Resources\ItemResource;
 use Spatie\LaravelPackageTools\Package;
 
 class ItemServiceProvider extends MooxServiceProvider
@@ -67,15 +66,5 @@ class ItemServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
-    }
-
-    public function packageBooted(): void
-    {
-        config([
-            'builder.entities.item' => [
-                'resource' => ItemResource::class,
-                'label' => 'Items',
-            ],
-        ]);
     }
 }

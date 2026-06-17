@@ -20,8 +20,7 @@ return [
         'target_entities' => 'Show on',
         'target_entities_helper' => 'This field group appears in the forms of the selected resources.',
         'target_entities_placeholder' => 'Select a resource…',
-        'no_entities_registered' => 'No resources registered yet. Add them under config(builder.entities).',
-        'fields_empty' => 'No fields defined yet.',
+        'no_entities_registered' => 'No resources use HasCustomFields yet. Add the trait to a Filament resource.',
         'field_item' => 'Field',
         'fields_count' => 'Fields',
         'assigned_to' => 'Assigned to',
@@ -60,6 +59,16 @@ return [
         'color' => 'Color',
         'link' => 'Link',
         'rich_text' => 'Rich text',
+        'message' => 'Message',
+        'oembed' => 'oEmbed',
+    ],
+
+    'message' => [
+        'body' => 'Message',
+    ],
+
+    'oembed' => [
+        'helper' => 'Paste a video or embed URL (YouTube, Vimeo, etc.).',
     ],
 
     'link' => [
