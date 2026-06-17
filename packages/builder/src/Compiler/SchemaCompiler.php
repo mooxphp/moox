@@ -74,6 +74,11 @@ class SchemaCompiler
     protected function rulesForField(FieldDefinition $field): array
     {
         $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+        if (! $fieldType->storesValue()) {
+            return [];
+        }
+
         $rules = [];
 
         foreach ($fieldType->capabilities() as $capabilityClass) {
@@ -90,7 +95,7 @@ class SchemaCompiler
             $rules[] = 'email';
         }
 
-        if ($field->type === 'url') {
+        if (in_array($field->type, ['url', 'oembed'], true)) {
             $rules[] = 'url';
         }
 
@@ -112,8 +117,8 @@ class SchemaCompiler
             ? $this->customFieldsManager->locationContextForResource($resourceClass)->entity
             : null;
 
-        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity): void {
-            if ($field->type === 'password' || $record === null || $entity === null) {
+        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType): void {
+            if (! $fieldType->storesValue() || $field->type === 'password' || $record === null || $entity === null) {
                 return;
             }
 

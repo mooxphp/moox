@@ -11,7 +11,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Item\Models\Item;
 use Moox\Item\Resources\ItemResource\Pages\CreateItem;
@@ -21,8 +20,6 @@ use Moox\Item\Resources\ItemResource\Pages\ViewItem;
 
 class ItemResource extends BaseItemResource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Item::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-offer';
@@ -63,7 +60,6 @@ class ItemResource extends BaseItemResource
                                 ->label(__('core::core.title')),
                             MarkdownEditor::make('description')
                                 ->label(__('core::core.description')),
-                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),

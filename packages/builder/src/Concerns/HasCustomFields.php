@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Moox\Builder\Concerns;
 
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\Str;
 use Moox\Builder\Compiler\SchemaCompiler;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Registry\DefinitionRegistry;
-use Moox\Builder\Registry\EntityRegistry;
 
 /**
  * Add custom field group sections to a Filament resource form.
@@ -17,9 +17,9 @@ use Moox\Builder\Registry\EntityRegistry;
  *
  *   ...static::customFieldComponents(),
  *
- * The resource must be registered in config('builder.entities'). Loading and
- * saving is handled automatically via Filament record events registered by
- * the Builder service provider — no page-level hooks required.
+ * Field groups are matched by entity key (model basename in kebab-case, e.g.
+ * Item → item). Override with customFieldsEntity() when needed. Loading and
+ * saving is handled automatically via Filament record events.
  */
 trait HasCustomFields
 {
@@ -28,10 +28,6 @@ trait HasCustomFields
      */
     public static function customFieldComponents(): array
     {
-        if (! static::isRegisteredForCustomFields()) {
-            return [];
-        }
-
         $groups = app(DefinitionRegistry::class)->fieldGroupsFor(
             static::customFieldsLocationContext(),
         );
@@ -50,21 +46,24 @@ trait HasCustomFields
 
     public static function resolveCustomFieldsEntityIdentifier(): string
     {
-        $entity = app(EntityRegistry::class)->resolveForResource(static::class);
+        $entity = static::customFieldsEntity();
 
-        if ($entity === null) {
-            throw new \LogicException(sprintf(
-                'Resource [%s] uses HasCustomFields but is not registered in config(builder.entities).',
-                static::class,
-            ));
+        if ($entity !== null) {
+            return $entity;
         }
 
-        return $entity;
+        $model = static::getModel();
+
+        return Str::kebab(class_basename($model));
     }
 
-    public static function isRegisteredForCustomFields(): bool
+    /**
+     * Override the storage / location-rule entity key when it should differ
+     * from the model basename (e.g. "item" instead of "test-item").
+     */
+    protected static function customFieldsEntity(): ?string
     {
-        return app(EntityRegistry::class)->isRegisteredResource(static::class);
+        return null;
     }
 
     /**

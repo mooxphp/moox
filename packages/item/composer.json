@@ -18,7 +18,6 @@
         }
     ],
     "require": {
-        "moox/builder": "dev-main",
         "moox/core": "dev-main"
     },
     "autoload": {

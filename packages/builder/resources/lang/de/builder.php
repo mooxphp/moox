@@ -20,8 +20,7 @@ return [
         'target_entities' => 'Anzeigen bei',
         'target_entities_helper' => 'Diese Feldgruppe erscheint in den Formularen der ausgewählten Ressourcen.',
         'target_entities_placeholder' => 'Ressource auswählen…',
-        'no_entities_registered' => 'Noch keine Ressourcen registriert. Trage sie unter config(builder.entities) ein.',
-        'fields_empty' => 'Noch keine Felder definiert.',
+        'no_entities_registered' => 'Noch keine Ressource mit HasCustomFields. Trait an einer Filament-Resource hinzufügen.',
         'field_item' => 'Feld',
         'fields_count' => 'Felder',
         'assigned_to' => 'Zugeordnet zu',
@@ -60,6 +59,16 @@ return [
         'color' => 'Farbe',
         'link' => 'Link',
         'rich_text' => 'Rich Text',
+        'message' => 'Hinweis',
+        'oembed' => 'oEmbed',
+    ],
+
+    'message' => [
+        'body' => 'Hinweistext',
+    ],
+
+    'oembed' => [
+        'helper' => 'Video- oder Embed-URL einfügen (YouTube, Vimeo, …).',
     ],
 
     'link' => [

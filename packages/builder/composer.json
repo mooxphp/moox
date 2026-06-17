@@ -24,7 +24,6 @@
     "autoload": {
         "psr-4": {
             "Moox\\Builder\\": "src",
-            "Moox\\Builder\\Database\\Factories\\": "database/factories",
             "Moox\\Builder\\Database\\Seeders\\": "database/seeders"
         }
     },
