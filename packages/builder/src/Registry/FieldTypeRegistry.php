@@ -44,6 +44,10 @@ class FieldTypeRegistry
         $options = [];
 
         foreach ($this->types as $key => $type) {
+            if ($type->isInternal()) {
+                continue;
+            }
+
             $options[$key] = $type->label();
         }
 
@@ -60,7 +64,7 @@ class FieldTypeRegistry
         $options = [];
 
         foreach ($this->types as $key => $type) {
-            if ($type->isLayoutMarker() || $type->hasSubFields()) {
+            if ($type->isLayoutMarker() || $type->hasSubFields() || $type->isInternal()) {
                 continue;
             }
 

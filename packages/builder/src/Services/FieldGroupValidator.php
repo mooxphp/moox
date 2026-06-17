@@ -71,6 +71,13 @@ class FieldGroupValidator
 
             $seen[$name] = $index;
 
+            if (isset($row['layouts']) && is_array($row['layouts'])) {
+                $messages = array_merge(
+                    $messages,
+                    $this->internalDuplicateMessages($row['layouts'], "{$pathPrefix}.{$index}.layouts"),
+                );
+            }
+
             if (isset($row['children']) && is_array($row['children'])) {
                 $messages = array_merge(
                     $messages,

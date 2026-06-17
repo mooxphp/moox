@@ -48,6 +48,16 @@ abstract class FieldType
         return false;
     }
 
+    public function hasLayouts(): bool
+    {
+        return false;
+    }
+
+    public function isInternal(): bool
+    {
+        return false;
+    }
+
     public function label(): string
     {
         $key = 'builder::builder.field_types.'.str_replace('-', '_', static::key());

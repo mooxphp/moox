@@ -40,6 +40,12 @@ return [
         'option_label' => 'Anzeigetext',
         'option_value' => 'Wert',
         'subfields' => 'Unterfelder',
+        'layouts' => 'Layouts',
+        'layout_label' => 'Layout-Bezeichnung',
+        'layout_key' => 'Layout-Schlüssel',
+        'layout_key_helper' => 'Technischer Schlüssel für gespeicherte Blöcke. Nur Kleinbuchstaben, Zahlen und Bindestriche.',
+        'layout_item' => 'Layout',
+        'layouts_count' => '{1} :count Layout|[2,*] :count Layouts',
     ],
 
     'field_types' => [
@@ -67,6 +73,11 @@ return [
         'tab' => 'Tab',
         'group' => 'Gruppe',
         'repeater' => 'Repeater',
+        'flexible_content' => 'Flexible Inhalte',
+    ],
+
+    'flexible_content' => [
+        'add_layout' => 'Layout hinzufügen',
     ],
 
     'message' => [
@@ -109,5 +120,8 @@ return [
         'duplicate_field_name' => 'Der Feldschlüssel „:name“ wird bereits in der Gruppe „:group“ verwendet.',
         'duplicate_field_name_internal' => 'Der Feldschlüssel „:name“ ist in dieser Gruppe mehrfach vergeben.',
         'empty_repeater_item' => 'Eintrag :position in „:field“ ist leer.',
+        'empty_flexible_item' => 'Block :position in „:field“ ist leer.',
+        'empty_flexible_layout' => 'Bitte ein Layout für jeden Block wählen.',
+        'unknown_flexible_layout' => 'Unbekanntes Layout „:layout“.',
     ],
 ];
