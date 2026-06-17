@@ -22,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Moox\Builder\Exceptions\UnknownFieldTypeException;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -129,12 +130,11 @@ class FieldGroupResource extends Resource
                                 ->orderColumn('sort')
                                 ->reorderable()
                                 ->collapsible()
+                                ->collapsed()
                                 ->cloneable()
                                 ->collapseAllAction(fn (Action $action): Action => $action->hidden())
                                 ->expandAllAction(fn (Action $action): Action => $action->hidden())
-                                ->itemLabel(fn (array $state): ?string => filled($state['label'] ?? null)
-                                    ? (string) $state['label']
-                                    : __('builder::builder.field_group.field_item'))
+                                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
                                 ->schema([
                                     Hidden::make('id'),
                                     Hidden::make('sort'),
@@ -164,14 +164,16 @@ class FieldGroupResource extends Resource
                                         ->helperText(__('builder::builder.field.name_helper'))
                                         ->required()
                                         ->maxLength(255)
-                                        ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/'),
+                                        ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                                        ->live(onBlur: true),
                                     Toggle::make('required')
                                         ->label(__('builder::builder.field.required'))
-                                        ->inline(false),
+                                        ->inline(false)
+                                        ->live(),
                                     Section::make(__('builder::builder.field.settings'))
                                         ->collapsed()
                                         ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
-                                        ->visible(fn (callable $get): bool => filled($get('type'))),
+                                        ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
                                     Section::make(__('builder::builder.field.options'))
                                         ->collapsed()
                                         ->schema([
@@ -192,12 +194,138 @@ class FieldGroupResource extends Resource
                                                 ->defaultItems(1),
                                         ])
                                         ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+                                    Section::make(__('builder::builder.field.subfields'))
+                                        ->collapsed()
+                                        ->schema([
+                                            Repeater::make('children')
+                                                ->hiddenLabel()
+                                                ->orderColumn('sort')
+                                                ->reorderable()
+                                                ->collapsible()
+                                                ->collapsed()
+                                                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                                                ->schema(static::subFieldSchema($registry))
+                                                ->defaultItems(0),
+                                        ])
+                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields()),
                                 ]),
                         ]),
                 ])
                 ->columns(3)
                 ->columnSpanFull(),
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    protected static function fieldRepeaterItemLabel(FieldTypeRegistry $registry, array $state): string
+    {
+        $parts = [];
+
+        $parts[] = filled($state['label'] ?? null)
+            ? (string) $state['label']
+            : __('builder::builder.field_group.field_item');
+
+        if (filled($state['type'] ?? null)) {
+            $parts[] = static::fieldTypeLabel($registry, (string) $state['type']);
+        }
+
+        if (filled($state['name'] ?? null)) {
+            $parts[] = (string) $state['name'];
+        }
+
+        if (($state['required'] ?? false) === true) {
+            $parts[] = __('builder::builder.field.required_badge');
+        }
+
+        $childrenCount = count($state['children'] ?? []);
+        if ($childrenCount > 0) {
+            $parts[] = trans_choice('builder::builder.field.subfields_count', $childrenCount, [
+                'count' => $childrenCount,
+            ]);
+        }
+
+        return implode(' · ', $parts);
+    }
+
+    protected static function fieldTypeLabel(FieldTypeRegistry $registry, string $type): string
+    {
+        try {
+            return $registry->get($type)->label();
+        } catch (UnknownFieldTypeException) {
+            return $type;
+        }
+    }
+
+    /**
+     * @return list<Component|\Filament\Schemas\Components\Component>
+     */
+    protected static function subFieldSchema(FieldTypeRegistry $registry): array
+    {
+        return [
+            Hidden::make('id'),
+            Hidden::make('sort'),
+            Grid::make(2)
+                ->schema([
+                    TextInput::make('label')
+                        ->label(__('builder::builder.field.label'))
+                        ->required()
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                            if (blank($get('name'))) {
+                                $set('name', Str::slug((string) $state, '-'));
+                            }
+                        }),
+                    Select::make('type')
+                        ->label(__('builder::builder.field.type'))
+                        ->options($registry->optionsForSubFields())
+                        ->required()
+                        ->searchable()
+                        ->live()
+                        ->native(false),
+                ]),
+            TextInput::make('name')
+                ->label(__('builder::builder.field.name'))
+                ->required()
+                ->maxLength(255)
+                ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                ->live(onBlur: true),
+            Toggle::make('required')
+                ->label(__('builder::builder.field.required'))
+                ->inline(false)
+                ->live(),
+            Section::make(__('builder::builder.field.settings'))
+                ->collapsed()
+                ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
+                ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
+            Section::make(__('builder::builder.field.options'))
+                ->collapsed()
+                ->schema([
+                    Repeater::make('options')
+                        ->label(__('builder::builder.field.options'))
+                        ->orderColumn('sort')
+                        ->reorderable()
+                        ->schema([
+                            Hidden::make('id'),
+                            TextInput::make('label')
+                                ->label(__('builder::builder.field.option_label'))
+                                ->required(),
+                            TextInput::make('value')
+                                ->label(__('builder::builder.field.option_value'))
+                                ->required(),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(1),
+                ])
+                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+        ];
+    }
+
+    protected static function typeHasSettings(?string $type): bool
+    {
+        return static::typeSettingsSchema($type) !== [];
     }
 
     /**
@@ -262,11 +390,13 @@ class FieldGroupResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->description(fn (FieldGroup $record): ?string => $record->slug),
-                TextColumn::make('location_rules')
+                TextColumn::make('assigned_entities')
                     ->label(__('builder::builder.field_group.assigned_to'))
-                    ->formatStateUsing(fn (?array $state): string => $entityRegistry->labelsFor(
-                        $persistence->entitiesFromLocationRules($state ?? []),
-                    ))
+                    ->getStateUsing(function (FieldGroup $record) use ($entityRegistry, $persistence): string {
+                        return $entityRegistry->labelsFor(
+                            $persistence->entitiesFromLocationRules($record->location_rules ?? []),
+                        );
+                    })
                     ->wrap(),
                 TextColumn::make('fields_count')
                     ->counts('fields')

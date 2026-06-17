@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Moox\Builder\Services;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Registry\FieldTypeRegistry;
 
 class FieldGroupPersistence
 {
@@ -144,11 +146,58 @@ class FieldGroupPersistence
     }
 
     /**
+     * @return list<array<string, mixed>>
+     */
+    public function fieldRowsForForm(FieldGroup $group): array
+    {
+        $group->load([
+            'fields' => fn ($query) => $query->whereNull('parent_field_id')->orderBy('sort'),
+            'fields.options',
+            'fields.children' => fn ($query) => $query->orderBy('sort'),
+            'fields.children.options',
+        ]);
+
+        return $this->mapFieldRows($group->fields);
+    }
+
+    /**
+     * @param  Collection<int, Field>  $fields
+     * @return list<array<string, mixed>>
+     */
+    protected function mapFieldRows(Collection $fields): array
+    {
+        return $fields->map(fn (Field $field): array => [
+            'id' => $field->getKey(),
+            'label' => $field->label,
+            'name' => $field->name,
+            'type' => $field->type,
+            'required' => (bool) ($field->validation['required'] ?? false),
+            'config' => $field->config ?? [],
+            'sort' => $field->sort,
+            'options' => $field->options->map(fn (FieldOption $option): array => [
+                'id' => $option->getKey(),
+                'label' => $option->label,
+                'value' => $option->value,
+                'sort' => $option->sort,
+            ])->values()->all(),
+            'children' => $this->mapFieldRows($field->children),
+        ])->values()->all();
+    }
+
+    /**
      * @param  list<array<string, mixed>>  $rows
      */
-    protected function syncFields(FieldGroup $group, array $rows): void
+    protected function syncFields(FieldGroup $group, array $rows, ?int $parentFieldId = null): void
     {
-        $existing = $group->fields()->with('options')->get()->keyBy('id');
+        $existingQuery = $group->fields()->with('options');
+
+        if ($parentFieldId === null) {
+            $existingQuery->whereNull('parent_field_id');
+        } else {
+            $existingQuery->where('parent_field_id', $parentFieldId);
+        }
+
+        $existing = $existingQuery->get()->keyBy('id');
         $retainedIds = [];
 
         foreach ($rows as $index => $row) {
@@ -167,6 +216,7 @@ class FieldGroupPersistence
 
             $field->fill([
                 'field_group_id' => $group->getKey(),
+                'parent_field_id' => $parentFieldId,
                 'name' => (string) $row['name'],
                 'label' => (string) ($row['label'] ?? $row['name']),
                 'type' => (string) $row['type'],
@@ -188,11 +238,30 @@ class FieldGroupPersistence
             $retainedIds[] = $field->getKey();
 
             $this->syncOptions($field, $row['options'] ?? []);
+
+            if ($this->typeHasSubFields((string) $row['type'])) {
+                $this->syncFields($group, $row['children'] ?? [], $field->getKey());
+            } else {
+                $field->children()->each(fn (Field $child) => $child->delete());
+            }
         }
 
-        $group->fields()
+        $deleteQuery = $group->fields();
+
+        if ($parentFieldId === null) {
+            $deleteQuery->whereNull('parent_field_id');
+        } else {
+            $deleteQuery->where('parent_field_id', $parentFieldId);
+        }
+
+        $deleteQuery
             ->whereNotIn('id', $retainedIds)
             ->each(fn (Field $field) => $field->delete());
+    }
+
+    protected function typeHasSubFields(string $type): bool
+    {
+        return app(FieldTypeRegistry::class)->get($type)->hasSubFields();
     }
 
     /**

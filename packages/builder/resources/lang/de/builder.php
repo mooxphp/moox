@@ -33,10 +33,13 @@ return [
         'name_helper' => 'Technischer Name für Speicherung und Abfragen. Nur Kleinbuchstaben, Zahlen und Bindestriche.',
         'type' => 'Feldtyp',
         'required' => 'Pflichtfeld',
+        'required_badge' => 'Pflicht',
+        'subfields_count' => '{1} :count Unterfeld|[2,*] :count Unterfelder',
         'settings' => 'Einstellungen',
         'options' => 'Auswahloptionen',
         'option_label' => 'Anzeigetext',
         'option_value' => 'Wert',
+        'subfields' => 'Unterfelder',
     ],
 
     'field_types' => [
@@ -61,6 +64,9 @@ return [
         'rich_text' => 'Rich Text',
         'message' => 'Hinweis',
         'oembed' => 'oEmbed',
+        'tab' => 'Tab',
+        'group' => 'Gruppe',
+        'repeater' => 'Repeater',
     ],
 
     'message' => [
@@ -86,6 +92,8 @@ return [
         'helper_text' => 'Hilfetext',
         'min_value' => 'Mindestwert',
         'max_value' => 'Höchstwert',
+        'min_items' => 'Mindestanzahl Einträge',
+        'max_items' => 'Höchstanzahl Einträge',
         'step' => 'Schrittweite',
         'rows' => 'Zeilen',
         'display_format' => 'Anzeigeformat',

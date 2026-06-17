@@ -37,6 +37,16 @@ abstract class FieldType
         return true;
     }
 
+    public function isLayoutMarker(): bool
+    {
+        return false;
+    }
+
+    public function hasSubFields(): bool
+    {
+        return false;
+    }
+
     public function label(): string
     {
         $key = 'builder::builder.field_types.'.str_replace('-', '_', static::key());

@@ -33,10 +33,13 @@ return [
         'name_helper' => 'Technical name for storage and queries. Lowercase letters, numbers, and hyphens only.',
         'type' => 'Field type',
         'required' => 'Required',
+        'required_badge' => 'Required',
+        'subfields_count' => '{1} :count subfield|[2,*] :count subfields',
         'settings' => 'Settings',
         'options' => 'Options',
         'option_label' => 'Display text',
         'option_value' => 'Value',
+        'subfields' => 'Subfields',
     ],
 
     'field_types' => [
@@ -61,6 +64,9 @@ return [
         'rich_text' => 'Rich text',
         'message' => 'Message',
         'oembed' => 'oEmbed',
+        'tab' => 'Tab',
+        'group' => 'Group',
+        'repeater' => 'Repeater',
     ],
 
     'message' => [
@@ -86,6 +92,8 @@ return [
         'helper_text' => 'Helper text',
         'min_value' => 'Minimum value',
         'max_value' => 'Maximum value',
+        'min_items' => 'Minimum items',
+        'max_items' => 'Maximum items',
         'step' => 'Step',
         'rows' => 'Rows',
         'display_format' => 'Display format',

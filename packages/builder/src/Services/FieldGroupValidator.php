@@ -29,7 +29,7 @@ class FieldGroupValidator
         $messages = [];
 
         $messages = array_merge($messages, $this->internalDuplicateMessages($fieldRows));
-        $messages = array_merge($messages, $this->externalConflictMessages($group, $entities, $fieldRows));
+        $messages = array_merge($messages, $this->externalConflictMessages($group, $entities, $this->rootFieldRows($fieldRows)));
 
         if ($messages !== []) {
             throw ValidationException::withMessages($messages);
@@ -38,9 +38,18 @@ class FieldGroupValidator
 
     /**
      * @param  list<array<string, mixed>>  $fieldRows
+     * @return list<array<string, mixed>>
+     */
+    protected function rootFieldRows(array $fieldRows): array
+    {
+        return $fieldRows;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $fieldRows
      * @return array<string, list<string>>
      */
-    protected function internalDuplicateMessages(array $fieldRows): array
+    protected function internalDuplicateMessages(array $fieldRows, string $pathPrefix = 'fields'): array
     {
         $seen = [];
         $messages = [];
@@ -53,7 +62,7 @@ class FieldGroupValidator
             }
 
             if (isset($seen[$name])) {
-                $messages["fields.{$index}.name"] = [
+                $messages["{$pathPrefix}.{$index}.name"] = [
                     __('builder::builder.validation.duplicate_field_name_internal', ['name' => $name]),
                 ];
 
@@ -61,6 +70,13 @@ class FieldGroupValidator
             }
 
             $seen[$name] = $index;
+
+            if (isset($row['children']) && is_array($row['children'])) {
+                $messages = array_merge(
+                    $messages,
+                    $this->internalDuplicateMessages($row['children'], "{$pathPrefix}.{$index}.children"),
+                );
+            }
         }
 
         return $messages;

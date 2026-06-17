@@ -43,6 +43,10 @@ class Field extends Model
                 $field->ulid = (string) Str::ulid();
             }
         });
+
+        static::deleting(function (Field $field): void {
+            $field->children()->each(fn (Field $child) => $child->delete());
+        });
     }
 
     /**
@@ -59,6 +63,14 @@ class Field extends Model
     public function parentField(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_field_id');
+    }
+
+    /**
+     * @return HasMany<Field, $this>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_field_id')->orderBy('sort');
     }
 
     /**

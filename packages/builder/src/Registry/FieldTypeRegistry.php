@@ -51,4 +51,24 @@ class FieldTypeRegistry
 
         return $options;
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function optionsForSubFields(): array
+    {
+        $options = [];
+
+        foreach ($this->types as $key => $type) {
+            if ($type->isLayoutMarker() || $type->hasSubFields()) {
+                continue;
+            }
+
+            $options[$key] = $type->label();
+        }
+
+        asort($options);
+
+        return $options;
+    }
 }
