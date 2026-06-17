@@ -13,6 +13,8 @@ use Moox\Builder\FieldTypes\Types\ColorFieldType;
 use Moox\Builder\FieldTypes\Types\DateFieldType;
 use Moox\Builder\FieldTypes\Types\DatetimeFieldType;
 use Moox\Builder\FieldTypes\Types\EmailFieldType;
+use Moox\Builder\FieldTypes\Types\FlexibleContentFieldType;
+use Moox\Builder\FieldTypes\Types\FlexibleLayoutFieldType;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\FieldTypes\Types\LinkFieldType;
 use Moox\Builder\FieldTypes\Types\MessageFieldType;
@@ -119,6 +121,8 @@ class BuilderServiceProvider extends MooxServiceProvider
             new TabFieldType,
             new GroupFieldType,
             new RepeaterFieldType,
+            new FlexibleContentFieldType,
+            new FlexibleLayoutFieldType,
         ];
     }
 }

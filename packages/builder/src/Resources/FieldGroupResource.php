@@ -207,7 +207,21 @@ class FieldGroupResource extends Resource
                                                 ->schema(static::subFieldSchema($registry))
                                                 ->defaultItems(0),
                                         ])
-                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields()),
+                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
+                                    Section::make(__('builder::builder.field.layouts'))
+                                        ->collapsed()
+                                        ->schema([
+                                            Repeater::make('layouts')
+                                                ->hiddenLabel()
+                                                ->orderColumn('sort')
+                                                ->reorderable()
+                                                ->collapsible()
+                                                ->collapsed()
+                                                ->itemLabel(fn (array $state): string => static::layoutRepeaterItemLabel($registry, $state))
+                                                ->schema(static::layoutSchema($registry))
+                                                ->defaultItems(0),
+                                        ])
+                                        ->visible(fn (callable $get): bool => filled($get('type')) && $get('type') === 'flexible_content'),
                                 ]),
                         ]),
                 ])
@@ -246,6 +260,38 @@ class FieldGroupResource extends Resource
             ]);
         }
 
+        $layoutsCount = count($state['layouts'] ?? []);
+        if ($layoutsCount > 0) {
+            $parts[] = trans_choice('builder::builder.field.layouts_count', $layoutsCount, [
+                'count' => $layoutsCount,
+            ]);
+        }
+
+        return implode(' · ', $parts);
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    protected static function layoutRepeaterItemLabel(FieldTypeRegistry $registry, array $state): string
+    {
+        $parts = [];
+
+        $parts[] = filled($state['label'] ?? null)
+            ? (string) $state['label']
+            : __('builder::builder.field.layout_item');
+
+        if (filled($state['name'] ?? null)) {
+            $parts[] = (string) $state['name'];
+        }
+
+        $childrenCount = count($state['children'] ?? []);
+        if ($childrenCount > 0) {
+            $parts[] = trans_choice('builder::builder.field.subfields_count', $childrenCount, [
+                'count' => $childrenCount,
+            ]);
+        }
+
         return implode(' · ', $parts);
     }
 
@@ -256,6 +302,46 @@ class FieldGroupResource extends Resource
         } catch (UnknownFieldTypeException) {
             return $type;
         }
+    }
+
+    /**
+     * @return list<Component|\Filament\Schemas\Components\Component>
+     */
+    protected static function layoutSchema(FieldTypeRegistry $registry): array
+    {
+        return [
+            Hidden::make('id'),
+            Hidden::make('sort'),
+            Grid::make(2)
+                ->schema([
+                    TextInput::make('label')
+                        ->label(__('builder::builder.field.layout_label'))
+                        ->required()
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                            if (blank($get('name'))) {
+                                $set('name', Str::slug((string) $state, '-'));
+                            }
+                        }),
+                ]),
+            TextInput::make('name')
+                ->label(__('builder::builder.field.layout_key'))
+                ->helperText(__('builder::builder.field.layout_key_helper'))
+                ->required()
+                ->maxLength(255)
+                ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                ->live(onBlur: true),
+            Repeater::make('children')
+                ->label(__('builder::builder.field.subfields'))
+                ->orderColumn('sort')
+                ->reorderable()
+                ->collapsible()
+                ->collapsed()
+                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                ->schema(static::subFieldSchema($registry))
+                ->defaultItems(0),
+        ];
     }
 
     /**

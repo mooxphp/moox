@@ -276,10 +276,51 @@ class BuilderSeeder extends Seeder
                     ],
                 ],
                 [
+                    'name' => 'seiteninhalt',
+                    'label' => 'Seiteninhalt',
+                    'type' => 'flexible_content',
+                    'sort' => 10,
+                    'layouts' => [
+                        [
+                            'name' => 'hero',
+                            'label' => 'Hero',
+                            'sort' => 0,
+                            'children' => [
+                                [
+                                    'name' => 'titel',
+                                    'label' => 'Titel',
+                                    'type' => 'text',
+                                    'sort' => 0,
+                                    'required' => true,
+                                ],
+                                [
+                                    'name' => 'text',
+                                    'label' => 'Text',
+                                    'type' => 'textarea',
+                                    'sort' => 1,
+                                ],
+                            ],
+                        ],
+                        [
+                            'name' => 'text-block',
+                            'label' => 'Textblock',
+                            'sort' => 1,
+                            'children' => [
+                                [
+                                    'name' => 'inhalt',
+                                    'label' => 'Inhalt',
+                                    'type' => 'rich_text',
+                                    'sort' => 0,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                [
                     'name' => 'demo-oembed',
                     'label' => 'Video (oEmbed)',
                     'type' => 'oembed',
-                    'sort' => 10,
+                    'sort' => 11,
                     'config' => [
                         'placeholder' => 'https://www.youtube.com/watch?v=…',
                     ],
@@ -346,6 +387,24 @@ class BuilderSeeder extends Seeder
                 'value' => [
                     ['datum' => '2022-06-15', 'ereignis' => 'Erstzulassung'],
                     ['datum' => '2024-03-01', 'ereignis' => 'Inspektion'],
+                ],
+            ],
+            'seiteninhalt' => [
+                'type' => 'flexible_content',
+                'value' => [
+                    [
+                        'type' => 'hero',
+                        'data' => [
+                            'titel' => 'Willkommen beim Layout-Showcase',
+                            'text' => 'Flexible Inhalte mit unterschiedlichen Layouts.',
+                        ],
+                    ],
+                    [
+                        'type' => 'text-block',
+                        'data' => [
+                            'inhalt' => '<p>Dies ist ein <strong>Textblock</strong> im Flexible-Content-Feld.</p>',
+                        ],
+                    ],
                 ],
             ],
             'demo-oembed' => [

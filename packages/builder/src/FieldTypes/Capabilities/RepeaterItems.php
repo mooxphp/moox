@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\FieldTypes\Capabilities;
 
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
@@ -27,7 +28,7 @@ class RepeaterItems extends Capability
 
     public function apply(Component $component, FieldDefinition $field): Component
     {
-        if (! $component instanceof Repeater) {
+        if (! $component instanceof Repeater && ! $component instanceof Builder) {
             return $component;
         }
 
@@ -45,3 +46,4 @@ class RepeaterItems extends Capability
         return $component;
     }
 }
+

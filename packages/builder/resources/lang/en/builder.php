@@ -40,6 +40,12 @@ return [
         'option_label' => 'Display text',
         'option_value' => 'Value',
         'subfields' => 'Subfields',
+        'layouts' => 'Layouts',
+        'layout_label' => 'Layout label',
+        'layout_key' => 'Layout key',
+        'layout_key_helper' => 'Technical identifier used when storing blocks. Lowercase letters, numbers, and hyphens only.',
+        'layout_item' => 'Layout',
+        'layouts_count' => '{1} :count layout|[2,*] :count layouts',
     ],
 
     'field_types' => [
@@ -67,6 +73,11 @@ return [
         'tab' => 'Tab',
         'group' => 'Group',
         'repeater' => 'Repeater',
+        'flexible_content' => 'Flexible content',
+    ],
+
+    'flexible_content' => [
+        'add_layout' => 'Add layout',
     ],
 
     'message' => [
@@ -109,5 +120,8 @@ return [
         'duplicate_field_name' => 'The field key ":name" is already used in the group ":group".',
         'duplicate_field_name_internal' => 'The field key ":name" is assigned more than once in this group.',
         'empty_repeater_item' => 'Row :position in ":field" is empty.',
+        'empty_flexible_item' => 'Block :position in ":field" is empty.',
+        'empty_flexible_layout' => 'Please choose a layout for each block.',
+        'unknown_flexible_layout' => 'Unknown layout ":layout".',
     ],
 ];

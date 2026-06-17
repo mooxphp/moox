@@ -65,6 +65,8 @@ class DefinitionRegistry
                 'fields.options',
                 'fields.children' => fn ($query) => $query->orderBy('sort'),
                 'fields.children.options',
+                'fields.children.children' => fn ($query) => $query->orderBy('sort'),
+                'fields.children.children.options',
             ])
             ->orderBy('sort')
             ->get()

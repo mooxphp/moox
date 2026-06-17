@@ -155,6 +155,8 @@ class FieldGroupPersistence
             'fields.options',
             'fields.children' => fn ($query) => $query->orderBy('sort'),
             'fields.children.options',
+            'fields.children.children' => fn ($query) => $query->orderBy('sort'),
+            'fields.children.children.options',
         ]);
 
         return $this->mapFieldRows($group->fields);
@@ -166,22 +168,50 @@ class FieldGroupPersistence
      */
     protected function mapFieldRows(Collection $fields): array
     {
-        return $fields->map(fn (Field $field): array => [
-            'id' => $field->getKey(),
-            'label' => $field->label,
-            'name' => $field->name,
-            'type' => $field->type,
-            'required' => (bool) ($field->validation['required'] ?? false),
-            'config' => $field->config ?? [],
-            'sort' => $field->sort,
-            'options' => $field->options->map(fn (FieldOption $option): array => [
-                'id' => $option->getKey(),
-                'label' => $option->label,
-                'value' => $option->value,
-                'sort' => $option->sort,
-            ])->values()->all(),
-            'children' => $this->mapFieldRows($field->children),
-        ])->values()->all();
+        return $fields->map(function (Field $field): array {
+            $row = [
+                'id' => $field->getKey(),
+                'label' => $field->label,
+                'name' => $field->name,
+                'type' => $field->type,
+                'required' => (bool) ($field->validation['required'] ?? false),
+                'config' => $field->config ?? [],
+                'sort' => $field->sort,
+                'options' => $field->options->map(fn (FieldOption $option): array => [
+                    'id' => $option->getKey(),
+                    'label' => $option->label,
+                    'value' => $option->value,
+                    'sort' => $option->sort,
+                ])->values()->all(),
+            ];
+
+            if ($field->type === 'flexible_content') {
+                $row['layouts'] = $this->mapLayoutRows($field->children);
+            } else {
+                $row['children'] = $this->mapFieldRows($field->children);
+            }
+
+            return $row;
+        })->values()->all();
+    }
+
+    /**
+     * @param  Collection<int, Field>  $fields
+     * @return list<array<string, mixed>>
+     */
+    protected function mapLayoutRows(Collection $fields): array
+    {
+        return $fields
+            ->filter(fn (Field $field): bool => $field->type === 'flexible_layout')
+            ->map(fn (Field $layout): array => [
+                'id' => $layout->getKey(),
+                'label' => $layout->label,
+                'name' => $layout->name,
+                'sort' => $layout->sort,
+                'children' => $this->mapFieldRows($layout->children),
+            ])
+            ->values()
+            ->all();
     }
 
     /**
@@ -239,7 +269,17 @@ class FieldGroupPersistence
 
             $this->syncOptions($field, $row['options'] ?? []);
 
-            if ($this->typeHasSubFields((string) $row['type'])) {
+            if ((string) $row['type'] === 'flexible_content') {
+                $layoutRows = array_map(
+                    fn (array $layout): array => [
+                        ...$layout,
+                        'type' => 'flexible_layout',
+                    ],
+                    $row['layouts'] ?? [],
+                );
+
+                $this->syncFields($group, $layoutRows, $field->getKey());
+            } elseif ($this->typeHasSubFields((string) $row['type'])) {
                 $this->syncFields($group, $row['children'] ?? [], $field->getKey());
             } else {
                 $field->children()->each(fn (Field $child) => $child->delete());

@@ -53,6 +53,10 @@ class FieldValueValidator
             return $this->messagesForRow($field, $this->normalizeGroupRow($value), $path);
         }
 
+        if ($field->type === 'flexible_content') {
+            return $this->messagesForFlexibleContent($field, $value, $path);
+        }
+
         if (! is_array($value)) {
             return [];
         }
@@ -78,6 +82,63 @@ class FieldValueValidator
             }
 
             $messages = array_merge($messages, $this->messagesForRow($field, $item, $itemPath));
+        }
+
+        return $messages;
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForFlexibleContent(FieldDefinition $field, mixed $value, string $path): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $messages = [];
+
+        foreach (array_values($value) as $index => $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $layoutKey = (string) ($item['type'] ?? $item['layout'] ?? '');
+            $data = is_array($item['data'] ?? null) ? $item['data'] : $item;
+            unset($data['type'], $data['layout'], $data['data']);
+
+            $itemPath = "{$path}.{$index}";
+
+            if ($layoutKey === '') {
+                $messages[$itemPath] = [
+                    __('builder::builder.validation.empty_flexible_layout'),
+                ];
+
+                continue;
+            }
+
+            $layout = $field->layouts()->firstWhere('name', $layoutKey);
+
+            if ($layout === null) {
+                $messages[$itemPath] = [
+                    __('builder::builder.validation.unknown_flexible_layout', ['layout' => $layoutKey]),
+                ];
+
+                continue;
+            }
+
+            if ($this->isRowEmpty($layout, $data)) {
+                $messages[$itemPath] = [
+                    __('builder::builder.validation.empty_flexible_item', [
+                        'position' => $index + 1,
+                        'field' => $field->label,
+                    ]),
+                ];
+
+                continue;
+            }
+
+            $messages = array_merge($messages, $this->messagesForRow($layout, $data, "{$itemPath}.data"));
         }
 
         return $messages;

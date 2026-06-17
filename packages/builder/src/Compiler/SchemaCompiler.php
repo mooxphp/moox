@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Compiler;
 
+use Filament\Forms\Components\Builder;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -137,6 +138,10 @@ class SchemaCompiler
         }
 
         if ($fieldType->hasSubFields()) {
+            if ($field->type === 'flexible_content') {
+                return $rules;
+            }
+
             $childPrefix = $prefix === '' ? $field->name : "{$prefix}.{$field->name}";
 
             if ($field->type === 'repeater') {
@@ -239,6 +244,10 @@ class SchemaCompiler
             }
 
             $component->state($value);
+
+            if ($component instanceof Builder) {
+                $component->hydrateItems();
+            }
         });
     }
 }

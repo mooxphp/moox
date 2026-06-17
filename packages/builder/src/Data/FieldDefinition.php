@@ -55,6 +55,17 @@ readonly class FieldDefinition
     }
 
     /**
+     * @return Collection<int, FieldDefinition>
+     */
+    public function layouts(): Collection
+    {
+        return $this->children
+            ->filter(fn (self $child): bool => $child->type === 'flexible_layout')
+            ->sortBy(fn (self $child): int => $child->sort)
+            ->values();
+    }
+
+    /**
      * @return array{name: string, label: string, type: string, sort: int, config: array<string, mixed>, validation: array<string, mixed>, options: list<array{label: string, value: string}>, children: list<array<string, mixed>>}
      */
     public function toArray(): array
