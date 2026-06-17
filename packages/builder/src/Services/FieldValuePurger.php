@@ -21,12 +21,21 @@ class FieldValuePurger
      */
     public function purgeForFieldName(string $fieldName, array $entities): void
     {
-        if ($entities === []) {
+        $this->purgeForFieldNames([$fieldName], $entities);
+    }
+
+    /**
+     * @param  list<string>  $fieldNames
+     * @param  list<string>  $entities
+     */
+    public function purgeForFieldNames(array $fieldNames, array $entities): void
+    {
+        if ($fieldNames === [] || $entities === []) {
             return;
         }
 
         FieldValue::query()
-            ->where('field_name', $fieldName)
+            ->whereIn('field_name', $fieldNames)
             ->whereIn('entity', $entities)
             ->delete();
     }

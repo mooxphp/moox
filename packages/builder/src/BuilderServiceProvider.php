@@ -72,6 +72,7 @@ class BuilderServiceProvider extends MooxServiceProvider
     public function packageBooted(): void
     {
         FieldGroup::observe(InvalidateDefinitionCacheObserver::class);
+        FieldGroup::observe(PurgeFieldValuesObserver::class);
         Field::observe(InvalidateDefinitionCacheObserver::class);
         Field::observe(PurgeFieldValuesObserver::class);
         FieldOption::observe(InvalidateDefinitionCacheObserver::class);
