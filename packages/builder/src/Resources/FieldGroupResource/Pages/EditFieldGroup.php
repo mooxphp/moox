@@ -38,21 +38,7 @@ class EditFieldGroup extends EditRecord
             $record->location_rules ?? [],
         );
 
-        $data['fields'] = $record->fields->map(fn ($field): array => [
-            'id' => $field->getKey(),
-            'label' => $field->label,
-            'name' => $field->name,
-            'type' => $field->type,
-            'required' => (bool) ($field->validation['required'] ?? false),
-            'config' => $field->config ?? [],
-            'sort' => $field->sort,
-            'options' => $field->options->map(fn ($option): array => [
-                'id' => $option->getKey(),
-                'label' => $option->label,
-                'value' => $option->value,
-                'sort' => $option->sort,
-            ])->values()->all(),
-        ])->values()->all();
+        $data['fields'] = app(FieldGroupPersistence::class)->fieldRowsForForm($record);
 
         return $data;
     }

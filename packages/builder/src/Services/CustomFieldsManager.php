@@ -40,7 +40,34 @@ class CustomFieldsManager
             $this->locationContextForResource($resourceClass),
         );
 
-        return $groups->flatMap(fn ($group) => $group->fields)->values();
+        return $groups->flatMap(fn ($group) => $this->storableFieldsFromList($group->fields))->values();
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return Collection<int, FieldDefinition>
+     */
+    protected function storableFieldsFromList(Collection $fields): Collection
+    {
+        return $fields->flatMap(fn (FieldDefinition $field): Collection => $this->storableFieldsFor($field));
+    }
+
+    /**
+     * @return Collection<int, FieldDefinition>
+     */
+    protected function storableFieldsFor(FieldDefinition $field): Collection
+    {
+        $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+        if ($fieldType->isLayoutMarker()) {
+            return collect();
+        }
+
+        if ($fieldType->hasSubFields()) {
+            return collect([$field]);
+        }
+
+        return collect([$field]);
     }
 
     /**

@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -23,6 +24,7 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 class RecordResource extends BaseRecordResource
 {
     use HasResourceTabs;
+    use HasCustomFields;
     use HasResourceTaxonomy;
 
     protected static ?string $model = Record::class;
@@ -76,6 +78,7 @@ class RecordResource extends BaseRecordResource
                             ),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
+                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),

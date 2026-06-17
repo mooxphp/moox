@@ -7,6 +7,7 @@ namespace Moox\Builder\Registry;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Moox\Builder\Compiler\LocationMatcher;
+use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldGroup;
@@ -60,7 +61,12 @@ class DefinitionRegistry
     {
         return FieldGroup::query()
             ->active()
-            ->with(['fields.options'])
+            ->with([
+                'fields' => fn ($query) => $query->whereNull('parent_field_id')->orderBy('sort'),
+                'fields.options',
+                'fields.children' => fn ($query) => $query->orderBy('sort'),
+                'fields.children.options',
+            ])
             ->orderBy('sort')
             ->get()
             ->map(fn (FieldGroup $group): array => FieldGroupDefinition::fromModel($group)->toArray())

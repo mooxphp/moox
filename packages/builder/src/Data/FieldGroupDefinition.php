@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Data;
 
 use Illuminate\Support\Collection;
+use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 
 readonly class FieldGroupDefinition
@@ -27,7 +28,8 @@ readonly class FieldGroupDefinition
     {
         $fields = $group->relationLoaded('fields')
             ? $group->fields
-                ->map(fn ($field): FieldDefinition => FieldDefinition::fromModel($field))
+                ->filter(fn (Field $field): bool => $field->parent_field_id === null)
+                ->map(fn (Field $field): FieldDefinition => FieldDefinition::fromModel($field))
                 ->sortBy(fn (FieldDefinition $field): int => $field->sort)
                 ->values()
             : collect();

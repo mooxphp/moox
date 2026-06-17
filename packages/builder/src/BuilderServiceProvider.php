@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Types\ColorFieldType;
 use Moox\Builder\FieldTypes\Types\DateFieldType;
 use Moox\Builder\FieldTypes\Types\DatetimeFieldType;
 use Moox\Builder\FieldTypes\Types\EmailFieldType;
+use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\FieldTypes\Types\LinkFieldType;
 use Moox\Builder\FieldTypes\Types\MessageFieldType;
 use Moox\Builder\FieldTypes\Types\MultiselectFieldType;
@@ -21,8 +22,10 @@ use Moox\Builder\FieldTypes\Types\OembedFieldType;
 use Moox\Builder\FieldTypes\Types\PasswordFieldType;
 use Moox\Builder\FieldTypes\Types\RadioFieldType;
 use Moox\Builder\FieldTypes\Types\RangeFieldType;
+use Moox\Builder\FieldTypes\Types\RepeaterFieldType;
 use Moox\Builder\FieldTypes\Types\RichTextFieldType;
 use Moox\Builder\FieldTypes\Types\SelectFieldType;
+use Moox\Builder\FieldTypes\Types\TabFieldType;
 use Moox\Builder\FieldTypes\Types\TextareaFieldType;
 use Moox\Builder\FieldTypes\Types\TextFieldType;
 use Moox\Builder\FieldTypes\Types\TimeFieldType;
@@ -113,6 +116,9 @@ class BuilderServiceProvider extends MooxServiceProvider
             new RichTextFieldType,
             new MessageFieldType,
             new OembedFieldType,
+            new TabFieldType,
+            new GroupFieldType,
+            new RepeaterFieldType,
         ];
     }
 }
