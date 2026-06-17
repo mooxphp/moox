@@ -12,7 +12,6 @@ use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
-use Moox\Builder\Services\FieldValueValidator;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\TypedValueColumns;
 
