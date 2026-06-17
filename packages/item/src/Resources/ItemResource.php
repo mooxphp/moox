@@ -22,6 +22,7 @@ use Moox\Item\Resources\ItemResource\Pages\ViewItem;
 class ItemResource extends BaseItemResource
 {
     use HasCustomFields;
+
     protected static ?string $model = Item::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-offer';

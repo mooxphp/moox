@@ -23,8 +23,8 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class RecordResource extends BaseRecordResource
 {
-    use HasResourceTabs;
     use HasCustomFields;
+    use HasResourceTabs;
     use HasResourceTaxonomy;
 
     protected static ?string $model = Record::class;

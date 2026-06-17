@@ -7,7 +7,6 @@ namespace Moox\Builder\Registry;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Moox\Builder\Compiler\LocationMatcher;
-use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldGroup;
