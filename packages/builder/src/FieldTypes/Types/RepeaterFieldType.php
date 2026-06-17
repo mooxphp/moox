@@ -41,7 +41,10 @@ class RepeaterFieldType extends FieldType
             ->defaultItems(0)
             ->reorderable();
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        return $this->applyNestedValueValidation(
+            $this->applyCapabilitiesAndValidation($component, $field),
+            $field,
+        );
     }
 
     public function castValue(mixed $raw): mixed

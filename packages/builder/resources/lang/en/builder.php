@@ -108,5 +108,6 @@ return [
         'invalid_option' => 'The selected value is not a valid option.',
         'duplicate_field_name' => 'The field key ":name" is already used in the group ":group".',
         'duplicate_field_name_internal' => 'The field key ":name" is assigned more than once in this group.',
+        'empty_repeater_item' => 'Row :position in ":field" is empty.',
     ],
 ];
