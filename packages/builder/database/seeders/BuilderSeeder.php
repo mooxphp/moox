@@ -152,6 +152,7 @@ class BuilderSeeder extends Seeder
                             'label' => 'Merkmal',
                             'type' => 'text',
                             'sort' => 0,
+                            'required' => true,
                         ],
                         [
                             'name' => 'enthalten',

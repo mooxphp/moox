@@ -26,7 +26,7 @@ class GroupFieldType extends FieldType
     {
         $compiler = app(SchemaCompiler::class);
 
-        return Repeater::make($field->name)
+        $component = Repeater::make($field->name)
             ->label($field->label)
             ->schema($compiler->compileSubFields($field->children, null))
             ->minItems(1)
@@ -37,6 +37,8 @@ class GroupFieldType extends FieldType
             ->reorderable(false)
             ->collapsible(false)
             ->hiddenLabel($field->label === '');
+
+        return $this->applyNestedValueValidation($component, $field);
     }
 
     public function castValue(mixed $raw): mixed

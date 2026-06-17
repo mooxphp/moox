@@ -127,7 +127,7 @@ class SchemaCompiler
     /**
      * @return array<string, list<string>>
      */
-    protected function rulesForFieldTree(FieldDefinition $field): array
+    protected function rulesForFieldTree(FieldDefinition $field, string $prefix = ''): array
     {
         $rules = [];
         $fieldType = $this->fieldTypeRegistry->get($field->type);
@@ -137,8 +137,14 @@ class SchemaCompiler
         }
 
         if ($fieldType->hasSubFields()) {
+            $childPrefix = $prefix === '' ? $field->name : "{$prefix}.{$field->name}";
+
+            if ($field->type === 'repeater') {
+                $childPrefix .= '.*';
+            }
+
             foreach ($field->children as $child) {
-                $rules = array_merge($rules, $this->rulesForFieldTree($child));
+                $rules = array_merge($rules, $this->rulesForFieldTree($child, $childPrefix));
             }
 
             return $rules;
@@ -147,7 +153,8 @@ class SchemaCompiler
         $fieldRules = $this->rulesForField($field);
 
         if ($fieldRules !== []) {
-            $rules[$field->name] = $fieldRules;
+            $key = $prefix === '' ? $field->name : "{$prefix}.{$field->name}";
+            $rules[$key] = $fieldRules;
         }
 
         return $rules;

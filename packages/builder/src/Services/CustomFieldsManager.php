@@ -12,6 +12,7 @@ use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Services\FieldValueValidator;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\TypedValueColumns;
 
@@ -20,6 +21,7 @@ class CustomFieldsManager
     public function __construct(
         protected DefinitionRegistry $definitionRegistry,
         protected FieldTypeRegistry $fieldTypeRegistry,
+        protected FieldValueValidator $fieldValueValidator,
     ) {}
 
     /**
@@ -191,6 +193,8 @@ class CustomFieldsManager
             if ($field->type !== 'password') {
                 OptionValueRules::assertValid($field, $value);
             }
+
+            $this->fieldValueValidator->assertValid($field, $value);
 
             $cast = $fieldType->castValue($value);
             $columns = TypedValueColumns::attributesFor($field->type, $cast);

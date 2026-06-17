@@ -7,6 +7,7 @@ namespace Moox\Builder\FieldTypes;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\Capability;
+use Moox\Builder\Services\FieldValueValidator;
 
 abstract class FieldType
 {
@@ -75,6 +76,23 @@ abstract class FieldType
         }
 
         return $component;
+    }
+
+    protected function applyNestedValueValidation(Component $component, FieldDefinition $field): Component
+    {
+        if (! $this->hasSubFields()) {
+            return $component;
+        }
+
+        return $component->rules([
+            fn (): \Closure => function (string $attribute, mixed $value, \Closure $fail) use ($field): void {
+                foreach (app(FieldValueValidator::class)->messagesFor($field, $value, $attribute) as $messages) {
+                    foreach ($messages as $message) {
+                        $fail($message);
+                    }
+                }
+            },
+        ]);
     }
 
     /**
