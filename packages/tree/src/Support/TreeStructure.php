@@ -66,12 +66,8 @@ final class TreeStructure
      * @param  Collection<string, Collection<int, Model>>  $recordsByParent
      * @return array<int, array<string, mixed>>
      */
-    public function buildTree(Collection $recordsByParent, ?int $parentId = null): array
+    public function buildTree(Collection $recordsByParent): array
     {
-        if ($parentId !== null) {
-            return $this->buildBranch($recordsByParent, $parentId);
-        }
-
         $allRecords = $recordsByParent->flatten()->unique(
             fn (Model $record): int => (int) $record->getKey(),
         );
@@ -94,6 +90,28 @@ final class TreeStructure
         return $this->sortRecords($roots)
             ->map(fn (Model $record): array => $this->mapRecordToNode($record, $recordsByParent))
             ->all();
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function ancestorIds(int $recordId): array
+    {
+        $parentColumn = $this->configuration->getParentColumn();
+
+        /** @var array<int|string, int|string|null> $parentMap */
+        $parentMap = $this->configuration->newQuery()->pluck($parentColumn, 'id')->all();
+
+        $ids = [];
+        $parentId = $parentMap[$recordId] ?? null;
+
+        while ($parentId !== null && $parentId !== '') {
+            $parentId = (int) $parentId;
+            $ids[] = $parentId;
+            $parentId = $parentMap[$parentId] ?? null;
+        }
+
+        return $ids;
     }
 
     /**
@@ -130,7 +148,7 @@ final class TreeStructure
         return $ids;
     }
 
-    public function parentKey(?int $parentId): string
+    private function parentKey(?int $parentId): string
     {
         return $parentId === null ? 'root' : (string) $parentId;
     }
@@ -168,29 +186,11 @@ final class TreeStructure
         return [
             'id' => (int) $record->getKey(),
             $parentColumn => $this->parentId($record),
-            'label' => $this->resolveLabel($record),
+            'label' => TreeNodeLabelResolver::resolve($record, $this->configuration),
             'children' => $recordsByParent === null
                 ? []
                 : $this->buildBranch($recordsByParent, (int) $record->getKey()),
         ];
-    }
-
-    private function resolveLabel(Model $record): string
-    {
-        $labelColumn = $this->configuration->getLabelColumn();
-        $value = $record->getAttribute($labelColumn);
-
-        if (filled($value)) {
-            return (string) $value;
-        }
-
-        $fallback = data_get($record, 'display_title');
-
-        if (filled($fallback)) {
-            return (string) $fallback;
-        }
-
-        return '';
     }
 
     /**

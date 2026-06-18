@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Moox\Tree\Actions\Tree;
 
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
-use Kalnoy\Nestedset\NodeTrait;
 use Moox\Tree\Config\TreeIndexConfiguration;
+use Moox\Tree\Support\NestedSetGuard;
 
 final class MoveNestedSetTreeNodeAction
 {
@@ -15,14 +14,12 @@ final class MoveNestedSetTreeNodeAction
 
     public function handle(Model $record, ?int $newParentId, int $position): void
     {
-        $this->assertNestedSetCapable($record);
+        NestedSetGuard::assertCapable($record);
 
         $record = $record->fresh() ?? $record;
 
         $siblings = $this->configuration
-            ->applyTreeOrdering(
-                $this->configuration->siblingsQuery($newParentId)->whereKeyNot($record->getKey()),
-            )
+            ->siblingsExcept($newParentId, $record->getKey())
             ->get();
 
         $position = max(0, min($position, $siblings->count()));
@@ -57,15 +54,6 @@ final class MoveNestedSetTreeNodeAction
         $parent = $this->configuration->newQuery()->findOrFail($parentId);
 
         $record->appendToNode($parent)->save();
-    }
-
-    private function assertNestedSetCapable(Model $record): void
-    {
-        if (! in_array(NodeTrait::class, class_uses_recursive($record), true)) {
-            throw new InvalidArgumentException(
-                'Nested set tree index requires Kalnoy\Nestedset\NodeTrait on the model.',
-            );
-        }
     }
 
     private function isRootNode(Model $record): bool

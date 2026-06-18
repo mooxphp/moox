@@ -6,7 +6,7 @@
 
         window.__filamentTreeIndexAlpineRegistered = true;
 
-        document.addEventListener('alpine:init', () => {
+        const registerFilamentTreeIndexStore = () => {
             Alpine.store('filamentTreeIndex', {
                 open: {},
                 branchIds: [],
@@ -46,6 +46,12 @@
                     }
                 },
             });
-        });
+        };
+
+        document.addEventListener('alpine:init', registerFilamentTreeIndexStore);
+
+        if (window.Alpine) {
+            registerFilamentTreeIndexStore();
+        }
     })();
 </script>

@@ -4,74 +4,31 @@ declare(strict_types=1);
 
 namespace Moox\Tree\Filament\Concerns;
 
-use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Schemas\Schema;
-use Illuminate\Contracts\View\View;
 
 /**
+ * Standalone tree-inspector edit page (direct route). Tree index uses inline {@see InteractsWithTreeResourceInspectorForm}.
+ *
  * @mixin EditRecord
  */
 trait RendersAsTreeIndexInspector
 {
+    use InteractsWithTreeIndexInspectorLocale;
+    use RendersAsTreeIndexEmbeddedPage;
+
     protected bool $embeddedInTreeIndexInspector = true;
 
-    public static function shouldRegisterNavigation(array $parameters = []): bool
+    public function mount($record): void
     {
-        return false;
+        $this->syncTreeInspectorLocaleToRequest();
+
+        parent::mount($record);
     }
 
-    /**
-     * @param  mixed  $url
-     */
-    public function redirect($url, $navigate = false): void
+    protected function isEmbeddedInTreeIndex(): bool
     {
-        if ($this->embeddedInTreeIndexInspector) {
-            return;
-        }
-
-        parent::redirect($url, $navigate);
-    }
-
-    public function getView(): string
-    {
-        return 'filament-tree-index::filament.pages.tree-index-inspector';
-    }
-
-    public function render(): View
-    {
-        return view($this->getView(), $this->getViewData());
-    }
-
-    public function getTitle(): string
-    {
-        return '';
-    }
-
-    public function getHeading(): string
-    {
-        return '';
-    }
-
-    public function getSubheading(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @return array<Action>
-     */
-    public function getHeaderActions(): array
-    {
-        return [];
-    }
-
-    public function content(Schema $schema): Schema
-    {
-        return $schema->components([
-            $this->getFormContentComponent(),
-        ]);
+        return $this->embeddedInTreeIndexInspector;
     }
 
     protected function getRedirectUrl(): ?string
@@ -84,10 +41,5 @@ trait RendersAsTreeIndexInspector
         return Notification::make()
             ->title(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
             ->success();
-    }
-
-    protected function afterSave(): void
-    {
-        $this->dispatch('tree-index-record-saved');
     }
 }

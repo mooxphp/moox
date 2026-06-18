@@ -7,6 +7,7 @@ namespace Moox\Category;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Category\Commands\InstallCommand;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Core\MooxServiceProvider;
@@ -31,6 +32,10 @@ class CategoryServiceProvider extends MooxServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListCategories::class
         );
+
+        if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+            AuditPackageRegistry::register('category', config('category.audit', []));
+        }
     }
 
     public function mooxInfo(): array

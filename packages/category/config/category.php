@@ -1,6 +1,8 @@
 <?php
 
 use Moox\Category\Models\Category;
+use Moox\Category\Models\CategoryTranslation;
+use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 
 /*
@@ -110,5 +112,64 @@ return [
     */
 
     'navigation_group' => 'trans//core::core.cms',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Category::class => [
+                'preset' => 'draft_main',
+                'log_name' => 'category',
+                'attributes' => [
+                    'is_active',
+                    'status',
+                    'scope',
+                    'parent_id',
+                    'color',
+                    'weight',
+                ],
+            ],
+            CategoryTranslation::class => [
+                'preset' => 'draft_translation',
+                'log_name' => 'category',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'description',
+                    'content',
+                    'translation_status',
+                    'author_id',
+                    'author_type',
+                ],
+            ],
+        ],
+        'hooks' => [
+            Category::class => [
+                'deleting' => [
+                    'handler' => 'categorizables_detached',
+                    'log_name' => 'category',
+                    'entry_type' => 'log',
+                    'event' => 'categorizables_detached',
+                    'description' => 'categorizables_detached',
+                ],
+            ],
+        ],
+        'filament' => [
+            CategoryResource::class => [
+                'owner_model' => Category::class,
+                'aggregate_subjects' => [
+                    CategoryTranslation::class => 'translations',
+                ],
+            ],
+        ],
+    ],
 
 ];

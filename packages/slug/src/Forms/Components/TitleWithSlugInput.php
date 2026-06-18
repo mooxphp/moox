@@ -79,9 +79,7 @@ class TitleWithSlugInput
                         $set($fieldSlug, $slug);
 
                         if ($fieldPermalink && filled($slug)) {
-                            $entityPath = $urlPathEntityType ? '/'.$urlPathEntityType : '';
-                            $permalink = $entityPath.'/'.$slug;
-                            $set($fieldPermalink, $permalink);
+                            $set($fieldPermalink, self::buildPermalink($slug, $urlPathEntityType));
                         }
                     }
 
@@ -154,6 +152,17 @@ class TitleWithSlugInput
             ->validationMessages([
                 'unique' => __('core::core.slug_unique'),
             ])
+            ->mutateStateForValidationUsing(function (?string $state, Get $get) use ($slugSlugifier, $fieldTitle): ?string {
+                $state = trim((string) $state);
+
+                if ($state !== '') {
+                    return $state;
+                }
+
+                $slug = self::slugify($slugSlugifier, $get($fieldTitle));
+
+                return $slug === '' ? null : $slug;
+            })
             ->afterStateUpdated(
                 function ($state, Set $set, Get $get, TextInput $component) use ($slugSlugifier, $fieldTitle, $fieldSlug, $fieldPermalink, $urlPathEntityType, $slugAfterStateUpdated) {
                     $text = trim($state) === ''
@@ -164,9 +173,7 @@ class TitleWithSlugInput
                     $set($fieldSlug, $slug);
 
                     if ($fieldPermalink && filled($slug)) {
-                        $entityPath = $urlPathEntityType ? '/'.$urlPathEntityType : '';
-                        $permalink = $entityPath.'/'.$slug;
-                        $set($fieldPermalink, $permalink);
+                        $set($fieldPermalink, self::buildPermalink($slug, $urlPathEntityType));
                     }
 
                     $set($fieldSlug.'_slug_auto_update_disabled', true);
@@ -198,7 +205,22 @@ class TitleWithSlugInput
             ->dehydrated(false);
 
         /** Input: "Permalink" (Hidden) */
-        $hiddenInputPermalink = $fieldPermalink ? Hidden::make($fieldPermalink) : null;
+        $hiddenInputPermalink = $fieldPermalink
+            ? Hidden::make($fieldPermalink)
+                ->dehydrateStateUsing(function (?string $state, Get $get) use ($fieldSlug, $urlPathEntityType): ?string {
+                    if (filled($state)) {
+                        return $state;
+                    }
+
+                    $slug = $get($fieldSlug);
+
+                    if (! filled($slug)) {
+                        return $state;
+                    }
+
+                    return self::buildPermalink($slug, $urlPathEntityType);
+                })
+            : null;
 
         /** Group */
 
@@ -209,6 +231,13 @@ class TitleWithSlugInput
                 $hiddenInputSlugAutoUpdateDisabled,
                 $hiddenInputPermalink,
             ]);
+    }
+
+    protected static function buildPermalink(string $slug, ?string $urlPathEntityType = null): string
+    {
+        $entityPath = $urlPathEntityType ? '/'.$urlPathEntityType : '';
+
+        return $entityPath.'/'.$slug;
     }
 
     /** Fallback slugifier, over-writable with slugSlugifier parameter. */

@@ -11,7 +11,7 @@ it('resolves tree index configuration from the resource class on demand', functi
 
     TreeIndexConfigurationRegistry::forget($key);
 
-    $configuration = TreeIndexConfigurationRegistry::get($key);
+    $configuration = TreeIndexConfigurationRegistry::resolve($key);
 
     expect($configuration->modelClass())->toBe(TreeNode::class);
 });
@@ -19,5 +19,5 @@ it('resolves tree index configuration from the resource class on demand', functi
 it('throws when the configuration key is not a tree index resource', function (): void {
     TreeIndexConfigurationRegistry::forget(TreeNode::class);
 
-    TreeIndexConfigurationRegistry::get(TreeNode::class);
+    TreeIndexConfigurationRegistry::resolve(TreeNode::class);
 })->throws(LogicException::class);

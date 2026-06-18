@@ -21,7 +21,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Unique;
+use Moox\Audit\Support\AuditResourceRelationRegistry;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
 use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
@@ -116,7 +118,7 @@ class CategoryResource extends BaseDraftResource
                                         TextInput::make('weight')->numeric(),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn (?Model $record): bool => filled($record)),
                                     ]),
                                 Section::make('')
                                     ->schema([
@@ -258,9 +260,16 @@ class CategoryResource extends BaseDraftResource
     #[Override]
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        $relations = parent::getRelations();
+
+        if (class_exists(AuditResourceRelationRegistry::class)) {
+            $relations = array_merge(
+                $relations,
+                AuditResourceRelationRegistry::for(static::class),
+            );
+        }
+
+        return $relations;
     }
 
     #[Override]

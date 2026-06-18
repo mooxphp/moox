@@ -1,11 +1,13 @@
 {
     "name": "moox/audit",
-    "description": "This is my package audit",
+    "description": "Activity logging and audit UI for Moox based on Spatie Laravel Activity Log",
     "keywords": [
         "Laravel",
         "Filament",
         "Filament plugin",
-        "Laravel package"
+        "Laravel package",
+        "audit",
+        "activity log"
     ],
     "homepage": "https://moox.org/",
     "license": "MIT",
@@ -21,11 +23,19 @@
         "spatie/laravel-activitylog": "dev-main"
     },
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "dev-main",
+        "moox/category": "dev-main",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.7"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Audit\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Audit\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -38,5 +48,15 @@
             "stability": "stable"
         }
     },
-    "prefer-stable": true
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit"
+        ]
+    },
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }

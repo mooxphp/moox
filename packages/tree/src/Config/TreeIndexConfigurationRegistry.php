@@ -17,11 +17,6 @@ final class TreeIndexConfigurationRegistry
         self::$configurations[$key] = $configuration;
     }
 
-    public static function get(string $key): TreeIndexConfiguration
-    {
-        return self::resolve($key);
-    }
-
     public static function resolve(string $key): TreeIndexConfiguration
     {
         if (isset(self::$configurations[$key])) {
