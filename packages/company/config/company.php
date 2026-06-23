@@ -1,15 +1,16 @@
 <?php
 
 use Moox\Company\Models\Company;
+use Moox\Company\Resources\CompanyResource;
 
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
 |--------------------------------------------------------------------------
 |
-| Greenfield ERP company entity. No payment fields, no employee_id, no
-| default-address FKs — addresses and commercial terms use pivots
-| (addressables, employee_assignments, commercial_term_assignments).
+| Greenfield ERP company entity. Relations are resolved by moox/core
+| (RelationService + ConfigRelationManager). Override model classes and
+| pivot details in the application config/company.php.
 |
 */
 return [
@@ -92,41 +93,46 @@ return [
 
     'relations' => [
         'parent' => [
+            'kind' => 'belongs_to',
+            'presentation' => 'tab',
             'label' => 'trans//company::fields.parent',
             'relationship' => 'parent',
             'model' => Company::class,
+            'related_resource' => CompanyResource::class,
+            'foreign_key' => 'parent_id',
+            'display_columns' => ['name', 'company_type', 'status'],
+            'badge_columns' => ['company_type', 'status'],
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
+            'actions' => [
+                'header' => ['associate'],
+                'record' => ['view', 'edit', 'dissociate'],
+            ],
+            'associate' => [
+                'exclude' => ['self', 'inverse'],
+            ],
         ],
         'children' => [
+            'kind' => 'has_many',
+            'presentation' => 'tab',
             'label' => 'trans//company::fields.children',
             'relationship' => 'children',
+            'inverse_relationship' => 'parent',
             'model' => Company::class,
-        ],
-    ],
-
-    /*
-    | Morph pivots (moox/core HasMorphPivotRelations + MorphPivotRelationManager).
-    | Same keys as address.relations.addressables / draft taxonomies.
-    | App sets model, pivot_model, related_resource. Further packages register
-    | display_columns via MorphPivotRelationRegistry::registerRelatedModel().
-    */
-    'morph_relations' => [
-        'addressables' => [
-            'label' => 'trans//company::fields.addresses',
-            'relationship' => 'addresses',
-            'model' => null,
-            'pivot_model' => null,
-            'pivot_table' => 'addressables',
-            'morph_name' => 'addressable',
-            'pivot_columns' => [
-                'billing_address',
-                'postal_address',
-                'delivery_address',
+            'related_resource' => CompanyResource::class,
+            'foreign_key' => 'parent_id',
+            'display_columns' => ['name', 'company_type', 'status'],
+            'badge_columns' => ['company_type', 'status'],
+            'create_prefill' => [
+                'parent_id' => 'owner.id',
             ],
-            'related_key' => 'address_id',
-            'primary' => [
-                'on' => 'related',
-                'column' => 'id',
-                'value' => true,
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
+            'actions' => [
+                'header' => ['associate', 'create'],
+                'record' => ['view', 'edit', 'dissociate'],
+            ],
+            'associate' => [
+                'strategy' => 'inverse',
+                'multiple' => true,
             ],
         ],
     ],

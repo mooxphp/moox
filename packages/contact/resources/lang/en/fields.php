@@ -11,6 +11,7 @@ return [
     'is_system_user' => 'System user',
     'companies' => 'Companies',
     'contacts' => 'Contacts',
+    'departments' => 'Departments',
     'role' => 'Role',
     'is_primary' => 'Primary',
     'note' => 'Note',

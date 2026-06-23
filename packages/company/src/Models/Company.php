@@ -7,23 +7,25 @@ namespace Moox\Company\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Company\Database\Factories\CompanyFactory;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
-use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
-class Company extends BaseItemModel
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<Company, $this> parent()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany<Company, $this> children()
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> contacts()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> addresses()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> address()
+ */
+class Company extends BaseRecordModel
 {
     /** @use HasFactory<CompanyFactory> */
     use HasFactory;
 
     use HasModelTaxonomy;
-    use HasMorphPivotRelations;
     use HasUuids;
     use SoftDeletes;
 
@@ -93,62 +95,11 @@ class Company extends BaseItemModel
     }
 
     /**
-     * @return BelongsTo<Company, $this>
-     */
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(self::class, 'parent_id');
-    }
-
-    /**
-     * @return HasMany<Company, $this>
-     */
-    public function children(): HasMany
-    {
-        return $this->hasMany(self::class, 'parent_id');
-    }
-
-    /**
      * @return MorphTo<Model, $this>
      */
     public function approvedBy(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    /**
-     * @return MorphToMany<Model, $this>
-     */
-    /**
-     * @return MorphToMany<Model, $this>
-     */
-    public function addresses(): MorphToMany
-    {
-        return $this->morphPivotRelation('addressables');
-    }
-
-    /**
-     * Primary related record ({@see addresses()} + config primary).
-     *
-     * @return MorphToMany<Model, $this>
-     */
-    public function address(): MorphToMany
-    {
-        return $this->primaryMorphPivotRelation('addressables');
-    }
-
-    /**
-     * @param  array<int, mixed>  $parameters
-     */
-    public function __call($method, $parameters): mixed
-    {
-        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
-
-        if (array_key_exists($method, $taxonomies)) {
-            return $this->taxonomy($method);
-        }
-
-        return $this->morphPivotCall($method, $parameters);
     }
 
     public function displayLabel(): string

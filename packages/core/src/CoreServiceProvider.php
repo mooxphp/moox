@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstallCommand;
 use Moox\Core\Console\Commands\PublishScheduledContentCommand;
 use Moox\Core\Console\Commands\ScopesSyncCommand;
+use Moox\Core\Services\RelationService;
 use Moox\Core\Services\ScopeAssignmentValidator;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Services\TabStateManager;
@@ -15,7 +16,6 @@ use Moox\Core\Services\TaxonomyService;
 use Moox\Core\Traits\HasGoogleIcons;
 use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
-use Override;
 use Spatie\LaravelPackageTools\Package;
 
 class CoreServiceProvider extends MooxServiceProvider
@@ -23,29 +23,28 @@ class CoreServiceProvider extends MooxServiceProvider
     use HasGoogleIcons;
     use HasTranslatableConfig;
 
-    #[Override]
-    public function boot(): void
+    public function packageRegistered(): void
     {
-        parent::boot();
-
         $this->app->singleton(ScopeRegistry::class);
         $this->app->singleton(ScopeAssignmentValidator::class);
         $this->app->singleton(TabStateManager::class);
+        $this->app->singleton(RelationService::class);
         $this->app->singleton(TaxonomyService::class);
 
-        if (config('core.use_google_icons', true)) {
-            $this->useGoogleIcons();
-        }
-
-        $this->loadTranslationsFrom(lang_path('previews'), 'previews');
-
         $this->app->booted(function (): void {
+            $this->resetTranslatorLoadedGroups();
             $this->translateConfigurations();
         });
     }
 
     public function packageBooted(): void
     {
+        if (config('core.use_google_icons', true)) {
+            $this->useGoogleIcons();
+        }
+
+        $this->loadTranslationsFrom(lang_path('previews'), 'previews');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $this->package->basePath('/../public') => public_path('vendor/core'),
@@ -76,7 +75,7 @@ class CoreServiceProvider extends MooxServiceProvider
         return $packageNames;
     }
 
-    protected function translateConfigurations()
+    protected function translateConfigurations(): void
     {
         $configs = config()->all();
         $translatedConfigs = $this->translateConfig($configs);

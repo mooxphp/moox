@@ -399,8 +399,8 @@ abstract class BaseResource extends Resource
                         } else {
                             if (method_exists($record, 'trashed')) {
                                 $hasSoftDeletes = true;
-                                if (auth()->check() && is_object($record)) {
-                                    $record->setAttribute('deleted_by_id', auth()->id());
+                                if (auth()->check() && is_object($record) && static::modelHasAuditMorph($record, 'deleted_by')) {
+                                    $record->deletedBy()->associate(auth()->user());
                                     $record->save();
                                 }
                             }
@@ -676,7 +676,7 @@ abstract class BaseResource extends Resource
                     }
                 } else {
                     if (method_exists($livewire->record, 'trashed')) {
-                        if (auth()->check() && is_object($livewire->record)) {
+                        if (auth()->check() && is_object($livewire->record) && static::modelHasAuditMorph($livewire->record, 'deleted_by')) {
                             $livewire->record->deletedBy()->associate(auth()->user());
                             $livewire->record->save();
                         }
@@ -996,5 +996,17 @@ abstract class BaseResource extends Resource
             ->label(__('core::core.updated_at'))
             ->state(fn ($record): string => $record->updated_at ?
                 $record->updated_at.' - '.$record->updated_at->diffForHumans() : '');
+    }
+
+    protected static function modelHasAuditMorph(Model $model, string $prefix): bool
+    {
+        static $cache = [];
+
+        $column = $prefix.'_id';
+        $cacheKey = $model->getConnectionName().'|'.$model->getTable().'|'.$column;
+
+        return $cache[$cacheKey] ??= $model->getConnection()
+            ->getSchemaBuilder()
+            ->hasColumn($model->getTable(), $column);
     }
 }

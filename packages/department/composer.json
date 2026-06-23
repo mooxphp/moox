@@ -1,0 +1,69 @@
+{
+    "name": "moox/department",
+    "description": "Department is a Moox Entity for organizational units assignable to companies and contacts.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "ERP",
+        "Department"
+    ],
+    "homepage": "https://moox.org/docs/department",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/data": "dev-main",
+        "moox/company": "dev-main",
+        "moox/contact": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Department\\": "src",
+            "Moox\\Department\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Department\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Department\\DepartmentServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

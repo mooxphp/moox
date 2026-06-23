@@ -15,6 +15,8 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
 /**
+ * @method HasMany<Addressable, $this> addressables()
+ *
  * @property string|null $label
  * @property string|null $name
  * @property string|null $street
@@ -66,14 +68,6 @@ class Address extends BaseItemModel
     public static function newFactory(): AddressFactory
     {
         return AddressFactory::new();
-    }
-
-    /**
-     * @return HasMany<Addressable, $this>
-     */
-    public function addressables(): HasMany
-    {
-        return $this->hasMany(Addressable::class);
     }
 
     protected static function booted(): void

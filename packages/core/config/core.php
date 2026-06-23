@@ -548,4 +548,58 @@ return [
         'prompt_when_any_published' => false,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relation tab blueprints (moox/core ConfigRelationManager)
+    |--------------------------------------------------------------------------
+    |
+    | Default Filament actions per relation kind. Merged automatically when a
+    | relation declares `kind`. Override per relation via `actions` in
+    | config/{resource}.php.
+    |
+    */
+    'relations' => [
+        'blueprints' => [
+            'belongs_to' => [
+                'actions' => [
+                    'header' => ['associate'],
+                    'record' => ['view', 'edit', 'dissociate'],
+                ],
+                'associate' => [
+                    'exclude' => ['self', 'inverse'],
+                ],
+            ],
+            'has_many' => [
+                'actions' => [
+                    'header' => ['associate', 'create'],
+                    'record' => ['view', 'edit', 'dissociate'],
+                ],
+                'associate' => [
+                    'strategy' => 'inverse',
+                    'multiple' => true,
+                ],
+            ],
+            'belongs_to_many' => [
+                'actions' => [
+                    'header' => ['attach'],
+                    'record' => ['edit_pivot', 'detach'],
+                    'toolbar' => ['detach_bulk'],
+                ],
+            ],
+            'morph_pivot' => [
+                'actions' => [
+                    'header' => ['attach', 'create'],
+                    'record' => ['edit_related', 'edit_pivot', 'detach'],
+                    'toolbar' => ['detach_bulk'],
+                ],
+            ],
+            'pivot_has_many' => [
+                'actions' => [
+                    'header' => ['create'],
+                    'record' => ['edit', 'delete'],
+                ],
+            ],
+        ],
+    ],
+
 ];

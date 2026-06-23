@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Address\Resources;
 
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -19,7 +20,6 @@ use Moox\Address\Resources\Address\Pages\CreateAddress;
 use Moox\Address\Resources\Address\Pages\EditAddress;
 use Moox\Address\Resources\Address\Pages\ListAddresses;
 use Moox\Address\Resources\Address\Pages\ViewAddress;
-use Moox\Address\Resources\Address\RelationManagers\AddressablesRelationManager;
 use Moox\Address\Support\AddressRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -120,6 +120,14 @@ class AddressResource extends BaseRecordResource
                                 ]),
                             Toggle::make('is_primary')
                                 ->label(__('address::fields.is_primary')),
+                            Textarea::make('data')
+                                ->label(__('address::fields.data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                                }),
                         ])
                         ->columnSpan(2),
                     Grid::make()
@@ -157,8 +165,8 @@ class AddressResource extends BaseRecordResource
                     ->label(__('address::fields.label'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name')
-                    ->label(__('address::fields.name'))
+                TextColumn::make('street')
+                    ->label(__('address::fields.street'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('city')
@@ -252,16 +260,6 @@ class AddressResource extends BaseRecordResource
         }
 
         return static::getDistinctFilterOptions('country_code');
-    }
-
-    /**
-     * @return array<class-string>
-     */
-    public static function getRelations(): array
-    {
-        return [
-            AddressablesRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

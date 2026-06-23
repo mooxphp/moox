@@ -1,7 +1,5 @@
 <?php
 
-use Moox\Address\Models\Address;
-use Moox\Address\Models\Addressable;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
 use Moox\Contact\Models\CompanyContact;
@@ -12,9 +10,8 @@ use Moox\Contact\Models\Contact;
 | Moox Configuration
 |--------------------------------------------------------------------------
 |
-| Greenfield ERP company entity. No payment fields, no employee_id, no
-| default-address FKs — addresses and commercial terms use pivots
-| (addressables, employee_assignments, commercial_term_assignments).
+| Relations are resolved by moox/core (RelationService + ConfigRelationManager).
+| Wire pivot models and morph address relations in config/contact.php.
 |
 */
 return [
@@ -99,6 +96,8 @@ return [
 
     'relations' => [
         'companies' => [
+            'kind' => 'belongs_to_many',
+            'presentation' => 'tab',
             'label' => 'trans//contact::fields.companies',
             'inverse_label' => 'trans//contact::fields.contacts',
             'relationship' => 'companies',
@@ -113,33 +112,24 @@ return [
                 'role',
                 'is_primary',
             ],
-        ],
-    ],
-
-    /*
-    | Morph pivots (moox/core HasMorphPivotRelations + MorphPivotRelationManager).
-    | Same keys as address.relations.addressables / draft taxonomies.
-    | App sets model, pivot_model, related_resource. Further packages register
-    | display_columns via MorphPivotRelationRegistry::registerRelatedModel().
-    */
-    'morph_relations' => [
-        'addressables' => [
-            'label' => 'trans//contact::fields.addresses',
-            'relationship' => 'addresses',
-            'model' => Address::class,
-            'pivot_model' => Addressable::class,
-            'pivot_table' => 'addressables',
-            'morph_name' => 'addressable',
-            'pivot_columns' => [
-                'billing_address',
-                'postal_address',
-                'delivery_address',
+            'actions' => [
+                'header' => ['attach'],
+                'record' => ['edit_pivot', 'detach'],
+                'toolbar' => ['detach_bulk'],
             ],
-            'related_key' => 'address_id',
-            'primary' => [
-                'on' => 'related',
-                'column' => 'id',
-                'value' => true,
+        ],
+        'addressables' => [
+            'kind' => 'morph_pivot',
+            'perspective' => 'owner',
+            'presentation' => 'tab',
+            'label' => 'trans//contact::fields.addresses',
+            'translation_prefix' => 'address::fields',
+            'relationship' => 'addresses',
+            'primary_relationship' => 'address',
+            'actions' => [
+                'header' => ['attach', 'create'],
+                'record' => ['edit_related', 'edit_pivot', 'detach'],
+                'toolbar' => ['detach_bulk'],
             ],
         ],
     ],
