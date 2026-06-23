@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Address\Resources;
 
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -119,6 +120,14 @@ class AddressResource extends BaseRecordResource
                                 ]),
                             Toggle::make('is_primary')
                                 ->label(__('address::fields.is_primary')),
+                            Textarea::make('data')
+                                ->label(__('address::fields.data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                                }),
                         ])
                         ->columnSpan(2),
                     Grid::make()
@@ -156,8 +165,8 @@ class AddressResource extends BaseRecordResource
                     ->label(__('address::fields.label'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name')
-                    ->label(__('address::fields.name'))
+                TextColumn::make('street')
+                    ->label(__('address::fields.street'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('city')

@@ -132,6 +132,8 @@ final class RelationFactory
             (string) $relation->pivotTable,
             self::nullableString($relation->foreignKey),
             self::nullableString($relation->relatedKey),
+            self::nullableString($relation->config['parent_key'] ?? null),
+            self::nullableString($relation->config['related_owner_key'] ?? null),
         );
 
         if ($pivotAttributes !== []) {

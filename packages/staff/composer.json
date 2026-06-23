@@ -22,7 +22,7 @@
     "require": {
         "moox/core": "dev-main",
         "moox/data": "dev-main",
-        "moox/contact": "dev-main"
+        "moox/media": "dev-main"
     },
     "autoload": {
         "psr-4": {

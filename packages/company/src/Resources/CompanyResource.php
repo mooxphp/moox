@@ -259,20 +259,20 @@ class CompanyResource extends BaseRecordResource
                     }
                 )
                 ->sortable(),
-            TextColumn::make('status')
-                ->label(__('company::fields.status'))
-                ->badge()
-                ->color(
-                    fn (string $state): string => match ($state) {
-                        'draft' => 'info',
-                        'active' => 'success',
-                        'inactive' => 'warning',
-                        'approved' => 'success',
-                        'archived' => 'danger',
-                        default => 'gray',
-                    }
-                )
-                ->sortable(),
+            // TextColumn::make('status')
+            //     ->label(__('company::fields.status'))
+            //     ->badge()
+            //     ->color(
+            //         fn (string $state): string => match ($state) {
+            //             'draft' => 'info',
+            //             'active' => 'success',
+            //             'inactive' => 'warning',
+            //             'approved' => 'success',
+            //             'archived' => 'danger',
+            //             default => 'gray',
+            //         }
+            //     )
+            //     ->sortable(),
         ];
 
         if ($hasParentRelation) {

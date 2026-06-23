@@ -98,6 +98,14 @@ class DepartmentResource extends BaseRecordResource
                                 ->label(__('department::fields.external_reference'))
                                 ->rules(DepartmentRules::for('external_reference'))
                                 ->maxLength(100),
+                            Textarea::make('data')
+                                ->label(__('department::fields.data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                                }),
                         ])
                         ->columnSpan(2),
                     Grid::make()

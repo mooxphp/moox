@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Staff\Resources;
 
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -12,6 +13,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -75,6 +77,13 @@ class StaffResource extends BaseRecordResource
                 ->schema([
                     Section::make(__('staff::fields.identity'))
                         ->schema([
+                            SpatieMediaLibraryFileUpload::make('avatar')
+                                ->label(__('staff::fields.avatar'))
+                                ->collection('avatar')
+                                ->image()
+                                ->avatar()
+                                ->imageEditor()
+                                ->columnSpanFull(),
                             Select::make('status')
                                 ->label(__('staff::fields.status'))
                                 ->options($statusOptions)
@@ -206,8 +215,7 @@ class StaffResource extends BaseRecordResource
                             return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                         }),
                 ])
-                ->columnSpanFull()
-                ->collapsed(),
+                ->columnSpanFull(),
         ];
 
         return $form->components($schema);
@@ -217,6 +225,11 @@ class StaffResource extends BaseRecordResource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar')
+                    ->label(__('staff::fields.avatar'))
+                    ->circular()
+                    ->getStateUsing(fn (Staff $record): ?string => $record->getFirstMediaUrl('avatar') ?: null)
+                    ->defaultImageUrl(fn (Staff $record): string => 'https://ui-avatars.com/api/?name='.urlencode($record->displayLabel())),
                 TextColumn::make('display_name')
                     ->label(__('staff::fields.display_name'))
                     ->searchable(['display_name', 'first_name', 'last_name', 'short_code'])
@@ -232,20 +245,10 @@ class StaffResource extends BaseRecordResource
                 TextColumn::make('department')
                     ->label(__('staff::fields.department'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status')
-                    ->label(__('staff::fields.status'))
-                    ->badge()
-                    ->color(
-                        fn (string $state): string => match ($state) {
-                            'draft' => 'info',
-                            'active' => 'success',
-                            'inactive' => 'warning',
-                            'approved' => 'success',
-                            'archived' => 'danger',
-                            default => 'gray',
-                        }
-                    )
-                    ->sortable(),
+                TextColumn::make('legacy_id')
+                ->label(__('staff::fields.legacy_id'))
+                ->sortable()
+                ->searchable(),
                 IconColumn::make('is_active')
                     ->label(__('staff::fields.is_active'))
                     ->boolean(),

@@ -10,18 +10,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Staff\Database\Factories\StaffFactory;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<\Illuminate\Database\Eloquent\Model, $this> user()
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<\Illuminate\Database\Eloquent\Model, $this> contact()
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<\Illuminate\Database\Eloquent\Model, $this> companies()
  */
-class Staff extends BaseRecordModel
+class Staff extends BaseRecordModel implements HasMedia
 {
     /** @use HasFactory<StaffFactory> */
     use HasFactory;
 
     use HasModelTaxonomy;
     use HasUuids;
+    use InteractsWithMedia;
     use SoftDeletes;
 
     protected $table = 'staff';
@@ -83,6 +89,20 @@ class Staff extends BaseRecordModel
     public static function newFactory(): StaffFactory
     {
         return StaffFactory::new();
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('avatar')
+            ->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300);
     }
 
     public function displayLabel(): string

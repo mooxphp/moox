@@ -112,6 +112,14 @@ class ContactResource extends BaseRecordResource
                                 ->label(__('contact::fields.note'))
                                 ->rules(ContactRules::for('note'))
                                 ->columnSpanFull(),
+                            Textarea::make('data')
+                                ->label(__('contact::fields.data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                                }),
                         ])
                         ->columnSpan(2),
                     Grid::make()
@@ -173,7 +181,8 @@ class ContactResource extends BaseRecordResource
                 TextColumn::make('display_name')
                     ->label(__('contact::fields.display_name'))
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->sortable(),
                 TextColumn::make('contact_type')
                     ->label(__('contact::fields.contact_type'))
                     ->badge()
@@ -202,7 +211,8 @@ class ContactResource extends BaseRecordResource
                 TextColumn::make('email')
                     ->label(__('contact::fields.email'))
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->sortable(),
                 IconColumn::make('is_active')
                     ->label(__('contact::fields.is_active'))
                     ->boolean(),

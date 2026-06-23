@@ -26,8 +26,9 @@ return new class extends Migration
             $table->string('phone', 30)->nullable();
             $table->string('fax', 30)->nullable();
             $table->string('language_code', 10)->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignUuid('contact_id')->nullable()->constrained('contacts')->nullOnDelete();
+            $table->text('avatar_url')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable()->index();
+            $table->uuid('contact_id')->nullable()->index();
             $table->uuid('sales_unit_guid')->nullable();
             $table->unsignedInteger('sales_unit_id')->nullable()->index();
             $table->boolean('can_change')->default(false);

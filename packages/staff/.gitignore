@@ -1,6 +1,4 @@
-# Environment
-.env
-.env.backup
+
 
 # Composer
 /vendor

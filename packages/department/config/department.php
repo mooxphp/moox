@@ -30,6 +30,26 @@ return [
         'manager',
     ],
 
+    'company_roles' => [
+        'member',
+        'lead',
+        'manager',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Legacy overflow → data column
+    |--------------------------------------------------------------------------
+    |
+    | Keys stored inside `data` during legacy import (see comwork-legacy pull).
+    | Standard fields live on the departments table.
+    */
+    'legacy_data_fields' => [
+        'legacy_source',
+        'legacy_synced_at',
+        'legacy_object',
+    ],
+
     'resources' => [
         'department' => [
             'single' => 'trans//department::department.department',

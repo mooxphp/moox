@@ -1,10 +1,6 @@
 <?php
 
-use Moox\Contact\Models\Contact;
-use Moox\Contact\Resources\ContactResource;
 use Moox\Staff\Models\Staff;
-use Moox\User\Models\User;
-use Moox\User\Resources\UserResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +10,9 @@ use Moox\User\Resources\UserResource;
 | Staff maps legacy Comwork Bearbeiter records to first-class ERP entities.
 | Standard employee fields live on the staff table; legacy overflow and
 | credentials are stored in the json `data` column (see legacy_data_fields).
+|
+| Wire relations to contact, user, company, media, etc. in the published
+| application config (config/staff.php), not here.
 |
 */
 return [
@@ -46,7 +45,7 @@ return [
     | - Systembenutzer         → is_system_user
     | - is_user_for_services   → is_user_for_services
     | - BCC_bei_Mailversand    → bcc_on_mail_send
-    | - ID_Kontakt             → contact_id (via contacts.external_reference)
+    | - ID_Kontakt             → contact_id
     | - SalesUnitGuid          → sales_unit_guid
     | - SalesUnitId            → sales_unit_id
     | - angelegt/geändert/gelöscht audit columns → Laravel timestamps / soft deletes
@@ -140,51 +139,9 @@ return [
     ],
 
     'relations' => [
-        'contact' => [
-            'kind' => 'belongs_to',
-            'presentation' => 'tab',
-            'label' => 'trans//staff::fields.contact',
-            'relationship' => 'contact',
-            'model' => Contact::class,
-            'related_resource' => ContactResource::class,
-            'foreign_key' => 'contact_id',
-            'display_columns' => ['display_name', 'email', 'status'],
-            'badge_columns' => ['status', 'contact_type'],
-            'record_select_search_columns' => ['display_name', 'first_name', 'last_name', 'email'],
-            'actions' => [
-                'header' => ['associate'],
-                'record' => ['view', 'edit', 'dissociate'],
-            ],
-        ],
-        'user' => [
-            'kind' => 'belongs_to',
-            'presentation' => 'tab',
-            'label' => 'trans//staff::fields.user',
-            'relationship' => 'user',
-            'model' => User::class,
-            'related_resource' => UserResource::class,
-            'foreign_key' => 'user_id',
-            'display_columns' => ['name', 'email'],
-            'record_select_search_columns' => ['name', 'email'],
-            'actions' => [
-                'header' => ['associate'],
-                'record' => ['view', 'edit', 'dissociate'],
-            ],
-        ],
     ],
 
     'taxonomies' => [
-    ],
-
-    'user_models' => [
-        App\Models\User::class => [
-            'title_attribute' => 'name',
-            'label' => 'App User',
-        ],
-        User::class => [
-            'title_attribute' => 'name',
-            'label' => 'Moox User',
-        ],
     ],
 
     'navigation_group' => 'Portal',
