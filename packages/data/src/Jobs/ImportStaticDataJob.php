@@ -10,8 +10,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Moox\Data\Services\RestCountriesClient;
-use Moox\Data\Support\RestCountriesCountryNormalizer;
 use Moox\Data\Models\StaticCountriesStaticCurrencies;
 use Moox\Data\Models\StaticCountriesStaticTimezones;
 use Moox\Data\Models\StaticCountry;
@@ -19,6 +17,8 @@ use Moox\Data\Models\StaticCurrency;
 use Moox\Data\Models\StaticLanguage;
 use Moox\Data\Models\StaticLocale;
 use Moox\Data\Models\StaticTimezone;
+use Moox\Data\Services\RestCountriesClient;
+use Moox\Data\Support\RestCountriesCountryNormalizer;
 
 class ImportStaticDataJob implements ShouldQueue
 {
