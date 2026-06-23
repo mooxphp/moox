@@ -246,9 +246,9 @@ class StaffResource extends BaseRecordResource
                     ->label(__('staff::fields.department'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('legacy_id')
-                ->label(__('staff::fields.legacy_id'))
-                ->sortable()
-                ->searchable(),
+                    ->label(__('staff::fields.legacy_id'))
+                    ->sortable()
+                    ->searchable(),
                 IconColumn::make('is_active')
                     ->label(__('staff::fields.is_active'))
                     ->boolean(),
