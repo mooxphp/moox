@@ -45,7 +45,6 @@ class RestCountriesCountryNormalizer
     }
 
     /**
-     * @param  mixed  $capitals
      * @return list<string>
      */
     protected function normalizeCapitals(mixed $capitals): array
@@ -66,7 +65,6 @@ class RestCountriesCountryNormalizer
     }
 
     /**
-     * @param  mixed  $currencies
      * @return array<string, array{name: string, symbol: string|null}>
      */
     protected function normalizeCurrencies(mixed $currencies): array
@@ -98,7 +96,6 @@ class RestCountriesCountryNormalizer
     }
 
     /**
-     * @param  mixed  $languages
      * @return array<string, string>
      */
     protected function normalizeLanguages(mixed $languages): array
@@ -128,7 +125,6 @@ class RestCountriesCountryNormalizer
     }
 
     /**
-     * @param  mixed  $callingCodes
      * @return array{root: string|null, suffixes: list<string>}
      */
     protected function normalizeCallingCodes(mixed $callingCodes): array
@@ -153,7 +149,6 @@ class RestCountriesCountryNormalizer
     }
 
     /**
-     * @param  mixed  $memberships
      * @return list<array{acronym: string, name: string}>
      */
     protected function normalizeMemberships(mixed $memberships): array
