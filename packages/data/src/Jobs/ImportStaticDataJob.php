@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Moox\Data\Services\RestCountriesClient;
+use Moox\Data\Support\RestCountriesCountryNormalizer;
 use Moox\Data\Models\StaticCountriesStaticCurrencies;
 use Moox\Data\Models\StaticCountriesStaticTimezones;
 use Moox\Data\Models\StaticCountry;
@@ -196,49 +198,32 @@ class ImportStaticDataJob implements ShouldQueue
         ];
 
         try {
-            Log::channel('daily')->info('Attempting to fetch data from REST Countries API with multiple calls...');
+            Log::channel('daily')->info('Attempting to fetch data from REST Countries API...');
 
-            // First call: Basic country info (max 10 fields)
-            $response1 = Http::timeout(60)->get('https://restcountries.com/v3.1/all', [
-                'fields' => 'name,cca2,cca3,region,subregion,capital,population,area,flags,currencies',
-            ]);
+            $client = app(RestCountriesClient::class);
+            $normalizer = app(RestCountriesCountryNormalizer::class);
 
-            if ($response1->failed()) {
-                Log::channel('daily')->error('Failed to fetch basic data from REST Countries API. Status: '.$response1->status());
-                Log::channel('daily')->error('Response body: '.$response1->body());
+            $countries = array_map(
+                static fn (array $country): array => $normalizer->normalize($country),
+                $client->listAllCountries([
+                    'names',
+                    'codes',
+                    'region',
+                    'subregion',
+                    'capitals',
+                    'population',
+                    'area.kilometers',
+                    'currencies',
+                    'languages',
+                    'timezones',
+                    'calling_codes',
+                    'tlds',
+                    'memberships',
+                    'postal_code',
+                ])
+            );
 
-                return;
-            }
-
-            // Second call: Additional country info including translations
-            $response2 = Http::timeout(60)->get('https://restcountries.com/v3.1/all', [
-                'fields' => 'cca2,idd,tld,regionalBlocs,postalCode,languages,timezones,translations',
-            ]);
-
-            if ($response2->failed()) {
-                Log::channel('daily')->error('Failed to fetch additional data from REST Countries API. Status: '.$response2->status());
-                Log::channel('daily')->error('Response body: '.$response2->body());
-
-                return;
-            }
-
-            $countriesBasic = $response1->json();
-            $countriesAdditional = $response2->json();
-
-            $countries = [];
-            foreach ($countriesBasic as $country) {
-                $cca2 = $country['cca2'] ?? null;
-                if ($cca2) {
-                    $additional = collect($countriesAdditional)->firstWhere('cca2', $cca2);
-                    if ($additional) {
-                        $countries[] = array_merge($country, $additional);
-                    } else {
-                        $countries[] = $country;
-                    }
-                }
-            }
-
-            Log::channel('daily')->info('Fetched and merged '.count($countries).' countries from REST Countries API');
+            Log::channel('daily')->info('Fetched '.count($countries).' countries from REST Countries API');
 
             // Fetch native names from ApiCountries API
             Log::channel('daily')->info('Fetching native names from ApiCountries API...');
@@ -268,8 +253,8 @@ class ImportStaticDataJob implements ShouldQueue
                 try {
                     Log::channel('daily')->info('Processing country: '.($countryData['cca2'] ?? 'unknown'));
 
-                    if (! isset($countryData['cca2'])) {
-                        Log::channel('daily')->warning('Skipping country - missing cca2 code');
+                    if (! is_string($countryData['cca2'] ?? null) || strlen($countryData['cca2']) !== 2) {
+                        Log::channel('daily')->warning('Skipping country - missing or invalid alpha2 code: '.($countryData['name']['common'] ?? 'unknown'));
 
                         continue;
                     }

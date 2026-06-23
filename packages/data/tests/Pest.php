@@ -23,7 +23,6 @@ pest()->extends(TestCase::class)
         $this->artisan('db:wipe');
         $this->artisan('optimize:clear');
     })->in('Feature');
-
 /*
 |--------------------------------------------------------------------------
 | Expectations
@@ -45,3 +44,4 @@ pest()->extends(TestCase::class)
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+

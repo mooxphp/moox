@@ -226,7 +226,7 @@ class StaticCountryResource extends BaseRecordResource
             ->columns([
                 IconColumn::make('flag_icon')
                     ->label('')
-                    ->icon(fn (string $state): string => $state),
+                    ->icon(fn (?string $state): string => filled($state) ? $state : 'flag-xx'),
                 TextColumn::make('alpha2')
                     ->label('Alpha-2')
                     ->searchable()

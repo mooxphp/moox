@@ -36,6 +36,7 @@ class DataServiceProvider extends MooxServiceProvider
     public function mergeConfigFiles()
     {
         $configs = [
+            'rest-countries' => 'rest-countries',
             'data' => 'data/data',
             'static-countries-static-currencies' => 'data/static-countries-static-currencies',
             'static-countries-static-timezones' => 'data/static-countries-static-timezones',
@@ -65,7 +66,7 @@ class DataServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('data')
-            ->hasConfigFile(['data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone', 'static-charge-reason', 'static-allowance-reason', 'static-document-type', 'static-vat-category', 'static-payment-mean', 'static-unit', 'static-incoterm', 'static-vat-exemption-reason', 'static-icd-scheme', 'static-eas-scheme'])
+            ->hasConfigFile(['rest-countries', 'data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone', 'static-charge-reason', 'static-allowance-reason', 'static-document-type', 'static-vat-category', 'static-payment-mean', 'static-unit', 'static-incoterm', 'static-vat-exemption-reason', 'static-icd-scheme', 'static-eas-scheme'])
             ->hasViews()
             ->hasTranslations()
             ->hasCommands([

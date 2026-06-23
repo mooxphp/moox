@@ -75,6 +75,10 @@ class StaticCountry extends Model
 
     public function getFlagIconAttribute(): ?string
     {
+        if (! is_string($this->alpha2) || strlen($this->alpha2) !== 2) {
+            return 'flag-xx';
+        }
+
         $territoryToCountryMap = [
             'hm' => 'au', // Heard Island and McDonald Islands -> Australia
             'um' => 'us', // US Minor Outlying Islands -> United States
