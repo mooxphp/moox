@@ -455,6 +455,109 @@ As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) p
 
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
 
+### Relations
+
+Moox Core provides a unified relation system for Eloquent models and Filament resources. Configuration lives in config files — not in service providers.
+
+#### Related-model defaults (package config)
+
+When a resource references another package's model in `morph_relations`, defaults are merged from that package's config key `{resource}.related_morph_defaults` (resolved via `Model::getResourceName()`):
+
+```php
+// config/address.php
+'related_morph_defaults' => [
+    'display_columns' => ['name', 'city'],
+    'translation_prefix' => 'address::fields',
+    'related_resource' => AddressResource::class,
+],
+```
+
+Owner resources only need the pivot wiring; display columns and Filament resource class are picked up automatically:
+
+```php
+// config/contact.php
+'morph_relations' => [
+    'addressables' => [
+        'model' => Address::class,
+        'pivot_table' => 'addressables',
+        // ...
+    ],
+],
+```
+
+#### Blueprints (optional, config)
+
+Reusable relation shapes can live in `config/core.php` under `relations.blueprints` and be referenced with `uses`:
+
+```php
+'relations' => [
+    'addresses' => [
+        'uses' => 'morph_pivot',
+        'relationship' => 'addresses',
+        'model' => Address::class,
+    ],
+],
+```
+
+#### Configure relations per resource
+
+Add relations under `config/{resource}.php`:
+
+| Key | Purpose |
+|-----|---------|
+| `relations` | Primary relation definitions |
+| `morph_relations` | Legacy morph-pivot tabs (merged automatically) |
+| `taxonomies` | Legacy inline morph-pivot fields (merged automatically) |
+
+Each relation supports:
+
+| Key | Description |
+|-----|-------------|
+| `kind` | `morph_pivot`, `pivot_has_many`, `belongs_to_many`, `has_many`, … |
+| `perspective` | `owner` (default) or `related` (inverse pivot rows) |
+| `presentation` | `tab`, `inline`, or `hidden` |
+| `relationship` | Eloquent relationship method name |
+| `model` / `related_model` | Related model class |
+| `pivot_table`, `pivot_model`, `pivot_columns` | Pivot metadata |
+| `owner_types` | Allowed morph owner types (`perspective: related`) |
+
+#### Model trait
+
+```php
+use Moox\Core\Traits\Relations\HasRelations;
+
+class Item extends Model
+{
+    use HasRelations;
+
+    public static function getResourceName(): string
+    {
+        return 'item';
+    }
+}
+```
+
+Dynamic relationship methods are resolved from configuration (`$item->tags()`, `$item->syncRelation('tags', $ids)`).
+
+#### Resource trait
+
+```php
+use Moox\Core\Traits\Relations\HasResourceRelations;
+
+class ItemResource extends BaseRecordResource
+{
+    use HasResourceRelations;
+}
+```
+
+`HasResourceRelations` registers `ConfigRelationManager` tabs from configuration and includes inline form fields via `HasInlineRelationFields`.
+
+#### Page trait
+
+Use `HasPagesRelations` on create/edit/view pages (or the legacy alias `HasPagesTaxonomy`) to sync inline relations on save.
+
+Legacy traits (`HasModelTaxonomy`, `HasMorphPivotRelations`, `HasResourceTaxonomy`, `MorphPivotRelationManager`) remain as thin aliases during migration.
+
 ### HasModelTaxonomy
 
 This trait provides functionality for models to work with dynamic taxonomies.

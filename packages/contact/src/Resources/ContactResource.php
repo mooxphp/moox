@@ -8,8 +8,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\RelationManagers\RelationGroup;
-use Filament\Resources\RelationManagers\RelationManagerConfiguration;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,7 +16,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Moox\Contact\Filament\RelationManagers\ConfigPivotRelationManager;
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Resources\Contact\Pages\CreateContact;
 use Moox\Contact\Resources\Contact\Pages\EditContact;
@@ -115,6 +112,14 @@ class ContactResource extends BaseRecordResource
                                 ->label(__('contact::fields.note'))
                                 ->rules(ContactRules::for('note'))
                                 ->columnSpanFull(),
+                            Textarea::make('data')
+                                ->label(__('contact::fields.data'))
+                                ->columnSpanFull()
+                                ->cols(100)
+                                ->rows(10)
+                                ->formatStateUsing(function ($state) {
+                                    return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                                }),
                         ])
                         ->columnSpan(2),
                     Grid::make()
@@ -176,7 +181,8 @@ class ContactResource extends BaseRecordResource
                 TextColumn::make('display_name')
                     ->label(__('contact::fields.display_name'))
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->sortable(),
                 TextColumn::make('contact_type')
                     ->label(__('contact::fields.contact_type'))
                     ->badge()
@@ -205,7 +211,8 @@ class ContactResource extends BaseRecordResource
                 TextColumn::make('email')
                     ->label(__('contact::fields.email'))
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->sortable(),
                 IconColumn::make('is_active')
                     ->label(__('contact::fields.is_active'))
                     ->boolean(),
@@ -260,16 +267,6 @@ class ContactResource extends BaseRecordResource
         }
 
         return $options;
-    }
-
-    /**
-     * @return array<class-string|RelationGroup|RelationManagerConfiguration>
-     */
-    protected static function getDeclaredRelations(): array
-    {
-        return [
-            ConfigPivotRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

@@ -1,0 +1,68 @@
+{
+    "name": "moox/staff",
+    "description": "Staff is a Moox Entity for internal employees (legacy Bearbeiter).",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "ERP",
+        "Staff"
+    ],
+    "homepage": "https://moox.org/docs/staff",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/data": "dev-main",
+        "moox/media": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Staff\\": "src",
+            "Moox\\Staff\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Staff\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Staff\\StaffServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

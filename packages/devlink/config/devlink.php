@@ -227,6 +227,16 @@ return [
             'path' => $public_base_path.'/demo',
             'type' => 'public',
         ],
+        'device' => [
+            'active' => false,
+            'path' => $public_base_path.'/device',
+            'type' => 'public',
+        ],
+        'department' => [
+            'active' => false,
+            'path' => $public_base_path.'/department',
+            'type' => 'public',
+        ],
         'devlink' => [
             'active' => false,
             'linked' => false,
@@ -493,6 +503,11 @@ return [
         'slug' => [
             'active' => false,
             'path' => $public_base_path.'/slug',
+            'type' => 'public',
+        ],
+        'staff' => [
+            'active' => false,
+            'path' => $public_base_path.'/staff',
             'type' => 'public',
         ],
         'tag' => [

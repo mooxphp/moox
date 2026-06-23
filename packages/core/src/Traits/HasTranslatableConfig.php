@@ -2,6 +2,8 @@
 
 namespace Moox\Core\Traits;
 
+use Illuminate\Translation\Translator;
+
 trait HasTranslatableConfig
 {
     /**
@@ -26,5 +28,25 @@ trait HasTranslatableConfig
         }
 
         return $config;
+    }
+
+    /**
+     * Clear cached translation groups after {@see translateConfig()}.
+     *
+     * {@see translateConfig()} may resolve keys before all package namespaces
+     * are registered, leaving empty groups cached permanently.
+     */
+    protected function resetTranslatorLoadedGroups(): void
+    {
+        $translator = $this->app->make('translator');
+
+        if (! $translator instanceof Translator) {
+            return;
+        }
+
+        $reflection = new \ReflectionClass($translator);
+        $property = $reflection->getProperty('loaded');
+        $property->setAccessible(true);
+        $property->setValue($translator, []);
     }
 }

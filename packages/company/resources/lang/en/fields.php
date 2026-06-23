@@ -10,6 +10,8 @@ return [
     'parent' => 'Parent company',
     'children' => 'Subsidiaries',
     'addresses' => 'Addresses',
+    'contacts' => 'Contacts',
+    'departments' => 'Departments',
     'external_reference' => 'External reference',
     'phone' => 'Phone',
     'fax' => 'Fax',

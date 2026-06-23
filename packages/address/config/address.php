@@ -2,6 +2,7 @@
 
 use Moox\Address\Models\Address;
 use Moox\Address\Models\Addressable;
+use Moox\Address\Resources\AddressResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,9 +91,31 @@ return [
     | addresses. Register owner_types when Company / Contact packages exist.
     |
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Related morph defaults
+    |--------------------------------------------------------------------------
+    |
+    | Merged automatically when another resource references Address::class in
+    | morph_relations or relations (via RelationRegistry). No service provider
+    | registration required.
+    |
+    */
+    'related_morph_defaults' => [
+        'display_columns' => ['name', 'city', 'postal_code', 'country_code', 'is_primary'],
+        'translation_prefix' => 'address::fields',
+        'related_resource' => AddressResource::class,
+        'record_select_label' => 'formattedLine',
+        'record_select_search_columns' => ['name', 'city', 'postal_code', 'street', 'street2', 'label'],
+    ],
+
     'relations' => [
         'addressables' => [
+            'kind' => 'pivot_has_many',
+            'perspective' => 'related',
+            'presentation' => 'tab',
             'label' => 'trans//address::fields.assignments',
+            'translation_prefix' => 'address::fields',
             'relationship' => 'addressables',
             'pivot_model' => Addressable::class,
             'pivot_table' => 'addressables',
@@ -101,6 +124,10 @@ return [
                 'billing_address',
                 'postal_address',
                 'delivery_address',
+            ],
+            'actions' => [
+                'header' => ['create'],
+                'record' => ['edit', 'delete'],
             ],
             'owner_types' => [
                 // 'Moox\Company\Models\Company' => [

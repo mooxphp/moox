@@ -4,23 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Contact;
 
-use Moox\Contact\Support\CompanyContactRelation;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
 class ContactServiceProvider extends MooxServiceProvider
 {
-    public function boot(): void
-    {
-        parent::boot();
-
-        $companyModel = config('contact.relations.companies.model');
-
-        if (is_string($companyModel) && $companyModel !== '' && class_exists($companyModel)) {
-            $companyModel::resolveRelationUsing('contacts', fn ($company) => CompanyContactRelation::forCompany($company));
-        }
-    }
-
     public function configureMoox(Package $package): void
     {
         $package
@@ -79,8 +67,6 @@ class ContactServiceProvider extends MooxServiceProvider
                 'src/Resources/ContactResource.php',
                 'src/Support/ContactRules.php',
                 'src/Plugins/ContactPlugin.php',
-                'src/Support/CompanyContactRelationConfig.php',
-                'src/Support/CompanyContactRelation.php',
                 'resources/lang/de/fields.php',
             ])
             ->templateRemove([
