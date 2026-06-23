@@ -6,14 +6,67 @@ Some Static Data
 
 ## Quick Installation
 
-These two commmands are all you need to install the package:
+### Using the Moox app (recommended)
+
+If you use the Moox application, install the package and run the unified Moox installer:
 
 ```bash
 composer require moox/data
-php artisan data:install
 ```
 
-Curious what the install command does? See manual installation below.
+Before importing static country data, add a REST Countries API key to your `.env` (see [REST Countries API key](#rest-countries-api-key) below).
+
+```bash
+php artisan moox:install
+```
+
+`moox:install` publishes configs, runs migrations, and registers Filament plugins for Moox packages. For this package it can also run the **Static Data** custom installer (countries, languages, timezones, currencies from REST Countries) when that step is included in the install flow.
+
+You do **not** need a separate package-specific install command when using `moox:install`. If static data is not imported during install, configure your API key and run the import command in [REST Countries API key](#rest-countries-api-key) below.
+
+Curious what the installer does? See the [Moox installer docs](https://github.com/mooxphp/core/blob/main/src/Installer/README.md) or [manual installation](#manual-installation) below.
+
+## REST Countries API key
+
+Country, currency, language, and timezone data is imported from the [REST Countries API](https://restcountries.com/docs). The API requires an authenticated API key.
+
+1. Sign up for a free API key at [restcountries.com/sign-up](https://restcountries.com/sign-up).
+2. Add the key to your `.env` file:
+
+```dotenv
+REST_COUNTRIES_API_KEY=your_api_key_here
+```
+
+3. Optionally publish the package configuration:
+
+```bash
+php artisan vendor:publish --tag="data-config"
+```
+
+The published `config/rest-countries.php` file also supports:
+
+```php
+return [
+    'api_key' => env('REST_COUNTRIES_API_KEY'),
+    'base_url' => env('REST_COUNTRIES_BASE_URL', 'https://api.restcountries.com/countries/v5'),
+    'timeout' => (int) env('REST_COUNTRIES_TIMEOUT', 60),
+    'page_limit' => (int) env('REST_COUNTRIES_PAGE_LIMIT', 100),
+];
+```
+
+### Free tier and request usage
+
+REST Countries offers a [free plan](https://restcountries.com/plans) with **500 API requests per month** (quota resets on your billing anniversary). On the free plan, each list request can return at most **100 countries** per page (`page_limit` defaults to `100`).
+
+A single `moox:data:import-static` run uses **3 REST Countries requests** with the default settings: the API returns about 250 countries, paginated at 100 per request (`offset` 0, 100, 200). The import also makes **one additional HTTP request** to ApiCountries for language native names; that call is separate and does not count against your REST Countries quota.
+
+At 3 requests per import, the free tier allows roughly **160 full imports per month** if REST Countries is the only consumer of your quota.
+
+After configuring your key, import static data (if not already done via `moox:install`) or refresh it later:
+
+```bash
+php artisan moox:data:import-static --sync
+```
 
 ## What it does
 
@@ -200,7 +253,9 @@ or Moox Press User instead:
 
 ## Manual Installation
 
-Instead of using the install-command `php artisan data:install` you are able to install this package manually step by step:
+**Note:** If you use the Moox app, run `php artisan moox:install` instead—it installs all packages and runs their migrations in one go. The steps below are only for installing this package without the unified installer.
+
+Instead of using `moox:install`, you can install this package manually step by step:
 
 ```bash
 // Publish and run the migrations:
@@ -210,6 +265,8 @@ php artisan migrate
 // Publish the config file with:
 php artisan vendor:publish --tag="data-config"
 ```
+
+Then configure your REST Countries API key and import static data as described in [REST Countries API key](#rest-countries-api-key).
 
 ## Changelog
 
