@@ -43,9 +43,9 @@ Admins definieren Felder im Panel. Werte werden in typisierten `builder_field_va
 │       ↓                                                                 │
 │  EntityRegistry → LocationMatcher → SchemaCompiler → Filament-Sections  │
 │       ↓                                                                 │
-│  PersistCustomFields (RecordSaved) → TypedValueDriver                   │
+│  PersistCustomFields (RecordSaved) → CustomFieldsManager                │
 │       ↓                                                                 │
-│  builder_field_values                                                   │
+│  builder_field_values (TypedValueColumns)                               │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -54,7 +54,7 @@ Admins definieren Felder im Panel. Werte werden in typisierten `builder_field_va
 | Schicht | Frage | Wo |
 |---------|-------|-----|
 | **Definition** | Welche Felder gibt es? | `builder_field_*` Tabellen + Admin-UI |
-| **Speicher** | Wo liegen die Werte? | `builder_field_values` + `TypedValueDriver` |
+| **Speicher** | Wo liegen die Werte? | `builder_field_values` + `TypedValueColumns` |
 
 ---
 
@@ -67,11 +67,12 @@ Verantwortlich für **was** angezeigt wird und **wo** (Location).
 | Komponente | Aufgabe |
 |------------|---------|
 | `FieldGroupResource` | Filament-CRUD für Feldgruppen |
-| `FieldGroupPersistence` | Speichert Gruppen, Felder, Optionen, Location Rules |
+| `FieldGroupPersistence` | Speichert Gruppen, Felder, Optionen, Location Rules, verschachtelte Felder |
+| `FieldGroupValidator` | Prüft doppelte Feldschlüssel innerhalb und zwischen Gruppen |
 | `DefinitionRegistry` | Lädt aktive Gruppen, cached als Arrays |
 | `LocationMatcher` | Prüft `location_rules` gegen `LocationContext` |
-| `EntityRegistry` | Mappt registrierte Filament-Resources → Entity-Keys |
-| `SchemaCompiler` | Baut Filament-`Section`s aus Definitionen |
+| `EntityRegistry` | Findet Filament-Resources mit `HasCustomFields` → Entity-Keys |
+| `SchemaCompiler` | Baut Filament-Sections, Tabs, Layout-Felder aus Definitionen |
 
 Definitionen werden als **DTOs** (`FieldGroupDefinition`, `FieldDefinition`) transportiert — nicht als lose Eloquent-Models im Runtime-Pfad.
 
@@ -81,11 +82,10 @@ Verantwortlich für **Werte** pro Datensatz.
 
 | Komponente | Aufgabe |
 |------------|---------|
-| `ValueStore` (Interface) | `load()` / `save()` Vertrag |
-| `TypedValueDriver` | Einziger Treiber: typisierte Spalten |
-| `ValueStoreResolver` | Löst Treiber aus `config/builder.php` auf |
-| `TypedValueColumns` | Mapping Feldtyp → DB-Spalte |
-| `CustomFieldsManager` | Orchestriert Laden/Speichern für Resources |
+| `TypedValueColumns` | Mapping Feldtyp → DB-Spalte (`value_string`, `value_json`, …) |
+| `CustomFieldsManager` | Laden/Speichern für Resources, Option-Validierung |
+| `FieldValueValidator` | Validierung verschachtelter Werte (Repeater, Group, Flexible Content) |
+| `FieldValuePurger` | Löscht Werte bei Feld-/Gruppenänderungen |
 | `PersistCustomFields` | Listener auf Filament `RecordSaved` |
 
 Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nötig).
@@ -108,13 +108,13 @@ Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nö
 
 ### `builder_fields`
 
-Felder einer Gruppe: `name` (Feldschlüssel), `label`, `type`, `config`, `validation`, `sort`.
+Felder einer Gruppe: `name`, `label`, `type`, `config`, `validation`, `sort`.
 
-`parent_field_id` ist in der Migration vorgesehen (Repeater/Flexible Content — noch nicht implementiert).
+**`parent_field_id`** verknüpft Unterfelder mit Layout-Feldern (Group, Repeater, Flexible-Content-Layouts). Die Baumstruktur wird rekursiv in `FieldGroupPersistence` synchronisiert.
 
 ### `builder_field_options`
 
-Optionen für `select`, `radio`, `multiselect`, `checkbox_list`.
+Optionen für `select`, `radio`, `multiselect`, `checkbox_list`, `button_group`.
 
 ### `builder_field_values`
 
@@ -125,13 +125,13 @@ Eine Zeile pro Wert:
 | `entity` | z. B. `item` |
 | `record_id` | ID des Datensatzes |
 | `field_name` | Feldschlüssel |
-| `value_string` | text, email, url, select, … |
-| `value_text` | textarea |
-| `value_decimal` | number |
+| `value_string` | text, email, url, select, password, oembed, … |
+| `value_text` | textarea, rich_text |
+| `value_decimal` | number, range |
 | `value_date` | date |
 | `value_datetime` | datetime |
 | `value_boolean` | toggle |
-| `value_json` | multiselect, checkbox_list |
+| `value_json` | multiselect, checkbox_list, link, group, repeater, flexible_content |
 
 Unique: `(entity, record_id, field_name)`.
 
@@ -142,7 +142,7 @@ Im Admin wählst du **„Anzeigen bei“** (Multi-Select). Intern wird das zu:
 ```json
 [
   [{ "param": "entity", "operator": "==", "value": "item" }],
-  [{ "param": "entity", "operator": "==", "value": "product" }]
+  [{ "param": "entity", "operator": "==", "value": "record" }]
 ]
 ```
 
@@ -157,17 +157,15 @@ Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der M
 ```
 1. Resource::form() enthält ...static::customFieldComponents()
 
-2. HasCustomFields prüft EntityRegistry
-   → nicht registriert? → leeres Array (keine Sections)
-
-3. DefinitionRegistry::fieldGroupsFor(LocationContext)
+2. HasCustomFields → DefinitionRegistry::fieldGroupsFor(LocationContext)
    → lädt gecachte Gruppen
    → LocationMatcher filtert nach entity
 
-4. SchemaCompiler::compile()
+3. SchemaCompiler::compile()
    → pro Gruppe eine Filament-Section
-   → pro Feld eine Form-Komponente (TextInput, Select, …)
-   → afterStateHydrated lädt Werte aus TypedValueDriver (nur Edit)
+   → Layout-Felder: Tabs, Group, Repeater, Flexible Content (Builder)
+   → afterStateHydrated lädt Werte via CustomFieldsManager (nur Edit)
+   → Filament Builder: hydrateItems() für UUID-basierte Block-Keys
 ```
 
 ### Speichern
@@ -178,18 +176,19 @@ Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der M
 2. Event RecordSaved wird gefeuert
 
 3. PersistCustomFields::handle($record, $data, $page)
-   → prüft: Resource nutzt HasCustomFields + ist registriert?
+   → prüft: Resource nutzt HasCustomFields?
 
 4. CustomFieldsManager::saveFromFormData()
-   → extrahiert nur bekannte Feld-Keys aus $data
-   → TypedValueDriver::save() → builder_field_values
+   → extrahiert bekannte Feld-Keys aus $data
+   → FieldValueValidator + OptionValueRules
+   → updateOrCreate in builder_field_values
 ```
 
 **Wichtig:** Keine Page-Hooks (`afterCreate`, `mutateFormDataBeforeSave`) nötig.
 
 ### Cache
 
-`DefinitionRegistry` cached unter `builder.definitions` als **PHP-Arrays** (keine serialisierten Objekte).
+`DefinitionRegistry` cached unter `builder.definitions` als **PHP-Arrays**.
 
 Invalidierung automatisch via `InvalidateDefinitionCacheObserver` bei Änderungen an Gruppen/Feldern/Optionen.
 
@@ -232,34 +231,7 @@ $panel->plugins([
 
 ## Resource anbinden
 
-### Schritt 1: Entity registrieren
-
-Der Array-Key in `config('builder.entities')` ist der Entity-Identifier für Location Rules und Storage.
-
-**Option A — Config** (`config/builder.php`):
-
-```php
-'entities' => [
-    'item' => [
-        'resource' => \Moox\Item\Resources\ItemResource::class,
-        'label' => 'Items',
-    ],
-],
-```
-
-**Option B — Service Provider** (empfohlen für Moox-Packages):
-
-```php
-// ItemServiceProvider::packageBooted()
-config([
-    'builder.entities.item' => [
-        'resource' => ItemResource::class,
-        'label' => 'Items',
-    ],
-]);
-```
-
-### Schritt 2: Trait in der Filament-Resource
+### Schritt 1: Trait in der Filament-Resource
 
 ```php
 use Moox\Builder\Concerns\HasCustomFields;
@@ -278,20 +250,33 @@ class ItemResource extends Resource
 }
 ```
 
-**Nicht nötig:**
+Der **Entity-Key** wird automatisch aus dem Model-Basename abgeleitet (`Item` → `item`). Abweichenden Key per `customFieldsEntity()` überschreiben:
 
-- Trait oder Spalte am Eloquent-Model
-- `$customFieldsEntity` (entfernt — kommt aus Config)
-- Eigene Listener oder Page-Hooks
-- Migration für JSON am Model
+```php
+protected static function customFieldsEntity(): ?string
+{
+    return 'item';
+}
+```
+
+### Schritt 2: Entity-Discovery
+
+`EntityRegistry` findet Resources **automatisch** über alle registrierten Filament-Panels — jede Resource mit `HasCustomFields` erscheint im Multi-Select „Anzeigen bei“. Keine manuelle Config-Registrierung nötig.
 
 ### Schritt 3: Feldgruppe im Admin
 
 **Felder → Feldgruppen → Erstellen**
 
-- **Anzeigen bei:** `Items` (oder andere registrierte Entity)
+- **Anzeigen bei:** z. B. `Items`, `Records`
 - Felder definieren
 - Aktiv lassen
+
+**Nicht nötig:**
+
+- Trait oder Spalte am Eloquent-Model
+- Eigene Listener oder Page-Hooks
+- Migration für JSON am Model
+- Manuelle Entity-Config
 
 ---
 
@@ -302,8 +287,14 @@ Navigation: **Felder → Feldgruppen**
 | Bereich | Inhalt |
 |---------|--------|
 | **Allgemein** | Name, technischer Schlüssel, aktiv, Reihenfolge |
-| **Zuordnung** | Multi-Select „Anzeigen bei“ (registrierte Resources) |
-| **Felder** | Repeater: Bezeichnung, Typ, Feldschlüssel, Pflichtfeld, Einstellungen, Optionen |
+| **Zuordnung** | Multi-Select „Anzeigen bei“ (auto-discovered Resources) |
+| **Felder** | Repeater: Bezeichnung, Typ, Feldschlüssel, Pflichtfeld |
+| **Einstellungen** | Capability-Felder (nur wenn der Typ welche hat) |
+| **Optionen** | Für Select/Radio/Multiselect/Checkbox-Liste |
+| **Unterfelder** | Für Group und Repeater |
+| **Layouts** | Für Flexible Content (Layout-Schlüssel + Unterfelder) |
+
+Repeater-Zeilen sind standardmäßig eingeklappt und zeigen Typ, Schlüssel und Pflichtfeld im Label.
 
 Übersetzungen: `resources/lang/de/builder.php`, `en/builder.php`.
 
@@ -311,25 +302,29 @@ Navigation: **Felder → Feldgruppen**
 
 ## Feldtypen & Capabilities
 
-### Eingebaute Feldtypen (15)
+### Eingebaute Feldtypen (25 wählbar)
 
-| Key | Filament-Komponente |
-|-----|---------------------|
-| `text` | TextInput |
-| `textarea` | Textarea |
-| `number` | TextInput (numeric) |
-| `email` | TextInput (email) |
-| `url` | TextInput (url) |
-| `password` | TextInput (password) |
-| `select` | Select |
-| `multiselect` | Select (multiple) |
-| `checkbox_list` | CheckboxList |
-| `radio` | Radio |
-| `toggle` | Toggle |
-| `date` | DatePicker |
-| `datetime` | DateTimePicker |
-| `time` | TimePicker |
-| `color` | ColorPicker |
+| Kategorie | Keys |
+|-----------|------|
+| **Text** | `text`, `textarea`, `email`, `url`, `password`, `rich_text` |
+| **Zahl** | `number`, `range` |
+| **Auswahl** | `select`, `multiselect`, `checkbox_list`, `radio`, `button_group`, `toggle` |
+| **Datum** | `date`, `datetime`, `time` |
+| **Sonstiges** | `color`, `link`, `message`, `oembed` |
+| **Layout** | `tab`, `group`, `repeater`, `flexible_content` |
+
+Intern (nur in der DB, nicht wählbar): `flexible_layout` — definiert ein Layout innerhalb von Flexible Content.
+
+### Layout-Felder
+
+| Typ | Filament-Komponente | Speicher |
+|-----|---------------------|----------|
+| `tab` | `Tabs` / `Tab` (Marker, kein Wert) | — |
+| `group` | `Repeater` (min/max 1) | `value_json` (Objekt) |
+| `repeater` | `Repeater` | `value_json` (Array) |
+| `flexible_content` | `Builder` mit Layout-Blöcken | `value_json` (Array mit `type` + `data`) |
+
+Flexible Content entspricht ACF **Flexible Content**: pro Zeile ein wählbares Layout mit eigenen Unterfeldern.
 
 ### Capabilities (pro Typ konfigurierbar)
 
@@ -343,8 +338,15 @@ Navigation: **Felder → Feldgruppen**
 | `MinValue` / `MaxValue` / `Step` | Zahlenfelder |
 | `Rows` | Textarea-Zeilen |
 | `DisplayFormat` | Datumsformat |
+| `MessageBody` | Hinweistext (message) |
+| `RepeaterItems` | min/max Einträge (Repeater, Flexible Content) |
 
-Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabilities()`, optional `castValue()` und `hasOptions()`.
+Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabilities()`, optional `castValue()`, `hasSubFields()`, `hasLayouts()`.
+
+### Validierung
+
+- **Pflichtfelder** und **Capabilities** werden als Filament-Regeln auf die Komponente angewendet.
+- **Verschachtelte Werte** (Repeater, Group, Flexible Content) werden zusätzlich durch `FieldValueValidator` geprüft — u. a. leere Repeater-Zeilen und unbekannte Layouts.
 
 ---
 
@@ -354,12 +356,9 @@ Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabiliti
 
 | Key | Default | Beschreibung |
 |-----|---------|--------------|
-| `default_driver` | `typed` | Aktiver Value-Store-Treiber |
-| `drivers.typed` | `TypedValueDriver` | Klassenname des Treibers |
-| `navigation_group` | `Felder` | Filament-Navigationsgruppe |
-| `entities` | `[]` | Registrierte Resources (siehe oben) |
+| `navigation_group` | `Felder` | Filament-Navigationsgruppe für Feldgruppen |
 
-Env-Variablen: `BUILDER_DRIVER`, `BUILDER_NAVIGATION_GROUP`.
+Env: `BUILDER_NAVIGATION_GROUP`.
 
 ---
 
@@ -376,17 +375,24 @@ $this->app->afterResolving(FieldTypeRegistry::class, function (FieldTypeRegistry
 });
 ```
 
-### Eigenen Storage-Treiber (optional)
-
-Interface `ValueStore` implementieren, in `config/builder.php` unter `drivers` eintragen, `default_driver` setzen.
-
-Aktuell ist nur `typed` produktiv im Einsatz.
+Übersetzung unter `builder::builder.field_types.{key}` in `resources/lang`.
 
 ### Validierungsregeln abfragen
 
 ```php
 ItemResource::customFieldRules();
-// ['feld-name' => ['required', 'max:255'], ...]
+// ['feld-name' => ['required', 'max:255'], 'repeater.*.unterfeld' => ['required'], ...]
+```
+
+### Werte programmatisch laden
+
+```php
+use Moox\Builder\Services\CustomFieldsManager;
+
+$values = app(CustomFieldsManager::class)->loadFormData(
+    ItemResource::class,
+    $item,
+);
 ```
 
 ---
@@ -402,7 +408,7 @@ packages/builder/
 ├── resources/lang/{de,en}/builder.php
 └── src/
     ├── BuilderServiceProvider.php
-    ├── Concerns/HasCustomFields.php      # Consumer-Trait
+    ├── Concerns/HasCustomFields.php       # Consumer-Trait
     ├── Compiler/
     │   ├── LocationMatcher.php
     │   └── SchemaCompiler.php
@@ -412,25 +418,29 @@ packages/builder/
     │   └── LocationContext.php
     ├── FieldTypes/
     │   ├── FieldType.php
-    │   ├── Capabilities/                   # Wiederverwendbare Feld-Einstellungen
-    │   └── Types/                          # 15 Feldtypen
+    │   ├── Capabilities/
+    │   └── Types/                         # 26 Feldtypen
     ├── Listeners/PersistCustomFields.php
-    ├── Models/                             # FieldGroup, Field, FieldOption, FieldValue
-    ├── Observers/InvalidateDefinitionCacheObserver.php
+    ├── Models/                            # FieldGroup, Field, FieldOption, FieldValue
+    ├── Observers/
+    │   ├── InvalidateDefinitionCacheObserver.php
+    │   └── PurgeFieldValuesObserver.php
     ├── Plugins/BuilderPlugin.php
     ├── Registry/
     │   ├── DefinitionRegistry.php
     │   ├── EntityRegistry.php
     │   └── FieldTypeRegistry.php
-    ├── Resources/FieldGroupResource.php    # Admin-UI
+    ├── Resources/FieldGroupResource.php   # Admin-UI
     ├── Services/
     │   ├── CustomFieldsManager.php
-    │   └── FieldGroupPersistence.php
-    ├── Storage/
-    │   ├── TypedValueDriver.php
-    │   ├── ValueStore.php
-    │   └── ValueStoreResolver.php
-    └── Support/TypedValueColumns.php
+    │   ├── FieldGroupPersistence.php
+    │   ├── FieldGroupValidator.php
+    │   ├── FieldValuePurger.php
+    │   └── FieldValueValidator.php
+    └── Support/
+        ├── EntityModelDeletionRegistrar.php
+        ├── OptionValueRules.php
+        └── TypedValueColumns.php
 ```
 
 ---
@@ -443,47 +453,67 @@ packages/builder/
 cd packages/builder && composer test
 ```
 
+46 Tests (Stand: Paket-intern).
+
 ### Manuell im Panel
 
-1. **Felder → Feldgruppen** — Demo-Gruppe „Fahrzeugdaten“ (nach Seeder)
-2. **Items → Erstellen/Bearbeiten** — Section mit Custom Fields
+1. **Felder → Feldgruppen** — Demo-Gruppen „Fahrzeugdaten“ und „Layout-Showcase“ (nach Seeder)
+2. **Items → Bearbeiten** — Custom-Field-Sections inkl. Tabs, Group, Repeater, Flexible Content
 3. Speichern, dann DB prüfen:
 
 ```sql
-SELECT entity, record_id, field_name, value_string, value_decimal, value_date
+SELECT entity, record_id, field_name, value_string, value_decimal, value_json
 FROM builder_field_values
 WHERE entity = 'item';
 ```
 
 4. Item erneut öffnen — Werte müssen geladen sein.
 
+### Seeder
+
+```bash
+php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --force
+```
+
 ### Checkliste
 
 | Check | Erwartung |
 |-------|-----------|
 | 4 Builder-Tabellen existieren | nach `migrate` |
-| Entity in `builder.entities` registriert | z. B. via ItemServiceProvider |
+| Resource nutzt `HasCustomFields` | erscheint unter „Anzeigen bei“ |
 | `BuilderPlugin` im Panel | Nav „Felder“ sichtbar |
 | Feldgruppe mit „Anzeigen bei: Items“ | Section auf Item-Form |
 | Werte in `builder_field_values` | typisierte Spalten befüllt |
+| Flexible Content sortierbar | ohne Fehler nach Speichern/Laden |
 
 ---
 
 ## Grenzen & Roadmap
 
+**Implementiert:**
+
+- Nested Fields via `parent_field_id` (Group, Repeater, Flexible Content)
+- Layout-Felder: Tab, Group, Repeater, Flexible Content
+- Entity-Discovery über `HasCustomFields` in Filament-Panels
+- Verschachtelte Validierung (`FieldValueValidator`)
+- Repeater min/max (`RepeaterItems` Capability)
+
 **Aktuell nicht implementiert:**
 
-- Repeater / Flexible Content (`parent_field_id` reserviert)
-- Query-Scopes auf Consumer-Models (`whereCustomField()` o. ä.)
-- Tier-1 Auto-Discovery von Entities
+- Werte-API / `HasBuilderValues`-Trait fürs Frontend (nur `CustomFieldsManager::loadFormData()`)
+- Query-Scopes auf Consumer-Models (`whereCustomField()`)
+- Relational-Felder (Post Object, Relationship, User, Taxonomy)
+- Media-Felder (Image, File, Gallery)
+- Clone-Feldtyp (ACF)
 - Location-Params über `entity` hinaus
-- `placement`-Steuerung (Tab, Sidebar, …)
+- `placement`-Steuerung (Sidebar, …)
+- Conditional Logic im Formular
 
-**Bewusst entfernt / nicht Ziel:**
+**Bewusst nicht Ziel:**
 
 - WordPress/postmeta-Treiber
 - JSON-Spalte am Model
-- Press/WP-Integration
+- Accordion als eigener Feldtyp (Tabs + Sections reichen)
 
 ---
 
