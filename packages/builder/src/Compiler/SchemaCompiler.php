@@ -100,6 +100,7 @@ class SchemaCompiler
 
         return $component
             ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $storableFields, $defaultValue): void {
+                $hasStoredValue = false;
                 $storedValue = null;
 
                 if ($record?->exists) {
@@ -110,11 +111,14 @@ class SchemaCompiler
                     );
 
                     if (array_key_exists($field->name, $values)) {
+                        $hasStoredValue = true;
                         $storedValue = (new GroupFieldType)->normalizeForForm($values[$field->name]);
                     }
                 }
 
-                $flat = is_array($storedValue ?? $state) ? ($storedValue ?? $state) : [];
+                $flat = $hasStoredValue
+                    ? (is_array($storedValue) ? $storedValue : [])
+                    : (is_array($state) ? $state : []);
 
                 if (array_is_list($flat) && isset($flat[0]) && is_array($flat[0])) {
                     $flat = $flat[0];
@@ -337,17 +341,14 @@ class SchemaCompiler
                 }
 
                 if ($fieldType->hasSubFields()) {
-                    $valueToApply = $hasStoredValue ? $storedValue : $state;
-
-                    if (is_array($valueToApply) && $valueToApply !== []) {
-                        $this->applyCompoundState(
-                            $component,
-                            $field,
-                            $defaultValue,
-                            $defaultValue->normalizeCompoundState($valueToApply),
-                            force: true,
-                        );
-                    }
+                    $this->hydrateCompoundFieldState(
+                        $component,
+                        $field,
+                        $defaultValue,
+                        $hasStoredValue,
+                        $storedValue,
+                        $state,
+                    );
 
                     return;
                 }
@@ -386,6 +387,36 @@ class SchemaCompiler
                     $defaultValue->normalizeCompoundState($state),
                 );
             });
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>|array<string, mixed>|null  $storedValue
+     */
+    protected function hydrateCompoundFieldState(
+        Component $component,
+        FieldDefinition $field,
+        DefaultValue $defaultValue,
+        bool $hasStoredValue,
+        mixed $storedValue,
+        mixed $state,
+    ): void {
+        if ($component instanceof Builder || $component instanceof Repeater) {
+            $component->hydrateItems();
+        }
+
+        $valueToApply = $hasStoredValue ? $storedValue : $state;
+
+        if (! is_array($valueToApply) || $valueToApply === []) {
+            return;
+        }
+
+        $this->applyCompoundState(
+            $component,
+            $field,
+            $defaultValue,
+            $defaultValue->normalizeCompoundState($valueToApply),
+            force: true,
+        );
     }
 
     /**

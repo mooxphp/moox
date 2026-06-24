@@ -7,10 +7,10 @@ namespace Moox\Builder\Services;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
-use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\FieldRelationTree;
 
 class FieldGroupPersistence
@@ -239,7 +239,7 @@ class FieldGroupPersistence
                 'name' => (string) $row['name'],
                 'label' => (string) ($row['label'] ?? $row['name']),
                 'type' => (string) $row['type'],
-                'config' => $row['config'] ?? [],
+                'config' => $this->filterConfigForType((string) $row['type'], $row['config'] ?? []),
                 'validation' => [
                     'required' => (bool) ($row['required'] ?? false),
                     'rules' => $row['validation']['rules'] ?? [],
@@ -385,5 +385,54 @@ class FieldGroupPersistence
         }
 
         return new FieldOption;
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    protected function filterConfigForType(string $type, array $config): array
+    {
+        if ($config === []) {
+            return [];
+        }
+
+        $allowed = $this->allowedConfigKeysForType($type);
+
+        if ($allowed === []) {
+            return [];
+        }
+
+        return Arr::only($config, $allowed);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function allowedConfigKeysForType(string $type): array
+    {
+        try {
+            $fieldType = app(FieldTypeRegistry::class)->get($type);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $keys = [];
+
+        foreach ($fieldType->capabilities() as $capabilityClass) {
+            $capability = app($capabilityClass);
+
+            foreach ($capability->builderFieldsFor($type) as $component) {
+                $name = $component->getName();
+
+                if (! is_string($name) || ! str_starts_with($name, 'config.')) {
+                    continue;
+                }
+
+                $keys[] = substr($name, strlen('config.'));
+            }
+        }
+
+        return array_values(array_unique($keys));
     }
 }
