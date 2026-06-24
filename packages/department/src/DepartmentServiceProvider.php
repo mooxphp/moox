@@ -17,7 +17,7 @@ class DepartmentServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_departments_table',
-                'create_departmentables_table',
+                'create_department_assignments_table',
             ])
             ->hasCommands();
 
@@ -56,7 +56,7 @@ class DepartmentServiceProvider extends MooxServiceProvider
                 'config/department.php',
                 'database/factories/DepartmentFactory.php',
                 'database/migrations/create_departments_table.php.stub',
-                'database/migrations/create_departmentables_table.php.stub',
+                'database/migrations/create_department_assignments_table.php.stub',
                 'resources/lang/en/department.php',
                 'resources/lang/en/fields.php',
                 'src/Models/Department.php',

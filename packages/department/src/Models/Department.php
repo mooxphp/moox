@@ -12,7 +12,7 @@ use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Department\Database\Factories\DepartmentFactory;
 
 /**
- * @method \Illuminate\Database\Eloquent\Relations\HasMany<Departmentable, $this> departmentables()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany<DepartmentAssignment, $this> departmentAssignments()
  */
 class Department extends BaseRecordModel
 {

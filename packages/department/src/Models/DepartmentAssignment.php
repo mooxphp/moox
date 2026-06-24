@@ -13,15 +13,15 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property bool $is_primary
  * @property string|null $role
  */
-class Departmentable extends MorphPivot
+class DepartmentAssignment extends MorphPivot
 {
-    protected $table = 'departmentables';
+    protected $table = 'department_assignments';
 
     public $incrementing = true;
 
     protected $fillable = [
-        'departmentable_type',
-        'departmentable_id',
+        'assignable_type',
+        'assignable_id',
         'department_id',
         'is_primary',
         'role',
@@ -38,7 +38,7 @@ class Departmentable extends MorphPivot
     /**
      * @return MorphTo<Model, $this>
      */
-    public function departmentable(): MorphTo
+    public function assignable(): MorphTo
     {
         return $this->morphTo();
     }

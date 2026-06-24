@@ -10,23 +10,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('departmentables', function (Blueprint $table): void {
+        Schema::create('department_assignments', function (Blueprint $table): void {
             $table->id();
-            $table->uuidMorphs('departmentable');
+            $table->uuidMorphs('assignable');
             $table->foreignUuid('department_id')->constrained('departments')->cascadeOnDelete();
             $table->boolean('is_primary')->default(false)->index();
             $table->string('role', 30)->default('member')->index();
             $table->timestamps();
 
             $table->unique(
-                ['departmentable_type', 'departmentable_id', 'department_id'],
-                'departmentables_owner_department_unique',
+                ['assignable_type', 'assignable_id', 'department_id'],
+                'department_assignments_owner_department_unique',
             );
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('departmentables');
+        Schema::dropIfExists('department_assignments');
     }
 };

@@ -1,7 +1,7 @@
 <?php
 
 use Moox\Department\Models\Department;
-use Moox\Department\Models\Departmentable;
+use Moox\Department\Models\DepartmentAssignment;
 use Moox\Department\Resources\DepartmentResource;
 
 /*
@@ -114,16 +114,16 @@ return [
     ],
 
     'relations' => [
-        'departmentables' => [
+        'department_assignments' => [
             'kind' => 'pivot_has_many',
             'perspective' => 'related',
             'presentation' => 'tab',
             'label' => 'trans//department::fields.assignments',
             'translation_prefix' => 'department::fields',
-            'relationship' => 'departmentables',
-            'pivot_model' => Departmentable::class,
-            'pivot_table' => 'departmentables',
-            'morph_name' => 'departmentable',
+            'relationship' => 'departmentAssignments',
+            'pivot_model' => DepartmentAssignment::class,
+            'pivot_table' => 'department_assignments',
+            'morph_name' => 'assignable',
             'pivot_columns' => [
                 'is_primary',
                 'role',
