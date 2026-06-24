@@ -246,49 +246,100 @@ class SchemaCompiler
             return $component;
         }
 
-        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields): void {
-            if ($field->type === 'password') {
-                return;
-            }
+        $defaultValue = app(DefaultValue::class);
 
-            $defaultValue = app(DefaultValue::class);
-            $storedValue = null;
+        return $component
+            ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields, $defaultValue): void {
+                if ($field->type === 'password') {
+                    return;
+                }
 
-            if ($record?->exists) {
-                $values = $this->customFieldsManager->loadCachedValues(
-                    $entity,
-                    $record,
-                    $storableFields,
-                );
+                $storedValue = null;
 
-                if (array_key_exists($field->name, $values)) {
-                    $storedValue = $values[$field->name];
+                if ($record?->exists) {
+                    $values = $this->customFieldsManager->loadCachedValues(
+                        $entity,
+                        $record,
+                        $storableFields,
+                    );
 
-                    if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
-                        $storedValue = $fieldType->normalizeForForm($storedValue);
+                    if (array_key_exists($field->name, $values)) {
+                        $storedValue = $values[$field->name];
+
+                        if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
+                            $storedValue = $fieldType->normalizeForForm($storedValue);
+                        }
                     }
                 }
-            }
 
-            $valueToApply = $storedValue ?? $state;
+                if ($fieldType->hasSubFields()) {
+                    $valueToApply = $storedValue ?? $state;
 
-            if ($defaultValue->shouldApplyDefault($valueToApply, $field->type)) {
-                $default = $defaultValue->resolveForField($field);
+                    if (is_array($valueToApply) && $valueToApply !== []) {
+                        $this->applyCompoundState(
+                            $component,
+                            $field,
+                            $defaultValue,
+                            $defaultValue->normalizeCompoundState($valueToApply),
+                            force: true,
+                        );
+                    }
 
-                if ($default !== null) {
-                    $component->state($default);
+                    return;
                 }
 
-                return;
-            }
+                $valueToApply = $storedValue ?? $state;
 
-            if ($storedValue !== null) {
-                $component->state($storedValue);
+                if ($defaultValue->shouldApplyDefault($valueToApply, $field->type)) {
+                    $default = $defaultValue->resolveForField($field);
 
-                if ($component instanceof Builder) {
-                    $component->hydrateItems();
+                    if ($default !== null) {
+                        $component->state($default);
+                    }
+                } elseif ($storedValue !== null) {
+                    $component->state($storedValue);
                 }
-            }
-        });
+            })
+            ->afterStateUpdated(function (Component $component) use ($field, $fieldType, $defaultValue): void {
+                if (! $fieldType->hasSubFields()) {
+                    return;
+                }
+
+                $state = $component->getState();
+
+                if (! is_array($state) || $state === []) {
+                    return;
+                }
+
+                $this->applyCompoundState(
+                    $component,
+                    $field,
+                    $defaultValue,
+                    $defaultValue->normalizeCompoundState($state),
+                );
+            });
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $state
+     */
+    protected function applyCompoundState(
+        Component $component,
+        FieldDefinition $field,
+        DefaultValue $defaultValue,
+        array $state,
+        bool $force = false,
+    ): void {
+        $merged = $defaultValue->mergeCompoundDefaults($field, $state);
+
+        if (! $force && $merged == $state) {
+            return;
+        }
+
+        $component->state($merged);
+
+        if ($component instanceof Builder) {
+            $component->hydrateItems();
+        }
     }
 }
