@@ -37,7 +37,13 @@ class DisplayFormat extends Capability
             $component->displayFormat($format);
 
             if ($field->type === 'datetime') {
-                $component->seconds(str_contains($format, 'H:i:s'));
+                $withSeconds = str_contains($format, 'H:i:s');
+                $component->seconds($withSeconds);
+                $component->format($withSeconds ? 'Y-m-d H:i:s' : 'Y-m-d H:i');
+            }
+
+            if ($field->type === 'date') {
+                $component->format('Y-m-d');
             }
         }
 
