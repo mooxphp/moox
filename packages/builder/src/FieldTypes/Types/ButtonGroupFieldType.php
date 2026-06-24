@@ -43,12 +43,17 @@ class ButtonGroupFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $defaultValue = app(DefaultValue::class);
+
         $component = ToggleButtons::make($field->name)
             ->label($field->label)
             ->inline();
 
         $component = $this->applyOptions($component, $field);
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        return $component->default(static function () use ($field, $defaultValue): ?string {
+            return $defaultValue->resolveForField($field);
+        });
     }
 }

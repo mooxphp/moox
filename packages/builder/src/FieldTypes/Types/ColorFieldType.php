@@ -28,10 +28,30 @@ class ColorFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $defaultValue = app(DefaultValue::class);
+
         $component = ColorPicker::make($field->name)
             ->label($field->label)
-            ->hex();
+            ->live()
+            ->afterStateHydrated(function (ColorPicker $component, mixed $state) use ($defaultValue): void {
+                $normalized = $defaultValue->normalizeColorValue($state);
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+                if ($normalized !== null && $normalized !== $state) {
+                    $component->state($normalized);
+                }
+            })
+            ->afterStateUpdated(function (ColorPicker $component, mixed $state) use ($defaultValue): void {
+                $normalized = $defaultValue->normalizeColorValue($state);
+
+                if ($normalized !== null && $normalized !== $state) {
+                    $component->state($normalized);
+                }
+            });
+
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
+
+        return $component->default(static function () use ($field, $defaultValue): ?string {
+            return $defaultValue->resolveForField($field);
+        });
     }
 }
