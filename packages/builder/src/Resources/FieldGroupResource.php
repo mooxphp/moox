@@ -171,7 +171,7 @@ class FieldGroupResource extends Resource
                                         ->live(),
                                     Section::make(__('builder::builder.field.settings'))
                                         ->collapsed()
-                                        ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
+                                        ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                                         ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
                                     Section::make(__('builder::builder.field.options'))
                                         ->collapsed()
@@ -390,7 +390,7 @@ class FieldGroupResource extends Resource
                 ->live(),
             Section::make(__('builder::builder.field.settings'))
                 ->collapsed()
-                ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
+                ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                 ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
             Section::make(__('builder::builder.field.options'))
                 ->collapsed()
@@ -483,7 +483,7 @@ class FieldGroupResource extends Resource
                 ->live(),
             Section::make(__('builder::builder.field.settings'))
                 ->collapsed()
-                ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
+                ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                 ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
             Section::make(__('builder::builder.field.options'))
                 ->collapsed()
@@ -511,6 +511,24 @@ class FieldGroupResource extends Resource
     protected static function typeHasSettings(?string $type): bool
     {
         return static::typeSettingsSchema($type) !== [];
+    }
+
+    /**
+     * @return list<Component|\Filament\Schemas\Components\Component>
+     */
+    protected static function reactiveTypeSettingsSchema(callable $get): array
+    {
+        $type = $get('type');
+
+        if (in_array($type, ['date', 'datetime'], true)) {
+            $get('config.displayFormat');
+        }
+
+        if (in_array($type, ['date', 'datetime', 'time'], true)) {
+            $get('config.defaultNow');
+        }
+
+        return static::typeSettingsSchema($type);
     }
 
     /**
