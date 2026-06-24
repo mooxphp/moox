@@ -35,7 +35,10 @@ trait BuildsOptionComponents
             $component->options($options);
 
             if ($options !== []) {
-                $component->in(array_keys($options));
+                $component->in(array_map(
+                    fn (mixed $value): string => (string) $value,
+                    array_column($field->options, 'value'),
+                ));
             }
         }
 

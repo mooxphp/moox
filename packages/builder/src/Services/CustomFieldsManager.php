@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
+use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -140,17 +141,44 @@ class CustomFieldsManager
         }
 
         $values = [];
+        $defaultValue = app(DefaultValue::class);
+        $entity = $this->locationContextForResource($resourceClass)->entity;
 
         foreach ($fields as $field) {
+            $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+            if (! $fieldType->storesValue()) {
+                continue;
+            }
+
             if (! array_key_exists($field->name, $data)) {
+                $resolved = $defaultValue->resolveForField($field);
+
+                if ($resolved !== null) {
+                    $values[$field->name] = $resolved;
+                }
+
                 continue;
             }
 
-            if (! $this->fieldTypeRegistry->get($field->type)->storesValue()) {
-                continue;
+            $value = $data[$field->name];
+
+            if ($defaultValue->shouldApplyDefault($value, $field->type) && $record->exists) {
+                $hasStoredValue = FieldValue::query()
+                    ->forRecord($entity, $record->getKey())
+                    ->where('field_name', $field->name)
+                    ->exists();
+
+                if (! $hasStoredValue) {
+                    $resolved = $defaultValue->resolveForField($field);
+
+                    if ($resolved !== null) {
+                        $value = $resolved;
+                    }
+                }
             }
 
-            $values[$field->name] = $data[$field->name];
+            $values[$field->name] = $value;
         }
 
         if ($values === []) {

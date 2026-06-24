@@ -8,6 +8,7 @@ use Filament\Forms\Components\Radio;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
+use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\Concerns\BuildsOptionComponents;
 use Moox\Builder\FieldTypes\FieldType;
 
@@ -29,6 +30,7 @@ class RadioFieldType extends FieldType
     {
         return [
             DefaultValue::class,
+            HelperText::class,
         ];
     }
 

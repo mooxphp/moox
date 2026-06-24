@@ -70,7 +70,8 @@ class DefaultValue extends Capability
                     ->helperText(__('builder::builder.capabilities.default_value_option_helper'))
                     ->options(fn (Get $get): array => $this->optionChoices($get('options')))
                     ->searchable()
-                    ->native(false),
+                    ->native(false)
+                    ->live(),
             ],
             'multiselect', 'checkbox_list' => [
                 Select::make('config.default')
@@ -150,7 +151,7 @@ class DefaultValue extends Capability
         }
 
         if (in_array($field->type, ['select', 'radio', 'button_group'], true)) {
-            return (string) $default;
+            return $this->resolveOptionDefault($field, (string) $default);
         }
 
         if ($field->type === 'color') {
@@ -420,6 +421,23 @@ class DefaultValue extends Capability
         }
 
         return $choices;
+    }
+
+    protected function resolveOptionDefault(FieldDefinition $field, string $default): ?string
+    {
+        foreach ($field->options as $option) {
+            $value = $option['value'] ?? null;
+
+            if (blank($value)) {
+                continue;
+            }
+
+            if ((string) $value === $default) {
+                return (string) $value;
+            }
+        }
+
+        return null;
     }
 
     protected function resolveBooleanDefault(mixed $default): bool
