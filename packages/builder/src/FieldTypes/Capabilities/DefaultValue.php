@@ -82,12 +82,24 @@ class DefaultValue extends Capability
             'number', 'range' => [
                 TextInput::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
-                    ->numeric(),
+                    ->rules(['nullable', 'numeric'])
+                    ->validationAttribute(__('builder::builder.capabilities.default_value'))
+                    ->live(onBlur: true),
             ],
             'textarea', 'rich_text' => [
                 Textarea::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
                     ->rows(3),
+            ],
+            'email' => [
+                TextInput::make('config.default')
+                    ->label(__('builder::builder.capabilities.default_value'))
+                    ->rules(['nullable', 'email'])
+                    ->validationAttribute(__('builder::builder.capabilities.default_value'))
+                    ->validationMessages([
+                        'email' => __('builder::builder.validation.invalid_email_default'),
+                    ])
+                    ->live(onBlur: true),
             ],
             default => [
                 TextInput::make('config.default')

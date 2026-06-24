@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
+use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\Capabilities\MaxLength;
 use Moox\Builder\FieldTypes\Capabilities\Placeholder;
 use Moox\Builder\FieldTypes\FieldType;
@@ -25,6 +26,7 @@ class EmailFieldType extends FieldType
             MaxLength::class,
             Placeholder::class,
             DefaultValue::class,
+            HelperText::class,
         ];
     }
 

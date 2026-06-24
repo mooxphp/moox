@@ -170,7 +170,7 @@ class FieldGroupResource extends Resource
                                         ->inline(false)
                                         ->live(),
                                     Section::make(__('builder::builder.field.settings'))
-                                        ->collapsed()
+                                        ->collapsible()
                                         ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                                         ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
                                     Section::make(__('builder::builder.field.options'))
@@ -389,7 +389,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live(),
             Section::make(__('builder::builder.field.settings'))
-                ->collapsed()
+                ->collapsible()
                 ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                 ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
             Section::make(__('builder::builder.field.options'))
@@ -482,7 +482,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live(),
             Section::make(__('builder::builder.field.settings'))
-                ->collapsed()
+                ->collapsible()
                 ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                 ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
             Section::make(__('builder::builder.field.options'))
