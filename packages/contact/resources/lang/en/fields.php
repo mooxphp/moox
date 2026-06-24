@@ -12,6 +12,7 @@ return [
     'companies' => 'Companies',
     'contacts' => 'Contacts',
     'departments' => 'Departments',
+    'staff' => 'Staff',
     'role' => 'Role',
     'is_primary' => 'Primary',
     'note' => 'Note',

@@ -2,7 +2,7 @@
 
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
-use Moox\Contact\Models\CompanyContact;
+use Moox\Contact\Models\ContactAssignment;
 use Moox\Contact\Models\Contact;
 
 /*
@@ -95,8 +95,9 @@ return [
     ],
 
     'relations' => [
-        'companies' => [
-            'kind' => 'belongs_to_many',
+        'contact_assignments' => [
+            'kind' => 'morph_pivot',
+            'perspective' => 'related',
             'presentation' => 'tab',
             'label' => 'trans//contact::fields.companies',
             'inverse_label' => 'trans//contact::fields.contacts',
@@ -104,10 +105,10 @@ return [
             'inverse_relationship' => 'contacts',
             'model' => Company::class,
             'related_resource' => CompanyResource::class,
-            'pivot_model' => CompanyContact::class,
-            'pivot_table' => 'company_contact',
-            'foreign_key' => 'contact_id',
-            'related_key' => 'company_id',
+            'pivot_model' => ContactAssignment::class,
+            'pivot_table' => 'contact_assignments',
+            'morph_name' => 'assignable',
+            'related_key' => 'contact_id',
             'pivot_columns' => [
                 'role',
                 'is_primary',
@@ -118,7 +119,7 @@ return [
                 'toolbar' => ['detach_bulk'],
             ],
         ],
-        'addressables' => [
+        'address_assignments' => [
             'kind' => 'morph_pivot',
             'perspective' => 'owner',
             'presentation' => 'tab',

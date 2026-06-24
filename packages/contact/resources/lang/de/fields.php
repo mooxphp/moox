@@ -12,6 +12,7 @@ return [
     'companies' => 'Firmen',
     'contacts' => 'Kontakte',
     'departments' => 'Abteilungen',
+    'staff' => 'Bearbeiter',
     'role' => 'Rolle',
     'is_primary' => 'Primär',
     'note' => 'Notiz',

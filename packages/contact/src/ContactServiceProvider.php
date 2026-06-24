@@ -17,7 +17,7 @@ class ContactServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_contacts_table',
-                'create_company_contact_table',
+                'create_contact_assignments_table',
             ])
             ->hasCommands();
 
@@ -56,7 +56,7 @@ class ContactServiceProvider extends MooxServiceProvider
                 'config/contact.php',
                 'database/factories/ContactFactory.php',
                 'database/migrations/create_contacts_table.php.stub',
-                'database/migrations/create_company_contact_table.php.stub',
+                'database/migrations/create_contact_assignments_table.php.stub',
                 'resources/lang/en/contact.php',
                 'resources/lang/en/fields.php',
                 'src/Models/Contact.php',

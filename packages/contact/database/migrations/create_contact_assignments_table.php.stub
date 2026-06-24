@@ -10,20 +10,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('company_contact', function (Blueprint $table): void {
+        Schema::create('contact_assignments', function (Blueprint $table): void {
             $table->id();
-            $table->foreignUuid('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->uuidMorphs('assignable');
             $table->foreignUuid('contact_id')->constrained('contacts')->cascadeOnDelete();
             $table->string('role', 30)->default('general')->index();
             $table->boolean('is_primary')->default(false)->index();
             $table->timestamps();
 
-            $table->unique(['company_id', 'contact_id']);
+            $table->unique(['assignable_type', 'assignable_id', 'contact_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('company_contact');
+        Schema::dropIfExists('contact_assignments');
     }
 };
