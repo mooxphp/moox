@@ -82,11 +82,7 @@ class DefaultValue extends Capability
                     ->native(false),
             ],
             'number', 'range' => [
-                TextInput::make('config.default')
-                    ->label(__('builder::builder.capabilities.default_value'))
-                    ->rules(['nullable', 'numeric'])
-                    ->validationAttribute(__('builder::builder.capabilities.default_value'))
-                    ->live(onBlur: true),
+                $this->numericDefaultField(),
             ],
             'textarea', 'rich_text' => [
                 Textarea::make('config.default')
@@ -144,7 +140,9 @@ class DefaultValue extends Capability
         }
 
         if (in_array($field->type, ['number', 'range'], true) && is_numeric($default)) {
-            return $default + 0;
+            $numeric = $default + 0;
+
+            return $this->numericDefaultWithinBounds($numeric, $field) ? $numeric : null;
         }
 
         if (in_array($field->type, ['multiselect', 'checkbox_list'], true)) {
@@ -563,5 +561,55 @@ class DefaultValue extends Capability
         }
 
         return array_values(array_filter($default, fn (mixed $value): bool => $value !== null && $value !== ''));
+    }
+
+    protected function numericDefaultField(): TextInput
+    {
+        return TextInput::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->helperText(__('builder::builder.capabilities.default_value_number_helper'))
+            ->numeric()
+            ->rules(fn (Get $get): array => $this->numericDefaultRules($get))
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->live(onBlur: true);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function numericDefaultRules(Get $get): array
+    {
+        $rules = ['nullable', 'numeric'];
+
+        $min = $get('config.min');
+
+        if ($min !== null && $min !== '' && is_numeric($min)) {
+            $rules[] = 'min:'.$min;
+        }
+
+        $max = $get('config.max');
+
+        if ($max !== null && $max !== '' && is_numeric($max)) {
+            $rules[] = 'max:'.$max;
+        }
+
+        return $rules;
+    }
+
+    protected function numericDefaultWithinBounds(float|int $value, FieldDefinition $field): bool
+    {
+        if (isset($field->config['min']) && $field->config['min'] !== '' && is_numeric($field->config['min'])) {
+            if ($value < $field->config['min'] + 0) {
+                return false;
+            }
+        }
+
+        if (isset($field->config['max']) && $field->config['max'] !== '' && is_numeric($field->config['max'])) {
+            if ($value > $field->config['max'] + 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
