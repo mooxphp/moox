@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use Moox\Core\Relations\Enums\RelationKind;
+use Moox\Core\Relations\Enums\RelationPerspective;
 use Moox\Core\Relations\Exceptions\UnsupportedRelationException;
 use Moox\Core\Services\RelationService;
 
@@ -78,13 +79,21 @@ final class RelationFactory
         $pivotAttributes = $service->pivotAttributes($key);
         $pivotModel = $service->pivotModel($key);
 
-        $builder = $owner->morphToMany(
-            $relatedModel,
-            $service->morphType($key),
-            $service->pivotTable($key),
-            $service->foreignKey($key),
-            $service->relatedKey($key),
-        );
+        $builder = $relation->perspective === RelationPerspective::Related
+            ? $owner->morphedByMany(
+                $relatedModel,
+                $service->morphType($key),
+                $service->pivotTable($key),
+                $service->relatedKey($key),
+                $service->foreignKey($key),
+            )
+            : $owner->morphToMany(
+                $relatedModel,
+                $service->morphType($key),
+                $service->pivotTable($key),
+                $service->foreignKey($key),
+                $service->relatedKey($key),
+            );
 
         if ($pivotAttributes !== []) {
             $builder->withPivot($pivotAttributes);

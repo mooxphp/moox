@@ -11,7 +11,7 @@ use RuntimeException;
 
 /**
  * Config-driven morph pivot relations ({resource}.morph_relations.*).
- * Same shape as address.relations.addressables: morph_name, pivot_table,
+ * Same shape as address.relations.address_assignments: morph_name, pivot_table,
  * pivot_model, pivot_columns, relationship, model (owner side), primary.
  */
 class MorphPivotRelationService
@@ -102,7 +102,7 @@ class MorphPivotRelationService
             return $config['morph_name'];
         }
 
-        return (string) ($config['relationship'] ?? 'addressable');
+        return (string) ($config['relationship'] ?? 'assignable');
     }
 
     public function getPivotTable(string $relation): string
@@ -113,7 +113,7 @@ class MorphPivotRelationService
             return $config['pivot_table'];
         }
 
-        return (string) ($config['table'] ?? 'addressables');
+        return (string) ($config['table'] ?? 'address_assignments');
     }
 
     public function getForeignKey(string $relation): string

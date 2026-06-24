@@ -83,7 +83,7 @@ trait HasResourceRelations
     protected static function supportsConfiguredRelationManager(ResolvedRelation $relation): bool
     {
         return match ($relation->kind) {
-            RelationKind::MorphPivot => $relation->perspective === RelationPerspective::Owner,
+            RelationKind::MorphPivot => in_array($relation->perspective, [RelationPerspective::Owner, RelationPerspective::Related], true),
             RelationKind::PivotHasMany => $relation->perspective === RelationPerspective::Related,
             RelationKind::BelongsToMany => true,
             RelationKind::BelongsTo => true,

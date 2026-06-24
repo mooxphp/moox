@@ -28,8 +28,8 @@ it('normalizes morph relations as owner tab pivots', function (): void {
     $normalized = RelationConfigNormalizer::fromMorphRelations([
         'addresses' => [
             'model' => 'Address',
-            'pivot_table' => 'addressables',
-            'morph_name' => 'addressable',
+            'pivot_table' => 'address_assignments',
+            'morph_name' => 'assignable',
         ],
     ]);
 
@@ -40,9 +40,9 @@ it('normalizes morph relations as owner tab pivots', function (): void {
 });
 
 it('merges related morph defaults from package config', function (): void {
-    $merged = RelationConfigNormalizer::normalize('addressables', [
+    $merged = RelationConfigNormalizer::normalize('address_assignments', [
         'model' => 'Moox\\Address\\Models\\Address',
-        'pivot_table' => 'addressables',
+        'pivot_table' => 'address_assignments',
     ]);
 
     expect($merged)
@@ -53,16 +53,17 @@ it('merges related morph defaults from package config', function (): void {
 it('infers belongs to many and pivot has many kinds', function (): void {
     $belongsToMany = RelationConfigNormalizer::normalize('companies', [
         'model' => 'Company',
-        'pivot_table' => 'company_contact',
-        'inverse_relationship' => 'contacts',
+        'pivot_table' => 'contact_assignments',
+        'morph_name' => 'assignable',
+        'related_key' => 'contact_id',
     ]);
 
-    $pivotHasMany = RelationConfigNormalizer::normalize('addressables', [
-        'pivot_model' => 'Addressable',
+    $pivotHasMany = RelationConfigNormalizer::normalize('address_assignments', [
+        'pivot_model' => 'AddressAssignment',
         'owner_types' => ['Company' => 'Company'],
     ]);
 
-    expect($belongsToMany['kind'])->toBe(RelationKind::BelongsToMany->value)
+    expect($belongsToMany['kind'])->toBe(RelationKind::MorphPivot->value)
         ->and($pivotHasMany['kind'])->toBe(RelationKind::PivotHasMany->value)
         ->and($pivotHasMany['perspective'])->toBe(RelationPerspective::Related->value);
 });
