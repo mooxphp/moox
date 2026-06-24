@@ -7,6 +7,7 @@ namespace Moox\Builder\Compiler;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -85,7 +86,7 @@ class SchemaCompiler
     {
         $storableFields ??= collect();
 
-        $component = \Filament\Schemas\Components\Fieldset::make($field->label)
+        $component = Fieldset::make($field->label)
             ->schema($this->compileSubFields($field->children, $entity, $storableFields))
             ->statePath($field->name)
             ->columns(1)
