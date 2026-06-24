@@ -67,8 +67,8 @@ Verantwortlich für **was** angezeigt wird und **wo** (Location).
 | Komponente | Aufgabe |
 |------------|---------|
 | `FieldGroupResource` | Filament-CRUD für Feldgruppen |
-| `FieldGroupPersistence` | Speichert Gruppen, Felder, Optionen, Location Rules, verschachtelte Felder |
-| `FieldGroupValidator` | Prüft doppelte Feldschlüssel innerhalb und zwischen Gruppen |
+| `FieldGroupPersistence` | Speichert Gruppen, Felder, Optionen, Location Rules, verschachtelte Felder; migriert JSON-Werte bei Umbenennung/Löschen verschachtelter Subfelder |
+| `FieldGroupValidator` | Prüft doppelte **speicherbare** Feldschlüssel (global pro Gruppe, inkl. Tabs) und Konflikte zwischen Gruppen |
 | `DefinitionRegistry` | Lädt aktive Gruppen, cached als Arrays |
 | `LocationMatcher` | Prüft `location_rules` gegen `LocationContext` |
 | `EntityRegistry` | Findet Filament-Resources mit `HasCustomFields` → Entity-Keys |
@@ -83,9 +83,10 @@ Verantwortlich für **Werte** pro Datensatz.
 | Komponente | Aufgabe |
 |------------|---------|
 | `TypedValueColumns` | Mapping Feldtyp → DB-Spalte (`value_string`, `value_json`, …) |
-| `CustomFieldsManager` | Laden/Speichern für Resources, Option-Validierung |
+| `CustomFieldsManager` | Laden/Speichern für Resources, Option-Validierung, Hydration-Cache |
 | `FieldValueValidator` | Validierung verschachtelter Werte (Repeater, Group, Flexible Content) |
-| `FieldValuePurger` | Löscht Werte bei Feld-/Gruppenänderungen |
+| `FieldValuePurger` | Löscht Werte bei Feld-/Gruppenänderungen (Root-Felder) |
+| `CompoundFieldValueMigrator` | Benennt/entfernt verschachtelte Schlüssel in `value_json` (Group, Repeater, Flexible Content) |
 | `PersistCustomFields` | Listener auf Filament `RecordSaved` |
 
 Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nötig).
@@ -164,7 +165,7 @@ Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der M
 3. SchemaCompiler::compile()
    → pro Gruppe eine Filament-Section
    → Layout-Felder: Tabs, Group, Repeater, Flexible Content (Builder)
-   → afterStateHydrated lädt Werte via CustomFieldsManager (nur Edit)
+   → afterStateHydrated lädt Werte via CustomFieldsManager (ein Query pro Datensatz, gecacht)
    → Filament Builder: hydrateItems() für UUID-basierte Block-Keys
 ```
 
@@ -453,11 +454,11 @@ packages/builder/
 cd packages/builder && composer test
 ```
 
-46 Tests (Stand: Paket-intern).
+73 Tests (Stand: Paket-intern).
 
 ### Manuell im Panel
 
-1. **Felder → Feldgruppen** — Demo-Gruppen „Fahrzeugdaten“ und „Layout-Showcase“ (nach Seeder)
+1. **Felder → Feldgruppen** — Demo-Gruppe „Fahrzeugdaten“ (nach Seeder)
 2. **Items → Bearbeiten** — Custom-Field-Sections inkl. Tabs, Group, Repeater, Flexible Content
 3. Speichern, dann DB prüfen:
 

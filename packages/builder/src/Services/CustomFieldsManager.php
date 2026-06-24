@@ -13,14 +13,21 @@ use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Support\StorableFieldCollector;
 use Moox\Builder\Support\TypedValueColumns;
 
 class CustomFieldsManager
 {
+    /**
+     * @var array<string, array<string, mixed>>
+     */
+    protected array $valuesCache = [];
+
     public function __construct(
         protected DefinitionRegistry $definitionRegistry,
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected FieldValueValidator $fieldValueValidator,
+        protected StorableFieldCollector $storableFieldCollector,
     ) {}
 
     /**
@@ -41,34 +48,7 @@ class CustomFieldsManager
             $this->locationContextForResource($resourceClass),
         );
 
-        return $groups->flatMap(fn ($group) => $this->storableFieldsFromList($group->fields))->values();
-    }
-
-    /**
-     * @param  Collection<int, FieldDefinition>  $fields
-     * @return Collection<int, FieldDefinition>
-     */
-    protected function storableFieldsFromList(Collection $fields): Collection
-    {
-        return $fields->flatMap(fn (FieldDefinition $field): Collection => $this->storableFieldsFor($field));
-    }
-
-    /**
-     * @return Collection<int, FieldDefinition>
-     */
-    protected function storableFieldsFor(FieldDefinition $field): Collection
-    {
-        $fieldType = $this->fieldTypeRegistry->get($field->type);
-
-        if ($fieldType->isLayoutMarker()) {
-            return collect();
-        }
-
-        if ($fieldType->hasSubFields()) {
-            return collect([$field]);
-        }
-
-        return collect([$field]);
+        return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
     }
 
     /**
@@ -126,6 +106,25 @@ class CustomFieldsManager
         }
 
         return $values;
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    public function loadCachedValues(string $entity, Model $record, Collection $fields): array
+    {
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        $cacheKey = "{$entity}:{$record->getKey()}";
+
+        if (! array_key_exists($cacheKey, $this->valuesCache)) {
+            $this->valuesCache[$cacheKey] = $this->loadValues($entity, $record, $fields);
+        }
+
+        return $this->valuesCache[$cacheKey];
     }
 
     /**
@@ -207,6 +206,8 @@ class CustomFieldsManager
                 $columns,
             );
         }
+
+        unset($this->valuesCache["{$entity}:{$record->getKey()}"]);
     }
 
     /**

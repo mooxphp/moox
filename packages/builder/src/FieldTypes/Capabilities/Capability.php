@@ -15,6 +15,14 @@ abstract class Capability
     abstract public function builderFields(): array;
 
     /**
+     * @return list<Component>
+     */
+    public function builderFieldsFor(string $fieldType): array
+    {
+        return $this->builderFields();
+    }
+
+    /**
      * @return list<string>
      */
     public function rules(FieldDefinition $field): array

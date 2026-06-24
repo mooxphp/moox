@@ -10,6 +10,7 @@ use Moox\Builder\Compiler\LocationMatcher;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\FieldRelationTree;
 
 class DefinitionRegistry
 {
@@ -60,14 +61,7 @@ class DefinitionRegistry
     {
         return FieldGroup::query()
             ->active()
-            ->with([
-                'fields' => fn ($query) => $query->whereNull('parent_field_id')->orderBy('sort'),
-                'fields.options',
-                'fields.children' => fn ($query) => $query->orderBy('sort'),
-                'fields.children.options',
-                'fields.children.children' => fn ($query) => $query->orderBy('sort'),
-                'fields.children.children.options',
-            ])
+            ->with(FieldRelationTree::eagerLoadForDefinition())
             ->orderBy('sort')
             ->get()
             ->map(fn (FieldGroup $group): array => FieldGroupDefinition::fromModel($group)->toArray())

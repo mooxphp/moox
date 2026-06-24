@@ -7,6 +7,7 @@ namespace Moox\Builder\FieldTypes\Types;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\Concerns\BuildsOptionComponents;
 use Moox\Builder\FieldTypes\FieldType;
@@ -28,6 +29,7 @@ class MultiselectFieldType extends FieldType
     public function capabilities(): array
     {
         return [
+            DefaultValue::class,
             HelperText::class,
         ];
     }

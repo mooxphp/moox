@@ -194,7 +194,12 @@ class FieldGroupResource extends Resource
                                                 ->defaultItems(1),
                                         ])
                                         ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
-                                    Section::make(__('builder::builder.field.subfields'))
+                                    Section::make(fn (callable $get): string => $get('type') === 'tab'
+                                        ? __('builder::builder.field.tab_content')
+                                        : __('builder::builder.field.subfields'))
+                                        ->description(fn (callable $get): ?string => $get('type') === 'tab'
+                                            ? __('builder::builder.field.tab_content_helper')
+                                            : null)
                                         ->collapsed()
                                         ->schema([
                                             Repeater::make('children')
@@ -427,7 +432,7 @@ class FieldGroupResource extends Resource
         $components = [];
 
         foreach ($fieldType->capabilities() as $capabilityClass) {
-            $components = array_merge($components, app($capabilityClass)->builderFields());
+            $components = array_merge($components, app($capabilityClass)->builderFieldsFor($type));
         }
 
         return $components;

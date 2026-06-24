@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Moox\Builder\Services;
 
 use Illuminate\Validation\ValidationException;
+use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\FieldRelationTree;
+use Moox\Builder\Support\StorableFieldCollector;
 
 class FieldGroupValidator
 {
     public function __construct(
         protected FieldGroupPersistence $fieldGroupPersistence,
+        protected StorableFieldCollector $storableFieldCollector,
     ) {}
 
     /**
@@ -26,10 +30,12 @@ class FieldGroupValidator
             return;
         }
 
-        $messages = [];
+        $entries = $this->storableFieldCollector->pathsFromRows($fieldRows);
 
-        $messages = array_merge($messages, $this->internalDuplicateMessages($fieldRows));
-        $messages = array_merge($messages, $this->externalConflictMessages($group, $entities, $this->rootFieldRows($fieldRows)));
+        $messages = array_merge(
+            $this->internalDuplicateMessages($entries),
+            $this->externalConflictMessages($group, $entities, $entries),
+        );
 
         if ($messages !== []) {
             throw ValidationException::withMessages($messages);
@@ -37,53 +43,24 @@ class FieldGroupValidator
     }
 
     /**
-     * @param  list<array<string, mixed>>  $fieldRows
-     * @return list<array<string, mixed>>
-     */
-    protected function rootFieldRows(array $fieldRows): array
-    {
-        return $fieldRows;
-    }
-
-    /**
-     * @param  list<array<string, mixed>>  $fieldRows
+     * @param  list<array{name: string, path: string}>  $entries
      * @return array<string, list<string>>
      */
-    protected function internalDuplicateMessages(array $fieldRows, string $pathPrefix = 'fields'): array
+    protected function internalDuplicateMessages(array $entries): array
     {
         $seen = [];
         $messages = [];
 
-        foreach ($fieldRows as $index => $row) {
-            $name = (string) ($row['name'] ?? '');
-
-            if ($name === '') {
-                continue;
-            }
-
-            if (isset($seen[$name])) {
-                $messages["{$pathPrefix}.{$index}.name"] = [
-                    __('builder::builder.validation.duplicate_field_name_internal', ['name' => $name]),
+        foreach ($entries as $entry) {
+            if (isset($seen[$entry['name']])) {
+                $messages[$entry['path']] = [
+                    __('builder::builder.validation.duplicate_field_name_internal', ['name' => $entry['name']]),
                 ];
 
                 continue;
             }
 
-            $seen[$name] = $index;
-
-            if (isset($row['layouts']) && is_array($row['layouts'])) {
-                $messages = array_merge(
-                    $messages,
-                    $this->internalDuplicateMessages($row['layouts'], "{$pathPrefix}.{$index}.layouts"),
-                );
-            }
-
-            if (isset($row['children']) && is_array($row['children'])) {
-                $messages = array_merge(
-                    $messages,
-                    $this->internalDuplicateMessages($row['children'], "{$pathPrefix}.{$index}.children"),
-                );
-            }
+            $seen[$entry['name']] = $entry['path'];
         }
 
         return $messages;
@@ -91,27 +68,24 @@ class FieldGroupValidator
 
     /**
      * @param  list<string>  $entities
-     * @param  list<array<string, mixed>>  $fieldRows
+     * @param  list<array{name: string, path: string}>  $entries
      * @return array<string, list<string>>
      */
-    protected function externalConflictMessages(FieldGroup $group, array $entities, array $fieldRows): array
+    protected function externalConflictMessages(FieldGroup $group, array $entities, array $entries): array
     {
-        $namesByIndex = [];
-
-        foreach ($fieldRows as $index => $row) {
-            if (filled($row['name'] ?? null)) {
-                $namesByIndex[$index] = (string) $row['name'];
-            }
+        if ($entries === []) {
+            return [];
         }
 
-        if ($namesByIndex === []) {
-            return [];
+        $currentNames = [];
+
+        foreach ($entries as $entry) {
+            $currentNames[$entry['name']] = $entry['path'];
         }
 
         $otherGroups = FieldGroup::query()
             ->active()
             ->when($group->exists, fn ($query) => $query->whereKeyNot($group->getKey()))
-            ->with('fields')
             ->get();
 
         $messages = [];
@@ -123,19 +97,28 @@ class FieldGroupValidator
                 continue;
             }
 
-            foreach ($otherGroup->fields as $otherField) {
-                foreach ($namesByIndex as $index => $name) {
-                    if ($name !== $otherField->name) {
-                        continue;
-                    }
+            $otherGroup->load(FieldRelationTree::eagerLoadForDefinition());
+            $otherNames = $this->storableFieldCollector->namesFromList(
+                FieldGroupDefinition::fromModel($otherGroup)->fields,
+            );
 
-                    $messages["fields.{$index}.name"] = [
-                        __('builder::builder.validation.duplicate_field_name', [
-                            'name' => $name,
-                            'group' => $otherGroup->name,
-                        ]),
-                    ];
+            foreach ($otherNames as $otherName) {
+                if (! isset($currentNames[$otherName])) {
+                    continue;
                 }
+
+                $path = $currentNames[$otherName];
+
+                if (isset($messages[$path])) {
+                    continue;
+                }
+
+                $messages[$path] = [
+                    __('builder::builder.validation.duplicate_field_name', [
+                        'name' => $otherName,
+                        'group' => $otherGroup->name,
+                    ]),
+                ];
             }
         }
 

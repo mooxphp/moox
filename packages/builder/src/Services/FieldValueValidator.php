@@ -24,6 +24,10 @@ class FieldValueValidator
 
         $fieldType = $this->fieldTypeRegistry->get($field->type);
 
+        if ($field->type === 'tab') {
+            return [];
+        }
+
         if ($fieldType->isLayoutMarker()) {
             return [];
         }

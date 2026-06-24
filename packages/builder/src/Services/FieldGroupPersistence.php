@@ -11,6 +11,7 @@ use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\FieldRelationTree;
 
 class FieldGroupPersistence
 {
@@ -150,14 +151,7 @@ class FieldGroupPersistence
      */
     public function fieldRowsForForm(FieldGroup $group): array
     {
-        $group->load([
-            'fields' => fn ($query) => $query->whereNull('parent_field_id')->orderBy('sort'),
-            'fields.options',
-            'fields.children' => fn ($query) => $query->orderBy('sort'),
-            'fields.children.options',
-            'fields.children.children' => fn ($query) => $query->orderBy('sort'),
-            'fields.children.children.options',
-        ]);
+        $group->load(FieldRelationTree::eagerLoadForDefinition());
 
         return $this->mapFieldRows($group->fields);
     }
@@ -262,7 +256,12 @@ class FieldGroupPersistence
 
             if ($previousName !== null && $previousName !== $field->name) {
                 $entities = $this->entitiesFromLocationRules($group->location_rules ?? []);
-                $this->fieldValuePurger->purgeForFieldName($previousName, $entities);
+
+                if ($field->parent_field_id !== null) {
+                    app(CompoundFieldValueMigrator::class)->renameNestedSubfield($field, $previousName, $entities);
+                } else {
+                    $this->fieldValuePurger->purgeForFieldName($previousName, $entities);
+                }
             }
 
             $retainedIds[] = $field->getKey();
