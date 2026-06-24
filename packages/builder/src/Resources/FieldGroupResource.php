@@ -188,7 +188,8 @@ class FieldGroupResource extends Resource
                                                         ->required(),
                                                     TextInput::make('value')
                                                         ->label(__('builder::builder.field.option_value'))
-                                                        ->required(),
+                                                        ->required()
+                                                        ->live(onBlur: true),
                                                 ])
                                                 ->columns(2)
                                                 ->defaultItems(1),
@@ -408,7 +409,8 @@ class FieldGroupResource extends Resource
                                 ->required(),
                             TextInput::make('value')
                                 ->label(__('builder::builder.field.option_value'))
-                                ->required(),
+                                ->required()
+                                ->live(onBlur: true),
                         ])
                         ->columns(2)
                         ->defaultItems(1),
@@ -502,7 +504,8 @@ class FieldGroupResource extends Resource
                                 ->required(),
                             TextInput::make('value')
                                 ->label(__('builder::builder.field.option_value'))
-                                ->required(),
+                                ->required()
+                                ->live(onBlur: true),
                         ])
                         ->columns(2)
                         ->defaultItems(1),
@@ -542,6 +545,10 @@ class FieldGroupResource extends Resource
 
         if (in_array($type, ['date', 'datetime', 'time'], true)) {
             $get('config.defaultNow');
+        }
+
+        if (in_array($type, ['select', 'radio', 'button_group', 'multiselect', 'checkbox_list'], true)) {
+            $get('options');
         }
 
         return static::typeSettingsSchema($type);
