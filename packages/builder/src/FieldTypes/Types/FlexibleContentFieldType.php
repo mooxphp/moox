@@ -41,13 +41,6 @@ class FlexibleContentFieldType extends FieldType
     public function formComponent(FieldDefinition $field): Component
     {
         $compiler = app(SchemaCompiler::class);
-        $defaultValue = app(DefaultValue::class);
-
-        $layoutDefaults = $field->layouts()
-            ->mapWithKeys(fn (FieldDefinition $layout): array => [
-                $layout->name => $defaultValue->defaultDataForChildren($layout->children),
-            ])
-            ->all();
 
         $blocks = $field->layouts()
             ->map(fn (FieldDefinition $layout): Block => Block::make($layout->name)
@@ -61,8 +54,8 @@ class FlexibleContentFieldType extends FieldType
             ->addActionLabel(__('builder::builder.flexible_content.add_layout'))
             ->collapsible()
             ->collapsed()
-            ->addAction(fn (Action $action): Action => $this->configureAddAction($action, $layoutDefaults))
-            ->addBetweenAction(fn (Action $action): Action => $this->configureAddBetweenAction($action, $layoutDefaults));
+            ->addAction(fn (Action $action): Action => $this->configureAddAction($action, $field))
+            ->addBetweenAction(fn (Action $action): Action => $this->configureAddBetweenAction($action, $field));
 
         return $this->applyNestedValueValidation(
             $this->applyCapabilitiesAndValidation($component, $field),
@@ -73,41 +66,40 @@ class FlexibleContentFieldType extends FieldType
     /**
      * @param  array<string, array<string, mixed>>  $layoutDefaults
      */
-    protected function configureAddAction(Action $action, array $layoutDefaults): Action
+    protected function configureAddAction(Action $action, FieldDefinition $field): Action
     {
-        return $action->action(function (array $arguments, Builder $component, array $data = []) use ($layoutDefaults): void {
-            $this->insertBuilderBlock($component, (string) $arguments['block'], $data, $layoutDefaults, afterItem: null);
+        return $action->action(function (array $arguments, Builder $component, array $data = []) use ($field): void {
+            $this->insertBuilderBlock($component, $field, (string) $arguments['block'], $data, afterItem: null);
         });
     }
 
     /**
      * @param  array<string, array<string, mixed>>  $layoutDefaults
      */
-    protected function configureAddBetweenAction(Action $action, array $layoutDefaults): Action
+    protected function configureAddBetweenAction(Action $action, FieldDefinition $field): Action
     {
-        return $action->action(function (array $arguments, Builder $component, array $data = []) use ($layoutDefaults): void {
+        return $action->action(function (array $arguments, Builder $component, array $data = []) use ($field): void {
             $this->insertBuilderBlock(
                 $component,
+                $field,
                 (string) $arguments['block'],
                 $data,
-                $layoutDefaults,
                 afterItem: $arguments['afterItem'] ?? null,
             );
         });
     }
 
-    /**
-     * @param  array<string, array<string, mixed>>  $layoutDefaults
-     */
     protected function insertBuilderBlock(
         Builder $component,
+        FieldDefinition $field,
         string $block,
         array $data,
-        array $layoutDefaults,
         ?string $afterItem,
     ): void {
-        if ($data === []) {
-            $data = $layoutDefaults[$block] ?? [];
+        $layout = $field->layouts()->firstWhere('name', $block);
+
+        if ($layout !== null) {
+            $data = app(DefaultValue::class)->mergeIntoData($layout->children, $data);
         }
 
         $newKey = $component->generateUuid();

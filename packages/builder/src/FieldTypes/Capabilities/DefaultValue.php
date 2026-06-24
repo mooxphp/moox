@@ -162,15 +162,33 @@ class DefaultValue extends Capability
         return $default;
     }
 
+    /**
+     * @param  Collection<int, FieldDefinition>  $children
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function mergeIntoData(Collection $children, array $data): array
+    {
+        return $this->mergeSubFieldDefaults($children, $data);
+    }
+
     protected function normalizeColorDefault(mixed $default): ?string
     {
-        if (! is_string($default)) {
+        if ($default === null) {
             return null;
+        }
+
+        if (! is_string($default)) {
+            if (is_scalar($default)) {
+                $default = (string) $default;
+            } else {
+                return null;
+            }
         }
 
         $color = trim($default);
 
-        if ($color === '') {
+        if ($color === '' || $color === '#') {
             return null;
         }
 
@@ -185,6 +203,10 @@ class DefaultValue extends Capability
     {
         if ($type === 'toggle') {
             return $state === null;
+        }
+
+        if ($type === 'color') {
+            return $state === null || (is_string($state) && trim($state) === '');
         }
 
         if (in_array($type, ['date', 'datetime', 'time'], true)) {
