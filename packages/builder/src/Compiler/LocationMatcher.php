@@ -15,7 +15,7 @@ class LocationMatcher
     public function matches(array $locationRules, LocationContext $context): bool
     {
         if ($locationRules === []) {
-            return true;
+            return false;
         }
 
         foreach ($locationRules as $andGroup) {

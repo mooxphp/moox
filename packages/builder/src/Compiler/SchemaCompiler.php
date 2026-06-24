@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
+use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\OptionValueRules;
@@ -246,11 +247,19 @@ class SchemaCompiler
         }
 
         return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields): void {
-            if ($record === null) {
+            if ($field->type === 'password') {
                 return;
             }
 
-            if ($field->type === 'password') {
+            $defaultValue = app(DefaultValue::class);
+
+            if ($record === null || ! $record->exists) {
+                $default = $defaultValue->resolveForField($field);
+
+                if ($default !== null && $defaultValue->shouldApplyDefault($state, $field->type)) {
+                    $component->state($default);
+                }
+
                 return;
             }
 
@@ -261,6 +270,12 @@ class SchemaCompiler
             );
 
             if (! array_key_exists($field->name, $values)) {
+                $default = $defaultValue->resolveForField($field);
+
+                if ($default !== null && $defaultValue->shouldApplyDefault($state, $field->type)) {
+                    $component->state($default);
+                }
+
                 return;
             }
 

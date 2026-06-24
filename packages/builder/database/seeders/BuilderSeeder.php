@@ -140,13 +140,17 @@ class BuilderSeeder extends Seeder
                 $this->field('besichtigungszeit', 'Bevorzugte Besichtigungszeit', 'time', 1, config: [
                     'default' => '14:00',
                 ]),
-                $this->field('zahlungsoptionen', 'Zahlungsoptionen', 'multiselect', 2, options: [
+                $this->field('zahlungsoptionen', 'Zahlungsoptionen', 'multiselect', 2, config: [
+                    'default' => ['finance', 'trade_in'],
+                ], options: [
                     ['label' => 'Barzahlung', 'value' => 'cash'],
                     ['label' => 'Finanzierung', 'value' => 'finance'],
                     ['label' => 'Leasing', 'value' => 'leasing'],
                     ['label' => 'Inzahlungnahme', 'value' => 'trade_in'],
                 ]),
-                $this->field('serienausstattung', 'Serienausstattung', 'checkbox_list', 3, options: [
+                $this->field('serienausstattung', 'Serienausstattung', 'checkbox_list', 3, config: [
+                    'default' => ['climate', 'cruise', 'led'],
+                ], options: [
                     ['label' => 'Klimaautomatik', 'value' => 'climate'],
                     ['label' => 'Tempomat', 'value' => 'cruise'],
                     ['label' => 'Einparkhilfe', 'value' => 'parking'],
@@ -157,9 +161,9 @@ class BuilderSeeder extends Seeder
                     'label' => 'Zusatzausstattung',
                     'type' => 'repeater',
                     'sort' => 4,
-                    'config' => ['min' => 1, 'max' => 20],
+                    'config' => ['min' => 0, 'max' => 20],
                     'children' => [
-                        $this->field('merkmal', 'Merkmal', 'text', 0, required: true),
+                        $this->field('merkmal', 'Merkmal', 'text', 0),
                         $this->field('enthalten', 'Enthalten', 'toggle', 1, config: ['default' => true]),
                     ],
                 ],
@@ -187,7 +191,7 @@ class BuilderSeeder extends Seeder
                     'label' => 'Inserat-Inhalt (Flexible Inhalte)',
                     'type' => 'flexible_content',
                     'sort' => 3,
-                    'config' => ['min' => 1, 'max' => 10],
+                    'config' => ['min' => 0, 'max' => 10],
                     'layouts' => [
                         [
                             'name' => 'hero',
@@ -261,17 +265,19 @@ class BuilderSeeder extends Seeder
     }
 
     /**
-     * Demo-Werte für Item #1 — nur wenn items-Tabelle und Datensatz existieren.
+     * Demo-Werte für das erste Item — nur wenn items-Tabelle und ein Datensatz existieren.
      */
     protected function seedDemoValuesForFirstItem(): void
     {
-        if (! Schema::hasTable('items') || ! DB::table('items')->where('id', 1)->exists()) {
+        $recordId = $this->resolveDemoItemId();
+
+        if ($recordId === null) {
             return;
         }
 
         FieldValue::query()
             ->where('entity', 'item')
-            ->where('record_id', 1)
+            ->where('record_id', $recordId)
             ->delete();
 
         $demos = [
@@ -364,8 +370,19 @@ class BuilderSeeder extends Seeder
         ];
 
         foreach ($demos as $fieldName => $demo) {
-            $this->upsertFieldValue('item', 1, $fieldName, $demo['type'], $demo['value']);
+            $this->upsertFieldValue('item', $recordId, $fieldName, $demo['type'], $demo['value']);
         }
+    }
+
+    protected function resolveDemoItemId(): ?int
+    {
+        if (! Schema::hasTable('items')) {
+            return null;
+        }
+
+        $recordId = DB::table('items')->orderBy('id')->value('id');
+
+        return is_numeric($recordId) ? (int) $recordId : null;
     }
 
     /**

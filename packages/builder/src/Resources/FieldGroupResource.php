@@ -114,7 +114,6 @@ class FieldGroupResource extends Resource
                                         ->searchable()
                                         ->preload()
                                         ->placeholder(__('builder::builder.field_group.target_entities_placeholder'))
-                                        ->required()
                                         ->disabled($entityOptions === [])
                                         ->native(false),
                                 ]),
@@ -209,7 +208,7 @@ class FieldGroupResource extends Resource
                                                 ->collapsible()
                                                 ->collapsed()
                                                 ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
-                                                ->schema(static::subFieldSchema($registry))
+                                                ->schema(static::tabChildFieldSchema($registry))
                                                 ->defaultItems(0),
                                         ])
                                         ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
@@ -346,6 +345,101 @@ class FieldGroupResource extends Resource
                 ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
                 ->schema(static::subFieldSchema($registry))
                 ->defaultItems(0),
+        ];
+    }
+
+    /**
+     * @return list<Component|\Filament\Schemas\Components\Component>
+     */
+    protected static function tabChildFieldSchema(FieldTypeRegistry $registry): array
+    {
+        return [
+            Hidden::make('id'),
+            Hidden::make('sort'),
+            Grid::make(2)
+                ->schema([
+                    TextInput::make('label')
+                        ->label(__('builder::builder.field.label'))
+                        ->helperText(__('builder::builder.field.label_helper'))
+                        ->required()
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
+                            if (blank($get('name'))) {
+                                $set('name', Str::slug((string) $state, '-'));
+                            }
+                        }),
+                    Select::make('type')
+                        ->label(__('builder::builder.field.type'))
+                        ->options($registry->optionsForTabChildren())
+                        ->required()
+                        ->searchable()
+                        ->live()
+                        ->native(false),
+                ]),
+            TextInput::make('name')
+                ->label(__('builder::builder.field.name'))
+                ->helperText(__('builder::builder.field.name_helper'))
+                ->required()
+                ->maxLength(255)
+                ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                ->live(onBlur: true),
+            Toggle::make('required')
+                ->label(__('builder::builder.field.required'))
+                ->inline(false)
+                ->live(),
+            Section::make(__('builder::builder.field.settings'))
+                ->collapsed()
+                ->schema(fn (callable $get): array => static::typeSettingsSchema($get('type')))
+                ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
+            Section::make(__('builder::builder.field.options'))
+                ->collapsed()
+                ->schema([
+                    Repeater::make('options')
+                        ->label(__('builder::builder.field.options'))
+                        ->orderColumn('sort')
+                        ->reorderable()
+                        ->schema([
+                            Hidden::make('id'),
+                            TextInput::make('label')
+                                ->label(__('builder::builder.field.option_label'))
+                                ->required(),
+                            TextInput::make('value')
+                                ->label(__('builder::builder.field.option_value'))
+                                ->required(),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(1),
+                ])
+                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+            Section::make(__('builder::builder.field.subfields'))
+                ->collapsed()
+                ->schema([
+                    Repeater::make('children')
+                        ->hiddenLabel()
+                        ->orderColumn('sort')
+                        ->reorderable()
+                        ->collapsible()
+                        ->collapsed()
+                        ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                        ->schema(static::subFieldSchema($registry))
+                        ->defaultItems(0),
+                ])
+                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
+            Section::make(__('builder::builder.field.layouts'))
+                ->collapsed()
+                ->schema([
+                    Repeater::make('layouts')
+                        ->hiddenLabel()
+                        ->orderColumn('sort')
+                        ->reorderable()
+                        ->collapsible()
+                        ->collapsed()
+                        ->itemLabel(fn (array $state): string => static::layoutRepeaterItemLabel($registry, $state))
+                        ->schema(static::layoutSchema($registry))
+                        ->defaultItems(0),
+                ])
+                ->visible(fn (callable $get): bool => filled($get('type')) && $get('type') === 'flexible_content'),
         ];
     }
 

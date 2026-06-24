@@ -18,7 +18,7 @@ return [
         'sort' => 'Sort order',
         'sort_helper' => 'Lower values appear higher in the form.',
         'target_entities' => 'Show on',
-        'target_entities_helper' => 'This field group appears in the forms of the selected resources.',
+        'target_entities_helper' => 'This field group appears in the forms of the selected resources. Leave empty to keep the group without showing it anywhere.',
         'target_entities_placeholder' => 'Select a resource…',
         'no_entities_registered' => 'No resources use HasCustomFields yet. Add the trait to a Filament resource.',
         'field_item' => 'Field',

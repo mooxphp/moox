@@ -147,7 +147,7 @@ Im Admin wählst du **„Anzeigen bei“** (Multi-Select). Intern wird das zu:
 ]
 ```
 
-Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der Matcher nur `param: entity` mit `==` / `!=`.
+Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der Matcher nur `param: entity` mit `==` / `!=`. Ohne Zuordnung (`Anzeigen bei` leer) erscheint die Gruppe in keinem Formular.
 
 ---
 
@@ -454,7 +454,7 @@ packages/builder/
 cd packages/builder && composer test
 ```
 
-73 Tests (Stand: Paket-intern).
+75 Tests (Stand: Paket-intern).
 
 ### Manuell im Panel
 
