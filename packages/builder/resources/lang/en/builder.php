@@ -84,6 +84,7 @@ return [
 
     'message' => [
         'body' => 'Message',
+        'body_helper' => 'Shown in the form only — no per-record stored value.',
     ],
 
     'oembed' => [

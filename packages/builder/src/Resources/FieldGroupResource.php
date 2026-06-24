@@ -168,7 +168,8 @@ class FieldGroupResource extends Resource
                                     Toggle::make('required')
                                         ->label(__('builder::builder.field.required'))
                                         ->inline(false)
-                                        ->live(),
+                                        ->live()
+                                        ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
                                     Section::make(__('builder::builder.field.settings'))
                                         ->collapsible()
                                         ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
@@ -387,7 +388,8 @@ class FieldGroupResource extends Resource
             Toggle::make('required')
                 ->label(__('builder::builder.field.required'))
                 ->inline(false)
-                ->live(),
+                ->live()
+                ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
             Section::make(__('builder::builder.field.settings'))
                 ->collapsible()
                 ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
@@ -480,7 +482,8 @@ class FieldGroupResource extends Resource
             Toggle::make('required')
                 ->label(__('builder::builder.field.required'))
                 ->inline(false)
-                ->live(),
+                ->live()
+                ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
             Section::make(__('builder::builder.field.settings'))
                 ->collapsible()
                 ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
@@ -511,6 +514,19 @@ class FieldGroupResource extends Resource
     protected static function typeHasSettings(?string $type): bool
     {
         return static::typeSettingsSchema($type) !== [];
+    }
+
+    protected static function fieldTypeSupportsRequired(?string $type): bool
+    {
+        if (blank($type)) {
+            return false;
+        }
+
+        try {
+            return app(FieldTypeRegistry::class)->get($type)->storesValue();
+        } catch (UnknownFieldTypeException) {
+            return false;
+        }
     }
 
     /**
