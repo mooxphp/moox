@@ -292,14 +292,13 @@ class CompanyResource extends BaseRecordResource
                 ->numeric()
                 ->label(__('company::fields.contacts'))
                 ->toggleable(),
-           
 
             TextColumn::make('addresses_count')
                 ->counts('addresses')
                 ->label(__('company::fields.addresses'))
                 ->numeric()
                 ->toggleable(),
-       
+
             // TextColumn::make('default_currency_code')
             //     ->label(__('company::fields.default_currency_code'))
             //     ->toggleable(isToggledHiddenByDefault: true),

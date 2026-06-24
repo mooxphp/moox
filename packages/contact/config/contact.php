@@ -2,8 +2,8 @@
 
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
-use Moox\Contact\Models\ContactAssignment;
 use Moox\Contact\Models\Contact;
+use Moox\Contact\Models\ContactAssignment;
 
 /*
 |--------------------------------------------------------------------------
