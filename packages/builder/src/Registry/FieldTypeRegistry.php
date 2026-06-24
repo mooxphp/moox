@@ -57,6 +57,28 @@ class FieldTypeRegistry
     }
 
     /**
+     * Field types allowed as direct children of a tab (includes group, repeater, flexible content).
+     *
+     * @return array<string, string>
+     */
+    public function optionsForTabChildren(): array
+    {
+        $options = [];
+
+        foreach ($this->types as $key => $type) {
+            if ($type->isInternal() || $key === 'tab') {
+                continue;
+            }
+
+            $options[$key] = $type->label();
+        }
+
+        asort($options);
+
+        return $options;
+    }
+
+    /**
      * @return array<string, string>
      */
     public function optionsForSubFields(): array

@@ -18,7 +18,7 @@ return [
         'sort' => 'Reihenfolge',
         'sort_helper' => 'Niedrigere Werte werden weiter oben angezeigt.',
         'target_entities' => 'Anzeigen bei',
-        'target_entities_helper' => 'Diese Feldgruppe erscheint in den Formularen der ausgewählten Ressourcen.',
+        'target_entities_helper' => 'Diese Feldgruppe erscheint in den Formularen der ausgewählten Ressourcen. Leer lassen, um die Gruppe zu behalten, aber nirgends anzuzeigen.',
         'target_entities_placeholder' => 'Ressource auswählen…',
         'no_entities_registered' => 'Noch keine Ressource mit HasCustomFields. Trait an einer Filament-Resource hinzufügen.',
         'field_item' => 'Feld',

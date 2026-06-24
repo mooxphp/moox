@@ -229,12 +229,7 @@ class FieldGroupPersistence
                 continue;
             }
 
-            $fieldId = $row['id'] ?? null;
-            $field = $fieldId ? $existing->get((int) $fieldId) : new Field;
-
-            if (! $field instanceof Field) {
-                $field = new Field;
-            }
+            $field = $this->resolveFieldForSync($existing, $row);
 
             $previousName = $field->exists ? $field->name : null;
 
@@ -253,6 +248,8 @@ class FieldGroupPersistence
             ]);
 
             $field->save();
+
+            $existing->put($field->getKey(), $field);
 
             if ($previousName !== null && $previousName !== $field->name) {
                 $entities = $this->entitiesFromLocationRules($group->location_rules ?? []);
@@ -316,12 +313,7 @@ class FieldGroupPersistence
                 continue;
             }
 
-            $optionId = $row['id'] ?? null;
-            $option = $optionId ? $existing->get((int) $optionId) : new FieldOption;
-
-            if (! $option instanceof FieldOption) {
-                $option = new FieldOption;
-            }
+            $option = $this->resolveOptionForSync($existing, $row);
 
             $option->fill([
                 'field_id' => $field->getKey(),
@@ -331,6 +323,7 @@ class FieldGroupPersistence
             ]);
 
             $option->save();
+            $existing->put($option->getKey(), $option);
             $retainedIds[] = $option->getKey();
         }
 
@@ -342,5 +335,55 @@ class FieldGroupPersistence
     public function slugFromName(string $name): string
     {
         return Str::slug($name);
+    }
+
+    /**
+     * @param  Collection<int, Field>  $existing
+     * @param  array<string, mixed>  $row
+     */
+    protected function resolveFieldForSync(Collection $existing, array $row): Field
+    {
+        $fieldId = filled($row['id'] ?? null) ? (int) $row['id'] : null;
+
+        if ($fieldId !== null && $existing->has($fieldId)) {
+            return $existing->get($fieldId);
+        }
+
+        $name = (string) ($row['name'] ?? '');
+
+        if ($name !== '') {
+            $match = $existing->firstWhere('name', $name);
+
+            if ($match instanceof Field) {
+                return $match;
+            }
+        }
+
+        return new Field;
+    }
+
+    /**
+     * @param  Collection<int, FieldOption>  $existing
+     * @param  array<string, mixed>  $row
+     */
+    protected function resolveOptionForSync(Collection $existing, array $row): FieldOption
+    {
+        $optionId = filled($row['id'] ?? null) ? (int) $row['id'] : null;
+
+        if ($optionId !== null && $existing->has($optionId)) {
+            return $existing->get($optionId);
+        }
+
+        $value = (string) ($row['value'] ?? '');
+
+        if ($value !== '') {
+            $match = $existing->firstWhere('value', $value);
+
+            if ($match instanceof FieldOption) {
+                return $match;
+            }
+        }
+
+        return new FieldOption;
     }
 }

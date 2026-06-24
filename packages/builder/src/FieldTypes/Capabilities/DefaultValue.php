@@ -91,37 +91,59 @@ class DefaultValue extends Capability
 
     public function apply(Component $component, FieldDefinition $field): Component
     {
-        if (! array_key_exists('default', $field->config)) {
-            return $component;
-        }
+        $default = $this->resolveForField($field);
 
-        $default = $field->config['default'];
-
-        if ($default === null || $default === '') {
-            return $component;
-        }
-
-        if ($component instanceof Toggle) {
-            $component->default($this->resolveBooleanDefault($default));
-
-            return $component;
-        }
-
-        if (in_array($field->type, ['number', 'range'], true) && is_numeric($default)) {
-            $component->default($default + 0);
-
-            return $component;
-        }
-
-        if (in_array($field->type, ['multiselect', 'checkbox_list'], true)) {
-            $component->default($this->resolveArrayDefault($default));
-
+        if ($default === null) {
             return $component;
         }
 
         $component->default($default);
 
         return $component;
+    }
+
+    public function resolveForField(FieldDefinition $field): mixed
+    {
+        if (! array_key_exists('default', $field->config)) {
+            return null;
+        }
+
+        $default = $field->config['default'];
+
+        if ($default === null || $default === '') {
+            return null;
+        }
+
+        if ($field->type === 'toggle') {
+            return $this->resolveBooleanDefault($default);
+        }
+
+        if (in_array($field->type, ['number', 'range'], true) && is_numeric($default)) {
+            return $default + 0;
+        }
+
+        if (in_array($field->type, ['multiselect', 'checkbox_list'], true)) {
+            return $this->resolveArrayDefault($default);
+        }
+
+        if (in_array($field->type, ['select', 'radio', 'button_group'], true)) {
+            return (string) $default;
+        }
+
+        return $default;
+    }
+
+    public function shouldApplyDefault(mixed $state, string $type): bool
+    {
+        if ($type === 'toggle') {
+            return $state === null;
+        }
+
+        if (is_array($state)) {
+            return $state === [];
+        }
+
+        return $state === null || $state === '';
     }
 
     /**
