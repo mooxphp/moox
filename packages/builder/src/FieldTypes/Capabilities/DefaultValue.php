@@ -82,8 +82,11 @@ class DefaultValue extends Capability
                     ->searchable()
                     ->native(false),
             ],
-            'number', 'range' => [
+            'number' => [
                 $this->numericDefaultField(),
+            ],
+            'range' => [
+                $this->rangeDefaultField(),
             ],
             'textarea', 'rich_text' => [
                 Textarea::make('config.default')
@@ -140,10 +143,20 @@ class DefaultValue extends Capability
             return $this->resolveBooleanDefault($default);
         }
 
-        if (in_array($field->type, ['number', 'range'], true) && is_numeric($default)) {
+        if ($field->type === 'number' && is_numeric($default)) {
             $numeric = $default + 0;
 
             return $this->numericDefaultWithinBounds($numeric, $field) ? $numeric : null;
+        }
+
+        if ($field->type === 'range' && is_numeric($default)) {
+            $numeric = $default + 0;
+
+            if (! $this->rangeDefaultIsValid($numeric, $field->config)) {
+                return null;
+            }
+
+            return $this->normalizeRangeDefault($numeric);
         }
 
         if (in_array($field->type, ['multiselect', 'checkbox_list'], true)) {
@@ -235,6 +248,43 @@ class DefaultValue extends Capability
         }
 
         return $state === null || $state === '';
+    }
+
+    public function shouldReplaceSliderFallbackState(FieldDefinition $field, mixed $state): bool
+    {
+        if ($field->type !== 'range' || ! is_numeric($state)) {
+            return false;
+        }
+
+        $resolved = $this->resolveForField($field);
+
+        if ($resolved === null) {
+            return false;
+        }
+
+        $min = $field->config['min'] ?? null;
+
+        if ($min === null || $min === '' || ! is_numeric($min)) {
+            return false;
+        }
+
+        return ($state + 0) === ($min + 0) && ($resolved + 0) !== ($min + 0);
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     */
+    public function rangeDefaultIsValid(float|int $value, array $config): bool
+    {
+        $field = new FieldDefinition(
+            name: 'range',
+            label: 'Range',
+            type: 'range',
+            config: $config,
+        );
+
+        return $this->numericDefaultWithinBounds($value, $field)
+            && $this->numericDefaultAlignsWithStep($value, $field);
     }
 
     public function mergeCompoundDefaults(FieldDefinition $field, mixed $state): mixed
@@ -592,6 +642,49 @@ class DefaultValue extends Capability
             ->live(onBlur: true);
     }
 
+    protected function rangeDefaultField(): TextInput
+    {
+        return TextInput::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->helperText(__('builder::builder.capabilities.default_value_range_helper'))
+            ->numeric()
+            ->rules(fn (Get $get): array => $this->rangeDefaultRules($get))
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->validationMessages([
+                'min' => __('builder::builder.validation.range_default_bounds'),
+                'max' => __('builder::builder.validation.range_default_bounds'),
+            ])
+            ->live(onBlur: true);
+    }
+
+    /**
+     * @return list<string|\Closure>
+     */
+    protected function rangeDefaultRules(Get $get): array
+    {
+        $rules = $this->numericDefaultRules($get);
+
+        $rules[] = function (string $attribute, mixed $value, \Closure $fail) use ($get): void {
+            if ($value === null || $value === '') {
+                return;
+            }
+
+            if (! is_numeric($value)) {
+                return;
+            }
+
+            if (! $this->rangeDefaultIsValid($value + 0, [
+                'min' => $get('config.min'),
+                'max' => $get('config.max'),
+                'step' => $get('config.step'),
+            ])) {
+                $fail(__('builder::builder.validation.range_default_step'));
+            }
+        };
+
+        return $rules;
+    }
+
     /**
      * @return list<string>
      */
@@ -629,5 +722,35 @@ class DefaultValue extends Capability
         }
 
         return true;
+    }
+
+    protected function numericDefaultAlignsWithStep(float|int $value, FieldDefinition $field): bool
+    {
+        $step = $field->config['step'] ?? null;
+
+        if ($step === null || $step === '' || ! is_numeric($step) || $step + 0 <= 0) {
+            return true;
+        }
+
+        $min = $field->config['min'] ?? null;
+        $origin = ($min !== null && $min !== '' && is_numeric($min)) ? $min + 0 : 0;
+        $diff = $value - $origin;
+
+        if ($diff < -1e-9) {
+            return false;
+        }
+
+        $steps = $diff / ($step + 0);
+
+        return abs($steps - round($steps)) < 1e-6;
+    }
+
+    protected function normalizeRangeDefault(float|int $value): float|int
+    {
+        if (abs($value - round($value)) < 1e-9) {
+            return (int) round($value);
+        }
+
+        return round($value, 6);
     }
 }
