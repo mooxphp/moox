@@ -135,6 +135,7 @@ return [
 
     'validation' => [
         'invalid_option' => 'Der gewählte Wert ist keine gültige Option.',
+        'invalid_email_default' => 'Bitte eine gültige E-Mail-Adresse als Standardwert eingeben.',
         'duplicate_field_name' => 'Der Feldschlüssel „:name“ wird bereits in der Gruppe „:group“ verwendet.',
         'duplicate_field_name_internal' => 'Der Feldschlüssel „:name“ ist in dieser Gruppe mehrfach vergeben.',
         'empty_repeater_item' => 'Eintrag :position in „:field“ ist leer.',
