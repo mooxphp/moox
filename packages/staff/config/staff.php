@@ -1,6 +1,8 @@
 <?php
 
 use Moox\Staff\Models\Staff;
+use Moox\Staff\Models\StaffAssignment;
+use Moox\Staff\Resources\StaffResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,15 @@ return [
         'inactive',
         'approved',
         'archived',
+    ],
+
+    'company_roles' => [
+        'account_manager',
+        'deputy_manager',
+    ],
+
+    'contact_roles' => [
+        'account_manager',
     ],
 
     /*
@@ -138,7 +149,34 @@ return [
         ],
     ],
 
+    'related_morph_defaults' => [
+        'display_columns' => ['display_name', 'short_code', 'email', 'status'],
+        'translation_prefix' => 'staff::fields',
+        'related_resource' => StaffResource::class,
+        'record_select_search_columns' => ['display_name', 'short_code', 'first_name', 'last_name', 'email'],
+    ],
+
     'relations' => [
+        'staff_assignments' => [
+            'kind' => 'pivot_has_many',
+            'perspective' => 'related',
+            'presentation' => 'tab',
+            'label' => 'trans//staff::fields.assignments',
+            'translation_prefix' => 'staff::fields',
+            'relationship' => 'staffAssignments',
+            'pivot_model' => StaffAssignment::class,
+            'pivot_table' => 'staff_assignments',
+            'morph_name' => 'assignable',
+            'pivot_columns' => [
+                'is_primary',
+                'role',
+            ],
+            'actions' => [
+                'header' => ['create'],
+                'record' => ['edit', 'delete'],
+            ],
+            'owner_types' => [],
+        ],
     ],
 
     'taxonomies' => [

@@ -17,6 +17,7 @@ class StaffServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_staff_table',
+                'create_staff_assignments_table',
             ])
             ->hasCommands();
 

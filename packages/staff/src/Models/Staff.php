@@ -18,7 +18,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<\Illuminate\Database\Eloquent\Model, $this> user()
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<\Illuminate\Database\Eloquent\Model, $this> contact()
- * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<\Illuminate\Database\Eloquent\Model, $this> companies()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany<StaffAssignment, $this> staffAssignments()
  */
 class Staff extends BaseRecordModel implements HasMedia
 {
