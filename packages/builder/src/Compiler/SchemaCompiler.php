@@ -316,6 +316,7 @@ class SchemaCompiler
 
         return $component
             ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields, $defaultValue): void {
+                $hasStoredValue = false;
                 $storedValue = null;
 
                 if ($record?->exists) {
@@ -326,6 +327,7 @@ class SchemaCompiler
                     );
 
                     if (array_key_exists($field->name, $values)) {
+                        $hasStoredValue = true;
                         $storedValue = $values[$field->name];
 
                         if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
@@ -335,7 +337,7 @@ class SchemaCompiler
                 }
 
                 if ($fieldType->hasSubFields()) {
-                    $valueToApply = $storedValue ?? $state;
+                    $valueToApply = $hasStoredValue ? $storedValue : $state;
 
                     if (is_array($valueToApply) && $valueToApply !== []) {
                         $this->applyCompoundState(
@@ -350,16 +352,16 @@ class SchemaCompiler
                     return;
                 }
 
-                $valueToApply = $storedValue ?? $state;
-
-                if ($defaultValue->shouldApplyDefault($valueToApply, $field->type)) {
-                    $default = $defaultValue->resolveForField($field);
-
-                    if ($default !== null) {
-                        $component->state($default);
-                    }
-                } elseif ($storedValue !== null) {
+                if ($hasStoredValue) {
                     $component->state($storedValue);
+
+                    return;
+                }
+
+                $default = $defaultValue->resolveForField($field);
+
+                if ($default !== null) {
+                    $component->state($default);
                 }
             })
             ->afterStateUpdated(function (Component $component) use ($field, $fieldType, $defaultValue): void {

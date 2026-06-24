@@ -6,6 +6,7 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldGroupDefinition;
+use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Support\FieldRelationTree;
 use Moox\Builder\Support\StorableFieldCollector;
@@ -25,14 +26,20 @@ class FieldGroupValidator
         $locationRules = $this->fieldGroupPersistence->resolveLocationRules($data);
         $entities = $this->fieldGroupPersistence->entitiesFromLocationRules($locationRules);
         $fieldRows = $data['fields'] ?? [];
+        $messages = $this->rangeBoundsMessages($fieldRows);
 
         if ($entities === [] || $fieldRows === []) {
+            if ($messages !== []) {
+                throw ValidationException::withMessages($messages);
+            }
+
             return;
         }
 
         $entries = $this->storableFieldCollector->pathsFromRows($fieldRows);
 
         $messages = array_merge(
+            $messages,
             $this->internalDuplicateMessages($entries),
             $this->externalConflictMessages($group, $entities, $entries),
         );
@@ -123,5 +130,91 @@ class FieldGroupValidator
         }
 
         return $messages;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return array<string, list<string>>
+     */
+    protected function rangeBoundsMessages(array $rows, string $prefix = 'fields'): array
+    {
+        $messages = [];
+
+        foreach ($rows as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $basePath = "{$prefix}.{$index}";
+            $type = (string) ($row['type'] ?? '');
+
+            if ($type === 'range' && $this->rangeMaxIsNotGreaterThanMin(
+                $row['config']['min'] ?? null,
+                $row['config']['max'] ?? null,
+            )) {
+                $messages["{$basePath}.config.max"] = [
+                    __('builder::builder.validation.range_max_gt_min'),
+                ];
+            }
+
+            if ($type === 'range') {
+                $default = $row['config']['default'] ?? null;
+
+                if ($default !== null && $default !== '' && is_numeric($default) && ! app(DefaultValue::class)->rangeDefaultIsValid($default + 0, $row['config'] ?? [])) {
+                    $messages["{$basePath}.config.default"] = [
+                        __('builder::builder.validation.range_default_step'),
+                    ];
+                }
+            }
+
+            if ($type === 'tab') {
+                $messages = array_merge(
+                    $messages,
+                    $this->rangeBoundsMessages($row['children'] ?? [], "{$basePath}.children"),
+                );
+
+                continue;
+            }
+
+            if ($type === 'flexible_content') {
+                foreach ($row['layouts'] ?? [] as $layoutIndex => $layout) {
+                    if (! is_array($layout)) {
+                        continue;
+                    }
+
+                    $messages = array_merge(
+                        $messages,
+                        $this->rangeBoundsMessages(
+                            $layout['children'] ?? [],
+                            "{$basePath}.layouts.{$layoutIndex}.children",
+                        ),
+                    );
+                }
+
+                continue;
+            }
+
+            if (in_array($type, ['group', 'repeater'], true)) {
+                $messages = array_merge(
+                    $messages,
+                    $this->rangeBoundsMessages($row['children'] ?? [], "{$basePath}.children"),
+                );
+            }
+        }
+
+        return $messages;
+    }
+
+    protected function rangeMaxIsNotGreaterThanMin(mixed $min, mixed $max): bool
+    {
+        if ($min === null || $min === '' || $max === null || $max === '') {
+            return false;
+        }
+
+        if (! is_numeric($min) || ! is_numeric($max)) {
+            return false;
+        }
+
+        return $max + 0 <= $min + 0;
     }
 }

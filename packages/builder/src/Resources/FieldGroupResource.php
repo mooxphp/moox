@@ -551,6 +551,13 @@ class FieldGroupResource extends Resource
             $get('options');
         }
 
+        if ($type === 'range') {
+            $get('config.min');
+            $get('config.max');
+            $get('config.step');
+            $get('config.default');
+        }
+
         return static::typeSettingsSchema($type);
     }
 

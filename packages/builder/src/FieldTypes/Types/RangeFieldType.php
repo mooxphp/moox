@@ -53,13 +53,27 @@ class RangeFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $defaultValue = app(DefaultValue::class);
+
         $component = Slider::make($field->name)
             ->label($field->label)
             ->tooltips(true)
             ->required(false)
             ->decimalPlaces($this->decimalPlacesForStep($field));
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
+
+        $component->default(static function (Slider $slider) use ($field, $defaultValue): float|int {
+            $resolved = $defaultValue->resolveForField($field);
+
+            if ($resolved !== null) {
+                return $resolved;
+            }
+
+            return $slider->getMinValue();
+        });
+
+        return $component;
     }
 
     protected function decimalPlacesForStep(FieldDefinition $field): int
