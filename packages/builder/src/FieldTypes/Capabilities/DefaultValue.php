@@ -16,7 +16,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\Registry\FieldTypeRegistry;
 
 class DefaultValue extends Capability
 {
@@ -212,6 +214,165 @@ class DefaultValue extends Capability
         }
 
         return $state === null || $state === '';
+    }
+
+    public function mergeCompoundDefaults(FieldDefinition $field, mixed $state): mixed
+    {
+        if (! is_array($state)) {
+            return $state;
+        }
+
+        return match ($field->type) {
+            'flexible_content' => $this->mergeFlexibleContentDefaults($field, $state),
+            'repeater' => $this->mergeListItemDefaults($field, $state),
+            'group' => $this->mergeGroupDefaults($field, $state),
+            default => $state,
+        };
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $children
+     * @return array<string, mixed>
+     */
+    public function defaultDataForChildren(Collection $children): array
+    {
+        return $this->mergeSubFieldDefaults($children, []);
+    }
+
+    /**
+     * @param  array<int|string, array<string, mixed>>  $state
+     * @return array<int, array<string, mixed>>
+     */
+    public function normalizeCompoundState(array $state): array
+    {
+        return array_is_list($state) ? array_values($state) : array_values($state);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $state
+     * @return array<int, array<string, mixed>>
+     */
+    protected function mergeFlexibleContentDefaults(FieldDefinition $field, array $state): array
+    {
+        return array_values(array_map(function (mixed $item) use ($field): array {
+            if (! is_array($item)) {
+                return [];
+            }
+
+            $type = $item['type'] ?? null;
+            $data = $item['data'] ?? [];
+
+            if (! is_string($type) || ! is_array($data)) {
+                return $item;
+            }
+
+            $layout = $field->layouts()->firstWhere('name', $type);
+
+            if ($layout === null) {
+                return $item;
+            }
+
+            $item['data'] = $this->mergeSubFieldDefaults($layout->children, $data);
+
+            return $item;
+        }, $state));
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $state
+     * @return array<int, array<string, mixed>>
+     */
+    protected function mergeGroupDefaults(FieldDefinition $field, array $state): array
+    {
+        if ($state === []) {
+            return $state;
+        }
+
+        if (! array_is_list($state)) {
+            return [$this->mergeSubFieldDefaults($field->children, $state)];
+        }
+
+        return $this->mergeListItemDefaults($field, $state);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $state
+     * @return array<int, array<string, mixed>>
+     */
+    protected function mergeListItemDefaults(FieldDefinition $field, array $state): array
+    {
+        return array_values(array_map(
+            fn (mixed $item): array => is_array($item)
+                ? $this->mergeSubFieldDefaults($field->children, $item)
+                : [],
+            $state,
+        ));
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $children
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mergeSubFieldDefaults(Collection $children, array $data): array
+    {
+        foreach ($children as $child) {
+            if ($child->type === 'tab') {
+                foreach ($child->children as $tabChild) {
+                    $data = $this->mergeFieldDefaultIntoData($tabChild, $data);
+                }
+
+                continue;
+            }
+
+            $data = $this->mergeFieldDefaultIntoData($child, $data);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mergeFieldDefaultIntoData(FieldDefinition $child, array $data): array
+    {
+        $fieldType = app(FieldTypeRegistry::class)->get($child->type);
+
+        if ($fieldType->hasSubFields() && in_array($child->type, ['group', 'repeater', 'flexible_content'], true)) {
+            $key = $child->name;
+            $nested = $data[$key] ?? [];
+
+            if (! is_array($nested)) {
+                $nested = [];
+            }
+
+            if ($child->type === 'group' && ! array_is_list($nested)) {
+                $data[$key] = $this->mergeSubFieldDefaults($child->children, $nested);
+            } else {
+                $data[$key] = $this->mergeCompoundDefaults($child, $nested);
+            }
+
+            return $data;
+        }
+
+        if (! $fieldType->storesValue()) {
+            return $data;
+        }
+
+        $current = $data[$child->name] ?? null;
+
+        if (! $this->shouldApplyDefault($current, $child->type)) {
+            return $data;
+        }
+
+        $default = $this->resolveForField($child);
+
+        if ($default !== null) {
+            $data[$child->name] = $default;
+        }
+
+        return $data;
     }
 
     /**
