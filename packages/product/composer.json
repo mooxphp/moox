@@ -1,6 +1,6 @@
 {
     "name": "moox/product",
-    "description": "Product is a Moox draft entity with taxonomy and attribute value assignments.",
+    "description": "Moox product entity with translatable name, slug, descriptions and commerce fields.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -19,14 +19,9 @@
         }
     ],
     "require": {
-        "moox/attribute": "dev-main",
-        "moox/category": "dev-main",
         "moox/core": "dev-main",
-        "moox/draft": "dev-main",
         "moox/localization": "dev-main",
-        "moox/slug": "dev-main",
-        "moox/tag": "dev-main",
-        "moox/user": "dev-main"
+        "moox/slug": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -59,13 +54,6 @@
                 },
                 "auto_class": {
                     "Product": "Moox\\Product\\Product"
-                },
-                "auto_run": {
-                    "Build the frontend": "npm run build",
-                    "Clear the cache": "php artisan cache:clear"
-                },
-                "auto_runhere": {
-                    "Build the frontend": "npm run build"
                 }
             },
             "update": {

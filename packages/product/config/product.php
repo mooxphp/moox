@@ -1,12 +1,5 @@
 <?php
 
-use App\Models\User;
-use Moox\Attribute\Models\AttributableAttributeValue;
-use Moox\Attribute\Models\AttributeValues;
-use Moox\Category\Models\Category;
-use Moox\Tag\Forms\TaxonomyCreateForm;
-use Moox\Tag\Models\Tag;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -26,28 +19,8 @@ return [
 
     'resources' => [
         'product' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
             'single' => 'trans//product::product.product',
             'plural' => 'trans//product::product.products',
-
-            /*
-            |--------------------------------------------------------------------------
-            | <Tabs></Tabs>
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
 
             'tabs' => [
                 'all' => [
@@ -76,73 +49,16 @@ return [
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relations (registry)
-    |--------------------------------------------------------------------------
-    |
-    | Declarative list of notable Eloquent relations for this entity. The
-    | attribute_values entry documents the morph-to-many link provided by
-    | moox/attribute's HasAttributeValues concern.
-    |
-    */
-    'relations' => [
-        'attribute_values' => [
-            'label' => 'trans//product::product.attribute_values',
-            'relationship' => 'attributeValues',
-            'related_model' => AttributeValues::class,
-            'pivot_model' => AttributableAttributeValue::class,
-            'pivot_table' => 'attributable_attribute_value',
-        ],
-    ],
+    'relations' => [],
 
-    'taxonomies' => [
-        'category' => [
-            'label' => 'trans//core::core.category',
-            'model' => Category::class,
-            'table' => 'categorizables',
-            'relationship' => 'categorizable',
-            'foreignKey' => 'categorizable_id',
-            'relatedKey' => 'category_id',
-            'createForm' => Moox\Category\Forms\TaxonomyCreateForm::class,
-            'hierarchical' => true,
-        ],
-        'tag' => [
-            'label' => 'trans//core::core.tag',
-            'model' => Tag::class,
-            'table' => 'taggables',
-            'relationship' => 'taggable',
-            'foreignKey' => 'taggable_id',
-            'relatedKey' => 'tag_id',
-            'createForm' => TaxonomyCreateForm::class,
-            'hierarchical' => false,
-        ],
-    ],
+    'taxonomies' => [],
 
-    /*
-   |--------------------------------------------------------------------------
-   | User Models
-   |--------------------------------------------------------------------------
-   |
-   | The User model classes available for author relationships.
-   | You can define multiple user types with their display attributes.
-   |
-   */
-    'user_models' => [
-        User::class => [
-            'title_attribute' => 'name',
-            'label' => 'App User',
-        ],
-    ],
+    'navigation_group' => 'trans//core::core.cms',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Navigation
-    |--------------------------------------------------------------------------
-    |
-    | The navigation group and sort of the Resource,
-    | and if the panel is enabled.
-    |
-    */
-    'navigation_group' => 'DEV',
+    'statuses' => [
+        'draft' => 'trans//product::product.status_draft',
+        'active' => 'trans//product::product.status_active',
+        'inactive' => 'trans//product::product.status_inactive',
+        'archived' => 'trans//product::product.status_archived',
+    ],
 ];

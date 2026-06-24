@@ -4,37 +4,32 @@ declare(strict_types=1);
 
 namespace Moox\Product\Resources;
 
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Product\Models\Product;
-use Moox\Product\Moox\Entities\Product\RelationManagers\ProductAttributeValuesRelationManager;
 use Moox\Product\Resources\Product\Pages\CreateProduct;
 use Moox\Product\Resources\Product\Pages\EditProduct;
 use Moox\Product\Resources\Product\Pages\ListProducts;
 use Moox\Product\Resources\Product\Pages\ViewProduct;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Override;
 
 class ProductResource extends BaseDraftResource
 {
     use HasResourceTabs;
-    use HasResourceTaxonomy;
 
     protected static ?string $model = Product::class;
 
@@ -43,6 +38,39 @@ class ProductResource extends BaseDraftResource
     protected static function getEntityType(): string
     {
         return 'product';
+    }
+
+    #[Override]
+    public static function getTitleColumn(): TextColumn
+    {
+        return TextColumn::make('name')
+            ->label(__('product::product.name'))
+            ->searchable(true, function ($query, $search, $livewire): void {
+                $currentLang = static::resolveCurrentLang($livewire);
+                $query->whereHas('translations', function ($query) use ($search, $currentLang): void {
+                    $query->where('locale', $currentLang)
+                        ->where('name', 'like', '%'.$search.'%');
+                });
+            })
+            ->extraAttributes(function ($record, $livewire): array {
+                $currentLang = static::resolveCurrentLang($livewire);
+
+                return [
+                    'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('name')->exists()
+                        ? ''
+                        : 'color: var(--gray-500);',
+                ];
+            })
+            ->getStateUsing(function ($record, $livewire) {
+                $currentLang = static::resolveCurrentLang($livewire);
+                $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
+
+                if ($translation?->name) {
+                    return $translation->name;
+                }
+
+                return __('core::core.no_title_available');
+            });
     }
 
     public static function getModelLabel(): string
@@ -72,91 +100,122 @@ class ProductResource extends BaseDraftResource
 
     public static function form(Schema $form): Schema
     {
-        $taxonomyFields = static::getTaxonomyFields();
-
-        $schema = [
-            Grid::make()
-                ->schema([
-                    Section::make()
-                        ->schema([
-                            TitleWithSlugInput::make(
-                                fieldTitle: 'title',
-                                fieldSlug: 'slug',
-                                fieldPermalink: 'permalink',
-                                urlPathEntityType: 'product',
-                                slugRuleUniqueParameters: [
-                                    'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
-                                        $locale = $livewire->lang;
-                                        if ($record) {
-                                            $rule->where('locale', $locale);
-                                            $existingTranslation = $record->translations()
-                                                ->where('locale', $locale)
-                                                ->first();
-                                            if ($existingTranslation) {
-                                                $rule->ignore($existingTranslation->id);
-                                            }
-                                        } else {
-                                            $rule->where('locale', $locale);
-                                        }
-
-                                        return $rule;
-                                    },
-                                    'table' => 'product_translations',
-                                    'column' => 'slug',
-                                ]
-                            ),
-                            Toggle::make('is_active')
-                                ->label(__('core::core.active')),
-                            RichEditor::make('description')
-                                ->label(__('core::core.description')),
-                            MarkdownEditor::make('content')
-                                ->label(__('core::core.content')),
-                            Grid::make(2)
-                                ->schema([
-                                    static::getFooterActions()->columnSpan(1),
-                                ]),
-                        ])->columnSpan(2),
-                    Grid::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    static::getFormActions(),
-                                ]),
-                            Section::make('')
-                                ->schema([
-                                    static::getTranslationStatusSelect(),
-                                    static::getPublishDateField(),
-                                    static::getUnpublishDateField(),
-                                ]),
-                            Section::make('')
-                                ->schema($taxonomyFields),
-                            Section::make('')
-                                ->schema([
-                                    static::getAuthorSelect(),
-                                    DateTimePicker::make('due_at')
-                                        ->label(__('core::core.due')),
-                                    ColorPicker::make('color')
-                                        ->label(__('core::core.color')),
-                                ]),
-                            Section::make('')
-                                ->schema([
-                                    ...static::getStandardCopyableFields(),
-                                    Section::make('')
-                                        ->schema([
-                                            ...static::getStandardTimestampFields(),
-                                        ]),
-                                ])
-                                ->hidden(fn ($record) => $record === null),
-                        ])
-                        ->columnSpan(1)
-                        ->columns(1),
-                ])
-                ->columns(3)
-                ->columnSpanFull(),
-        ];
-
         return $form
-            ->components($schema);
+            ->components([
+                Grid::make()
+                    ->schema([
+                        Section::make(__('product::product.section_content'))
+                            ->schema([
+                                TitleWithSlugInput::make(
+                                    fieldTitle: 'name',
+                                    fieldSlug: 'slug',
+                                    urlPathEntityType: 'products',
+                                    slugRuleUniqueParameters: [
+                                        'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                                            $locale = $livewire->lang;
+                                            if ($record) {
+                                                $rule->where('locale', $locale);
+                                                $existingTranslation = $record->translations()
+                                                    ->where('locale', $locale)
+                                                    ->first();
+                                                if ($existingTranslation) {
+                                                    $rule->ignore($existingTranslation->id);
+                                                }
+                                            } else {
+                                                $rule->where('locale', $locale);
+                                            }
+
+                                            return $rule;
+                                        },
+                                        'table' => 'product_translations',
+                                        'column' => 'slug',
+                                    ]
+                                ),
+                                Textarea::make('short_description')
+                                    ->label(__('product::product.short_description'))
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+                                RichEditor::make('description')
+                                    ->label(__('product::product.description'))
+                                    ->columnSpanFull(),
+                            ])
+                            ->columnSpan(2),
+                        Grid::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
+                                Section::make(__('product::product.section_commerce'))
+                                    ->schema([
+                                        TextInput::make('sku')
+                                            ->label(__('product::product.sku'))
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(64),
+                                        TextInput::make('price')
+                                            ->label(__('product::product.price'))
+                                            ->numeric()
+                                            ->required()
+                                            ->default(0)
+                                            ->step(0.01),
+                                        TextInput::make('sale_price')
+                                            ->label(__('product::product.sale_price'))
+                                            ->numeric()
+                                            ->step(0.01),
+                                        TextInput::make('stock')
+                                            ->label(__('product::product.stock'))
+                                            ->numeric()
+                                            ->integer()
+                                            ->default(0),
+                                        Select::make('status')
+                                            ->label(__('product::product.status'))
+                                            ->options(config('product.statuses', []))
+                                            ->default('draft')
+                                            ->required(),
+                                        TextInput::make('brand_id')
+                                            ->label(__('product::product.brand_id'))
+                                            ->numeric()
+                                            ->integer(),
+                                        TextInput::make('weight')
+                                            ->label(__('product::product.weight'))
+                                            ->numeric()
+                                            ->step(0.001),
+                                        KeyValue::make('meta')
+                                            ->label(__('product::product.meta'))
+                                            ->columnSpanFull(),
+                                    ]),
+                                Section::make(__('product::product.section_seo'))
+                                    ->schema([
+                                        TextInput::make('meta_title')
+                                            ->label(__('product::product.meta_title'))
+                                            ->maxLength(255),
+                                        Textarea::make('meta_description')
+                                            ->label(__('product::product.meta_description'))
+                                            ->rows(3),
+                                    ]),
+                                Section::make()
+                                    ->schema([
+                                        static::getTranslationStatusSelect(),
+                                        static::getPublishDateField(),
+                                        static::getUnpublishDateField(),
+                                    ]),
+                                Section::make('')
+                                    ->schema([
+                                        ...static::getStandardCopyableFields(),
+                                        Section::make('')
+                                            ->schema([
+                                                ...static::getStandardTimestampFields(),
+                                            ]),
+                                    ])
+                                    ->hidden(fn ($record) => $record === null),
+                            ])
+                            ->columnSpan(1)
+                            ->columns(1),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -166,54 +225,43 @@ class ProductResource extends BaseDraftResource
                 static::getTitleColumn(),
                 static::getSlugColumn(),
                 TranslationColumn::make('translations.locale'),
-                IconColumn::make('is_active')
-                    ->label(__('core::core.active'))
-                    ->boolean()
+                TextColumn::make('sku')
+                    ->label(__('product::product.sku'))
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('description')
-                    ->label(__('core::core.description'))
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('content')
-                    ->label(__('core::core.content'))
-                    ->limit(50)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('author.name')
-                    ->label(__('core::core.author'))
+                TextColumn::make('price')
+                    ->label(__('product::product.price'))
+                    ->money('EUR')
+                    ->sortable(),
+                TextColumn::make('sale_price')
+                    ->label(__('product::product.sale_price'))
+                    ->money('EUR')
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('type')
-                    ->label(__('core::core.type'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('published_at')
-                    ->label(__('core::core.published_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
-                ColorColumn::make('color')
-                    ->label(__('core::core.color'))
-                    ->toggleable(),
-                TextColumn::make('uuid')
-                    ->label(__('core::core.uuid'))
+                TextColumn::make('stock')
+                    ->label(__('product::product.stock'))
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->label(__('product::product.status'))
+                    ->badge()
+                    ->sortable(),
+                TextColumn::make('brand_id')
+                    ->label(__('product::product.brand_id'))
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('ulid')
-                    ->label(__('core::core.ulid'))
+                TextColumn::make('weight')
+                    ->label(__('product::product.weight'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 static::getStatusColumn(),
-                ...static::getTaxonomyColumns(),
             ])
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
-                TernaryFilter::make('is_active')
-                    ->label(__('core::core.active')),
                 static::getTranslationStatusFilter(),
-                SelectFilter::make('type')
-                    ->label(__('core::core.type'))
-                    ->options(['simple' => 'Simple', 'bundle' => 'Bundle']),
-                ...static::getTaxonomyFilters(),
-            ])->deferFilters(false)
+                SelectFilter::make('status')
+                    ->label(__('product::product.status'))
+                    ->options(config('product.statuses', [])),
+            ])
+            ->deferFilters(false)
             ->persistFiltersInSession();
     }
 
@@ -227,14 +275,9 @@ class ProductResource extends BaseDraftResource
         ];
     }
 
-    /**
-     * @return array<class-string>
-     */
     public static function getRelations(): array
     {
-        return [
-            ProductAttributeValuesRelationManager::class,
-        ];
+        return [];
     }
 
     public static function setCurrentTab(?string $tab): void

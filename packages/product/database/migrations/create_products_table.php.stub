@@ -13,23 +13,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_active')->default(true);
-            $table->json('image')->nullable();
-            $table->string('type')->nullable();
-            $table->dateTime('due_at')->nullable();
-            $table->string('color')->nullable();
-            $table->string('sku', 64)->nullable()->unique();
-            $table->string('gtin', 14)->nullable()->index();
-            $table->string('mpn', 64)->nullable();
-            $table->string('brand_name', 128)->nullable();
-            $table->unsignedInteger('weight_grams')->nullable();
-            $table->unsignedInteger('length_mm')->nullable();
-            $table->unsignedInteger('width_mm')->nullable();
-            $table->unsignedInteger('height_mm')->nullable();
+            $table->string('sku', 64)->unique();
+            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('sale_price', 10, 2)->nullable();
+            $table->unsignedInteger('stock')->default(0);
+            $table->string('status')->default('draft');
+            $table->unsignedBigInteger('brand_id')->nullable()->index();
+            $table->decimal('weight', 10, 3)->nullable();
+            $table->json('meta')->nullable();
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
-            $table->string('status')->nullable();
-            $table->json('custom_properties')->nullable();
             $table->softDeletes();
         });
     }
