@@ -14,9 +14,11 @@ class PrefixSuffix extends Capability
     {
         return [
             TextInput::make('config.prefix')
-                ->label(__('builder::builder.capabilities.prefix')),
+                ->label(__('builder::builder.capabilities.prefix'))
+                ->helperText(__('builder::builder.capabilities.prefix_helper')),
             TextInput::make('config.suffix')
-                ->label(__('builder::builder.capabilities.suffix')),
+                ->label(__('builder::builder.capabilities.suffix'))
+                ->helperText(__('builder::builder.capabilities.suffix_helper')),
         ];
     }
 
