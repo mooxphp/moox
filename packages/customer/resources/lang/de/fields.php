@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'status' => 'Status',
+    'customer_number' => 'Kundennummer',
+    'external_reference' => 'Externe Referenz',
+    'search_terms' => 'Suchbegriffe',
+    'price_type' => 'Preisart',
+    'customer_group' => 'Kundengruppe',
+    'discount_percent' => 'Rabatt (%)',
+    'credit_limit' => 'Kreditlimit',
+    'language_id' => 'Sprache',
+    'note' => 'Notiz',
+    'sort' => 'Sortierung',
+    'is_active' => 'Aktiv',
+    'approved_at' => 'Freigegeben am',
+    'active' => 'Aktiv',
+    'company' => 'Firma',
+    'companies' => 'Firmen',
+    'customers' => 'Kunden',
+    'assignments' => 'Zuordnungen',
+    'is_primary' => 'Primär',
+    'role' => 'Rolle',
+    'identity' => 'Stammdaten',
+    'settings' => 'Einstellungen',
+    'commercial' => 'Konditionen',
+    'data' => 'Zusätzliche Daten',
+];

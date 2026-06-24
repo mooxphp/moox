@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'status' => 'Status',
+    'customer_number' => 'Customer number',
+    'external_reference' => 'External reference',
+    'search_terms' => 'Search terms',
+    'price_type' => 'Price type',
+    'customer_group' => 'Customer group',
+    'discount_percent' => 'Discount (%)',
+    'credit_limit' => 'Credit limit',
+    'language_id' => 'Language',
+    'note' => 'Note',
+    'sort' => 'Sort order',
+    'is_active' => 'Active',
+    'approved_at' => 'Approved at',
+    'active' => 'Active',
+    'company' => 'Company',
+    'companies' => 'Companies',
+    'customers' => 'Customers',
+    'assignments' => 'Assignments',
+    'is_primary' => 'Primary',
+    'role' => 'Role',
+    'identity' => 'Identity',
+    'settings' => 'Settings',
+    'commercial' => 'Commercial',
+    'data' => 'Additional data',
+];
