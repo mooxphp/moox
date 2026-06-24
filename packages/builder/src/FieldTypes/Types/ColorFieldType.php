@@ -8,6 +8,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
+use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\FieldType;
 
 class ColorFieldType extends FieldType
@@ -21,13 +22,15 @@ class ColorFieldType extends FieldType
     {
         return [
             DefaultValue::class,
+            HelperText::class,
         ];
     }
 
     public function formComponent(FieldDefinition $field): Component
     {
         $component = ColorPicker::make($field->name)
-            ->label($field->label);
+            ->label($field->label)
+            ->hex();
 
         return $this->applyCapabilitiesAndValidation($component, $field);
     }
