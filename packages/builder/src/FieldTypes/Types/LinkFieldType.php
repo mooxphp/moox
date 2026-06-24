@@ -9,6 +9,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\FieldTypes\Capabilities\Capability;
 use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\FieldType;
 
@@ -68,16 +69,15 @@ class LinkFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $urlRules = ($field->validation['required'] ?? false) === true
+            ? ['required', 'url']
+            : ['nullable', 'url'];
+
         $url = TextInput::make('url')
             ->label(__('builder::builder.link.url'))
-            ->url()
-            ->nullable();
+            ->rules($urlRules);
 
-        if (($field->validation['required'] ?? false) === true) {
-            $url->required();
-        } else {
-            $url->nullable();
-        }
+        $url = Capability::applyAll($this->capabilities(), $url, $field);
 
         $fieldset = Fieldset::make($field->label)
             ->schema([
