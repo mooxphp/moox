@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 
+use Filament\Forms\Components\TextInput;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Types\LinkFieldType;
@@ -101,5 +102,5 @@ it('builds link fields with helper text configured on the url input', function (
     $component = (new LinkFieldType)->formComponent($field);
 
     expect($component->getDefaultChildComponents())->toHaveCount(3)
-        ->and($component->getDefaultChildComponents()[0])->toBeInstanceOf(\Filament\Forms\Components\TextInput::class);
+        ->and($component->getDefaultChildComponents()[0])->toBeInstanceOf(TextInput::class);
 });
