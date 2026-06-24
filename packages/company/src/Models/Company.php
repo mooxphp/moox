@@ -19,6 +19,8 @@ use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
  * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> contacts()
  * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> addresses()
  * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> address()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> staff()
+ * @method \Illuminate\Database\Eloquent\Relations\MorphToMany<Model, $this> staffMember()
  */
 class Company extends BaseRecordModel
 {

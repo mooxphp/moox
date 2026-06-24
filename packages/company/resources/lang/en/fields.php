@@ -12,6 +12,7 @@ return [
     'addresses' => 'Addresses',
     'contacts' => 'Contacts',
     'departments' => 'Departments',
+    'staff' => 'Staff',
     'external_reference' => 'External reference',
     'phone' => 'Phone',
     'fax' => 'Fax',

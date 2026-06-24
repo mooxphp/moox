@@ -11,6 +11,7 @@ return [
     'children' => 'Tochtergesellschaften',
     'contacts' => 'Kontakte',
     'departments' => 'Abteilungen',
+    'staff' => 'Bearbeiter',
     'addresses' => 'Adressen',
     'external_reference' => 'Externe Referenz',
     'phone' => 'Telefon',

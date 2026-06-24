@@ -230,17 +230,17 @@ class CompanyResource extends BaseRecordResource
         $hasChildrenRelation = static::hasConfiguredRelation('children');
 
         $columns = [
-            TextColumn::make('name')
-                ->label(__('company::fields.name'))
-                ->formatStateUsing(fn (?string $state, Company $record): string => ($hasParentRelation && $record->parent_id ? '↳ ' : '').($state ?? '')
-                )
-                ->description(
-                    $hasParentRelation
-                        ? fn (Company $record): ?string => $record->parent?->displayLabel()
-                        : null,
-                )
-                ->searchable()
-                ->sortable(),
+            // TextColumn::make('name')
+            //     ->label(__('company::fields.name'))
+            //     ->formatStateUsing(fn (?string $state, Company $record): string => ($hasParentRelation && $record->parent_id ? '↳ ' : '').($state ?? '')
+            //     )
+            //     ->description(
+            //         $hasParentRelation
+            //             ? fn (Company $record): ?string => $record->parent?->displayLabel()
+            //             : null,
+            //     )
+            //     ->searchable()
+            //     ->sortable(),
             TextColumn::make('display_name')
                 ->label(__('company::fields.display_name'))
                 ->searchable()
@@ -287,12 +287,25 @@ class CompanyResource extends BaseRecordResource
                 ->label(__('company::fields.email'))
                 ->searchable()
                 ->toggleable(),
-            TextColumn::make('default_currency_code')
-                ->label(__('company::fields.default_currency_code'))
-                ->toggleable(isToggledHiddenByDefault: true),
-            IconColumn::make('is_active')
-                ->label(__('company::fields.is_active'))
-                ->boolean(),
+            TextColumn::make('contacts_count')
+                ->counts('contacts')
+                ->numeric()
+                ->label(__('company::fields.contacts'))
+                ->toggleable(),
+           
+
+            TextColumn::make('addresses_count')
+                ->counts('addresses')
+                ->label(__('company::fields.addresses'))
+                ->numeric()
+                ->toggleable(),
+       
+            // TextColumn::make('default_currency_code')
+            //     ->label(__('company::fields.default_currency_code'))
+            //     ->toggleable(isToggledHiddenByDefault: true),
+            // IconColumn::make('is_active')
+            //     ->label(__('company::fields.is_active'))
+            //     ->boolean(),
         ];
 
         if ($hasChildrenRelation) {
