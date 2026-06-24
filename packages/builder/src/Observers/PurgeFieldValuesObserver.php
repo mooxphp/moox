@@ -6,6 +6,7 @@ namespace Moox\Builder\Observers;
 
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Services\CompoundFieldValueMigrator;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Services\FieldValuePurger;
 
@@ -14,6 +15,7 @@ class PurgeFieldValuesObserver
     public function __construct(
         protected FieldValuePurger $purger,
         protected FieldGroupPersistence $fieldGroupPersistence,
+        protected CompoundFieldValueMigrator $compoundFieldValueMigrator,
     ) {}
 
     public function deleting(FieldGroup|Field $model): void
@@ -51,6 +53,12 @@ class PurgeFieldValuesObserver
         $entities = $this->fieldGroupPersistence->entitiesFromLocationRules(
             $field->fieldGroup->location_rules ?? [],
         );
+
+        if ($field->parent_field_id !== null) {
+            $this->compoundFieldValueMigrator->removeNestedSubfield($field, $entities);
+
+            return;
+        }
 
         $this->purger->purgeForFieldName($field->name, $entities);
     }

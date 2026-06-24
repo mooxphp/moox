@@ -16,12 +16,14 @@ use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Support\StorableFieldCollector;
 
 class SchemaCompiler
 {
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected CustomFieldsManager $customFieldsManager,
+        protected StorableFieldCollector $storableFieldCollector,
     ) {}
 
     /**
@@ -31,12 +33,23 @@ class SchemaCompiler
      */
     public function compile(Collection $fieldGroups, ?string $resourceClass = null): array
     {
+        $entity = $resourceClass !== null
+            ? $this->customFieldsManager->locationContextForResource($resourceClass)->entity
+            : null;
+
+        $storableFields = $entity !== null
+            ? $this->storableFieldCollector->definitionsFromList(
+                $fieldGroups->flatMap(fn (FieldGroupDefinition $group): Collection => $group->fields),
+            )
+            : collect();
+
         $sections = [];
 
         foreach ($fieldGroups as $group) {
             $components = $this->compileRootFields(
                 $group->fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values(),
-                $resourceClass,
+                $entity,
+                $storableFields,
             );
 
             if ($components === []) {
@@ -52,57 +65,62 @@ class SchemaCompiler
 
     /**
      * @param  Collection<int, FieldDefinition>  $fields
-     * @param  class-string|null  $resourceClass
      * @return list<Component>
      */
-    public function compileSubFields(Collection $fields, ?string $resourceClass): array
+    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null): array
     {
+        $storableFields ??= collect();
+
         return $fields
             ->sortBy(fn (FieldDefinition $field): int => $field->sort)
             ->values()
-            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $resourceClass))
+            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields))
             ->all();
     }
 
     /**
      * @param  Collection<int, FieldDefinition>  $fields
-     * @param  class-string|null  $resourceClass
+     * @param  Collection<int, FieldDefinition>  $storableFields
      * @return list<Component>
      */
-    protected function compileRootFields(Collection $fields, ?string $resourceClass): array
+    protected function compileRootFields(Collection $fields, ?string $entity, Collection $storableFields): array
     {
         $components = [];
-        $beforeTabs = [];
-        $tabPanels = [];
-        $tabPanelIndex = null;
+        $sorted = $fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values();
+        $index = 0;
 
-        foreach ($fields as $field) {
+        while ($index < $sorted->count()) {
+            $field = $sorted[$index];
+
             if ($field->type === 'tab') {
-                $tabPanels[] = ['label' => $field->label, 'fields' => []];
-                $tabPanelIndex = count($tabPanels) - 1;
+                $tabPanels = [];
+
+                while ($index < $sorted->count() && $sorted[$index]->type === 'tab') {
+                    $tabField = $sorted[$index];
+
+                    if ($tabField->children->isNotEmpty()) {
+                        $tabPanels[] = [
+                            'label' => $tabField->label,
+                            'fields' => $tabField->children,
+                        ];
+                    }
+
+                    $index++;
+                }
+
+                if ($tabPanels !== []) {
+                    $components[] = Tabs::make('custom_fields_tabs')
+                        ->tabs(collect($tabPanels)->map(
+                            fn (array $panel): Tab => Tab::make($panel['label'])
+                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields)),
+                        )->all());
+                }
 
                 continue;
             }
 
-            if ($tabPanelIndex !== null) {
-                $tabPanels[$tabPanelIndex]['fields'][] = $field;
-
-                continue;
-            }
-
-            $beforeTabs[] = $field;
-        }
-
-        foreach ($beforeTabs as $field) {
-            $components[] = $this->compileField($field, $resourceClass);
-        }
-
-        if ($tabPanels !== []) {
-            $components[] = Tabs::make('custom_fields_tabs')
-                ->tabs(collect($tabPanels)->map(
-                    fn (array $panel): Tab => Tab::make($panel['label'])
-                        ->schema($this->compileSubFields(collect($panel['fields']), $resourceClass)),
-                )->all());
+            $components[] = $this->compileField($field, $entity, $storableFields);
+            $index++;
         }
 
         return $components;
@@ -135,6 +153,16 @@ class SchemaCompiler
 
         if ($fieldType->isLayoutMarker()) {
             return [];
+        }
+
+        if ($field->type === 'tab') {
+            $rules = [];
+
+            foreach ($field->children as $child) {
+                $rules = array_merge($rules, $this->rulesForFieldTree($child, $prefix));
+            }
+
+            return $rules;
         }
 
         if ($fieldType->hasSubFields()) {
@@ -204,21 +232,20 @@ class SchemaCompiler
     }
 
     /**
-     * @param  class-string|null  $resourceClass
+     * @param  Collection<int, FieldDefinition>  $storableFields
      */
-    protected function compileField(FieldDefinition $field, ?string $resourceClass = null): Component
+    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null): Component
     {
+        $storableFields ??= collect();
+
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
-        $entity = $resourceClass !== null
-            ? $this->customFieldsManager->locationContextForResource($resourceClass)->entity
-            : null;
 
         if (! $fieldType->storesValue() || $entity === null) {
             return $component;
         }
 
-        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType): void {
+        return $component->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields): void {
             if ($record === null) {
                 return;
             }
@@ -227,10 +254,10 @@ class SchemaCompiler
                 return;
             }
 
-            $values = $this->customFieldsManager->loadValues(
+            $values = $this->customFieldsManager->loadCachedValues(
                 $entity,
                 $record,
-                collect([$field]),
+                $storableFields,
             );
 
             if (! array_key_exists($field->name, $values)) {

@@ -20,7 +20,7 @@ class TabFieldType extends FieldType
         return false;
     }
 
-    public function isLayoutMarker(): bool
+    public function hasSubFields(): bool
     {
         return true;
     }
