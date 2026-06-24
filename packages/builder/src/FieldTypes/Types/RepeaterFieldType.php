@@ -36,7 +36,6 @@ class RepeaterFieldType extends FieldType
     {
         $compiler = app(SchemaCompiler::class);
         $defaultValue = app(DefaultValue::class);
-        $defaultRow = $defaultValue->defaultDataForChildren($field->children);
 
         $component = Repeater::make($field->name)
             ->label($field->label)
@@ -45,8 +44,8 @@ class RepeaterFieldType extends FieldType
             ->defaultItems(0)
             ->reorderable()
             ->addAction(fn (Action $action): Action => $action->action(
-                function (Repeater $component) use ($defaultRow, $defaultValue, $field): void {
-                    $data = $defaultValue->mergeIntoData($field->children, $defaultRow);
+                function (Repeater $component) use ($defaultValue, $field): void {
+                    $data = $defaultValue->mergeIntoData($field->children, []);
 
                     $newUuid = $component->generateUuid();
                     $items = $component->getRawState() ?? [];
@@ -60,13 +59,14 @@ class RepeaterFieldType extends FieldType
 
                     $component->rawState($items);
                     $component->getChildSchema($newUuid)->fill($data);
+                    $component->hydrateItems();
                     $component->collapsed(false, shouldMakeComponentCollapsible: false);
                     $component->callAfterStateUpdated();
                 },
             ))
             ->addBetweenAction(fn (Action $action): Action => $action->action(
-                function (array $arguments, Repeater $component) use ($defaultRow, $defaultValue, $field): void {
-                    $data = $defaultValue->mergeIntoData($field->children, $defaultRow);
+                function (array $arguments, Repeater $component) use ($defaultValue, $field): void {
+                    $data = $defaultValue->mergeIntoData($field->children, []);
                     $newKey = $component->generateUuid();
                     $items = [];
 
@@ -85,6 +85,7 @@ class RepeaterFieldType extends FieldType
 
                     $component->rawState($items);
                     $component->getChildSchema($newKey)->fill($data);
+                    $component->hydrateItems();
                     $component->collapsed(false, shouldMakeComponentCollapsible: false);
                     $component->callAfterStateUpdated();
                 },

@@ -134,7 +134,8 @@ class FlexibleContentFieldType extends FieldType
         $component->rawState($items);
 
         $schemaKey = $newKey ?? (string) array_key_last($items);
-        $component->getChildSchema($schemaKey)->fill($data);
+        $component->getChildSchema($schemaKey)->fill(filled($data) ? $data : null);
+        $component->hydrateItems();
 
         $component->collapsed(false, shouldMakeComponentCollapsible: false);
         $component->callAfterStateUpdated();
