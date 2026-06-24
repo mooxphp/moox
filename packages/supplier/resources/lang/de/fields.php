@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'status' => 'Status',
+    'supplier_number' => 'Lieferantennummer',
+    'external_reference' => 'Externe Referenz',
+    'search_terms' => 'Suchbegriffe',
+    'discount_percent' => 'Rabatt (%)',
+    'lead_time_days' => 'Lieferzeit (Tage)',
+    'minimum_order_value' => 'Mindestbestellwert',
+    'language_id' => 'Sprache',
+    'is_preferred' => 'Bevorzugter Lieferant',
+    'note' => 'Notiz',
+    'sort' => 'Sortierung',
+    'is_active' => 'Aktiv',
+    'approved_at' => 'Freigegeben am',
+    'active' => 'Aktiv',
+    'company' => 'Firma',
+    'companies' => 'Firmen',
+    'suppliers' => 'Lieferanten',
+    'assignments' => 'Zuordnungen',
+    'is_primary' => 'Primär',
+    'role' => 'Rolle',
+    'identity' => 'Stammdaten',
+    'settings' => 'Einstellungen',
+    'procurement' => 'Beschaffung',
+    'data' => 'Zusätzliche Daten',
+];

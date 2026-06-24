@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'status' => 'Status',
+    'supplier_number' => 'Supplier number',
+    'external_reference' => 'External reference',
+    'search_terms' => 'Search terms',
+    'discount_percent' => 'Discount (%)',
+    'lead_time_days' => 'Lead time (days)',
+    'minimum_order_value' => 'Minimum order value',
+    'language_id' => 'Language',
+    'is_preferred' => 'Preferred supplier',
+    'note' => 'Note',
+    'sort' => 'Sort order',
+    'is_active' => 'Active',
+    'approved_at' => 'Approved at',
+    'active' => 'Active',
+    'company' => 'Company',
+    'companies' => 'Companies',
+    'suppliers' => 'Suppliers',
+    'assignments' => 'Assignments',
+    'is_primary' => 'Primary',
+    'role' => 'Role',
+    'identity' => 'Identity',
+    'settings' => 'Settings',
+    'procurement' => 'Procurement',
+    'data' => 'Additional data',
+];
