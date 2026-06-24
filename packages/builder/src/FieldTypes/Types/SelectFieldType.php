@@ -36,11 +36,23 @@ class SelectFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $defaultValue = app(DefaultValue::class);
+
         $component = Select::make($field->name)
-            ->label($field->label);
+            ->label($field->label)
+            ->native(false);
 
         $component = $this->applyOptions($component, $field);
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        $component->default(static function () use ($field, $defaultValue): ?string {
+            return $defaultValue->resolveForField($field);
+        });
+
+        if ($defaultValue->resolveForField($field) !== null) {
+            $component->selectablePlaceholder(false);
+        }
+
+        return $component;
     }
 }

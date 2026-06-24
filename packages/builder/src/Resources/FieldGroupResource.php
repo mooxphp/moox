@@ -170,31 +170,7 @@ class FieldGroupResource extends Resource
                                         ->inline(false)
                                         ->live()
                                         ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-                                    Section::make(__('builder::builder.field.settings'))
-                                        ->collapsible()
-                                        ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
-                                        ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
-                                    Section::make(__('builder::builder.field.options'))
-                                        ->collapsed()
-                                        ->schema([
-                                            Repeater::make('options')
-                                                ->label(__('builder::builder.field.options'))
-                                                ->orderColumn('sort')
-                                                ->reorderable()
-                                                ->schema([
-                                                    Hidden::make('id'),
-                                                    TextInput::make('label')
-                                                        ->label(__('builder::builder.field.option_label'))
-                                                        ->required(),
-                                                    TextInput::make('value')
-                                                        ->label(__('builder::builder.field.option_value'))
-                                                        ->required()
-                                                        ->live(onBlur: true),
-                                                ])
-                                                ->columns(2)
-                                                ->defaultItems(1),
-                                        ])
-                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+                                    ...static::optionFieldSections($registry),
                                     Section::make(fn (callable $get): string => $get('type') === 'tab'
                                         ? __('builder::builder.field.tab_content')
                                         : __('builder::builder.field.subfields'))
@@ -391,31 +367,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-            Section::make(__('builder::builder.field.settings'))
-                ->collapsible()
-                ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
-                ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
-            Section::make(__('builder::builder.field.options'))
-                ->collapsed()
-                ->schema([
-                    Repeater::make('options')
-                        ->label(__('builder::builder.field.options'))
-                        ->orderColumn('sort')
-                        ->reorderable()
-                        ->schema([
-                            Hidden::make('id'),
-                            TextInput::make('label')
-                                ->label(__('builder::builder.field.option_label'))
-                                ->required(),
-                            TextInput::make('value')
-                                ->label(__('builder::builder.field.option_value'))
-                                ->required()
-                                ->live(onBlur: true),
-                        ])
-                        ->columns(2)
-                        ->defaultItems(1),
-                ])
-                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+            ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
                 ->collapsed()
                 ->schema([
@@ -486,31 +438,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-            Section::make(__('builder::builder.field.settings'))
-                ->collapsible()
-                ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
-                ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
-            Section::make(__('builder::builder.field.options'))
-                ->collapsed()
-                ->schema([
-                    Repeater::make('options')
-                        ->label(__('builder::builder.field.options'))
-                        ->orderColumn('sort')
-                        ->reorderable()
-                        ->schema([
-                            Hidden::make('id'),
-                            TextInput::make('label')
-                                ->label(__('builder::builder.field.option_label'))
-                                ->required(),
-                            TextInput::make('value')
-                                ->label(__('builder::builder.field.option_value'))
-                                ->required()
-                                ->live(onBlur: true),
-                        ])
-                        ->columns(2)
-                        ->defaultItems(1),
-                ])
-                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+            ...static::optionFieldSections($registry),
         ];
     }
 
@@ -535,6 +463,42 @@ class FieldGroupResource extends Resource
     /**
      * @return list<Component|\Filament\Schemas\Components\Component>
      */
+    protected static function optionFieldSections(FieldTypeRegistry $registry): array
+    {
+        return [
+            Section::make(__('builder::builder.field.settings'))
+                ->collapsible()
+                ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
+                ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
+            Section::make(__('builder::builder.field.options'))
+                ->collapsed()
+                ->schema([
+                    Repeater::make('options')
+                        ->label(__('builder::builder.field.options'))
+                        ->orderColumn('sort')
+                        ->reorderable()
+                        ->live()
+                        ->schema([
+                            Hidden::make('id'),
+                            TextInput::make('label')
+                                ->label(__('builder::builder.field.option_label'))
+                                ->required()
+                                ->live(onBlur: true),
+                            TextInput::make('value')
+                                ->label(__('builder::builder.field.option_value'))
+                                ->required()
+                                ->live(onBlur: true),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(1),
+                ])
+                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasOptions()),
+        ];
+    }
+
+    /**
+     * @return list<Component|\Filament\Schemas\Components\Component>
+     */
     protected static function reactiveTypeSettingsSchema(callable $get): array
     {
         $type = $get('type');
@@ -549,6 +513,7 @@ class FieldGroupResource extends Resource
 
         if (in_array($type, ['select', 'radio', 'button_group', 'multiselect', 'checkbox_list'], true)) {
             $get('options');
+            $get('config.default');
         }
 
         if ($type === 'range') {
