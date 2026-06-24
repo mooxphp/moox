@@ -173,6 +173,28 @@ class DefaultValue extends Capability
             return $state === null;
         }
 
+        if (in_array($type, ['date', 'datetime', 'time'], true)) {
+            if ($state === null || $state === '') {
+                return true;
+            }
+
+            if ($state instanceof CarbonInterface) {
+                return false;
+            }
+
+            if (is_string($state)) {
+                try {
+                    Carbon::parse($state);
+
+                    return false;
+                } catch (\Throwable) {
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
         if (is_array($state)) {
             return $state === [];
         }
@@ -221,16 +243,8 @@ class DefaultValue extends Capability
      */
     protected function temporalDefaultFields(Component $picker, string $type): array
     {
-        if ($picker instanceof DateTimePicker) {
-            $picker = $picker
-                ->displayFormat(fn (Get $get): string => $this->resolvedDisplayFormat($get, $type))
-                ->key(fn (Get $get): string => 'default-picker-'.$this->resolvedDisplayFormat($get, $type));
-
-            if ($type === 'datetime') {
-                $picker = $picker->seconds(
-                    fn (Get $get): bool => str_contains($this->resolvedDisplayFormat($get, $type), 'H:i:s'),
-                );
-            }
+        if (in_array($type, ['date', 'datetime'], true) && $picker instanceof DateTimePicker) {
+            $picker = $this->configureTemporalAdminPicker($picker, $type);
         }
 
         return [
@@ -247,11 +261,43 @@ class DefaultValue extends Capability
         ];
     }
 
+    protected function configureTemporalAdminPicker(DateTimePicker $picker, string $type): DateTimePicker
+    {
+        $picker = $picker
+            ->displayFormat(fn (Get $get): string => $this->resolvedDisplayFormat($get, $type))
+            ->format(fn (Get $get): string => $this->resolvedStorageFormat($get, $type))
+            ->key(fn (Get $get): string => 'default-picker-'.$this->temporalPickerKeySuffix($get, $type));
+
+        if ($type === 'datetime') {
+            $picker = $picker->seconds(
+                fn (Get $get): bool => str_contains($this->resolvedDisplayFormat($get, $type), 'H:i:s'),
+            );
+        }
+
+        return $picker;
+    }
+
+    protected function temporalPickerKeySuffix(Get $get, string $type): string
+    {
+        return md5($type.':'.$this->resolvedDisplayFormat($get, $type));
+    }
+
     protected function resolvedDisplayFormat(Get $get, string $type): string
     {
         return filled($get('config.displayFormat'))
             ? (string) $get('config.displayFormat')
             : DisplayFormat::defaultFor($type);
+    }
+
+    protected function resolvedStorageFormat(Get $get, string $type): string
+    {
+        if ($type === 'datetime') {
+            return str_contains($this->resolvedDisplayFormat($get, $type), 'H:i:s')
+                ? 'Y-m-d H:i:s'
+                : 'Y-m-d H:i';
+        }
+
+        return 'Y-m-d';
     }
 
     protected function resolveTemporalDefault(FieldDefinition $field): CarbonInterface|string|null
