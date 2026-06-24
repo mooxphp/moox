@@ -84,6 +84,7 @@ return [
 
     'message' => [
         'body' => 'Hinweistext',
+        'body_helper' => 'Wird nur im Formular angezeigt — kein speicherbarer Wert pro Datensatz.',
     ],
 
     'oembed' => [

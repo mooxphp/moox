@@ -15,7 +15,9 @@ class MessageBody extends Capability
         return [
             Textarea::make('config.message')
                 ->label(__('builder::builder.message.body'))
-                ->rows(4),
+                ->helperText(__('builder::builder.message.body_helper'))
+                ->rows(4)
+                ->required(),
         ];
     }
 
