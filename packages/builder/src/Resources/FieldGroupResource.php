@@ -523,6 +523,10 @@ class FieldGroupResource extends Resource
             $get('config.default');
         }
 
+        if ($type === 'color') {
+            $get('config.default');
+        }
+
         return static::typeSettingsSchema($type);
     }
 

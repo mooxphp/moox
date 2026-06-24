@@ -60,8 +60,20 @@ class SchemaCompiler
                 continue;
             }
 
-            $sections[] = Section::make($group->name)
+            $groupScalarFields = $this->storableFieldCollector->definitionsFromList($group->fields);
+
+            $section = Section::make($group->name)
                 ->schema($components);
+
+            if ($entity !== null) {
+                $section = $section->afterStateHydrated(
+                    function (Component $component, mixed $state, ?Model $record) use ($groupScalarFields, $entity, $storableFields): void {
+                        $this->applyScalarFieldDefaults($component, $groupScalarFields, $entity, $record, $storableFields);
+                    },
+                );
+            }
+
+            $sections[] = $section;
         }
 
         return $sections;
@@ -71,14 +83,14 @@ class SchemaCompiler
      * @param  Collection<int, FieldDefinition>  $fields
      * @return list<Component>
      */
-    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null): array
+    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false): array
     {
         $storableFields ??= collect();
 
         return $fields
             ->sortBy(fn (FieldDefinition $field): int => $field->sort)
             ->values()
-            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields))
+            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs))
             ->all();
     }
 
@@ -176,11 +188,25 @@ class SchemaCompiler
                 }
 
                 if ($tabPanels !== []) {
-                    $components[] = Tabs::make('custom_fields_tabs')
+                    $tabScalarFields = collect($tabPanels)
+                        ->flatMap(fn (array $panel): Collection => $this->storableFieldCollector->definitionsFromList($panel['fields']))
+                        ->values();
+
+                    $tabs = Tabs::make('custom_fields_tabs')
                         ->tabs(collect($tabPanels)->map(
                             fn (array $panel): Tab => Tab::make($panel['label'])
-                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields)),
+                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true)),
                         )->all());
+
+                    if ($entity !== null) {
+                        $tabs = $tabs->afterStateHydrated(
+                            function (Component $component, mixed $state, ?Model $record) use ($tabScalarFields, $entity, $storableFields): void {
+                                $this->applyScalarFieldDefaults($component, $tabScalarFields, $entity, $record, $storableFields);
+                            },
+                        );
+                    }
+
+                    $components[] = $tabs;
                 }
 
                 continue;
@@ -301,7 +327,7 @@ class SchemaCompiler
     /**
      * @param  Collection<int, FieldDefinition>  $storableFields
      */
-    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null): Component
+    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false): Component
     {
         $storableFields ??= collect();
 
@@ -311,6 +337,10 @@ class SchemaCompiler
 
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
+
+        if ($insideTabs && $fieldType->storesValue()) {
+            $component->dehydratedWhenHidden(true);
+        }
 
         if (! $fieldType->storesValue() || $entity === null) {
             return $component;
@@ -354,7 +384,11 @@ class SchemaCompiler
                 }
 
                 if ($hasStoredValue) {
-                    $component->state($storedValue);
+                    $component->state(
+                        $field->type === 'color'
+                            ? ($defaultValue->normalizeColorValue($storedValue) ?? $storedValue)
+                            : $storedValue,
+                    );
 
                     return;
                 }
@@ -439,6 +473,59 @@ class SchemaCompiler
 
         if ($component instanceof Builder || $component instanceof Repeater) {
             $component->hydrateItems();
+        }
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  Collection<int, FieldDefinition>  $storableFields
+     */
+    protected function applyScalarFieldDefaults(
+        Component $context,
+        Collection $fields,
+        string $entity,
+        ?Model $record,
+        Collection $storableFields,
+    ): void {
+        $defaultValue = app(DefaultValue::class);
+        $stored = $record?->exists
+            ? $this->customFieldsManager->loadCachedValues($entity, $record, $storableFields)
+            : [];
+
+        $root = $context->getRootContainer();
+
+        foreach ($fields as $field) {
+            $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+            if (! $fieldType->storesValue() || $fieldType->hasSubFields()) {
+                continue;
+            }
+
+            if (array_key_exists($field->name, $stored) && ! $defaultValue->shouldApplyDefault($stored[$field->name], $field->type)) {
+                continue;
+            }
+
+            $resolved = $defaultValue->resolveForField($field);
+
+            if ($resolved === null) {
+                continue;
+            }
+
+            $fieldComponent = $root->getComponent($field->name);
+
+            if ($fieldComponent === null) {
+                continue;
+            }
+
+            if (! $defaultValue->shouldApplyDefault($fieldComponent->getState(), $field->type)) {
+                continue;
+            }
+
+            $fieldComponent->state($resolved);
+
+            if (method_exists($fieldComponent, 'partiallyRender')) {
+                $fieldComponent->partiallyRender();
+            }
         }
     }
 }
