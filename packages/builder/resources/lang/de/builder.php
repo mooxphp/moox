@@ -97,6 +97,10 @@ return [
         'opens_in_new_tab' => 'In neuem Tab öffnen',
     ],
 
+    'password' => [
+        'helper' => 'Maskierte Eingabe — nach dem Speichern per Augen-Symbol anzeigen und kopieren (wie bei ACF).',
+    ],
+
     'capabilities' => [
         'max_length' => 'Maximale Länge',
         'placeholder' => 'Platzhalter',

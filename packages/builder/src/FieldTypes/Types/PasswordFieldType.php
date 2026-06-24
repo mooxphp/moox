@@ -8,7 +8,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Illuminate\Support\Facades\Hash;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\Capabilities\MaxLength;
+use Moox\Builder\FieldTypes\Capabilities\Placeholder;
+use Moox\Builder\FieldTypes\Capabilities\PrefixSuffix;
 use Moox\Builder\FieldTypes\FieldType;
 
 class PasswordFieldType extends FieldType
@@ -22,6 +25,9 @@ class PasswordFieldType extends FieldType
     {
         return [
             MaxLength::class,
+            Placeholder::class,
+            PrefixSuffix::class,
+            HelperText::class,
         ];
     }
 
@@ -30,10 +36,15 @@ class PasswordFieldType extends FieldType
         $component = TextInput::make($field->name)
             ->label($field->label)
             ->password()
-            ->revealable(false)
-            ->dehydrated(fn (?string $state): bool => filled($state));
+            ->revealable();
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
+
+        if (! filled($field->config['helperText'] ?? null)) {
+            $component->helperText(__('builder::builder.password.helper'));
+        }
+
+        return $component;
     }
 
     public function castValue(mixed $raw): mixed
@@ -45,9 +56,9 @@ class PasswordFieldType extends FieldType
         $value = (string) $raw;
 
         if (Hash::isHashed($value)) {
-            return $value;
+            return null;
         }
 
-        return Hash::make($value);
+        return $value;
     }
 }

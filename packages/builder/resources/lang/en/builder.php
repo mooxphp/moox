@@ -97,6 +97,10 @@ return [
         'opens_in_new_tab' => 'Open in new tab',
     ],
 
+    'password' => [
+        'helper' => 'Masked input — use the eye icon after save to reveal and copy the value (ACF-style).',
+    ],
+
     'capabilities' => [
         'max_length' => 'Maximum length',
         'placeholder' => 'Placeholder',

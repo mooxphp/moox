@@ -316,10 +316,6 @@ class SchemaCompiler
 
         return $component
             ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $fieldType, $storableFields, $defaultValue): void {
-                if ($field->type === 'password') {
-                    return;
-                }
-
                 $storedValue = null;
 
                 if ($record?->exists) {
