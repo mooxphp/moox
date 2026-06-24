@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Compiler;
 
 use Filament\Forms\Components\Builder;
+use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -14,6 +15,7 @@ use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
+use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\OptionValueRules;
@@ -77,6 +79,65 @@ class SchemaCompiler
             ->values()
             ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields))
             ->all();
+    }
+
+    public function buildGroupComponent(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null): Component
+    {
+        $storableFields ??= collect();
+
+        $component = \Filament\Schemas\Components\Fieldset::make($field->label)
+            ->schema($this->compileSubFields($field->children, $entity, $storableFields))
+            ->statePath($field->name)
+            ->columns(1)
+            ->columnSpanFull();
+
+        if ($entity === null) {
+            return $component;
+        }
+
+        $defaultValue = app(DefaultValue::class);
+
+        return $component
+            ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $storableFields, $defaultValue): void {
+                $storedValue = null;
+
+                if ($record?->exists) {
+                    $values = $this->customFieldsManager->loadCachedValues(
+                        $entity,
+                        $record,
+                        $storableFields,
+                    );
+
+                    if (array_key_exists($field->name, $values)) {
+                        $storedValue = (new GroupFieldType)->normalizeForForm($values[$field->name]);
+                    }
+                }
+
+                $flat = is_array($storedValue ?? $state) ? ($storedValue ?? $state) : [];
+
+                if (array_is_list($flat) && isset($flat[0]) && is_array($flat[0])) {
+                    $flat = $flat[0];
+                }
+
+                $component->state($defaultValue->mergeIntoData($field->children, $flat));
+            })
+            ->afterStateUpdated(function (Component $component) use ($field, $defaultValue): void {
+                $state = $component->getState();
+
+                if (! is_array($state)) {
+                    return;
+                }
+
+                if (array_is_list($state) && isset($state[0]) && is_array($state[0])) {
+                    $state = $state[0];
+                }
+
+                $merged = $defaultValue->mergeIntoData($field->children, $state);
+
+                if ($merged != $state) {
+                    $component->state($merged);
+                }
+            });
     }
 
     /**
@@ -239,6 +300,10 @@ class SchemaCompiler
     {
         $storableFields ??= collect();
 
+        if ($field->type === 'group') {
+            return $this->buildGroupComponent($field, $entity, $storableFields);
+        }
+
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
 
@@ -307,7 +372,11 @@ class SchemaCompiler
 
                 $state = $component->getState();
 
-                if (! is_array($state) || $state === []) {
+                if (! is_array($state)) {
+                    return;
+                }
+
+                if ($state === []) {
                     return;
                 }
 
@@ -338,7 +407,7 @@ class SchemaCompiler
 
         $component->state($merged);
 
-        if ($component instanceof Builder) {
+        if ($component instanceof Builder || $component instanceof Repeater) {
             $component->hydrateItems();
         }
     }
