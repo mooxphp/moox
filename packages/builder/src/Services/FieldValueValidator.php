@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Support\RichTextValue;
 
 class FieldValueValidator
 {
@@ -268,6 +269,10 @@ class FieldValueValidator
 
     protected function isEmptyValue(string $type, mixed $value, bool $required = false): bool
     {
+        if ($type === 'rich_text') {
+            return RichTextValue::isEmpty($value);
+        }
+
         if ($type === 'toggle') {
             return $value === null || $value === false;
         }
