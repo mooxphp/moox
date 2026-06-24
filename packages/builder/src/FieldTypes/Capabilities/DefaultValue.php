@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\RichTextValue;
 
 class DefaultValue extends Capability
 {
@@ -245,6 +246,10 @@ class DefaultValue extends Capability
 
         if (is_array($state)) {
             return $state === [];
+        }
+
+        if ($type === 'rich_text') {
+            return RichTextValue::isEmpty($state);
         }
 
         return $state === null || $state === '';
