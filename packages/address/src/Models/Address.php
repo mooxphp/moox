@@ -15,7 +15,7 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
 /**
- * @method HasMany<Addressable, $this> addressables()
+ * @method HasMany<AddressAssignment, $this> addressAssignments()
  *
  * @property string|null $label
  * @property string|null $name

@@ -10,21 +10,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('addressables', function (Blueprint $table): void {
+        Schema::create('address_assignments', function (Blueprint $table): void {
             $table->id();
-            $table->uuidMorphs('addressable');
+            $table->uuidMorphs('assignable');
             $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete();
             $table->boolean('billing_address')->default(false);
             $table->boolean('postal_address')->default(false);
             $table->boolean('delivery_address')->default(false);
             $table->timestamps();
 
-            $table->unique(['addressable_type', 'addressable_id', 'address_id']);
+            $table->unique(['assignable_type', 'assignable_id', 'address_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('addressables');
+        Schema::dropIfExists('address_assignments');
     }
 };

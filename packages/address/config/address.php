@@ -1,7 +1,7 @@
 <?php
 
 use Moox\Address\Models\Address;
-use Moox\Address\Models\Addressable;
+use Moox\Address\Models\AddressAssignment;
 use Moox\Address\Resources\AddressResource;
 
 /*
@@ -110,16 +110,16 @@ return [
     ],
 
     'relations' => [
-        'addressables' => [
+        'address_assignments' => [
             'kind' => 'pivot_has_many',
             'perspective' => 'related',
             'presentation' => 'tab',
             'label' => 'trans//address::fields.assignments',
             'translation_prefix' => 'address::fields',
-            'relationship' => 'addressables',
-            'pivot_model' => Addressable::class,
-            'pivot_table' => 'addressables',
-            'morph_name' => 'addressable',
+            'relationship' => 'addressAssignments',
+            'pivot_model' => AddressAssignment::class,
+            'pivot_table' => 'address_assignments',
+            'morph_name' => 'assignable',
             'pivot_columns' => [
                 'billing_address',
                 'postal_address',

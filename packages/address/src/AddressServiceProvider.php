@@ -17,7 +17,7 @@ class AddressServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations([
                 'create_addresses_table',
-                'create_addressables_table',
+                'create_address_assignments_table',
             ])
             ->hasCommands();
 
@@ -56,8 +56,8 @@ class AddressServiceProvider extends MooxServiceProvider
                 'config/address.php',
                 'database/factories/AddressFactory.php',
                 'database/migrations/create_addresses_table.php.stub',
-                'database/migrations/create_addressables_table.php.stub',
-                'src/Models/Addressable.php',
+                'database/migrations/create_address_assignments_table.php.stub',
+                'src/Models/AddressAssignment.php',
                 'src/Concerns/HasAddresses.php',
                 'resources/lang/en/address.php',
                 'src/Models/Address.php',

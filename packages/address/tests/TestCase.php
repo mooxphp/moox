@@ -164,7 +164,7 @@ class TestCase extends Orchestra
 
     protected function loadPackageMigrations(): void
     {
-        foreach (['create_addresses_table', 'create_addressables_table'] as $migration) {
+        foreach (['create_addresses_table', 'create_address_assignments_table'] as $migration) {
             $path = dirname(__DIR__).'/database/migrations/'.$migration.'.php.stub';
 
             if (! is_file($path)) {

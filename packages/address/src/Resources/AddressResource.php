@@ -181,8 +181,8 @@ class AddressResource extends BaseRecordResource
                 IconColumn::make('is_primary')
                     ->label(__('address::fields.is_primary'))
                     ->boolean(),
-                TextColumn::make('addressables_count')
-                    ->counts('addressables')
+                TextColumn::make('address_assignments_count')
+                    ->counts('addressAssignments')
                     ->label(__('address::fields.assignments')),
                 TextColumn::make('created_at')
                     ->dateTime()

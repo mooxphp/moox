@@ -14,15 +14,15 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property bool $postal_address
  * @property bool $delivery_address
  */
-class Addressable extends MorphPivot
+class AddressAssignment extends MorphPivot
 {
-    protected $table = 'addressables';
+    protected $table = 'address_assignments';
 
     public $incrementing = true;
 
     protected $fillable = [
-        'addressable_type',
-        'addressable_id',
+        'assignable_type',
+        'assignable_id',
         'address_id',
         'billing_address',
         'postal_address',
@@ -44,7 +44,7 @@ class Addressable extends MorphPivot
     /**
      * @return MorphTo<Model, $this>
      */
-    public function addressable(): MorphTo
+    public function assignable(): MorphTo
     {
         return $this->morphTo();
     }
