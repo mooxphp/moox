@@ -252,43 +252,42 @@ class SchemaCompiler
             }
 
             $defaultValue = app(DefaultValue::class);
+            $storedValue = null;
 
-            if ($record === null || ! $record->exists) {
+            if ($record?->exists) {
+                $values = $this->customFieldsManager->loadCachedValues(
+                    $entity,
+                    $record,
+                    $storableFields,
+                );
+
+                if (array_key_exists($field->name, $values)) {
+                    $storedValue = $values[$field->name];
+
+                    if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
+                        $storedValue = $fieldType->normalizeForForm($storedValue);
+                    }
+                }
+            }
+
+            $valueToApply = $storedValue ?? $state;
+
+            if ($defaultValue->shouldApplyDefault($valueToApply, $field->type)) {
                 $default = $defaultValue->resolveForField($field);
 
-                if ($default !== null && $defaultValue->shouldApplyDefault($state, $field->type)) {
+                if ($default !== null) {
                     $component->state($default);
                 }
 
                 return;
             }
 
-            $values = $this->customFieldsManager->loadCachedValues(
-                $entity,
-                $record,
-                $storableFields,
-            );
+            if ($storedValue !== null) {
+                $component->state($storedValue);
 
-            if (! array_key_exists($field->name, $values)) {
-                $default = $defaultValue->resolveForField($field);
-
-                if ($default !== null && $defaultValue->shouldApplyDefault($state, $field->type)) {
-                    $component->state($default);
+                if ($component instanceof Builder) {
+                    $component->hydrateItems();
                 }
-
-                return;
-            }
-
-            $value = $values[$field->name];
-
-            if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
-                $value = $fieldType->normalizeForForm($value);
-            }
-
-            $component->state($value);
-
-            if ($component instanceof Builder) {
-                $component->hydrateItems();
             }
         });
     }

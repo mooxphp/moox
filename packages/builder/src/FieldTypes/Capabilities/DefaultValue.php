@@ -38,7 +38,8 @@ class DefaultValue extends Capability
             ],
             'color' => [
                 ColorPicker::make('config.default')
-                    ->label(__('builder::builder.capabilities.default_value')),
+                    ->label(__('builder::builder.capabilities.default_value'))
+                    ->hex(),
             ],
             'date' => [
                 DatePicker::make('config.default')
@@ -130,7 +131,30 @@ class DefaultValue extends Capability
             return (string) $default;
         }
 
+        if ($field->type === 'color') {
+            return $this->normalizeColorDefault($default);
+        }
+
         return $default;
+    }
+
+    protected function normalizeColorDefault(mixed $default): ?string
+    {
+        if (! is_string($default)) {
+            return null;
+        }
+
+        $color = trim($default);
+
+        if ($color === '') {
+            return null;
+        }
+
+        if (! str_starts_with($color, '#')) {
+            $color = '#'.$color;
+        }
+
+        return $color;
     }
 
     public function shouldApplyDefault(mixed $state, string $type): bool
