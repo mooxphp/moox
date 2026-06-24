@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -177,6 +178,10 @@ class FieldValueValidator
             return [];
         }
 
+        if ($field->type === 'link') {
+            return $this->messagesForLink($field, $value, $path);
+        }
+
         $messages = [];
 
         if (($field->validation['required'] ?? false) === true && $this->isEmptyValue($field->type, $value)) {
@@ -195,6 +200,47 @@ class FieldValueValidator
             foreach ($exception->errors() as $key => $errorMessages) {
                 $messages[$key !== 'value' ? $key : $path] = $errorMessages;
             }
+        }
+
+        return $messages;
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForLink(FieldDefinition $field, mixed $value, string $path): array
+    {
+        $messages = [];
+        $urlPath = "{$path}.url";
+
+        if (($field->validation['required'] ?? false) === true && $this->isEmptyValue('link', $value, true)) {
+            $messages[$urlPath] = [
+                __('validation.required', ['attribute' => __('builder::builder.link.url')]),
+            ];
+        }
+
+        if ($this->isEmptyValue('link', $value)) {
+            return $messages;
+        }
+
+        if (! is_array($value)) {
+            return $messages;
+        }
+
+        $url = $value['url'] ?? null;
+
+        if (blank($url)) {
+            return $messages;
+        }
+
+        $validator = Validator::make(
+            ['url' => $url],
+            ['url' => ['url']],
+            ['url.url' => __('builder::builder.validation.invalid_link_url')],
+        );
+
+        if ($validator->fails()) {
+            $messages[$urlPath] = $validator->errors()->get('url');
         }
 
         return $messages;
@@ -220,10 +266,22 @@ class FieldValueValidator
         return true;
     }
 
-    protected function isEmptyValue(string $type, mixed $value): bool
+    protected function isEmptyValue(string $type, mixed $value, bool $required = false): bool
     {
         if ($type === 'toggle') {
             return $value === null || $value === false;
+        }
+
+        if ($type === 'link') {
+            if (! is_array($value)) {
+                return true;
+            }
+
+            if ($required) {
+                return blank($value['url'] ?? null);
+            }
+
+            return blank($value['url'] ?? null) && blank($value['label'] ?? null);
         }
 
         if (is_array($value)) {
