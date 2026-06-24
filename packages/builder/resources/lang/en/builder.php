@@ -105,6 +105,10 @@ return [
         'default_value_toggle_helper' => 'Switch position when creating a new record.',
         'default_value_option_helper' => 'Choose from the options defined above.',
         'default_value_multi_option_helper' => 'Choose one or more options defined above.',
+        'default_value_now' => 'Current date or time',
+        'default_value_now_date_helper' => 'Automatically uses today’s date when creating a record.',
+        'default_value_now_datetime_helper' => 'Automatically uses the current date and time when creating a record.',
+        'default_value_now_time_helper' => 'Automatically uses the current time when creating a record.',
         'helper_text' => 'Helper text',
         'min_value' => 'Minimum value',
         'max_value' => 'Maximum value',
@@ -120,6 +124,8 @@ return [
         'display_format_mdy' => '12/31/2026',
         'display_format_dmy_hi' => '31.12.2026 14:30',
         'display_format_dmy_his' => '31.12.2026 14:30:00',
+        'display_format_ymd_hi' => '2026-12-31 14:30',
+        'display_format_ymd_his' => '2026-12-31 14:30:00',
     ],
 
     'repeater' => [

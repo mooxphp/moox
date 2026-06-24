@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\FieldTypes\Capabilities;
 
+use Carbon\CarbonInterface;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\Carbon;
 use Moox\Builder\Data\FieldDefinition;
 
 class DefaultValue extends Capability
@@ -41,21 +43,25 @@ class DefaultValue extends Capability
                     ->label(__('builder::builder.capabilities.default_value'))
                     ->hex(),
             ],
-            'date' => [
+            'date' => $this->temporalDefaultFields(
                 DatePicker::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
                     ->native(false),
-            ],
-            'datetime' => [
+                'date',
+            ),
+            'datetime' => $this->temporalDefaultFields(
                 DateTimePicker::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
                     ->native(false),
-            ],
-            'time' => [
+                'datetime',
+            ),
+            'time' => $this->temporalDefaultFields(
                 TimePicker::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
-                    ->native(false),
-            ],
+                    ->native(false)
+                    ->seconds(false),
+                'time',
+            ),
             'select', 'radio', 'button_group' => [
                 Select::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
@@ -105,6 +111,10 @@ class DefaultValue extends Capability
 
     public function resolveForField(FieldDefinition $field): mixed
     {
+        if (in_array($field->type, ['date', 'datetime', 'time'], true)) {
+            return $this->resolveTemporalDefault($field);
+        }
+
         if (! array_key_exists('default', $field->config)) {
             return null;
         }
@@ -207,8 +217,90 @@ class DefaultValue extends Capability
     }
 
     /**
-     * @return list<string>
+     * @return list<Component>
      */
+    protected function temporalDefaultFields(Component $picker, string $type): array
+    {
+        if ($picker instanceof DateTimePicker) {
+            $picker = $picker
+                ->displayFormat(fn (Get $get): string => $this->resolvedDisplayFormat($get, $type))
+                ->key(fn (Get $get): string => 'default-picker-'.$this->resolvedDisplayFormat($get, $type));
+
+            if ($type === 'datetime') {
+                $picker = $picker->seconds(
+                    fn (Get $get): bool => str_contains($this->resolvedDisplayFormat($get, $type), 'H:i:s'),
+                );
+            }
+        }
+
+        return [
+            Toggle::make('config.defaultNow')
+                ->label(__('builder::builder.capabilities.default_value_now'))
+                ->helperText(match ($type) {
+                    'date' => __('builder::builder.capabilities.default_value_now_date_helper'),
+                    'datetime' => __('builder::builder.capabilities.default_value_now_datetime_helper'),
+                    default => __('builder::builder.capabilities.default_value_now_time_helper'),
+                })
+                ->inline(false)
+                ->live(),
+            $picker->hidden(fn (Get $get): bool => (bool) $get('config.defaultNow')),
+        ];
+    }
+
+    protected function resolvedDisplayFormat(Get $get, string $type): string
+    {
+        return filled($get('config.displayFormat'))
+            ? (string) $get('config.displayFormat')
+            : DisplayFormat::defaultFor($type);
+    }
+
+    protected function resolveTemporalDefault(FieldDefinition $field): CarbonInterface|string|null
+    {
+        if (($field->config['defaultNow'] ?? false) === true) {
+            return match ($field->type) {
+                'date' => now()->startOfDay(),
+                'datetime' => now(),
+                'time' => now()->format('H:i'),
+                default => null,
+            };
+        }
+
+        if (! array_key_exists('default', $field->config)) {
+            return null;
+        }
+
+        $default = $field->config['default'];
+
+        if ($default === null || $default === '') {
+            return null;
+        }
+
+        return $this->parseTemporalDefault($field->type, $default);
+    }
+
+    protected function parseTemporalDefault(string $type, mixed $default): CarbonInterface|string|null
+    {
+        if ($default instanceof CarbonInterface) {
+            return $type === 'time'
+                ? $default->format('H:i')
+                : $default;
+        }
+
+        if (! is_string($default)) {
+            return null;
+        }
+
+        if ($type === 'time') {
+            return $default;
+        }
+
+        try {
+            return Carbon::parse($default);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
     protected function resolveArrayDefault(mixed $default): array
     {
         if ($default === null || $default === '') {

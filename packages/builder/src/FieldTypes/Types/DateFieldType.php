@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Component;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Capabilities\DisplayFormat;
+use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\FieldType;
 
 class DateFieldType extends FieldType
@@ -23,13 +24,15 @@ class DateFieldType extends FieldType
         return [
             DisplayFormat::class,
             DefaultValue::class,
+            HelperText::class,
         ];
     }
 
     public function formComponent(FieldDefinition $field): Component
     {
         $component = DatePicker::make($field->name)
-            ->label($field->label);
+            ->label($field->label)
+            ->native(false);
 
         return $this->applyCapabilitiesAndValidation($component, $field);
     }

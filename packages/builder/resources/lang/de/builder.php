@@ -105,6 +105,10 @@ return [
         'default_value_toggle_helper' => 'Schalter-Position beim Anlegen eines neuen Datensatzes.',
         'default_value_option_helper' => 'Aus den oben definierten Auswahloptionen wählen.',
         'default_value_multi_option_helper' => 'Eine oder mehrere der oben definierten Optionen wählen.',
+        'default_value_now' => 'Aktuelles Datum bzw. aktuelle Uhrzeit',
+        'default_value_now_date_helper' => 'Beim Anlegen wird automatisch das heutige Datum gesetzt.',
+        'default_value_now_datetime_helper' => 'Beim Anlegen wird automatisch der aktuelle Zeitpunkt gesetzt.',
+        'default_value_now_time_helper' => 'Beim Anlegen wird automatisch die aktuelle Uhrzeit gesetzt.',
         'helper_text' => 'Hilfetext',
         'min_value' => 'Mindestwert',
         'max_value' => 'Höchstwert',
@@ -120,6 +124,8 @@ return [
         'display_format_mdy' => '12/31/2026',
         'display_format_dmy_hi' => '31.12.2026 14:30',
         'display_format_dmy_his' => '31.12.2026 14:30:00',
+        'display_format_ymd_hi' => '2026-12-31 14:30',
+        'display_format_ymd_his' => '2026-12-31 14:30:00',
     ],
 
     'repeater' => [
