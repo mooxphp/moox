@@ -97,7 +97,7 @@ class CustomFieldsManager
 
             $row = $rows->get($field->name);
 
-            if ($row === null || $field->type === 'password') {
+            if ($row === null) {
                 continue;
             }
 
@@ -150,10 +150,6 @@ class CustomFieldsManager
                 continue;
             }
 
-            if ($field->type === 'password' && blank($data[$field->name])) {
-                continue;
-            }
-
             $values[$field->name] = $data[$field->name];
         }
 
@@ -188,9 +184,7 @@ class CustomFieldsManager
 
             $value = $values[$field->name];
 
-            if ($field->type !== 'password') {
-                OptionValueRules::assertValid($field, $value);
-            }
+            OptionValueRules::assertValid($field, $value);
 
             $this->fieldValueValidator->assertValid($field, $value);
 
