@@ -33,9 +33,19 @@ class ToggleFieldType extends FieldType
 
     public function formComponent(FieldDefinition $field): Component
     {
+        $defaultValue = app(DefaultValue::class);
+
         $component = Toggle::make($field->name)
             ->label($field->label);
 
-        return $this->applyCapabilitiesAndValidation($component, $field);
+        $component = $this->applyCapabilitiesAndValidation($component, $field);
+
+        if ($defaultValue->hasConfiguredDefault($field)) {
+            $component->default(static function () use ($field, $defaultValue): bool {
+                return (bool) $defaultValue->resolveForField($field);
+            });
+        }
+
+        return $component;
     }
 }

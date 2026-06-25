@@ -258,6 +258,16 @@ class DefaultValue extends Capability
             });
     }
 
+    public function hasConfiguredDefault(FieldDefinition $field): bool
+    {
+        if (in_array($field->type, ['date', 'datetime', 'time'], true)) {
+            return ($field->config['defaultNow'] ?? false) === true
+                || array_key_exists('default', $field->config);
+        }
+
+        return array_key_exists('default', $field->config);
+    }
+
     public function shouldApplyDefault(mixed $state, string $type): bool
     {
         if ($type === 'toggle') {

@@ -152,10 +152,8 @@ class CustomFieldsManager
             }
 
             if (! array_key_exists($field->name, $data)) {
-                $resolved = $defaultValue->resolveForField($field);
-
-                if ($resolved !== null) {
-                    $values[$field->name] = $resolved;
+                if ($defaultValue->hasConfiguredDefault($field)) {
+                    $values[$field->name] = $defaultValue->resolveForField($field);
                 }
 
                 continue;
@@ -163,16 +161,17 @@ class CustomFieldsManager
 
             $value = $data[$field->name];
 
-            if ($defaultValue->shouldApplyDefault($value, $field->type) && $record->exists) {
-                $hasStoredValue = FieldValue::query()
+            $hasStoredValue = $record->exists
+                && FieldValue::query()
                     ->forRecord($entity, $record->getKey())
                     ->where('field_name', $field->name)
                     ->exists();
 
-                if (! $hasStoredValue) {
+            if (! $hasStoredValue && $defaultValue->hasConfiguredDefault($field)) {
+                if ($field->type === 'toggle' || $defaultValue->shouldApplyDefault($value, $field->type)) {
                     $resolved = $defaultValue->resolveForField($field);
 
-                    if ($resolved !== null) {
+                    if ($field->type === 'toggle' || $resolved !== null) {
                         $value = $resolved;
                     }
                 }
