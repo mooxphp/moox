@@ -154,6 +154,7 @@ return [
     'validation' => [
         'invalid_option' => 'The selected value is not a valid option.',
         'invalid_email_default' => 'Please enter a valid email address as the default value.',
+        'invalid_url_default' => 'Please enter a valid URL as the default value.',
         'invalid_link_url' => 'Please enter a valid URL.',
         'range_min_lt_max' => 'The minimum value must be less than the maximum value.',
         'range_max_gt_min' => 'The maximum value must be greater than the minimum value.',

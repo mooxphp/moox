@@ -16,6 +16,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -101,6 +102,9 @@ class DefaultValue extends Capability
                     ])
                     ->live(onBlur: true),
             ],
+            'url', 'oembed' => [
+                $this->urlDefaultField(),
+            ],
             default => [
                 TextInput::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value')),
@@ -167,6 +171,10 @@ class DefaultValue extends Capability
 
         if ($field->type === 'color') {
             return $this->normalizeColorDefault($default);
+        }
+
+        if (in_array($field->type, ['url', 'oembed'], true)) {
+            return $this->resolveUrlDefault($default);
         }
 
         return $default;
@@ -713,6 +721,41 @@ class DefaultValue extends Capability
         }
 
         return array_values(array_filter($default, fn (mixed $value): bool => $value !== null && $value !== ''));
+    }
+
+    protected function urlDefaultField(): TextInput
+    {
+        return TextInput::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->rules(['nullable', 'url'])
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->validationMessages([
+                'url' => __('builder::builder.validation.invalid_url_default'),
+            ])
+            ->live(onBlur: true);
+    }
+
+    protected function resolveUrlDefault(mixed $default): ?string
+    {
+        if (! is_string($default)) {
+            return null;
+        }
+
+        $url = trim($default);
+
+        if ($url === '') {
+            return null;
+        }
+
+        return $this->isValidUrl($url) ? $url : null;
+    }
+
+    protected function isValidUrl(string $url): bool
+    {
+        return Validator::make(
+            ['url' => $url],
+            ['url' => ['url']],
+        )->passes();
     }
 
     protected function numericDefaultField(): TextInput
