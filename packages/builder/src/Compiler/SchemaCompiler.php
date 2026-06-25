@@ -393,14 +393,8 @@ class SchemaCompiler
                     return;
                 }
 
-                $default = $defaultValue->resolveForField($field);
-
-                if ($default !== null) {
-                    $component->state(
-                        $field->type === 'time'
-                            ? ($defaultValue->normalizeTimeValue($default) ?? $default)
-                            : $default,
-                    );
+                if ($defaultValue->hasConfiguredDefault($field)) {
+                    $component->state($defaultValue->resolveForField($field));
                 }
             })
             ->afterStateUpdated(function (Component $component) use ($field, $fieldType, $defaultValue): void {
@@ -509,11 +503,11 @@ class SchemaCompiler
                 continue;
             }
 
-            $resolved = $defaultValue->resolveForField($field);
-
-            if ($resolved === null) {
+            if (! $defaultValue->hasConfiguredDefault($field)) {
                 continue;
             }
+
+            $resolved = $defaultValue->resolveForField($field);
 
             if ($field->type === 'time') {
                 $resolved = $defaultValue->normalizeTimeValue($resolved) ?? $resolved;
@@ -525,7 +519,7 @@ class SchemaCompiler
                 continue;
             }
 
-            if (! $defaultValue->shouldApplyDefault($fieldComponent->getState(), $field->type)) {
+            if ($field->type !== 'toggle' && ! $defaultValue->shouldApplyDefault($fieldComponent->getState(), $field->type)) {
                 continue;
             }
 
