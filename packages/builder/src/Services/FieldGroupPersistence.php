@@ -7,10 +7,10 @@ namespace Moox\Builder\Services;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\Builder\FieldTypes\Capabilities\DisplayFormat;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
-use Moox\Builder\FieldTypes\Capabilities\DisplayFormat;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\FieldRelationTree;
 
