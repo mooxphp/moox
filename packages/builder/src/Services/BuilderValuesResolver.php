@@ -7,6 +7,7 @@ namespace Moox\Builder\Services;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Moox\Builder\Concerns\InteractsWithCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
@@ -268,7 +269,7 @@ class BuilderValuesResolver
             ->groupBy('record_id');
 
         foreach ($collection as $record) {
-            /** @var Model&\Moox\Builder\Concerns\InteractsWithCustomFields $record */
+            /** @var Model&InteractsWithCustomFields $record */
             $recordRows = $rows->get($record->getKey(), collect())->keyBy('field_name');
             $record->setCustomFieldsCache(
                 $this->resolveFromRows($fields, $recordRows, mergeDefaults: true),

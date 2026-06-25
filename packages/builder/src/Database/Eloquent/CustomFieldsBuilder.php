@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Database\Eloquent;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -47,7 +48,7 @@ class CustomFieldsBuilder extends Builder
     }
 
     /**
-     * @param  array<int, mixed>|\Illuminate\Contracts\Support\Arrayable<int, mixed>|\Closure(static): void|string  $values
+     * @param  array<int, mixed>|Arrayable<int, mixed>|\Closure(static): void|string  $values
      * @return $this
      */
     public function whereIn($column, $values, $boolean = 'and', $not = false): static
@@ -60,7 +61,7 @@ class CustomFieldsBuilder extends Builder
     }
 
     /**
-     * @param  array<int, mixed>|\Illuminate\Contracts\Support\Arrayable<int, mixed>|\Closure(static): void|string  $values
+     * @param  array<int, mixed>|Arrayable<int, mixed>|\Closure(static): void|string  $values
      * @return $this
      */
     public function whereNotIn($column, $values, $boolean = 'and'): static
@@ -126,7 +127,7 @@ class CustomFieldsBuilder extends Builder
     }
 
     /**
-     * @param  array<int, mixed>|\Illuminate\Contracts\Support\Arrayable<int, mixed>|\Closure(static): void|string  $values
+     * @param  array<int, mixed>|Arrayable<int, mixed>|\Closure(static): void|string  $values
      * @return $this
      */
     protected function addCustomFieldInConstraint(
