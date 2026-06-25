@@ -160,6 +160,7 @@ return [
         'range_max_gt_min' => 'Der Höchstwert muss größer als der Mindestwert sein.',
         'range_default_step' => 'Der Standardwert muss zwischen Minimum und Maximum liegen und zur Schrittweite passen.',
         'range_default_bounds' => 'Der Standardwert muss zwischen Minimum und Maximum liegen.',
+        'default_max_length' => 'Der Standardwert darf höchstens :max Zeichen lang sein.',
         'duplicate_field_name' => 'Der Feldschlüssel „:name“ wird bereits in der Gruppe „:group“ verwendet.',
         'duplicate_field_name_internal' => 'Der Feldschlüssel „:name“ ist in dieser Gruppe mehrfach vergeben.',
         'empty_repeater_item' => 'Eintrag :position in „:field“ ist leer.',

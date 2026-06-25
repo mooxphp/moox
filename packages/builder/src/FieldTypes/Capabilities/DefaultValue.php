@@ -87,20 +87,14 @@ class DefaultValue extends Capability
             'range' => [
                 $this->rangeDefaultField(),
             ],
+            'text', 'password' => [
+                $this->textDefaultField(),
+            ],
             'textarea', 'rich_text' => [
-                Textarea::make('config.default')
-                    ->label(__('builder::builder.capabilities.default_value'))
-                    ->rows(3),
+                $this->textareaDefaultField(),
             ],
             'email' => [
-                TextInput::make('config.default')
-                    ->label(__('builder::builder.capabilities.default_value'))
-                    ->rules(['nullable', 'email'])
-                    ->validationAttribute(__('builder::builder.capabilities.default_value'))
-                    ->validationMessages([
-                        'email' => __('builder::builder.validation.invalid_email_default'),
-                    ])
-                    ->live(onBlur: true),
+                $this->emailDefaultField(),
             ],
             'url', 'oembed' => [
                 $this->urlDefaultField(),
@@ -175,6 +169,11 @@ class DefaultValue extends Capability
 
         if (in_array($field->type, ['url', 'oembed'], true)) {
             return $this->resolveUrlDefault($default);
+        }
+
+        if (in_array($field->type, ['text', 'textarea', 'rich_text', 'email', 'password'], true)
+            && ! $this->defaultWithinMaxLength($default, $field)) {
+            return null;
         }
 
         return $default;
@@ -721,6 +720,93 @@ class DefaultValue extends Capability
         }
 
         return array_values(array_filter($default, fn (mixed $value): bool => $value !== null && $value !== ''));
+    }
+
+    protected function textDefaultField(): TextInput
+    {
+        return TextInput::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->rules(fn (Get $get): array => $this->maxLengthDefaultRules($get))
+            ->maxLength(fn (Get $get): ?int => $this->configuredMaxLength($get('config.maxLength')))
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->validationMessages([
+                'max' => __('builder::builder.validation.default_max_length'),
+            ])
+            ->live(onBlur: true);
+    }
+
+    protected function textareaDefaultField(): Textarea
+    {
+        return Textarea::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->rows(3)
+            ->rules(fn (Get $get): array => $this->maxLengthDefaultRules($get))
+            ->maxLength(fn (Get $get): ?int => $this->configuredMaxLength($get('config.maxLength')))
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->validationMessages([
+                'max' => __('builder::builder.validation.default_max_length'),
+            ])
+            ->live(onBlur: true);
+    }
+
+    protected function emailDefaultField(): TextInput
+    {
+        return TextInput::make('config.default')
+            ->label(__('builder::builder.capabilities.default_value'))
+            ->rules(fn (Get $get): array => array_merge(
+                ['nullable', 'email'],
+                $this->maxLengthConstraintRules($get),
+            ))
+            ->maxLength(fn (Get $get): ?int => $this->configuredMaxLength($get('config.maxLength')))
+            ->validationAttribute(__('builder::builder.capabilities.default_value'))
+            ->validationMessages([
+                'email' => __('builder::builder.validation.invalid_email_default'),
+                'max' => __('builder::builder.validation.default_max_length'),
+            ])
+            ->live(onBlur: true);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function maxLengthDefaultRules(Get $get): array
+    {
+        return array_merge(
+            ['nullable', 'string'],
+            $this->maxLengthConstraintRules($get),
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function maxLengthConstraintRules(Get $get): array
+    {
+        $maxLength = $this->configuredMaxLength($get('config.maxLength'));
+
+        return $maxLength !== null ? ['max:'.$maxLength] : [];
+    }
+
+    protected function configuredMaxLength(mixed $maxLength): ?int
+    {
+        if ($maxLength === null || $maxLength === '' || ! is_numeric($maxLength)) {
+            return null;
+        }
+
+        $maxLength = (int) $maxLength;
+
+        return $maxLength > 0 ? $maxLength : null;
+    }
+
+    protected function defaultWithinMaxLength(mixed $default, FieldDefinition $field): bool
+    {
+        $maxLength = $this->configuredMaxLength($field->config['maxLength'] ?? null);
+
+        if ($maxLength === null || ! is_string($default)) {
+            return true;
+        }
+
+        return mb_strlen($default) <= $maxLength;
     }
 
     protected function urlDefaultField(): TextInput
