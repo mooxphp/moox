@@ -67,4 +67,21 @@ class TimeFieldType extends FieldType
             return $defaultValue->resolveForField($field);
         });
     }
+
+    public function presentValue(mixed $value, ?FieldDefinition $field = null): mixed
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if ($value instanceof CarbonInterface) {
+            $format = $field !== null
+                ? DisplayFormat::storageFormatForTime(DisplayFormat::resolveForField($field))
+                : 'H:i';
+
+            return $value->format($format);
+        }
+
+        return (string) $value;
+    }
 }

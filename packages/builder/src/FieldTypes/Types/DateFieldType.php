@@ -36,4 +36,9 @@ class DateFieldType extends FieldType
 
         return $this->applyCapabilitiesAndValidation($component, $field);
     }
+
+    public function presentValue(mixed $value, ?FieldDefinition $field = null): mixed
+    {
+        return $this->presentIsoDate($value);
+    }
 }

@@ -77,6 +77,26 @@ class EntityRegistry
         return is_string($model) ? $model : null;
     }
 
+    /**
+     * @param  class-string  $modelClass
+     */
+    public function entityForModel(string $modelClass): ?string
+    {
+        foreach ($this->all() as $entity => $definition) {
+            $resource = $definition['resource'] ?? null;
+
+            if (! is_string($resource) || ! method_exists($resource, 'getModel')) {
+                continue;
+            }
+
+            if ($resource::getModel() === $modelClass) {
+                return $entity;
+            }
+        }
+
+        return null;
+    }
+
     public function labelFor(string $entity): string
     {
         $definition = $this->all()[$entity] ?? [];

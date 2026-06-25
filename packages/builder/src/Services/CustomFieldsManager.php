@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
 use Moox\Builder\Support\TypedValueColumns;
@@ -50,6 +51,34 @@ class CustomFieldsManager
         );
 
         return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
+    }
+
+    /**
+     * @return Collection<int, FieldDefinition>
+     */
+    public function fieldsForEntity(string $entity): Collection
+    {
+        $groups = $this->definitionRegistry->fieldGroupsFor(new LocationContext($entity));
+
+        return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function loadForModel(Model $record, string $entity, bool $fresh = false): array
+    {
+        $fields = $this->fieldsForEntity($entity);
+
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        if ($fresh) {
+            return $this->loadValues($entity, $record, $fields);
+        }
+
+        return $this->loadCachedValues($entity, $record, $fields);
     }
 
     /**
@@ -123,6 +152,40 @@ class CustomFieldsManager
 
         if (! array_key_exists($cacheKey, $this->valuesCache)) {
             $this->valuesCache[$cacheKey] = $this->loadValues($entity, $record, $fields);
+        }
+
+        return $this->valuesCache[$cacheKey];
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    public function loadValuesWithDefaults(string $entity, Model $record, Collection $fields): array
+    {
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        $values = $this->loadValues($entity, $record, $fields);
+
+        return app(BuilderValuesResolver::class)->mergeDefaults($fields, $values);
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return array<string, mixed>
+     */
+    public function loadCachedValuesWithDefaults(string $entity, Model $record, Collection $fields): array
+    {
+        if ($fields->isEmpty()) {
+            return [];
+        }
+
+        $cacheKey = "{$entity}:{$record->getKey()}";
+
+        if (! array_key_exists($cacheKey, $this->valuesCache)) {
+            $this->valuesCache[$cacheKey] = $this->loadValuesWithDefaults($entity, $record, $fields);
         }
 
         return $this->valuesCache[$cacheKey];
@@ -215,8 +278,8 @@ class CustomFieldsManager
 
             $this->fieldValueValidator->assertValid($field, $value);
 
-            $cast = $fieldType->castValue($value, $field);
-            $columns = TypedValueColumns::attributesFor($field->type, $cast);
+            $persisted = app(BuilderValuesResolver::class)->persistFieldValue($field, $value);
+            $columns = TypedValueColumns::attributesFor($field->type, $persisted);
 
             FieldValue::query()->updateOrCreate(
                 [
