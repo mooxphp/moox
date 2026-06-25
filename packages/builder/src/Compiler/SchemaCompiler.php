@@ -364,7 +364,7 @@ class SchemaCompiler
                         $hasStoredValue = true;
                         $storedValue = $values[$field->name];
 
-                        if ($fieldType->hasSubFields() && method_exists($fieldType, 'normalizeForForm')) {
+                        if (method_exists($fieldType, 'normalizeForForm')) {
                             $storedValue = $fieldType->normalizeForForm($storedValue);
                         }
                     }

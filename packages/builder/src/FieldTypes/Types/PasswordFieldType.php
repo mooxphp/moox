@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\MaxLength;
 use Moox\Builder\FieldTypes\Capabilities\Placeholder;
 use Moox\Builder\FieldTypes\Capabilities\PrefixSuffix;
 use Moox\Builder\FieldTypes\FieldType;
+use Moox\Builder\FieldTypes\Value\StoredPassword;
 
 class PasswordFieldType extends FieldType
 {
@@ -53,12 +54,39 @@ class PasswordFieldType extends FieldType
             return null;
         }
 
-        $value = (string) $raw;
+        return StoredPassword::instance();
+    }
 
-        if (Hash::isHashed($value)) {
+    public function persistValue(mixed $value, ?FieldDefinition $field = null): mixed
+    {
+        if ($value === null || $value === '') {
             return null;
         }
 
-        return $value;
+        $value = (string) $value;
+
+        if (Hash::isHashed($value)) {
+            return $value;
+        }
+
+        return Hash::make($value);
+    }
+
+    public function normalizeForForm(mixed $stored): mixed
+    {
+        if ($stored === null || $stored === '') {
+            return null;
+        }
+
+        return null;
+    }
+
+    public function presentValue(mixed $value, ?FieldDefinition $field = null): mixed
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return ['has_value' => true];
     }
 }

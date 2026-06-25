@@ -396,6 +396,74 @@ $values = app(CustomFieldsManager::class)->loadFormData(
 );
 ```
 
+### Werte auf Model-Ebene (InteractsWithCustomFields)
+
+Trait auf dem Consumer-Model (z. B. `Item`). Entity-Key: `getResourceName()` → `customFieldsEntity()` → Filament-Resource → Model-Basename.
+
+```php
+use Moox\Builder\Concerns\InteractsWithCustomFields;
+
+// Lesen
+$item->farbe;                              // wie natives Attribut (gültige PHP-Feldnamen)
+$item->customFields();                     // alle Custom Fields inkl. Defaults
+$item->customFields(fresh: true);           // neu aus DB, Cache ignorieren
+$item->customField('fahrzeugtyp-modell');  // ein Feld (auch mit Bindestrich)
+$item->hasCustomField('farbe');            // Wert vorhanden (inkl. Default)?
+$item->hasCustomFieldDefinition('farbe');   // Felddefinition existiert?
+$item->toArray();                          // DB-Spalten + Custom Fields (roh, intern)
+
+// Schreiben
+$item->farbe = 'Blau';                     // oder setCustomField()
+$item->setCustomField('farbe', 'Blau');
+$item->setCustomFields(['unfallfrei' => true]);
+$item->clearCustomField('farbe');
+
+// Queries & Collections
+Item::query()->where('farbe', 'Blau')->get();       // normales where auf Custom Fields
+Item::query()->withCustomFields()->get();            // Eager Load (kein N+1)
+Item::eagerLoadCustomFields($models);                // Batch für bestehende Collection
+
+// Meta
+Item::customFieldNames();                            // alle definierten Feldnamen
+Item::resolveCustomFieldsEntity();                  // Entity-Key (z. B. item)
+Item::flushCustomFieldDefinitionCache();             // Definitionen-Cache leeren
+$item->flushCustomFieldsCache();                     // Werte-Cache auf dem Model leeren
+
+// Optional: abweichender Entity-Key (gleicher Hook wie auf der Filament-Resource)
+protected static function customFieldsEntity(): ?string
+{
+    return 'my-entity';
+}
+```
+
+**Hinweise:**
+
+- DB-Spalten haben Vorrang vor Custom Fields mit gleichem Namen (`$item->title` → Spalte, nicht Builder-Feld).
+- Passwort-Felder werden beim Speichern gehasht (`Hash::make`) und nie im Klartext zurückgeladen
+- `dump($item)` / Tinker zeigt Custom Fields in `__debugInfo()` (Passwörter maskiert).
+
+### API Resources
+
+`MergesCustomFields` merged Custom Fields API-formatiert in die Resource (ISO-Dates, maskierte Passwörter, verschachtelte Group/Repeater/Flexible Content).
+
+```php
+use Illuminate\Http\Resources\Json\JsonResource;
+use Moox\Builder\Http\Resources\Concerns\MergesCustomFields;
+
+class ItemResource extends JsonResource
+{
+    use MergesCustomFields;
+
+    public function toArray($request): array
+    {
+        return $this->mergeCustomFields([
+            'id' => $this->id,
+            'title' => $this->title,
+        ]);
+    }
+}
+```
+
 ---
 
 ## Paketstruktur
@@ -409,7 +477,9 @@ packages/builder/
 ├── resources/lang/{de,en}/builder.php
 └── src/
     ├── BuilderServiceProvider.php
-    ├── Concerns/HasCustomFields.php       # Consumer-Trait
+    ├── Concerns/
+    │   ├── HasCustomFields.php              # Filament-Resource
+    │   └── InteractsWithCustomFields.php    # Consumer-Model
     ├── Compiler/
     │   ├── LocationMatcher.php
     │   └── SchemaCompiler.php
@@ -497,12 +567,14 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Layout-Felder: Tab, Group, Repeater, Flexible Content
 - Entity-Discovery über `HasCustomFields` in Filament-Panels
 - Verschachtelte Validierung (`FieldValueValidator`)
+- `InteractsWithCustomFields` auf Consumer-Models (`customFields()`, Attribute-Zugriff, Queries, Eager Load)
+- `MergesCustomFields` für API Resources
+- `FieldType::presentValue()` für API-Serialisierung (Datums-ISO, Passwort-Maskierung, verschachtelte Felder)
 - Repeater min/max (`RepeaterItems` Capability)
 
 **Aktuell nicht implementiert:**
 
-- Werte-API / `HasBuilderValues`-Trait fürs Frontend (nur `CustomFieldsManager::loadFormData()`)
-- Query-Scopes auf Consumer-Models (`whereCustomField()`)
+- `FieldType::presentValue()`-Spezialisierungen für Media-URLs
 - Relational-Felder (Post Object, Relationship, User, Taxonomy)
 - Media-Felder (Image, File, Gallery)
 - Clone-Feldtyp (ACF)
