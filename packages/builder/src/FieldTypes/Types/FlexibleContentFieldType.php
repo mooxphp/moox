@@ -141,7 +141,7 @@ class FlexibleContentFieldType extends FieldType
         $component->callAfterStateUpdated();
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         if (! is_array($raw)) {
             return [];

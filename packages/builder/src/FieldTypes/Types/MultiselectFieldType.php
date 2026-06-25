@@ -34,7 +34,7 @@ class MultiselectFieldType extends FieldType
         ];
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         if ($raw === null) {
             return [];

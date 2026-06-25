@@ -384,11 +384,11 @@ class SchemaCompiler
                 }
 
                 if ($hasStoredValue) {
-                    $component->state(
-                        $field->type === 'color'
-                            ? ($defaultValue->normalizeColorValue($storedValue) ?? $storedValue)
-                            : $storedValue,
-                    );
+                    $component->state(match ($field->type) {
+                        'color' => $defaultValue->normalizeColorValue($storedValue) ?? $storedValue,
+                        'time' => $defaultValue->normalizeTimeValue($storedValue) ?? $storedValue,
+                        default => $storedValue,
+                    });
 
                     return;
                 }
@@ -396,7 +396,11 @@ class SchemaCompiler
                 $default = $defaultValue->resolveForField($field);
 
                 if ($default !== null) {
-                    $component->state($default);
+                    $component->state(
+                        $field->type === 'time'
+                            ? ($defaultValue->normalizeTimeValue($default) ?? $default)
+                            : $default,
+                    );
                 }
             })
             ->afterStateUpdated(function (Component $component) use ($field, $fieldType, $defaultValue): void {
@@ -509,6 +513,10 @@ class SchemaCompiler
 
             if ($resolved === null) {
                 continue;
+            }
+
+            if ($field->type === 'time') {
+                $resolved = $defaultValue->normalizeTimeValue($resolved) ?? $resolved;
             }
 
             $fieldComponent = $root->getComponent($field->name);

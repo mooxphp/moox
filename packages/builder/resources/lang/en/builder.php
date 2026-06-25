@@ -118,6 +118,7 @@ return [
         'default_value_now_date_helper' => 'Automatically uses today’s date when creating a record.',
         'default_value_now_datetime_helper' => 'Automatically uses the current date and time when creating a record.',
         'default_value_now_time_helper' => 'Automatically uses the current time when creating a record.',
+        'default_value_now_active_helper' => 'Disabled while current time is active.',
         'helper_text' => 'Helper text',
         'min_value' => 'Minimum value',
         'max_value' => 'Maximum value',
@@ -131,6 +132,7 @@ return [
         'rows' => 'Rows',
         'display_format' => 'Display format',
         'display_format_helper' => 'How the date is shown in the form.',
+        'display_format_time_helper' => 'How the time is shown in the form.',
         'display_format_dmy' => '31 Dec 2026',
         'display_format_dmy_slash' => '31/12/2026',
         'display_format_ymd' => '2026-12-31',
@@ -139,6 +141,9 @@ return [
         'display_format_dmy_his' => '31.12.2026 14:30:00',
         'display_format_ymd_hi' => '2026-12-31 14:30',
         'display_format_ymd_his' => '2026-12-31 14:30:00',
+        'display_format_hi' => '14:30',
+        'display_format_his' => '14:30:00',
+        'display_format_gi_a' => '2:30 PM',
     ],
 
     'repeater' => [

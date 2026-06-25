@@ -26,7 +26,7 @@ class ToggleFieldType extends FieldType
         ];
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         return filter_var($raw, FILTER_VALIDATE_BOOLEAN);
     }

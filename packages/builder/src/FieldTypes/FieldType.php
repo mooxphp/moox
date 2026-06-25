@@ -23,7 +23,7 @@ abstract class FieldType
         return [];
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         return $raw;
     }
