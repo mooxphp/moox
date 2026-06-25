@@ -154,6 +154,7 @@ return [
     'validation' => [
         'invalid_option' => 'Der gewählte Wert ist keine gültige Option.',
         'invalid_email_default' => 'Bitte eine gültige E-Mail-Adresse als Standardwert eingeben.',
+        'invalid_url_default' => 'Bitte eine gültige URL als Standardwert eingeben.',
         'invalid_link_url' => 'Bitte eine gültige URL eingeben.',
         'range_min_lt_max' => 'Der Mindestwert muss kleiner als der Höchstwert sein.',
         'range_max_gt_min' => 'Der Höchstwert muss größer als der Mindestwert sein.',
