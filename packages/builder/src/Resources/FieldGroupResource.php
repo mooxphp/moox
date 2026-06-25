@@ -525,6 +525,11 @@ class FieldGroupResource extends Resource
             $get('config.default');
         }
 
+        if (in_array($type, ['text', 'textarea', 'rich_text', 'email', 'password'], true)) {
+            $get('config.maxLength');
+            $get('config.default');
+        }
+
         return static::typeSettingsSchema($type);
     }
 

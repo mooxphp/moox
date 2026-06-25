@@ -160,6 +160,7 @@ return [
         'range_max_gt_min' => 'The maximum value must be greater than the minimum value.',
         'range_default_step' => 'The default value must stay within min/max and align with the step size.',
         'range_default_bounds' => 'The default value must be between the minimum and maximum.',
+        'default_max_length' => 'The default value must not exceed :max characters.',
         'duplicate_field_name' => 'The field key ":name" is already used in the group ":group".',
         'duplicate_field_name_internal' => 'The field key ":name" is assigned more than once in this group.',
         'empty_repeater_item' => 'Row :position in ":field" is empty.',
