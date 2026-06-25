@@ -118,6 +118,7 @@ return [
         'default_value_now_date_helper' => 'Beim Anlegen wird automatisch das heutige Datum gesetzt.',
         'default_value_now_datetime_helper' => 'Beim Anlegen wird automatisch der aktuelle Zeitpunkt gesetzt.',
         'default_value_now_time_helper' => 'Beim Anlegen wird automatisch die aktuelle Uhrzeit gesetzt.',
+        'default_value_now_active_helper' => 'Deaktiviert, solange die aktuelle Uhrzeit aktiv ist.',
         'helper_text' => 'Hilfetext',
         'min_value' => 'Mindestwert',
         'max_value' => 'Höchstwert',
@@ -131,6 +132,7 @@ return [
         'rows' => 'Zeilen',
         'display_format' => 'Anzeigeformat',
         'display_format_helper' => 'So wird das Datum im Formular angezeigt.',
+        'display_format_time_helper' => 'So wird die Uhrzeit im Formular angezeigt.',
         'display_format_dmy' => '31.12.2026',
         'display_format_dmy_slash' => '31/12/2026',
         'display_format_ymd' => '2026-12-31',
@@ -139,6 +141,9 @@ return [
         'display_format_dmy_his' => '31.12.2026 14:30:00',
         'display_format_ymd_hi' => '2026-12-31 14:30',
         'display_format_ymd_his' => '2026-12-31 14:30:00',
+        'display_format_hi' => '14:30',
+        'display_format_his' => '14:30:00',
+        'display_format_gi_a' => '2:30 PM',
     ],
 
     'repeater' => [

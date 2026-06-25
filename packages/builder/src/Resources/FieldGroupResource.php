@@ -503,11 +503,9 @@ class FieldGroupResource extends Resource
     {
         $type = $get('type');
 
-        if (in_array($type, ['date', 'datetime'], true)) {
-            $get('config.displayFormat');
-        }
-
         if (in_array($type, ['date', 'datetime', 'time'], true)) {
+            $get('config.displayFormat');
+            $get('config.default');
             $get('config.defaultNow');
         }
 

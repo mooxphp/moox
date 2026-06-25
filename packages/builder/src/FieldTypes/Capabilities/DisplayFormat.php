@@ -18,12 +18,22 @@ class DisplayFormat extends Capability
 
     public function builderFieldsFor(string $fieldType): array
     {
+        $defaultFormat = self::defaultFor($fieldType);
+
         return [
             Select::make('config.displayFormat')
                 ->label(__('builder::builder.capabilities.display_format'))
-                ->helperText(__('builder::builder.capabilities.display_format_helper'))
+                ->helperText(match ($fieldType) {
+                    'time' => __('builder::builder.capabilities.display_format_time_helper'),
+                    default => __('builder::builder.capabilities.display_format_helper'),
+                })
                 ->options($this->formatOptionsFor($fieldType))
-                ->default(self::defaultFor($fieldType))
+                ->default($defaultFormat)
+                ->afterStateHydrated(function (Select $component, mixed $state) use ($defaultFormat): void {
+                    if (blank($state)) {
+                        $component->state($defaultFormat);
+                    }
+                })
                 ->live()
                 ->native(false),
         ];
@@ -33,6 +43,18 @@ class DisplayFormat extends Capability
     {
         if ($component instanceof DateTimePicker) {
             $format = self::resolveForField($field);
+
+            if ($field->type === 'time') {
+                $withSeconds = str_contains($format, ':s');
+                $component->seconds($withSeconds);
+
+                if (! $component->isNative()) {
+                    $component->displayFormat($format);
+                    $component->format(self::storageFormatForTime($format));
+                }
+
+                return $component;
+            }
 
             $component->displayFormat($format);
 
@@ -54,8 +76,14 @@ class DisplayFormat extends Capability
     {
         return match ($fieldType) {
             'datetime' => 'd.m.Y H:i',
+            'time' => 'H:i',
             default => 'd.m.Y',
         };
+    }
+
+    public static function storageFormatForTime(string $displayFormat): string
+    {
+        return str_contains($displayFormat, ':s') ? 'H:i:s' : 'H:i';
     }
 
     public static function resolveForField(FieldDefinition $field): string
@@ -74,8 +102,21 @@ class DisplayFormat extends Capability
     {
         return match ($fieldType) {
             'datetime' => $this->datetimeFormatOptions(),
+            'time' => $this->timeFormatOptions(),
             default => $this->dateFormatOptions(),
         };
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function timeFormatOptions(): array
+    {
+        return [
+            'H:i' => __('builder::builder.capabilities.display_format_hi'),
+            'H:i:s' => __('builder::builder.capabilities.display_format_his'),
+            'g:i A' => __('builder::builder.capabilities.display_format_gi_a'),
+        ];
     }
 
     /**

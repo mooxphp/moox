@@ -26,7 +26,7 @@ class GroupFieldType extends FieldType
         return app(SchemaCompiler::class)->buildGroupComponent($field);
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         if (! is_array($raw)) {
             return [];

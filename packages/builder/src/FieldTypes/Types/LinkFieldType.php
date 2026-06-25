@@ -20,7 +20,7 @@ class LinkFieldType extends FieldType
         return 'link';
     }
 
-    public function castValue(mixed $raw): mixed
+    public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
     {
         if ($raw === null || $raw === '') {
             return null;

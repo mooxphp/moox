@@ -103,7 +103,7 @@ class CustomFieldsManager
             }
 
             $raw = TypedValueColumns::read($row, $field->type);
-            $values[$field->name] = $fieldType->castValue($raw);
+            $values[$field->name] = $fieldType->castValue($raw, $field);
         }
 
         return $values;
@@ -216,7 +216,7 @@ class CustomFieldsManager
 
             $this->fieldValueValidator->assertValid($field, $value);
 
-            $cast = $fieldType->castValue($value);
+            $cast = $fieldType->castValue($value, $field);
             $columns = TypedValueColumns::attributesFor($field->type, $cast);
 
             FieldValue::query()->updateOrCreate(

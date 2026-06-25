@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\FieldTypes\Capabilities\DisplayFormat;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\FieldRelationTree;
 
@@ -403,7 +404,13 @@ class FieldGroupPersistence
             return [];
         }
 
-        return Arr::only($config, $allowed);
+        $filtered = Arr::only($config, $allowed);
+
+        if (in_array($type, ['date', 'datetime', 'time'], true) && ! array_key_exists('displayFormat', $filtered)) {
+            $filtered['displayFormat'] = DisplayFormat::defaultFor($type);
+        }
+
+        return $filtered;
     }
 
     /**

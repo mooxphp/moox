@@ -59,8 +59,7 @@ class DefaultValue extends Capability
             'time' => $this->temporalDefaultFields(
                 TimePicker::make('config.default')
                     ->label(__('builder::builder.capabilities.default_value'))
-                    ->native(false)
-                    ->seconds(false),
+                    ->native(true),
                 'time',
             ),
             'select', 'radio', 'button_group' => [
@@ -213,6 +212,29 @@ class DefaultValue extends Capability
     public function normalizeColorValue(mixed $value): ?string
     {
         return $this->normalizeColorDefault($value);
+    }
+
+    public function normalizeTimeValue(mixed $value): ?CarbonInterface
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if ($value instanceof CarbonInterface) {
+            return Carbon::today()->setTimeFromTimeString($value->format('H:i:s'));
+        }
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        try {
+            $parsed = Carbon::parse($value, config('app.timezone'));
+
+            return Carbon::today()->setTime($parsed->hour, $parsed->minute, $parsed->second);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     protected function colorDefaultField(): ColorPicker
@@ -533,7 +555,7 @@ class DefaultValue extends Capability
      */
     protected function temporalDefaultFields(Component $picker, string $type): array
     {
-        if (in_array($type, ['date', 'datetime'], true) && $picker instanceof DateTimePicker) {
+        if ($picker instanceof DateTimePicker && in_array($type, ['date', 'datetime', 'time'], true)) {
             $picker = $this->configureTemporalAdminPicker($picker, $type);
         }
 
@@ -546,13 +568,34 @@ class DefaultValue extends Capability
                     default => __('builder::builder.capabilities.default_value_now_time_helper'),
                 })
                 ->inline(false)
+                ->default(false)
                 ->live(),
-            $picker->hidden(fn (Get $get): bool => (bool) $get('config.defaultNow')),
+            $picker->hidden(fn (Get $get): bool => $this->defaultNowEnabled($get)),
         ];
+    }
+
+    protected function defaultNowEnabled(Get $get): bool
+    {
+        return filter_var($get('config.defaultNow') ?? false, FILTER_VALIDATE_BOOLEAN);
     }
 
     protected function configureTemporalAdminPicker(DateTimePicker $picker, string $type): DateTimePicker
     {
+        if ($type === 'time') {
+            return $picker
+                ->native(true)
+                ->seconds(
+                    fn (Get $get): bool => str_contains($this->resolvedDisplayFormat($get, $type), ':s'),
+                )
+                ->afterStateHydrated(function (DateTimePicker $component, mixed $state): void {
+                    $normalized = $this->normalizeTimeValue($state);
+
+                    if ($normalized !== null && $normalized !== $state) {
+                        $component->state($normalized);
+                    }
+                });
+        }
+
         $picker = $picker
             ->displayFormat(fn (Get $get): string => $this->resolvedDisplayFormat($get, $type))
             ->format(fn (Get $get): string => $this->resolvedStorageFormat($get, $type))
@@ -581,6 +624,10 @@ class DefaultValue extends Capability
 
     protected function resolvedStorageFormat(Get $get, string $type): string
     {
+        if ($type === 'time') {
+            return DisplayFormat::storageFormatForTime($this->resolvedDisplayFormat($get, $type));
+        }
+
         if ($type === 'datetime') {
             return str_contains($this->resolvedDisplayFormat($get, $type), 'H:i:s')
                 ? 'Y-m-d H:i:s'
@@ -596,7 +643,7 @@ class DefaultValue extends Capability
             return match ($field->type) {
                 'date' => now()->startOfDay(),
                 'datetime' => now(),
-                'time' => now()->format('H:i'),
+                'time' => now(),
                 default => null,
             };
         }
@@ -616,18 +663,16 @@ class DefaultValue extends Capability
 
     protected function parseTemporalDefault(string $type, mixed $default): CarbonInterface|string|null
     {
+        if ($type === 'time') {
+            return $this->normalizeTimeValue($default);
+        }
+
         if ($default instanceof CarbonInterface) {
-            return $type === 'time'
-                ? $default->format('H:i')
-                : $default;
+            return $default;
         }
 
         if (! is_string($default)) {
             return null;
-        }
-
-        if ($type === 'time') {
-            return $default;
         }
 
         try {
