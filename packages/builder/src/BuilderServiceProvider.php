@@ -42,6 +42,8 @@ use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
+use Livewire\Livewire;
+use Moox\Builder\Http\Livewire\BuilderMediaPickerModal;
 use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Core\MooxServiceProvider;
@@ -93,6 +95,7 @@ class BuilderServiceProvider extends MooxServiceProvider
 
         $this->app->booted(function (): void {
             app(EntityModelDeletionRegistrar::class)->register();
+            $this->registerMediaPickerModal();
         });
     }
 
@@ -124,6 +127,7 @@ class BuilderServiceProvider extends MooxServiceProvider
 
         if (MediaIntegration::isAvailable()) {
             $types[] = new FieldTypes\Types\ImageFieldType;
+            $types[] = new FieldTypes\Types\GalleryFieldType;
         }
 
         return array_merge($types, [
@@ -136,6 +140,15 @@ class BuilderServiceProvider extends MooxServiceProvider
             new FlexibleContentFieldType,
             new FlexibleLayoutFieldType,
         ]);
+    }
+
+    protected function registerMediaPickerModal(): void
+    {
+        if (! MediaIntegration::isAvailable() || ! $this->app->bound('livewire.finder')) {
+            return;
+        }
+
+        Livewire::component('builder-media-picker-modal', BuilderMediaPickerModal::class);
     }
 
     protected function registerMediaMetadataSyncListeners(): void

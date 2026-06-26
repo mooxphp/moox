@@ -276,7 +276,7 @@ class CustomFieldsManager
 
             OptionValueRules::assertValid($field, $value);
 
-            $this->fieldValueValidator->assertValid($field, $value);
+            $this->fieldValueValidator->assertValid($field, $value, $record);
 
             $persisted = app(BuilderValuesResolver::class)->persistFieldValue($field, $value);
             $columns = TypedValueColumns::attributesFor($field->type, $persisted);

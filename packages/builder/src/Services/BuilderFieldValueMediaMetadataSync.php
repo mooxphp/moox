@@ -40,13 +40,17 @@ final class BuilderFieldValueMediaMetadataSync
                     return;
                 }
 
-                $snapshot = MediaFieldValueSupport::normalizeSnapshot($row->value_json);
+                $updated = MediaFieldValueSupport::replaceSnapshotInStoredValue(
+                    $row->value_json,
+                    $mediaId,
+                    $fresh,
+                );
 
-                if ($snapshot === null || (int) ($snapshot['id'] ?? 0) !== $mediaId) {
+                if ($updated === $row->value_json) {
                     return;
                 }
 
-                $row->update(['value_json' => $fresh]);
+                $row->update(['value_json' => $updated]);
 
                 $this->customFieldsManager->forgetValuesCache($row->entity, $row->record_id);
                 $this->flushCustomFieldsCacheForRow($row);
