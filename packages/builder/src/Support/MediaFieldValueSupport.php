@@ -342,6 +342,10 @@ final class MediaFieldValueSupport
             return ['valid' => false, 'reason' => 'invalid_type'];
         }
 
+        if ($fieldType === 'file' && self::mediaRowIsImage($row)) {
+            return ['valid' => false, 'reason' => 'invalid_file_type'];
+        }
+
         $expectedScope = self::resolveExpectedMediaScope($record);
 
         if (filled($expectedScope) && Schema::hasColumn('media', 'scope')) {

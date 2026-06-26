@@ -193,6 +193,10 @@ class FieldValueValidator
             return $this->messagesForGallery($field, $value, $path, $record);
         }
 
+        if ($field->type === 'file') {
+            return $this->messagesForFile($field, $value, $path, $record);
+        }
+
         $messages = [];
 
         if (($field->validation['required'] ?? false) === true && $this->isEmptyValue($field->type, $value)) {
@@ -263,6 +267,14 @@ class FieldValueValidator
     protected function messagesForImage(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
     {
         return $this->messagesForMediaField($field, $value, $path, 'image', $record);
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForFile(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
+    {
+        return $this->messagesForMediaField($field, $value, $path, 'file', $record);
     }
 
     /**
@@ -344,6 +356,9 @@ class FieldValueValidator
                 'invalid_type' => [
                     __('builder::builder.validation.invalid_media_type', ['attribute' => $field->label]),
                 ],
+                'invalid_file_type' => [
+                    __('builder::builder.validation.invalid_file_media_type', ['attribute' => $field->label]),
+                ],
                 'scope_mismatch' => [
                     __('builder::builder.validation.media_scope_mismatch', ['attribute' => $field->label]),
                 ],
@@ -415,7 +430,7 @@ class FieldValueValidator
             return blank($value['url'] ?? null) && blank($value['label'] ?? null);
         }
 
-        if (in_array($type, ['image', 'gallery'], true)) {
+        if (in_array($type, ['image', 'gallery', 'file'], true)) {
             return MediaFieldValueSupport::extractIds($value) === [];
         }
 

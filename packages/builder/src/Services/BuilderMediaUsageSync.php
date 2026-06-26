@@ -17,7 +17,7 @@ final class BuilderMediaUsageSync
     /**
      * @var list<string>
      */
-    private const MEDIA_FIELD_TYPES = ['image', 'gallery'];
+    private const MEDIA_FIELD_TYPES = ['image', 'gallery', 'file'];
 
     /**
      * @param  Collection<int, FieldDefinition>  $fields

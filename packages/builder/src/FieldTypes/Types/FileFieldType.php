@@ -12,11 +12,11 @@ use Moox\Builder\FieldTypes\FieldType;
 use Moox\Builder\Forms\Components\BuilderMediaPicker;
 use Moox\Builder\Support\MediaFieldValueSupport;
 
-class ImageFieldType extends FieldType
+class FileFieldType extends FieldType
 {
     public static function key(): string
     {
-        return 'image';
+        return 'file';
     }
 
     public function castValue(mixed $raw, ?FieldDefinition $field = null): mixed
@@ -52,8 +52,14 @@ class ImageFieldType extends FieldType
     {
         $component = BuilderMediaPicker::make($field->name)
             ->label($field->label)
-            ->acceptedFileTypes(['image/*'])
-            ->onlyMimePrefixes(['image/'])
+            ->acceptedFileTypes([
+                'application/*',
+                'video/*',
+                'audio/*',
+                'text/*',
+                'model/*',
+            ])
+            ->excludeMimePrefixes(['image/'])
             ->maxFiles(1)
             ->multiple(false);
 
