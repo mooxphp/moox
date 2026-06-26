@@ -7,6 +7,7 @@ namespace Moox\Builder\Support;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Http\Resources\MediaItemResource;
 use Moox\Media\Models\Media;
@@ -312,11 +313,11 @@ final class MediaFieldValueSupport
             }
         }
 
-        if (! class_exists(\Moox\Core\Support\Scopes\ScopeValue::class)) {
+        if (! class_exists(ScopeValue::class)) {
             return null;
         }
 
-        return \Moox\Core\Support\Scopes\ScopeValue::forOriginString(
+        return ScopeValue::forOriginString(
             $record->getAttribute('scope'),
             'media',
         );
@@ -486,11 +487,11 @@ final class MediaFieldValueSupport
             return null;
         }
 
-        if (! class_exists(\Moox\Core\Support\Scopes\ScopeValue::class)) {
+        if (! class_exists(ScopeValue::class)) {
             return trim($scope);
         }
 
-        return \Moox\Core\Support\Scopes\ScopeValue::toStringOrNull($scope);
+        return ScopeValue::toStringOrNull($scope);
     }
 
     protected static function nullableString(mixed $value): ?string
