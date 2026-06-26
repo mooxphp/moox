@@ -53,6 +53,7 @@ class GalleryFieldType extends FieldType
         $component = BuilderMediaPicker::make($field->name)
             ->label($field->label)
             ->acceptedFileTypes(['image/*'])
+            ->onlyMimePrefixes(['image/'])
             ->multiple(true);
 
         return Capability::applyAll($this->capabilities(), $component, $field);

@@ -128,6 +128,7 @@ class BuilderServiceProvider extends MooxServiceProvider
         if (MediaIntegration::isAvailable()) {
             $types[] = new FieldTypes\Types\ImageFieldType;
             $types[] = new FieldTypes\Types\GalleryFieldType;
+            $types[] = new FieldTypes\Types\FileFieldType;
         }
 
         return array_merge($types, [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Forms\Components;
 
+use Closure;
 use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Support\MediaFieldValueSupport;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -30,6 +31,26 @@ class BuilderMediaPicker extends MediaPicker
         });
 
         $this->dehydrated(true);
+    }
+
+    /**
+     * @param  Closure|list<string>  $prefixes
+     */
+    public function excludeMimePrefixes(Closure|array $prefixes): static
+    {
+        $this->uploadConfig['excluded_mime_prefixes'] = $prefixes instanceof Closure ? $prefixes() : $prefixes;
+
+        return $this;
+    }
+
+    /**
+     * @param  Closure|list<string>  $prefixes
+     */
+    public function onlyMimePrefixes(Closure|array $prefixes): static
+    {
+        $this->uploadConfig['only_mime_prefixes'] = $prefixes instanceof Closure ? $prefixes() : $prefixes;
+
+        return $this;
     }
 
     /**

@@ -15,10 +15,16 @@
                     <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="fileTypeFilter">
                             <option value="">{{ __('media::fields.all_types') }}</option>
-                            <option value="images">{{ __('media::fields.images') }}</option>
-                            <option value="videos">{{ __('media::fields.videos') }}</option>
-                            <option value="audios">{{ __('media::fields.audios') }}</option>
-                            <option value="documents">{{ __('media::fields.documents') }}</option>
+                            @if (($onlyMimePrefixes ?? []) === ['image/'])
+                                <option value="images">{{ __('media::fields.images') }}</option>
+                            @else
+                                @unless(in_array('image/', $excludedMimePrefixes ?? [], true))
+                                    <option value="images">{{ __('media::fields.images') }}</option>
+                                @endunless
+                                <option value="videos">{{ __('media::fields.videos') }}</option>
+                                <option value="audios">{{ __('media::fields.audios') }}</option>
+                                <option value="documents">{{ __('media::fields.documents') }}</option>
+                            @endif
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
 
