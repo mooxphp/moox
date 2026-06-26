@@ -1,8 +1,11 @@
 <x-dynamic-component :component="$getFieldWrapperView()" :field="$field">
     @php
         $mimeTypeLabels = \Moox\Media\Helpers\MediaIconHelper::getIconMapWithLabels();
+        $statePath = $getStatePath();
+        $modalId = 'builder-media-picker-' . md5($statePath);
     @endphp
     <div x-data="{
+        pickerStatePath: @js($statePath),
         selectedMedia: {{ json_encode($field->getInitialPreviewMedia(), JSON_UNESCAPED_UNICODE) }},
         mimeTypes: {{ Js::from($mimeTypeLabels) }},
         getIconForMimeType(type) {
@@ -12,8 +15,20 @@
         isMultiple: {{ $field->isMultiple() ? 'true' : 'false' }},
         isAvatar: {{ $field->isAvatar() ? 'true' : 'false' }},
 
-        isNestedArray: function(data) {
-            return Array.isArray(data) && Array.isArray(data[0]);
+        applySelectedMedia(media) {
+            if (! media || (Array.isArray(media) && media.length === 0)) {
+                this.selectedMedia = [];
+            } else if (Array.isArray(media)) {
+                this.selectedMedia = media;
+            } else {
+                this.selectedMedia = [media];
+            }
+
+            if (! this.isMultiple && this.selectedMedia.length > 1) {
+                this.selectedMedia = [this.selectedMedia[0]];
+            }
+
+            this.initializeState();
         },
 
         initializeState: function() {
@@ -24,13 +39,12 @@
             }
         }
     }" x-init="
-        window.addEventListener('mediaSelected', event => {
-            if (isNestedArray(event.detail)) {
-                selectedMedia = event.detail[0];
-            } else {
-                selectedMedia = event.detail;
+        window.addEventListener('builder-media-selected', event => {
+            if (event.detail?.statePath !== pickerStatePath) {
+                return;
             }
-            initializeState();
+
+            applySelectedMedia(event.detail?.media ?? []);
         });
         initializeState();
     ">
@@ -41,7 +55,7 @@
                                                                             modelId: {{ $getRecord()?->id ?? 0 }},
                                                                             modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
                                                                             });
-                                                                             $dispatch('open-modal', { id: 'mediaPickerModal' });
+                                                                             $dispatch('open-modal', { id: '{{ $modalId }}' });
                                                                             ">
                 <span>{{ __('media::fields.select_media') }}</span>
             </x-filament::button>
@@ -94,8 +108,12 @@
             {{ __('media::fields.no_media_selected') }}
         </div>
 
-        <livewire:media-picker-modal id="media-picker-modal" lazy :multiple="$field->isMultiple()"
-            wire:key="media-picker-modal-{{ $field->getStatePath() }}-{{ $getRecord()?->id ?? 'new' }}"
+        <livewire:builder-media-picker-modal
+            lazy
+            :multiple="$field->isMultiple()"
+            :modal-id="$modalId"
+            :state-path="$statePath"
+            wire:key="builder-media-picker-modal-{{ $statePath }}-{{ $getRecord()?->id ?? 'new' }}"
             :upload-config="$field->getUploadConfig()"
             :model-class="$this->getRecord() ? get_class($this->getRecord()) : $this->getResource()::getModel()"
             :model-id="$this->getRecord()?->id" />

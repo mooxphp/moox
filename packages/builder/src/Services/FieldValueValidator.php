@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
@@ -21,7 +22,7 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    public function messagesFor(FieldDefinition $field, mixed $value, ?string $path = null): array
+    public function messagesFor(FieldDefinition $field, mixed $value, ?string $path = null, ?Model $record = null): array
     {
         $path ??= $field->name;
 
@@ -36,15 +37,15 @@ class FieldValueValidator
         }
 
         if ($fieldType->hasSubFields()) {
-            return $this->messagesForCompound($field, $value, $path);
+            return $this->messagesForCompound($field, $value, $path, $record);
         }
 
-        return $this->messagesForLeaf($field, $value, $path);
+        return $this->messagesForLeaf($field, $value, $path, $record);
     }
 
-    public function assertValid(FieldDefinition $field, mixed $value): void
+    public function assertValid(FieldDefinition $field, mixed $value, ?Model $record = null): void
     {
-        $messages = $this->messagesFor($field, $value);
+        $messages = $this->messagesFor($field, $value, record: $record);
 
         if ($messages !== []) {
             throw ValidationException::withMessages($messages);
@@ -54,14 +55,14 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    protected function messagesForCompound(FieldDefinition $field, mixed $value, string $path): array
+    protected function messagesForCompound(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
     {
         if ($field->type === 'group') {
-            return $this->messagesForRow($field, $this->normalizeGroupRow($value), $path);
+            return $this->messagesForRow($field, $this->normalizeGroupRow($value), $path, $record);
         }
 
         if ($field->type === 'flexible_content') {
-            return $this->messagesForFlexibleContent($field, $value, $path);
+            return $this->messagesForFlexibleContent($field, $value, $path, $record);
         }
 
         if (! is_array($value)) {
@@ -88,7 +89,7 @@ class FieldValueValidator
                 continue;
             }
 
-            $messages = array_merge($messages, $this->messagesForRow($field, $item, $itemPath));
+            $messages = array_merge($messages, $this->messagesForRow($field, $item, $itemPath, $record));
         }
 
         return $messages;
@@ -97,7 +98,7 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    protected function messagesForFlexibleContent(FieldDefinition $field, mixed $value, string $path): array
+    protected function messagesForFlexibleContent(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
     {
         if (! is_array($value)) {
             return [];
@@ -145,7 +146,7 @@ class FieldValueValidator
                 continue;
             }
 
-            $messages = array_merge($messages, $this->messagesForRow($layout, $data, "{$itemPath}.data"));
+            $messages = array_merge($messages, $this->messagesForRow($layout, $data, "{$itemPath}.data", $record));
         }
 
         return $messages;
@@ -154,7 +155,7 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    protected function messagesForRow(FieldDefinition $parent, array $row, string $path): array
+    protected function messagesForRow(FieldDefinition $parent, array $row, string $path, ?Model $record = null): array
     {
         $messages = [];
 
@@ -162,7 +163,7 @@ class FieldValueValidator
             $childPath = "{$path}.{$child->name}";
             $messages = array_merge(
                 $messages,
-                $this->messagesFor($child, $row[$child->name] ?? null, $childPath),
+                $this->messagesFor($child, $row[$child->name] ?? null, $childPath, $record),
             );
         }
 
@@ -172,7 +173,7 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    protected function messagesForLeaf(FieldDefinition $field, mixed $value, string $path): array
+    protected function messagesForLeaf(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
     {
         $fieldType = $this->fieldTypeRegistry->get($field->type);
 
@@ -185,7 +186,11 @@ class FieldValueValidator
         }
 
         if ($field->type === 'image') {
-            return $this->messagesForImage($field, $value, $path);
+            return $this->messagesForImage($field, $value, $path, $record);
+        }
+
+        if ($field->type === 'gallery') {
+            return $this->messagesForGallery($field, $value, $path, $record);
         }
 
         $messages = [];
@@ -255,17 +260,66 @@ class FieldValueValidator
     /**
      * @return array<string, list<string>>
      */
-    protected function messagesForImage(FieldDefinition $field, mixed $value, string $path): array
+    protected function messagesForImage(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
+    {
+        return $this->messagesForMediaField($field, $value, $path, 'image', $record);
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForGallery(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
+    {
+        $messages = $this->messagesForMediaField($field, $value, $path, 'gallery', $record);
+
+        if ($messages !== [] || $this->isEmptyValue('gallery', $value)) {
+            return $messages;
+        }
+
+        $ids = MediaFieldValueSupport::extractIds($value);
+        $count = count($ids);
+        $min = $this->normalizeFileLimit($field->config['min_files'] ?? null);
+        $max = $this->normalizeFileLimit($field->config['max_files'] ?? null);
+
+        if ($min === null && ($field->validation['required'] ?? false) === true) {
+            $min = 1;
+        }
+
+        if ($min !== null && $count < $min) {
+            $messages[$path] = [
+                __('builder::builder.validation.gallery_min_files', [
+                    'min' => $min,
+                    'attribute' => $field->label,
+                ]),
+            ];
+        }
+
+        if ($max !== null && $count > $max) {
+            $messages[$path] = [
+                __('builder::builder.validation.gallery_max_files', [
+                    'max' => $max,
+                    'attribute' => $field->label,
+                ]),
+            ];
+        }
+
+        return $messages;
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForMediaField(FieldDefinition $field, mixed $value, string $path, string $type, ?Model $record = null): array
     {
         $messages = [];
 
-        if (($field->validation['required'] ?? false) === true && $this->isEmptyValue('image', $value)) {
+        if (($field->validation['required'] ?? false) === true && $this->isEmptyValue($type, $value)) {
             $messages[$path] = [
                 __('validation.required', ['attribute' => $field->label]),
             ];
         }
 
-        if ($this->isEmptyValue('image', $value)) {
+        if ($this->isEmptyValue($type, $value)) {
             return $messages;
         }
 
@@ -280,16 +334,43 @@ class FieldValueValidator
         }
 
         foreach ($ids as $mediaId) {
-            if (! MediaFieldValueSupport::mediaExists($mediaId)) {
-                $messages[$path] = [
-                    __('builder::builder.validation.missing_media'),
-                ];
+            $result = MediaFieldValueSupport::mediaValidationResult($mediaId, $type, $record);
 
-                break;
+            if ($result['valid']) {
+                continue;
             }
+
+            $messages[$path] = match ($result['reason']) {
+                'invalid_type' => [
+                    __('builder::builder.validation.invalid_media_type', ['attribute' => $field->label]),
+                ],
+                'scope_mismatch' => [
+                    __('builder::builder.validation.media_scope_mismatch', ['attribute' => $field->label]),
+                ],
+                default => [
+                    __('builder::builder.validation.missing_media'),
+                ],
+            };
+
+            break;
         }
 
         return $messages;
+    }
+
+    protected function normalizeFileLimit(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (! is_numeric($value)) {
+            return null;
+        }
+
+        $limit = (int) $value;
+
+        return $limit > 0 ? $limit : null;
     }
 
     /**
@@ -332,6 +413,10 @@ class FieldValueValidator
             }
 
             return blank($value['url'] ?? null) && blank($value['label'] ?? null);
+        }
+
+        if (in_array($type, ['image', 'gallery'], true)) {
+            return MediaFieldValueSupport::extractIds($value) === [];
         }
 
         if (is_array($value)) {
