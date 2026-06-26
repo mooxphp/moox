@@ -88,8 +88,10 @@ Verantwortlich für **Werte** pro Datensatz.
 | `FieldValuePurger` | Löscht Werte bei Feld-/Gruppenänderungen (Root-Felder) |
 | `CompoundFieldValueMigrator` | Benennt/entfernt verschachtelte Schlüssel in `value_json` (Group, Repeater, Flexible Content) |
 | `PersistCustomFields` | Listener auf Filament `RecordSaved` |
+| `BuilderMediaUsageSync` | Pflegt `media_usables` bei Image/Gallery/File-Feldern |
+| `BuilderFieldValueMediaMetadataSync` | Aktualisiert Media-Snapshots in `value_json` bei Metadaten-Änderungen |
 
-Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nötig).
+Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nötig). Media-Felder speichern **Referenzen** in `value_json`, nicht in Model-Spalten.
 
 ---
 
@@ -132,7 +134,7 @@ Eine Zeile pro Wert:
 | `value_date` | date |
 | `value_datetime` | datetime |
 | `value_boolean` | toggle |
-| `value_json` | multiselect, checkbox_list, link, group, repeater, flexible_content |
+| `value_json` | multiselect, checkbox_list, link, image, gallery, file, group, repeater, flexible_content |
 
 Unique: `(entity, record_id, field_name)`.
 
@@ -303,7 +305,7 @@ Repeater-Zeilen sind standardmäßig eingeklappt und zeigen Typ, Schlüssel und 
 
 ## Feldtypen & Capabilities
 
-### Eingebaute Feldtypen (25 wählbar)
+### Eingebaute Feldtypen (28 wählbar mit `moox/media`, sonst 25)
 
 | Kategorie | Keys |
 |-----------|------|
@@ -312,9 +314,29 @@ Repeater-Zeilen sind standardmäßig eingeklappt und zeigen Typ, Schlüssel und 
 | **Auswahl** | `select`, `multiselect`, `checkbox_list`, `radio`, `button_group`, `toggle` |
 | **Datum** | `date`, `datetime`, `time` |
 | **Sonstiges** | `color`, `link`, `message`, `oembed` |
+| **Media** *(nur mit `moox/media`)* | `image`, `gallery`, `file` |
 | **Layout** | `tab`, `group`, `repeater`, `flexible_content` |
 
 Intern (nur in der DB, nicht wählbar): `flexible_layout` — definiert ein Layout innerhalb von Flexible Content.
+
+### Media-Felder (`moox/media` optional)
+
+Die Feldtypen `image`, `gallery` und `file` werden nur registriert, wenn `moox/media` installiert ist (`MediaIntegration::isAvailable()`). Es gibt **keine** harte Composer-Abhängigkeit — ohne Media-Paket fehlen diese Typen im Admin.
+
+| Typ | UI | Speicher in `value_json` | Mediathek |
+|-----|----|--------------------------|-----------|
+| `image` | Einzelner Media-Picker | Ein Snapshot `{id, file_name, title, alt, …}` | nur Bilder |
+| `gallery` | Mehrfach-Picker | Indexierte Snapshots `{"1": {…}, "2": {…}}` | nur Bilder |
+| `file` | Einzelner Media-Picker | Ein Snapshot (wie Image) | alles außer Bilder |
+
+**Architektur:**
+
+- UI nutzt die Moox-Mediathek (`BuilderMediaPicker` + isolierter Modal pro Feld)
+- Werte landen in `builder_field_values`, nicht in Model-Spalten
+- `media_usables` trackt Verwendung; Snapshots werden bei Translation-Updates synchronisiert
+- Validierung: Media existiert, Scope passt zum Record, MIME-Typ passend zum Feldtyp
+
+API-Ausgabe über `presentValue()` / `MediaItemResource` (URLs, Thumbnails — kein `internal_note`).
 
 ### Layout-Felder
 
@@ -341,6 +363,7 @@ Flexible Content entspricht ACF **Flexible Content**: pro Zeile ein wählbares L
 | `DisplayFormat` | Datumsformat |
 | `MessageBody` | Hinweistext (message) |
 | `RepeaterItems` | min/max Einträge (Repeater, Flexible Content) |
+| `GalleryFiles` | min/max Dateien (Gallery) |
 
 Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabilities()`, optional `castValue()`, `hasSubFields()`, `hasLayouts()`.
 
@@ -348,6 +371,7 @@ Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabiliti
 
 - **Pflichtfelder** und **Capabilities** werden als Filament-Regeln auf die Komponente angewendet.
 - **Verschachtelte Werte** (Repeater, Group, Flexible Content) werden zusätzlich durch `FieldValueValidator` geprüft — u. a. leere Repeater-Zeilen und unbekannte Layouts.
+- **Media-Felder:** Existenz, Scope, MIME-Typ (Bild vs. Datei) und bei Gallery min/max Dateien.
 
 ---
 
@@ -490,7 +514,9 @@ packages/builder/
     ├── FieldTypes/
     │   ├── FieldType.php
     │   ├── Capabilities/
-    │   └── Types/                         # 26 Feldtypen
+    │   └── Types/                         # 29 Feldtypen
+    ├── Forms/Components/BuilderMediaPicker.php
+    ├── Http/Livewire/BuilderMediaPickerModal.php
     ├── Listeners/PersistCustomFields.php
     ├── Models/                            # FieldGroup, Field, FieldOption, FieldValue
     ├── Observers/
@@ -504,12 +530,16 @@ packages/builder/
     ├── Resources/FieldGroupResource.php   # Admin-UI
     ├── Services/
     │   ├── CustomFieldsManager.php
+    │   ├── BuilderMediaUsageSync.php
+    │   ├── BuilderFieldValueMediaMetadataSync.php
     │   ├── FieldGroupPersistence.php
     │   ├── FieldGroupValidator.php
     │   ├── FieldValuePurger.php
     │   └── FieldValueValidator.php
     └── Support/
         ├── EntityModelDeletionRegistrar.php
+        ├── MediaFieldValueSupport.php
+        ├── MediaIntegration.php
         ├── OptionValueRules.php
         └── TypedValueColumns.php
 ```
@@ -524,12 +554,10 @@ packages/builder/
 cd packages/builder && composer test
 ```
 
-75 Tests (Stand: Paket-intern).
-
 ### Manuell im Panel
 
 1. **Felder → Feldgruppen** — Demo-Gruppe „Fahrzeugdaten“ (nach Seeder)
-2. **Items → Bearbeiten** — Custom-Field-Sections inkl. Tabs, Group, Repeater, Flexible Content
+2. **Items → Bearbeiten** — Custom-Field-Sections inkl. Tabs, Group, Repeater, Flexible Content, optional Image/Gallery/File
 3. Speichern, dann DB prüfen:
 
 ```sql
@@ -556,6 +584,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Feldgruppe mit „Anzeigen bei: Items“ | Section auf Item-Form |
 | Werte in `builder_field_values` | typisierte Spalten befüllt |
 | Flexible Content sortierbar | ohne Fehler nach Speichern/Laden |
+| Image/Gallery/File (mit `moox/media`) | Mediathek gefiltert, Speichern/Laden, `media_usables` |
 
 ---
 
@@ -569,14 +598,15 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Verschachtelte Validierung (`FieldValueValidator`)
 - `InteractsWithCustomFields` auf Consumer-Models (`customFields()`, Attribute-Zugriff, Queries, Eager Load)
 - `MergesCustomFields` für API Resources
-- `FieldType::presentValue()` für API-Serialisierung (Datums-ISO, Passwort-Maskierung, verschachtelte Felder)
+- `FieldType::presentValue()` für API-Serialisierung (Datums-ISO, Passwort-Maskierung, verschachtelte Felder, Media via `MediaItemResource`)
 - Repeater min/max (`RepeaterItems` Capability)
+- Media-Felder: `image`, `gallery`, `file` (optional mit `moox/media`)
+- `BuilderMediaPicker` mit isoliertem Modal pro Feld und MIME-Filter in der Mediathek
+- `media_usables`-Sync und Metadaten-Snapshot-Updates für Media-Felder
 
 **Aktuell nicht implementiert:**
 
-- `FieldType::presentValue()`-Spezialisierungen für Media-URLs
 - Relational-Felder (Post Object, Relationship, User, Taxonomy)
-- Media-Felder (Image, File, Gallery)
 - Clone-Feldtyp (ACF)
 - Location-Params über `entity` hinaus
 - `placement`-Steuerung (Sidebar, …)
