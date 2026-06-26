@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\MediaFieldValueSupport;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\RichTextValue;
 
@@ -183,6 +184,10 @@ class FieldValueValidator
             return $this->messagesForLink($field, $value, $path);
         }
 
+        if ($field->type === 'image') {
+            return $this->messagesForImage($field, $value, $path);
+        }
+
         $messages = [];
 
         if (($field->validation['required'] ?? false) === true && $this->isEmptyValue($field->type, $value)) {
@@ -242,6 +247,46 @@ class FieldValueValidator
 
         if ($validator->fails()) {
             $messages[$urlPath] = $validator->errors()->get('url');
+        }
+
+        return $messages;
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForImage(FieldDefinition $field, mixed $value, string $path): array
+    {
+        $messages = [];
+
+        if (($field->validation['required'] ?? false) === true && $this->isEmptyValue('image', $value)) {
+            $messages[$path] = [
+                __('validation.required', ['attribute' => $field->label]),
+            ];
+        }
+
+        if ($this->isEmptyValue('image', $value)) {
+            return $messages;
+        }
+
+        $ids = MediaFieldValueSupport::extractIds($value);
+
+        if ($ids === []) {
+            $messages[$path] = [
+                __('builder::builder.validation.invalid_media'),
+            ];
+
+            return $messages;
+        }
+
+        foreach ($ids as $mediaId) {
+            if (! MediaFieldValueSupport::mediaExists($mediaId)) {
+                $messages[$path] = [
+                    __('builder::builder.validation.missing_media'),
+                ];
+
+                break;
+            }
         }
 
         return $messages;

@@ -4,16 +4,39 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services;
 
+use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Models\FieldValue;
+use Moox\Builder\Registry\EntityRegistry;
+use Moox\Media\Models\MediaUsable;
 
 class FieldValuePurger
 {
-    public function purgeForRecord(string $entity, int|string $recordId): void
+    public function __construct(
+        protected BuilderMediaUsageSync $mediaUsageSync,
+        protected EntityRegistry $entityRegistry,
+    ) {}
+
+    public function purgeForRecord(string $entity, int|string $recordId, ?Model $record = null): void
     {
         FieldValue::query()
             ->where('entity', $entity)
             ->where('record_id', $recordId)
             ->delete();
+
+        if ($record !== null) {
+            $this->mediaUsageSync->purgeForRecord($record);
+
+            return;
+        }
+
+        $modelClass = $this->entityRegistry->modelFor($entity);
+
+        if ($modelClass !== null && class_exists(MediaUsable::class)) {
+            MediaUsable::query()
+                ->where('media_usable_id', $recordId)
+                ->where('media_usable_type', $modelClass)
+                ->delete();
+        }
     }
 
     /**

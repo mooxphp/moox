@@ -34,6 +34,7 @@ use Moox\Builder\FieldTypes\Types\TimeFieldType;
 use Moox\Builder\FieldTypes\Types\ToggleFieldType;
 use Moox\Builder\FieldTypes\Types\UrlFieldType;
 use Moox\Builder\Listeners\PersistCustomFields;
+use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
@@ -42,6 +43,7 @@ use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\EntityModelDeletionRegistrar;
+use Moox\Builder\Support\MediaIntegration;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -52,6 +54,7 @@ class BuilderServiceProvider extends MooxServiceProvider
         $package
             ->name('builder')
             ->hasConfigFile()
+            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 'create_builder_field_groups_table',
@@ -86,6 +89,8 @@ class BuilderServiceProvider extends MooxServiceProvider
 
         Event::listen(RecordSaved::class, PersistCustomFields::class);
 
+        $this->registerMediaMetadataSyncListeners();
+
         $this->app->booted(function (): void {
             app(EntityModelDeletionRegistrar::class)->register();
         });
@@ -96,7 +101,7 @@ class BuilderServiceProvider extends MooxServiceProvider
      */
     protected function defaultFieldTypes(): array
     {
-        return [
+        $types = [
             new TextFieldType,
             new TextareaFieldType,
             new NumberFieldType,
@@ -115,6 +120,13 @@ class BuilderServiceProvider extends MooxServiceProvider
             new RangeFieldType,
             new ButtonGroupFieldType,
             new LinkFieldType,
+        ];
+
+        if (MediaIntegration::isAvailable()) {
+            $types[] = new FieldTypes\Types\ImageFieldType;
+        }
+
+        return array_merge($types, [
             new RichTextFieldType,
             new MessageFieldType,
             new OembedFieldType,
@@ -123,6 +135,31 @@ class BuilderServiceProvider extends MooxServiceProvider
             new RepeaterFieldType,
             new FlexibleContentFieldType,
             new FlexibleLayoutFieldType,
-        ];
+        ]);
+    }
+
+    protected function registerMediaMetadataSyncListeners(): void
+    {
+        if (! MediaIntegration::isAvailable()) {
+            return;
+        }
+
+        $translationClass = 'Moox\Media\Models\MediaTranslation';
+        $mediaClass = 'Moox\Media\Models\Media';
+
+        if (! class_exists($translationClass) || ! class_exists($mediaClass)) {
+            return;
+        }
+
+        $sync = function (object $translation) use ($mediaClass): void {
+            $media = $mediaClass::query()->find($translation->media_id ?? null);
+
+            if ($media !== null) {
+                app(BuilderFieldValueMediaMetadataSync::class)->syncForMedia($media);
+            }
+        };
+
+        $translationClass::saved($sync);
+        $translationClass::updated($sync);
     }
 }

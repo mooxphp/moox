@@ -69,6 +69,7 @@ return [
         'time' => 'Time',
         'color' => 'Color',
         'link' => 'Link',
+        'image' => 'Image',
         'rich_text' => 'Rich text',
         'message' => 'Message',
         'oembed' => 'oEmbed',
@@ -167,5 +168,7 @@ return [
         'empty_flexible_item' => 'Block :position in ":field" is empty.',
         'empty_flexible_layout' => 'Please choose a layout for each block.',
         'unknown_flexible_layout' => 'Unknown layout ":layout".',
+        'invalid_media' => 'Please select a valid media item.',
+        'missing_media' => 'The selected media item no longer exists.',
     ],
 ];

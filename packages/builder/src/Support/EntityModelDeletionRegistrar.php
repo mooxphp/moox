@@ -28,7 +28,7 @@ class EntityModelDeletionRegistrar
             }
 
             $modelClass::deleted(function (Model $record) use ($entity): void {
-                app(FieldValuePurger::class)->purgeForRecord($entity, $record->getKey());
+                app(FieldValuePurger::class)->purgeForRecord($entity, $record->getKey(), $record);
             });
 
             self::$registeredModels[] = $modelClass;
