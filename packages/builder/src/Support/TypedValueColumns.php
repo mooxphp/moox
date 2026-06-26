@@ -32,7 +32,7 @@ final class TypedValueColumns
             'date' => 'value_date',
             'datetime' => 'value_datetime',
             'toggle' => 'value_boolean',
-            'multiselect', 'checkbox_list', 'link', 'group', 'repeater', 'flexible_content' => 'value_json',
+            'multiselect', 'checkbox_list', 'link', 'image', 'group', 'repeater', 'flexible_content' => 'value_json',
             'button_group' => 'value_string',
             default => 'value_string',
         };

@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\MediaIntegration;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
 use Moox\Builder\Support\TypedValueColumns;
@@ -290,7 +291,16 @@ class CustomFieldsManager
             );
         }
 
+        if (MediaIntegration::isAvailable()) {
+            app(BuilderMediaUsageSync::class)->syncForRecord($entity, $record, $fields);
+        }
+
         unset($this->valuesCache["{$entity}:{$record->getKey()}"]);
+    }
+
+    public function forgetValuesCache(string $entity, int|string $recordId): void
+    {
+        unset($this->valuesCache["{$entity}:{$recordId}"]);
     }
 
     /**
