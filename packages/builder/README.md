@@ -1,35 +1,37 @@
 # Moox Builder
 
-Runtime-Feldgruppen für Filament-Resources — ACF-ähnlich, aber rein Laravel/Filament.
+Runtime field groups for Filament resources — ACF-like, but pure Laravel/Filament.
 
-Admins definieren Felder im Panel. Werte werden in typisierten `builder_field_values`-Zeilen gespeichert (kein JSON-Blob am Model, kein WordPress/postmeta).
+Admins define fields in the panel. Values are stored in typed `builder_field_values` rows (no JSON blob on the model, no WordPress/postmeta).
 
 ---
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-1. [Architektur-Überblick](#architektur-überblick)
-2. [Die zwei Schichten](#die-zwei-schichten)
-3. [Datenbank](#datenbank)
-4. [Runtime-Ablauf](#runtime-ablauf)
+1. [Architecture Overview](#architecture-overview)
+2. [The Two Layers](#the-two-layers)
+3. [Database](#database)
+4. [Runtime Flow](#runtime-flow)
 5. [Installation](#installation)
-6. [Resource anbinden](#resource-anbinden)
-7. [Feldgruppen im Admin](#feldgruppen-im-admin)
-8. [Feldtypen & Capabilities](#feldtypen--capabilities)
-9. [Konfiguration](#konfiguration)
-10. [Erweiterung](#erweiterung)
-11. [Paketstruktur](#paketstruktur)
-12. [Testen](#testen)
-13. [Grenzen & Roadmap](#grenzen--roadmap)
+6. [Connect a Resource](#connect-a-resource)
+7. [Field Groups in Admin](#field-groups-in-admin)
+8. [Field Types & Capabilities](#field-types--capabilities)
+9. [Configuration](#configuration)
+10. [Extension](#extension)
+11. [Model API](#model-api)
+12. [API Serialization](#api-serialization)
+13. [Package Structure](#package-structure)
+14. [Testing](#testing)
+15. [Limits & Roadmap](#limits--roadmap)
 
 ---
 
-## Architektur-Überblick
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         ADMIN (Definition)                              │
-│  Filament → Felder → Feldgruppen (FieldGroupResource)                   │
+│  Filament → Fields → Field Groups (FieldGroupResource)                  │
 │       ↓                                                                 │
 │  builder_field_groups / builder_fields / builder_field_options          │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -38,10 +40,10 @@ Admins definieren Felder im Panel. Werte werden in typisierten `builder_field_va
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      RUNTIME (Consumer-Resources)                       │
+│                      RUNTIME (Consumer Resources)                       │
 │  ItemResource + HasCustomFields                                         │
 │       ↓                                                                 │
-│  EntityRegistry → LocationMatcher → SchemaCompiler → Filament-Sections  │
+│  EntityRegistry → LocationMatcher → SchemaCompiler → Filament Sections  │
 │       ↓                                                                 │
 │  PersistCustomFields (RecordSaved) → CustomFieldsManager                │
 │       ↓                                                                 │
@@ -49,85 +51,85 @@ Admins definieren Felder im Panel. Werte werden in typisierten `builder_field_va
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Kernprinzip:** Definition und Speicherung sind strikt getrennt.
+**Core principle:** Definition and storage are strictly separated.
 
-| Schicht | Frage | Wo |
-|---------|-------|-----|
-| **Definition** | Welche Felder gibt es? | `builder_field_*` Tabellen + Admin-UI |
-| **Speicher** | Wo liegen die Werte? | `builder_field_values` + `TypedValueColumns` |
+| Layer | Question | Where |
+|-------|----------|-------|
+| **Definition** | Which fields exist? | `builder_field_*` tables + admin UI |
+| **Storage** | Where are values stored? | `builder_field_values` + `TypedValueColumns` |
 
 ---
 
-## Die zwei Schichten
+## The Two Layers
 
 ### 1. Definition Layer
 
-Verantwortlich für **was** angezeigt wird und **wo** (Location).
+Responsible for **what** is shown and **where** (location).
 
-| Komponente | Aufgabe |
-|------------|---------|
-| `FieldGroupResource` | Filament-CRUD für Feldgruppen |
-| `FieldGroupPersistence` | Speichert Gruppen, Felder, Optionen, Location Rules, verschachtelte Felder; migriert JSON-Werte bei Umbenennung/Löschen verschachtelter Subfelder |
-| `FieldGroupValidator` | Prüft doppelte **speicherbare** Feldschlüssel (global pro Gruppe, inkl. Tabs) und Konflikte zwischen Gruppen |
-| `DefinitionRegistry` | Lädt aktive Gruppen, cached als Arrays |
-| `LocationMatcher` | Prüft `location_rules` gegen `LocationContext` |
-| `EntityRegistry` | Findet Filament-Resources mit `HasCustomFields` → Entity-Keys |
-| `SchemaCompiler` | Baut Filament-Sections, Tabs, Layout-Felder aus Definitionen |
+| Component | Role |
+|-----------|------|
+| `FieldGroupResource` | Filament CRUD for field groups |
+| `FieldGroupPersistence` | Saves groups, fields, options, location rules, nested fields; migrates JSON values when nested subfields are renamed or removed |
+| `FieldGroupValidator` | Checks duplicate **storable** field keys (globally per group, including tabs) and conflicts between groups |
+| `DefinitionRegistry` | Loads active groups, caches as arrays |
+| `LocationMatcher` | Matches `location_rules` against `LocationContext` |
+| `EntityRegistry` | Finds Filament resources with `HasCustomFields` → entity keys |
+| `SchemaCompiler` | Builds Filament sections, tabs, and layout fields from definitions |
 
-Definitionen werden als **DTOs** (`FieldGroupDefinition`, `FieldDefinition`) transportiert — nicht als lose Eloquent-Models im Runtime-Pfad.
+Definitions are transported as **DTOs** (`FieldGroupDefinition`, `FieldDefinition`) — not as loose Eloquent models in the runtime path.
 
 ### 2. Storage Layer
 
-Verantwortlich für **Werte** pro Datensatz.
+Responsible for **values** per record.
 
-| Komponente | Aufgabe |
-|------------|---------|
-| `TypedValueColumns` | Mapping Feldtyp → DB-Spalte (`value_string`, `value_json`, …) |
-| `CustomFieldsManager` | Laden/Speichern für Resources, Option-Validierung, Hydration-Cache |
-| `FieldValueValidator` | Validierung verschachtelter Werte (Repeater, Group, Flexible Content) |
-| `FieldValuePurger` | Löscht Werte bei Feld-/Gruppenänderungen (Root-Felder) |
-| `CompoundFieldValueMigrator` | Benennt/entfernt verschachtelte Schlüssel in `value_json` (Group, Repeater, Flexible Content) |
-| `PersistCustomFields` | Listener auf Filament `RecordSaved` |
-| `BuilderMediaUsageSync` | Pflegt `media_usables` bei Image/Gallery/File-Feldern |
-| `BuilderFieldValueMediaMetadataSync` | Aktualisiert Media-Snapshots in `value_json` bei Metadaten-Änderungen |
+| Component | Role |
+|-----------|------|
+| `TypedValueColumns` | Maps field type → DB column (`value_string`, `value_json`, …) |
+| `CustomFieldsManager` | Load/save for resources, option validation, hydration cache |
+| `FieldValueValidator` | Validates nested values (repeater, group, flexible content) |
+| `FieldValuePurger` | Deletes values when fields/groups change (root fields) |
+| `CompoundFieldValueMigrator` | Renames/removes nested keys in `value_json` (group, repeater, flexible content) |
+| `PersistCustomFields` | Listener on Filament `RecordSaved` |
+| `BuilderMediaUsageSync` | Maintains `media_usables` for image/gallery/file fields |
+| `BuilderFieldValueMediaMetadataSync` | Updates media snapshots in `value_json` when metadata changes |
 
-Werte hängen **nicht** am Eloquent-Model (keine `custom_fields`-JSON-Spalte nötig). Media-Felder speichern **Referenzen** in `value_json`, nicht in Model-Spalten.
+Values are **not** attached to the Eloquent model (no `custom_fields` JSON column needed). Media fields store **references** in `value_json`, not in model columns.
 
 ---
 
-## Datenbank
+## Database
 
 ### `builder_field_groups`
 
-| Spalte | Bedeutung |
-|--------|-----------|
-| `name` | Anzeigename (= Section-Titel im Formular) |
-| `slug` | Technischer Schlüssel der Gruppe |
-| `location_rules` | JSON: wo die Gruppe erscheint (siehe unten) |
-| `placement` | Reserviert (`default`) |
-| `settings` | Reserviert für Gruppen-Einstellungen |
-| `sort` | Reihenfolge mehrerer Gruppen |
-| `active` | Nur aktive Gruppen werden gerendert |
+| Column | Meaning |
+|--------|---------|
+| `name` | Display name (= section title in the form) |
+| `slug` | Technical group key |
+| `location_rules` | JSON: where the group appears (see below) |
+| `placement` | Reserved (`default`) |
+| `settings` | Reserved for group settings |
+| `sort` | Order of multiple groups |
+| `active` | Only active groups are rendered |
 
 ### `builder_fields`
 
-Felder einer Gruppe: `name`, `label`, `type`, `config`, `validation`, `sort`.
+Fields of a group: `name`, `label`, `type`, `config`, `validation`, `sort`.
 
-**`parent_field_id`** verknüpft Unterfelder mit Layout-Feldern (Group, Repeater, Flexible-Content-Layouts). Die Baumstruktur wird rekursiv in `FieldGroupPersistence` synchronisiert.
+**`parent_field_id`** links subfields to layout fields (group, repeater, flexible content layouts). The tree is synced recursively in `FieldGroupPersistence`.
 
 ### `builder_field_options`
 
-Optionen für `select`, `radio`, `multiselect`, `checkbox_list`, `button_group`.
+Options for `select`, `radio`, `multiselect`, `checkbox_list`, `button_group`.
 
 ### `builder_field_values`
 
-Eine Zeile pro Wert:
+One row per value:
 
-| Spalte | Feldtypen |
-|--------|-----------|
-| `entity` | z. B. `item` |
-| `record_id` | ID des Datensatzes |
-| `field_name` | Feldschlüssel |
+| Column | Field types |
+|--------|-------------|
+| `entity` | e.g. `item` |
+| `record_id` | Record ID |
+| `field_name` | Field key |
 | `value_string` | text, email, url, select, password, oembed, … |
 | `value_text` | textarea, rich_text |
 | `value_decimal` | number, range |
@@ -138,9 +140,9 @@ Eine Zeile pro Wert:
 
 Unique: `(entity, record_id, field_name)`.
 
-### Location Rules (intern)
+### Location Rules (internal)
 
-Im Admin wählst du **„Anzeigen bei“** (Multi-Select). Intern wird das zu:
+In admin you choose **"Show on"** (multi-select). Internally this becomes:
 
 ```json
 [
@@ -149,53 +151,53 @@ Im Admin wählst du **„Anzeigen bei“** (Multi-Select). Intern wird das zu:
 ]
 ```
 
-Jede innere Liste = AND-Gruppe, mehrere Gruppen = OR. Aktuell unterstützt der Matcher nur `param: entity` mit `==` / `!=`. Ohne Zuordnung (`Anzeigen bei` leer) erscheint die Gruppe in keinem Formular.
+Each inner list = AND group, multiple groups = OR. The matcher currently only supports `param: entity` with `==` / `!=`. Without assignment ("Show on" empty) the group appears in no form.
 
 ---
 
-## Runtime-Ablauf
+## Runtime Flow
 
-### Formular öffnen (Create/Edit)
+### Open form (create/edit)
 
 ```
-1. Resource::form() enthält ...static::customFieldComponents()
+1. Resource::form() includes ...static::customFieldComponents()
 
 2. HasCustomFields → DefinitionRegistry::fieldGroupsFor(LocationContext)
-   → lädt gecachte Gruppen
-   → LocationMatcher filtert nach entity
+   → loads cached groups
+   → LocationMatcher filters by entity
 
 3. SchemaCompiler::compile()
-   → pro Gruppe eine Filament-Section
-   → Layout-Felder: Tabs, Group, Repeater, Flexible Content (Builder)
-   → afterStateHydrated lädt Werte via CustomFieldsManager (ein Query pro Datensatz, gecacht)
-   → Filament Builder: hydrateItems() für UUID-basierte Block-Keys
+   → one Filament section per group
+   → layout fields: tabs, group, repeater, flexible content (Builder)
+   → afterStateHydrated loads values via CustomFieldsManager (one query per record, cached)
+   → Filament Builder: hydrateItems() for UUID-based block keys
 ```
 
-### Speichern
+### Save
 
 ```
-1. Filament speichert das Model (title, description, …)
+1. Filament saves the model (title, description, …)
 
-2. Event RecordSaved wird gefeuert
+2. RecordSaved event fires
 
 3. PersistCustomFields::handle($record, $data, $page)
-   → prüft: Resource nutzt HasCustomFields?
+   → checks: does the resource use HasCustomFields?
 
 4. CustomFieldsManager::saveFromFormData()
-   → extrahiert bekannte Feld-Keys aus $data
+   → extracts known field keys from $data
    → FieldValueValidator + OptionValueRules
    → updateOrCreate in builder_field_values
 ```
 
-**Wichtig:** Keine Page-Hooks (`afterCreate`, `mutateFormDataBeforeSave`) nötig.
+**Important:** No page hooks (`afterCreate`, `mutateFormDataBeforeSave`) needed.
 
 ### Cache
 
-`DefinitionRegistry` cached unter `builder.definitions` als **PHP-Arrays**.
+`DefinitionRegistry` caches under `builder.definitions` as **PHP arrays**.
 
-Invalidierung automatisch via `InvalidateDefinitionCacheObserver` bei Änderungen an Gruppen/Feldern/Optionen.
+Invalidation is automatic via `InvalidateDefinitionCacheObserver` when groups/fields/options change.
 
-Manuell: `php artisan cache:forget builder.definitions`
+Manual: `php artisan cache:forget builder.definitions`
 
 ---
 
@@ -208,9 +210,9 @@ composer require moox/builder
 php artisan moox:install
 ```
 
-Migrations, Config, Seeder und `BuilderPlugin` auswählen.
+Select migrations, config, seeder, and `BuilderPlugin`.
 
-### Manuell
+### Manual
 
 ```bash
 composer require moox/builder
@@ -220,7 +222,7 @@ php artisan migrate
 php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder"
 ```
 
-Plugin im Panel:
+Register the plugin in your panel:
 
 ```php
 use Moox\Builder\Plugins\BuilderPlugin;
@@ -232,9 +234,9 @@ $panel->plugins([
 
 ---
 
-## Resource anbinden
+## Connect a Resource
 
-### Schritt 1: Trait in der Filament-Resource
+### Step 1: Trait on the Filament resource
 
 ```php
 use Moox\Builder\Concerns\HasCustomFields;
@@ -246,14 +248,14 @@ class ItemResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            // eigene Felder …
+            // your own fields …
             ...static::customFieldComponents(),
         ]);
     }
 }
 ```
 
-Der **Entity-Key** wird automatisch aus dem Model-Basename abgeleitet (`Item` → `item`). Abweichenden Key per `customFieldsEntity()` überschreiben:
+The **entity key** is derived automatically from the model basename (`Item` → `item`). Override with `customFieldsEntity()`:
 
 ```php
 protected static function customFieldsEntity(): ?string
@@ -262,134 +264,134 @@ protected static function customFieldsEntity(): ?string
 }
 ```
 
-### Schritt 2: Entity-Discovery
+### Step 2: Entity discovery
 
-`EntityRegistry` findet Resources **automatisch** über alle registrierten Filament-Panels — jede Resource mit `HasCustomFields` erscheint im Multi-Select „Anzeigen bei“. Keine manuelle Config-Registrierung nötig.
+`EntityRegistry` finds resources **automatically** across all registered Filament panels — every resource with `HasCustomFields` appears in the "Show on" multi-select. No manual config registration needed.
 
-### Schritt 3: Feldgruppe im Admin
+### Step 3: Field group in admin
 
-**Felder → Feldgruppen → Erstellen**
+**Fields → Field Groups → Create**
 
-- **Anzeigen bei:** z. B. `Items`, `Records`
-- Felder definieren
-- Aktiv lassen
+- **Show on:** e.g. `Items`, `Records`
+- Define fields
+- Keep active
 
-**Nicht nötig:**
+**Not required:**
 
-- Trait oder Spalte am Eloquent-Model
-- Eigene Listener oder Page-Hooks
-- Migration für JSON am Model
-- Manuelle Entity-Config
-
----
-
-## Feldgruppen im Admin
-
-Navigation: **Felder → Feldgruppen**
-
-| Bereich | Inhalt |
-|---------|--------|
-| **Allgemein** | Name, technischer Schlüssel, aktiv, Reihenfolge |
-| **Zuordnung** | Multi-Select „Anzeigen bei“ (auto-discovered Resources) |
-| **Felder** | Repeater: Bezeichnung, Typ, Feldschlüssel, Pflichtfeld |
-| **Einstellungen** | Capability-Felder (nur wenn der Typ welche hat) |
-| **Optionen** | Für Select/Radio/Multiselect/Checkbox-Liste |
-| **Unterfelder** | Für Group und Repeater |
-| **Layouts** | Für Flexible Content (Layout-Schlüssel + Unterfelder) |
-
-Repeater-Zeilen sind standardmäßig eingeklappt und zeigen Typ, Schlüssel und Pflichtfeld im Label.
-
-Übersetzungen: `resources/lang/de/builder.php`, `en/builder.php`.
+- Trait or column on the Eloquent model
+- Custom listeners or page hooks
+- Migration for JSON on the model
+- Manual entity config
 
 ---
 
-## Feldtypen & Capabilities
+## Field Groups in Admin
 
-### Eingebaute Feldtypen (28 wählbar mit `moox/media`, sonst 25)
+Navigation: **Fields → Field Groups**
 
-| Kategorie | Keys |
-|-----------|------|
+| Section | Content |
+|---------|---------|
+| **General** | Name, technical key, active, sort order |
+| **Assignment** | "Show on" multi-select (auto-discovered resources) |
+| **Fields** | Repeater: label, type, field key, required |
+| **Settings** | Capability fields (only when the type has them) |
+| **Options** | For select/radio/multiselect/checkbox list |
+| **Subfields** | For group and repeater |
+| **Layouts** | For flexible content (layout key + subfields) |
+
+Repeater rows are collapsed by default and show type, key, and required flag in the label.
+
+Translations: `resources/lang/de/builder.php`, `en/builder.php`.
+
+---
+
+## Field Types & Capabilities
+
+### Built-in field types (28 with `moox/media`, otherwise 25)
+
+| Category | Keys |
+|----------|------|
 | **Text** | `text`, `textarea`, `email`, `url`, `password`, `rich_text` |
-| **Zahl** | `number`, `range` |
-| **Auswahl** | `select`, `multiselect`, `checkbox_list`, `radio`, `button_group`, `toggle` |
-| **Datum** | `date`, `datetime`, `time` |
-| **Sonstiges** | `color`, `link`, `message`, `oembed` |
-| **Media** *(nur mit `moox/media`)* | `image`, `gallery`, `file` |
+| **Number** | `number`, `range` |
+| **Choice** | `select`, `multiselect`, `checkbox_list`, `radio`, `button_group`, `toggle` |
+| **Date** | `date`, `datetime`, `time` |
+| **Other** | `color`, `link`, `message`, `oembed` |
+| **Media** *(requires `moox/media`)* | `image`, `gallery`, `file` |
 | **Layout** | `tab`, `group`, `repeater`, `flexible_content` |
 
-Intern (nur in der DB, nicht wählbar): `flexible_layout` — definiert ein Layout innerhalb von Flexible Content.
+Internal only (DB, not selectable): `flexible_layout` — defines a layout inside flexible content.
 
-### Media-Felder (`moox/media` optional)
+### Media fields (`moox/media` optional)
 
-Die Feldtypen `image`, `gallery` und `file` werden nur registriert, wenn `moox/media` installiert ist (`MediaIntegration::isAvailable()`). Es gibt **keine** harte Composer-Abhängigkeit — ohne Media-Paket fehlen diese Typen im Admin.
+Types `image`, `gallery`, and `file` are only registered when `moox/media` is installed (`MediaIntegration::isAvailable()`). There is **no** hard Composer dependency — without the media package these types are missing in admin.
 
-| Typ | UI | Speicher in `value_json` | Mediathek |
-|-----|----|--------------------------|-----------|
-| `image` | Einzelner Media-Picker | Ein Snapshot `{id, file_name, title, alt, …}` | nur Bilder |
-| `gallery` | Mehrfach-Picker | Indexierte Snapshots `{"1": {…}, "2": {…}}` | nur Bilder |
-| `file` | Einzelner Media-Picker | Ein Snapshot (wie Image) | alles außer Bilder |
+| Type | UI | Storage in `value_json` | Library filter |
+|------|----|---------------------------|----------------|
+| `image` | Single media picker | One snapshot `{id, file_name, title, alt, …}` | images only |
+| `gallery` | Multi picker | Indexed snapshots `{"1": {…}, "2": {…}}` | images only |
+| `file` | Single media picker | One snapshot (like image) | everything except images |
 
-**Architektur:**
+**Architecture:**
 
-- UI nutzt die Moox-Mediathek (`BuilderMediaPicker` + isolierter Modal pro Feld)
-- Werte landen in `builder_field_values`, nicht in Model-Spalten
-- `media_usables` trackt Verwendung; Snapshots werden bei Translation-Updates synchronisiert
-- Validierung: Media existiert, Scope passt zum Record, MIME-Typ passend zum Feldtyp
+- UI uses the Moox media library (`BuilderMediaPicker` + isolated modal per field)
+- Values go to `builder_field_values`, not model columns
+- `media_usables` tracks usage; snapshots sync on translation updates
+- Validation: media exists, scope matches the record, MIME type matches the field type
 
-API-Ausgabe über `presentValue()` / `MediaItemResource` (URLs, Thumbnails — kein `internal_note`).
+API output uses `presentValue()` / `MediaItemResource` (URLs, thumbnails — no `internal_note`). See [API Serialization](#api-serialization).
 
-### Layout-Felder
+### Layout fields
 
-| Typ | Filament-Komponente | Speicher |
-|-----|---------------------|----------|
-| `tab` | `Tabs` / `Tab` (Marker, kein Wert) | — |
-| `group` | `Repeater` (min/max 1) | `value_json` (Objekt) |
-| `repeater` | `Repeater` | `value_json` (Array) |
-| `flexible_content` | `Builder` mit Layout-Blöcken | `value_json` (Array mit `type` + `data`) |
+| Type | Filament component | Storage |
+|------|-------------------|---------|
+| `tab` | `Tabs` / `Tab` (marker, no value) | — |
+| `group` | `Repeater` (min/max 1) | `value_json` (object) |
+| `repeater` | `Repeater` | `value_json` (array) |
+| `flexible_content` | `Builder` with layout blocks | `value_json` (array with `type` + `data`) |
 
-Flexible Content entspricht ACF **Flexible Content**: pro Zeile ein wählbares Layout mit eigenen Unterfeldern.
+Flexible content works like ACF **Flexible Content**: each row is a selectable layout with its own subfields.
 
-### Capabilities (pro Typ konfigurierbar)
+### Capabilities (configurable per type)
 
-| Capability | Wirkung |
-|------------|---------|
-| `MaxLength` | max. Zeichenlänge |
-| `Placeholder` | Platzhaltertext |
-| `PrefixSuffix` | Präfix/Suffix |
-| `DefaultValue` | Standardwert |
-| `HelperText` | Hilfetext unter dem Feld |
-| `MinValue` / `MaxValue` / `Step` | Zahlenfelder |
-| `Rows` | Textarea-Zeilen |
-| `DisplayFormat` | Datumsformat |
-| `MessageBody` | Hinweistext (message) |
-| `RepeaterItems` | min/max Einträge (Repeater, Flexible Content) |
-| `GalleryFiles` | min/max Dateien (Gallery) |
+| Capability | Effect |
+|------------|--------|
+| `MaxLength` | Max character length |
+| `Placeholder` | Placeholder text |
+| `PrefixSuffix` | Prefix/suffix |
+| `DefaultValue` | Default value |
+| `HelperText` | Help text below the field |
+| `MinValue` / `MaxValue` / `Step` | Number fields |
+| `Rows` | Textarea rows |
+| `DisplayFormat` | Date format |
+| `MessageBody` | Info text (message) |
+| `RepeaterItems` | Min/max entries (repeater, flexible content) |
+| `GalleryFiles` | Min/max files (gallery) |
 
-Jeder Feldtyp implementiert `FieldType`: `key()`, `formComponent()`, `capabilities()`, optional `castValue()`, `hasSubFields()`, `hasLayouts()`.
+Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilities()`, optionally `castValue()`, `hasSubFields()`, `hasLayouts()`.
 
-### Validierung
+### Validation
 
-- **Pflichtfelder** und **Capabilities** werden als Filament-Regeln auf die Komponente angewendet.
-- **Verschachtelte Werte** (Repeater, Group, Flexible Content) werden zusätzlich durch `FieldValueValidator` geprüft — u. a. leere Repeater-Zeilen und unbekannte Layouts.
-- **Media-Felder:** Existenz, Scope, MIME-Typ (Bild vs. Datei) und bei Gallery min/max Dateien.
+- **Required fields** and **capabilities** are applied as Filament rules on the component.
+- **Nested values** (repeater, group, flexible content) are also validated by `FieldValueValidator` — including empty repeater rows and unknown layouts.
+- **Media fields:** existence, scope, MIME type (image vs file), and min/max files for gallery.
 
 ---
 
-## Konfiguration
+## Configuration
 
 `config/builder.php`:
 
-| Key | Default | Beschreibung |
-|-----|---------|--------------|
-| `navigation_group` | `Felder` | Filament-Navigationsgruppe für Feldgruppen |
+| Key | Default | Description |
+|-----|---------|-------------|
+| `navigation_group` | `Fields` | Filament navigation group for field groups |
 
 Env: `BUILDER_NAVIGATION_GROUP`.
 
 ---
 
-## Erweiterung
+## Extension
 
-### Eigenen Feldtyp registrieren
+### Register a custom field type
 
 ```php
 use Moox\Builder\FieldTypes\FieldType;
@@ -400,16 +402,16 @@ $this->app->afterResolving(FieldTypeRegistry::class, function (FieldTypeRegistry
 });
 ```
 
-Übersetzung unter `builder::builder.field_types.{key}` in `resources/lang`.
+Translation under `builder::builder.field_types.{key}` in `resources/lang`.
 
-### Validierungsregeln abfragen
+### Get validation rules
 
 ```php
 ItemResource::customFieldRules();
-// ['feld-name' => ['required', 'max:255'], 'repeater.*.unterfeld' => ['required'], ...]
+// ['field-name' => ['required', 'max:255'], 'repeater.*.subfield' => ['required'], ...]
 ```
 
-### Werte programmatisch laden
+### Load values for Filament forms
 
 ```php
 use Moox\Builder\Services\CustomFieldsManager;
@@ -420,61 +422,74 @@ $values = app(CustomFieldsManager::class)->loadFormData(
 );
 ```
 
-### Werte auf Model-Ebene (InteractsWithCustomFields)
+This is for the Filament form context, not for API output.
 
-Trait auf dem Consumer-Model (z. B. `Item`). Entity-Key: `getResourceName()` → `customFieldsEntity()` → Filament-Resource → Model-Basename.
+---
+
+## Model API
+
+Add `InteractsWithCustomFields` to the consumer model (e.g. `Item`). Entity key resolution: `getResourceName()` → `customFieldsEntity()` → Filament resource → model basename.
 
 ```php
 use Moox\Builder\Concerns\InteractsWithCustomFields;
 
-// Lesen
-$item->farbe;                              // wie natives Attribut (gültige PHP-Feldnamen)
-$item->customFields();                     // alle Custom Fields inkl. Defaults
-$item->customFields(fresh: true);           // neu aus DB, Cache ignorieren
-$item->customField('fahrzeugtyp-modell');  // ein Feld (auch mit Bindestrich)
-$item->hasCustomField('farbe');            // Wert vorhanden (inkl. Default)?
-$item->hasCustomFieldDefinition('farbe');   // Felddefinition existiert?
-$item->toArray();                          // DB-Spalten + Custom Fields (roh, intern)
+// Read
+$item->color;                              // like a native attribute (valid PHP field names)
+$item->customFields();                     // all custom fields including defaults
+$item->customFields(fresh: true);           // reload from DB, ignore cache
+$item->customField('vehicle-type');        // single field
+$item->hasCustomField('color');            // value present (including default)?
+$item->hasCustomFieldDefinition('color');   // field definition exists?
+$item->toArray();                          // DB columns + raw custom fields (internal)
 
-// Schreiben
-$item->farbe = 'Blau';                     // oder setCustomField()
-$item->setCustomField('farbe', 'Blau');
-$item->setCustomFields(['unfallfrei' => true]);
-$item->clearCustomField('farbe');
+// Write
+$item->color = 'Blue';                     // or setCustomField()
+$item->setCustomField('color', 'Blue');
+$item->setCustomFields(['accident_free' => true]);
+$item->clearCustomField('color');
 
-// Queries & Collections
-Item::query()->where('farbe', 'Blau')->get();       // normales where auf Custom Fields
-Item::query()->withCustomFields()->get();            // Eager Load (kein N+1)
-Item::eagerLoadCustomFields($models);                // Batch für bestehende Collection
+// Queries & collections
+Item::query()->where('color', 'Blue')->get();        // normal where on custom fields
+Item::query()->withCustomFields()->get();            // eager load (no N+1)
+Item::eagerLoadCustomFields($models);                // batch for existing collection
 
 // Meta
-Item::customFieldNames();                            // alle definierten Feldnamen
-Item::resolveCustomFieldsEntity();                  // Entity-Key (z. B. item)
-Item::flushCustomFieldDefinitionCache();             // Definitionen-Cache leeren
-$item->flushCustomFieldsCache();                     // Werte-Cache auf dem Model leeren
+Item::customFieldNames();                            // all defined field names
+Item::resolveCustomFieldsEntity();                   // entity key (e.g. item)
+Item::flushCustomFieldDefinitionCache();             // clear definition cache
+$item->flushCustomFieldsCache();                     // clear value cache on the model
 
-// Optional: abweichender Entity-Key (gleicher Hook wie auf der Filament-Resource)
+// Optional: custom entity key (same hook as on the Filament resource)
 protected static function customFieldsEntity(): ?string
 {
     return 'my-entity';
 }
 ```
 
-**Hinweise:**
+**Notes:**
 
-- DB-Spalten haben Vorrang vor Custom Fields mit gleichem Namen (`$item->title` → Spalte, nicht Builder-Feld).
-- Passwort-Felder werden beim Speichern gehasht (`Hash::make`) und nie im Klartext zurückgeladen
-- `dump($item)` / Tinker zeigt Custom Fields in `__debugInfo()` (Passwörter maskiert).
+- DB columns take precedence over custom fields with the same name (`$item->title` → column, not builder field).
+- Password fields are hashed on save (`Hash::make`) and never returned in plain text.
+- `dump($item)` / Tinker shows custom fields in `__debugInfo()` (passwords masked).
 
-### API Resources
+---
 
-`MergesCustomFields` merged Custom Fields API-formatiert in die Resource (ISO-Dates, maskierte Passwörter, verschachtelte Group/Repeater/Flexible Content).
+## API Serialization
+
+Builder does **not** ship HTTP routes. It provides helpers for your own `JsonResource` classes or controllers.
+
+### Requirements
+
+1. The Eloquent model must use `InteractsWithCustomFields`.
+2. Without that trait, `mergeCustomFields()` returns your payload unchanged (no error).
+
+### JsonResource (recommended)
 
 ```php
 use Illuminate\Http\Resources\Json\JsonResource;
 use Moox\Builder\Http\Resources\Concerns\MergesCustomFields;
 
-class ItemResource extends JsonResource
+class ItemApiResource extends JsonResource
 {
     use MergesCustomFields;
 
@@ -488,22 +503,69 @@ class ItemResource extends JsonResource
 }
 ```
 
+Use a distinct class name (e.g. `ItemApiResource`) — do not confuse it with the Filament `ItemResource`.
+
+### Lists (avoid N+1)
+
+```php
+$items = Item::query()->withCustomFields()->get();
+
+return ItemApiResource::collection($items);
+```
+
+### Internal vs API output
+
+| Method | Use case | Example: `date` | Example: `password` | Example: `image` |
+|--------|----------|-----------------|---------------------|-------------------|
+| `$item->customFields()` | Internal / PHP | `Carbon` instance | hashed string | snapshot array |
+| `$item->toArray()` | Internal arrays | `Carbon` instance | `null` | snapshot array |
+| `mergeCustomFields()` | API / JSON | `"2026-06-16"` | `{"has_value": true}` | `MediaItemResource` shape |
+
+### Output shapes (API)
+
+| Field type | API output |
+|------------|------------|
+| `date` | `"2026-06-16"` |
+| `datetime` | ISO 8601 string |
+| `time` | `"14:30"` |
+| `password` | `{"has_value": true}` |
+| `image` / `file` | `MediaItemResource` (`url`, `thumbnail_url`, `preview_url`, …) |
+| `gallery` | `{"1": {...}, "2": {...}}` (indexed) |
+| `group` | `{"subfield": ...}` (nested, presented) |
+| `repeater` | `[{...}, {...}]` |
+| `flexible_content` | `[{"type": "hero", "data": {...}}]` |
+
+### Without JsonResource
+
+```php
+use Moox\Builder\Services\BuilderValuesResolver;
+use Moox\Builder\Services\CustomFieldsManager;
+
+$manager = app(CustomFieldsManager::class);
+$entity = $item::resolveCustomFieldsEntity();
+
+$presented = app(BuilderValuesResolver::class)->present(
+    $manager->fieldsForEntity($entity),
+    $item->customFields(),
+);
+```
+
 ---
 
-## Paketstruktur
+## Package Structure
 
 ```
 packages/builder/
 ├── config/builder.php
 ├── database/
-│   ├── migrations/          # 4 Tabellen
+│   ├── migrations/          # 4 tables
 │   └── seeders/BuilderSeeder.php
 ├── resources/lang/{de,en}/builder.php
 └── src/
     ├── BuilderServiceProvider.php
     ├── Concerns/
-    │   ├── HasCustomFields.php              # Filament-Resource
-    │   └── InteractsWithCustomFields.php    # Consumer-Model
+    │   ├── HasCustomFields.php              # Filament resource
+    │   └── InteractsWithCustomFields.php    # Consumer model
     ├── Compiler/
     │   ├── LocationMatcher.php
     │   └── SchemaCompiler.php
@@ -514,9 +576,11 @@ packages/builder/
     ├── FieldTypes/
     │   ├── FieldType.php
     │   ├── Capabilities/
-    │   └── Types/                         # 29 Feldtypen
+    │   └── Types/                         # 29 field types
     ├── Forms/Components/BuilderMediaPicker.php
-    ├── Http/Livewire/BuilderMediaPickerModal.php
+    ├── Http/
+    │   ├── Livewire/BuilderMediaPickerModal.php
+    │   └── Resources/Concerns/MergesCustomFields.php
     ├── Listeners/PersistCustomFields.php
     ├── Models/                            # FieldGroup, Field, FieldOption, FieldValue
     ├── Observers/
@@ -527,9 +591,10 @@ packages/builder/
     │   ├── DefinitionRegistry.php
     │   ├── EntityRegistry.php
     │   └── FieldTypeRegistry.php
-    ├── Resources/FieldGroupResource.php   # Admin-UI
+    ├── Resources/FieldGroupResource.php   # Admin UI
     ├── Services/
     │   ├── CustomFieldsManager.php
+    │   ├── BuilderValuesResolver.php
     │   ├── BuilderMediaUsageSync.php
     │   ├── BuilderFieldValueMediaMetadataSync.php
     │   ├── FieldGroupPersistence.php
@@ -546,19 +611,19 @@ packages/builder/
 
 ---
 
-## Testen
+## Testing
 
-### Package-Tests
+### Package tests
 
 ```bash
 cd packages/builder && composer test
 ```
 
-### Manuell im Panel
+### Manual in the panel
 
-1. **Felder → Feldgruppen** — Demo-Gruppe „Fahrzeugdaten“ (nach Seeder)
-2. **Items → Bearbeiten** — Custom-Field-Sections inkl. Tabs, Group, Repeater, Flexible Content, optional Image/Gallery/File
-3. Speichern, dann DB prüfen:
+1. **Fields → Field Groups** — demo group "Vehicle data" (after seeder)
+2. **Items → Edit** — custom field sections including tabs, group, repeater, flexible content, optional image/gallery/file
+3. Save, then check the DB:
 
 ```sql
 SELECT entity, record_id, field_name, value_string, value_decimal, value_json
@@ -566,7 +631,7 @@ FROM builder_field_values
 WHERE entity = 'item';
 ```
 
-4. Item erneut öffnen — Werte müssen geladen sein.
+4. Re-open the item — values must be loaded.
 
 ### Seeder
 
@@ -574,52 +639,52 @@ WHERE entity = 'item';
 php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --force
 ```
 
-### Checkliste
+### Checklist
 
-| Check | Erwartung |
-|-------|-----------|
-| 4 Builder-Tabellen existieren | nach `migrate` |
-| Resource nutzt `HasCustomFields` | erscheint unter „Anzeigen bei“ |
-| `BuilderPlugin` im Panel | Nav „Felder“ sichtbar |
-| Feldgruppe mit „Anzeigen bei: Items“ | Section auf Item-Form |
-| Werte in `builder_field_values` | typisierte Spalten befüllt |
-| Flexible Content sortierbar | ohne Fehler nach Speichern/Laden |
-| Image/Gallery/File (mit `moox/media`) | Mediathek gefiltert, Speichern/Laden, `media_usables` |
-
----
-
-## Grenzen & Roadmap
-
-**Implementiert:**
-
-- Nested Fields via `parent_field_id` (Group, Repeater, Flexible Content)
-- Layout-Felder: Tab, Group, Repeater, Flexible Content
-- Entity-Discovery über `HasCustomFields` in Filament-Panels
-- Verschachtelte Validierung (`FieldValueValidator`)
-- `InteractsWithCustomFields` auf Consumer-Models (`customFields()`, Attribute-Zugriff, Queries, Eager Load)
-- `MergesCustomFields` für API Resources
-- `FieldType::presentValue()` für API-Serialisierung (Datums-ISO, Passwort-Maskierung, verschachtelte Felder, Media via `MediaItemResource`)
-- Repeater min/max (`RepeaterItems` Capability)
-- Media-Felder: `image`, `gallery`, `file` (optional mit `moox/media`)
-- `BuilderMediaPicker` mit isoliertem Modal pro Feld und MIME-Filter in der Mediathek
-- `media_usables`-Sync und Metadaten-Snapshot-Updates für Media-Felder
-
-**Aktuell nicht implementiert:**
-
-- Relational-Felder (Post Object, Relationship, User, Taxonomy)
-- Clone-Feldtyp (ACF)
-- Location-Params über `entity` hinaus
-- `placement`-Steuerung (Sidebar, …)
-- Conditional Logic im Formular
-
-**Bewusst nicht Ziel:**
-
-- WordPress/postmeta-Treiber
-- JSON-Spalte am Model
-- Accordion als eigener Feldtyp (Tabs + Sections reichen)
+| Check | Expected |
+|-------|----------|
+| 4 builder tables exist | after `migrate` |
+| Resource uses `HasCustomFields` | appears under "Show on" |
+| `BuilderPlugin` in panel | "Fields" nav visible |
+| Field group with "Show on: Items" | section on item form |
+| Values in `builder_field_values` | typed columns filled |
+| Flexible content sortable | no errors after save/load |
+| Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
 
 ---
 
-## Lizenz
+## Limits & Roadmap
+
+**Implemented:**
+
+- Nested fields via `parent_field_id` (group, repeater, flexible content)
+- Layout fields: tab, group, repeater, flexible content
+- Entity discovery via `HasCustomFields` in Filament panels
+- Nested validation (`FieldValueValidator`)
+- `InteractsWithCustomFields` on consumer models (`customFields()`, attribute access, queries, eager load)
+- `MergesCustomFields` for API resources
+- `FieldType::presentValue()` for API serialization (ISO dates, password masking, nested fields, media via `MediaItemResource`)
+- Repeater min/max (`RepeaterItems` capability)
+- Media fields: `image`, `gallery`, `file` (optional with `moox/media`)
+- `BuilderMediaPicker` with isolated modal per field and MIME filter in the library
+- `media_usables` sync and metadata snapshot updates for media fields
+
+**Not implemented yet:**
+
+- Relational fields (post object, relationship, user, taxonomy)
+- Clone field type (ACF)
+- Location params beyond `entity`
+- `placement` control (sidebar, …)
+- Conditional logic in forms
+
+**Intentionally out of scope:**
+
+- WordPress/postmeta driver
+- JSON column on the model
+- Accordion as its own field type (tabs + sections are enough)
+
+---
+
+## License
 
 MIT
