@@ -14,8 +14,6 @@ class InvoiceServiceProvider extends MooxServiceProvider
         $package
             ->name('invoice')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasTranslations()
             ->hasMigrations([
                 'create_invoices_table',
                 'create_invoice_lines_table',
