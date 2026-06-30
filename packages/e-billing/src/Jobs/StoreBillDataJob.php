@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Services\EBilling;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Models\InboxAttachment;
@@ -39,7 +40,7 @@ final class StoreBillDataJob implements ShouldQueue
         public int $inboxAttachmentId,
     ) {}
 
-    public function handle(): void
+    public function handle(EBilling $eBilling): void
     {
         $this->setProgress(0);
 
@@ -69,13 +70,20 @@ final class StoreBillDataJob implements ShouldQueue
         $this->setProgress(20);
 
         $document = EbillingDocument::forSourceAttachment($attachment);
-        $billData = $document?->bill_data;
-        if (! is_array($billData) || $billData === []) {
-            Log::warning('[EBilling] StoreBillDataJob: bill_data missing or empty', [
+
+        if ($document === null) {
+            Log::warning('[EBilling] StoreBillDataJob: no EbillingDocument found for attachment', [
                 'inbox_attachment_id' => $this->inboxAttachmentId,
                 'attachment_id' => $attachment->id,
             ]);
+            $this->setProgress(100);
+
+            return;
         }
+
+        $invoice = $eBilling->parseInvoiceFromPdf($attachment->fullPath());
+        $document->bill_data = $invoice->toArray();
+        $document->save();
 
         $this->setProgress(80);
 
