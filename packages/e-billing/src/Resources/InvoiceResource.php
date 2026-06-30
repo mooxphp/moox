@@ -37,7 +37,7 @@ final class InvoiceResource extends BaseItemResource
     protected static ?string $slug = 'invoices';
 
     /**
-     * Resolve the model from config so a host can swap in a subclass 
+     * Resolve the model from config so a host can swap in a subclass
      * via `invoice.models.invoice`; defaults to the generic Moox\Invoice\Models\Invoice.
      * Replaces the static `$model` property so subclass casts/relations apply on the
      * Filament read/edit path.
