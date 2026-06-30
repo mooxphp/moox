@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Services;
 
+use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice;
-use Moox\EBilling\Parsers\HecoInvoiceParser;
 use Moox\PdfParser\PdfParser;
 use Moox\Zugferd\ZugferdConverter;
 
@@ -15,7 +15,7 @@ class EBilling
     public function __construct(
         private PdfParser $pdfParser,
         private ZugferdConverter $zugferdConverter,
-        private HecoInvoiceParser $parser,
+        private InvoiceParserInterface $parser,
     ) {}
 
     /**

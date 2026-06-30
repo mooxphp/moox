@@ -10,7 +10,7 @@ use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\EBilling\Resources\InvoiceResource;
-use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Support\InvoiceModels;
 
 final class ListInvoices extends ListRecords
 {
@@ -28,7 +28,7 @@ final class ListInvoices extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('e-billing.tabs.invoices', Invoice::class); // Extend Invoice in your host app if needed
+        return $this->getDynamicTabs('e-billing.tabs.invoices', InvoiceModels::invoice()); // resolves host subclass via config('invoice.models.invoice')
     }
 
     protected function applyConditions($query, $conditions)

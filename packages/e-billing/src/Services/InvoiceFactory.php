@@ -10,15 +10,16 @@ use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
-use Moox\EBilling\Heco\Models\HecoInvoice;
-use Moox\EBilling\Heco\Models\HecoInvoiceLine;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
 use Moox\Invoice\Support\InvoiceAddress;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceContact;
 use Moox\Invoice\Support\InvoiceDraft;
 use Moox\Invoice\Support\InvoiceLineDraft;
+use Moox\Invoice\Support\InvoiceModels;
 use Moox\Invoice\Support\InvoiceParty;
 use Moox\MailInbox\Models\InboxAttachment;
 use RuntimeException;
@@ -29,9 +30,9 @@ class InvoiceFactory
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
     ) {}
 
-    public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): HecoInvoice
+    public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice
     {
-        $invoice = DB::transaction(function () use ($dto, $attachment): HecoInvoice {
+        $invoice = DB::transaction(function () use ($dto, $attachment): Invoice {
             $existingInvoice = $this->findExistingInvoiceForAttachment($attachment);
 
             if ($existingInvoice !== null) {
@@ -49,7 +50,7 @@ class InvoiceFactory
                     );
                 }
 
-                $existingInvoice->lines()->each(function (HecoInvoiceLine $line): void {
+                $existingInvoice->lines()->each(function (InvoiceLine $line): void {
                     $line->allowanceCharges()->delete();
                     $line->delete();
                 });
@@ -67,7 +68,7 @@ class InvoiceFactory
         return $invoice;
     }
 
-    private function findExistingInvoiceForAttachment(InboxAttachment $attachment): ?HecoInvoice
+    private function findExistingInvoiceForAttachment(InboxAttachment $attachment): ?Invoice
     {
         $document = EbillingDocument::query()
             ->where('source_type', $attachment->getMorphClass())
@@ -79,7 +80,7 @@ class InvoiceFactory
             return null;
         }
 
-        return HecoInvoice::query()->find($document->invoice_id);
+        return InvoiceModels::invoice()::query()->find($document->invoice_id);
     }
 
     private function buildDraftFromDto(InvoiceDto $dto): InvoiceDraft

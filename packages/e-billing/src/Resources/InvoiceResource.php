@@ -7,7 +7,6 @@ namespace Moox\EBilling\Resources;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -22,26 +21,31 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Support\InvoiceModels;
 
-final class InvoiceResource extends Resource
+final class InvoiceResource extends BaseItemResource
 {
-    use BaseInResource {
-        getTableQuery as private baseInResourceGetTableQuery;
-    }
-    use HasResourceTabs;
     use SingleSoftDeleteInResource;
 
     protected static ?string $slug = 'invoices';
 
-    protected static ?string $model = Invoice::class;
+    /**
+     * Resolve the model from config so a host can swap in a subclass 
+     * via `invoice.models.invoice`; defaults to the generic Moox\Invoice\Models\Invoice.
+     * Replaces the static `$model` property so subclass casts/relations apply on the
+     * Filament read/edit path.
+     */
+    public static function getModel(): string
+    {
+        return InvoiceModels::invoice();
+    }
 
     /**
      * Matches {@see HasListPageTabs::getTableQuery()} which passes the
@@ -51,7 +55,7 @@ final class InvoiceResource extends Resource
     {
         unset($activeTab);
 
-        return self::baseInResourceGetTableQuery();
+        return parent::getTableQuery();
     }
 
     protected static function applySoftDeleteQuery(Builder $query): Builder
@@ -109,9 +113,7 @@ final class InvoiceResource extends Resource
 
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
-        if (method_exists(self::class, 'addTaxonomyRelationsToQuery')) {
-            $query = self::addTaxonomyRelationsToQuery($query);
-        }
+        $query = parent::modifyEloquentQuery($query);
 
         return $query->with([
             'ebillingDocument',
