@@ -9,7 +9,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -22,21 +21,15 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ListKositValidations;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ViewKositValidation;
 use Moox\KositValidator\Resources\KositValidationResource\RelationManagers\KositValidatablesRelationManager;
 use Moox\KositValidator\Support\KositValidationMessages;
 
-final class KositValidationResource extends Resource
+final class KositValidationResource extends BaseItemResource
 {
-    use BaseInResource {
-        getTableQuery as private baseInResourceGetTableQuery;
-    }
-    use HasResourceTabs;
-
     protected static ?string $slug = 'kosit-validations';
 
     protected static ?string $model = KositValidation::class;
@@ -92,7 +85,7 @@ final class KositValidationResource extends Resource
     {
         unset($activeTab);
 
-        return self::baseInResourceGetTableQuery();
+        return parent::getTableQuery();
     }
 
     public static function form(Schema $schema): Schema
@@ -244,6 +237,21 @@ final class KositValidationResource extends Resource
     }
 
     public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return false;
+    }
+
+    public static function enableDelete(): bool
     {
         return false;
     }

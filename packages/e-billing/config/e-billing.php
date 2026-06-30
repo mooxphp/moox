@@ -23,6 +23,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Invoice parser
+    |--------------------------------------------------------------------------
+    |
+    | The PDF → Invoice DTO parser. The package ships none because the layout is
+    | host-specific; set this to a class implementing
+    | Moox\EBilling\Contracts\InvoiceParserInterface. When null, the parser is left
+    | unbound and resolving the EBilling service fails fast with a clear error.
+    |
+    */
+
+    'parser' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Filament: Invoices (InvoiceResource)
     |--------------------------------------------------------------------------
     */

@@ -6,11 +6,14 @@ namespace Moox\EBilling;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Event;
+use InvalidArgumentException;
 use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
+use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
@@ -49,14 +52,13 @@ class EBillingServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
+
+        $this->registerInvoiceParser();
     }
 
     public function boot(): void
     {
         parent::boot();
-
-        // Bind InvoiceParserInterface in your host app ServiceProvider:
-        // $this->app->bind(\Moox\EBilling\Contracts\InvoiceParserInterface::class, YourParser::class);
 
         $this->registerInvoiceEbillingDocumentRelation();
 
@@ -65,6 +67,30 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->registerZugferdFilesystemDisk();
 
         Event::listen(InboxAttachmentProcessed::class, ProcessInboxAttachmentListener::class);
+    }
+
+    /**
+     * Bind the invoice parser from config. The package ships no parser — the PDF format
+     * is host-specific — so a consumer sets `e-billing.parser` to an
+     * {@see InvoiceParserInterface} implementation (e.g. in their host config). Left
+     * unbound when not configured, so resolving {@see EBilling}
+     * fails fast with a clear container error instead of silently using a wrong parser.
+     */
+    private function registerInvoiceParser(): void
+    {
+        $parser = config('e-billing.parser');
+
+        if (! is_string($parser) || $parser === '') {
+            return;
+        }
+
+        if (! is_a($parser, InvoiceParserInterface::class, true)) {
+            throw new InvalidArgumentException(
+                "config('e-billing.parser') must implement ".InvoiceParserInterface::class.": {$parser}"
+            );
+        }
+
+        $this->app->bind(InvoiceParserInterface::class, $parser);
     }
 
     private function registerInvoiceEbillingDocumentRelation(): void
@@ -97,9 +123,6 @@ class EBillingServiceProvider extends MooxServiceProvider
             'filesystems.disks.zugferd' => [
                 'driver' => 'local',
                 'root' => $root,
-                'serve' => true,
-                'throw' => false,
-                'report' => false,
             ],
         ]);
     }
