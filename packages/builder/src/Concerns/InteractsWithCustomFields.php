@@ -15,6 +15,7 @@ use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\BuilderLocaleResolver;
 
 /**
  * Expose custom field values as if they belong to the Eloquent model.
@@ -32,6 +33,8 @@ trait InteractsWithCustomFields
      */
     protected ?array $customFieldsCache = null;
 
+    protected ?string $customFieldsCacheLocale = null;
+
     protected bool $mergeCustomFieldsIntoArray = true;
 
     /**
@@ -47,9 +50,13 @@ trait InteractsWithCustomFields
     /**
      * @return array<string, mixed>
      */
-    public function customFields(bool $fresh = false): array
+    public function customFields(bool $fresh = false, ?string $locale = null): array
     {
-        if (! $fresh && $this->customFieldsCache !== null) {
+        $locale = app(BuilderLocaleResolver::class)->current($locale);
+
+        if (! $fresh
+            && $this->customFieldsCache !== null
+            && $this->customFieldsCacheLocale === $locale) {
             return $this->customFieldsCache;
         }
 
@@ -61,15 +68,17 @@ trait InteractsWithCustomFields
 
         if ($fields->isEmpty()) {
             $this->customFieldsCache = [];
+            $this->customFieldsCacheLocale = $locale;
 
             return [];
         }
 
         $values = $fresh
-            ? $manager->loadValuesWithDefaults($entity, $this, $fields)
-            : $manager->loadCachedValuesWithDefaults($entity, $this, $fields);
+            ? $manager->loadValuesWithDefaults($entity, $this, $fields, $locale)
+            : $manager->loadCachedValuesWithDefaults($entity, $this, $fields, $locale);
 
         $this->customFieldsCache = $values;
+        $this->customFieldsCacheLocale = $locale;
 
         return $values;
     }
@@ -174,9 +183,10 @@ trait InteractsWithCustomFields
             $this,
             $payload,
             $fields->only(array_keys($payload))->values(),
+            app(BuilderLocaleResolver::class)->current(),
         );
 
-        $this->customFieldsCache = null;
+        $this->flushCustomFieldsCache();
 
         return $this;
     }
@@ -194,11 +204,11 @@ trait InteractsWithCustomFields
 
         FieldValue::query()
             ->forRecord(static::resolveCustomFieldsEntity(), $this->getKey())
+            ->forLocale(app(BuilderLocaleResolver::class)->current())
             ->where('field_name', $name)
             ->delete();
 
-        unset($this->customFieldsCache[$name]);
-        $this->customFieldsCache = null;
+        $this->flushCustomFieldsCache();
 
         return $this;
     }
@@ -231,9 +241,10 @@ trait InteractsWithCustomFields
     /**
      * @param  array<string, mixed>  $values
      */
-    public function setCustomFieldsCache(array $values): void
+    public function setCustomFieldsCache(array $values, ?string $locale = null): void
     {
         $this->customFieldsCache = $values;
+        $this->customFieldsCacheLocale = app(BuilderLocaleResolver::class)->current($locale);
     }
 
     public static function flushCustomFieldDefinitionCache(): void
@@ -245,6 +256,7 @@ trait InteractsWithCustomFields
     public function flushCustomFieldsCache(): void
     {
         $this->customFieldsCache = null;
+        $this->customFieldsCacheLocale = null;
     }
 
     public function toArray(): array

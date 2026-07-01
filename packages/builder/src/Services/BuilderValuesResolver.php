@@ -12,6 +12,7 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\TypedValueColumns;
 
 class BuilderValuesResolver
@@ -19,6 +20,7 @@ class BuilderValuesResolver
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected DefaultValue $defaultValue,
+        protected BuilderLocaleResolver $localeResolver,
     ) {}
 
     /**
@@ -243,7 +245,7 @@ class BuilderValuesResolver
     /**
      * @param  iterable<int, Model>  $models
      */
-    public function eagerLoad(iterable $models, string $entity, Collection $fields): void
+    public function eagerLoad(iterable $models, string $entity, Collection $fields, ?string $locale = null): void
     {
         $collection = $models instanceof EloquentCollection
             ? $models
@@ -260,19 +262,41 @@ class BuilderValuesResolver
         }
 
         $keyName = $model->getKeyName();
+        $localeChain = $this->localeResolver->fallbackChain($locale);
 
         $rows = FieldValue::query()
             ->where('entity', $entity)
             ->whereIn('record_id', $collection->pluck($keyName))
             ->whereIn('field_name', $fields->pluck('name'))
+            ->whereIn('locale', $localeChain)
             ->get()
             ->groupBy('record_id');
 
         foreach ($collection as $record) {
             /** @var Model&InteractsWithCustomFields $record */
-            $recordRows = $rows->get($record->getKey(), collect())->keyBy('field_name');
+            $recordRows = $rows->get($record->getKey(), collect())->groupBy('field_name');
+            $resolvedRows = collect();
+
+            foreach ($fields as $field) {
+                $fieldRows = $recordRows->get($field->name, collect());
+                $row = null;
+
+                foreach ($localeChain as $candidate) {
+                    $row = $fieldRows->firstWhere('locale', $candidate);
+
+                    if ($row !== null) {
+                        break;
+                    }
+                }
+
+                if ($row !== null) {
+                    $resolvedRows->put($field->name, $row);
+                }
+            }
+
             $record->setCustomFieldsCache(
-                $this->resolveFromRows($fields, $recordRows, mergeDefaults: true),
+                $this->resolveFromRows($fields, $resolvedRows, mergeDefaults: true),
+                $this->localeResolver->current($locale),
             );
         }
     }

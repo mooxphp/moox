@@ -418,11 +418,14 @@ class BuilderSeeder extends Seeder
 
     protected function upsertFieldValue(string $entity, int $recordId, string $fieldName, string $type, mixed $value): void
     {
+        $locale = (string) config('builder.default_locale', 'en_US');
+
         FieldValue::query()->updateOrCreate(
             [
                 'entity' => $entity,
                 'record_id' => $recordId,
                 'field_name' => $fieldName,
+                'locale' => $locale,
             ],
             TypedValueColumns::attributesFor($type, $value),
         );

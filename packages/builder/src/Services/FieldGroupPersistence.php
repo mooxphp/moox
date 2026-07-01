@@ -12,12 +12,16 @@ use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldRelationTree;
 
 class FieldGroupPersistence
 {
     public function __construct(
         protected FieldValuePurger $fieldValuePurger,
+        protected BuilderLocaleResolver $localeResolver,
+        protected DefinitionTranslator $definitionTranslator,
     ) {}
 
     /**
@@ -27,8 +31,11 @@ class FieldGroupPersistence
     {
         app(FieldGroupValidator::class)->validate($group, $data);
 
+        $locale = $this->localeResolver->current();
+        $isDefaultLocale = $locale === $this->localeResolver->defaultLocale();
+        $name = (string) ($data['name'] ?? $group->name);
+
         $group->fill(Arr::only($data, [
-            'name',
             'slug',
             'active',
             'sort',
@@ -36,10 +43,26 @@ class FieldGroupPersistence
             'settings',
         ]));
 
+        if ($isDefaultLocale || ! $group->exists || blank($group->name)) {
+            $group->name = $name;
+        }
+
         $group->location_rules = $this->resolveLocationRules($data);
         $group->save();
 
+        $this->syncGroupTranslation($group, $name);
+
         $this->syncFields($group, $data['fields'] ?? []);
+    }
+
+    protected function syncGroupTranslation(FieldGroup $group, string $name): void
+    {
+        $locale = $this->localeResolver->current();
+
+        $group->translateOrNew($locale)->name = $name;
+        $group->saveTranslations();
+
+        $group->syncTranslationFallbackOnMainRecord($locale, ['name' => $name]);
     }
 
     /**
@@ -150,40 +173,48 @@ class FieldGroupPersistence
     /**
      * @return list<array<string, mixed>>
      */
-    public function fieldRowsForForm(FieldGroup $group): array
+    public function fieldRowsForForm(FieldGroup $group, ?string $locale = null): array
     {
         $group->load(FieldRelationTree::eagerLoadForDefinition());
+        $group->load('translations');
 
-        return $this->mapFieldRows($group->fields);
+        return $this->mapFieldRows($group->fields, $locale);
+    }
+
+    public function localizedGroupName(FieldGroup $group, ?string $locale = null): string
+    {
+        return $this->definitionTranslator->translatedGroupName($group, $locale);
     }
 
     /**
      * @param  Collection<int, Field>  $fields
      * @return list<array<string, mixed>>
      */
-    protected function mapFieldRows(Collection $fields): array
+    protected function mapFieldRows(Collection $fields, ?string $locale = null): array
     {
-        return $fields->map(function (Field $field): array {
+        $locale = $this->localeResolver->current($locale);
+
+        return $fields->map(function (Field $field) use ($locale): array {
             $row = [
                 'id' => $field->getKey(),
-                'label' => $field->label,
+                'label' => $this->definitionTranslator->translatedFieldLabel($field, $locale),
                 'name' => $field->name,
                 'type' => $field->type,
                 'required' => (bool) ($field->validation['required'] ?? false),
-                'config' => $field->config ?? [],
+                'config' => $this->definitionTranslator->translatedFieldConfig($field, $locale),
                 'sort' => $field->sort,
                 'options' => $field->options->map(fn (FieldOption $option): array => [
                     'id' => $option->getKey(),
-                    'label' => $option->label,
+                    'label' => $this->definitionTranslator->translatedOptionLabel($option, $locale),
                     'value' => $option->value,
                     'sort' => $option->sort,
                 ])->values()->all(),
             ];
 
             if ($field->type === 'flexible_content') {
-                $row['layouts'] = $this->mapLayoutRows($field->children);
+                $row['layouts'] = $this->mapLayoutRows($field->children, $locale);
             } else {
-                $row['children'] = $this->mapFieldRows($field->children);
+                $row['children'] = $this->mapFieldRows($field->children, $locale);
             }
 
             return $row;
@@ -194,16 +225,18 @@ class FieldGroupPersistence
      * @param  Collection<int, Field>  $fields
      * @return list<array<string, mixed>>
      */
-    protected function mapLayoutRows(Collection $fields): array
+    protected function mapLayoutRows(Collection $fields, ?string $locale = null): array
     {
+        $locale = $this->localeResolver->current($locale);
+
         return $fields
             ->filter(fn (Field $field): bool => $field->type === 'flexible_layout')
             ->map(fn (Field $layout): array => [
                 'id' => $layout->getKey(),
-                'label' => $layout->label,
+                'label' => $this->definitionTranslator->translatedFieldLabel($layout, $locale),
                 'name' => $layout->name,
                 'sort' => $layout->sort,
-                'children' => $this->mapFieldRows($layout->children),
+                'children' => $this->mapFieldRows($layout->children, $locale),
             ])
             ->values()
             ->all();
@@ -233,14 +266,24 @@ class FieldGroupPersistence
             $field = $this->resolveFieldForSync($existing, $row);
 
             $previousName = $field->exists ? $field->name : null;
+            $locale = $this->localeResolver->current();
+            $isDefaultLocale = $locale === $this->localeResolver->defaultLocale();
+            $label = (string) ($row['label'] ?? $row['name']);
+            $config = $this->filterConfigForType((string) $row['type'], $row['config'] ?? []);
+            $structuralConfig = array_diff_key(
+                $config,
+                array_flip(BuilderLocaleResolver::TRANSLATABLE_CONFIG_KEYS),
+            );
 
             $field->fill([
                 'field_group_id' => $group->getKey(),
                 'parent_field_id' => $parentFieldId,
                 'name' => (string) $row['name'],
-                'label' => (string) ($row['label'] ?? $row['name']),
+                'label' => $isDefaultLocale ? $label : ($field->label ?: $label),
                 'type' => (string) $row['type'],
-                'config' => $this->filterConfigForType((string) $row['type'], $row['config'] ?? []),
+                'config' => $isDefaultLocale
+                    ? $config
+                    : array_merge($structuralConfig, array_diff_key($field->config ?? [], array_flip(BuilderLocaleResolver::TRANSLATABLE_CONFIG_KEYS))),
                 'validation' => [
                     'required' => (bool) ($row['required'] ?? false),
                     'rules' => $row['validation']['rules'] ?? [],
@@ -249,6 +292,8 @@ class FieldGroupPersistence
             ]);
 
             $field->save();
+
+            $this->syncFieldTranslation($field, $label, $config);
 
             $existing->put($field->getKey(), $field);
 
@@ -315,15 +360,21 @@ class FieldGroupPersistence
             }
 
             $option = $this->resolveOptionForSync($existing, $row);
+            $locale = $this->localeResolver->current();
+            $isDefaultLocale = $locale === $this->localeResolver->defaultLocale();
+            $label = (string) ($row['label'] ?? $row['value']);
 
             $option->fill([
                 'field_id' => $field->getKey(),
-                'label' => (string) ($row['label'] ?? $row['value']),
+                'label' => $isDefaultLocale ? $label : ($option->label ?: $label),
                 'value' => (string) $row['value'],
                 'sort' => (int) ($row['sort'] ?? $index),
             ]);
 
             $option->save();
+
+            $this->syncOptionTranslation($option, $label);
+
             $existing->put($option->getKey(), $option);
             $retainedIds[] = $option->getKey();
         }
@@ -331,6 +382,37 @@ class FieldGroupPersistence
         $field->options()
             ->whereNotIn('id', $retainedIds)
             ->each(fn (FieldOption $option) => $option->delete());
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     */
+    protected function syncFieldTranslation(Field $field, string $label, array $config): void
+    {
+        $locale = $this->localeResolver->current();
+        $translatableConfig = $this->definitionTranslator->extractTranslatableConfig(
+            $this->filterConfigForType($field->type, $config),
+        );
+
+        $translation = $field->translateOrNew($locale);
+        $translation->label = $label;
+        $translation->config = $translatableConfig === [] ? null : $translatableConfig;
+        $field->saveTranslations();
+
+        $field->syncTranslationFallbackOnMainRecord($locale, [
+            'label' => $label,
+            'config' => $this->filterConfigForType($field->type, $config),
+        ]);
+    }
+
+    protected function syncOptionTranslation(FieldOption $option, string $label): void
+    {
+        $locale = $this->localeResolver->current();
+
+        $option->translateOrNew($locale)->label = $label;
+        $option->saveTranslations();
+
+        $option->syncTranslationFallbackOnMainRecord($locale, ['label' => $label]);
     }
 
     public function slugFromName(string $name): string

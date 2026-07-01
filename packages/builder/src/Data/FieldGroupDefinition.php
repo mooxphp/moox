@@ -14,6 +14,7 @@ readonly class FieldGroupDefinition
      * @param  Collection<int, FieldDefinition>  $fields
      * @param  list<list<array{param: string, operator: string, value: mixed}>>  $locationRules
      * @param  array<string, mixed>  $settings
+     * @param  array<string, array{name?: string}>  $translations
      */
     public function __construct(
         public string $name,
@@ -22,6 +23,7 @@ readonly class FieldGroupDefinition
         public Collection $fields,
         public array $locationRules = [],
         public array $settings = [],
+        public array $translations = [],
     ) {}
 
     public static function fromModel(FieldGroup $group): self
@@ -41,7 +43,28 @@ readonly class FieldGroupDefinition
             fields: $fields,
             locationRules: $group->location_rules ?? [],
             settings: $group->settings ?? [],
+            translations: self::mapGroupTranslations($group),
         );
+    }
+
+    /**
+     * @return array<string, array{name: string}>
+     */
+    protected static function mapGroupTranslations(FieldGroup $group): array
+    {
+        if (! $group->relationLoaded('translations')) {
+            return [];
+        }
+
+        $translations = [];
+
+        foreach ($group->translations as $translation) {
+            $translations[$translation->locale] = [
+                'name' => $translation->name,
+            ];
+        }
+
+        return $translations;
     }
 
     /**
@@ -59,11 +82,12 @@ readonly class FieldGroupDefinition
                 ->all(),
             'locationRules' => $this->locationRules,
             'settings' => $this->settings,
+            'translations' => $this->translations,
         ];
     }
 
     /**
-     * @param  array{name: string, slug: string, placement: string, fields?: list<array<string, mixed>>, locationRules?: list<list<array{param: string, operator: string, value: mixed}>>, settings?: array<string, mixed>}  $data
+     * @param  array{name: string, slug: string, placement: string, fields?: list<array<string, mixed>>, locationRules?: list<list<array{param: string, operator: string, value: mixed}>>, settings?: array<string, mixed>, translations?: array<string, array{name?: string}>}  $data
      */
     public static function fromArray(array $data): self
     {
@@ -79,6 +103,7 @@ readonly class FieldGroupDefinition
             fields: $fields,
             locationRules: $data['locationRules'] ?? [],
             settings: $data['settings'] ?? [],
+            translations: $data['translations'] ?? [],
         );
     }
 }

@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('builder_field_group_translations', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('field_group_id')->constrained('builder_field_groups')->cascadeOnDelete();
+            $table->string('locale');
+            $table->string('name');
+            $table->timestamps();
+
+            $table->unique(['field_group_id', 'locale']);
+            $table->index('locale');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('builder_field_group_translations');
+    }
+};

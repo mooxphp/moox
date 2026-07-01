@@ -10,6 +10,8 @@ use Moox\Builder\Compiler\LocationMatcher;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldRelationTree;
 
 class DefinitionRegistry
@@ -18,18 +20,23 @@ class DefinitionRegistry
 
     public function __construct(
         protected LocationMatcher $locationMatcher,
+        protected DefinitionTranslator $definitionTranslator,
+        protected BuilderLocaleResolver $localeResolver,
     ) {}
 
     /**
      * @return Collection<int, FieldGroupDefinition>
      */
-    public function fieldGroupsFor(LocationContext $context): Collection
+    public function fieldGroupsFor(LocationContext $context, ?string $locale = null): Collection
     {
+        $locale = $this->localeResolver->current($locale);
+
         return $this->allActiveGroups()
             ->filter(fn (FieldGroupDefinition $group): bool => $this->locationMatcher->matches(
                 $group->locationRules,
                 $context,
             ))
+            ->map(fn (FieldGroupDefinition $group): FieldGroupDefinition => $this->definitionTranslator->localizeGroup($group, $locale))
             ->values();
     }
 
@@ -62,6 +69,7 @@ class DefinitionRegistry
         return FieldGroup::query()
             ->active()
             ->with(FieldRelationTree::eagerLoadForDefinition())
+            ->with('translations')
             ->orderBy('sort')
             ->get()
             ->map(fn (FieldGroup $group): array => FieldGroupDefinition::fromModel($group)->toArray())
