@@ -19,7 +19,8 @@ use Moox\Builder\Registry\DefinitionRegistry;
  *
  * Field groups are matched by entity key (model basename in kebab-case, e.g.
  * Item → item). Override with customFieldsEntity() when needed. Loading and
- * saving is handled automatically via Filament record events.
+ * saving is handled automatically via Filament record events. Per-locale
+ * values and the admin language selector are wired by the builder package.
  */
 trait HasCustomFields
 {

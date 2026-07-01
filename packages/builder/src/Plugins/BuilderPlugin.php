@@ -7,6 +7,7 @@ namespace Moox\Builder\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Builder\Http\Middleware\ResolveBuilderAdminLocale;
 use Moox\Builder\Resources\FieldGroupResource;
 
 class BuilderPlugin implements Plugin
@@ -23,6 +24,10 @@ class BuilderPlugin implements Plugin
         $panel->resources([
             FieldGroupResource::class,
         ]);
+
+        $panel->middleware([
+            ResolveBuilderAdminLocale::class,
+        ], isPersistent: true);
     }
 
     public function boot(Panel $panel): void

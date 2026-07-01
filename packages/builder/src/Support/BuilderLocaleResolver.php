@@ -9,6 +9,8 @@ use Moox\Localization\Models\Localization;
 
 final class BuilderLocaleResolver
 {
+    public const ADMIN_SESSION_KEY = 'builder.admin_locale';
+
     /**
      * @return list<string>
      */
@@ -30,6 +32,12 @@ final class BuilderLocaleResolver
 
         if (is_string($requestLocale) && $requestLocale !== '') {
             return $requestLocale;
+        }
+
+        $sessionLocale = session(self::ADMIN_SESSION_KEY);
+
+        if (is_string($sessionLocale) && $sessionLocale !== '') {
+            return $sessionLocale;
         }
 
         return $this->defaultLocale();

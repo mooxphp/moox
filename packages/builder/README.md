@@ -429,7 +429,13 @@ Fallback chain for missing translations: **active locale → default locale → 
 
 ### Runtime: consumer resources
 
-Pass `?lang=` when loading/saving records so `CustomFieldsManager` reads and writes the correct `builder_field_values.locale` row. Definition labels in forms come from `DefinitionRegistry` + `DefinitionTranslator` (cached, localized at read time).
+No page changes are required. When a resource uses `HasCustomFields`, the builder package automatically:
+
+- Registers panel middleware that keeps `?lang=` in session (also for Livewire subrequests)
+- Shows the language selector on list, create, edit, and view pages
+- Loads and saves `builder_field_values` for the active locale via `BuilderLocaleResolver`
+
+Definition labels in forms come from `DefinitionRegistry` + `DefinitionTranslator` (cached, localized at read time).
 
 ### Code patterns (same as Media/Draft)
 
@@ -635,6 +641,8 @@ packages/builder/
     ├── Concerns/
     │   ├── HasCustomFields.php              # Filament resource
     │   └── InteractsWithCustomFields.php    # Consumer model
+    ├── Filament/Resources/Pages/Concerns/
+    │   └── InteractsWithBuilderLocale.php
     ├── Compiler/
     │   ├── LocationMatcher.php
     │   └── SchemaCompiler.php
@@ -648,6 +656,7 @@ packages/builder/
     │   └── Types/                         # 29 field types
     ├── Forms/Components/BuilderMediaPicker.php
     ├── Http/
+    │   ├── Middleware/ResolveBuilderAdminLocale.php
     │   ├── Livewire/BuilderMediaPickerModal.php
     │   └── Resources/Concerns/MergesCustomFields.php
     ├── Listeners/PersistCustomFields.php
@@ -675,6 +684,7 @@ packages/builder/
     │   └── FieldValueValidator.php
     └── Support/
         ├── BuilderLocaleResolver.php
+        ├── CustomFieldsFilamentHooks.php
         ├── DefinitionTranslator.php
         ├── EntityModelDeletionRegistrar.php
         ├── MediaFieldValueSupport.php
