@@ -35,6 +35,7 @@ use Moox\Builder\FieldTypes\Types\TimeFieldType;
 use Moox\Builder\FieldTypes\Types\ToggleFieldType;
 use Moox\Builder\FieldTypes\Types\UrlFieldType;
 use Moox\Builder\Http\Livewire\BuilderMediaPickerModal;
+use Moox\Builder\Http\Middleware\ResolveBuilderAdminLocale;
 use Moox\Builder\Listeners\PersistCustomFields;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
@@ -47,6 +48,7 @@ use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
+use Moox\Builder\Support\CustomFieldsFilamentHooks;
 use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Core\MooxServiceProvider;
@@ -100,6 +102,10 @@ class BuilderServiceProvider extends MooxServiceProvider
         FieldOptionTranslation::observe(InvalidateDefinitionCacheObserver::class);
 
         Event::listen(RecordSaved::class, PersistCustomFields::class);
+
+        CustomFieldsFilamentHooks::register();
+
+        $this->app['router']->pushMiddlewareToGroup('web', ResolveBuilderAdminLocale::class);
 
         $this->registerMediaMetadataSyncListeners();
 
