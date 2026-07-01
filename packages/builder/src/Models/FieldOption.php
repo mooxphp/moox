@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Models;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Moox\Builder\Models\Concerns\HasBuilderTranslatableAttributes;
 
-class FieldOption extends Model
+class FieldOption extends Model implements TranslatableContract
 {
+    use HasBuilderTranslatableAttributes;
+
     protected $table = 'builder_field_options';
+
+    /** @var list<string> */
+    public array $translatedAttributes = ['label'];
 
     protected $fillable = [
         'ulid',

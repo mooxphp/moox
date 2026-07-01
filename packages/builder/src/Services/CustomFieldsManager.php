@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
@@ -30,6 +31,7 @@ class CustomFieldsManager
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected FieldValueValidator $fieldValueValidator,
         protected StorableFieldCollector $storableFieldCollector,
+        protected BuilderLocaleResolver $localeResolver,
     ) {}
 
     /**
@@ -104,17 +106,20 @@ class CustomFieldsManager
      * @param  Collection<int, FieldDefinition>  $fields
      * @return array<string, mixed>
      */
-    public function loadValues(string $entity, Model $record, Collection $fields): array
+    public function loadValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
         if ($fields->isEmpty()) {
             return [];
         }
 
+        $localeChain = $this->localeResolver->fallbackChain($locale);
+
         $rows = FieldValue::query()
             ->forRecord($entity, $record->getKey())
             ->whereIn('field_name', $fields->pluck('name'))
+            ->whereIn('locale', $localeChain)
             ->get()
-            ->keyBy('field_name');
+            ->groupBy('field_name');
 
         $values = [];
 
@@ -125,7 +130,7 @@ class CustomFieldsManager
                 continue;
             }
 
-            $row = $rows->get($field->name);
+            $row = $this->resolveRowForLocale($rows->get($field->name, collect()), $localeChain);
 
             if ($row === null) {
                 continue;
@@ -142,16 +147,16 @@ class CustomFieldsManager
      * @param  Collection<int, FieldDefinition>  $fields
      * @return array<string, mixed>
      */
-    public function loadCachedValues(string $entity, Model $record, Collection $fields): array
+    public function loadCachedValues(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
         if ($fields->isEmpty()) {
             return [];
         }
 
-        $cacheKey = "{$entity}:{$record->getKey()}";
+        $cacheKey = $this->valuesCacheKey($entity, $record->getKey(), $locale);
 
         if (! array_key_exists($cacheKey, $this->valuesCache)) {
-            $this->valuesCache[$cacheKey] = $this->loadValues($entity, $record, $fields);
+            $this->valuesCache[$cacheKey] = $this->loadValues($entity, $record, $fields, $locale);
         }
 
         return $this->valuesCache[$cacheKey];
@@ -161,13 +166,13 @@ class CustomFieldsManager
      * @param  Collection<int, FieldDefinition>  $fields
      * @return array<string, mixed>
      */
-    public function loadValuesWithDefaults(string $entity, Model $record, Collection $fields): array
+    public function loadValuesWithDefaults(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
         if ($fields->isEmpty()) {
             return [];
         }
 
-        $values = $this->loadValues($entity, $record, $fields);
+        $values = $this->loadValues($entity, $record, $fields, $locale);
 
         return app(BuilderValuesResolver::class)->mergeDefaults($fields, $values);
     }
@@ -176,16 +181,16 @@ class CustomFieldsManager
      * @param  Collection<int, FieldDefinition>  $fields
      * @return array<string, mixed>
      */
-    public function loadCachedValuesWithDefaults(string $entity, Model $record, Collection $fields): array
+    public function loadCachedValuesWithDefaults(string $entity, Model $record, Collection $fields, ?string $locale = null): array
     {
         if ($fields->isEmpty()) {
             return [];
         }
 
-        $cacheKey = "{$entity}:{$record->getKey()}";
+        $cacheKey = $this->valuesCacheKey($entity, $record->getKey(), $locale);
 
         if (! array_key_exists($cacheKey, $this->valuesCache)) {
-            $this->valuesCache[$cacheKey] = $this->loadValuesWithDefaults($entity, $record, $fields);
+            $this->valuesCache[$cacheKey] = $this->loadValuesWithDefaults($entity, $record, $fields, $locale);
         }
 
         return $this->valuesCache[$cacheKey];
@@ -206,6 +211,7 @@ class CustomFieldsManager
         $values = [];
         $defaultValue = app(DefaultValue::class);
         $entity = $this->locationContextForResource($resourceClass)->entity;
+        $locale = $this->localeResolver->current();
 
         foreach ($fields as $field) {
             $fieldType = $this->fieldTypeRegistry->get($field->type);
@@ -227,6 +233,7 @@ class CustomFieldsManager
             $hasStoredValue = $record->exists
                 && FieldValue::query()
                     ->forRecord($entity, $record->getKey())
+                    ->forLocale($locale)
                     ->where('field_name', $field->name)
                     ->exists();
 
@@ -252,6 +259,7 @@ class CustomFieldsManager
             $record,
             $values,
             $fields,
+            $locale,
         );
     }
 
@@ -259,8 +267,10 @@ class CustomFieldsManager
      * @param  array<string, mixed>  $values
      * @param  Collection<int, FieldDefinition>  $fields
      */
-    public function saveValues(string $entity, Model $record, array $values, Collection $fields): void
+    public function saveValues(string $entity, Model $record, array $values, Collection $fields, ?string $locale = null): void
     {
+        $locale = $this->localeResolver->current($locale);
+
         foreach ($fields as $field) {
             if (! array_key_exists($field->name, $values)) {
                 continue;
@@ -286,6 +296,7 @@ class CustomFieldsManager
                     'entity' => $entity,
                     'record_id' => $record->getKey(),
                     'field_name' => $field->name,
+                    'locale' => $locale,
                 ],
                 $columns,
             );
@@ -295,12 +306,44 @@ class CustomFieldsManager
             app(BuilderMediaUsageSync::class)->syncForRecord($entity, $record, $fields);
         }
 
-        unset($this->valuesCache["{$entity}:{$record->getKey()}"]);
+        $this->forgetValuesCache($entity, $record->getKey(), $locale);
     }
 
-    public function forgetValuesCache(string $entity, int|string $recordId): void
+    public function forgetValuesCache(string $entity, int|string $recordId, ?string $locale = null): void
     {
-        unset($this->valuesCache["{$entity}:{$recordId}"]);
+        if ($locale !== null) {
+            unset($this->valuesCache[$this->valuesCacheKey($entity, $recordId, $locale)]);
+
+            return;
+        }
+
+        foreach (array_keys($this->valuesCache) as $cacheKey) {
+            if (str_starts_with($cacheKey, "{$entity}:{$recordId}:")) {
+                unset($this->valuesCache[$cacheKey]);
+            }
+        }
+    }
+
+    /**
+     * @param  Collection<int, FieldValue>  $rows
+     * @param  list<string>  $localeChain
+     */
+    protected function resolveRowForLocale(Collection $rows, array $localeChain): ?FieldValue
+    {
+        foreach ($localeChain as $locale) {
+            $row = $rows->firstWhere('locale', $locale);
+
+            if ($row instanceof FieldValue) {
+                return $row;
+            }
+        }
+
+        return null;
+    }
+
+    protected function valuesCacheKey(string $entity, int|string $recordId, ?string $locale = null): string
+    {
+        return "{$entity}:{$recordId}:".$this->localeResolver->current($locale);
     }
 
     /**

@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Moox\Builder\Concerns\InteractsWithCustomFields;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\TypedValueColumns;
 
 /**
@@ -115,13 +116,15 @@ class CustomFieldsBuilder extends Builder
         $valueColumn = TypedValueColumns::columnForType($definition->type);
         $valuesTable = (new FieldValue)->getTable();
         $recordKey = $model->getQualifiedKeyName();
+        $locale = app(BuilderLocaleResolver::class)->current();
 
-        return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $operator, $value, $valuesTable, $recordKey): void {
+        return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $operator, $value, $valuesTable, $recordKey, $locale): void {
             $subQuery->selectRaw('1')
                 ->from($valuesTable)
                 ->whereColumn("{$valuesTable}.record_id", $recordKey)
                 ->where("{$valuesTable}.entity", $entity)
                 ->where("{$valuesTable}.field_name", $field)
+                ->where("{$valuesTable}.locale", $locale)
                 ->where("{$valuesTable}.{$valueColumn}", $operator, $value);
         }, $boolean);
     }
@@ -153,13 +156,15 @@ class CustomFieldsBuilder extends Builder
         $valueColumn = TypedValueColumns::columnForType($definition->type);
         $valuesTable = (new FieldValue)->getTable();
         $recordKey = $model->getQualifiedKeyName();
+        $locale = app(BuilderLocaleResolver::class)->current();
 
-        return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $values, $valuesTable, $recordKey, $not): void {
+        return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $values, $valuesTable, $recordKey, $not, $locale): void {
             $subQuery->selectRaw('1')
                 ->from($valuesTable)
                 ->whereColumn("{$valuesTable}.record_id", $recordKey)
                 ->where("{$valuesTable}.entity", $entity)
-                ->where("{$valuesTable}.field_name", $field);
+                ->where("{$valuesTable}.field_name", $field)
+                ->where("{$valuesTable}.locale", $locale);
 
             if ($not) {
                 $subQuery->whereNotIn("{$valuesTable}.{$valueColumn}", $values);

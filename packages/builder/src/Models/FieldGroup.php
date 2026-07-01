@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Models;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Moox\Builder\Models\Concerns\HasBuilderTranslatableAttributes;
 
-class FieldGroup extends Model
+class FieldGroup extends Model implements TranslatableContract
 {
+    use HasBuilderTranslatableAttributes;
+
     protected $table = 'builder_field_groups';
+
+    /** @var list<string> */
+    public array $translatedAttributes = ['name'];
 
     protected $attributes = [
         'placement' => 'default',

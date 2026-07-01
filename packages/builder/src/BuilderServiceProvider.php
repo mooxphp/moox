@@ -38,7 +38,10 @@ use Moox\Builder\Http\Livewire\BuilderMediaPickerModal;
 use Moox\Builder\Listeners\PersistCustomFields;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Models\FieldGroupTranslation;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Models\FieldOptionTranslation;
+use Moox\Builder\Models\FieldTranslation;
 use Moox\Builder\Observers\InvalidateDefinitionCacheObserver;
 use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
@@ -63,6 +66,10 @@ class BuilderServiceProvider extends MooxServiceProvider
                 'create_builder_fields_table',
                 'create_builder_field_options_table',
                 'create_builder_field_values_table',
+                'create_builder_field_group_translations_table',
+                'create_builder_field_translations_table',
+                'create_builder_field_option_translations_table',
+                'add_locale_to_builder_field_values_table',
             ]);
     }
 
@@ -88,6 +95,9 @@ class BuilderServiceProvider extends MooxServiceProvider
         Field::observe(InvalidateDefinitionCacheObserver::class);
         Field::observe(PurgeFieldValuesObserver::class);
         FieldOption::observe(InvalidateDefinitionCacheObserver::class);
+        FieldGroupTranslation::observe(InvalidateDefinitionCacheObserver::class);
+        FieldTranslation::observe(InvalidateDefinitionCacheObserver::class);
+        FieldOptionTranslation::observe(InvalidateDefinitionCacheObserver::class);
 
         Event::listen(RecordSaved::class, PersistCustomFields::class);
 

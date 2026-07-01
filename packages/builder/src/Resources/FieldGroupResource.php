@@ -21,6 +21,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Moox\Builder\Exceptions\UnknownFieldTypeException;
 use Moox\Builder\Models\FieldGroup;
@@ -30,6 +31,7 @@ use Moox\Builder\Resources\FieldGroupResource\Pages\CreateFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\EditFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\ListFieldGroups;
 use Moox\Builder\Services\FieldGroupPersistence;
+use Moox\Builder\Support\BuilderLocaleResolver;
 
 class FieldGroupResource extends Resource
 {
@@ -587,12 +589,24 @@ class FieldGroupResource extends Resource
     {
         $persistence = app(FieldGroupPersistence::class);
         $entityRegistry = app(EntityRegistry::class);
+        $localeResolver = app(BuilderLocaleResolver::class);
 
         return $table
             ->columns([
                 TextColumn::make('name')
                     ->label(__('builder::builder.field_group.name'))
-                    ->searchable()
+                    ->getStateUsing(fn (FieldGroup $record): string => $persistence->localizedGroupName(
+                        $record,
+                        $localeResolver->current(),
+                    ))
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $query) use ($search): void {
+                            $query->where('name', 'like', "%{$search}%")
+                                ->orWhereHas('translations', function (Builder $query) use ($search): void {
+                                    $query->where('name', 'like', "%{$search}%");
+                                });
+                        });
+                    })
                     ->sortable()
                     ->description(fn (FieldGroup $record): ?string => $record->slug),
                 TextColumn::make('assigned_entities')

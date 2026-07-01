@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('entity');
             $table->unsignedBigInteger('record_id');
             $table->string('field_name');
+            $table->string('locale')->default('en_US');
             $table->string('value_string')->nullable();
             $table->text('value_text')->nullable();
             $table->decimal('value_decimal', 20, 6)->nullable();
@@ -24,7 +25,8 @@ return new class extends Migration
             $table->json('value_json')->nullable();
             $table->timestamps();
 
-            $table->unique(['entity', 'record_id', 'field_name']);
+            $table->unique(['entity', 'record_id', 'field_name', 'locale']);
+            $table->index(['entity', 'record_id', 'locale']);
             $table->index(['entity', 'field_name', 'value_decimal']);
             $table->index(['entity', 'field_name', 'value_date']);
             $table->index(['entity', 'field_name', 'value_datetime']);

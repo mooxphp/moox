@@ -16,13 +16,14 @@ Admins define fields in the panel. Values are stored in typed `builder_field_val
 6. [Connect a Resource](#connect-a-resource)
 7. [Field Groups in Admin](#field-groups-in-admin)
 8. [Field Types & Capabilities](#field-types--capabilities)
-9. [Configuration](#configuration)
-10. [Extension](#extension)
-11. [Model API](#model-api)
-12. [API Serialization](#api-serialization)
-13. [Package Structure](#package-structure)
-14. [Testing](#testing)
-15. [Limits & Roadmap](#limits--roadmap)
+9. [Translations](#translations)
+10. [Configuration](#configuration)
+11. [Extension](#extension)
+12. [Model API](#model-api)
+13. [API Serialization](#api-serialization)
+14. [Package Structure](#package-structure)
+15. [Testing](#testing)
+16. [Limits & Roadmap](#limits--roadmap)
 
 ---
 
@@ -137,8 +138,23 @@ One row per value:
 | `value_datetime` | datetime |
 | `value_boolean` | toggle |
 | `value_json` | multiselect, checkbox_list, link, image, gallery, file, group, repeater, flexible_content |
+| `locale` | Locale variant for this value (e.g. `en_US`, `de_CH`) |
 
-Unique: `(entity, record_id, field_name)`.
+Unique: `(entity, record_id, field_name, locale)`.
+
+### Definition translations (Astrotomic)
+
+Field group names, field labels, option labels, and translatable field config (`helperText`, `placeholder`, …) use [astrotomic/laravel-translatable](https://docs.astrotomic.info/laravel-translatable) — the same stack as `moox/media` and Moox draft entities (via `moox/localization`).
+
+| Table | Model | Translated attributes |
+|-------|-------|----------------------|
+| `builder_field_group_translations` | `FieldGroupTranslation` | `name` |
+| `builder_field_translations` | `FieldTranslation` | `label`, `config` (JSON subset) |
+| `builder_field_option_translations` | `FieldOptionTranslation` | `label` |
+
+`FieldGroup`, `Field`, and `FieldOption` implement `TranslatableContract` through `HasBuilderTranslatableAttributes`. Main-table columns (`name`, `label`, …) stay populated for the default locale as fallback columns.
+
+**Not translated:** field keys (`name`), option values (`value`), structural `config`, location rules, validation rules.
 
 ### Location Rules (internal)
 
@@ -301,7 +317,9 @@ Navigation: **Fields → Field Groups**
 
 Repeater rows are collapsed by default and show type, key, and required flag in the label.
 
-Translations: `resources/lang/de/builder.php`, `en/builder.php`.
+Use the language selector (`?lang=`) on create/edit to translate group names, field labels, option labels, and translatable config. See [Translations](#translations).
+
+Package UI strings: `resources/lang/de/builder.php`, `en/builder.php`.
 
 ---
 
@@ -377,6 +395,56 @@ Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilitie
 
 ---
 
+## Translations
+
+Builder separates **definitions** (what fields are called) from **values** (what users enter).
+
+| Layer | Mechanism | Locale source |
+|-------|-----------|---------------|
+| **Definitions** | Astrotomic translation tables | `?lang=` on field group admin, `BuilderLocaleResolver` |
+| **Values** | `locale` column on `builder_field_values` | `?lang=` / `request('lang')` on consumer resources |
+
+### Locale resolution
+
+`BuilderLocaleResolver` resolves in order:
+
+1. Explicit locale argument
+2. `request('lang')` (query or input)
+3. Default locale from `moox/localization` (`localizations.is_default`)
+4. Admin UI default from `adminDefaultLocale()` (`is_default` + `is_active_admin`, then first active admin locale)
+5. `config('builder.default_locale')` → `config('app.locale')` → `en_US`
+
+Fallback chain for missing translations: **active locale → default locale → main-table columns**.
+
+### Admin: field groups
+
+`EditFieldGroup` / `CreateFieldGroup` / `ListFieldGroups` use `InteractsWithFieldGroupLocale` (same patterns as Moox draft list/edit pages):
+
+- Language selector in the header (`localization::lang-selector` when available)
+- `?lang=de_CH` saves labels/names into the matching translation row via `translateOrNew()` + `saveTranslations()`
+- `hydrate()` keeps `request('lang')` in sync on Livewire re-renders (search/filter)
+- Invalid or admin-hidden locales redirect to the default admin locale (`is_active_admin`)
+- Default locale also updates main-table fallback columns
+- List index shows localized group names for the active `?lang=`
+
+### Runtime: consumer resources
+
+Pass `?lang=` when loading/saving records so `CustomFieldsManager` reads and writes the correct `builder_field_values.locale` row. Definition labels in forms come from `DefinitionRegistry` + `DefinitionTranslator` (cached, localized at read time).
+
+### Code patterns (same as Media/Draft)
+
+```php
+$group->translateOrNew('de_CH')->name = 'Grundlagen';
+$group->saveTranslations();
+
+$field->translateOrNew('de_CH')->label = 'Farbe';
+$field->saveTranslations();
+```
+
+Astrotomic is provided transitively via `moox/core` → `moox/localization` — no extra Composer dependencies needed in this package.
+
+---
+
 ## Configuration
 
 `config/builder.php`:
@@ -384,8 +452,9 @@ Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilitie
 | Key | Default | Description |
 |-----|---------|-------------|
 | `navigation_group` | `Fields` | Filament navigation group for field groups |
+| `default_locale` | `en_US` | Fallback when `moox/localization` has no default |
 
-Env: `BUILDER_NAVIGATION_GROUP`.
+Env: `BUILDER_NAVIGATION_GROUP`, `BUILDER_DEFAULT_LOCALE`.
 
 ---
 
@@ -442,7 +511,7 @@ $item->hasCustomField('color');            // value present (including default)?
 $item->hasCustomFieldDefinition('color');   // field definition exists?
 $item->toArray();                          // DB columns + raw custom fields (internal)
 
-// Write
+// Write 
 $item->color = 'Blue';                     // or setCustomField()
 $item->setCustomField('color', 'Blue');
 $item->setCustomFields(['accident_free' => true]);
@@ -558,7 +627,7 @@ $presented = app(BuilderValuesResolver::class)->present(
 packages/builder/
 ├── config/builder.php
 ├── database/
-│   ├── migrations/          # 4 tables
+│   ├── migrations/          # 7 tables + translation tables
 │   └── seeders/BuilderSeeder.php
 ├── resources/lang/{de,en}/builder.php
 └── src/
@@ -582,7 +651,10 @@ packages/builder/
     │   ├── Livewire/BuilderMediaPickerModal.php
     │   └── Resources/Concerns/MergesCustomFields.php
     ├── Listeners/PersistCustomFields.php
-    ├── Models/                            # FieldGroup, Field, FieldOption, FieldValue
+    ├── Models/
+    │   ├── Concerns/HasBuilderTranslatableAttributes.php
+    │   ├── FieldGroup.php, Field.php, FieldOption.php, FieldValue.php
+    │   └── *Translation.php                 # Astrotomic translation models
     ├── Observers/
     │   ├── InvalidateDefinitionCacheObserver.php
     │   └── PurgeFieldValuesObserver.php
@@ -602,6 +674,8 @@ packages/builder/
     │   ├── FieldValuePurger.php
     │   └── FieldValueValidator.php
     └── Support/
+        ├── BuilderLocaleResolver.php
+        ├── DefinitionTranslator.php
         ├── EntityModelDeletionRegistrar.php
         ├── MediaFieldValueSupport.php
         ├── MediaIntegration.php
@@ -626,7 +700,7 @@ cd packages/builder && composer test
 3. Save, then check the DB:
 
 ```sql
-SELECT entity, record_id, field_name, value_string, value_decimal, value_json
+SELECT entity, record_id, field_name, locale, value_string, value_decimal, value_json
 FROM builder_field_values
 WHERE entity = 'item';
 ```
