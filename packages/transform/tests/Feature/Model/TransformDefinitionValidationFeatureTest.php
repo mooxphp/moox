@@ -29,6 +29,9 @@ test('it rejects definition with non existing file reference', function (): void
     TransformDefinition::query()->create([
         'name' => 'Invalid file definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'file.title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'file_json',
@@ -50,6 +53,9 @@ test('it rejects definition with unknown db connection', function (): void {
     TransformDefinition::query()->create([
         'name' => 'Invalid db connection definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',
@@ -73,6 +79,9 @@ test('it allows db_table source without row_key for iteration', function (): voi
     $definition = TransformDefinition::query()->create([
         'name' => 'Invalid db row key definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',
@@ -97,6 +106,9 @@ test('it rejects db_table source with schema qualified table name', function ():
     TransformDefinition::query()->create([
         'name' => 'Invalid schema table definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',

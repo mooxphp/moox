@@ -19,11 +19,15 @@ class RunTransformRecordJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public int $timeout = 300;
+    public int $timeout = 0;
 
     public function __construct(
         private readonly int $transformRecordId
-    ) {}
+    ) {
+        $timeout = config('transform.job_timeout', 0);
+        $this->timeout = is_int($timeout) ? $timeout : 0;
+        $this->onQueue((string) config('transform.job_queue', 'transform'));
+    }
 
     public function handle(TransformRunner $runner): void
     {

@@ -233,6 +233,9 @@ test('it updates and deletes a transform definition via filament edit page', fun
     $definition = TransformDefinition::query()->create([
         'name' => 'Filament Editable Definition',
         'destination_model' => User::class,
+        'destination_match' => [
+            'name' => 'title',
+        ],
         'field_map' => [
             'name' => 'title',
         ],

@@ -17,6 +17,17 @@ return [
                 ],
             ],
         ],
+        'failed' => [
+            'label' => 'trans//core::core.failed',
+            'icon' => 'gmdi-filter-list',
+            'query' => [
+                [
+                    'field' => 'status',
+                    'operator' => '!=',
+                    'value' => 'processed',
+                ],
+            ],
+        ],
         'deleted' => [
             'label' => 'trans//core::core.deleted',
             'icon' => 'gmdi-filter-list',

@@ -237,14 +237,42 @@ class TransformDefinitionResource extends BaseItemResource
                                         }),
                                     Repeater::make('destination_match')
                                         ->label(__('transform::fields.destination_match'))
-                                        ->helperText('Optional: define unique match keys for update-or-create behavior.')
+                                        ->helperText(__('transform::fields.destination_match_help'))
                                         ->collapsible()
                                         ->schema([
                                             TextInput::make('destination_field')
                                                 ->label(__('transform::fields.destination_field'))
                                                 ->datalist(fn (Get $get): array => array_values(TransformDefinition::discoverDestinationFieldOptions((string) $get('../../../destination_model'))))
-                                                ->placeholder('email')
-                                                ->required(),
+                                                ->placeholder('external_reference')
+                                                ->required()
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                                    if (! is_string($state) || $state === '' || filled($get('source_path'))) {
+                                                        return;
+                                                    }
+
+                                                    $fieldMapRows = $get('../../../field_map');
+                                                    if (! is_array($fieldMapRows)) {
+                                                        return;
+                                                    }
+
+                                                    foreach ($fieldMapRows as $row) {
+                                                        if (! is_array($row)) {
+                                                            continue;
+                                                        }
+
+                                                        if (($row['destination_field'] ?? null) !== $state) {
+                                                            continue;
+                                                        }
+
+                                                        $sourcePath = $row['source_path'] ?? null;
+                                                        if (is_string($sourcePath) && $sourcePath !== '') {
+                                                            $set('source_path', $sourcePath);
+                                                        }
+
+                                                        break;
+                                                    }
+                                                }),
                                             TextInput::make('source_path')
                                                 ->label(__('transform::fields.source_path'))
                                                 ->datalist(fn (Get $get): array => array_values(TransformDefinition::discoverSourcePathOptions(is_array($get('../../../source_references')) ? $get('../../../source_references') : [])))

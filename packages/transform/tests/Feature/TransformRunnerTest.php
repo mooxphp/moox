@@ -13,7 +13,7 @@ use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\TransformRunner;
 use Moox\Transform\Support\TransformValidator;
-use Tests\TestCase;
+use Moox\Transform\Tests\TestCase;
 
 /**
  * @property string|null $title
@@ -92,6 +92,8 @@ final class TransformDraftMainTranslationModel extends BaseDraftTranslationModel
     }
 }
 
+require_once dirname(__DIR__, 1).'/Support/TransformTestSupport.php';
+
 uses(TestCase::class);
 
 test('it transforms from multiple source rows and tables into one destination model', function (): void {
@@ -139,6 +141,9 @@ test('it transforms from multiple source rows and tables into one destination mo
             'stock' => 'product.inventory',
             'price_label' => 'price.label',
         ],
+        'destination_match' => [
+            'price_label' => 'product.sku',
+        ],
         'validation_rules' => [
             'title' => ['required', 'string'],
             'stock' => ['required', 'integer'],
@@ -168,6 +173,9 @@ test('it fails validation and stores validation errors', function (): void {
     createTestTables();
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'stock' => 'legacy.inventory',
+        ],
         'field_map' => [
             'title' => 'legacy.title',
             'stock' => 'legacy.inventory',
@@ -200,6 +208,9 @@ test('it rejects definition when destination model does not exist', function ():
     createTestTables();
     createDefinition([
         'destination_model' => 'App\\Models\\DefinitelyMissingModel',
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
         'field_map' => [
             'title' => 'legacy.title',
         ],
@@ -238,6 +249,9 @@ test('it allows adding extra validation rules on top of model-based validation',
     createTestTables();
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'stock' => 'legacy.inventory',
+        ],
         'field_map' => [
             'title' => 'legacy.title',
             'stock' => 'legacy.inventory',
@@ -271,6 +285,9 @@ test('it rejects definition with non existing file reference', function (): void
     TransformDefinition::query()->create([
         'name' => 'Invalid file definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'file.title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'file_json',
@@ -337,6 +354,8 @@ test('it writes translated fields for draft-like destination model', function ()
 
 function createTestTables(): void
 {
+    assertTransformTestsUseSafeDatabase();
+
     Schema::dropIfExists('transform_dummy_models');
     Schema::dropIfExists('transform_draft_main_model_translations');
     Schema::dropIfExists('transform_draft_main_models');
@@ -349,6 +368,7 @@ function createTestTables(): void
         $table->softDeletes();
         $table->string('name')->unique();
         $table->string('destination_model');
+        $table->json('destination_match')->nullable();
         $table->json('source_references');
         $table->json('field_map');
         $table->json('validation_rules')->nullable();
@@ -430,14 +450,19 @@ function makeRunner(): TransformRunner
  */
 function createDefinition(array $overrides = []): TransformDefinition
 {
-    return TransformDefinition::query()->create(array_replace_recursive([
+    $defaults = [
         'name' => 'Test Definition',
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
         'source_references' => [],
         'field_map' => [
             'title' => 'legacy.title',
         ],
         'validation_rules' => [],
         'is_active' => true,
-    ], $overrides));
+    ];
+
+    return TransformDefinition::query()->create([...$defaults, ...$overrides]);
 }

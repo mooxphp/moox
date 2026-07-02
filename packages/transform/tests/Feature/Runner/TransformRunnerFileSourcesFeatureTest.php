@@ -63,6 +63,9 @@ test('it rejects definition when json file is invalid', function (): void {
         TransformDefinition::query()->create([
             'name' => 'Invalid json definition',
             'destination_model' => TransformDummyModel::class,
+            'destination_match' => [
+                'title' => 'legacy.title',
+            ],
             'source_references' => [
                 [
                     'source_type' => 'file_json',
@@ -89,6 +92,9 @@ test('it transforms data from a csv source file', function (): void {
 
     try {
         $definition = createDefinition([
+            'destination_match' => [
+                'title' => 'title',
+            ],
             'source_references' => [
                 [
                     'source_type' => 'file_csv',
@@ -128,6 +134,9 @@ test('it rejects csv definition when key column is missing in header', function 
         TransformDefinition::query()->create([
             'name' => 'Invalid csv definition',
             'destination_model' => TransformDummyModel::class,
+            'destination_match' => [
+                'title' => 'title',
+            ],
             'source_references' => [
                 [
                     'source_type' => 'file_csv',

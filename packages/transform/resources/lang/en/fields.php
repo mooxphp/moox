@@ -5,6 +5,7 @@ return [
     'destination_model' => 'Destination model',
     'field_map' => 'Field map',
     'destination_match' => 'Destination match',
+    'destination_match_help' => 'Required for active definitions: unique keys for update-or-create on re-import. Source path can be copied from field map.',
     'destination_field' => 'Destination field',
     'source_path' => 'Source path',
     'validation_rules' => 'Validation rules',

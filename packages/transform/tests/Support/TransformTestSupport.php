@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\Transform\Models\TransformDefinition;
+use Moox\Transform\Support\Operations\InlineOperationRegistry;
 use Moox\Transform\Support\TransformRunner;
 use Moox\Transform\Support\TransformValidator;
 
@@ -55,6 +57,22 @@ final class TransformJsonDummyModel extends Model
             'meta' => 'array',
         ];
     }
+}
+
+/**
+ * @property string|null $title
+ * @property string|null $external_reference
+ */
+final class TransformSoftDeleteDummyModel extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'transform_soft_delete_dummy_models';
+
+    protected $fillable = [
+        'title',
+        'external_reference',
+    ];
 }
 
 /**
@@ -111,8 +129,24 @@ final class TransformDraftMainTranslationModel extends BaseDraftTranslationModel
     }
 }
 
+function assertTransformTestsUseSafeDatabase(): void
+{
+    $connection = (string) config('database.default');
+    $database = (string) config("database.connections.{$connection}.database");
+
+    if ($connection !== 'sqlite' || $database !== ':memory:') {
+        throw new RuntimeException(
+            "Transform tests refused to run against [{$connection}:{$database}]. "
+            .'Package tests must use sqlite :memory: only.'
+        );
+    }
+}
+
 function createTestTables(): void
 {
+    assertTransformTestsUseSafeDatabase();
+
+    Schema::dropIfExists('transform_soft_delete_dummy_models');
     Schema::dropIfExists('transform_dummy_models');
     Schema::dropIfExists('transform_json_dummy_models');
     Schema::dropIfExists('transform_draft_main_model_translations');
@@ -168,6 +202,14 @@ function createTestTables(): void
         $table->timestamps();
     });
 
+    Schema::create('transform_soft_delete_dummy_models', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title')->nullable();
+        $table->string('external_reference')->nullable()->unique();
+        $table->timestamps();
+        $table->softDeletes();
+    });
+
     Schema::create('transform_draft_main_models', function (Blueprint $table): void {
         $table->id();
         $table->uuid('uuid')->nullable();
@@ -179,7 +221,11 @@ function createTestTables(): void
 
     Schema::create('transform_draft_main_model_translations', function (Blueprint $table): void {
         $table->id();
-        $table->foreignId('transform_draft_main_model_id')->constrained('transform_draft_main_models')->cascadeOnDelete();
+        $table->unsignedBigInteger('transform_draft_main_model_id');
+        $table->foreign('transform_draft_main_model_id', 'tdmmt_main_id_fk')
+            ->references('id')
+            ->on('transform_draft_main_models')
+            ->cascadeOnDelete();
         $table->string('locale');
         $table->string('title')->nullable();
         $table->string('translation_status')->nullable();
@@ -207,7 +253,7 @@ function createTestTables(): void
 
 function makeRunner(): TransformRunner
 {
-    return new TransformRunner(new TransformValidator);
+    return new TransformRunner(new TransformValidator, new InlineOperationRegistry);
 }
 
 /**
@@ -215,17 +261,21 @@ function makeRunner(): TransformRunner
  */
 function createDefinition(array $overrides = []): TransformDefinition
 {
-    return TransformDefinition::query()->create(array_replace_recursive([
+    $defaults = [
         'name' => 'Test Definition',
         'destination_model' => TransformDummyModel::class,
-        'destination_match' => [],
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
         'source_references' => [],
         'field_map' => [
             'title' => 'legacy.title',
         ],
         'validation_rules' => [],
         'is_active' => true,
-    ], $overrides));
+    ];
+
+    return TransformDefinition::query()->create([...$defaults, ...$overrides]);
 }
 
 function createFilamentTestUser(): User

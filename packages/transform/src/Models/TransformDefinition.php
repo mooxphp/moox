@@ -73,6 +73,8 @@ class TransformDefinition extends BaseItemModel
                     $errors,
                     self::validateDestinationMatch($destinationMatch, is_array($fieldMap) ? $fieldMap : [])
                 );
+            } elseif ($definition->is_active) {
+                $errors['destination_match'][] = __('transform::validation.destination_match_required');
             }
 
             if ($errors !== []) {

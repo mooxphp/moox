@@ -29,6 +29,9 @@ test('it applies inline map operations via the operation registry', function ():
 
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'product.sku',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',

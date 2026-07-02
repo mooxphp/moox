@@ -5,6 +5,7 @@ return [
     'destination_model' => 'Zielmodell',
     'field_map' => 'Feldzuordnung',
     'destination_match' => 'Zielabgleich',
+    'destination_match_help' => 'Pflicht fuer aktive Definitionen: eindeutige Schluessel fuer Update-or-Create bei Wiederholungsimporten. Quellpfad kann aus dem Feld-Mapping uebernommen werden.',
     'destination_field' => 'Zielfeld',
     'source_path' => 'Quellpfad',
     'validation_rules' => 'Validierungsregeln',

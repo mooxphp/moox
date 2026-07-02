@@ -59,6 +59,9 @@ test('it transforms from multiple db sources into one destination model', functi
             'stock' => 'product.inventory',
             'price_label' => 'price.label',
         ],
+        'destination_match' => [
+            'price_label' => 'product.sku',
+        ],
         'validation_rules' => [
             'title' => ['required', 'string'],
             'stock' => ['required', 'integer'],
@@ -203,6 +206,9 @@ test('it fails validation and stores errors', function (): void {
     createTestTables();
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'stock' => 'legacy.inventory',
+        ],
         'field_map' => [
             'title' => 'legacy.title',
             'stock' => 'legacy.inventory',
@@ -262,6 +268,9 @@ test('it merges custom extra rules on top of model validation', function (): voi
     createTestTables();
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'stock' => 'legacy.inventory',
+        ],
         'field_map' => [
             'title' => 'legacy.title',
             'stock' => 'legacy.inventory',
@@ -302,6 +311,9 @@ test('it uses db_default connection alias for db_table source', function (): voi
 
     $definition = createDefinition([
         'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'title',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',
@@ -326,8 +338,298 @@ test('it uses db_default connection alias for db_table source', function (): voi
     makeRunner()->run($record);
     $record->refresh();
 
-    expect($record->status)->toBe('processed');
+    expect($record->status)->toBe('updated');
     expect($record->validation_status)->toBe('valid');
+});
+
+test('it fails when destination_match cannot be fully resolved', function (): void {
+    createTestTables();
+
+    $definition = createDefinition([
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
+        'field_map' => [
+            'title' => 'legacy.title',
+            'stock' => 'legacy.inventory',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+        'source_projection' => [
+            'legacy' => [
+                'inventory' => 5,
+            ],
+        ],
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('failed');
+    expect($record->error_message)->toContain('destination_match could not be fully resolved');
+    expect($record->validation_errors)->toHaveKey('destination_conflict');
+    expect($record->validation_errors['destination_conflict']['type'])->toBe('incomplete_destination_match');
+    expect($record->validation_errors['destination_conflict']['missing_fields'])->toContain('title (from legacy.title)');
+});
+
+test('it fails with structured conflict when multiple destination records match', function (): void {
+    createTestTables();
+
+    $first = TransformDummyModel::query()->create([
+        'title' => 'Shared Title',
+        'stock' => 1,
+        'price_label' => 'A',
+    ]);
+    $second = TransformDummyModel::query()->create([
+        'title' => 'Shared Title',
+        'stock' => 2,
+        'price_label' => 'B',
+    ]);
+
+    $definition = createDefinition([
+        'name' => 'duplicate-match-definition',
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
+        'field_map' => [
+            'title' => 'legacy.title',
+            'stock' => 'legacy.inventory',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+        'source_projection' => [
+            'legacy' => [
+                'title' => 'Shared Title',
+                'inventory' => 9,
+            ],
+        ],
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('failed');
+    expect($record->validation_errors['destination_conflict']['type'])->toBe('multiple_destination_matches');
+    expect($record->validation_errors['destination_conflict']['existing_destination_keys'])
+        ->toEqualCanonicalizing([(string) $first->getKey(), (string) $second->getKey()]);
+    expect($record->validation_errors['destination_conflict']['source']['primary_source_id'])->toBe('Shared Title');
+    expect($record->validation_errors['destination_conflict']['source']['references'][0]['source_path'])->toBe('legacy.title');
+    expect($record->error_message)->toContain((string) $first->getKey())
+        ->and($record->error_message)->toContain((string) $second->getKey());
+});
+
+test('it fails with structured conflict on unique constraint violations', function (): void {
+    createTestTables();
+
+    $existing = TransformSoftDeleteDummyModel::query()->create([
+        'title' => 'Original',
+        'external_reference' => 'LEG-1',
+    ]);
+
+    $definition = createDefinition([
+        'name' => 'unique-violation-definition',
+        'destination_model' => TransformSoftDeleteDummyModel::class,
+        'destination_match' => [
+            'title' => 'legacy.title',
+        ],
+        'field_map' => [
+            'title' => 'legacy.title',
+            'external_reference' => 'legacy.ref',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+        'source_projection' => [
+            'legacy' => [
+                'ref' => 'LEG-1',
+                'title' => 'Different Title',
+            ],
+        ],
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('failed');
+    expect($record->validation_errors['destination_conflict']['type'])->toBe('unique_constraint_violation');
+    expect($record->validation_errors['destination_conflict']['source']['references'][0]['source_path'])->toBe('legacy.title');
+    expect($record->validation_errors['destination_conflict']['source']['primary_source_id'])->toBe('Different Title');
+    expect($record->validation_errors['destination_conflict']['destination_match']['title'])->toBe('Different Title');
+    expect($record->validation_errors['destination_conflict']['existing_destination_keys'])->toBe([(string) $existing->getKey()]);
+    expect($record->error_message)->toContain((string) $existing->getKey());
+});
+
+test('it includes db source identity in conflict output', function (): void {
+    createTestTables();
+
+    Schema::create('legacy_products', function (Blueprint $table): void {
+        $table->id();
+        $table->string('sku')->unique();
+        $table->string('title');
+        $table->integer('inventory');
+    });
+
+    DB::table('legacy_products')->insert([
+        'id' => 99,
+        'sku' => 'SKU-99',
+        'title' => 'Shared',
+        'inventory' => 1,
+    ]);
+    TransformDummyModel::query()->create([
+        'title' => 'Shared',
+        'stock' => 1,
+        'price_label' => 'X',
+    ]);
+    TransformDummyModel::query()->create([
+        'title' => 'Shared',
+        'stock' => 2,
+        'price_label' => 'Y',
+    ]);
+
+    $definition = createDefinition([
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'title' => 'product.title',
+        ],
+        'source_references' => [
+            [
+                'source_type' => 'db_table',
+                'table' => 'legacy_products',
+                'row_key' => 99,
+                'key_column' => 'id',
+                'alias' => 'product',
+            ],
+        ],
+        'field_map' => [
+            'title' => 'product.title',
+            'stock' => 'product.inventory',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('failed');
+    expect($record->validation_errors['destination_conflict']['source']['references'][0])
+        ->toMatchArray([
+            'source_type' => 'db_table',
+            'table' => 'legacy_products',
+            'key_column' => 'id',
+            'source_id' => 99,
+        ]);
+    expect($record->error_message)->toContain('legacy_products')
+        ->and($record->error_message)->toContain('99');
+});
+
+test('it normalizes integer source values when matching string destination columns', function (): void {
+    createTestTables();
+
+    TransformDummyModel::query()->create([
+        'title' => 'Existing',
+        'stock' => 1,
+        'price_label' => '42',
+    ]);
+
+    Schema::create('legacy_products', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title');
+        $table->integer('inventory');
+    });
+
+    DB::table('legacy_products')->insert([
+        'id' => 42,
+        'title' => 'Updated',
+        'inventory' => 9,
+    ]);
+
+    $definition = createDefinition([
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'price_label' => 'product.id',
+        ],
+        'source_references' => [
+            [
+                'source_type' => 'db_table',
+                'table' => 'legacy_products',
+                'row_key' => 42,
+                'key_column' => 'id',
+                'alias' => 'product',
+            ],
+        ],
+        'field_map' => [
+            'title' => 'product.title',
+            'stock' => 'product.inventory',
+            'price_label' => 'product.id',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('updated');
+    expect(TransformDummyModel::query()->count())->toBe(1);
+
+    $saved = TransformDummyModel::query()->first();
+    expect($saved?->title)->toBe('Updated');
+    expect($saved?->price_label)->toBe('42');
+});
+
+test('it restores and updates soft deleted destination models matched by destination_match', function (): void {
+    createTestTables();
+
+    $existing = TransformSoftDeleteDummyModel::query()->create([
+        'title' => 'Old Title',
+        'external_reference' => 'LEG-1',
+    ]);
+    $existing->delete();
+
+    $definition = createDefinition([
+        'destination_model' => TransformSoftDeleteDummyModel::class,
+        'destination_match' => [
+            'external_reference' => 'legacy.ref',
+        ],
+        'field_map' => [
+            'title' => 'legacy.title',
+            'external_reference' => 'legacy.ref',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+        'source_projection' => [
+            'legacy' => [
+                'ref' => 'LEG-1',
+                'title' => 'Restored Title',
+            ],
+        ],
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('updated');
+    expect(TransformSoftDeleteDummyModel::query()->count())->toBe(1);
+    expect(TransformSoftDeleteDummyModel::withTrashed()->count())->toBe(1);
+
+    $saved = TransformSoftDeleteDummyModel::query()->first();
+    expect($saved?->getKey())->toBe($existing->getKey());
+    expect($saved?->title)->toBe('Restored Title');
+    expect($saved?->external_reference)->toBe('LEG-1');
 });
 
 test('it decodes json strings for destination array casts', function (): void {
@@ -349,6 +651,9 @@ test('it decodes json strings for destination array casts', function (): void {
 
     $definition = createDefinition([
         'destination_model' => TransformJsonDummyModel::class,
+        'destination_match' => [
+            'code' => 'meta_src.code',
+        ],
         'source_references' => [
             [
                 'source_type' => 'db_table',

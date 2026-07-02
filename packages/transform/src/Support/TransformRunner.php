@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Moox\Transform\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\Exceptions\TransformDestinationConflictException;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
 
 class TransformRunner
@@ -40,6 +43,16 @@ class TransformRunner
                     'status' => 'failed',
                     'validation_status' => 'invalid',
                     'error_message' => 'Transform definition missing or inactive.',
+                ])->save();
+
+                return;
+            }
+
+            if ($this->resolveArrayAttribute($definition, 'destination_match') === []) {
+                $record->forceFill([
+                    'status' => 'failed',
+                    'validation_status' => 'invalid',
+                    'error_message' => 'Transform definition requires destination_match to prevent duplicate records on re-import.',
                 ])->save();
 
                 return;
@@ -76,8 +89,28 @@ class TransformRunner
                 return;
             }
 
+            $sourceContext = $this->resolveSourceContext($record, $definition, $payload);
+            /** @var Model $prototype */
+            $prototype = new $destinationClass;
+            $destinationMatch = $this->resolveDestinationMatchData(
+                $definition,
+                $payload,
+                $prototype,
+                $destinationClass,
+                $sourceContext,
+                (int) $record->getKey(),
+                (string) $definition->name,
+            );
+
             /** @var Model $destination */
-            $destination = $this->resolveDestinationModel($record, $definition, $destinationClass, $payload);
+            $destination = $this->resolveDestinationModel(
+                $record,
+                $destinationClass,
+                $destinationMatch,
+                $sourceContext,
+                (int) $record->getKey(),
+                (string) $definition->name,
+            );
             $record->destination_key = $destination->getKey() !== null ? (string) $destination->getKey() : $record->destination_key;
             $resolvedData = $this->normalizeResolvedDataForDestinationCasts($destination, $resolvedData);
             $validationRules = $this->resolveValidationRules($definition, $destination, $resolvedData);
@@ -112,7 +145,40 @@ class TransformRunner
             }
 
             $assignment = $this->assignAttributesWithGracefulDegradation($destination, $resolvedData);
-            $destination->save();
+
+            try {
+                $destination->save();
+            } catch (QueryException $exception) {
+                if (! $this->isUniqueConstraintViolation($exception)) {
+                    throw $exception;
+                }
+
+                $conflictingKeys = $this->findDestinationKeysByMatch($destinationClass, $destinationMatch);
+
+                if (count($conflictingKeys) > 1) {
+                    throw TransformDestinationConflictException::multipleMatches(
+                        $destinationClass,
+                        $destinationMatch,
+                        $conflictingKeys,
+                        $sourceContext,
+                        (int) $record->getKey(),
+                        (string) $definition->name,
+                    );
+                }
+
+                $existingDestinationKey = $conflictingKeys[0]
+                    ?? $this->findConflictingDestinationKey($destinationClass, $resolvedData);
+
+                throw TransformDestinationConflictException::uniqueConstraintViolation(
+                    $destinationClass,
+                    $destinationMatch,
+                    $sourceContext,
+                    $existingDestinationKey !== null ? (string) $existingDestinationKey : null,
+                    $exception->getMessage(),
+                    (int) $record->getKey(),
+                    (string) $definition->name,
+                );
+            }
 
             $isDegraded = $warnings !== [] || $assignment['ignored'] !== [];
             $record->forceFill([
@@ -128,6 +194,15 @@ class TransformRunner
                 'degraded' => $isDegraded,
                 'last_success_at' => now(),
                 'error_message' => null,
+            ])->save();
+        } catch (TransformDestinationConflictException $exception) {
+            $record->forceFill([
+                'status' => 'failed',
+                'validation_status' => 'invalid',
+                'error_message' => $exception->getMessage(),
+                'validation_errors' => [
+                    'destination_conflict' => $exception->context(),
+                ],
             ])->save();
         } catch (\Throwable $throwable) {
             $record->forceFill([
@@ -155,7 +230,10 @@ class TransformRunner
 
             $sourceType = $reference['source_type'] ?? null;
             $rowKey = $reference['row_key'] ?? null;
-            if ($sourceType === 'db_table' && ($rowKey === null || (is_string($rowKey) && trim($rowKey) === ''))) {
+            $rowKeyFrom = $reference['row_key_from'] ?? null;
+            $hasIterableRowKey = $rowKey !== null && (! is_string($rowKey) || trim($rowKey) !== '');
+            $hasDynamicRowKey = is_string($rowKeyFrom) && trim($rowKeyFrom) !== '';
+            if ($sourceType === 'db_table' && ! $hasIterableRowKey && ! $hasDynamicRowKey) {
                 $iterableIndexes[] = $index;
             }
         }
@@ -193,11 +271,13 @@ class TransformRunner
             return true;
         }
 
-        $rowKeys = DB::connection($connection)
+        $rowKeysQuery = DB::connection($connection)
             ->table($table)
-            ->orderBy($keyColumn)
-            ->pluck($keyColumn)
-            ->all();
+            ->orderBy($keyColumn);
+
+        $this->applyDbTableWhereClauses($rowKeysQuery, $reference);
+
+        $rowKeys = $rowKeysQuery->pluck($keyColumn)->all();
 
         if ($rowKeys === []) {
             $record->forceFill([
@@ -259,13 +339,14 @@ class TransformRunner
         $warnings = [];
         $merged = $projection;
 
-        foreach ($references as $index => $reference) {
+        foreach ($this->orderReferencesForResolution($references) as $index => $reference) {
             if (! is_array($reference)) {
                 $warnings[] = "Invalid source reference at index {$index}.";
 
                 continue;
             }
 
+            $reference = $this->resolveDynamicReference($reference, $merged);
             $sourcePayload = $this->resolveReferencePayload($reference, $warnings);
             if ($sourcePayload === null) {
                 continue;
@@ -304,6 +385,7 @@ class TransformRunner
 
         return match ($type) {
             'db_table' => $this->resolveDbReferencePayload($reference, $warnings),
+            'static' => $this->resolveStaticReferencePayload($reference, $warnings),
             'file_json' => $this->resolveJsonFileReferencePayload($reference, $warnings),
             'file_csv' => $this->resolveCsvFileReferencePayload($reference, $warnings),
             'api' => $this->resolveApiReferencePayload($reference, $warnings),
@@ -322,8 +404,9 @@ class TransformRunner
         $rowKey = $reference['row_key'] ?? null;
         $keyColumn = $reference['key_column'] ?? 'id';
         $connection = $reference['connection'] ?? null;
+        $hasRowKey = $rowKey !== null && (! is_string($rowKey) || trim((string) $rowKey) !== '');
 
-        if (! is_string($table) || $table === '' || $rowKey === null || ! is_string($keyColumn) || $keyColumn === '') {
+        if (! is_string($table) || $table === '' || ! $hasRowKey || ! is_string($keyColumn) || $keyColumn === '') {
             $warnings[] = 'Invalid db_table reference configuration.';
 
             return null;
@@ -337,6 +420,7 @@ class TransformRunner
         $resolvedConnection = $this->resolveConnectionName($connection);
         $queryBuilder = DB::connection($resolvedConnection);
         $query = $queryBuilder->table($table)->where($keyColumn, $rowKey);
+        $this->applyDbTableWhereClauses($query, $reference);
         if (is_array($reference['columns'] ?? null) && $reference['columns'] !== []) {
             $query->select($reference['columns']);
         }
@@ -624,7 +708,8 @@ class TransformRunner
     /**
      * Supported source expression syntax:
      * - plain path: source.field
-     * - mapped path: source.field|map:1=de_DE,2=en_US,*=de_DE
+     * - payload path: coalesce:source.a,source.b or any_truthy:source.a,source.b
+     * - piped ops: source.field|map:1=a,2=b,*=c|upper
      *
      * @param  array<string, mixed>  $payload
      * @param  array<int, string>  $warnings
@@ -641,13 +726,42 @@ class TransformRunner
             return null;
         }
 
-        $value = Arr::get($payload, $basePath);
+        $value = $this->resolveSourceBaseValue($payload, $basePath, $destinationField, $warnings);
 
         foreach ($segments as $operation) {
-            $value = $this->inlineOperationRegistry->applyOperation($operation, $value, $destinationField, $warnings);
+            $value = $this->inlineOperationRegistry->applyOperation(
+                $operation,
+                $value,
+                $destinationField,
+                $warnings,
+                $payload,
+            );
         }
 
         return $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @param  array<int, string>  $warnings
+     */
+    private function resolveSourceBaseValue(
+        array $payload,
+        string $basePath,
+        string $destinationField,
+        array &$warnings,
+    ): mixed {
+        if ($this->inlineOperationRegistry->isPayloadBaseExpression($basePath)) {
+            return $this->inlineOperationRegistry->applyOperation(
+                $basePath,
+                null,
+                $destinationField,
+                $warnings,
+                $payload,
+            );
+        }
+
+        return Arr::get($payload, $basePath);
     }
 
     /**
@@ -667,44 +781,117 @@ class TransformRunner
             return false;
         }
 
-        return Arr::has($payload, $basePath);
+        return $this->inlineOperationRegistry->isPayloadBaseExpression($basePath)
+            ? $this->inlineOperationRegistry->payloadBaseExpressionExists($payload, $basePath)
+            : Arr::has($payload, $basePath);
     }
 
     /**
      * @param  class-string<Model>  $destinationClass
-     * @param  array<string, mixed>  $payload
+     * @param  array<string, mixed>  $destinationMatch
+     * @param  array{references: list<array<string, mixed>>, primary_source_id: string|int|null}  $sourceContext
      */
     private function resolveDestinationModel(
         TransformRecord $record,
-        TransformDefinition $definition,
         string $destinationClass,
-        array $payload
+        array $destinationMatch,
+        array $sourceContext,
+        int $transformRecordId,
+        string $transformDefinitionName,
     ): Model {
-        $destination = null;
         if ($record->destination_key !== null && $record->destination_key !== '') {
-            $destination = $destinationClass::query()
-                ->whereKey($record->destination_key)
-                ->first();
-        }
-
-        if ($destination instanceof Model) {
-            return $destination;
-        }
-
-        $destinationMatch = $this->resolveDestinationMatchData($definition, $payload);
-        if ($destinationMatch !== []) {
-            $query = $destinationClass::query();
-            foreach ($destinationMatch as $destinationField => $value) {
-                $query->where((string) $destinationField, $value);
-            }
-
-            $matched = $query->first();
-            if ($matched instanceof Model) {
-                return $matched;
+            $destination = $this->findDestinationByKey($destinationClass, $record->destination_key);
+            if ($destination instanceof Model) {
+                return $destination;
             }
         }
 
-        return new $destinationClass;
+        return DB::transaction(function () use (
+            $destinationClass,
+            $destinationMatch,
+            $sourceContext,
+            $transformRecordId,
+            $transformDefinitionName,
+        ): Model {
+            $matchedKeys = $this->findDestinationKeysByMatch($destinationClass, $destinationMatch, lock: true);
+
+            if (count($matchedKeys) > 1) {
+                throw TransformDestinationConflictException::multipleMatches(
+                    $destinationClass,
+                    $destinationMatch,
+                    $matchedKeys,
+                    $sourceContext,
+                    $transformRecordId,
+                    $transformDefinitionName,
+                );
+            }
+
+            if (count($matchedKeys) === 1) {
+                $destination = $this->findDestinationByKey($destinationClass, (string) $matchedKeys[0]);
+                if ($destination instanceof Model) {
+                    if ($this->usesSoftDeletes($destinationClass) && $destination->trashed()) {
+                        $destination->restore();
+                    }
+
+                    return $destination;
+                }
+            }
+
+            return new $destinationClass;
+        });
+    }
+
+    /**
+     * @param  class-string<Model>  $destinationClass
+     */
+    private function findDestinationByKey(string $destinationClass, string $key): ?Model
+    {
+        $query = $destinationClass::query()->whereKey($key);
+        if ($this->usesSoftDeletes($destinationClass)) {
+            $query->withTrashed();
+        }
+
+        $destination = $query->first();
+
+        return $destination instanceof Model ? $destination : null;
+    }
+
+    /**
+     * @param  class-string<Model>  $destinationClass
+     * @param  array<string, mixed>  $destinationMatch
+     * @return list<string|int>
+     */
+    private function findDestinationKeysByMatch(string $destinationClass, array $destinationMatch, bool $lock = false): array
+    {
+        /** @var Model $prototype */
+        $prototype = new $destinationClass;
+        $keyName = $prototype->getKeyName();
+
+        $query = $destinationClass::query()->select($keyName);
+        if ($this->usesSoftDeletes($destinationClass)) {
+            $query->withTrashed();
+        }
+
+        foreach ($destinationMatch as $destinationField => $value) {
+            $query->where((string) $destinationField, $value);
+        }
+
+        if ($lock) {
+            $query->lockForUpdate();
+        }
+
+        return $query->pluck($keyName)
+            ->map(static fn (mixed $key): string|int => is_int($key) ? $key : (string) $key)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  class-string<Model>  $destinationClass
+     */
+    private function usesSoftDeletes(string $destinationClass): bool
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive($destinationClass), true);
     }
 
     private function hasUnchangedInput(TransformRecord $record, string $inputHash): bool
@@ -726,31 +913,202 @@ class TransformRunner
 
     /**
      * @param  array<string, mixed>  $payload
+     * @return array{references: list<array<string, mixed>>, primary_source_id: string|int|null}
+     */
+    private function resolveSourceContext(TransformRecord $record, TransformDefinition $definition, array $payload): array
+    {
+        $definitionReferences = $this->resolveArrayAttribute($definition, 'source_references');
+        $runtimeReferences = $this->resolveArrayAttribute($record, 'source_references');
+        $references = $runtimeReferences !== [] ? $runtimeReferences : $definitionReferences;
+
+        $resolvedReferences = [];
+
+        foreach ($references as $reference) {
+            if (! is_array($reference)) {
+                continue;
+            }
+
+            $sourceType = $reference['source_type'] ?? null;
+            if (! is_string($sourceType) || $sourceType === '') {
+                continue;
+            }
+
+            $sourceId = $reference['row_key'] ?? null;
+            if ($sourceId === null && $sourceType === 'db_table') {
+                $keyColumn = is_string($reference['key_column'] ?? null) && $reference['key_column'] !== ''
+                    ? $reference['key_column']
+                    : 'id';
+                $alias = is_string($reference['alias'] ?? null) && $reference['alias'] !== ''
+                    ? $reference['alias'].'.'
+                    : '';
+                $sourceId = Arr::get($payload, $alias.$keyColumn) ?? Arr::get($payload, $keyColumn);
+            }
+
+            $resolvedReferences[] = array_filter([
+                'source_type' => $sourceType,
+                'connection' => $reference['connection'] ?? null,
+                'table' => $reference['table'] ?? null,
+                'key_column' => $reference['key_column'] ?? null,
+                'path' => $reference['path'] ?? null,
+                'url' => $reference['url'] ?? null, //why url isn that spezific
+                'alias' => $reference['alias'] ?? null,
+                'source_id' => $sourceId,
+            ], static fn (mixed $value): bool => $value !== null && $value !== '');
+        }
+
+        if ($resolvedReferences === []) {
+            $warnings = [];
+            foreach ($this->resolveArrayAttribute($definition, 'destination_match') as $destinationField => $sourcePath) {
+                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
+                    continue;
+                }
+
+                $sourceId = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
+                if ($this->isMissingDestinationMatchValue($sourceId)) {
+                    continue;
+                }
+
+                $resolvedReferences[] = [
+                    'source_type' => 'projection',
+                    'source_path' => $sourcePath,
+                    'source_id' => $sourceId,
+                ];
+            }
+        }
+
+        $primarySourceId = null;
+        foreach ($resolvedReferences as $reference) {
+            if (($reference['source_id'] ?? null) !== null) {
+                $primarySourceId = $reference['source_id'];
+
+                break;
+            }
+        }
+
+        return [
+            'references' => $resolvedReferences,
+            'primary_source_id' => $primarySourceId,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @param  array{references: list<array<string, mixed>>, primary_source_id: string|int|null}  $sourceContext
      * @return array<string, mixed>
      */
-    private function resolveDestinationMatchData(TransformDefinition $definition, array $payload): array
-    {
+    private function resolveDestinationMatchData(
+        TransformDefinition $definition,
+        array $payload,
+        Model $prototype,
+        string $destinationClass,
+        array $sourceContext,
+        int $transformRecordId,
+        string $transformDefinitionName,
+    ): array {
         $destinationMatch = $this->resolveArrayAttribute($definition, 'destination_match');
         if ($destinationMatch === []) {
             return [];
         }
 
         $resolved = [];
+        $missing = [];
         $warnings = [];
+
         foreach ($destinationMatch as $destinationField => $sourcePath) {
             if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
+                $missing[] = (string) $destinationField;
+
                 continue;
             }
 
             $value = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
-            if ($value === null) {
+            if ($this->isMissingDestinationMatchValue($value)) {
+                $missing[] = "{$destinationField} (from {$sourcePath})";
+
                 continue;
             }
 
-            $resolved[$destinationField] = $value;
+            $resolved[$destinationField] = $this->normalizeDestinationMatchValue($prototype, $destinationField, $value);
+        }
+
+        if ($missing !== []) {
+            throw TransformDestinationConflictException::incompleteDestinationMatch(
+                $missing,
+                $destinationMatch,
+                $sourceContext,
+                $destinationClass,
+                $transformRecordId,
+                $transformDefinitionName,
+            );
         }
 
         return $resolved;
+    }
+
+    /**
+     * @param  class-string<Model>  $destinationClass
+     * @param  array<string, mixed>  $resolvedData
+     */
+    private function findConflictingDestinationKey(string $destinationClass, array $resolvedData): ?string
+    {
+        /** @var Model $prototype */
+        $prototype = new $destinationClass;
+        $keyName = $prototype->getKeyName();
+
+        foreach ($resolvedData as $field => $value) {
+            if (! is_string($field) || $field === '' || $this->isMissingDestinationMatchValue($value)) {
+                continue;
+            }
+
+            $query = $destinationClass::query()->select($keyName);
+            if ($this->usesSoftDeletes($destinationClass)) {
+                $query->withTrashed();
+            }
+
+            $keys = $query->where($field, $value)->pluck($keyName)->all();
+            if (count($keys) === 1) {
+                return (string) $keys[0];
+            }
+        }
+
+        return null;
+    }
+
+    private function isUniqueConstraintViolation(QueryException $exception): bool
+    {
+        $errorCode = (string) $exception->getCode();
+        if (in_array($errorCode, ['23000', '23505'], true)) {
+            return true;
+        }
+
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'unique constraint failed')
+            || str_contains($message, 'duplicate entry')
+            || str_contains($message, 'duplicate key value')
+            || str_contains($message, 'unique violation');
+    }
+
+    private function isMissingDestinationMatchValue(mixed $value): bool
+    {
+        if ($value === null) {
+            return true;
+        }
+
+        return is_string($value) && trim($value) === '';
+    }
+
+    private function normalizeDestinationMatchValue(Model $prototype, string $field, mixed $value): mixed
+    {
+        $castType = strtolower(explode(':', (string) ($prototype->getCasts()[$field] ?? ''))[0]);
+
+        return match ($castType) {
+            'int', 'integer' => (int) $value,
+            'float', 'double', 'decimal', 'real' => (float) $value,
+            'bool', 'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+            'array', 'json', 'collection', 'object' => $value,
+            default => is_scalar($value) ? (string) $value : $value,
+        };
     }
 
     /**
@@ -860,5 +1218,151 @@ class TransformRunner
         }
 
         return [];
+    }
+
+    /**
+     * @param  array<int, mixed>  $references
+     * @return array<int, mixed>
+     */
+    private function orderReferencesForResolution(array $references): array
+    {
+        $static = [];
+        $withRowKey = [];
+        $withRowKeyFrom = [];
+
+        foreach ($references as $reference) {
+            if (! is_array($reference)) {
+                $withRowKey[] = $reference;
+
+                continue;
+            }
+
+            $sourceType = $reference['source_type'] ?? null;
+            $rowKey = $reference['row_key'] ?? null;
+            $rowKeyFrom = $reference['row_key_from'] ?? null;
+            $hasRowKey = $rowKey !== null && (! is_string($rowKey) || trim((string) $rowKey) !== '');
+
+            if ($sourceType === 'static') {
+                $static[] = $reference;
+
+                continue;
+            }
+
+            if ($hasRowKey) {
+                $withRowKey[] = $reference;
+
+                continue;
+            }
+
+            if (is_string($rowKeyFrom) && trim($rowKeyFrom) !== '') {
+                $withRowKeyFrom[] = $reference;
+
+                continue;
+            }
+
+            $withRowKey[] = $reference;
+        }
+
+        return array_values(array_merge($static, $withRowKey, $withRowKeyFrom));
+    }
+
+    /**
+     * @param  array<string, mixed>  $reference
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function resolveDynamicReference(array $reference, array $payload): array
+    {
+        $rowKey = $reference['row_key'] ?? null;
+        $hasRowKey = $rowKey !== null && (! is_string($rowKey) || trim((string) $rowKey) !== '');
+
+        if ($hasRowKey) {
+            return $reference;
+        }
+
+        $rowKeyFrom = $reference['row_key_from'] ?? null;
+        if (! is_string($rowKeyFrom) || trim($rowKeyFrom) === '') {
+            return $reference;
+        }
+
+        $reference['row_key'] = Arr::get($payload, $rowKeyFrom);
+
+        return $reference;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array<string, mixed>  $reference
+     */
+    private function applyDbTableWhereClauses($query, array $reference): void
+    {
+        $where = $reference['where'] ?? null;
+        if (! is_array($where)) {
+            return;
+        }
+
+        foreach ($where as $clause) {
+            if (! is_array($clause)) {
+                continue;
+            }
+
+            $column = $clause['column'] ?? null;
+            $operator = strtolower((string) ($clause['operator'] ?? '='));
+
+            if (! is_string($column) || $column === '') {
+                continue;
+            }
+
+            if ($operator === 'null') {
+                $query->whereNull($column);
+
+                continue;
+            }
+
+            if ($operator === 'not_null') {
+                $query->whereNotNull($column);
+
+                continue;
+            }
+
+            if ($operator === 'in' && is_array($clause['value'] ?? null)) {
+                $query->where(function ($nested) use ($column, $clause): void {
+                    foreach ($clause['value'] as $value) {
+                        if ($value === null) {
+                            $nested->orWhereNull($column);
+                        } else {
+                            $nested->orWhere($column, $value);
+                        }
+                    }
+                });
+
+                continue;
+            }
+
+            if (array_key_exists('value', $clause)) {
+                $query->where($column, $operator, $clause['value']);
+
+                continue;
+            }
+
+            $query->where($column, $operator);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $reference
+     * @param  array<int, string>  $warnings
+     * @return array<string, mixed>|null
+     */
+    private function resolveStaticReferencePayload(array $reference, array &$warnings): ?array
+    {
+        $data = $reference['data'] ?? null;
+        if (! is_array($data)) {
+            $warnings[] = 'Invalid static source reference data.';
+
+            return null;
+        }
+
+        return $data;
     }
 }
