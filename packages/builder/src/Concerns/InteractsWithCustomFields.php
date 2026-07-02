@@ -52,7 +52,11 @@ trait InteractsWithCustomFields
      */
     public function customFields(bool $fresh = false, ?string $locale = null): array
     {
-        $locale = app(BuilderLocaleResolver::class)->current($locale);
+        $locale = app(BuilderLocaleResolver::class)->valuesLocaleForEntity(
+            static::resolveCustomFieldsEntity(),
+            $locale,
+            static::class,
+        );
 
         if (! $fresh
             && $this->customFieldsCache !== null
@@ -183,7 +187,7 @@ trait InteractsWithCustomFields
             $this,
             $payload,
             $fields->only(array_keys($payload))->values(),
-            app(BuilderLocaleResolver::class)->current(),
+            app(BuilderLocaleResolver::class)->valuesLocaleForEntity($entity, null, static::class),
         );
 
         $this->flushCustomFieldsCache();
@@ -204,7 +208,11 @@ trait InteractsWithCustomFields
 
         FieldValue::query()
             ->forRecord(static::resolveCustomFieldsEntity(), $this->getKey())
-            ->forLocale(app(BuilderLocaleResolver::class)->current())
+            ->forLocale(app(BuilderLocaleResolver::class)->valuesLocaleForEntity(
+                static::resolveCustomFieldsEntity(),
+                null,
+                static::class,
+            ))
             ->where('field_name', $name)
             ->delete();
 
@@ -244,7 +252,11 @@ trait InteractsWithCustomFields
     public function setCustomFieldsCache(array $values, ?string $locale = null): void
     {
         $this->customFieldsCache = $values;
-        $this->customFieldsCacheLocale = app(BuilderLocaleResolver::class)->current($locale);
+        $this->customFieldsCacheLocale = app(BuilderLocaleResolver::class)->valuesLocaleForEntity(
+            static::resolveCustomFieldsEntity(),
+            $locale,
+            static::class,
+        );
     }
 
     public static function flushCustomFieldDefinitionCache(): void

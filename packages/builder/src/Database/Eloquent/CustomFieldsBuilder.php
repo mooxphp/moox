@@ -116,7 +116,7 @@ class CustomFieldsBuilder extends Builder
         $valueColumn = TypedValueColumns::columnForType($definition->type);
         $valuesTable = (new FieldValue)->getTable();
         $recordKey = $model->getQualifiedKeyName();
-        $locale = app(BuilderLocaleResolver::class)->current();
+        $locale = app(BuilderLocaleResolver::class)->valuesLocaleForEntity($entity, null, $modelClass);
 
         return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $operator, $value, $valuesTable, $recordKey, $locale): void {
             $subQuery->selectRaw('1')
@@ -156,7 +156,7 @@ class CustomFieldsBuilder extends Builder
         $valueColumn = TypedValueColumns::columnForType($definition->type);
         $valuesTable = (new FieldValue)->getTable();
         $recordKey = $model->getQualifiedKeyName();
-        $locale = app(BuilderLocaleResolver::class)->current();
+        $locale = app(BuilderLocaleResolver::class)->valuesLocaleForEntity($entity, null, $modelClass);
 
         return $this->whereExists(function ($subQuery) use ($entity, $field, $valueColumn, $values, $valuesTable, $recordKey, $not, $locale): void {
             $subQuery->selectRaw('1')

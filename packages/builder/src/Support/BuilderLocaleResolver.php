@@ -106,4 +106,43 @@ final class BuilderLocaleResolver
             static fn (string $value): bool => $value !== '',
         )));
     }
+
+    public function valuesLocaleForEntity(string $entity, ?string $locale = null, ?string $modelClass = null): string
+    {
+        if (! app(CustomFieldsTranslatability::class)->valuesAreTranslatable($entity, $modelClass)) {
+            return $this->defaultLocale();
+        }
+
+        return $this->current($locale);
+    }
+
+    /**
+     * @param  class-string  $resourceClass
+     */
+    public function valuesLocaleForResource(string $resourceClass, ?string $locale = null): string
+    {
+        $entity = $resourceClass::resolveCustomFieldsEntityIdentifier();
+
+        if (! app(CustomFieldsTranslatability::class)->valuesAreTranslatable(
+            $entity,
+            $resourceClass::getModel(),
+            $resourceClass,
+        )) {
+            return $this->defaultLocale();
+        }
+
+        return $this->current($locale);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function valuesFallbackChainForEntity(string $entity, ?string $locale = null, ?string $modelClass = null): array
+    {
+        if (! app(CustomFieldsTranslatability::class)->valuesAreTranslatable($entity, $modelClass)) {
+            return [$this->defaultLocale()];
+        }
+
+        return $this->fallbackChain($locale);
+    }
 }

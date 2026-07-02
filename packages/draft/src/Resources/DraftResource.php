@@ -17,6 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
+use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -31,6 +32,7 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class DraftResource extends BaseDraftResource
 {
+    use HasCustomFields;
     use HasResourceTabs;
     use HasResourceTaxonomy;
 
@@ -106,6 +108,7 @@ class DraftResource extends BaseDraftResource
                                 ->label(__('core::core.description')),
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
+                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
