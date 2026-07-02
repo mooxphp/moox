@@ -14,6 +14,7 @@ use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\FieldVisibility;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
@@ -61,6 +62,22 @@ class CustomFieldsManager
     public function fieldsForEntity(string $entity): Collection
     {
         $groups = $this->definitionRegistry->fieldGroupsFor(new LocationContext($entity));
+
+        return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
+    }
+
+    /**
+     * Storable fields of an entity, filtered to those visible in the given
+     * context (e.g. FieldVisibility::API for JsonResource output).
+     *
+     * @return Collection<int, FieldDefinition>
+     */
+    public function visibleFieldsForEntity(string $entity, string $context): Collection
+    {
+        $groups = FieldVisibility::filterGroups(
+            $this->definitionRegistry->fieldGroupsFor(new LocationContext($entity)),
+            $context,
+        );
 
         return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
     }

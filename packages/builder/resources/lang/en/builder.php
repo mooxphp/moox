@@ -24,6 +24,8 @@ return [
         'field_item' => 'Field',
         'fields_count' => 'Fields',
         'assigned_to' => 'Assigned to',
+        'visibility' => 'Visibility',
+        'visibility_helper' => 'Hide the whole group per context. Hiding it also hides all of its fields there.',
     ],
 
     'field' => [
@@ -62,6 +64,8 @@ return [
         'column_image_size_sm' => 'Small',
         'column_image_size_md' => 'Medium',
         'column_image_size_lg' => 'Large',
+        'visibility' => 'Visibility',
+        'visibility_helper' => 'Hide this field per context without deleting it.',
         'subfields_count' => '{1} :count subfield|[2,*] :count subfields',
         'settings' => 'Settings',
         'options' => 'Options',
@@ -107,6 +111,13 @@ return [
         'group' => 'Group',
         'repeater' => 'Repeater',
         'flexible_content' => 'Flexible content',
+    ],
+
+    'visibility' => [
+        'admin' => 'Admin',
+        'admin_helper' => 'When off, the field is not shown or editable in the admin form and table.',
+        'frontend' => 'Frontend',
+        'api' => 'API',
     ],
 
     'flexible_content' => [

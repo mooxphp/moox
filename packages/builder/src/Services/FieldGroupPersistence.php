@@ -212,6 +212,9 @@ class FieldGroupPersistence
                     'icon' => $field->settings['icon'] ?? null,
                     'image_shape' => $field->settings['image_shape'] ?? null,
                     'image_size' => $field->settings['image_size'] ?? null,
+                    'visible_admin' => (bool) ($field->settings['visible_admin'] ?? true),
+                    'visible_frontend' => (bool) ($field->settings['visible_frontend'] ?? true),
+                    'visible_api' => (bool) ($field->settings['visible_api'] ?? true),
                 ],
                 'sort' => $field->sort,
                 'options' => $field->options->map(fn (FieldOption $option): array => [
@@ -309,6 +312,9 @@ class FieldGroupPersistence
                     'icon' => filled($row['settings']['icon'] ?? null) ? (string) $row['settings']['icon'] : null,
                     'image_shape' => filled($row['settings']['image_shape'] ?? null) ? (string) $row['settings']['image_shape'] : null,
                     'image_size' => filled($row['settings']['image_size'] ?? null) ? (string) $row['settings']['image_size'] : null,
+                    'visible_admin' => (bool) ($row['settings']['visible_admin'] ?? true),
+                    'visible_frontend' => (bool) ($row['settings']['visible_frontend'] ?? true),
+                    'visible_api' => (bool) ($row['settings']['visible_api'] ?? true),
                 ]),
                 'sort' => $index,
             ]);

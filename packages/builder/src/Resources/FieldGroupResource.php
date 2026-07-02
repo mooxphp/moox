@@ -120,6 +120,11 @@ class FieldGroupResource extends Resource
                                         ->disabled($entityOptions === [])
                                         ->native(false),
                                 ]),
+                            Section::make(__('builder::builder.field_group.visibility'))
+                                ->description(__('builder::builder.field_group.visibility_helper'))
+                                ->collapsible()
+                                ->collapsed()
+                                ->schema(static::visibilityToggles()),
                         ])
                         ->columnSpan(1)
                         ->columns(1),
@@ -174,6 +179,7 @@ class FieldGroupResource extends Resource
                                         ->live()
                                         ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
                                     ...static::columnSettingsSchema(),
+                                    ...static::visibilitySettingsSchema(),
                                     ...static::optionFieldSections($registry),
                                     Section::make(fn (callable $get): string => $get('type') === 'tab'
                                         ? __('builder::builder.field.tab_content')
@@ -372,6 +378,7 @@ class FieldGroupResource extends Resource
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
             ...static::columnSettingsSchema(),
+            ...static::visibilitySettingsSchema(),
             ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
                 ->collapsed()
@@ -608,6 +615,48 @@ class FieldGroupResource extends Resource
                         ])
                         ->visible(fn (callable $get): bool => $enabled($get)
                             && static::fieldTypeSupportsImageColumn($get('type'))),
+                ]),
+        ];
+    }
+
+    /**
+     * Per-context visibility (admin, frontend, API) as its own collapsible
+     * section. Reused for both fields and – via the toggles – field groups.
+     *
+     * @return list<Section>
+     */
+    protected static function visibilitySettingsSchema(): array
+    {
+        return [
+            Section::make(__('builder::builder.field.visibility'))
+                ->description(__('builder::builder.field.visibility_helper'))
+                ->collapsible()
+                ->collapsed()
+                ->schema(static::visibilityToggles()),
+        ];
+    }
+
+    /**
+     * @return list<Grid>
+     */
+    protected static function visibilityToggles(): array
+    {
+        return [
+            Grid::make(3)
+                ->schema([
+                    Toggle::make('settings.visible_admin')
+                        ->label(__('builder::builder.visibility.admin'))
+                        ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.visibility.admin_helper'))
+                        ->inline(false)
+                        ->default(true),
+                    Toggle::make('settings.visible_frontend')
+                        ->label(__('builder::builder.visibility.frontend'))
+                        ->inline(false)
+                        ->default(true),
+                    Toggle::make('settings.visible_api')
+                        ->label(__('builder::builder.visibility.api'))
+                        ->inline(false)
+                        ->default(true),
                 ]),
         ];
     }
