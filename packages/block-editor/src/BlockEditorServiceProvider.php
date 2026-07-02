@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\BlockEditor;
 
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\MooxServiceProvider;
 use Moox\BlockEditor\Models\Template;
 use Moox\BlockEditor\Policies\TemplatePolicy;
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
 class BlockEditorServiceProvider extends MooxServiceProvider
