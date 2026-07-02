@@ -19,20 +19,20 @@ use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource\Pages\CreatePage;
 use Moox\Page\Resources\PageResource\Pages\EditPage;
 use Moox\Page\Resources\PageResource\Pages\ListPages;
 use Moox\Page\Resources\PageResource\Pages\ViewPage;
-use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class PageResource extends BaseDraftResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
-    
+
     protected static ?string $model = Page::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';

@@ -34,4 +34,3 @@ it('can sort by columns and show correct translations', function () {
         ->assertCanSeeTableRecords(records: $pages, inOrder: true)
         ->assertSee($pages[0]->title);
 });
-

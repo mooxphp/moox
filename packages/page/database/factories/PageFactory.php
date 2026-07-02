@@ -147,7 +147,7 @@ class PageFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'status' => 'published',
-            ];  
+            ];
         })->afterCreating(function (Page $page) {
             // Override translation status for published
             foreach ($page->translations as $translation) {

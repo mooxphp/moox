@@ -3,9 +3,9 @@
 use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
-use Moox\Page\Models\Page;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Resources\NewsResource;
+use Moox\Page\Models\Page;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 
