@@ -1,0 +1,87 @@
+{
+    "name": "moox/page",
+    "description": "Draft is a simple Moox Entity, that can be used to create and manage simple entries, like logs.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/draft",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/localization": "dev-main",
+        "moox/media": "dev-main",
+        "moox/category": "dev-main",
+        "moox/tag": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Page\\": "src",
+            "Moox\\Page\\Database\\Factories\\": "database/factories",
+            "Moox\\Page\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Page\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Page\\PageServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Page",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/PageSeeder.php",
+                "auto_publish": "moox-page-config",
+                "auto_entities": {
+                    "Page": true
+                },
+                "auto_class": {
+                    "Page": "Moox\\Page\\Page"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-page-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-page-config"
+            }
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
