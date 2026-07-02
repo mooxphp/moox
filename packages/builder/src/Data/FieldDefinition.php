@@ -7,6 +7,7 @@ namespace Moox\Builder\Data;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Support\FieldWidth;
 
 readonly class FieldDefinition
 {
@@ -91,6 +92,22 @@ readonly class FieldDefinition
     public function isVisibleIn(string $context): bool
     {
         return (bool) ($this->settings["visible_{$context}"] ?? true);
+    }
+
+    /**
+     * Layout width fraction (full, 1/2, 1/3, …). Defaults to full width.
+     */
+    public function width(): string
+    {
+        return FieldWidth::normalize(is_string($this->settings['width'] ?? null) ? $this->settings['width'] : null);
+    }
+
+    /**
+     * Filament columnSpan for this field on the 12-column layout grid.
+     */
+    public function columnSpan(): int
+    {
+        return FieldWidth::columnSpan($this->width());
     }
 
     /**

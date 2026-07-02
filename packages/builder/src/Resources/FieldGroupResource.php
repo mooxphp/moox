@@ -32,6 +32,8 @@ use Moox\Builder\Resources\FieldGroupResource\Pages\EditFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\ListFieldGroups;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\FieldGroupPlacement;
+use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\TypedValueColumns;
 
 class FieldGroupResource extends Resource
@@ -102,6 +104,13 @@ class FieldGroupResource extends Resource
                                         ->numeric()
                                         ->default(0)
                                         ->minValue(0),
+                                    Select::make('placement')
+                                        ->label(__('builder::builder.field_group.placement'))
+                                        ->helperText(__('builder::builder.field_group.placement_helper'))
+                                        ->options(static::placementOptions())
+                                        ->default(FieldGroupPlacement::MAIN)
+                                        ->selectablePlaceholder(false)
+                                        ->native(false),
                                 ]),
                             Section::make(__('builder::builder.field_group.assignment'))
                                 ->schema([
@@ -178,6 +187,7 @@ class FieldGroupResource extends Resource
                                         ->inline(false)
                                         ->live()
                                         ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+                                    static::widthField(),
                                     ...static::columnSettingsSchema(),
                                     ...static::visibilitySettingsSchema(),
                                     ...static::optionFieldSections($registry),
@@ -377,6 +387,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+            static::widthField(),
             ...static::columnSettingsSchema(),
             ...static::visibilitySettingsSchema(),
             ...static::optionFieldSections($registry),
@@ -450,6 +461,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+            static::widthField(),
             ...static::optionFieldSections($registry),
         ];
     }
@@ -658,6 +670,48 @@ class FieldGroupResource extends Resource
                         ->inline(false)
                         ->default(true),
                 ]),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function placementOptions(): array
+    {
+        return [
+            FieldGroupPlacement::MAIN => __('builder::builder.field_group.placement_main'),
+            FieldGroupPlacement::SIDEBAR => __('builder::builder.field_group.placement_sidebar'),
+        ];
+    }
+
+    /**
+     * Layout width selector. Fields render on a 12-column grid, so widths define
+     * the columns (two 1/2 fields sit side by side). Not shown for tab markers.
+     */
+    protected static function widthField(): Select
+    {
+        return Select::make('settings.width')
+            ->label(__('builder::builder.field.width'))
+            ->helperText(__('builder::builder.field.width_helper'))
+            ->options(static::widthOptions())
+            ->default(FieldWidth::FULL)
+            ->selectablePlaceholder(false)
+            ->native(false)
+            ->visible(fn (callable $get): bool => $get('type') !== 'tab');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function widthOptions(): array
+    {
+        return [
+            FieldWidth::FULL => __('builder::builder.field.width_full'),
+            '1/2' => __('builder::builder.field.width_half'),
+            '1/3' => __('builder::builder.field.width_third'),
+            '2/3' => __('builder::builder.field.width_two_thirds'),
+            '1/4' => __('builder::builder.field.width_quarter'),
+            '3/4' => __('builder::builder.field.width_three_quarters'),
         ];
     }
 

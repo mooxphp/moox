@@ -7,6 +7,7 @@ namespace Moox\Builder\Data;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\FieldGroupPlacement;
 
 readonly class FieldGroupDefinition
 {
@@ -33,6 +34,15 @@ readonly class FieldGroupDefinition
     public function isVisibleIn(string $context): bool
     {
         return (bool) ($this->settings["visible_{$context}"] ?? true);
+    }
+
+    /**
+     * Whether the group renders in the given form placement (main, sidebar).
+     * The legacy "default" placement is treated as main.
+     */
+    public function hasPlacement(string $placement): bool
+    {
+        return FieldGroupPlacement::matches($this->placement, $placement);
     }
 
     /**

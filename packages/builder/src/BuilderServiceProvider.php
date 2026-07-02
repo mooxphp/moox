@@ -27,6 +27,7 @@ use Moox\Builder\FieldTypes\Types\RadioFieldType;
 use Moox\Builder\FieldTypes\Types\RangeFieldType;
 use Moox\Builder\FieldTypes\Types\RepeaterFieldType;
 use Moox\Builder\FieldTypes\Types\RichTextFieldType;
+use Moox\Builder\FieldTypes\Types\SectionFieldType;
 use Moox\Builder\FieldTypes\Types\SelectFieldType;
 use Moox\Builder\FieldTypes\Types\TabFieldType;
 use Moox\Builder\FieldTypes\Types\TextareaFieldType;
@@ -152,6 +153,7 @@ class BuilderServiceProvider extends MooxServiceProvider
             new MessageFieldType,
             new OembedFieldType,
             new TabFieldType,
+            new SectionFieldType,
             new GroupFieldType,
             new RepeaterFieldType,
             new FlexibleContentFieldType,

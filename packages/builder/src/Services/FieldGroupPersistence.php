@@ -215,6 +215,7 @@ class FieldGroupPersistence
                     'visible_admin' => (bool) ($field->settings['visible_admin'] ?? true),
                     'visible_frontend' => (bool) ($field->settings['visible_frontend'] ?? true),
                     'visible_api' => (bool) ($field->settings['visible_api'] ?? true),
+                    'width' => $field->settings['width'] ?? null,
                 ],
                 'sort' => $field->sort,
                 'options' => $field->options->map(fn (FieldOption $option): array => [
@@ -315,6 +316,7 @@ class FieldGroupPersistence
                     'visible_admin' => (bool) ($row['settings']['visible_admin'] ?? true),
                     'visible_frontend' => (bool) ($row['settings']['visible_frontend'] ?? true),
                     'visible_api' => (bool) ($row['settings']['visible_api'] ?? true),
+                    'width' => filled($row['settings']['width'] ?? null) ? (string) $row['settings']['width'] : null,
                 ]),
                 'sort' => $index,
             ]);

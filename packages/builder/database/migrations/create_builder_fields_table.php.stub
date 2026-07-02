@@ -21,7 +21,6 @@ return new class extends Migration
             $table->json('conditional_logic')->nullable();
             $table->json('settings')->nullable();
             $table->integer('sort')->default(0);
-            $table->string('width')->nullable();
             $table->timestamps();
 
             $table->unique(['field_group_id', 'name']);
