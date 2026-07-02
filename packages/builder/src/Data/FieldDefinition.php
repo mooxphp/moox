@@ -103,10 +103,25 @@ readonly class FieldDefinition
     }
 
     /**
-     * Filament columnSpan for this field on the 12-column layout grid.
+     * Whether the field pins its own width instead of inheriting the group's
+     * column layout. False for the "auto" default, so the group columns apply.
      */
-    public function columnSpan(): int
+    public function hasExplicitWidth(): bool
     {
+        return FieldWidth::isExplicit($this->settings['width'] ?? null);
+    }
+
+    /**
+     * Filament columnSpan on the 12-column grid. Without an explicit width the
+     * field inherits the group's default span (from its column count) when one
+     * is provided; otherwise it falls back to full width.
+     */
+    public function columnSpan(?int $groupDefaultSpan = null): int
+    {
+        if (! $this->hasExplicitWidth() && $groupDefaultSpan !== null) {
+            return $groupDefaultSpan;
+        }
+
         return FieldWidth::columnSpan($this->width());
     }
 

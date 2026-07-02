@@ -74,7 +74,6 @@ class BuilderServiceProvider extends MooxServiceProvider
                 'create_builder_field_group_translations_table',
                 'create_builder_field_translations_table',
                 'create_builder_field_option_translations_table',
-                'add_locale_to_builder_field_values_table',
             ]);
     }
 
