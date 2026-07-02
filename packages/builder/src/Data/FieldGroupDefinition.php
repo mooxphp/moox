@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Support\FieldGroupPlacement;
+use Moox\Builder\Support\FieldWidth;
 
 readonly class FieldGroupDefinition
 {
@@ -43,6 +44,24 @@ readonly class FieldGroupDefinition
     public function hasPlacement(string $placement): bool
     {
         return FieldGroupPlacement::matches($this->placement, $placement);
+    }
+
+    /**
+     * Number of columns the group's fields flow into (1–4). Defaults to a single
+     * column, keeping fields stacked as before.
+     */
+    public function columns(): int
+    {
+        return FieldWidth::normalizeColumns($this->settings['columns'] ?? null);
+    }
+
+    /**
+     * Default columnSpan inherited by fields without an explicit width, derived
+     * from the group's column count (2 columns → span 6).
+     */
+    public function defaultColumnSpan(): int
+    {
+        return FieldWidth::columnsToSpan($this->columns());
     }
 
     /**

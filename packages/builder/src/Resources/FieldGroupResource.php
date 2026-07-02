@@ -112,6 +112,13 @@ class FieldGroupResource extends Resource
                                         ->default(FieldGroupPlacement::MAIN)
                                         ->selectablePlaceholder(false)
                                         ->native(false),
+                                    Select::make('settings.columns')
+                                        ->label(__('builder::builder.field_group.columns'))
+                                        ->helperText(__('builder::builder.field_group.columns_helper'))
+                                        ->options(static::columnsOptions())
+                                        ->default(1)
+                                        ->selectablePlaceholder(false)
+                                        ->native(false),
                                 ]),
                             Section::make(__('builder::builder.field_group.assignment'))
                                 ->schema([
@@ -739,8 +746,9 @@ class FieldGroupResource extends Resource
     }
 
     /**
-     * Layout width selector. Fields render on a 12-column grid, so widths define
-     * the columns (two 1/2 fields sit side by side). Not shown for tab markers.
+     * Per-field width override. Defaults to "auto", which follows the group's
+     * column layout; a fixed fraction pins the field width. Hidden for tab
+     * markers, which span the whole row.
      */
     protected static function widthField(): Select
     {
@@ -748,7 +756,7 @@ class FieldGroupResource extends Resource
             ->label(__('builder::builder.field.width'))
             ->helperText(__('builder::builder.field.width_helper'))
             ->options(static::widthOptions())
-            ->default(FieldWidth::FULL)
+            ->default(FieldWidth::AUTO)
             ->selectablePlaceholder(false)
             ->native(false)
             ->visible(fn (callable $get): bool => $get('type') !== 'tab');
@@ -760,6 +768,7 @@ class FieldGroupResource extends Resource
     protected static function widthOptions(): array
     {
         return [
+            FieldWidth::AUTO => __('builder::builder.field.width_auto'),
             FieldWidth::FULL => __('builder::builder.field.width_full'),
             '1/2' => __('builder::builder.field.width_half'),
             '1/3' => __('builder::builder.field.width_third'),
@@ -767,6 +776,22 @@ class FieldGroupResource extends Resource
             '1/4' => __('builder::builder.field.width_quarter'),
             '3/4' => __('builder::builder.field.width_three_quarters'),
         ];
+    }
+
+    /**
+     * Column-count options for a field group's layout (1–4 columns).
+     *
+     * @return array<int, string>
+     */
+    protected static function columnsOptions(): array
+    {
+        $options = [];
+
+        foreach (FieldWidth::GROUP_COLUMNS as $columns) {
+            $options[$columns] = trans_choice('builder::builder.field_group.columns_option', $columns, ['count' => $columns]);
+        }
+
+        return $options;
     }
 
     /**

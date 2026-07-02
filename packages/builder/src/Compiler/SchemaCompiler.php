@@ -55,6 +55,7 @@ class SchemaCompiler
                 $group->fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values(),
                 $entity,
                 $storableFields,
+                $group->defaultColumnSpan(),
             );
 
             if ($components === []) {
@@ -85,14 +86,14 @@ class SchemaCompiler
      * @param  Collection<int, FieldDefinition>  $fields
      * @return list<Component>
      */
-    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false): array
+    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null): array
     {
         $storableFields ??= collect();
 
         return $fields
             ->sortBy(fn (FieldDefinition $field): int => $field->sort)
             ->values()
-            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs))
+            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs, $defaultSpan))
             ->all();
     }
 
@@ -178,7 +179,7 @@ class SchemaCompiler
      * @param  Collection<int, FieldDefinition>  $storableFields
      * @return list<Component>
      */
-    protected function compileRootFields(Collection $fields, ?string $entity, Collection $storableFields): array
+    protected function compileRootFields(Collection $fields, ?string $entity, Collection $storableFields, int $defaultSpan = FieldWidth::GRID_COLUMNS): array
     {
         $components = [];
         $sorted = $fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values();
@@ -212,7 +213,7 @@ class SchemaCompiler
                         ->tabs(collect($tabPanels)->map(
                             fn (array $panel): Tab => Tab::make($panel['label'])
                                 ->columns(FieldWidth::GRID_COLUMNS)
-                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true)),
+                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true, defaultSpan: $defaultSpan)),
                         )->all());
 
                     if ($entity !== null) {
@@ -229,7 +230,7 @@ class SchemaCompiler
                 continue;
             }
 
-            $components[] = $this->compileField($field, $entity, $storableFields);
+            $components[] = $this->compileField($field, $entity, $storableFields, defaultSpan: $defaultSpan);
             $index++;
         }
 
@@ -344,7 +345,7 @@ class SchemaCompiler
     /**
      * @param  Collection<int, FieldDefinition>  $storableFields
      */
-    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false): Component
+    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null): Component
     {
         $storableFields ??= collect();
 
@@ -358,7 +359,7 @@ class SchemaCompiler
 
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
-        $component->columnSpan($field->columnSpan());
+        $component->columnSpan($field->columnSpan($defaultSpan));
 
         if ($insideTabs && $fieldType->storesValue()) {
             $component->dehydratedWhenHidden(true);
