@@ -1,0 +1,259 @@
+/* Custom styles for Tailwind CSS v4 Browser CDN */
+
+/* Remove outline on contenteditable focus */
+[contenteditable="true"]:focus {
+    outline: none;
+}
+
+/* Placeholder pseudo-element for empty contenteditable blocks */
+.block-placeholder:empty:before {
+    content: attr(data-placeholder);
+    color: rgb(156 163 175); /* gray-400 */
+}
+
+/* Dark mode utility mapping for all editor components */
+.dark .moox-block-editor {
+    color: var(--color-gray-300);
+    color-scheme: dark;
+}
+
+.dark .moox-block-editor .bg-white {
+    background-color: var(--color-gray-900);
+}
+
+.dark .moox-block-editor .bg-gray-50 {
+    background-color: var(--color-gray-900);
+}
+
+.dark .moox-block-editor .bg-gray-100 {
+    background-color: var(--color-gray-800);
+}
+
+.dark .moox-block-editor .bg-gray-200 {
+    background-color: var(--color-gray-700);
+}
+
+.dark .moox-block-editor .bg-blue-50 {
+    background-color: var(--color-blue-950);
+}
+
+.dark .moox-block-editor .bg-blue-100 {
+    background-color: var(--color-blue-900);
+}
+
+.dark .moox-block-editor .bg-blue-600 {
+    background-color: var(--color-blue-600);
+}
+
+.dark .moox-block-editor .bg-blue-50\/50 {
+    background-color: color-mix(in oklab, var(--color-blue-900) 55%, transparent);
+}
+
+.dark .moox-block-editor .bg-yellow-600 {
+    background-color: var(--color-yellow-600);
+}
+
+.dark .moox-block-editor .bg-red-50 {
+    background-color: var(--color-red-950);
+}
+
+.dark .moox-block-editor .bg-red-100 {
+    background-color: var(--color-red-900);
+}
+
+.dark .moox-block-editor .border-gray-100,
+.dark .moox-block-editor .border-gray-200,
+.dark .moox-block-editor .border-gray-300 {
+    border-color: var(--color-gray-700);
+}
+
+.dark .moox-block-editor .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.dark .moox-block-editor .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--color-gray-700);
+}
+
+.dark .moox-block-editor .ring-gray-200,
+.dark .moox-block-editor .ring-gray-300 {
+    --tw-ring-color: var(--color-gray-700);
+}
+
+.dark .moox-block-editor .text-gray-900,
+.dark .moox-block-editor .text-gray-800 {
+    color: var(--color-gray-200);
+}
+
+.dark .moox-block-editor .text-gray-700 {
+    color: var(--color-gray-300);
+}
+
+.dark .moox-block-editor .text-gray-600,
+.dark .moox-block-editor .text-gray-500,
+.dark .moox-block-editor .text-gray-400 {
+    color: var(--color-gray-400);
+}
+
+.dark .moox-block-editor .text-blue-800,
+.dark .moox-block-editor .text-blue-700 {
+    color: var(--color-blue-300);
+}
+
+.dark .moox-block-editor .text-blue-900 {
+    color: var(--color-blue-200);
+}
+
+.dark .moox-block-editor .text-blue-600 {
+    color: var(--color-blue-400);
+}
+
+.dark .moox-block-editor .text-red-500 {
+    color: var(--color-red-400);
+}
+
+.dark .moox-block-editor .text-red-700,
+.dark .moox-block-editor .text-red-600 {
+    color: var(--color-red-400);
+}
+
+.dark .moox-block-editor .text-red-800 {
+    color: var(--color-red-300);
+}
+
+.dark .moox-block-editor .text-red-900 {
+    color: var(--color-red-200);
+}
+
+.dark .moox-block-editor .border-blue-200,
+.dark .moox-block-editor .border-blue-300 {
+    border-color: var(--color-blue-700);
+}
+
+.dark .moox-block-editor .border-red-300 {
+    border-color: var(--color-red-700);
+}
+
+.dark .moox-block-editor .border-red-200 {
+    border-color: var(--color-red-800);
+}
+
+.dark .moox-block-editor .hover\:bg-gray-50:hover {
+    background-color: var(--color-gray-800);
+}
+
+.dark .moox-block-editor .hover\:bg-gray-100:hover {
+    background-color: var(--color-gray-700);
+}
+
+.dark .moox-block-editor .hover\:bg-gray-200:hover {
+    background-color: var(--color-gray-600);
+}
+
+.dark .moox-block-editor .hover\:bg-gray-300:hover {
+    background-color: var(--color-gray-500);
+}
+
+.dark .moox-block-editor .hover\:bg-blue-50:hover {
+    background-color: var(--color-blue-900);
+}
+
+.dark .moox-block-editor .hover\:bg-blue-100:hover {
+    background-color: var(--color-blue-800);
+}
+
+.dark .moox-block-editor .hover\:bg-blue-700:hover {
+    background-color: var(--color-blue-500);
+}
+
+.dark .moox-block-editor .hover\:bg-yellow-700:hover {
+    background-color: var(--color-yellow-500);
+}
+
+.dark .moox-block-editor .hover\:bg-red-700:hover {
+    background-color: var(--color-red-600);
+}
+
+.dark .moox-block-editor .hover\:bg-red-50:hover {
+    background-color: var(--color-red-900);
+}
+
+.dark .moox-block-editor .hover\:bg-red-100:hover {
+    background-color: var(--color-red-800);
+}
+
+.dark .moox-block-editor .hover\:text-gray-700:hover {
+    color: var(--color-gray-200);
+}
+
+.dark .moox-block-editor .hover\:text-blue-600:hover {
+    color: var(--color-blue-300);
+}
+
+.dark .moox-block-editor .hover\:text-blue-800:hover {
+    color: var(--color-blue-200);
+}
+
+.dark .moox-block-editor .hover\:text-red-700:hover {
+    color: var(--color-red-300);
+}
+
+.dark .moox-block-editor .block-placeholder:empty:before {
+    color: var(--color-gray-500);
+}
+
+.dark .moox-block-editor .data-\[state\=on\]\:bg-blue-100[data-state="on"] {
+    background-color: var(--color-blue-900);
+}
+
+.dark .moox-block-editor .data-\[state\=on\]\:text-blue-900[data-state="on"] {
+    color: var(--color-blue-200);
+}
+
+/* Form controls in settings modals (soft contrast, better readability) */
+.dark .moox-block-editor input,
+.dark .moox-block-editor select,
+.dark .moox-block-editor textarea {
+    background-color: var(--color-gray-900);
+    border-color: var(--color-gray-700);
+    color: var(--color-gray-200);
+}
+
+.dark .moox-block-editor input::placeholder,
+.dark .moox-block-editor textarea::placeholder {
+    color: var(--color-gray-400);
+}
+
+.dark .moox-block-editor select option {
+    background-color: var(--color-gray-900);
+    color: var(--color-gray-200);
+}
+
+.dark .moox-block-editor .focus\:border-blue-500:focus {
+    border-color: var(--color-blue-400);
+}
+
+.dark .moox-block-editor .focus\:ring-blue-500:focus {
+    --tw-ring-color: var(--color-blue-400);
+}
+
+.dark .moox-block-editor .focus-visible\:border-blue-500:focus-visible {
+    border-color: var(--color-blue-400);
+}
+
+.dark .moox-block-editor .focus-visible\:ring-blue-500\/50:focus-visible {
+    --tw-ring-color: color-mix(in oklab, var(--color-blue-400) 50%, transparent);
+}
+
+/* Drag cursor for draggable block items */
+.block-item[draggable="true"]:hover {
+    /* cursor: move; */
+}
+
+/* Visual indicator for drag-over state */
+.block-item.drag-over {
+    border-top: 2px solid rgb(59 130 246); /* blue-500 */
+    margin-top: 0.25rem; /* 4px / 1 */
+}
+
+/* Alpine.js cloak directive - hide elements until Alpine initializes */
+[x-cloak] {
+    display: none !important;
+}

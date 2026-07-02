@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\BlockEditor;
 
+use Illuminate\Support\Facades\Gate;
 use Moox\Core\MooxServiceProvider;
+use Moox\BlockEditor\Models\Template;
+use Moox\BlockEditor\Policies\TemplatePolicy;
 use Spatie\LaravelPackageTools\Package;
 
 class BlockEditorServiceProvider extends MooxServiceProvider
@@ -13,53 +16,26 @@ class BlockEditorServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('block-editor')
-            ->hasConfigFile()
-            ->hasViews('block-editor')
-            ->hasAssets()
-            ->hasTranslations()
+            ->hasConfigFile('moox-editor')
+            ->hasViews('moox-editor')
             ->hasMigrations()
-            ->hasCommands();
-
-        $this->getMooxPackage()
-            ->title('Moox Block Editor')
-            ->released(true)
-            ->stability('stable')
-            ->category('development')
-            ->usedFor([
-                'building new Moox packages, not used as installed package',
-            ])
-            ->alternatePackages([
-                'moox/builder', // optional alternative package (e.g. moox/post)
-            ])
-            ->templateFor([
-                'creating simple Laravel packages',
-            ])
-            ->templateReplace([
-                'Skeleton' => '%%PackageName%%',
-                'skeleton' => '%%PackageSlug%%',
-                'This template is used for generating Laravel packages, all Moox packages are built with this template.' => '%%Description%%',
-                'building new Moox packages, not used as installed package' => '%%UsedFor%%',
-                'released(true)' => 'released(false)',
-                'stability(stable)' => 'stability(dev)',
-                'category(development)' => 'category(unknown)',
-                'moox/builder' => '',
-            ])
-            ->templateRename([
-                'Skeleton' => '%%PackageName%%',
-                'skeleton' => '%%PackageSlug%%',
-            ])
-            ->templateSectionReplace([
-                "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',
-            ])
-            ->templateRemove([
-                'build.php',
-            ]);
+            ->hasRoutes('api');
     }
 
-    public function boot(): void
+    public function bootingPackage(): void
     {
-        parent::boot();
+        Gate::policy(Template::class, TemplatePolicy::class);
+    }
 
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+    public function packageBooted(): void
+    {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->publishes([
+            __DIR__.'/../resources/editor' => public_path('vendor/moox/block-editor'),
+            __DIR__.'/../resources/js/browser@4.js' => public_path('vendor/moox/block-editor/browser@4.js'),
+        ], 'moox-editor-assets');
     }
 }

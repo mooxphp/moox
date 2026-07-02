@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Editor</title>
+    <script src="./browser@4.js"></script>
+   
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.2/dist/cdn.min.js"></script>
+    <script type="module" src="./core/render/mount-editor.js"></script>
+    <link rel="stylesheet" href="./styles/editor.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+    <div id="editor-root-wrapper" class="container mx-auto w-full max-w-7xl px-4 py-6">
+        <div
+            id="editor-root"
+            data-editor-instance="static-demo-editor"
+            data-block-json="[]"
+            data-developer-json="1"
+            data-add-components="1"
+            data-moox-theme-templates="1"
+            data-json-import="1"
+            data-tailwind-browser-url="./browser@4.js"
+            data-mount-editor-url="./core/render/mount-editor.js"
+            class="min-h-[320px] w-full"
+        ></div>
+    </div>
+
+</body>
+
+</html>

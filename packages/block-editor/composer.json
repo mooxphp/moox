@@ -1,29 +1,19 @@
 {
     "name": "moox/block-editor",
-    "description": "Moox Block Editor",
-    "keywords": [
-        "Moox",
-        "React",
-        "Laravel",
-        "BlockNote",
-        "Block Editor",
-        "Laravel package"
-    ],
-    "homepage": "https://moox.org/docs/block-editor",
+    "description": "Reusable block editor package for Filament/Livewire.",
+    "type": "library",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Moox Developer",
-            "email": "dev@moox.org",
-            "role": "Developer"
-        }
-    ],
     "require": {
-        "moox/core": "self.version"
+        "php": "^8.3",
+        "filament/forms": "*",
+        "illuminate/support": "^12.0 || ^13.0",
+        "livewire/livewire": "^4.0",
+        "moox/media": "*",
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\BlockEditor\\": "src"
+            "Moox\\BlockEditor\\": "src/"
         }
     },
     "extra": {
@@ -34,13 +24,6 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require-dev": {
-        "moox/devtools": "dev-main"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    }
+    "prefer-stable": true
 }
+
