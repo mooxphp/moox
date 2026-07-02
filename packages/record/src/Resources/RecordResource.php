@@ -143,6 +143,7 @@ class RecordResource extends BaseRecordResource
                     ->label(__('core::core.content'))
                     ->searchable()
                     ->sortable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->limit(50),
                 TextColumn::make('created_at')

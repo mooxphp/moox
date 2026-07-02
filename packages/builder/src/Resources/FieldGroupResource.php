@@ -32,6 +32,7 @@ use Moox\Builder\Resources\FieldGroupResource\Pages\EditFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\ListFieldGroups;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\TypedValueColumns;
 
 class FieldGroupResource extends Resource
 {
@@ -172,6 +173,7 @@ class FieldGroupResource extends Resource
                                         ->inline(false)
                                         ->live()
                                         ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+                                    ...static::columnSettingsSchema(),
                                     ...static::optionFieldSections($registry),
                                     Section::make(fn (callable $get): string => $get('type') === 'tab'
                                         ? __('builder::builder.field.tab_content')
@@ -369,6 +371,7 @@ class FieldGroupResource extends Resource
                 ->inline(false)
                 ->live()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+            ...static::columnSettingsSchema(),
             ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
                 ->collapsed()
@@ -460,6 +463,176 @@ class FieldGroupResource extends Resource
         } catch (UnknownFieldTypeException) {
             return false;
         }
+    }
+
+    protected static function fieldTypeSupportsColumn(?string $type): bool
+    {
+        if (blank($type) || $type === 'password') {
+            return false;
+        }
+
+        try {
+            $fieldType = app(FieldTypeRegistry::class)->get($type);
+
+            if (! $fieldType->storesValue() || $fieldType->hasSubFields()) {
+                return false;
+            }
+        } catch (UnknownFieldTypeException) {
+            return false;
+        }
+
+        return TypedValueColumns::isColumnableType($type);
+    }
+
+    protected static function fieldTypeSupportsImageColumn(?string $type): bool
+    {
+        if (blank($type)) {
+            return false;
+        }
+
+        try {
+            $fieldType = app(FieldTypeRegistry::class)->get($type);
+
+            if (! $fieldType->storesValue() || $fieldType->hasSubFields()) {
+                return false;
+            }
+        } catch (UnknownFieldTypeException) {
+            return false;
+        }
+
+        return TypedValueColumns::isImageColumnType($type);
+    }
+
+    protected static function fieldTypeSupportsAnyColumn(?string $type): bool
+    {
+        return static::fieldTypeSupportsColumn($type) || static::fieldTypeSupportsImageColumn($type);
+    }
+
+    /**
+     * Presentation options (badge, color, icon) only apply to text-based columns,
+     * not to the boolean icon column used for toggle fields.
+     */
+    protected static function fieldTypeUsesTextColumn(?string $type): bool
+    {
+        return static::fieldTypeSupportsColumn($type) && $type !== 'toggle';
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function columnColorOptions(): array
+    {
+        return [
+            'primary' => __('builder::builder.field.column_color_primary'),
+            'gray' => __('builder::builder.field.column_color_gray'),
+            'success' => __('builder::builder.field.column_color_success'),
+            'warning' => __('builder::builder.field.column_color_warning'),
+            'danger' => __('builder::builder.field.column_color_danger'),
+            'info' => __('builder::builder.field.column_color_info'),
+        ];
+    }
+
+    /**
+     * Table-column configuration grouped in its own collapsible section, mirroring
+     * the existing "Settings"/"Options" sections. Only shown for columnable fields;
+     * the behaviour options appear once "Show in table" is enabled.
+     *
+     * @return list<Section>
+     */
+    protected static function columnSettingsSchema(): array
+    {
+        $enabled = fn (callable $get): bool => $get('settings.show_in_table') === true;
+
+        return [
+            Section::make(__('builder::builder.field.table_column'))
+                ->description(__('builder::builder.field.table_column_helper'))
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn (callable $get): bool => static::fieldTypeSupportsAnyColumn($get('type')))
+                ->schema([
+                    Toggle::make('settings.show_in_table')
+                        ->label(__('builder::builder.field.show_in_table'))
+                        ->inline(false)
+                        ->live(),
+                    Grid::make(2)
+                        ->schema([
+                            Toggle::make('settings.sortable')
+                                ->label(__('builder::builder.field.column_sortable'))
+                                ->inline(false)
+                                ->default(true),
+                            Toggle::make('settings.searchable')
+                                ->label(__('builder::builder.field.column_searchable'))
+                                ->inline(false)
+                                ->default(true),
+                        ])
+                        ->visible(fn (callable $get): bool => $enabled($get)
+                            && static::fieldTypeSupportsColumn($get('type'))),
+                    Toggle::make('settings.hidden_by_default')
+                        ->label(__('builder::builder.field.column_hidden_by_default'))
+                        ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_hidden_by_default_helper'))
+                        ->inline(false)
+                        ->default(true)
+                        ->visible($enabled),
+                    Grid::make(3)
+                        ->schema([
+                            Toggle::make('settings.badge')
+                                ->label(__('builder::builder.field.column_badge'))
+                                ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_badge_helper'))
+                                ->inline(false)
+                                ->default(false),
+                            Select::make('settings.color')
+                                ->label(__('builder::builder.field.column_color'))
+                                ->options(static::columnColorOptions())
+                                ->placeholder(__('builder::builder.field.column_color_default'))
+                                ->native(false),
+                            TextInput::make('settings.icon')
+                                ->label(__('builder::builder.field.column_icon'))
+                                ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_icon_helper'))
+                                ->placeholder('heroicon-o-star'),
+                        ])
+                        ->visible(fn (callable $get): bool => $enabled($get)
+                            && static::fieldTypeUsesTextColumn($get('type'))),
+                    Grid::make(2)
+                        ->schema([
+                            Select::make('settings.image_shape')
+                                ->label(__('builder::builder.field.column_image_shape'))
+                                ->options(static::columnImageShapeOptions())
+                                ->placeholder(__('builder::builder.field.column_image_shape_rectangle'))
+                                ->native(false),
+                            Select::make('settings.image_size')
+                                ->label(__('builder::builder.field.column_image_size'))
+                                ->options(static::columnImageSizeOptions())
+                                ->default('md')
+                                ->selectablePlaceholder(false)
+                                ->native(false),
+                        ])
+                        ->visible(fn (callable $get): bool => $enabled($get)
+                            && static::fieldTypeSupportsImageColumn($get('type'))),
+                ]),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function columnImageShapeOptions(): array
+    {
+        return [
+            'square' => __('builder::builder.field.column_image_shape_square'),
+            'circular' => __('builder::builder.field.column_image_shape_circular'),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function columnImageSizeOptions(): array
+    {
+        return [
+            'sm' => __('builder::builder.field.column_image_size_sm'),
+            'md' => __('builder::builder.field.column_image_size_md'),
+            'lg' => __('builder::builder.field.column_image_size_lg'),
+        ];
     }
 
     /**

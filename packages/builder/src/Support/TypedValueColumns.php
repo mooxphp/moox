@@ -38,6 +38,20 @@ final class TypedValueColumns
         };
     }
 
+    public static function isColumnableType(string $type): bool
+    {
+        if ($type === 'password') {
+            return false;
+        }
+
+        return self::columnForType($type) !== 'value_json';
+    }
+
+    public static function isImageColumnType(string $type): bool
+    {
+        return in_array($type, ['image', 'gallery'], true);
+    }
+
     /**
      * @return array<string, mixed>
      */

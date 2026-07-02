@@ -46,6 +46,7 @@ final class DefinitionTranslator
             sort: $field->sort,
             config: $this->resolveConfig($field->config, $field->translations, $locale),
             validation: $field->validation,
+            settings: $field->settings,
             options: collect($field->options)
                 ->map(function (array $option) use ($locale): array {
                     /** @var array{label: string, value: string, translations?: array<string, array{label?: string}>} $option */

@@ -6,8 +6,12 @@ namespace Moox\Builder\Concerns;
 
 use Astrotomic\Translatable\Contracts\Translatable;
 use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\Column;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Moox\Builder\Compiler\SchemaCompiler;
+use Moox\Builder\Compiler\TableColumnCompiler;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Registry\DefinitionRegistry;
 
@@ -63,6 +67,44 @@ trait HasCustomFields
         }
 
         return app(SchemaCompiler::class)->compile($groups, static::class);
+    }
+
+    /**
+     * @return list<Column>
+     */
+    public static function customFieldColumns(): array
+    {
+        $groups = app(DefinitionRegistry::class)->fieldGroupsFor(
+            static::customFieldsLocationContext(),
+        );
+
+        if ($groups->isEmpty()) {
+            return [];
+        }
+
+        return app(TableColumnCompiler::class)->compile($groups, static::class);
+    }
+
+    /**
+     * Eager-loads custom field values on list/table queries (via BaseResource *ModifyTableQuery convention).
+     *
+     * @param  Builder<Model>  $query
+     * @return Builder<Model>
+     */
+    protected static function customFieldsModifyTableQuery(Builder $query): Builder
+    {
+        if (static::customFieldColumns() === []) {
+            return $query;
+        }
+
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::getModel();
+
+        if (! in_array(InteractsWithCustomFields::class, class_uses_recursive($modelClass), true)) {
+            return $query;
+        }
+
+        return $query->withCustomFields();
     }
 
     public static function customFieldsLocationContext(): LocationContext

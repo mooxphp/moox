@@ -101,6 +101,7 @@ class ItemResource extends BaseItemResource
                     ->label(__('core::core.description'))
                     ->searchable()
                     ->sortable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->limit(50),
                 TextColumn::make('created_at')
