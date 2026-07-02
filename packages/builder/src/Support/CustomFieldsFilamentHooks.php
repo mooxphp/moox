@@ -10,7 +10,6 @@ use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Builder\Registry\EntityRegistry;
-use Moox\Builder\Support\CustomFieldsTranslatability;
 
 final class CustomFieldsFilamentHooks
 {
