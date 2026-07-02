@@ -6,6 +6,7 @@ namespace Moox\Transform\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -950,7 +951,7 @@ class TransformRunner
                 'table' => $reference['table'] ?? null,
                 'key_column' => $reference['key_column'] ?? null,
                 'path' => $reference['path'] ?? null,
-                'url' => $reference['url'] ?? null, //why url isn that spezific
+                'url' => $reference['url'] ?? null, // why url isn that spezific
                 'alias' => $reference['alias'] ?? null,
                 'source_id' => $sourceId,
             ], static fn (mixed $value): bool => $value !== null && $value !== '');
@@ -1291,7 +1292,7 @@ class TransformRunner
     }
 
     /**
-     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  Builder  $query
      * @param  array<string, mixed>  $reference
      */
     private function applyDbTableWhereClauses($query, array $reference): void
