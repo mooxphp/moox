@@ -1,0 +1,171 @@
+# Cursor Rules - Moox Block Editor (Package-spezifisch)
+
+Diese Regeln gelten fuer das Editor-Package in `packages/moox/editor/resources/editor`.
+Ziel ist konsistentes Verhalten zwischen Block-Registry, Rendering, Toolbar, Templates und Datenmodell.
+
+## 1) Architektur und Verantwortlichkeiten
+
+- `block-editor.js` ist der Integrationspunkt (State + orchestrierende Methoden).
+- `core/**` enthaelt Business-Logik (Management, Render, DragDrop, IO, Themes, Toolbar-Methoden).
+- `components/blocks/**` enthaelt pro Blocktyp die Komponente mit Lifecycle (`initialize`, `ensureInitialized`, `cleanup`) und HTML-Renderer.
+- `components/templates/**` liefert reine UI-Templates als HTML-Strings, keine Business-Logik.
+- `components/toolbar/**` liefert modulare Toolbar-Objekte, die Runtime-Methoden verwenden.
+
+Regel:
+Keine neue Logik in Templates verschieben. Templates bleiben deklarativ.
+
+## 2) Source of Truth fuer Blocktypen
+
+`components/block-types.js` ist die einzige zentrale Definition fuer bekannte Blocktypen.
+
+Wenn ein neuer Blocktyp hinzukommt oder geaendert wird, muessen immer alle Punkte aktualisiert werden:
+
+1. `BLOCK_TYPES` in `components/block-types.js`
+2. Block-Datei in `components/blocks/**`
+3. Registrierung in `components/blocks/index.js` (`BlockComponents`)
+4. Lifecycle sauber implementieren (`initialize`, `ensureInitialized`, `cleanup`)
+5. Rendering fuer Root und ggf. Child-Kontext
+6. Relevante Core-Pfade pruefen:
+   - `core/blocks/management.js`
+   - `core/render/json-renderer.js`
+   - `core/render/editor-shell.js`
+   - `core/drag/drag-drop.js`
+   - `block-editor.js`
+
+Wichtig:
+- Interner Strukturtyp `column` ist intern-only und wird nicht als regulaerer Blocktyp im Katalog gepflegt.
+- Unbekannte Typen fallen auf `paragraph` zurueck, das darf nie die eigentliche Integration ersetzen.
+
+## 3) Block-Komponenten Contract (verbindlich)
+
+Jede Komponente in `components/blocks/**` folgt dem bestehenden Contract:
+
+- `type`
+- `options` (aus `BLOCK_TYPES`)
+- `structure`
+- `renderHTML(block, context)`
+- `renderChildHTML(child, context)`
+- `initialize(block, blockIdCounter)`
+- `ensureInitialized(block, blockIdCounter)`
+- `cleanup(block)`
+
+Optional:
+- `focusable` / `focus(...)`
+- `getSettingsHTML(...)`
+
+Regeln:
+- Kein Duplikat von Lifecycle-Verhalten in mehreren Komponenten.
+- Keine parallel implementierte "zweite" Init-Logik fuer denselben Typ.
+- Cleanup muss alte typspezifische Felder entfernen, wenn Typ gewechselt wird.
+
+## 4) Datenmodell-Invarianten (streng)
+
+Grundstruktur pro Block:
+- `id`, `type`, `content`, `style`, `classes`, `htmlId`, `createdAt`
+- `updatedAt` bei Aenderungen setzen
+
+Container-Regeln:
+- Nur Container duerfen `children` tragen.
+- `checklist` und `list` verwenden Datenobjekte (`checklistData` / `listData`) und keine Children.
+- `table` verwendet `tableData.cells` (Zellen koennen `blocks` enthalten).
+
+Spaltenartige Layouts:
+- `twoColumn`, `threeColumn`, `group` werden ueber `columnCount`/Struktur behandelt.
+- Strukturkorrektur laeuft ueber `BlockManagement.ensureColumnStructure(...)`.
+- Bei Typwechsel weg von Spalten-Layouts muss ungueltige Spaltenstruktur entfernt werden.
+
+## 5) Rendering-Regeln
+
+Zentrale JSON-Verarbeitung:
+- `core/render/json-renderer.js` (`renderJSONBlocks`) ist der zentrale Normalisierungspfad fuer importierte/geladene Daten.
+- Vor und nach rekursiver Verarbeitung muss Spaltenstruktur konsistent sein.
+
+Editor-Rendering:
+- `renderBlock(...)` und `renderChild(...)` bleiben die zentralen Einstiegspunkte.
+- Keine hardcodierten Sonderpfade in Templates, die Registry-/Renderer-Logik umgehen.
+
+Regel:
+Keine zweite "Schatten-Rendering-Pipeline" einfuehren.
+
+## 6) Toolbar- und Template-Konsistenz
+
+Block-Hinzufuegen:
+- Blocktyp-Buttons immer dynamisch aus `childBlockTypes` (`BLOCK_TYPES`) generieren.
+- Keine manuell hardcodierten Block-Kataloge in Toolbar-Templates.
+
+Template-/Toolbar-Paritaet:
+- State-Namen und Methodensignaturen zwischen
+  - `components/templates/toolbars/**`,
+  - `components/toolbar/**`,
+  - `block-editor.js`
+  muessen exakt konsistent sein.
+
+Regel:
+Wenn eine Toolbar-Aktion geaendert wird, immer beide Ebenen pruefen:
+- Objektbasierte Toolbar-Komponente
+- HTML-Template-Variante
+
+## 7) Drag-and-Drop und verschachtelte Strukturen
+
+DragDrop-Logik in `core/drag/drag-drop.js` respektiert:
+- Hauptblock vs Child-Block
+- Container vs Normalblock
+- Spalten-/Gruppenverhalten
+
+Regeln:
+- Keine Abkuerzungen einbauen, die Parent-/Column-Kontext ignorieren.
+- Bei DnD-Aenderungen immer mit verschachtelten Child-Strukturen testen.
+- Keine Index-Manipulation ohne Beruecksichtigung von Spaltenzuordnung.
+
+## 8) Notification-Standard (verbindlich)
+
+Fuer Benutzerfeedback ausschliesslich `showNotification(message, type, duration)` verwenden.
+
+- Keine `alert()`/`confirm()` fuer Status- oder Fehlerfeedback.
+- Typen: `success`, `error`, `info`, `warning`
+- Kritische Hinweise koennen mit `duration = 0` persistent sein.
+
+Regel:
+Neue User-Feedback-Stellen muessen denselben Notification-Flow nutzen.
+
+## 9) Keine doppelte Logik
+
+Verboten:
+- Doppelte Funktionen mit identischer Verantwortung.
+- Mehrere Implementierungen derselben Block-Initialisierung.
+- Parallelpfade, die gleiche Datenmutationen unterschiedlich ausfuehren.
+
+Erlaubt:
+- Kleine, klar benannte Hilfsfunktionen mit einer Verantwortung.
+- Erweiterung bestehender Management-/Renderer-Pfade statt Nebenpfad.
+
+## 10) Aenderungs-Checkliste fuer neue Features
+
+Bei jeder funktionalen Aenderung:
+
+1. Registry und `BLOCK_TYPES` abgeglichen
+2. Lifecycle (`initialize`/`ensureInitialized`/`cleanup`) geprueft
+3. JSON-Renderpfad (`renderJSONBlocks`) geprueft
+4. Block-CRUD (`core/blocks/management.js`) geprueft
+5. DnD-Verhalten (`core/drag/drag-drop.js`) geprueft
+6. Editor-Shell/Template-Bindings geprueft
+7. Toolbar/Template-State-Namen konsistent
+8. Notification statt Browser-Dialoge
+
+## 11) Smoke-Test Minimalumfang nach Aenderungen
+
+Fuer betroffene Blocktypen oder UI-Pfade mindestens pruefen:
+
+- Anlegen/Hinzufuegen
+- Bearbeiten (Content/Settings)
+- Verschieben (inkl. Drag-and-Drop wenn betroffen)
+- Loeschen
+- Verschachtelung/Child-Verhalten (falls Container)
+- Import/Render bestehender JSON-Struktur (falls Datenmodell betroffen)
+
+## 12) Qualitaetsstandard
+
+- Produktionsreifer, klar lesbarer Code.
+- Bestehende Patterns zuerst wiederverwenden.
+- Neue Logik nur dort platzieren, wo sie architektonisch hingehoert.
+- Keine stillen Breaking-Changes am Datenmodell ohne gleichzeitige Normalisierung.

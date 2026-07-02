@@ -1,0 +1,29 @@
+{
+    "name": "moox/block-editor",
+    "description": "Reusable block editor package for Filament/Livewire.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "filament/forms": "*",
+        "illuminate/support": "^12.0 || ^13.0",
+        "livewire/livewire": "^4.0",
+        "moox/media": "*",
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\BlockEditor\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\BlockEditor\\BlockEditorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
+
