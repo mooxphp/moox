@@ -12,6 +12,7 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Capabilities\RepeaterItems;
 use Moox\Builder\FieldTypes\FieldType;
+use Moox\Builder\Support\FieldWidth;
 
 class RepeaterFieldType extends FieldType
 {
@@ -40,6 +41,7 @@ class RepeaterFieldType extends FieldType
         $component = Repeater::make($field->name)
             ->label($field->label)
             ->schema($compiler->compileSubFields($field->children, null))
+            ->columns(FieldWidth::GRID_COLUMNS)
             ->collapsible()
             ->defaultItems(0)
             ->reorderable()

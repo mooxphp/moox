@@ -28,7 +28,7 @@ final class StorableFieldCollector
      */
     public function definitionsFor(FieldDefinition $field): Collection
     {
-        if ($field->type === 'tab') {
+        if (in_array($field->type, ['tab', 'section'], true)) {
             return $this->definitionsFromList($field->children);
         }
 
@@ -79,7 +79,7 @@ final class StorableFieldCollector
 
             $path = "{$prefix}.{$index}.name";
 
-            if ($type === 'tab') {
+            if (in_array($type, ['tab', 'section'], true)) {
                 $entries = array_merge(
                     $entries,
                     $this->pathsFromRows($row['children'] ?? [], "{$prefix}.{$index}.children"),

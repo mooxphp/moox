@@ -10,6 +10,7 @@ use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
 use Moox\Builder\Services\FieldGroupPersistence;
+use Moox\Builder\Support\FieldGroupPlacement;
 
 class EditFieldGroup extends EditRecord
 {
@@ -53,6 +54,7 @@ class EditFieldGroup extends EditRecord
         $persistence = app(FieldGroupPersistence::class);
 
         $data['name'] = $persistence->localizedGroupName($record, $this->lang);
+        $data['placement'] = FieldGroupPlacement::normalize($record->placement);
         $data['location_rules'] = $persistence->flattenLocationRulesForForm(
             $record->location_rules ?? [],
         );

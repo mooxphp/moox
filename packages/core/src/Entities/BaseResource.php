@@ -36,7 +36,7 @@ abstract class BaseResource extends Resource
      *
      * @return array<int, mixed>
      */
-    public static function customFieldComponents(): array
+    public static function customFieldComponents(string $placement = 'main'): array
     {
         return [];
     }

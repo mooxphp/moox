@@ -76,6 +76,7 @@ class ItemResource extends BaseItemResource
                                 ->schema([
                                     static::getFormActions(),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardTimestampFields(),

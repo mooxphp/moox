@@ -106,6 +106,7 @@ class RecordResource extends BaseRecordResource
                                 ->schema([
                                     static::getAuthorSelect(),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardCopyableFields(),

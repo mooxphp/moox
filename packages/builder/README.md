@@ -107,7 +107,7 @@ Values are **not** attached to the Eloquent model (no `custom_fields` JSON colum
 | `name` | Display name (= section title in the form) |
 | `slug` | Technical group key |
 | `location_rules` | JSON: where the group appears (see below) |
-| `placement` | Reserved (`default`) |
+| `placement` | Form slot: `main` (default) or `sidebar`. Consumers render each via `customFieldComponents($placement)` |
 | `settings` | Reserved for group settings |
 | `sort` | Order of multiple groups |
 | `active` | Only active groups are rendered |
@@ -265,11 +265,14 @@ class ItemResource extends Resource
     {
         return $schema->components([
             // your own fields …
-            ...static::customFieldComponents(),
+            ...static::customFieldComponents(),           // groups placed in the main area
+            ...static::customFieldComponents('sidebar'),  // groups placed in the sidebar
         ]);
     }
 }
 ```
+
+A group's **placement** (`main` by default, or `sidebar`) decides which slot it renders in. Sidebar groups only appear where the resource form actually has a sidebar column and calls `customFieldComponents('sidebar')` there.
 
 The **entity key** is derived automatically from the model basename (`Item` → `item`). Override with `customFieldsEntity()`:
 
@@ -335,7 +338,7 @@ Package UI strings: `resources/lang/de/builder.php`, `en/builder.php`.
 | **Date** | `date`, `datetime`, `time` |
 | **Other** | `color`, `link`, `message`, `oembed` |
 | **Media** *(requires `moox/media`)* | `image`, `gallery`, `file` |
-| **Layout** | `tab`, `group`, `repeater`, `flexible_content` |
+| **Layout** | `tab`, `section`, `group`, `repeater`, `flexible_content` |
 
 Internal only (DB, not selectable): `flexible_layout` — defines a layout inside flexible content.
 
@@ -362,12 +365,27 @@ API output uses `presentValue()` / `MediaItemResource` (URLs, thumbnails — no 
 
 | Type | Filament component | Storage |
 |------|-------------------|---------|
-| `tab` | `Tabs` / `Tab` (marker, no value) | — |
+| `tab` | `Tabs` / `Tab` (marker, no value) | — (children store flat) |
+| `section` | `Section` (marker, no value) | — (children store flat) |
 | `group` | `Repeater` (min/max 1) | `value_json` (object) |
 | `repeater` | `Repeater` | `value_json` (array) |
 | `flexible_content` | `Builder` with layout blocks | `value_json` (array with `type` + `data`) |
 
 Flexible content works like ACF **Flexible Content**: each row is a selectable layout with its own subfields.
+
+`tab` and `section` are **visual-only** markers: they wrap the following fields but their children still store flat at the top level (unlike `group`, which nests values).
+
+### Field width (layout grid)
+
+Every field renders on a fixed **12-column grid**. Each field's `settings.width` fraction is translated into a Filament `columnSpan`, so the widths themselves define the columns — two `1/2` fields sit side by side, three `1/3` fields form a row. No separate "column count" setting is needed.
+
+| Width | columnSpan | Width | columnSpan |
+|-------|-----------|-------|-----------|
+| `full` (default) | 12 | `2/3` | 8 |
+| `1/2` | 6 | `1/4` | 3 |
+| `1/3` | 4 | `3/4` | 9 |
+
+Widths apply inside groups, tabs, sections, and repeaters. Defaulting to `full` keeps existing fields rendering exactly as before. Handled by `Moox\Builder\Support\FieldWidth`.
 
 ### Capabilities (configurable per type)
 
@@ -758,7 +776,6 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Relational fields (post object, relationship, user, taxonomy)
 - Clone field type (ACF)
 - Location params beyond `entity`
-- `placement` control (sidebar, …)
 - Conditional logic in forms
 
 **Intentionally out of scope:**

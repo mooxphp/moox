@@ -19,6 +19,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
 
@@ -63,6 +64,7 @@ class SchemaCompiler
             $groupScalarFields = $this->storableFieldCollector->definitionsFromList($group->fields);
 
             $section = Section::make($group->name)
+                ->columns(FieldWidth::GRID_COLUMNS)
                 ->schema($components);
 
             if ($entity !== null) {
@@ -94,6 +96,20 @@ class SchemaCompiler
             ->all();
     }
 
+    /**
+     * Visual section wrapper. Children store flat (like tabs); their defaults are
+     * hydrated by the enclosing group/tab, so no own hydration is needed here.
+     */
+    public function buildSectionComponent(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false): Component
+    {
+        $storableFields ??= collect();
+
+        return Section::make($field->label)
+            ->columns(FieldWidth::GRID_COLUMNS)
+            ->columnSpan($field->columnSpan())
+            ->schema($this->compileSubFields($field->children, $entity, $storableFields, $insideTabs));
+    }
+
     public function buildGroupComponent(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null): Component
     {
         $storableFields ??= collect();
@@ -101,8 +117,8 @@ class SchemaCompiler
         $component = Fieldset::make($field->label)
             ->schema($this->compileSubFields($field->children, $entity, $storableFields))
             ->statePath($field->name)
-            ->columns(1)
-            ->columnSpanFull();
+            ->columns(FieldWidth::GRID_COLUMNS)
+            ->columnSpan($field->columnSpan());
 
         if ($entity === null) {
             return $component;
@@ -195,6 +211,7 @@ class SchemaCompiler
                     $tabs = Tabs::make('custom_fields_tabs')
                         ->tabs(collect($tabPanels)->map(
                             fn (array $panel): Tab => Tab::make($panel['label'])
+                                ->columns(FieldWidth::GRID_COLUMNS)
                                 ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true)),
                         )->all());
 
@@ -248,7 +265,7 @@ class SchemaCompiler
             return [];
         }
 
-        if ($field->type === 'tab') {
+        if (in_array($field->type, ['tab', 'section'], true)) {
             $rules = [];
 
             foreach ($field->children as $child) {
@@ -331,12 +348,17 @@ class SchemaCompiler
     {
         $storableFields ??= collect();
 
+        if ($field->type === 'section') {
+            return $this->buildSectionComponent($field, $entity, $storableFields, $insideTabs);
+        }
+
         if ($field->type === 'group') {
             return $this->buildGroupComponent($field, $entity, $storableFields);
         }
 
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
+        $component->columnSpan($field->columnSpan());
 
         if ($insideTabs && $fieldType->storesValue()) {
             $component->dehydratedWhenHidden(true);

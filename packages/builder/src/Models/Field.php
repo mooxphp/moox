@@ -32,7 +32,6 @@ class Field extends Model implements TranslatableContract
         'conditional_logic',
         'settings',
         'sort',
-        'width',
     ];
 
     protected $casts = [

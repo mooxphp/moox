@@ -16,6 +16,7 @@ use Moox\Builder\Compiler\TableColumnCompiler;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Registry\DefinitionRegistry;
+use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldVisibility;
 
 /**
@@ -23,7 +24,8 @@ use Moox\Builder\Support\FieldVisibility;
  *
  * Usage in your resource form schema:
  *
- *   ...static::customFieldComponents(),
+ *   ...static::customFieldComponents(),              // main area (default)
+ *   ...static::customFieldComponents('sidebar'),      // sidebar slot
  *
  * Field groups are matched by entity key (model basename in kebab-case, e.g.
  * Item → item). Override with customFieldsEntity() when needed. Loading and
@@ -57,11 +59,17 @@ trait HasCustomFields
     }
 
     /**
+     * Compiled custom field sections for the given form placement. Defaults to
+     * the main area; pass FieldGroupPlacement::SIDEBAR (or 'sidebar') to render
+     * groups assigned to the sidebar in a dedicated slot.
+     *
      * @return list<Section>
      */
-    public static function customFieldComponents(): array
+    public static function customFieldComponents(string $placement = FieldGroupPlacement::MAIN): array
     {
-        $groups = static::visibleCustomFieldGroups();
+        $groups = static::visibleCustomFieldGroups()
+            ->filter(fn (FieldGroupDefinition $group): bool => $group->hasPlacement($placement))
+            ->values();
 
         if ($groups->isEmpty()) {
             return [];

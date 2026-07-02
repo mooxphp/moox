@@ -137,6 +137,7 @@ class DraftResource extends BaseDraftResource
                                     ColorPicker::make('color')
                                         ->label(__('core::core.color')),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardCopyableFields(),
