@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Concerns;
 
+use Astrotomic\Translatable\Contracts\Translatable;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Str;
 use Moox\Builder\Compiler\SchemaCompiler;
@@ -33,7 +34,7 @@ trait HasCustomFields
     {
         $model = static::getModel();
 
-        return is_subclass_of($model, \Astrotomic\Translatable\Contracts\Translatable::class);
+        return is_subclass_of($model, Translatable::class);
     }
 
     /**
