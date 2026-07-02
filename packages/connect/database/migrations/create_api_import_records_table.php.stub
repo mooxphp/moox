@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('payload_hash', 64)->index();
 
             // Import-Status steuert die weitere Verarbeitung
-            $table->enum('status', ['new', 'processed', 'failed'])->default('new')->index();
+            $table->enum('status', ['new', 'fetched', 'processing', 'update', 'processed', 'failed'])->default('new')->index();
 
             // Fehlerdetails für gescheiterte Transformationen
             $table->text('error_message')->nullable();
