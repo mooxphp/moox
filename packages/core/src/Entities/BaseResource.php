@@ -41,6 +41,17 @@ abstract class BaseResource extends Resource
         return [];
     }
 
+    /**
+     * Custom field table columns. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no columns otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldColumns(): array
+    {
+        return [];
+    }
+
     public static function make(string $key = 'default'): ResourceConfiguration
     {
         return ScopedResourceConfiguration::make(static::class, $key);
