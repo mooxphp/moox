@@ -30,6 +30,17 @@ use Moox\Core\Support\Resources\ScopedResourceContext;
 
 abstract class BaseResource extends Resource
 {
+    /**
+     * Custom field form components. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no components otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldComponents(): array
+    {
+        return [];
+    }
+
     public static function make(string $key = 'default'): ResourceConfiguration
     {
         return ScopedResourceConfiguration::make(static::class, $key);
