@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\Builder;
 
 use Filament\Resources\Events\RecordSaved;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Moox\Builder\FieldTypes\FieldType;
@@ -103,6 +105,10 @@ class BuilderServiceProvider extends MooxServiceProvider
         FieldOptionTranslation::observe(InvalidateDefinitionCacheObserver::class);
 
         Event::listen(RecordSaved::class, PersistCustomFields::class);
+
+        FilamentAsset::register([
+            Css::make('moox-builder', __DIR__.'/../resources/css/builder.css'),
+        ], 'moox/builder');
 
         CustomFieldsFilamentHooks::register();
 

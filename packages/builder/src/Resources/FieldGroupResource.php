@@ -22,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Moox\Builder\Exceptions\UnknownFieldTypeException;
 use Moox\Builder\Models\FieldGroup;
@@ -143,6 +144,7 @@ class FieldGroupResource extends Resource
                         ->schema([
                             Repeater::make('fields')
                                 ->hiddenLabel()
+                                ->extraAttributes(['class' => 'moox-builder-fields'])
                                 ->orderColumn('sort')
                                 ->reorderable()
                                 ->collapsible()
@@ -150,7 +152,7 @@ class FieldGroupResource extends Resource
                                 ->cloneable()
                                 ->collapseAllAction(fn (Action $action): Action => $action->hidden())
                                 ->expandAllAction(fn (Action $action): Action => $action->hidden())
-                                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                                ->itemLabel(fn (array $state): HtmlString => static::fieldRepeaterItemLabel($registry, $state))
                                 ->schema([
                                     Hidden::make('id'),
                                     Hidden::make('sort'),
@@ -182,21 +184,19 @@ class FieldGroupResource extends Resource
                                         ->maxLength(255)
                                         ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                         ->live(onBlur: true),
-                                    Toggle::make('required')
-                                        ->label(__('builder::builder.field.required'))
-                                        ->inline(false)
-                                        ->live()
-                                        ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-                                    static::widthField(),
+                                    static::requirementAndWidthRow(),
                                     ...static::columnSettingsSchema(),
                                     ...static::visibilitySettingsSchema(),
                                     ...static::optionFieldSections($registry),
                                     Section::make(fn (callable $get): string => $get('type') === 'tab'
                                         ? __('builder::builder.field.tab_content')
                                         : __('builder::builder.field.subfields'))
-                                        ->description(fn (callable $get): ?string => $get('type') === 'tab'
+                                        ->description(fn (callable $get): string => $get('type') === 'tab'
                                             ? __('builder::builder.field.tab_content_helper')
-                                            : null)
+                                            : __('builder::builder.field.subfields_helper'))
+                                        ->icon(fn (callable $get): Heroicon => $get('type') === 'tab'
+                                            ? Heroicon::OutlinedFolder
+                                            : Heroicon::OutlinedSquares2x2)
                                         ->collapsed()
                                         ->schema([
                                             Repeater::make('children')
@@ -205,12 +205,14 @@ class FieldGroupResource extends Resource
                                                 ->reorderable()
                                                 ->collapsible()
                                                 ->collapsed()
-                                                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                                                ->itemLabel(fn (array $state): HtmlString => static::fieldRepeaterItemLabel($registry, $state))
                                                 ->schema(static::tabChildFieldSchema($registry))
                                                 ->defaultItems(0),
                                         ])
                                         ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
                                     Section::make(__('builder::builder.field.layouts'))
+                                        ->description(__('builder::builder.field.layouts_helper'))
+                                        ->icon(Heroicon::OutlinedSquaresPlus)
                                         ->collapsed()
                                         ->schema([
                                             Repeater::make('layouts')
@@ -235,41 +237,80 @@ class FieldGroupResource extends Resource
     /**
      * @param  array<string, mixed>  $state
      */
-    protected static function fieldRepeaterItemLabel(FieldTypeRegistry $registry, array $state): string
+    protected static function fieldRepeaterItemLabel(FieldTypeRegistry $registry, array $state): HtmlString
     {
-        $parts = [];
+        $type = filled($state['type'] ?? null) ? (string) $state['type'] : null;
 
-        $parts[] = filled($state['label'] ?? null)
+        $title = filled($state['label'] ?? null)
             ? (string) $state['label']
             : __('builder::builder.field_group.field_item');
 
-        if (filled($state['type'] ?? null)) {
-            $parts[] = static::fieldTypeLabel($registry, (string) $state['type']);
+        $meta = [];
+
+        if ($type !== null) {
+            $meta[] = static::fieldTypeLabel($registry, $type);
         }
 
         if (filled($state['name'] ?? null)) {
-            $parts[] = (string) $state['name'];
+            $meta[] = (string) $state['name'];
         }
 
         if (($state['required'] ?? false) === true) {
-            $parts[] = __('builder::builder.field.required_badge');
+            $meta[] = __('builder::builder.field.required_badge');
         }
 
         $childrenCount = count($state['children'] ?? []);
         if ($childrenCount > 0) {
-            $parts[] = trans_choice('builder::builder.field.subfields_count', $childrenCount, [
+            $meta[] = trans_choice('builder::builder.field.subfields_count', $childrenCount, [
                 'count' => $childrenCount,
             ]);
         }
 
         $layoutsCount = count($state['layouts'] ?? []);
         if ($layoutsCount > 0) {
-            $parts[] = trans_choice('builder::builder.field.layouts_count', $layoutsCount, [
+            $meta[] = trans_choice('builder::builder.field.layouts_count', $layoutsCount, [
                 'count' => $layoutsCount,
             ]);
         }
 
-        return implode(' · ', $parts);
+        return static::fieldItemLabelHtml($registry, $type, $title, $meta);
+    }
+
+    /**
+     * Renders the repeater item header as an icon badge + title + muted meta,
+     * giving each field a strong visual anchor when several are expanded.
+     *
+     * @param  list<string>  $meta
+     */
+    protected static function fieldItemLabelHtml(FieldTypeRegistry $registry, ?string $type, string $title, array $meta): HtmlString
+    {
+        $icon = static::fieldTypeIcon($registry, $type);
+        $iconSvg = svg($icon, 'moox-builder-field-item__icon')->toHtml();
+
+        $metaHtml = $meta === []
+            ? ''
+            : '<span class="moox-builder-field-item__meta">'.e(implode(' · ', $meta)).'</span>';
+
+        return new HtmlString(
+            '<span class="moox-builder-field-item">'
+            .'<span class="moox-builder-field-item__badge">'.$iconSvg.'</span>'
+            .'<span class="moox-builder-field-item__title">'.e($title).'</span>'
+            .$metaHtml
+            .'</span>'
+        );
+    }
+
+    protected static function fieldTypeIcon(FieldTypeRegistry $registry, ?string $type): string
+    {
+        if (blank($type)) {
+            return 'heroicon-o-cube';
+        }
+
+        try {
+            return $registry->get($type)->icon();
+        } catch (UnknownFieldTypeException) {
+            return 'heroicon-o-cube';
+        }
     }
 
     /**
@@ -340,7 +381,7 @@ class FieldGroupResource extends Resource
                 ->reorderable()
                 ->collapsible()
                 ->collapsed()
-                ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                ->itemLabel(fn (array $state): HtmlString => static::fieldRepeaterItemLabel($registry, $state))
                 ->schema(static::subFieldSchema($registry))
                 ->defaultItems(0),
         ];
@@ -382,16 +423,13 @@ class FieldGroupResource extends Resource
                 ->maxLength(255)
                 ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                 ->live(onBlur: true),
-            Toggle::make('required')
-                ->label(__('builder::builder.field.required'))
-                ->inline(false)
-                ->live()
-                ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-            static::widthField(),
+            static::requirementAndWidthRow(),
             ...static::columnSettingsSchema(),
             ...static::visibilitySettingsSchema(),
             ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
+                ->description(__('builder::builder.field.subfields_helper'))
+                ->icon(Heroicon::OutlinedSquares2x2)
                 ->collapsed()
                 ->schema([
                     Repeater::make('children')
@@ -400,12 +438,14 @@ class FieldGroupResource extends Resource
                         ->reorderable()
                         ->collapsible()
                         ->collapsed()
-                        ->itemLabel(fn (array $state): string => static::fieldRepeaterItemLabel($registry, $state))
+                        ->itemLabel(fn (array $state): HtmlString => static::fieldRepeaterItemLabel($registry, $state))
                         ->schema(static::subFieldSchema($registry))
                         ->defaultItems(0),
                 ])
                 ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
             Section::make(__('builder::builder.field.layouts'))
+                ->description(__('builder::builder.field.layouts_helper'))
+                ->icon(Heroicon::OutlinedSquaresPlus)
                 ->collapsed()
                 ->schema([
                     Repeater::make('layouts')
@@ -456,12 +496,7 @@ class FieldGroupResource extends Resource
                 ->maxLength(255)
                 ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                 ->live(onBlur: true),
-            Toggle::make('required')
-                ->label(__('builder::builder.field.required'))
-                ->inline(false)
-                ->live()
-                ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
-            static::widthField(),
+            static::requirementAndWidthRow(),
             ...static::optionFieldSections($registry),
         ];
     }
@@ -565,6 +600,7 @@ class FieldGroupResource extends Resource
         return [
             Section::make(__('builder::builder.field.table_column'))
                 ->description(__('builder::builder.field.table_column_helper'))
+                ->icon(Heroicon::OutlinedTableCells)
                 ->collapsible()
                 ->collapsed()
                 ->visible(fn (callable $get): bool => static::fieldTypeSupportsAnyColumn($get('type')))
@@ -642,6 +678,7 @@ class FieldGroupResource extends Resource
         return [
             Section::make(__('builder::builder.field.visibility'))
                 ->description(__('builder::builder.field.visibility_helper'))
+                ->icon(Heroicon::OutlinedEye)
                 ->collapsible()
                 ->collapsed()
                 ->schema(static::visibilityToggles()),
@@ -682,6 +719,23 @@ class FieldGroupResource extends Resource
             FieldGroupPlacement::MAIN => __('builder::builder.field_group.placement_main'),
             FieldGroupPlacement::SIDEBAR => __('builder::builder.field_group.placement_sidebar'),
         ];
+    }
+
+    /**
+     * "Required" toggle and width selector share one row to keep the field
+     * basics compact. Either control hides itself when it does not apply.
+     */
+    protected static function requirementAndWidthRow(): Grid
+    {
+        return Grid::make(2)
+            ->schema([
+                Toggle::make('required')
+                    ->label(__('builder::builder.field.required'))
+                    ->inline(false)
+                    ->live()
+                    ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type'))),
+                static::widthField(),
+            ]);
     }
 
     /**
@@ -745,10 +799,14 @@ class FieldGroupResource extends Resource
     {
         return [
             Section::make(__('builder::builder.field.settings'))
+                ->description(__('builder::builder.field.settings_helper'))
+                ->icon(Heroicon::OutlinedCog6Tooth)
                 ->collapsible()
                 ->schema(fn (callable $get): array => static::reactiveTypeSettingsSchema($get))
                 ->visible(fn (callable $get): bool => static::typeHasSettings($get('type'))),
             Section::make(__('builder::builder.field.options'))
+                ->description(__('builder::builder.field.options_helper'))
+                ->icon(Heroicon::OutlinedListBullet)
                 ->collapsed()
                 ->schema([
                     Repeater::make('options')
