@@ -51,7 +51,7 @@ class ApiConnectionResource extends BaseItemResource
         return config('api-connection.single');
     }
 
-    public static function getNavigationGroup(): UnitEnum|string|null
+    public static function getNavigationGroup(): ?string
     {
         return config('api-connection.navigation_group');
     }
