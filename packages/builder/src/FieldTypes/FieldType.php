@@ -119,6 +119,44 @@ abstract class FieldType
         return __($key) !== $key ? __($key) : ucfirst(str_replace('_', ' ', static::key()));
     }
 
+    /**
+     * Heroicon representing this field type in builder UIs (e.g. repeater headers).
+     */
+    public function icon(): string
+    {
+        return match (static::key()) {
+            'text' => 'heroicon-o-bars-3-bottom-left',
+            'textarea' => 'heroicon-o-bars-3',
+            'rich_text' => 'heroicon-o-document-text',
+            'email' => 'heroicon-o-envelope',
+            'password' => 'heroicon-o-key',
+            'number' => 'heroicon-o-hashtag',
+            'range' => 'heroicon-o-adjustments-horizontal',
+            'url', 'link' => 'heroicon-o-link',
+            'color' => 'heroicon-o-swatch',
+            'date' => 'heroicon-o-calendar',
+            'datetime' => 'heroicon-o-calendar-days',
+            'time' => 'heroicon-o-clock',
+            'toggle' => 'heroicon-o-check-circle',
+            'select' => 'heroicon-o-chevron-up-down',
+            'multiselect' => 'heroicon-o-queue-list',
+            'radio' => 'heroicon-o-list-bullet',
+            'checkbox_list' => 'heroicon-o-clipboard-document-check',
+            'button_group' => 'heroicon-o-rectangle-group',
+            'file' => 'heroicon-o-paper-clip',
+            'image' => 'heroicon-o-photo',
+            'gallery' => 'heroicon-o-rectangle-stack',
+            'message' => 'heroicon-o-chat-bubble-left-right',
+            'oembed' => 'heroicon-o-film',
+            'repeater' => 'heroicon-o-queue-list',
+            'group' => 'heroicon-o-square-2-stack',
+            'tab' => 'heroicon-o-folder',
+            'section' => 'heroicon-o-view-columns',
+            'flexible_content', 'flexible_layout' => 'heroicon-o-squares-plus',
+            default => 'heroicon-o-cube',
+        };
+    }
+
     protected function applyCapabilitiesAndValidation(Component $component, FieldDefinition $field): Component
     {
         $component = Capability::applyAll($this->capabilities(), $component, $field);
