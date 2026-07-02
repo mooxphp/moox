@@ -202,6 +202,17 @@ class FieldGroupPersistence
                 'type' => $field->type,
                 'required' => (bool) ($field->validation['required'] ?? false),
                 'config' => $this->definitionTranslator->translatedFieldConfig($field, $locale),
+                'settings' => [
+                    'show_in_table' => (bool) ($field->settings['show_in_table'] ?? false),
+                    'sortable' => (bool) ($field->settings['sortable'] ?? true),
+                    'searchable' => (bool) ($field->settings['searchable'] ?? true),
+                    'hidden_by_default' => (bool) ($field->settings['hidden_by_default'] ?? true),
+                    'badge' => (bool) ($field->settings['badge'] ?? false),
+                    'color' => $field->settings['color'] ?? null,
+                    'icon' => $field->settings['icon'] ?? null,
+                    'image_shape' => $field->settings['image_shape'] ?? null,
+                    'image_size' => $field->settings['image_size'] ?? null,
+                ],
                 'sort' => $field->sort,
                 'options' => $field->options->map(fn (FieldOption $option): array => [
                     'id' => $option->getKey(),
@@ -288,6 +299,17 @@ class FieldGroupPersistence
                     'required' => (bool) ($row['required'] ?? false),
                     'rules' => $row['validation']['rules'] ?? [],
                 ],
+                'settings' => array_merge($field->settings ?? [], [
+                    'show_in_table' => (bool) ($row['settings']['show_in_table'] ?? false),
+                    'sortable' => (bool) ($row['settings']['sortable'] ?? true),
+                    'searchable' => (bool) ($row['settings']['searchable'] ?? true),
+                    'hidden_by_default' => (bool) ($row['settings']['hidden_by_default'] ?? true),
+                    'badge' => (bool) ($row['settings']['badge'] ?? false),
+                    'color' => filled($row['settings']['color'] ?? null) ? (string) $row['settings']['color'] : null,
+                    'icon' => filled($row['settings']['icon'] ?? null) ? (string) $row['settings']['icon'] : null,
+                    'image_shape' => filled($row['settings']['image_shape'] ?? null) ? (string) $row['settings']['image_shape'] : null,
+                    'image_size' => filled($row['settings']['image_size'] ?? null) ? (string) $row['settings']['image_size'] : null,
+                ]),
                 'sort' => $index,
             ]);
 

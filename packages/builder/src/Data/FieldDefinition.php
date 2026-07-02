@@ -13,6 +13,7 @@ readonly class FieldDefinition
     /**
      * @param  array<string, mixed>  $config
      * @param  array<string, mixed>  $validation
+     * @param  array<string, mixed>  $settings
      * @param  list<array{label: string, value: string, translations?: array<string, array{label?: string}>}>  $options
      * @param  Collection<int, FieldDefinition>  $children
      * @param  array<string, array{label?: string, config?: array<string, mixed>}>  $translations
@@ -24,10 +25,64 @@ readonly class FieldDefinition
         public int $sort = 0,
         public array $config = [],
         public array $validation = [],
+        public array $settings = [],
         public array $options = [],
         public Collection $children = new Collection,
         public array $translations = [],
     ) {}
+
+    public function showInTable(): bool
+    {
+        return (bool) ($this->settings['show_in_table'] ?? false);
+    }
+
+    public function isColumnSortable(): bool
+    {
+        return (bool) ($this->settings['sortable'] ?? true);
+    }
+
+    public function isColumnSearchable(): bool
+    {
+        return (bool) ($this->settings['searchable'] ?? true);
+    }
+
+    public function isColumnHiddenByDefault(): bool
+    {
+        return (bool) ($this->settings['hidden_by_default'] ?? true);
+    }
+
+    public function columnBadge(): bool
+    {
+        return (bool) ($this->settings['badge'] ?? false);
+    }
+
+    public function columnColor(): ?string
+    {
+        $color = $this->settings['color'] ?? null;
+
+        return filled($color) ? (string) $color : null;
+    }
+
+    public function columnIcon(): ?string
+    {
+        $icon = $this->settings['icon'] ?? null;
+
+        return filled($icon) ? (string) $icon : null;
+    }
+
+    public function columnImageShape(): ?string
+    {
+        $shape = $this->settings['image_shape'] ?? null;
+
+        return in_array($shape, ['square', 'circular'], true) ? $shape : null;
+    }
+
+    public function columnImageSize(): string
+    {
+        $size = $this->settings['image_size'] ?? null;
+
+        return in_array($size, ['sm', 'md', 'lg'], true) ? $size : 'md';
+    }
 
     public static function fromModel(Field $field): self
     {
@@ -53,6 +108,7 @@ readonly class FieldDefinition
             sort: (int) $field->sort,
             config: $field->config ?? [],
             validation: $field->validation ?? [],
+            settings: $field->settings ?? [],
             options: $options,
             children: $children,
             translations: self::mapFieldTranslations($field),
@@ -123,6 +179,7 @@ readonly class FieldDefinition
             'sort' => $this->sort,
             'config' => $this->config,
             'validation' => $this->validation,
+            'settings' => $this->settings,
             'options' => $this->options,
             'children' => $this->children
                 ->map(fn (self $child): array => $child->toArray())
@@ -133,7 +190,7 @@ readonly class FieldDefinition
     }
 
     /**
-     * @param  array{name: string, label: string, type: string, sort?: int, config?: array<string, mixed>, validation?: array<string, mixed>, options?: list<array{label: string, value: string, translations?: array<string, array{label?: string}>}>, children?: list<array<string, mixed>>, translations?: array<string, array{label?: string, config?: array<string, mixed>}>}  $data
+     * @param  array{name: string, label: string, type: string, sort?: int, config?: array<string, mixed>, validation?: array<string, mixed>, settings?: array<string, mixed>, options?: list<array{label: string, value: string, translations?: array<string, array{label?: string}>}>, children?: list<array<string, mixed>>, translations?: array<string, array{label?: string, config?: array<string, mixed>}>}  $data
      */
     public static function fromArray(array $data): self
     {
@@ -149,6 +206,7 @@ readonly class FieldDefinition
             sort: (int) ($data['sort'] ?? 0),
             config: $data['config'] ?? [],
             validation: $data['validation'] ?? [],
+            settings: $data['settings'] ?? [],
             options: $data['options'] ?? [],
             children: $children,
             translations: $data['translations'] ?? [],
