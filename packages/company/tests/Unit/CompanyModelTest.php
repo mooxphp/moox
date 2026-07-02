@@ -38,6 +38,17 @@ it('normalizes default currency to uppercase', function (): void {
     expect($company->fresh()->default_currency_code)->toBe('EUR');
 });
 
+it('allows saving when default currency is null', function (): void {
+    $company = Company::factory()->create([
+        'default_currency_code' => 'EUR',
+    ]);
+
+    $company->default_currency_code = null;
+    $company->save();
+
+    expect($company->fresh()->default_currency_code)->toBeNull();
+});
+
 it('clears parent when set to itself', function (): void {
     $company = Company::factory()->create();
 

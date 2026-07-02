@@ -119,7 +119,7 @@ class Company extends BaseRecordModel
                 $company->parent_id = null;
             }
 
-            if ($company->default_currency_code !== '') {
+            if (is_string($company->default_currency_code) && trim($company->default_currency_code) !== '') {
                 $company->default_currency_code = strtoupper(trim($company->default_currency_code));
             }
         });
