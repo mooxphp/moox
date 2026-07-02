@@ -26,6 +26,31 @@ readonly class FieldGroupDefinition
         public array $translations = [],
     ) {}
 
+    /**
+     * Whether the group is visible in the given context (admin, frontend, api).
+     * Defaults to visible when the setting is absent.
+     */
+    public function isVisibleIn(string $context): bool
+    {
+        return (bool) ($this->settings["visible_{$context}"] ?? true);
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     */
+    public function withFields(Collection $fields): self
+    {
+        return new self(
+            name: $this->name,
+            slug: $this->slug,
+            placement: $this->placement,
+            fields: $fields,
+            locationRules: $this->locationRules,
+            settings: $this->settings,
+            translations: $this->translations,
+        );
+    }
+
     public static function fromModel(FieldGroup $group): self
     {
         $fields = $group->relationLoaded('fields')

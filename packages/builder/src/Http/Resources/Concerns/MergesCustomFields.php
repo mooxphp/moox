@@ -7,6 +7,7 @@ namespace Moox\Builder\Http\Resources\Concerns;
 use Moox\Builder\Concerns\InteractsWithCustomFields;
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\FieldVisibility;
 
 trait MergesCustomFields
 {
@@ -27,7 +28,7 @@ trait MergesCustomFields
         $entity = $model::resolveCustomFieldsEntity();
 
         $presented = app(BuilderValuesResolver::class)->present(
-            $manager->fieldsForEntity($entity),
+            $manager->visibleFieldsForEntity($entity, FieldVisibility::API),
             $model->customFields(),
         );
 

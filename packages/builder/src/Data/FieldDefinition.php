@@ -84,6 +84,34 @@ readonly class FieldDefinition
         return in_array($size, ['sm', 'md', 'lg'], true) ? $size : 'md';
     }
 
+    /**
+     * Whether the field is visible in the given context (admin, frontend, api).
+     * Defaults to visible when the setting is absent.
+     */
+    public function isVisibleIn(string $context): bool
+    {
+        return (bool) ($this->settings["visible_{$context}"] ?? true);
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $children
+     */
+    public function withChildren(Collection $children): self
+    {
+        return new self(
+            name: $this->name,
+            label: $this->label,
+            type: $this->type,
+            sort: $this->sort,
+            config: $this->config,
+            validation: $this->validation,
+            settings: $this->settings,
+            options: $this->options,
+            children: $children,
+            translations: $this->translations,
+        );
+    }
+
     public static function fromModel(Field $field): self
     {
         $options = $field->relationLoaded('options')

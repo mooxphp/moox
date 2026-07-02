@@ -24,6 +24,8 @@ return [
         'field_item' => 'Feld',
         'fields_count' => 'Felder',
         'assigned_to' => 'Zugeordnet zu',
+        'visibility' => 'Sichtbarkeit',
+        'visibility_helper' => 'Ganze Gruppe je Kontext ausblenden. Damit werden auch alle enthaltenen Felder dort ausgeblendet.',
     ],
 
     'field' => [
@@ -62,6 +64,8 @@ return [
         'column_image_size_sm' => 'Klein',
         'column_image_size_md' => 'Mittel',
         'column_image_size_lg' => 'Groß',
+        'visibility' => 'Sichtbarkeit',
+        'visibility_helper' => 'Dieses Feld je Kontext ausblenden, ohne es zu löschen.',
         'subfields_count' => '{1} :count Unterfeld|[2,*] :count Unterfelder',
         'settings' => 'Einstellungen',
         'options' => 'Auswahloptionen',
@@ -107,6 +111,13 @@ return [
         'group' => 'Gruppe',
         'repeater' => 'Repeater',
         'flexible_content' => 'Flexible Inhalte',
+    ],
+
+    'visibility' => [
+        'admin' => 'Admin',
+        'admin_helper' => 'Wenn aus, wird das Feld im Admin-Formular und in der Tabelle nicht angezeigt oder bearbeitet.',
+        'frontend' => 'Frontend',
+        'api' => 'API',
     ],
 
     'flexible_content' => [

@@ -9,11 +9,14 @@ use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Moox\Builder\Compiler\SchemaCompiler;
 use Moox\Builder\Compiler\TableColumnCompiler;
+use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Registry\DefinitionRegistry;
+use Moox\Builder\Support\FieldVisibility;
 
 /**
  * Add custom field group sections to a Filament resource form.
@@ -58,9 +61,7 @@ trait HasCustomFields
      */
     public static function customFieldComponents(): array
     {
-        $groups = app(DefinitionRegistry::class)->fieldGroupsFor(
-            static::customFieldsLocationContext(),
-        );
+        $groups = static::visibleCustomFieldGroups();
 
         if ($groups->isEmpty()) {
             return [];
@@ -74,9 +75,7 @@ trait HasCustomFields
      */
     public static function customFieldColumns(): array
     {
-        $groups = app(DefinitionRegistry::class)->fieldGroupsFor(
-            static::customFieldsLocationContext(),
-        );
+        $groups = static::visibleCustomFieldGroups();
 
         if ($groups->isEmpty()) {
             return [];
@@ -139,10 +138,21 @@ trait HasCustomFields
      */
     public static function customFieldRules(): array
     {
-        $groups = app(DefinitionRegistry::class)->fieldGroupsFor(
-            static::customFieldsLocationContext(),
-        );
+        return app(SchemaCompiler::class)->rules(static::visibleCustomFieldGroups());
+    }
 
-        return app(SchemaCompiler::class)->rules($groups);
+    /**
+     * Field groups assigned to this resource, filtered to those visible in the
+     * admin (Filament) context. Admin-hidden groups/fields are excluded from the
+     * form, table and validation rules alike.
+     *
+     * @return Collection<int, FieldGroupDefinition>
+     */
+    protected static function visibleCustomFieldGroups(): Collection
+    {
+        return FieldVisibility::filterGroups(
+            app(DefinitionRegistry::class)->fieldGroupsFor(static::customFieldsLocationContext()),
+            FieldVisibility::ADMIN,
+        );
     }
 }
