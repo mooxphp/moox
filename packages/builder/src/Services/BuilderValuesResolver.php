@@ -262,7 +262,7 @@ class BuilderValuesResolver
         }
 
         $keyName = $model->getKeyName();
-        $localeChain = $this->localeResolver->fallbackChain($locale);
+        $localeChain = $this->localeResolver->valuesFallbackChainForEntity($entity, $locale, $model::class);
 
         $rows = FieldValue::query()
             ->where('entity', $entity)
@@ -296,7 +296,7 @@ class BuilderValuesResolver
 
             $record->setCustomFieldsCache(
                 $this->resolveFromRows($fields, $resolvedRows, mergeDefaults: true),
-                $this->localeResolver->current($locale),
+                $this->localeResolver->valuesLocaleForEntity($entity, $locale, $record::class),
             );
         }
     }

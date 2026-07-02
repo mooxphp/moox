@@ -10,6 +10,7 @@ use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Builder\Registry\EntityRegistry;
+use Moox\Builder\Support\CustomFieldsTranslatability;
 
 final class CustomFieldsFilamentHooks
 {
@@ -112,6 +113,14 @@ final class CustomFieldsFilamentHooks
             $resourceClass = $definition['resource'] ?? null;
 
             if (! is_string($resourceClass)) {
+                continue;
+            }
+
+            if (! app(CustomFieldsTranslatability::class)->forResource($resourceClass)) {
+                continue;
+            }
+
+            if (! $resourceClass::customFieldsRenderLocaleSwitcher()) {
                 continue;
             }
 

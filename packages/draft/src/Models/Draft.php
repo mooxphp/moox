@@ -5,6 +5,7 @@ namespace Moox\Draft\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Moox\Builder\Concerns\InteractsWithCustomFields;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Draft\Database\Factories\DraftFactory;
@@ -35,7 +36,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
+    use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithCustomFields, InteractsWithMedia;
 
     /**
      * Get custom translated attributes for Draft

@@ -112,7 +112,7 @@ class CustomFieldsManager
             return [];
         }
 
-        $localeChain = $this->localeResolver->fallbackChain($locale);
+        $localeChain = $this->localeResolver->valuesFallbackChainForEntity($entity, $locale, $record::class);
 
         $rows = FieldValue::query()
             ->forRecord($entity, $record->getKey())
@@ -211,7 +211,7 @@ class CustomFieldsManager
         $values = [];
         $defaultValue = app(DefaultValue::class);
         $entity = $this->locationContextForResource($resourceClass)->entity;
-        $locale = $this->localeResolver->current();
+        $locale = $this->localeResolver->valuesLocaleForResource($resourceClass);
 
         foreach ($fields as $field) {
             $fieldType = $this->fieldTypeRegistry->get($field->type);
@@ -269,7 +269,7 @@ class CustomFieldsManager
      */
     public function saveValues(string $entity, Model $record, array $values, Collection $fields, ?string $locale = null): void
     {
-        $locale = $this->localeResolver->current($locale);
+        $locale = $this->localeResolver->valuesLocaleForEntity($entity, $locale, $record::class);
 
         foreach ($fields as $field) {
             if (! array_key_exists($field->name, $values)) {
@@ -343,7 +343,7 @@ class CustomFieldsManager
 
     protected function valuesCacheKey(string $entity, int|string $recordId, ?string $locale = null): string
     {
-        return "{$entity}:{$recordId}:".$this->localeResolver->current($locale);
+        return "{$entity}:{$recordId}:".$this->localeResolver->valuesLocaleForEntity($entity, $locale);
     }
 
     /**

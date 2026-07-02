@@ -20,10 +20,34 @@ use Moox\Builder\Registry\DefinitionRegistry;
  * Field groups are matched by entity key (model basename in kebab-case, e.g.
  * Item → item). Override with customFieldsEntity() when needed. Loading and
  * saving is handled automatically via Filament record events. Per-locale
- * values and the admin language selector are wired by the builder package.
+ * values and the admin language selector apply only when the entity model
+ * is translatable (or customFieldsAreTranslatable() returns true).
  */
 trait HasCustomFields
 {
+    /**
+     * Whether custom field values are stored per admin locale.
+     * Defaults to whether the model implements Astrotomic TranslatableContract.
+     */
+    public static function customFieldsAreTranslatable(): bool
+    {
+        $model = static::getModel();
+
+        return is_subclass_of($model, \Astrotomic\Translatable\Contracts\Translatable::class);
+    }
+
+    /**
+     * Whether the builder should render its own admin locale switcher on this
+     * resource's pages. Off by default: custom fields are used on translatable
+     * entities that already ship a locale switcher (e.g. Draft), so the builder
+     * would only add a duplicate. Opt in per resource when a standalone switcher
+     * is actually needed.
+     */
+    public static function customFieldsRenderLocaleSwitcher(): bool
+    {
+        return false;
+    }
+
     /**
      * @return list<Section>
      */
