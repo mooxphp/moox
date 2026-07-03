@@ -216,6 +216,7 @@ class SchemaCompiler
                         ->values();
 
                     $tabs = Tabs::make('custom_fields_tabs')
+                        ->columnSpanFull()
                         ->tabs(collect($tabPanels)->map(
                             fn (array $panel): Tab => Tab::make($panel['label'])
                                 ->columns(FieldWidth::GRID_COLUMNS)
