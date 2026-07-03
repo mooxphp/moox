@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
@@ -19,6 +20,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
@@ -51,11 +53,15 @@ class SchemaCompiler
         $sections = [];
 
         foreach ($fieldGroups as $group) {
+            $sortedFields = $group->fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values();
+            $conditionalTriggers = $this->conditionalTriggerNames($sortedFields);
+
             $components = $this->compileRootFields(
-                $group->fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values(),
+                $sortedFields,
                 $entity,
                 $storableFields,
                 $group->defaultColumnSpan(),
+                $conditionalTriggers,
             );
 
             if ($components === []) {
@@ -86,14 +92,14 @@ class SchemaCompiler
      * @param  Collection<int, FieldDefinition>  $fields
      * @return list<Component>
      */
-    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null): array
+    public function compileSubFields(Collection $fields, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null, array $conditionalTriggers = []): array
     {
         $storableFields ??= collect();
 
         return $fields
             ->sortBy(fn (FieldDefinition $field): int => $field->sort)
             ->values()
-            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs, $defaultSpan))
+            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs, $defaultSpan, $conditionalTriggers))
             ->all();
     }
 
@@ -179,7 +185,7 @@ class SchemaCompiler
      * @param  Collection<int, FieldDefinition>  $storableFields
      * @return list<Component>
      */
-    protected function compileRootFields(Collection $fields, ?string $entity, Collection $storableFields, int $defaultSpan = FieldWidth::GRID_COLUMNS): array
+    protected function compileRootFields(Collection $fields, ?string $entity, Collection $storableFields, int $defaultSpan = FieldWidth::GRID_COLUMNS, array $conditionalTriggers = []): array
     {
         $components = [];
         $sorted = $fields->sortBy(fn (FieldDefinition $field): int => $field->sort)->values();
@@ -213,7 +219,7 @@ class SchemaCompiler
                         ->tabs(collect($tabPanels)->map(
                             fn (array $panel): Tab => Tab::make($panel['label'])
                                 ->columns(FieldWidth::GRID_COLUMNS)
-                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true, defaultSpan: $defaultSpan)),
+                                ->schema($this->compileSubFields($panel['fields'], $entity, $storableFields, insideTabs: true, defaultSpan: $defaultSpan, conditionalTriggers: $conditionalTriggers)),
                         )->all());
 
                     if ($entity !== null) {
@@ -230,7 +236,7 @@ class SchemaCompiler
                 continue;
             }
 
-            $components[] = $this->compileField($field, $entity, $storableFields, defaultSpan: $defaultSpan);
+            $components[] = $this->compileField($field, $entity, $storableFields, defaultSpan: $defaultSpan, conditionalTriggers: $conditionalTriggers);
             $index++;
         }
 
@@ -345,7 +351,7 @@ class SchemaCompiler
     /**
      * @param  Collection<int, FieldDefinition>  $storableFields
      */
-    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null): Component
+    protected function compileField(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null, bool $insideTabs = false, ?int $defaultSpan = null, array $conditionalTriggers = []): Component
     {
         $storableFields ??= collect();
 
@@ -360,6 +366,18 @@ class SchemaCompiler
         $fieldType = $this->fieldTypeRegistry->get($field->type);
         $component = $fieldType->formComponent($field);
         $component->columnSpan($field->columnSpan($defaultSpan));
+
+        if (ConditionalLogic::isConfigured($field)) {
+            $component->visible(fn (Get $get): bool => ConditionalLogic::passesForm($field, $get));
+
+            if (($field->validation['required'] ?? false) === true) {
+                $component->required(fn (Get $get): bool => ConditionalLogic::passesForm($field, $get));
+            }
+        }
+
+        if (in_array($field->name, $conditionalTriggers, true) && $fieldType->storesValue()) {
+            $component->live();
+        }
 
         if ($insideTabs && $fieldType->storesValue()) {
             $component->dehydratedWhenHidden(true);
@@ -552,5 +570,18 @@ class SchemaCompiler
                 $fieldComponent->partiallyRender();
             }
         }
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @return list<string>
+     */
+    protected function conditionalTriggerNames(Collection $fields): array
+    {
+        return $fields
+            ->flatMap(fn (FieldDefinition $field): array => $field->conditionTriggers())
+            ->unique()
+            ->values()
+            ->all();
     }
 }

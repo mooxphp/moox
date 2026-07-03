@@ -14,6 +14,7 @@ use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldVisibility;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Builder\Support\OptionValueRules;
@@ -301,9 +302,11 @@ class CustomFieldsManager
 
             $value = $values[$field->name];
 
-            OptionValueRules::assertValid($field, $value);
+            if (ConditionalLogic::isVisibleForValues($field, $values)) {
+                OptionValueRules::assertValid($field, $value);
 
-            $this->fieldValueValidator->assertValid($field, $value, $record);
+                $this->fieldValueValidator->assertValid($field, $value, $record);
+            }
 
             $persisted = app(BuilderValuesResolver::class)->persistFieldValue($field, $value);
             $columns = TypedValueColumns::attributesFor($field->type, $persisted);

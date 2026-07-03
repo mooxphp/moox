@@ -13,6 +13,7 @@ use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldRelationTree;
 
@@ -216,6 +217,7 @@ class FieldGroupPersistence
                     'visible_frontend' => (bool) ($field->settings['visible_frontend'] ?? true),
                     'visible_api' => (bool) ($field->settings['visible_api'] ?? true),
                     'width' => $field->settings['width'] ?? null,
+                    'conditions' => ConditionalLogic::normalizeSettings($field->settings['conditions'] ?? []),
                 ],
                 'sort' => $field->sort,
                 'options' => $field->options->map(fn (FieldOption $option): array => [
@@ -325,6 +327,7 @@ class FieldGroupPersistence
                     'visible_frontend' => (bool) ($row['settings']['visible_frontend'] ?? true),
                     'visible_api' => (bool) ($row['settings']['visible_api'] ?? true),
                     'width' => filled($row['settings']['width'] ?? null) ? (string) $row['settings']['width'] : null,
+                    'conditions' => ConditionalLogic::normalizeSettings($row['settings']['conditions'] ?? []),
                 ]),
                 'sort' => $index,
             ]);

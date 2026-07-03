@@ -33,6 +33,7 @@ use Moox\Builder\Resources\FieldGroupResource\Pages\EditFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\ListFieldGroups;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\TypedValueColumns;
@@ -195,6 +196,7 @@ class FieldGroupResource extends Resource
                                     static::requirementAndWidthRow(),
                                     ...static::columnSettingsSchema(),
                                     ...static::visibilitySettingsSchema(),
+                                    ...static::conditionalLogicSchema(),
                                     ...static::optionFieldSections($registry),
                                     Section::make(fn (callable $get): string => $get('type') === 'tab'
                                         ? __('builder::builder.field.tab_content')
@@ -696,6 +698,228 @@ class FieldGroupResource extends Resource
                             && static::fieldTypeSupportsImageColumn($get('type'))),
                 ]),
         ];
+    }
+
+    /**
+     * Dynamic show/hide rules based on sibling field values (root-level only in v1).
+     *
+     * @return list<Section>
+     */
+    protected static function conditionalLogicSchema(): array
+    {
+        $enabled = fn (callable $get): bool => (bool) $get('settings.conditions.enabled');
+
+        return [
+            Section::make(__('builder::builder.field.conditional_logic'))
+                ->description(__('builder::builder.field.conditional_logic_helper'))
+                ->icon(Heroicon::OutlinedAdjustmentsHorizontal)
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn (callable $get): bool => static::fieldTypeSupportsRequired($get('type')))
+                ->schema([
+                    Toggle::make('settings.conditions.enabled')
+                        ->label(__('builder::builder.field.conditional_logic_enabled'))
+                        ->inline(false)
+                        ->live()
+                        ->afterStateUpdated(function (mixed $state, callable $set, callable $get): void {
+                            if (! $state) {
+                                return;
+                            }
+
+                            if (blank($get('settings.conditions.action'))) {
+                                $set('settings.conditions.action', ConditionalLogic::ACTION_SHOW);
+                            }
+
+                            if (blank($get('settings.conditions.logic'))) {
+                                $set('settings.conditions.logic', ConditionalLogic::LOGIC_AND);
+                            }
+
+                            if (! is_array($get('settings.conditions.rules'))) {
+                                $set('settings.conditions.rules', []);
+                            }
+                        }),
+                    Grid::make(2)
+                        ->schema([
+                            Select::make('settings.conditions.action')
+                                ->label(__('builder::builder.field.conditional_logic_action'))
+                                ->options(static::conditionalLogicActionOptions())
+                                ->default(ConditionalLogic::ACTION_SHOW)
+                                ->selectablePlaceholder(false)
+                                ->native(false),
+                            Select::make('settings.conditions.logic')
+                                ->label(__('builder::builder.field.conditional_logic_logic'))
+                                ->options(static::conditionalLogicLogicOptions())
+                                ->default(ConditionalLogic::LOGIC_AND)
+                                ->selectablePlaceholder(false)
+                                ->native(false),
+                        ])
+                        ->visible($enabled),
+                    Repeater::make('settings.conditions.rules')
+                        ->label(__('builder::builder.field.conditional_logic_rules'))
+                        ->helperText(__('builder::builder.field.conditional_logic_rules_helper'))
+                        ->defaultItems(0)
+                        ->collapsible()
+                        ->collapsed()
+                        ->visible($enabled)
+                        ->schema([
+                            Select::make('field')
+                                ->label(__('builder::builder.field.conditional_logic_field'))
+                                ->options(fn (callable $get): array => static::siblingFieldOptions($get))
+                                ->required()
+                                ->searchable()
+                                ->native(false),
+                            Select::make('operator')
+                                ->label(__('builder::builder.field.conditional_logic_operator'))
+                                ->options(static::conditionalLogicOperatorOptions())
+                                ->default('equals')
+                                ->required()
+                                ->live()
+                                ->selectablePlaceholder(false)
+                                ->native(false),
+                            TextInput::make('value')
+                                ->label(__('builder::builder.field.conditional_logic_value'))
+                                ->visible(fn (callable $get): bool => in_array(
+                                    $get('operator'),
+                                    ['equals', 'not_equals', 'contains'],
+                                    true,
+                                )),
+                        ])
+                        ->columns(3),
+                ]),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function conditionalLogicActionOptions(): array
+    {
+        return [
+            ConditionalLogic::ACTION_SHOW => __('builder::builder.field.conditional_logic_action_show'),
+            ConditionalLogic::ACTION_HIDE => __('builder::builder.field.conditional_logic_action_hide'),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function conditionalLogicLogicOptions(): array
+    {
+        return [
+            ConditionalLogic::LOGIC_AND => __('builder::builder.field.conditional_logic_logic_and'),
+            ConditionalLogic::LOGIC_OR => __('builder::builder.field.conditional_logic_logic_or'),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function conditionalLogicOperatorOptions(): array
+    {
+        return [
+            'equals' => __('builder::builder.field.conditional_logic_operator_equals'),
+            'not_equals' => __('builder::builder.field.conditional_logic_operator_not_equals'),
+            'empty' => __('builder::builder.field.conditional_logic_operator_empty'),
+            'not_empty' => __('builder::builder.field.conditional_logic_operator_not_empty'),
+            'contains' => __('builder::builder.field.conditional_logic_operator_contains'),
+        ];
+    }
+
+    /**
+     * Lists sibling root-level fields as conditional-logic trigger options.
+     *
+     * The rules Select lives several repeater levels deep, so instead of
+     * hard-counting "../" segments (brittle if the editor layout changes) we
+     * probe a range of depths and use the first that yields the fields
+     * collection: an array whose entries are field rows with a "name".
+     *
+     * @return array<string, string>
+     */
+    protected static function siblingFieldOptions(callable $get): array
+    {
+        $fields = static::resolveSiblingFields($get);
+
+        if ($fields === []) {
+            return [];
+        }
+
+        $currentName = static::resolveCurrentFieldName($get);
+        $options = [];
+
+        foreach ($fields as $field) {
+            if (! is_array($field)) {
+                continue;
+            }
+
+            $name = (string) ($field['name'] ?? '');
+
+            if ($name === '' || $name === $currentName) {
+                continue;
+            }
+
+            if (! static::fieldTypeSupportsRequired((string) ($field['type'] ?? ''))) {
+                continue;
+            }
+
+            $options[$name] = (string) ($field['label'] ?? $name);
+        }
+
+        asort($options);
+
+        return $options;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    protected static function resolveSiblingFields(callable $get): array
+    {
+        $prefix = '';
+
+        for ($depth = 0; $depth <= 8; $depth++) {
+            $candidate = $get($prefix);
+
+            if (static::looksLikeFieldRows($candidate)) {
+                /** @var array<int|string, array<string, mixed>> $candidate */
+                return array_values($candidate);
+            }
+
+            $prefix .= '../';
+        }
+
+        return [];
+    }
+
+    protected static function resolveCurrentFieldName(callable $get): ?string
+    {
+        $prefix = '';
+
+        for ($depth = 0; $depth <= 8; $depth++) {
+            $name = $get($prefix.'name');
+
+            if (is_string($name) && $name !== '') {
+                return $name;
+            }
+
+            $prefix .= '../';
+        }
+
+        return null;
+    }
+
+    protected static function looksLikeFieldRows(mixed $value): bool
+    {
+        if (! is_array($value) || $value === []) {
+            return false;
+        }
+
+        foreach ($value as $row) {
+            if (! is_array($row) || ! array_key_exists('name', $row) || ! array_key_exists('type', $row)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Moox\Builder\Data;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldWidth;
 
 readonly class FieldDefinition
@@ -92,6 +93,27 @@ readonly class FieldDefinition
     public function isVisibleIn(string $context): bool
     {
         return (bool) ($this->settings["visible_{$context}"] ?? true);
+    }
+
+    /**
+     * @return array{enabled: bool, action: string, logic: string, rules: list<array{field: string, operator: string, value: mixed}>}
+     */
+    public function conditions(): array
+    {
+        return ConditionalLogic::normalizeSettings($this->settings['conditions'] ?? []);
+    }
+
+    public function hasConditions(): bool
+    {
+        return ConditionalLogic::isConfigured($this);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function conditionTriggers(): array
+    {
+        return ConditionalLogic::triggerFieldNames($this);
     }
 
     /**
