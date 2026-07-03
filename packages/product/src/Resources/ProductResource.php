@@ -17,6 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Product\Models\Product;
@@ -29,6 +30,7 @@ use Override;
 
 class ProductResource extends BaseDraftResource
 {
+    use HasResourceRelations;
     use HasResourceTabs;
 
     protected static ?string $model = Product::class;
@@ -153,6 +155,17 @@ class ProductResource extends BaseDraftResource
                                             ->required()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(64),
+                                        Select::make('type')
+                                            ->label(__('product::product.type'))
+                                            ->options(config('product.types', []))
+                                            ->default('simple')
+                                            ->required(),
+                                        TextInput::make('ean')
+                                            ->label(__('product::product.ean'))
+                                            ->maxLength(32),
+                                        TextInput::make('mpn')
+                                            ->label(__('product::product.mpn'))
+                                            ->maxLength(64),
                                         TextInput::make('price')
                                             ->label(__('product::product.price'))
                                             ->numeric()
@@ -163,8 +176,17 @@ class ProductResource extends BaseDraftResource
                                             ->label(__('product::product.sale_price'))
                                             ->numeric()
                                             ->step(0.01),
+                                        TextInput::make('cost_price')
+                                            ->label(__('product::product.cost_price'))
+                                            ->numeric()
+                                            ->step(0.01),
                                         TextInput::make('stock')
                                             ->label(__('product::product.stock'))
+                                            ->numeric()
+                                            ->integer()
+                                            ->default(0),
+                                        TextInput::make('stock_min')
+                                            ->label(__('product::product.stock_min'))
                                             ->numeric()
                                             ->integer()
                                             ->default(0),
@@ -173,16 +195,22 @@ class ProductResource extends BaseDraftResource
                                             ->options(config('product.statuses', []))
                                             ->default('draft')
                                             ->required(),
-                                        TextInput::make('brand_id')
-                                            ->label(__('product::product.brand_id'))
-                                            ->numeric()
-                                            ->integer(),
                                         TextInput::make('weight')
                                             ->label(__('product::product.weight'))
                                             ->numeric()
                                             ->step(0.001),
-                                        KeyValue::make('meta')
-                                            ->label(__('product::product.meta'))
+                                        TextInput::make('weight_unit')
+                                            ->label(__('product::product.weight_unit'))
+                                            ->maxLength(16),
+                                        TextInput::make('unit_of_measure')
+                                            ->label(__('product::product.unit_of_measure'))
+                                            ->maxLength(32),
+                                        TextInput::make('brand_id')
+                                            ->label(__('product::product.brand_id'))
+                                            ->numeric()
+                                            ->integer(),
+                                        KeyValue::make('custom_properties')
+                                            ->label(__('product::product.custom_properties'))
                                             ->columnSpanFull(),
                                     ]),
                                 Section::make(__('product::product.section_seo'))
@@ -229,6 +257,10 @@ class ProductResource extends BaseDraftResource
                     ->label(__('product::product.sku'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('type')
+                    ->label(__('product::product.type'))
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('price')
                     ->label(__('product::product.price'))
                     ->money('EUR')
@@ -273,11 +305,6 @@ class ProductResource extends BaseDraftResource
             'edit' => EditProduct::route('/{record}/edit'),
             'view' => ViewProduct::route('/{record}'),
         ];
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
     }
 
     public static function setCurrentTab(?string $tab): void

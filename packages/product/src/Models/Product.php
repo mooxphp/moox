@@ -6,17 +6,27 @@ namespace Moox\Product\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Product\Database\Factories\ProductFactory;
 
 /**
  * @property string $sku
+ * @property string $type
+ * @property string $status
+ * @property string|null $ean
+ * @property string|null $mpn
  * @property string|float $price
  * @property string|float|null $sale_price
+ * @property string|float|null $cost_price
  * @property int $stock
- * @property string $status
- * @property int|null $brand_id
+ * @property int $stock_min
  * @property string|float|null $weight
- * @property array|null $meta
+ * @property string|null $weight_unit
+ * @property string|null $unit_of_measure
+ * @property int|null $brand_id
+ * @property bool $is_purchasable
+ * @property bool $is_sellable
+ * @property array|null $custom_properties
  * @property string[] $translatedAttributes
  * @property-read string $name
  * @property-read string $slug
@@ -28,6 +38,7 @@ use Moox\Product\Database\Factories\ProductFactory;
 class Product extends BaseDraftModel
 {
     use HasFactory;
+    use HasModelTaxonomy;
 
     /**
      * {@inheritdoc}
@@ -49,13 +60,22 @@ class Product extends BaseDraftModel
      */
     protected $fillable = [
         'sku',
+        'type',
+        'status',
+        'ean',
+        'mpn',
         'price',
         'sale_price',
+        'cost_price',
         'stock',
-        'status',
-        'brand_id',
+        'stock_min',
         'weight',
-        'meta',
+        'weight_unit',
+        'unit_of_measure',
+        'brand_id',
+        'is_purchasable',
+        'is_sellable',
+        'custom_properties',
         'uuid',
         'ulid',
     ];
@@ -68,10 +88,14 @@ class Product extends BaseDraftModel
         return [
             'price' => 'decimal:2',
             'sale_price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
             'stock' => 'integer',
+            'stock_min' => 'integer',
             'brand_id' => 'integer',
             'weight' => 'decimal:3',
-            'meta' => 'json',
+            'is_purchasable' => 'boolean',
+            'is_sellable' => 'boolean',
+            'custom_properties' => 'array',
         ];
     }
 

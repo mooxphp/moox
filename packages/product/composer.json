@@ -1,6 +1,6 @@
 {
     "name": "moox/product",
-    "description": "Moox product entity with translatable name, slug, descriptions and commerce fields.",
+    "description": "Moox sellable product variant with commerce fields and config-driven assignments.",
     "keywords": [
         "Moox",
         "Laravel",
