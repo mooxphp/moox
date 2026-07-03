@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\ProductGroup\Database\Factories\ProductGroupFactory;
 
@@ -17,9 +16,10 @@ use Moox\ProductGroup\Database\Factories\ProductGroupFactory;
  * @property string $type
  * @property string $status
  * @property int|null $parent_id
- * @property int $_lft
- * @property int $_rgt
+ * @property int|null $attribute_set_id
+ * @property string|null $default_unit
  * @property string|null $sku_prefix
+ * @property int|null $brand_id
  * @property array|null $custom_properties
  * @property string[] $translatedAttributes
  * @property-read string $name
@@ -34,7 +34,6 @@ class ProductGroup extends BaseDraftModel
 {
     use HasFactory;
     use HasModelTaxonomy;
-    use InteractsWithCustomFields;
 
     /**
      * {@inheritdoc}
@@ -59,9 +58,10 @@ class ProductGroup extends BaseDraftModel
         'type',
         'status',
         'parent_id',
-        '_lft',
-        '_rgt',
+        'attribute_set_id',
+        'default_unit',
         'sku_prefix',
+        'brand_id',
         'custom_properties',
         'uuid',
         'ulid',
@@ -74,8 +74,8 @@ class ProductGroup extends BaseDraftModel
     {
         return [
             'parent_id' => 'integer',
-            '_lft' => 'integer',
-            '_rgt' => 'integer',
+            'attribute_set_id' => 'integer',
+            'brand_id' => 'integer',
             'custom_properties' => 'array',
         ];
     }
