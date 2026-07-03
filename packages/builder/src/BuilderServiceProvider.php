@@ -27,6 +27,7 @@ use Moox\Builder\FieldTypes\Types\OembedFieldType;
 use Moox\Builder\FieldTypes\Types\PasswordFieldType;
 use Moox\Builder\FieldTypes\Types\RadioFieldType;
 use Moox\Builder\FieldTypes\Types\RangeFieldType;
+use Moox\Builder\FieldTypes\Types\RelationFieldType;
 use Moox\Builder\FieldTypes\Types\RepeaterFieldType;
 use Moox\Builder\FieldTypes\Types\RichTextFieldType;
 use Moox\Builder\FieldTypes\Types\SectionFieldType;
@@ -145,6 +146,7 @@ class BuilderServiceProvider extends MooxServiceProvider
             new RangeFieldType,
             new ButtonGroupFieldType,
             new LinkFieldType,
+            new RelationFieldType,
         ];
 
         if (MediaIntegration::isAvailable()) {

@@ -296,9 +296,17 @@ class FieldGroupPersistence
                 'name' => (string) $row['name'],
                 'label' => $isDefaultLocale ? $label : ($field->label ?: $label),
                 'type' => (string) $row['type'],
+                // Structural config keys (e.g. related_entity, multiple) are
+                // locale-independent and must always take the submitted value.
+                // On a non-default locale only the translatable keys stored on
+                // the main record are preserved as the default-locale fallback;
+                // their localized values live in the translation row.
                 'config' => $isDefaultLocale
                     ? $config
-                    : array_merge($structuralConfig, array_diff_key($field->config ?? [], array_flip(BuilderLocaleResolver::TRANSLATABLE_CONFIG_KEYS))),
+                    : array_merge(
+                        array_intersect_key($field->config ?? [], array_flip(BuilderLocaleResolver::TRANSLATABLE_CONFIG_KEYS)),
+                        $structuralConfig,
+                    ),
                 'validation' => [
                     'required' => (bool) ($row['required'] ?? false),
                     'rules' => $row['validation']['rules'] ?? [],

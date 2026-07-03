@@ -133,6 +133,7 @@ abstract class FieldType
             'number' => 'heroicon-o-hashtag',
             'range' => 'heroicon-o-adjustments-horizontal',
             'url', 'link' => 'heroicon-o-link',
+            'relation' => 'heroicon-o-arrows-right-left',
             'color' => 'heroicon-o-swatch',
             'date' => 'heroicon-o-calendar',
             'datetime' => 'heroicon-o-calendar-days',

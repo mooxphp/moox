@@ -32,7 +32,7 @@ final class TypedValueColumns
             'date' => 'value_date',
             'datetime' => 'value_datetime',
             'toggle' => 'value_boolean',
-            'multiselect', 'checkbox_list', 'link', 'image', 'gallery', 'file', 'group', 'repeater', 'flexible_content' => 'value_json',
+            'multiselect', 'checkbox_list', 'link', 'relation', 'image', 'gallery', 'file', 'group', 'repeater', 'flexible_content' => 'value_json',
             'button_group' => 'value_string',
             default => 'value_string',
         };
@@ -50,6 +50,11 @@ final class TypedValueColumns
     public static function isImageColumnType(string $type): bool
     {
         return in_array($type, ['image', 'gallery'], true);
+    }
+
+    public static function isRelationColumnType(string $type): bool
+    {
+        return $type === 'relation';
     }
 
     /**

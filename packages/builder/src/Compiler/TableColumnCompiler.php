@@ -63,7 +63,7 @@ class TableColumnCompiler
         $fields = $this->storableFieldCollector
             ->definitionsFromList($fieldGroups->flatMap(fn (FieldGroupDefinition $group): Collection => $group->fields))
             ->filter(fn (FieldDefinition $field): bool => $field->showInTable()
-                && ($this->isColumnable($field) || $this->isImageColumn($field)))
+                && ($this->isColumnable($field) || $this->isImageColumn($field) || $this->isRelationColumn($field)))
             ->values();
 
         $columns = [];
@@ -85,6 +85,11 @@ class TableColumnCompiler
         return TypedValueColumns::isImageColumnType($field->type);
     }
 
+    protected function isRelationColumn(FieldDefinition $field): bool
+    {
+        return TypedValueColumns::isRelationColumnType($field->type);
+    }
+
     protected function compileColumn(
         FieldDefinition $field,
         string $entity,
@@ -94,6 +99,10 @@ class TableColumnCompiler
     ): Column {
         if ($this->isImageColumn($field)) {
             return $this->compileImageColumn($field);
+        }
+
+        if ($this->isRelationColumn($field)) {
+            return $this->compileRelationColumn($field);
         }
 
         $valueColumn = TypedValueColumns::columnForType($field->type);
@@ -220,6 +229,42 @@ class TableColumnCompiler
         }
 
         return $column;
+    }
+
+    protected function compileRelationColumn(FieldDefinition $field): Column
+    {
+        return TextColumn::make($field->name)
+            ->label($field->label)
+            ->placeholder('—')
+            ->getStateUsing(function (Model $record) use ($field): ?string {
+                $presented = $this->resolvePresentedValue($field, $record);
+
+                return $this->formatRelationColumnState($presented);
+            })
+            ->toggleable(isToggledHiddenByDefault: $field->isColumnHiddenByDefault());
+    }
+
+    protected function formatRelationColumnState(mixed $presented): ?string
+    {
+        if ($presented === null) {
+            return null;
+        }
+
+        if (is_array($presented) && array_key_exists('label', $presented)) {
+            return (string) $presented['label'];
+        }
+
+        if (! is_array($presented) || ! array_is_list($presented)) {
+            return null;
+        }
+
+        $labels = collect($presented)
+            ->map(fn (mixed $item): ?string => is_array($item) ? ($item['label'] ?? null) : null)
+            ->filter()
+            ->values()
+            ->all();
+
+        return $labels === [] ? null : implode(', ', $labels);
     }
 
     /**

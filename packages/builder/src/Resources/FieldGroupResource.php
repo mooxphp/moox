@@ -182,6 +182,7 @@ class FieldGroupResource extends Resource
                                                 ->required()
                                                 ->searchable()
                                                 ->live()
+                                                ->afterStateUpdated(fn ($state, callable $set, callable $get): mixed => static::seedConfigForFieldType((string) $state, $set, $get))
                                                 ->native(false),
                                         ]),
                                     TextInput::make('name')
@@ -421,6 +422,7 @@ class FieldGroupResource extends Resource
                         ->required()
                         ->searchable()
                         ->live()
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get): mixed => static::seedConfigForFieldType((string) $state, $set, $get))
                         ->native(false),
                 ]),
             TextInput::make('name')
@@ -495,6 +497,7 @@ class FieldGroupResource extends Resource
                         ->required()
                         ->searchable()
                         ->live()
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get): mixed => static::seedConfigForFieldType((string) $state, $set, $get))
                         ->native(false),
                 ]),
             TextInput::make('name')
@@ -564,9 +567,30 @@ class FieldGroupResource extends Resource
         return TypedValueColumns::isImageColumnType($type);
     }
 
+    protected static function fieldTypeSupportsRelationColumn(?string $type): bool
+    {
+        if (blank($type)) {
+            return false;
+        }
+
+        try {
+            $fieldType = app(FieldTypeRegistry::class)->get($type);
+
+            if (! $fieldType->storesValue() || $fieldType->hasSubFields()) {
+                return false;
+            }
+        } catch (UnknownFieldTypeException) {
+            return false;
+        }
+
+        return TypedValueColumns::isRelationColumnType($type);
+    }
+
     protected static function fieldTypeSupportsAnyColumn(?string $type): bool
     {
-        return static::fieldTypeSupportsColumn($type) || static::fieldTypeSupportsImageColumn($type);
+        return static::fieldTypeSupportsColumn($type)
+            || static::fieldTypeSupportsImageColumn($type)
+            || static::fieldTypeSupportsRelationColumn($type);
     }
 
     /**
@@ -891,7 +915,36 @@ class FieldGroupResource extends Resource
             $get('config.default');
         }
 
+        if ($type === 'relation') {
+            $get('config.multiple');
+            $get('config.related_entity');
+        }
+
         return static::typeSettingsSchema($type);
+    }
+
+    /**
+     * Ensures relation config keys exist in the repeater item state when the
+     * type settings section mounts inside a reactive schema closure.
+     *
+     * @see https://github.com/filamentphp/filament/issues/3575
+     */
+    protected static function seedConfigForFieldType(string $type, callable $set, callable $get): void
+    {
+        if ($type !== 'relation') {
+            return;
+        }
+
+        $config = $get('config');
+
+        if (! is_array($config)) {
+            $config = [];
+        }
+
+        $set('config', array_merge([
+            'related_entity' => null,
+            'multiple' => false,
+        ], $config));
     }
 
     /**

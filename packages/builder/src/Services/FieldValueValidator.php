@@ -11,6 +11,7 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\MediaFieldValueSupport;
 use Moox\Builder\Support\OptionValueRules;
+use Moox\Builder\Support\RelationValueRules;
 use Moox\Builder\Support\RichTextValue;
 
 class FieldValueValidator
@@ -195,6 +196,10 @@ class FieldValueValidator
 
         if ($field->type === 'file') {
             return $this->messagesForFile($field, $value, $path, $record);
+        }
+
+        if ($field->type === 'relation') {
+            return RelationValueRules::messages($field, $value, $path);
         }
 
         $messages = [];

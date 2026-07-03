@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\Builder\Registry;
 
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Moox\Builder\Concerns\HasCustomFields;
 
@@ -137,6 +139,129 @@ class EntityRegistry
     }
 
     /**
+     * All Filament resources that can be a relation target, keyed by a stable
+     * identifier. Unlike all(), this is not limited to resources that host
+     * custom fields, so relations can point to any Moox entity (e.g. users).
+     *
+     * @return array<string, class-string>
+     */
+    public function relatableResources(): array
+    {
+        $resources = [];
+        $seenModels = [];
+
+        $panelResources = $this->panelResources();
+        sort($panelResources);
+
+        foreach ($panelResources as $resourceClass) {
+            if (! method_exists($resourceClass, 'getModel')) {
+                continue;
+            }
+
+            $model = $resourceClass::getModel();
+
+            if (! is_string($model) || $model === '' || ! $this->modelIsQueryable($model)) {
+                continue;
+            }
+
+            // A relation always points at a model, so multiple resources that
+            // expose the same model represent the same target: keep only one.
+            if (isset($seenModels[$model])) {
+                continue;
+            }
+
+            $key = $this->relatableKeyFor($resourceClass);
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (isset($resources[$key]) && $resources[$key] !== $resourceClass) {
+                $key .= '_'.Str::of($model)->classBasename()->snake()->toString();
+            }
+
+            $seenModels[$model] = true;
+            $resources[$key] = $resourceClass;
+        }
+
+        ksort($resources);
+
+        return $resources;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function relatableOptions(): array
+    {
+        $resources = $this->relatableResources();
+
+        $labels = [];
+
+        foreach ($resources as $key => $resourceClass) {
+            $labels[$key] = $this->labelForResource($resourceClass);
+        }
+
+        // Distinct targets may share a label (e.g. two "Categories" models from
+        // different packages). Qualify collisions so every option is unambiguous.
+        $duplicates = array_keys(array_filter(array_count_values($labels), fn (int $count): bool => $count > 1));
+
+        foreach ($labels as $key => $label) {
+            if (in_array($label, $duplicates, true)) {
+                $labels[$key] = $label.' ('.$this->relatableQualifier($resources[$key]).')';
+            }
+        }
+
+        asort($labels);
+
+        return $labels;
+    }
+
+    /**
+     * @return class-string|null
+     */
+    public function relatedModelFor(string $key): ?string
+    {
+        $resourceClass = $this->relatableResources()[$key] ?? null;
+
+        if ($resourceClass === null || ! method_exists($resourceClass, 'getModel')) {
+            return null;
+        }
+
+        $model = $resourceClass::getModel();
+
+        return is_string($model) ? $model : null;
+    }
+
+    /**
+     * @return class-string|null
+     */
+    public function relatedResourceFor(string $key): ?string
+    {
+        return $this->relatableResources()[$key] ?? null;
+    }
+
+    /**
+     * Whether the model's database table exists and can be queried safely.
+     *
+     * @param  class-string<Model>  $modelClass
+     */
+    public function modelIsQueryable(string $modelClass): bool
+    {
+        if (! is_subclass_of($modelClass, Model::class)) {
+            return false;
+        }
+
+        try {
+            $table = (new $modelClass)->getTable();
+
+            return filled($table) && Schema::hasTable($table);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * @param  class-string  $resourceClass
      */
     public function usesCustomFields(string $resourceClass): bool
@@ -161,6 +286,17 @@ class EntityRegistry
      */
     protected function traitResources(): array
     {
+        return array_values(array_filter(
+            $this->panelResources(),
+            fn (string $resourceClass): bool => $this->usesCustomFields($resourceClass),
+        ));
+    }
+
+    /**
+     * @return list<class-string>
+     */
+    protected function panelResources(): array
+    {
         if (! class_exists(Filament::class)) {
             return [];
         }
@@ -175,13 +311,45 @@ class EntityRegistry
 
         foreach ($panels as $panel) {
             foreach ($panel->getResources() as $resourceClass) {
-                if ($this->usesCustomFields($resourceClass)) {
-                    $resources[] = $resourceClass;
-                }
+                $resources[] = $resourceClass;
             }
         }
 
         return array_values(array_unique($resources));
+    }
+
+    /**
+     * @param  class-string  $resourceClass
+     */
+    protected function relatableKeyFor(string $resourceClass): string
+    {
+        $entity = $this->resolveEntityKey($resourceClass);
+
+        if (is_string($entity) && $entity !== '') {
+            return $entity;
+        }
+
+        return Str::of(class_basename($resourceClass))
+            ->beforeLast('Resource')
+            ->snake()
+            ->toString();
+    }
+
+    /**
+     * A human-readable qualifier used to disambiguate resources that share a
+     * label, derived from the owning package/namespace segment.
+     *
+     * @param  class-string  $resourceClass
+     */
+    protected function relatableQualifier(string $resourceClass): string
+    {
+        $segments = explode('\\', $resourceClass);
+
+        // e.g. Moox\Press\Resources\CategoryResource => "Press",
+        //      App\Filament\Resources\CategoryResource => "App".
+        $segment = $segments[1] ?? $segments[0];
+
+        return Str::headline($segment);
     }
 
     /**
