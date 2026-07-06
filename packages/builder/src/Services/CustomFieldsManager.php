@@ -6,18 +6,17 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Moox\Builder\Concerns\HasCustomFields;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
+use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldVisibility;
 use Moox\Builder\Support\MediaIntegration;
-use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
 use Moox\Builder\Support\TypedValueColumns;
 
@@ -34,6 +33,7 @@ class CustomFieldsManager
         protected FieldValueValidator $fieldValueValidator,
         protected StorableFieldCollector $storableFieldCollector,
         protected BuilderLocaleResolver $localeResolver,
+        protected EntityRegistry $entityRegistry,
     ) {}
 
     /**
@@ -81,24 +81,6 @@ class CustomFieldsManager
         );
 
         return $groups->flatMap(fn ($group) => $this->storableFieldCollector->definitionsFromList($group->fields))->values();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function loadForModel(Model $record, string $entity, bool $fresh = false): array
-    {
-        $fields = $this->fieldsForEntity($entity);
-
-        if ($fields->isEmpty()) {
-            return [];
-        }
-
-        if ($fresh) {
-            return $this->loadValues($entity, $record, $fields);
-        }
-
-        return $this->loadCachedValues($entity, $record, $fields);
     }
 
     /**
@@ -231,6 +213,26 @@ class CustomFieldsManager
         $entity = $this->locationContextForResource($resourceClass)->entity;
         $locale = $this->localeResolver->valuesLocaleForResource($resourceClass);
 
+        // Only trust submitted values for fields that are actually part of the
+        // admin form. Admin-hidden fields must not be writable via crafted
+        // requests; they still receive their configured defaults below.
+        $adminVisibleNames = array_flip(
+            $this->visibleFieldsForEntity($entity, FieldVisibility::ADMIN)->pluck('name')->all(),
+        );
+        $data = array_intersect_key($data, $adminVisibleNames);
+
+        // Load the already-stored field names once instead of issuing an
+        // exists() query per field when deciding whether to apply defaults.
+        $storedFieldNames = $record->exists
+            ? array_flip(
+                FieldValue::query()
+                    ->forRecord($entity, $record->getKey())
+                    ->forLocale($locale)
+                    ->pluck('field_name')
+                    ->all(),
+            )
+            : [];
+
         foreach ($fields as $field) {
             $fieldType = $this->fieldTypeRegistry->get($field->type);
 
@@ -248,12 +250,7 @@ class CustomFieldsManager
 
             $value = $data[$field->name];
 
-            $hasStoredValue = $record->exists
-                && FieldValue::query()
-                    ->forRecord($entity, $record->getKey())
-                    ->forLocale($locale)
-                    ->where('field_name', $field->name)
-                    ->exists();
+            $hasStoredValue = isset($storedFieldNames[$field->name]);
 
             if (! $hasStoredValue && $defaultValue->hasConfiguredDefault($field)) {
                 if ($field->type === 'toggle' || $defaultValue->shouldApplyDefault($value, $field->type)) {
@@ -303,9 +300,12 @@ class CustomFieldsManager
             $value = $values[$field->name];
 
             if (ConditionalLogic::isVisibleForValues($field, $values)) {
-                OptionValueRules::assertValid($field, $value);
-
                 $this->fieldValueValidator->assertValid($field, $value, $record);
+            } else {
+                // A field hidden by conditional logic must never accept the
+                // submitted (untrusted, unvalidated) value. Clear it instead of
+                // persisting whatever the request contained.
+                $value = null;
             }
 
             $persisted = app(BuilderValuesResolver::class)->persistFieldValue($field, $value);
@@ -371,6 +371,6 @@ class CustomFieldsManager
      */
     public function usesCustomFields(string $resourceClass): bool
     {
-        return in_array(HasCustomFields::class, class_uses_recursive($resourceClass), true);
+        return $this->entityRegistry->usesCustomFields($resourceClass);
     }
 }

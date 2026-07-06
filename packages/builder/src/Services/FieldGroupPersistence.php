@@ -6,11 +6,11 @@ namespace Moox\Builder\Services;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Moox\Builder\FieldTypes\Capabilities\DisplayFormat;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\ConditionalLogic;
@@ -23,6 +23,7 @@ class FieldGroupPersistence
         protected FieldValuePurger $fieldValuePurger,
         protected BuilderLocaleResolver $localeResolver,
         protected DefinitionTranslator $definitionTranslator,
+        protected EntityRegistry $entityRegistry,
     ) {}
 
     /**
@@ -456,11 +457,6 @@ class FieldGroupPersistence
         $option->syncTranslationFallbackOnMainRecord($locale, ['label' => $label]);
     }
 
-    public function slugFromName(string $name): string
-    {
-        return Str::slug($name);
-    }
-
     /**
      * @param  Collection<int, Field>  $existing
      * @param  array<string, mixed>  $row
@@ -533,7 +529,33 @@ class FieldGroupPersistence
             $filtered['displayFormat'] = DisplayFormat::defaultFor($type);
         }
 
+        if ($type === 'relation' && array_key_exists('related_entity', $filtered)) {
+            $related = $this->sanitizeRelatedEntity($filtered['related_entity']);
+
+            if ($related === null) {
+                unset($filtered['related_entity']);
+            } else {
+                $filtered['related_entity'] = $related;
+            }
+        }
+
         return $filtered;
+    }
+
+    /**
+     * Only persist a related entity that is an actually relatable, registered
+     * resource. Prevents storing an arbitrary target string that would let the
+     * relation picker query models outside the intended whitelist.
+     */
+    protected function sanitizeRelatedEntity(mixed $relatedEntity): ?string
+    {
+        if (! is_string($relatedEntity) || $relatedEntity === '') {
+            return null;
+        }
+
+        $allowed = array_keys($this->entityRegistry->relatableResources());
+
+        return in_array($relatedEntity, $allowed, true) ? $relatedEntity : null;
     }
 
     /**

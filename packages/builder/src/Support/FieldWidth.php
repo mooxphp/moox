@@ -76,12 +76,4 @@ final class FieldWidth
     {
         return intdiv(self::GRID_COLUMNS, self::normalizeColumns($columns));
     }
-
-    /**
-     * @return list<string>
-     */
-    public static function values(): array
-    {
-        return array_keys(self::SPANS);
-    }
 }

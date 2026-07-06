@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Support;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,16 @@ use Moox\Builder\Registry\EntityRegistry;
  */
 final class RelationTargetResolver
 {
+    /**
+     * Request-scoped label memo (entity => [id => label]) so repeated relation
+     * targets across table rows and Livewire re-renders resolve without extra
+     * queries. The resolver is bound as scoped(), so this never outlives a
+     * request.
+     *
+     * @var array<string, array<int|string, string>>
+     */
+    protected array $labelMemo = [];
+
     public function __construct(
         protected EntityRegistry $entityRegistry,
     ) {}
@@ -52,7 +63,7 @@ final class RelationTargetResolver
         }
 
         try {
-            $query = $modelClass::query();
+            $query = $this->scopedQuery($entity, $modelClass);
 
             if ($term !== '') {
                 $query->where($titleAttribute, 'like', "%{$term}%");
@@ -88,21 +99,45 @@ final class RelationTargetResolver
             return [];
         }
 
-        $modelClass = $this->modelClass($entity);
+        $memo = $this->labelMemo[$entity] ?? [];
+        $missing = array_values(array_filter($ids, fn (mixed $id): bool => ! array_key_exists($id, $memo)));
 
-        if ($modelClass === null || ! $this->entityRegistry->modelIsQueryable($modelClass)) {
-            return [];
+        if ($missing !== []) {
+            $modelClass = $this->modelClass($entity);
+
+            if ($modelClass === null || ! $this->entityRegistry->modelIsQueryable($modelClass)) {
+                return $this->pickLabels($memo, $ids);
+            }
+
+            $model = new $modelClass;
+
+            try {
+                foreach ($modelClass::query()->whereIn($model->getKeyName(), $missing)->get() as $record) {
+                    $memo[$record->getKey()] = $this->titleFor($entity, $record);
+                }
+
+                $this->labelMemo[$entity] = $memo;
+            } catch (QueryException) {
+                return $this->pickLabels($memo, $ids);
+            }
         }
 
-        $model = new $modelClass;
+        return $this->pickLabels($memo, $ids);
+    }
+
+    /**
+     * @param  array<int|string, string>  $memo
+     * @param  list<int|string>  $ids
+     * @return array<int|string, string>
+     */
+    protected function pickLabels(array $memo, array $ids): array
+    {
         $labels = [];
 
-        try {
-            foreach ($modelClass::query()->whereIn($model->getKeyName(), $ids)->get() as $record) {
-                $labels[$record->getKey()] = $this->titleFor($entity, $record);
+        foreach ($ids as $id) {
+            if (array_key_exists($id, $memo)) {
+                $labels[$id] = $memo[$id];
             }
-        } catch (QueryException) {
-            return [];
         }
 
         return $labels;
@@ -142,10 +177,35 @@ final class RelationTargetResolver
         }
 
         try {
-            return $modelClass::query()->whereKey($id)->exists();
+            return $this->scopedQuery($entity, $modelClass)->whereKey($id)->exists();
         } catch (QueryException) {
             return false;
         }
+    }
+
+    /**
+     * Base query for enumerating/validating relation targets. Prefers the
+     * target resource's own Eloquent query so global/tenant/soft-delete scopes
+     * apply, preventing selection or validation of records that lie outside the
+     * resource's intended visibility. Falls back to the plain model query when
+     * no scoped resource query is available (e.g. outside a panel context).
+     *
+     * @param  class-string<Model>  $modelClass
+     * @return Builder<Model>
+     */
+    protected function scopedQuery(string $entity, string $modelClass): Builder
+    {
+        $resource = $this->resourceClass($entity);
+
+        if ($resource !== null && method_exists($resource, 'getEloquentQuery')) {
+            try {
+                return $resource::getEloquentQuery();
+            } catch (\Throwable) {
+                // Fall back to the unscoped model query below.
+            }
+        }
+
+        return $modelClass::query();
     }
 
     protected function titleFor(string $entity, Model $record): string

@@ -13,10 +13,28 @@ use Moox\Builder\Concerns\HasCustomFields;
 class EntityRegistry
 {
     /**
+     * Memoized entity/relatable discovery. The set of Filament resources is
+     * fixed once panels are booted, so scanning them once per request (this
+     * singleton's lifetime) avoids repeated, expensive panel traversals.
+     *
+     * @var array<string, array{resource?: class-string, label?: string}>|null
+     */
+    protected ?array $allCache = null;
+
+    /**
+     * @var array<string, class-string>|null
+     */
+    protected ?array $relatableCache = null;
+
+    /**
      * @return array<string, array{resource?: class-string, label?: string}>
      */
     public function all(): array
     {
+        if ($this->allCache !== null) {
+            return $this->allCache;
+        }
+
         $entities = [];
 
         foreach ($this->traitResources() as $resourceClass) {
@@ -32,7 +50,7 @@ class EntityRegistry
             ];
         }
 
-        return $entities;
+        return $this->allCache = $entities;
     }
 
     /**
@@ -147,6 +165,10 @@ class EntityRegistry
      */
     public function relatableResources(): array
     {
+        if ($this->relatableCache !== null) {
+            return $this->relatableCache;
+        }
+
         $resources = [];
         $seenModels = [];
 
@@ -186,7 +208,7 @@ class EntityRegistry
 
         ksort($resources);
 
-        return $resources;
+        return $this->relatableCache = $resources;
     }
 
     /**
@@ -262,11 +284,20 @@ class EntityRegistry
     }
 
     /**
+     * @var array<class-string, bool>
+     */
+    protected static array $usesCustomFieldsCache = [];
+
+    /**
      * @param  class-string  $resourceClass
      */
     public function usesCustomFields(string $resourceClass): bool
     {
-        return in_array(HasCustomFields::class, class_uses_recursive($resourceClass), true);
+        return self::$usesCustomFieldsCache[$resourceClass] ??= in_array(
+            HasCustomFields::class,
+            class_uses_recursive($resourceClass),
+            true,
+        );
     }
 
     /**

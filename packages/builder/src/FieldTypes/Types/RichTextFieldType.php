@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Capabilities\HelperText;
 use Moox\Builder\FieldTypes\Capabilities\MaxLength;
 use Moox\Builder\FieldTypes\FieldType;
+use Moox\Builder\Support\HtmlSanitizer;
 use Moox\Builder\Support\RichTextValue;
 
 class RichTextFieldType extends FieldType
@@ -20,6 +21,18 @@ class RichTextFieldType extends FieldType
     public static function key(): string
     {
         return 'rich_text';
+    }
+
+    public function persistValue(mixed $value, ?FieldDefinition $field = null): mixed
+    {
+        // Rich text is authored HTML and therefore untrusted; strip executable
+        // XSS vectors before storing so API/frontend consumers receive safe
+        // markup. Structured (JSON document) values are left untouched.
+        if (is_string($value)) {
+            return HtmlSanitizer::clean($value);
+        }
+
+        return $value;
     }
 
     public function capabilities(): array

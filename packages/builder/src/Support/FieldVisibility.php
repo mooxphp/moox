@@ -28,14 +28,6 @@ final class FieldVisibility
     public const CONTEXTS = [self::ADMIN, self::FRONTEND, self::API];
 
     /**
-     * @param  array<string, mixed>  $settings
-     */
-    public static function isVisible(array $settings, string $context): bool
-    {
-        return (bool) ($settings["visible_{$context}"] ?? true);
-    }
-
-    /**
      * Keep only the groups (and, cascading, the fields) visible in the given context.
      *
      * @param  Collection<int, FieldGroupDefinition>  $groups

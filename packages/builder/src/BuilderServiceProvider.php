@@ -55,6 +55,7 @@ use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
 use Moox\Builder\Support\CustomFieldsFilamentHooks;
 use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Support\MediaIntegration;
+use Moox\Builder\Support\RelationTargetResolver;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -91,6 +92,11 @@ class BuilderServiceProvider extends MooxServiceProvider
         });
 
         $this->app->singleton(EntityRegistry::class);
+
+        // Request-scoped so its relation-label memo is reused across table rows
+        // and re-renders within a request, while staying Octane-safe (reset per
+        // request, so target title changes are never served stale).
+        $this->app->scoped(RelationTargetResolver::class);
     }
 
     public function packageBooted(): void
