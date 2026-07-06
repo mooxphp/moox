@@ -137,7 +137,7 @@ One row per value:
 | `value_date` | date |
 | `value_datetime` | datetime |
 | `value_boolean` | toggle |
-| `value_json` | multiselect, checkbox_list, link, image, gallery, file, group, repeater, flexible_content |
+| `value_json` | multiselect, checkbox_list, link, relation, image, gallery, file, group, repeater, flexible_content |
 | `locale` | Locale variant for this value (e.g. `en_US`, `de_CH`) |
 
 Unique: `(entity, record_id, field_name, locale)`.
@@ -185,6 +185,7 @@ Each inner list = AND group, multiple groups = OR. The matcher currently only su
 3. SchemaCompiler::compile()
    → one Filament section per group
    → layout fields: tabs, group, repeater, flexible content (Builder)
+   → conditional logic: visible() closures on fields with rules
    → afterStateHydrated loads values via CustomFieldsManager (one query per record, cached)
    → Filament Builder: hydrateItems() for UUID-based block keys
 ```
@@ -200,8 +201,9 @@ Each inner list = AND group, multiple groups = OR. The matcher currently only su
    → checks: does the resource use HasCustomFields?
 
 4. CustomFieldsManager::saveFromFormData()
-   → extracts known field keys from $data
-   → FieldValueValidator + OptionValueRules
+   → only admin-visible fields accept submitted values (crafting hidden fields is ignored)
+   → FieldValueValidator (includes option/relation/media rules)
+   → fields hidden by conditional logic skip validation and are cleared on save
    → updateOrCreate in builder_field_values
 ```
 
@@ -317,6 +319,9 @@ Navigation: **Fields → Field Groups**
 | **Options** | For select/radio/multiselect/checkbox list |
 | **Subfields** | For group and repeater |
 | **Layouts** | For flexible content (layout key + subfields) |
+| **Visibility** | Per context: admin, frontend, API (`visible_*` toggles) |
+| **Conditional logic** | Show/hide rules based on sibling field values (root-level v1) |
+| **Table column** | Optional list-column settings for scalar, media, and relation fields |
 
 Repeater rows are collapsed by default and show type, key, and required flag in the label.
 
@@ -328,7 +333,7 @@ Package UI strings: `resources/lang/de/builder.php`, `en/builder.php`.
 
 ## Field Types & Capabilities
 
-### Built-in field types (28 with `moox/media`, otherwise 25)
+### Built-in field types (29 with `moox/media`, otherwise 26)
 
 | Category | Keys |
 |----------|------|
@@ -337,6 +342,7 @@ Package UI strings: `resources/lang/de/builder.php`, `en/builder.php`.
 | **Choice** | `select`, `multiselect`, `checkbox_list`, `radio`, `button_group`, `toggle` |
 | **Date** | `date`, `datetime`, `time` |
 | **Other** | `color`, `link`, `message`, `oembed` |
+| **Relation** | `relation` (link to other Moox Filament entities) |
 | **Media** *(requires `moox/media`)* | `image`, `gallery`, `file` |
 | **Layout** | `tab`, `section`, `group`, `repeater`, `flexible_content` |
 
@@ -360,6 +366,53 @@ Types `image`, `gallery`, and `file` are only registered when `moox/media` is in
 - Validation: media exists, scope matches the record, MIME type matches the field type
 
 API output uses `presentValue()` / `MediaItemResource` (URLs, thumbnails — no `internal_note`). See [API Serialization](#api-serialization).
+
+### Relation fields
+
+Type `relation` links a custom field to records of another Moox entity (any Filament resource with a queryable model — not limited to resources that use custom fields).
+
+| Setting | Effect |
+|---------|--------|
+| `config.related_entity` | Target entity key (from `EntityRegistry::relatableResources()`) |
+| `config.multiple` | Single select vs multi-select |
+| `config.min` / `config.max` | Selection limits when `multiple` is enabled |
+
+**Runtime:** searchable `Select` with preloaded suggestions, scoped queries via the target resource's `getEloquentQuery()` (tenant/soft-delete scopes apply).
+
+**Storage:** pure IDs in `value_json` (single ID or array).
+
+**API:** `presentValue()` resolves `{id, label}` objects via `RelationTargetResolver`.
+
+Invalid or non-relatable `related_entity` values are stripped when field groups are saved.
+
+### Conditional logic (v1)
+
+Fields can be shown or hidden based on other field values in the **same field group** (root-level siblings only — not inside repeaters, groups, or flexible layouts).
+
+| Setting | Values |
+|---------|--------|
+| `settings.conditions.enabled` | Toggle rules on/off |
+| `settings.conditions.action` | `show` or `hide` |
+| `settings.conditions.logic` | `and` or `or` |
+| `settings.conditions.rules` | `{field, operator, value}` per rule |
+
+**Operators:** `equals`, `not_equals`, `empty`, `not_empty`, `contains`.
+
+**Save behaviour:** hidden fields are not validated; any submitted value for a hidden field is cleared (not persisted). This matches ACF-style semantics and prevents crafted requests from writing unvalidated data.
+
+**Form behaviour:** `SchemaCompiler` applies Filament `visible()` closures that re-evaluate when trigger fields change (`->live()`).
+
+### Field visibility (contexts)
+
+Each field and field group can be toggled per context:
+
+| Context | Key | Wired at runtime |
+|---------|-----|------------------|
+| Admin | `visible_admin` | Yes — `HasCustomFields`, `saveFromFormData` |
+| API | `visible_api` | Yes — `MergesCustomFields` |
+| Frontend | `visible_frontend` | Configurable in admin; **no packaged frontend renderer yet** |
+
+Use `CustomFieldsManager::visibleFieldsForEntity($entity, FieldVisibility::API)` (or `ADMIN`) when building custom consumers.
 
 ### Layout fields
 
@@ -402,6 +455,7 @@ Widths apply inside groups, tabs, sections, and repeaters. Defaulting to `full` 
 | `MessageBody` | Info text (message) |
 | `RepeaterItems` | Min/max entries (repeater, flexible content) |
 | `GalleryFiles` | Min/max files (gallery) |
+| `RelationSettings` | Target entity, multiple, min/max (relation) |
 
 Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilities()`, optionally `castValue()`, `hasSubFields()`, `hasLayouts()`.
 
@@ -410,6 +464,9 @@ Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilitie
 - **Required fields** and **capabilities** are applied as Filament rules on the component.
 - **Nested values** (repeater, group, flexible content) are also validated by `FieldValueValidator` — including empty repeater rows and unknown layouts.
 - **Media fields:** existence, scope, MIME type (image vs file), and min/max files for gallery.
+- **Relation fields:** target exists, scoped to the resource query, min/max when multiple.
+- **Conditional logic:** required rules on hidden fields are skipped; hidden values are not persisted.
+- **Rich text:** HTML strings are sanitized on persist (`HtmlSanitizer`); prefer rendering API output through Filament's `RichContentRenderer::toHtml()` / `Str::sanitizeHtml()` when converting TipTap JSON to HTML.
 
 ---
 
@@ -627,6 +684,8 @@ return ItemApiResource::collection($items);
 | `group` | `{"subfield": ...}` (nested, presented) |
 | `repeater` | `[{...}, {...}]` |
 | `flexible_content` | `[{"type": "hero", "data": {...}}]` |
+| `relation` (single) | `{"id": 1, "label": "Record title"}` |
+| `relation` (multiple) | `[{"id": 1, "label": "..."}, ...]` |
 
 ### Without JsonResource
 
@@ -663,7 +722,8 @@ packages/builder/
     │   └── InteractsWithBuilderLocale.php
     ├── Compiler/
     │   ├── LocationMatcher.php
-    │   └── SchemaCompiler.php
+    │   ├── SchemaCompiler.php
+    │   └── TableColumnCompiler.php
     ├── Data/
     │   ├── FieldDefinition.php
     │   ├── FieldGroupDefinition.php
@@ -702,12 +762,20 @@ packages/builder/
     │   └── FieldValueValidator.php
     └── Support/
         ├── BuilderLocaleResolver.php
+        ├── ConditionalLogic.php
         ├── CustomFieldsFilamentHooks.php
+        ├── CustomFieldsTranslatability.php
         ├── DefinitionTranslator.php
         ├── EntityModelDeletionRegistrar.php
+        ├── FieldVisibility.php
+        ├── FieldWidth.php
+        ├── HtmlSanitizer.php
         ├── MediaFieldValueSupport.php
         ├── MediaIntegration.php
         ├── OptionValueRules.php
+        ├── RelationTargetResolver.php
+        ├── RelationValueRules.php
+        ├── RichTextValue.php
         └── TypedValueColumns.php
 ```
 
@@ -752,6 +820,9 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Values in `builder_field_values` | typed columns filled |
 | Flexible content sortable | no errors after save/load |
 | Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
+| Relation field on a group | searchable select, save/load IDs, API shows labels |
+| Conditional logic (show/hide) | field visibility updates live; hidden required fields do not block save |
+| `?lang=` on translatable resource | values stored per `locale` column |
 
 ---
 
@@ -760,29 +831,51 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 **Implemented:**
 
 - Nested fields via `parent_field_id` (group, repeater, flexible content)
-- Layout fields: tab, group, repeater, flexible content
+- Layout fields: tab, section, group, repeater, flexible content
 - Entity discovery via `HasCustomFields` in Filament panels
 - Nested validation (`FieldValueValidator`)
 - `InteractsWithCustomFields` on consumer models (`customFields()`, attribute access, queries, eager load)
-- `MergesCustomFields` for API resources
-- `FieldType::presentValue()` for API serialization (ISO dates, password masking, nested fields, media via `MediaItemResource`)
+- `MergesCustomFields` for API resources (respects `visible_api`)
+- `FieldType::presentValue()` for API serialization (ISO dates, password masking, nested fields, media, relations)
 - Repeater min/max (`RepeaterItems` capability)
 - Media fields: `image`, `gallery`, `file` (optional with `moox/media`)
 - `BuilderMediaPicker` with isolated modal per field and MIME filter in the library
 - `media_usables` sync and metadata snapshot updates for media fields
+- **Relation fields** — link to Moox Filament entities, scoped search/validation, API `{id, label}` output
+- **Conditional logic (v1)** — show/hide on root-level sibling fields; save-side enforcement
+- **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
+- **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
+- **Field width grid** — 12-column layout per field (`FieldWidth`)
+- **Sidebar placement** — `main` vs `sidebar` field group slots
+- **Translations** — definition + value locales (Astrotomic + `builder_field_values.locale`)
+- **Security hardening** — admin-hidden fields not writable via request; relation targets whitelisted and scoped; rich-text HTML sanitization on persist
+
+**v1 limitations (known):**
+
+- Location rules: only `entity` param (`==` / `!=`) — no taxonomy, template, user role, etc.
+- Conditional logic: root-level siblings only — not inside repeaters/groups/flexible content
+- `visible_frontend`: stored in admin, but no packaged Blade/theme renderer yet
+- Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
+- Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
+- No field-group import/export (staging → production is manual today)
+- No clone field type (ACF-style reusable field group in a field)
 
 **Not implemented yet:**
 
-- Relational fields (post object, relationship, user, taxonomy)
 - Clone field type (ACF)
 - Location params beyond `entity`
-- Conditional logic in forms
+- Nested conditional logic (inside compound fields)
+- Frontend rendering helper (`get_field()`-style Blade component)
+- Field group definition import/export
+- Custom validation rules UI in admin
+- Package-level policies on field group management
 
 **Intentionally out of scope:**
 
 - WordPress/postmeta driver
 - JSON column on the model
 - Accordion as its own field type (tabs + sections are enough)
+- Packaged HTTP REST routes (use `MergesCustomFields` / `BuilderValuesResolver` in your API layer)
 
 ---
 
