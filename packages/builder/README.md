@@ -466,7 +466,7 @@ Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilitie
 - **Media fields:** existence, scope, MIME type (image vs file), and min/max files for gallery.
 - **Relation fields:** target exists, scoped to the resource query, min/max when multiple.
 - **Conditional logic:** required rules on hidden fields are skipped; hidden values are not persisted.
-- **Rich text:** HTML strings are sanitized on persist (`HtmlSanitizer`); prefer rendering API output through Filament's `RichContentRenderer::toHtml()` / `Str::sanitizeHtml()` when converting TipTap JSON to HTML.
+- **Rich text:** HTML strings and TipTap JSON documents are sanitized on persist via Filament's `Str::sanitizeHtml()` and `RichContentRenderer::toHtml()`; stored values are always safe HTML in `value_text`.
 
 ---
 
@@ -769,7 +769,6 @@ packages/builder/
         ├── EntityModelDeletionRegistrar.php
         ├── FieldVisibility.php
         ├── FieldWidth.php
-        ├── HtmlSanitizer.php
         ├── MediaFieldValueSupport.php
         ├── MediaIntegration.php
         ├── OptionValueRules.php

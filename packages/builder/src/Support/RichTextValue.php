@@ -4,8 +4,36 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Support;
 
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
+use Illuminate\Support\Str;
+
 final class RichTextValue
 {
+    public static function sanitizeForPersist(mixed $value): mixed
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        if (is_array($value) && self::isTipTapDocument($value)) {
+            return RichContentRenderer::make($value)->toHtml();
+        }
+
+        if (is_string($value)) {
+            return Str::sanitizeHtml($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $document
+     */
+    public static function isTipTapDocument(array $document): bool
+    {
+        return ($document['type'] ?? null) === 'doc';
+    }
+
     public static function isEmpty(mixed $value): bool
     {
         if ($value === null || $value === '') {
