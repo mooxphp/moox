@@ -597,6 +597,12 @@ class FieldGroupResource extends Resource
             || static::fieldTypeSupportsRelationColumn($type);
     }
 
+    protected static function fieldTypeSupportsSortableSearchableColumn(?string $type): bool
+    {
+        return static::fieldTypeSupportsColumn($type)
+            || static::fieldTypeSupportsRelationColumn($type);
+    }
+
     /**
      * Presentation options (badge, color, icon) only apply to text-based columns,
      * not to the boolean icon column used for toggle fields.
@@ -604,6 +610,18 @@ class FieldGroupResource extends Resource
     protected static function fieldTypeUsesTextColumn(?string $type): bool
     {
         return static::fieldTypeSupportsColumn($type) && $type !== 'toggle';
+    }
+
+    protected static function fieldTypeSupportsRelationBadge(callable $get): bool
+    {
+        return $get('type') === 'relation'
+            && ! (bool) ($get('config.multiple') ?? false);
+    }
+
+    protected static function fieldTypeSupportsTextColumnPresentation(callable $get): bool
+    {
+        return static::fieldTypeUsesTextColumn($get('type'))
+            || static::fieldTypeSupportsRelationBadge($get);
     }
 
     /**
@@ -656,7 +674,7 @@ class FieldGroupResource extends Resource
                                 ->default(true),
                         ])
                         ->visible(fn (callable $get): bool => $enabled($get)
-                            && static::fieldTypeSupportsColumn($get('type'))),
+                            && static::fieldTypeSupportsSortableSearchableColumn($get('type'))),
                     Toggle::make('settings.hidden_by_default')
                         ->label(__('builder::builder.field.column_hidden_by_default'))
                         ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_hidden_by_default_helper'))
@@ -674,14 +692,16 @@ class FieldGroupResource extends Resource
                                 ->label(__('builder::builder.field.column_color'))
                                 ->options(static::columnColorOptions())
                                 ->placeholder(__('builder::builder.field.column_color_default'))
-                                ->native(false),
+                                ->native(false)
+                                ->visible(fn (callable $get): bool => static::fieldTypeUsesTextColumn($get('type'))),
                             TextInput::make('settings.icon')
                                 ->label(__('builder::builder.field.column_icon'))
                                 ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_icon_helper'))
-                                ->placeholder('heroicon-o-star'),
+                                ->placeholder('heroicon-o-star')
+                                ->visible(fn (callable $get): bool => static::fieldTypeUsesTextColumn($get('type'))),
                         ])
                         ->visible(fn (callable $get): bool => $enabled($get)
-                            && static::fieldTypeUsesTextColumn($get('type'))),
+                            && static::fieldTypeSupportsTextColumnPresentation($get)),
                     Grid::make(2)
                         ->schema([
                             Select::make('settings.image_shape')

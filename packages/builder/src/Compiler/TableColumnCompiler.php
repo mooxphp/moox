@@ -19,6 +19,8 @@ use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\RelationTableColumnQuery;
+use Moox\Builder\Support\RelationValueRules;
 use Moox\Builder\Support\StorableFieldCollector;
 use Moox\Builder\Support\TypedValueColumns;
 
@@ -29,6 +31,7 @@ class TableColumnCompiler
         protected StorableFieldCollector $storableFieldCollector,
         protected BuilderLocaleResolver $localeResolver,
         protected BuilderValuesResolver $valuesResolver,
+        protected RelationTableColumnQuery $relationTableColumnQuery,
     ) {}
 
     /**
@@ -102,7 +105,7 @@ class TableColumnCompiler
         }
 
         if ($this->isRelationColumn($field)) {
-            return $this->compileRelationColumn($field);
+            return $this->compileRelationColumn($field, $entity, $locale, $valuesTable);
         }
 
         $valueColumn = TypedValueColumns::columnForType($field->type);
@@ -231,9 +234,13 @@ class TableColumnCompiler
         return $column;
     }
 
-    protected function compileRelationColumn(FieldDefinition $field): Column
-    {
-        return TextColumn::make($field->name)
+    protected function compileRelationColumn(
+        FieldDefinition $field,
+        string $entity,
+        string $locale,
+        string $valuesTable,
+    ): Column {
+        $column = TextColumn::make($field->name)
             ->label($field->label)
             ->placeholder('—')
             ->getStateUsing(function (Model $record) use ($field): ?string {
@@ -242,6 +249,50 @@ class TableColumnCompiler
                 return $this->formatRelationColumnState($presented);
             })
             ->toggleable(isToggledHiddenByDefault: $field->isColumnHiddenByDefault());
+
+        if ($field->columnBadge() && ! RelationValueRules::isMultiple($field)) {
+            $column->badge();
+        }
+
+        if ($this->relationTableColumnQuery->canQuery($field)) {
+            if ($field->isColumnSortable()) {
+                $column->sortable(query: function (Builder $query, string $direction) use (
+                    $field,
+                    $entity,
+                    $locale,
+                    $valuesTable,
+                ): Builder {
+                    return $this->relationTableColumnQuery->applySort(
+                        $query,
+                        $field,
+                        $entity,
+                        $locale,
+                        $valuesTable,
+                        $direction,
+                    );
+                });
+            }
+
+            if ($field->isColumnSearchable()) {
+                $column->searchable(query: function (Builder $query, string $search) use (
+                    $field,
+                    $entity,
+                    $locale,
+                    $valuesTable,
+                ): Builder {
+                    return $this->relationTableColumnQuery->applySearch(
+                        $query,
+                        $field,
+                        $entity,
+                        $locale,
+                        $valuesTable,
+                        $search,
+                    );
+                });
+            }
+        }
+
+        return $column;
     }
 
     protected function formatRelationColumnState(mixed $presented): ?string

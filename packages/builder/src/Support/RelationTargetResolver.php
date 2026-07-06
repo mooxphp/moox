@@ -184,6 +184,32 @@ final class RelationTargetResolver
     }
 
     /**
+     * @return array{modelClass: class-string<Model>, table: string, key: string, titleColumn: string}|null
+     */
+    public function queryTarget(string $entity): ?array
+    {
+        $modelClass = $this->modelClass($entity);
+
+        if ($modelClass === null || ! $this->entityRegistry->modelIsQueryable($modelClass)) {
+            return null;
+        }
+
+        $model = new $modelClass;
+        $titleColumn = $this->titleAttributeFor($entity);
+
+        if ($titleColumn !== 'id' && ! $this->modelHasColumn($modelClass, $titleColumn)) {
+            $titleColumn = 'id';
+        }
+
+        return [
+            'modelClass' => $modelClass,
+            'table' => $model->getTable(),
+            'key' => $model->getKeyName(),
+            'titleColumn' => $titleColumn,
+        ];
+    }
+
+    /**
      * Base query for enumerating/validating relation targets. Prefers the
      * target resource's own Eloquent query so global/tenant/soft-delete scopes
      * apply, preventing selection or validation of records that lie outside the
