@@ -640,6 +640,24 @@ class FieldGroupResource extends Resource
     }
 
     /**
+     * @return array<string, string>
+     */
+    protected static function fieldHintWrapperAttributes(): array
+    {
+        return [
+            'class' => '[&_.fi-fo-field-label-ctn]:!items-center [&_.fi-fo-field-label-ctn]:!justify-start [&_.fi-fo-field-label-ctn]:gap-x-1 [&_.fi-sc-icon]:text-primary-500',
+        ];
+    }
+
+    protected static function configureFieldHint(Toggle|TextInput|Select $field, string $label, string $tooltip): Toggle|TextInput|Select
+    {
+        return $field
+            ->label($label)
+            ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: $tooltip)
+            ->extraFieldWrapperAttributes(static::fieldHintWrapperAttributes());
+    }
+
+    /**
      * Table-column configuration grouped in its own collapsible section, mirroring
      * the existing "Settings"/"Options" sections. Only shown for columnable fields;
      * the behaviour options appear once "Show in table" is enabled.
@@ -675,28 +693,37 @@ class FieldGroupResource extends Resource
                         ])
                         ->visible(fn (callable $get): bool => $enabled($get)
                             && static::fieldTypeSupportsSortableSearchableColumn($get('type'))),
-                    Toggle::make('settings.hidden_by_default')
-                        ->label(__('builder::builder.field.column_hidden_by_default'))
-                        ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_hidden_by_default_helper'))
+                    static::configureFieldHint(
+                        Toggle::make('settings.hidden_by_default'),
+                        __('builder::builder.field.column_hidden_by_default'),
+                        __('builder::builder.field.column_hidden_by_default_helper'),
+                    )
                         ->inline(false)
                         ->default(true)
                         ->visible($enabled),
                     Grid::make(3)
                         ->schema([
-                            Toggle::make('settings.badge')
-                                ->label(__('builder::builder.field.column_badge'))
-                                ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_badge_helper'))
+                            static::configureFieldHint(
+                                Toggle::make('settings.badge'),
+                                __('builder::builder.field.column_badge'),
+                                __('builder::builder.field.column_badge_helper'),
+                            )
                                 ->inline(false)
                                 ->default(false),
-                            Select::make('settings.color')
-                                ->label(__('builder::builder.field.column_color'))
+                            static::configureFieldHint(
+                                Select::make('settings.color'),
+                                __('builder::builder.field.column_color'),
+                                __('builder::builder.field.column_color_helper'),
+                            )
                                 ->options(static::columnColorOptions())
                                 ->placeholder(__('builder::builder.field.column_color_default'))
                                 ->native(false)
                                 ->visible(fn (callable $get): bool => static::fieldTypeUsesTextColumn($get('type'))),
-                            TextInput::make('settings.icon')
-                                ->label(__('builder::builder.field.column_icon'))
-                                ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.field.column_icon_helper'))
+                            static::configureFieldHint(
+                                TextInput::make('settings.icon'),
+                                __('builder::builder.field.column_icon'),
+                                __('builder::builder.field.column_icon_helper'),
+                            )
                                 ->placeholder('heroicon-o-star')
                                 ->visible(fn (callable $get): bool => static::fieldTypeUsesTextColumn($get('type'))),
                         ])
@@ -970,9 +997,11 @@ class FieldGroupResource extends Resource
         return [
             Grid::make(3)
                 ->schema([
-                    Toggle::make('settings.visible_admin')
-                        ->label(__('builder::builder.visibility.admin'))
-                        ->hintIcon(Heroicon::OutlinedQuestionMarkCircle, tooltip: __('builder::builder.visibility.admin_helper'))
+                    static::configureFieldHint(
+                        Toggle::make('settings.visible_admin'),
+                        __('builder::builder.visibility.admin'),
+                        __('builder::builder.visibility.admin_helper'),
+                    )
                         ->inline(false)
                         ->default(true),
                     Toggle::make('settings.visible_frontend')

@@ -89,6 +89,7 @@ return [
         'column_badge' => 'Badge',
         'column_badge_helper' => 'Display the value as a colored badge.',
         'column_color' => 'Color',
+        'column_color_helper' => 'Badge color when badge display is enabled.',
         'column_color_default' => 'Default',
         'column_color_primary' => 'Primary',
         'column_color_gray' => 'Gray',
