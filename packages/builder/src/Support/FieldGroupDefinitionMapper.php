@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Support;
 
+use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -68,7 +69,7 @@ final class FieldGroupDefinitionMapper
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, FieldDefinition>  $fields
+     * @param  Collection<int, FieldDefinition>  $fields
      * @return list<array<string, mixed>>
      */
     protected function mapFieldsToRows($fields): array
