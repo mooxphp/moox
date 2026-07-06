@@ -7,6 +7,7 @@ namespace Moox\Builder\Data;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldWidth;
 
@@ -115,6 +116,14 @@ readonly class FieldGroupDefinition
         foreach ($group->translations as $translation) {
             $translations[$translation->locale] = [
                 'name' => $translation->name,
+            ];
+        }
+
+        $defaultLocale = app(BuilderLocaleResolver::class)->defaultLocale();
+
+        if (filled($group->name)) {
+            $translations[$defaultLocale] = [
+                'name' => $group->name,
             ];
         }
 

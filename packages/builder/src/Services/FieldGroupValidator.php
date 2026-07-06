@@ -38,11 +38,22 @@ class FieldGroupValidator
 
         $entries = $this->storableFieldCollector->pathsFromRows($fieldRows);
 
+        $internalMessages = $this->internalDuplicateMessages($entries);
+        $externalMessages = $entities === [] ? [] : $this->externalConflictMessages($group, $entities, $entries);
+
         $messages = array_merge(
             $messages,
-            $this->internalDuplicateMessages($entries),
-            $this->externalConflictMessages($group, $entities, $entries),
+            $internalMessages,
+            $externalMessages,
         );
+
+        if ($externalMessages !== []) {
+            $summary = collect($externalMessages)->flatten()->first();
+
+            if (is_string($summary)) {
+                $messages['target_entities'] = [$summary];
+            }
+        }
 
         if ($messages !== []) {
             throw ValidationException::withMessages($messages);

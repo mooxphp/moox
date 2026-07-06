@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Resources;
 
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -28,6 +29,7 @@ use Moox\Builder\Exceptions\UnknownFieldTypeException;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Filament\Actions\FieldGroupDefinitionActions;
 use Moox\Builder\Resources\FieldGroupResource\Pages\CreateFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\EditFieldGroup;
 use Moox\Builder\Resources\FieldGroupResource\Pages\ListFieldGroups;
@@ -1268,7 +1270,11 @@ class FieldGroupResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort')
-            ->reorderable('sort');
+            ->reorderable('sort')
+            ->recordActions([
+                EditAction::make(),
+                FieldGroupDefinitionActions::export(),
+            ]);
     }
 
     public static function getPages(): array

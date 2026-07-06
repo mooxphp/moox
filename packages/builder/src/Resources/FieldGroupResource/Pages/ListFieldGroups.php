@@ -7,6 +7,7 @@ namespace Moox\Builder\Resources\FieldGroupResource\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Builder\Filament\Actions\FieldGroupDefinitionActions;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
@@ -47,6 +48,7 @@ class ListFieldGroups extends ListRecords
     {
         return [
             $this->getFieldGroupLanguageSelectorAction(),
+            FieldGroupDefinitionActions::import($this, $this->lang !== '' ? $this->lang : null),
             CreateAction::make()
                 ->url(fn (): string => FieldGroupResource::getUrl('create', [
                     'lang' => $this->lang !== ''

@@ -7,7 +7,9 @@ namespace Moox\Builder\Data;
 use Illuminate\Support\Collection;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldOption;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\ConditionalLogic;
+use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldWidth;
 
 readonly class FieldDefinition
@@ -215,6 +217,14 @@ readonly class FieldDefinition
             ];
         }
 
+        $defaultLocale = app(BuilderLocaleResolver::class)->defaultLocale();
+
+        $translations[$defaultLocale] = [
+            'label' => $field->label,
+            'config' => app(DefinitionTranslator::class)
+                ->extractTranslatableConfig($field->config ?? []),
+        ];
+
         return $translations;
     }
 
@@ -232,6 +242,14 @@ readonly class FieldDefinition
         foreach ($option->translations as $translation) {
             $translations[$translation->locale] = [
                 'label' => $translation->label,
+            ];
+        }
+
+        $defaultLocale = app(BuilderLocaleResolver::class)->defaultLocale();
+
+        if (filled($option->label)) {
+            $translations[$defaultLocale] = [
+                'label' => $option->label,
             ];
         }
 

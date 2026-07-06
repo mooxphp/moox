@@ -11,6 +11,8 @@ final class BuilderLocaleResolver
 {
     public const ADMIN_SESSION_KEY = 'builder.admin_locale';
 
+    private ?string $overrideLocale = null;
+
     /**
      * @return list<string>
      */
@@ -24,6 +26,10 @@ final class BuilderLocaleResolver
 
     public function current(?string $locale = null): string
     {
+        if ($this->overrideLocale !== null) {
+            return $this->overrideLocale;
+        }
+
         if (is_string($locale) && $locale !== '') {
             return $locale;
         }
@@ -105,6 +111,24 @@ final class BuilderLocaleResolver
             $chain,
             static fn (string $value): bool => $value !== '',
         )));
+    }
+
+    /**
+     * @template TReturn
+     *
+     * @param  callable(): TReturn  $callback
+     * @return TReturn
+     */
+    public function using(string $locale, callable $callback): mixed
+    {
+        $previous = $this->overrideLocale;
+        $this->overrideLocale = $locale;
+
+        try {
+            return $callback();
+        } finally {
+            $this->overrideLocale = $previous;
+        }
     }
 
     public function valuesLocaleForEntity(string $entity, ?string $locale = null, ?string $modelClass = null): string

@@ -848,6 +848,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Sidebar placement** — `main` vs `sidebar` field group slots
 - **Translations** — definition + value locales (Astrotomic + `builder_field_values.locale`)
 - **Security hardening** — admin-hidden fields not writable via request; relation targets whitelisted and scoped; rich-text HTML sanitization on persist
+- **Field group import/export** — JSON definition export/import in admin (all locales, no record values)
 
 **v1 limitations (known):**
 
@@ -856,7 +857,6 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - `visible_frontend`: stored in admin, but no packaged Blade/theme renderer yet
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
-- No field-group import/export (staging → production is manual today)
 - No clone field type (ACF-style reusable field group in a field)
 
 **Not implemented yet:**
@@ -865,7 +865,6 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Location params beyond `entity`
 - Nested conditional logic (inside compound fields)
 - Frontend rendering helper (`get_field()`-style Blade component)
-- Field group definition import/export
 - Custom validation rules UI in admin
 - Package-level policies on field group management
 

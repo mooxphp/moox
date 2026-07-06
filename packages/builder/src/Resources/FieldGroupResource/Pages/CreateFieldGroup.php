@@ -8,11 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
-use Moox\Builder\Services\FieldGroupPersistence;
+use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\PersistsFieldGroupInAdmin;
 
 class CreateFieldGroup extends CreateRecord
 {
     use InteractsWithFieldGroupLocale;
+    use PersistsFieldGroupInAdmin;
 
     protected static string $resource = FieldGroupResource::class;
 
@@ -44,8 +45,6 @@ class CreateFieldGroup extends CreateRecord
         $group = new FieldGroup;
         $this->applyFieldGroupDefaultLocale($group);
 
-        app(FieldGroupPersistence::class)->sync($group, $data);
-
-        return $group->fresh(['fields.options', 'translations']);
+        return $this->persistFieldGroup($group, $data);
     }
 }

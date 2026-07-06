@@ -6,15 +6,18 @@ namespace Moox\Builder\Resources\FieldGroupResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Moox\Builder\Filament\Actions\FieldGroupDefinitionActions;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
+use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\PersistsFieldGroupInAdmin;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\FieldGroupPlacement;
 
 class EditFieldGroup extends EditRecord
 {
     use InteractsWithFieldGroupLocale;
+    use PersistsFieldGroupInAdmin;
 
     protected static string $resource = FieldGroupResource::class;
 
@@ -36,6 +39,7 @@ class EditFieldGroup extends EditRecord
     {
         return [
             $this->getFieldGroupLanguageSelectorAction(),
+            FieldGroupDefinitionActions::export($this->getRecord()),
             DeleteAction::make(),
         ];
     }
@@ -73,8 +77,6 @@ class EditFieldGroup extends EditRecord
         $this->syncLangToRequest();
         $this->applyFieldGroupDefaultLocale($record);
 
-        app(FieldGroupPersistence::class)->sync($record, $data);
-
-        return $record->fresh(['fields.options', 'translations']);
+        return $this->persistFieldGroup($record, $data);
     }
 }

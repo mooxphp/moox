@@ -85,11 +85,7 @@ trait HasBuilderTranslatableAttributes
 
     protected function locale(): string
     {
-        if ($this->getDefaultLocale()) {
-            return $this->getDefaultLocale();
-        }
-
-        return app(BuilderLocaleResolver::class)->current();
+        return app(BuilderLocaleResolver::class)->defaultLocale();
     }
 
     protected function mirrorDefaultLocaleTranslationsToMainRecord(): void
