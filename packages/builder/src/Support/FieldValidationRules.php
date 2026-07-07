@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Support;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Moox\Builder\Data\FieldDefinition;
 
 final class FieldValidationRules
@@ -146,7 +145,6 @@ final class FieldValidationRules
     }
 
     /**
-     * @param  mixed  $rules
      * @return list<string>
      */
     protected function normalizeRules(mixed $rules): array
@@ -162,7 +160,6 @@ final class FieldValidationRules
     }
 
     /**
-     * @param  mixed  $rows
      * @return list<array{rule: string, value?: string}>
      */
     protected function normalizeRuleRows(mixed $rows): array
