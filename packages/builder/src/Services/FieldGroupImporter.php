@@ -50,6 +50,8 @@ class FieldGroupImporter
             }
         }
 
+        $groupData = $this->canonicalizeGroupData($groupData);
+
         $definition = FieldGroupDefinition::fromArray($groupData);
         $active = (bool) ($groupData['active'] ?? true);
         $sort = (int) ($groupData['sort'] ?? 0);
@@ -267,11 +269,87 @@ class FieldGroupImporter
             ]));
         }
 
-        if (! is_array($group['locationRules'] ?? null) && ! is_array($group['location_rules'] ?? null)) {
+        if (
+            ! is_array($group['locationRules'] ?? null)
+            && ! is_array($group['location_rules'] ?? null)
+            && ! array_key_exists('target_entities', $group)
+        ) {
             $this->validationError(__('builder::builder.field_group.import_missing_group_key', [
                 'key' => 'locationRules',
             ]));
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $groupData
+     * @return array<string, mixed>
+     */
+    protected function canonicalizeGroupData(array $groupData): array
+    {
+        if (
+            ! array_key_exists('locationRules', $groupData)
+            && ! array_key_exists('location_rules', $groupData)
+            && (
+                array_key_exists('target_entities', $groupData)
+                || array_key_exists('location_constraints', $groupData)
+            )
+        ) {
+            $groupData['locationRules'] = $this->fieldGroupPersistence->resolveLocationRules([
+                'target_entities' => $groupData['target_entities'] ?? [],
+                'location_constraints' => $groupData['location_constraints'] ?? [],
+            ]);
+        }
+
+        $groupData['fields'] = $this->canonicalizeFieldRows($groupData['fields'] ?? []);
+
+        return $groupData;
+    }
+
+    /**
+     * @param  mixed  $rows
+     * @return list<array<string, mixed>>
+     */
+    protected function canonicalizeFieldRows(mixed $rows): array
+    {
+        if (! is_array($rows)) {
+            return [];
+        }
+
+        return array_values(array_map(
+            fn (array $row): array => $this->canonicalizeFieldRow($row),
+            array_filter($rows, 'is_array'),
+        ));
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    protected function canonicalizeFieldRow(array $row): array
+    {
+        $validation = is_array($row['validation'] ?? null) ? $row['validation'] : [];
+
+        if (array_key_exists('required', $row) && ! array_key_exists('required', $validation)) {
+            $validation['required'] = (bool) $row['required'];
+        }
+
+        $children = $this->canonicalizeFieldRows($row['children'] ?? []);
+
+        if ($children === [] && is_array($row['layouts'] ?? null)) {
+            $children = array_map(
+                fn (array $layout): array => [
+                    ...$this->canonicalizeFieldRow($layout),
+                    'type' => 'flexible_layout',
+                ],
+                $this->canonicalizeFieldRows($row['layouts']),
+            );
+        }
+
+        return [
+            ...$row,
+            'validation' => $validation,
+            'children' => $children,
+        ];
     }
 
     /**
