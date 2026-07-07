@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Support\Execution;
 
+use Illuminate\Database\Eloquent\Model;
+
 final class ResolvedTransformRow
 {
     /**
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $destinationClass
+     * @param  class-string<Model>  $destinationClass
      * @param  array<string, mixed>  $payload
      * @param  array<string, mixed>  $resolvedData
      * @param  array<string, mixed>  $destinationMatch

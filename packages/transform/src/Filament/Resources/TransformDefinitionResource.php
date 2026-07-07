@@ -6,6 +6,7 @@ namespace Moox\Transform\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -749,7 +750,7 @@ class TransformDefinitionResource extends BaseItemResource
     }
 
     /**
-     * @return list<\Filament\Forms\Components\Component>
+     * @return list<Component>
      */
     private static function runFormSchema(TransformDefinition $definition): array
     {
