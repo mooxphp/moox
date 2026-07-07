@@ -626,7 +626,7 @@ class FieldGroupResource extends Resource
      */
     protected static function fieldTypeUsesTextColumn(?string $type): bool
     {
-        return static::fieldTypeSupportsColumn($type) && $type !== 'toggle';
+        return static::fieldTypeSupportsColumn($type) && ! in_array($type, ['toggle', 'color'], true);
     }
 
     protected static function fieldTypeSupportsRelationBadge(callable $get): bool

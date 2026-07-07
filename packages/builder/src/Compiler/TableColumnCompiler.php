@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Compiler;
 
 use Filament\Tables\Columns\Column;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -111,7 +112,11 @@ class TableColumnCompiler
         $valueColumn = TypedValueColumns::columnForType($field->type);
         $name = $field->name;
 
-        if ($field->type === 'toggle') {
+        if ($field->type === 'color') {
+            $column = ColorColumn::make($name)
+                ->label($field->label)
+                ->getStateUsing(fn (Model $record): ?string => $this->resolvePresentedValue($field, $record));
+        } elseif ($field->type === 'toggle') {
             $column = IconColumn::make($name)
                 ->label($field->label)
                 ->boolean()
