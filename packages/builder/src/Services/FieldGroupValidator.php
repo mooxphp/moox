@@ -245,7 +245,7 @@ class FieldGroupValidator
     protected function locationConstraintMessages(array $rows, mixed $entities): array
     {
         $messages = [];
-        $availableParams = array_keys($this->locationConstraintOptions->availableParamOptions());
+        $availableParams = array_keys($this->locationConstraintOptions->availableParamOptionsForEntities($entities));
         $availableOperators = ['==', '!=', 'in', 'not in'];
 
         foreach ($rows as $index => $row) {

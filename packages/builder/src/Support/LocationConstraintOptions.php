@@ -112,6 +112,29 @@ final class LocationConstraintOptions
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public function availableParamOptionsForEntities(mixed $entities): array
+    {
+        $options = [
+            'user_role' => __('builder::builder.field_group.location_param_user_role'),
+        ];
+
+        if ($this->recordTypeOptionsForEntities($entities) !== []) {
+            $options = [
+                'record_type' => __('builder::builder.field_group.location_param_record_type'),
+                ...$options,
+            ];
+        }
+
+        if ($this->taxonomyKeysForEntities($entities) !== []) {
+            $options['taxonomy'] = __('builder::builder.field_group.location_param_taxonomy');
+        }
+
+        return $options;
+    }
+
     public function supportsUserRoles(): bool
     {
         if (! class_exists(Role::class) || ! trait_exists(HasRoles::class)) {

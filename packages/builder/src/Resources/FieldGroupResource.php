@@ -142,6 +142,15 @@ class FieldGroupResource extends Resource
                                         ->placeholder(__('builder::builder.field_group.target_entities_placeholder'))
                                         ->disabled($entityOptions === [])
                                         ->live()
+                                        ->afterStateUpdated(function (mixed $state, callable $set, callable $get): void {
+                                            $set(
+                                                'location_constraints',
+                                                static::sanitizeLocationConstraintsForEntities(
+                                                    is_array($get('location_constraints')) ? $get('location_constraints') : [],
+                                                    $state,
+                                                ),
+                                            );
+                                        })
                                         ->native(false),
                                     Repeater::make('location_constraints')
                                         ->label(__('builder::builder.field_group.location_constraints'))
@@ -1380,7 +1389,7 @@ class FieldGroupResource extends Resource
                 ->schema([
                     Select::make('param')
                         ->label(__('builder::builder.field_group.location_param'))
-                        ->options(app(LocationConstraintOptions::class)->availableParamOptions())
+                        ->options(fn (Get $get): array => app(LocationConstraintOptions::class)->availableParamOptionsForEntities($get($targetEntitiesPath)))
                         ->required()
                         ->live()
                         ->afterStateUpdated(function (callable $set): void {
@@ -1547,6 +1556,56 @@ class FieldGroupResource extends Resource
     public static function locationConstraintParamOptions(): array
     {
         return app(LocationConstraintOptions::class)->availableParamOptions();
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $constraints
+     * @return list<array<string, mixed>>
+     */
+    protected static function sanitizeLocationConstraintsForEntities(array $constraints, mixed $entities): array
+    {
+        $options = app(LocationConstraintOptions::class);
+        $allowedParams = array_keys($options->availableParamOptionsForEntities($entities));
+        $allowedTaxonomies = $options->taxonomyKeysForEntities($entities);
+        $recordTypeOptions = $options->recordTypeOptionsForEntities($entities);
+
+        return array_values(array_map(
+            static function (array $constraint) use ($allowedParams, $allowedTaxonomies, $recordTypeOptions): array {
+                $param = (string) ($constraint['param'] ?? '');
+
+                if ($param === '' || ! in_array($param, $allowedParams, true)) {
+                    return [
+                        ...$constraint,
+                        'param' => null,
+                        'taxonomy' => null,
+                        'operator' => '==',
+                        'value' => null,
+                    ];
+                }
+
+                if ($param === 'taxonomy') {
+                    $taxonomy = (string) ($constraint['taxonomy'] ?? '');
+
+                    if ($taxonomy === '' || ! array_key_exists($taxonomy, $allowedTaxonomies)) {
+                        return [
+                            ...$constraint,
+                            'taxonomy' => null,
+                            'value' => null,
+                        ];
+                    }
+                }
+
+                if ($param === 'record_type' && $recordTypeOptions === []) {
+                    return [
+                        ...$constraint,
+                        'value' => null,
+                    ];
+                }
+
+                return $constraint;
+            },
+            $constraints,
+        ));
     }
 
     /**
