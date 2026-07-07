@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Compiler;
 
-use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
