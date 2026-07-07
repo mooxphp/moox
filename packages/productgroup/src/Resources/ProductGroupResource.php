@@ -111,7 +111,7 @@ class ProductGroupResource extends BaseDraftResource
                                 TitleWithSlugInput::make(
                                     fieldTitle: 'name',
                                     fieldSlug: 'slug',
-                                    urlPathEntityType: 'product_groups',
+                                    urlPathEntityType: 'productgroups',
                                     slugRuleUniqueParameters: [
                                         'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
                                             $locale = $livewire->lang;
@@ -129,7 +129,7 @@ class ProductGroupResource extends BaseDraftResource
 
                                             return $rule;
                                         },
-                                        'table' => 'product_group_translations',
+                                        'table' => 'productgroup_translations',
                                         'column' => 'slug',
                                     ]
                                 ),
@@ -170,16 +170,12 @@ class ProductGroupResource extends BaseDraftResource
                                             ->relationship('parent', 'code')
                                             ->searchable()
                                             ->preload(),
-                                        TextInput::make('default_unit')
-                                            ->label(__('productgroup::productgroup.default_unit'))
-                                            ->maxLength(32),
                                         TextInput::make('sku_prefix')
                                             ->label(__('productgroup::productgroup.sku_prefix'))
                                             ->maxLength(64),
-                                        TextInput::make('brand_id')
-                                            ->label(__('productgroup::productgroup.brand_id'))
-                                            ->numeric()
-                                            ->integer(),
+                                    ]),
+                                Section::make(__('productgroup::productgroup.custom_properties'))
+                                    ->schema([
                                         KeyValue::make('custom_properties')
                                             ->label(__('productgroup::productgroup.custom_properties'))
                                             ->columnSpanFull(),
@@ -236,14 +232,24 @@ class ProductGroupResource extends BaseDraftResource
                     ->label(__('productgroup::productgroup.status'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('parent.code')
+                TextColumn::make('parent.name')
                     ->label(__('productgroup::productgroup.parent'))
                     ->toggleable(),
-                TextColumn::make('default_unit')
-                    ->label(__('productgroup::productgroup.default_unit'))
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sku_prefix')
                     ->label(__('productgroup::productgroup.sku_prefix'))
+                    ->toggleable(),
+                TextColumn::make('custom_properties')
+                    ->label(__('productgroup::productgroup.custom_properties'))
+                    ->formatStateUsing(fn (?array $state): string => $state ? json_encode($state, JSON_UNESCAPED_UNICODE) : '')
+                    ->limit(50)
+                    ->toggleable(),
+                TextColumn::make('uuid')
+                    ->label('UUID')
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('ulid')
+                    ->label('ULID')
+                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 static::getStatusColumn(),
             ])
@@ -254,6 +260,9 @@ class ProductGroupResource extends BaseDraftResource
                 SelectFilter::make('status')
                     ->label(__('productgroup::productgroup.status'))
                     ->options(config('productgroup.statuses', [])),
+                SelectFilter::make('type')
+                    ->label(__('productgroup::productgroup.type'))
+                    ->options(config('productgroup.types', [])),
             ])
             ->deferFilters(false)
             ->persistFiltersInSession();

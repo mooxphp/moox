@@ -33,10 +33,7 @@ class ProductGroupFactory extends Factory
             'type' => $this->faker->randomElement(array_keys(config('productgroup.types', ['family' => 'family']))),
             'status' => $this->faker->randomElement(array_keys(config('productgroup.statuses', []))),
             'parent_id' => null,
-            'attribute_set_id' => null,
-            'default_unit' => $this->faker->optional(0.7)->randomElement(['Stück', 'm', 'kg']),
             'sku_prefix' => $this->faker->optional(0.5)->bothify('??.??'),
-            'brand_id' => $this->faker->optional(0.3)->numberBetween(1, 50),
             'custom_properties' => [
                 'source' => 'factory',
             ],

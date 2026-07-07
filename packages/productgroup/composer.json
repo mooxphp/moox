@@ -1,6 +1,6 @@
 {
     "name": "moox/productgroup",
-    "description": "Moox product family entity with translatable content and attribute schema reference.",
+    "description": "Moox product family entity with translatable content.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -19,6 +19,8 @@
         }
     ],
     "require": {
+        "codewithdennis/filament-select-tree": "4.x",
+        "kalnoy/nestedset": "^7.0",
         "moox/core": "dev-main",
         "moox/localization": "dev-main",
         "moox/slug": "dev-main"
