@@ -16,10 +16,9 @@ use Moox\ProductGroup\Database\Factories\ProductGroupFactory;
  * @property string $type
  * @property string $status
  * @property int|null $parent_id
- * @property int|null $attribute_set_id
- * @property string|null $default_unit
+ * @property int $_lft
+ * @property int $_rgt
  * @property string|null $sku_prefix
- * @property int|null $brand_id
  * @property array|null $custom_properties
  * @property string[] $translatedAttributes
  * @property-read string $name
@@ -58,10 +57,9 @@ class ProductGroup extends BaseDraftModel
         'type',
         'status',
         'parent_id',
-        'attribute_set_id',
-        'default_unit',
+        '_lft',
+        '_rgt',
         'sku_prefix',
-        'brand_id',
         'custom_properties',
         'uuid',
         'ulid',
@@ -74,8 +72,8 @@ class ProductGroup extends BaseDraftModel
     {
         return [
             'parent_id' => 'integer',
-            'attribute_set_id' => 'integer',
-            'brand_id' => 'integer',
+            '_lft' => 'integer',
+            '_rgt' => 'integer',
             'custom_properties' => 'array',
         ];
     }
