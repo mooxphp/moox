@@ -323,7 +323,7 @@ final class ApiImportRecordRenderController
                 ? hash('sha256', $requestedExternalKey)
                 : null);
 
-        $articleGroupId = is_string($requestedExternalKey) && $requestedExternalKey !== ''
+        $scopeExternalKey = is_string($requestedExternalKey) && $requestedExternalKey !== ''
             ? $requestedExternalKey
             : (is_string($apiImportRecord->external_key) ? $apiImportRecord->external_key : null);
 
@@ -420,7 +420,7 @@ final class ApiImportRecordRenderController
             'externalKeyCandidatesSample' => $externalKeyCandidatesSample,
             'recordsForExternalKey' => $recordsForExternalKey,
             'endpointOverview' => $endpointOverview,
-            'articleGroupId' => $articleGroupId,
+            'scopeExternalKey' => $scopeExternalKey,
             'recordBinaryPreview' => $this->buildBinaryPreview($reconstructedPayload),
         ]);
     }
@@ -580,24 +580,38 @@ final class ApiImportRecordRenderController
         $rawBase64 = null;
 
         if (is_array($payload)) {
-            $fileName = $payload['AttachmentFileName']
-                ?? $payload['FileName']
-                ?? $payload['filename']
-                ?? null;
+            foreach ((array) config('connect.binary_preview.file_name_keys', ['file_name', 'filename', 'FileName']) as $key) {
+                if (! is_string($key) || $key === '') {
+                    continue;
+                }
 
-            $body = $payload['body'] ?? null;
-            if (is_string($body)) {
-                $trimmed = trim($body);
-                if ($trimmed !== '' && preg_match('/^[A-Za-z0-9+\/=\r\n]+$/', $trimmed) === 1 && strlen($trimmed) > 40) {
-                    $rawBase64 = $trimmed;
+                $candidate = $payload[$key] ?? null;
+                if (is_string($candidate) && $candidate !== '') {
+                    $fileName = $candidate;
+                    break;
                 }
             }
 
-            if ($rawBase64 === null && isset($payload['Base64EncodedData']) && is_string($payload['Base64EncodedData'])) {
-                $candidate = trim($payload['Base64EncodedData']);
-                if ($candidate !== '') {
-                    $rawBase64 = $candidate;
+            foreach ((array) config('connect.binary_preview.base64_keys', ['body', 'base64', 'Base64EncodedData']) as $key) {
+                if (! is_string($key) || $key === '' || $rawBase64 !== null) {
+                    continue;
                 }
+
+                $candidate = $payload[$key] ?? null;
+                if (! is_string($candidate)) {
+                    continue;
+                }
+
+                $trimmed = trim($candidate);
+                if ($trimmed === '') {
+                    continue;
+                }
+
+                if ($key === 'body' && preg_match('/^[A-Za-z0-9+\/=\r\n]+$/', $trimmed) !== 1) {
+                    continue;
+                }
+
+                $rawBase64 = $trimmed;
             }
         }
 

@@ -96,7 +96,7 @@ final class RunEndpointForItemJob implements ShouldQueue
         $endpointForCall->variables = $vars;
 
         // Detail-Items muessen pro requestId eindeutig sein (external_key = Item-ID),
-        // der Parent-Kontext (z.B. Articlegroup) bleibt als Scope-Hash erhalten.
+        // Parent scope context remains available via sync_scope_hash.
         $scopeSourceKey = $this->externalKey ?? $this->requestId;
         $itemExternalKey = $this->requestId;
         $scopeHash = $scopeSourceKey !== null && $scopeSourceKey !== ''

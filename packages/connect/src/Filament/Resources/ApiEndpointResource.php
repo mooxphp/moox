@@ -98,7 +98,7 @@ class ApiEndpointResource extends BaseItemResource
                                     TextInput::make('list_item_path')
                                         ->label('List Item Pfad')
                                         ->placeholder('data.items')
-                                        ->helperText('Für Listen-Endpoints: JSON-Pfad (dot notation), unter dem die einzelnen Items liegen (z.B. data.articlegroups).'),
+                                        ->helperText('For list endpoints: JSON path (dot notation) to the list items, e.g. data.items.'),
                                     TextInput::make('list_id_key')
                                         ->label('List Item ID Key')
                                         ->placeholder('id')
@@ -113,8 +113,8 @@ class ApiEndpointResource extends BaseItemResource
                                         ->helperText('Optional: Wenn die ID nicht im Pfad, sondern als Query-/Body-Variable gesendet werden soll, hier den Variablennamen eintragen.'),
                                     TextInput::make('external_key_field')
                                         ->label('External Key Field')
-                                        ->placeholder('ArticleGroup.Id')
-                                        ->helperText('Optional: JSON-Pfad im Listen-Item, der als external_key im ImportRecord gespeichert werden soll (z.B. ArticleGroup.Id).'),
+                                        ->placeholder('Item.Id')
+                                        ->helperText('Optional JSON path on a list item stored as external_key on the import record, e.g. Item.Id.'),
                                     Select::make('sync_mode')
                                         ->label('Sync Mode')
                                         ->options([
@@ -125,7 +125,7 @@ class ApiEndpointResource extends BaseItemResource
                                         ->helperText('Wenn "sync": nicht mehr vorhandene Datensätze (pro Scope) werden im Zielmodell gelöscht (SoftDelete falls vorhanden).'),
                                     KeyValue::make('sync_scope_fields')
                                         ->label('Sync Scope Fields')
-                                        ->helperText('Optional: Scope fürs Pruning als Mapping internal_field => external_payload_path (z.B. article_group_id => ArticleGroup.Id).'),
+                                        ->helperText('Optional scope mapping for pruning: internal_field => external_payload_path, e.g. parent_id => Item.ParentId.'),
                                     KeyValue::make('options')
                                         ->label('Options')
                                         ->helperText('Optionale JSON-Optionen pro Endpoint (z.B. tree.stop_on_http_error => true, sync.purge_after_days => 30).'),
@@ -140,7 +140,7 @@ class ApiEndpointResource extends BaseItemResource
                                         ->helperText('Optionale Definition, welche Struktur/Felder die Response haben sollte (z.B. zur Validierung oder Doku).'),
                                     KeyValue::make('field_mappings')
                                         ->label(__('connect::fields.field_mappings'))
-                                        ->helperText('Mapping von API-Feldern auf Zieldatenbank-Felder (z.B. external_id → products.id).'),
+                                        ->helperText('Map API fields to destination model fields, e.g. external_id => id.'),
                                     KeyValue::make('transformers')
                                         ->label(__('connect::fields.transformers'))
                                         ->helperText('Optionale Transformationsregeln (z.B. Datumsformat, Typ-Konvertierungen) vor dem Import in deine Modelle.'),

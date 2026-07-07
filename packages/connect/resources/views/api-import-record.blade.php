@@ -8,9 +8,9 @@
 @section('title', $title)
 
 @section('content')
-    <h1>Connect Debug - Articlegroup {{ $articleGroupId ?? '-' }}</h1>
+    <h1>Connect Debug - Scope {{ $scopeExternalKey ?? '-' }}</h1>
     <div class="subtitle">
-        Uebersicht aller Import-Eintraege zu dieser Articlegroup inkl. Endpoint, Import-Status und letztem API-Log-Status.
+        Overview of import records for this scope, including endpoint, import status, and latest API log status.
     </div>
 
     <div class="grid two">
@@ -58,7 +58,7 @@
     <section class="card" style="margin-top: 12px;">
         <h2>Endpoint Uebersicht</h2>
         @if (($endpointOverview ?? collect())->isEmpty())
-            <div class="meta">Keine Import-Eintraege fuer diese Articlegroup gefunden.</div>
+            <div class="meta">Keine Import-Eintraege fuer diesen Scope gefunden.</div>
         @else
             <div class="grid">
                 @foreach ($endpointOverview as $endpoint)
