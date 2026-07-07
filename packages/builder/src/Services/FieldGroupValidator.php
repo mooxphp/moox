@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\FieldRelationTree;
 use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\StorableFieldCollector;
@@ -19,6 +20,7 @@ class FieldGroupValidator
         protected FieldGroupPersistence $fieldGroupPersistence,
         protected StorableFieldCollector $storableFieldCollector,
         protected LocationConstraintOptions $locationConstraintOptions,
+        protected FieldValidationRules $fieldValidationRules,
     ) {}
 
     /**
@@ -31,6 +33,7 @@ class FieldGroupValidator
         $fieldRows = $data['fields'] ?? [];
         $messages = array_merge(
             $this->rangeBoundsMessages($fieldRows),
+            $this->validationRuleMessages($fieldRows),
             $this->locationConstraintMessages(
                 is_array($data['location_constraints'] ?? null) ? $data['location_constraints'] : [],
                 $data['target_entities'] ?? [],
@@ -236,6 +239,93 @@ class FieldGroupValidator
         }
 
         return $max + 0 <= $min + 0;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return array<string, list<string>>
+     */
+    protected function validationRuleMessages(array $rows, string $prefix = 'fields'): array
+    {
+        $messages = [];
+
+        foreach ($rows as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $basePath = "{$prefix}.{$index}";
+            $type = (string) ($row['type'] ?? '');
+            $validation = is_array($row['validation'] ?? null) ? $row['validation'] : [];
+            $availableRules = $this->fieldValidationRules->availableRulesForType($type);
+
+            foreach (($validation['rule_rows'] ?? []) as $ruleIndex => $ruleRow) {
+                if (! is_array($ruleRow)) {
+                    continue;
+                }
+
+                $rule = trim((string) ($ruleRow['rule'] ?? ''));
+                $rulePath = "{$basePath}.validation.rule_rows.{$ruleIndex}";
+
+                if ($rule === '' || ! array_key_exists($rule, $availableRules)) {
+                    $messages["{$rulePath}.rule"] = [__('builder::builder.validation.invalid_option')];
+
+                    continue;
+                }
+
+                if (! $this->fieldValidationRules->ruleNeedsValue($rule)) {
+                    continue;
+                }
+
+                $value = trim((string) ($ruleRow['value'] ?? ''));
+
+                if ($value === '') {
+                    $messages["{$rulePath}.value"] = [__('builder::builder.validation.validation_rule_value_required')];
+
+                    continue;
+                }
+
+                if ($this->fieldValidationRules->ruleExpectsNumericValue($type, $rule) && ! is_numeric($value)) {
+                    $messages["{$rulePath}.value"] = [__('builder::builder.validation.validation_rule_value_numeric')];
+                }
+            }
+
+            if ($type === 'tab') {
+                $messages = array_merge(
+                    $messages,
+                    $this->validationRuleMessages($row['children'] ?? [], "{$basePath}.children"),
+                );
+
+                continue;
+            }
+
+            if ($type === 'flexible_content') {
+                foreach (($row['layouts'] ?? []) as $layoutIndex => $layout) {
+                    if (! is_array($layout)) {
+                        continue;
+                    }
+
+                    $messages = array_merge(
+                        $messages,
+                        $this->validationRuleMessages(
+                            $layout['children'] ?? [],
+                            "{$basePath}.layouts.{$layoutIndex}.children",
+                        ),
+                    );
+                }
+
+                continue;
+            }
+
+            if (in_array($type, ['group', 'repeater'], true)) {
+                $messages = array_merge(
+                    $messages,
+                    $this->validationRuleMessages($row['children'] ?? [], "{$basePath}.children"),
+                );
+            }
+        }
+
+        return $messages;
     }
 
     /**

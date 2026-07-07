@@ -103,6 +103,8 @@ return [
         'validation_rule_min' => 'Minimum',
         'validation_rule_max' => 'Maximum',
         'validation_rule_regex' => 'Regular expression',
+        'validation_rule_starts_with' => 'Starts with',
+        'validation_rule_ends_with' => 'Ends with',
         'validation_rule_alpha_dash' => 'Alpha dash',
         'validation_rule_alpha_num' => 'Alpha numeric',
         'validation_rule_gt' => 'Greater than',
@@ -313,6 +315,8 @@ return [
 
     'validation' => [
         'invalid_option' => 'The selected value is not a valid option.',
+        'validation_rule_value_required' => 'This validation rule needs a value.',
+        'validation_rule_value_numeric' => 'This validation rule needs a numeric value.',
         'invalid_email_default' => 'Please enter a valid email address as the default value.',
         'invalid_url_default' => 'Please enter a valid URL as the default value.',
         'invalid_link_url' => 'Please enter a valid URL.',

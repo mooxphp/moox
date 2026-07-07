@@ -19,6 +19,8 @@ final class FieldValidationRules
                 'min' => __('builder::builder.field.validation_rule_min'),
                 'max' => __('builder::builder.field.validation_rule_max'),
                 'regex' => __('builder::builder.field.validation_rule_regex'),
+                'starts_with' => __('builder::builder.field.validation_rule_starts_with'),
+                'ends_with' => __('builder::builder.field.validation_rule_ends_with'),
                 'alpha_dash' => __('builder::builder.field.validation_rule_alpha_dash'),
                 'alpha_num' => __('builder::builder.field.validation_rule_alpha_num'),
             ],
@@ -142,6 +144,12 @@ final class FieldValidationRules
     public function ruleNeedsValue(string $rule): bool
     {
         return ! in_array($rule, ['alpha_dash', 'alpha_num'], true);
+    }
+
+    public function ruleExpectsNumericValue(string $type, string $rule): bool
+    {
+        return $this->categoryForType($type) === 'numeric'
+            && in_array($rule, ['min', 'max', 'gt', 'gte', 'lt', 'lte'], true);
     }
 
     /**
