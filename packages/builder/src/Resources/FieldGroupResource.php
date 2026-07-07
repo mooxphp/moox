@@ -154,7 +154,7 @@ class FieldGroupResource extends Resource
                                         ->native(false),
                                     Repeater::make('location_constraints')
                                         ->label(__('builder::builder.field_group.location_constraints'))
-                                        ->helperText(__('builder::builder.field_group.location_constraints_helper'))
+                                        ->helperText(fn (Get $get): string => static::locationConstraintsHelperText($get('target_entities')))
                                         ->default([])
                                         ->addActionLabel(__('builder::builder.field_group.location_constraints_add'))
                                         ->itemLabel(fn (array $state, Get $get): string => static::locationConstraintItemLabel($state, $get('../../target_entities')))
@@ -1390,6 +1390,7 @@ class FieldGroupResource extends Resource
                     Select::make('param')
                         ->label(__('builder::builder.field_group.location_param'))
                         ->options(fn (Get $get): array => app(LocationConstraintOptions::class)->availableParamOptionsForEntities($get($targetEntitiesPath)))
+                        ->helperText(fn (Get $get): string => static::locationConstraintParamHelperText($get($targetEntitiesPath)))
                         ->required()
                         ->live()
                         ->afterStateUpdated(function (callable $set): void {
@@ -1507,9 +1508,18 @@ class FieldGroupResource extends Resource
             $paramLabel .= ': '.Str::headline((string) $state['taxonomy']);
         }
 
+        $valueLabel = static::locationConstraintValueLabel($state, $targetEntities);
+
+        if ($param === 'taxonomy' && blank($state['taxonomy'] ?? null)) {
+            return trim($paramLabel.' '.__('builder::builder.field_group.location_constraint_incomplete_taxonomy'));
+        }
+
+        if ($valueLabel === '') {
+            return trim($paramLabel.' '.__('builder::builder.field_group.location_constraint_incomplete_value'));
+        }
+
         $operator = (string) ($state['operator'] ?? '==');
         $operatorLabel = static::locationConstraintOperatorOptions()[$operator] ?? $operator;
-        $valueLabel = static::locationConstraintValueLabel($state, $targetEntities);
 
         return trim(implode(' ', array_filter([$paramLabel, $operatorLabel, $valueLabel])));
     }
@@ -1556,6 +1566,36 @@ class FieldGroupResource extends Resource
     public static function locationConstraintParamOptions(): array
     {
         return app(LocationConstraintOptions::class)->availableParamOptions();
+    }
+
+    protected static function locationConstraintsHelperText(mixed $entities): string
+    {
+        $options = app(LocationConstraintOptions::class)->availableParamOptionsForEntities($entities);
+
+        if ($entities === null || $entities === [] || $entities === '') {
+            return __('builder::builder.field_group.location_constraints_helper_empty_entities');
+        }
+
+        if (array_keys($options) === ['user_role']) {
+            return __('builder::builder.field_group.location_constraints_helper_roles_only');
+        }
+
+        return __('builder::builder.field_group.location_constraints_helper');
+    }
+
+    protected static function locationConstraintParamHelperText(mixed $entities): string
+    {
+        $options = app(LocationConstraintOptions::class)->availableParamOptionsForEntities($entities);
+
+        if ($entities === null || $entities === [] || $entities === '') {
+            return __('builder::builder.field_group.location_param_helper_empty_entities');
+        }
+
+        if (array_keys($options) === ['user_role']) {
+            return __('builder::builder.field_group.location_param_helper_roles_only');
+        }
+
+        return __('builder::builder.field_group.location_param_helper');
     }
 
     /**
