@@ -116,7 +116,24 @@ trait HasCustomFields
 
     public static function customFieldsLocationContext(): LocationContext
     {
-        return new LocationContext(static::resolveCustomFieldsEntityIdentifier());
+        return LocationContext::forResource(static::class);
+    }
+
+    /**
+     * Additional location params for the current record (merged with auto-detected
+     * record type, taxonomy IDs, and authenticated user roles).
+     *
+     * @return array<string, mixed>
+     */
+    public static function customFieldsLocationParams(?Model $record): array
+    {
+        $modelClass = static::getModel();
+
+        if (is_string($modelClass) && method_exists($modelClass, 'customFieldsLocationParams')) {
+            return $modelClass::customFieldsLocationParams($record);
+        }
+
+        return [];
     }
 
     public static function resolveCustomFieldsEntityIdentifier(): string

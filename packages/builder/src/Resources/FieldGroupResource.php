@@ -38,6 +38,7 @@ use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldWidth;
+use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\TypedValueColumns;
 
 class FieldGroupResource extends Resource
@@ -138,7 +139,18 @@ class FieldGroupResource extends Resource
                                         ->preload()
                                         ->placeholder(__('builder::builder.field_group.target_entities_placeholder'))
                                         ->disabled($entityOptions === [])
+                                        ->live()
                                         ->native(false),
+                                    Repeater::make('location_constraints')
+                                        ->label(__('builder::builder.field_group.location_constraints'))
+                                        ->helperText(__('builder::builder.field_group.location_constraints_helper'))
+                                        ->default([])
+                                        ->addActionLabel(__('builder::builder.field_group.location_constraints_add'))
+                                        ->itemLabel(fn (array $state, Get $get): string => static::locationConstraintItemLabel($state, $get('../../target_entities')))
+                                        ->schema(static::locationConstraintSchema())
+                                        ->columns(1)
+                                        ->collapsible()
+                                        ->collapsed(),
                                 ]),
                             Section::make(__('builder::builder.field_group.visibility'))
                                 ->description(__('builder::builder.field_group.visibility_helper'))
@@ -1269,6 +1281,200 @@ class FieldGroupResource extends Resource
                 ->size(Size::Small)
                 ->visible($visible)
                 ->alpineClickHandler("\$dispatch('repeater-expand', 'data.fields')"),
+        ];
+    }
+
+    /**
+     * @return list<Component>
+     */
+    public static function locationConstraintSchema(): array
+    {
+        $targetEntitiesPath = '../../target_entities';
+
+        return [
+            Grid::make()
+                ->schema([
+                    Select::make('param')
+                        ->label(__('builder::builder.field_group.location_param'))
+                        ->options(app(LocationConstraintOptions::class)->availableParamOptions())
+                        ->required()
+                        ->live()
+                        ->afterStateUpdated(function (callable $set): void {
+                            $set('taxonomy', null);
+                            $set('operator', '==');
+                            $set('value', null);
+                        })
+                        ->native(false)
+                        ->columnSpan(['default' => 1, 'md' => 4]),
+                    Select::make('taxonomy')
+                        ->label(__('builder::builder.field_group.location_taxonomy'))
+                        ->helperText(__('builder::builder.field_group.location_taxonomy_helper'))
+                        ->options(fn (Get $get): array => app(LocationConstraintOptions::class)
+                            ->taxonomyKeysForEntities($get($targetEntitiesPath)))
+                        ->visible(fn (Get $get): bool => $get('param') === 'taxonomy')
+                        ->required(fn (Get $get): bool => $get('param') === 'taxonomy')
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->afterStateUpdated(fn (callable $set): mixed => $set('value', null))
+                        ->native(false)
+                        ->columnSpan(['default' => 1, 'md' => 5]),
+                    Select::make('operator')
+                        ->label(__('builder::builder.field_group.location_operator'))
+                        ->options(static::locationConstraintOperatorOptions())
+                        ->default('==')
+                        ->required()
+                        ->live()
+                        ->disabled(fn (Get $get): bool => $get('param') === 'user_role'
+                            && ! app(LocationConstraintOptions::class)->supportsUserRoles())
+                        ->native(false)
+                        ->columnSpan(['default' => 1, 'md' => 3]),
+                ])
+                ->columns(['default' => 1, 'md' => 12]),
+            Select::make('value')
+                ->label(__('builder::builder.field_group.location_value'))
+                ->helperText(fn (Get $get): string => match ($get('param')) {
+                    'taxonomy' => __('builder::builder.field_group.location_value_taxonomy_helper'),
+                    'record_type' => __('builder::builder.field_group.location_value_record_type_helper'),
+                    'user_role' => app(LocationConstraintOptions::class)->userRoleUnavailableReason()
+                        ?? __('builder::builder.field_group.location_value_role_helper'),
+                    default => __('builder::builder.field_group.location_value_helper'),
+                })
+                ->options(function (Get $get) use ($targetEntitiesPath): array {
+                    return match ($get('param')) {
+                        'taxonomy' => app(LocationConstraintOptions::class)
+                            ->termOptionsForTaxonomy((string) $get('taxonomy'), $get($targetEntitiesPath)),
+                        'record_type' => app(LocationConstraintOptions::class)->recordTypeOptionsForEntities($get($targetEntitiesPath)),
+                        'user_role' => app(LocationConstraintOptions::class)->roleOptions(),
+                        default => [],
+                    };
+                })
+                ->visible(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true)
+                    && ($get('param') !== 'taxonomy' || filled($get('taxonomy'))))
+                ->required(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true)
+                    && ($get('param') !== 'user_role' || app(LocationConstraintOptions::class)->supportsUserRoles())
+                    && ($get('param') !== 'taxonomy' || filled($get('taxonomy'))))
+                ->disabled(fn (Get $get): bool => $get('param') === 'user_role'
+                    && ! app(LocationConstraintOptions::class)->supportsUserRoles())
+                ->multiple(fn (Get $get): bool => in_array($get('operator'), ['in', 'not in'], true))
+                ->getOptionLabelUsing(function (mixed $value, Get $get) use ($targetEntitiesPath): ?string {
+                    return match ($get('param')) {
+                        'taxonomy' => app(LocationConstraintOptions::class)->termLabelForValue(
+                            (string) $get('taxonomy'),
+                            $get($targetEntitiesPath),
+                            $value,
+                        ),
+                        'record_type' => app(LocationConstraintOptions::class)->recordTypeLabelForValue(
+                            $get($targetEntitiesPath),
+                            $value,
+                        ),
+                        'user_role' => filled($value) ? (string) $value : null,
+                        default => null,
+                    };
+                })
+                ->getOptionLabelsUsing(function (array $values, Get $get) use ($targetEntitiesPath): array {
+                    return match ($get('param')) {
+                        'taxonomy' => app(LocationConstraintOptions::class)->termLabelsForValues(
+                            (string) $get('taxonomy'),
+                            $get($targetEntitiesPath),
+                            $values,
+                        ),
+                        'record_type' => app(LocationConstraintOptions::class)->recordTypeLabelsForValues(
+                            $get($targetEntitiesPath),
+                            $values,
+                        ),
+                        'user_role' => collect($values)
+                            ->filter(fn (mixed $value): bool => filled($value))
+                            ->mapWithKeys(fn (mixed $value): array => [$value => (string) $value])
+                            ->all(),
+                        default => [],
+                    };
+                })
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->columnSpanFull(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    protected static function locationConstraintItemLabel(array $state, mixed $targetEntities): string
+    {
+        $param = (string) ($state['param'] ?? '');
+
+        if ($param === '') {
+            return __('builder::builder.field_group.location_constraints_add');
+        }
+
+        $paramLabel = static::locationConstraintParamOptions()[$param] ?? Str::headline($param);
+
+        if ($param === 'taxonomy' && filled($state['taxonomy'] ?? null)) {
+            $paramLabel .= ': '.Str::headline((string) $state['taxonomy']);
+        }
+
+        $operator = (string) ($state['operator'] ?? '==');
+        $operatorLabel = static::locationConstraintOperatorOptions()[$operator] ?? $operator;
+        $valueLabel = static::locationConstraintValueLabel($state, $targetEntities);
+
+        return trim(implode(' ', array_filter([$paramLabel, $operatorLabel, $valueLabel])));
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    protected static function locationConstraintValueLabel(array $state, mixed $targetEntities): string
+    {
+        $value = $state['value'] ?? null;
+
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $options = app(LocationConstraintOptions::class);
+
+        if (($state['param'] ?? null) === 'taxonomy' && filled($state['taxonomy'] ?? null)) {
+            if (is_array($value)) {
+                return implode(', ', $options->termLabelsForValues((string) $state['taxonomy'], $targetEntities, $value));
+            }
+
+            return $options->termLabelForValue((string) $state['taxonomy'], $targetEntities, $value) ?? (string) $value;
+        }
+
+        if (($state['param'] ?? null) === 'record_type') {
+            if (is_array($value)) {
+                return implode(', ', $options->recordTypeLabelsForValues($targetEntities, $value));
+            }
+
+            return $options->recordTypeLabelForValue($targetEntities, $value) ?? (string) $value;
+        }
+
+        if (is_array($value)) {
+            return implode(', ', array_map(static fn (mixed $item): string => (string) $item, $value));
+        }
+
+        return (string) $value;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function locationConstraintParamOptions(): array
+    {
+        return app(LocationConstraintOptions::class)->availableParamOptions();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function locationConstraintOperatorOptions(): array
+    {
+        return [
+            '==' => __('builder::builder.field_group.location_operator_equals'),
+            '!=' => __('builder::builder.field_group.location_operator_not_equals'),
+            'in' => __('builder::builder.field_group.location_operator_in'),
+            'not in' => __('builder::builder.field_group.location_operator_not_in'),
         ];
     }
 

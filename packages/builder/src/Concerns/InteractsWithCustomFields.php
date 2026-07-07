@@ -308,6 +308,14 @@ trait InteractsWithCustomFields
         return parent::setAttribute($key, $value);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public static function customFieldsLocationParams(?Model $record): array
+    {
+        return [];
+    }
+
     public static function resolveCustomFieldsEntity(): string
     {
         if (method_exists(static::class, 'customFieldsEntity')) {

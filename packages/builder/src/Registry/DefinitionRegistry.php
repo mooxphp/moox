@@ -32,10 +32,16 @@ class DefinitionRegistry
         $locale = $this->localeResolver->current($locale);
 
         return $this->allActiveGroups()
-            ->filter(fn (FieldGroupDefinition $group): bool => $this->locationMatcher->matches(
-                $group->locationRules,
-                $context,
-            ))
+            ->filter(function (FieldGroupDefinition $group) use ($context): bool {
+                if ($context->record === null) {
+                    return $this->locationMatcher->matchesEntityScope(
+                        $group->locationRules,
+                        $context->entity,
+                    );
+                }
+
+                return $this->locationMatcher->matches($group->locationRules, $context);
+            })
             ->map(fn (FieldGroupDefinition $group): FieldGroupDefinition => $this->definitionTranslator->localizeGroup($group, $locale))
             ->values();
     }

@@ -67,6 +67,10 @@ class EditFieldGroup extends EditRecord
             $record->location_rules ?? [],
         );
 
+        $data['location_constraints'] = $persistence->constraintsFromLocationRules(
+            $record->location_rules ?? [],
+        );
+
         $data['fields'] = $persistence->fieldRowsForForm($record, $this->lang);
 
         return $data;

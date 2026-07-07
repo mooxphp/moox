@@ -73,11 +73,202 @@ class FieldGroupPersistence
      */
     public function resolveLocationRules(array $data): array
     {
+        if ($this->isNestedLocationRules($data['location_rules'] ?? null)) {
+            return $this->normalizeNestedLocationRules($data['location_rules']);
+        }
+
         if (array_key_exists('target_entities', $data)) {
-            return $this->locationRulesFromEntities($data['target_entities'] ?? []);
+            return $this->mergeEntityRulesWithConstraints(
+                $data['target_entities'] ?? [],
+                $data['location_constraints'] ?? [],
+            );
         }
 
         return $this->normalizeLocationRules($data['location_rules'] ?? []);
+    }
+
+    /**
+     * @param  list<string>|string|null  $entities
+     * @param  list<array{param?: string, operator?: string, value?: mixed}>  $constraints
+     * @return list<list<array{param: string, operator: string, value: mixed}>>
+     */
+    public function mergeEntityRulesWithConstraints(array|string|null $entities, array $constraints): array
+    {
+        $entityRules = $this->locationRulesFromEntities($entities);
+        $constraintRules = $this->constraintRulesFromForm($constraints);
+
+        if ($constraintRules === []) {
+            return $entityRules;
+        }
+
+        return array_map(
+            fn (array $group): array => array_merge($group, $constraintRules),
+            $entityRules,
+        );
+    }
+
+    /**
+     * @param  list<array{param?: string, operator?: string, value?: mixed}>  $rows
+     * @return list<array{param: string, operator: string, value: mixed}>
+     */
+    public function constraintRulesFromForm(array $rows): array
+    {
+        $rules = [];
+
+        foreach ($rows as $row) {
+            $param = $this->resolveConstraintParam($row);
+
+            if ($param === null) {
+                continue;
+            }
+
+            $rules[] = [
+                'param' => $param,
+                'operator' => (string) ($row['operator'] ?? '=='),
+                'value' => $this->normalizeConstraintValue($row['value'] ?? null),
+            ];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @param  array{param?: string, operator?: string, value?: mixed, taxonomy?: string|null}  $row
+     */
+    protected function resolveConstraintParam(array $row): ?string
+    {
+        $param = (string) ($row['param'] ?? '');
+
+        if ($param === '') {
+            return null;
+        }
+
+        if ($param === 'taxonomy') {
+            $taxonomy = trim((string) ($row['taxonomy'] ?? ''));
+
+            return $taxonomy === '' ? null : 'taxonomy:'.$taxonomy;
+        }
+
+        return $param;
+    }
+
+    protected function normalizeConstraintValue(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_values(array_map(
+                fn (mixed $item): int|string => is_numeric($item) ? (int) $item : (string) $item,
+                array_filter($value, static fn (mixed $item): bool => $item !== null && $item !== ''),
+            ));
+        }
+
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+
+        if (str_contains($value, ',')) {
+            return array_values(array_filter(array_map(
+                static fn (string $item): int|string => is_numeric(trim($item)) ? (int) trim($item) : trim($item),
+                explode(',', $value),
+            )));
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param  list<list<array{param: string, operator: string, value: mixed}>>  $rules
+     * @return list<array{param: string, operator: string, value: mixed, taxonomy?: string|null}>
+     */
+    public function constraintsFromLocationRules(array $rules): array
+    {
+        if ($rules === []) {
+            return [];
+        }
+
+        $constraints = [];
+
+        foreach ($rules[0] as $rule) {
+            $param = (string) ($rule['param'] ?? '');
+
+            if ($param === '' || $param === 'entity') {
+                continue;
+            }
+
+            if (str_starts_with($param, 'taxonomy:')) {
+                $constraints[] = [
+                    'param' => 'taxonomy',
+                    'taxonomy' => substr($param, strlen('taxonomy:')),
+                    'operator' => (string) ($rule['operator'] ?? '=='),
+                    'value' => $rule['value'] ?? null,
+                ];
+
+                continue;
+            }
+
+            $constraints[] = [
+                'param' => $param,
+                'operator' => (string) ($rule['operator'] ?? '=='),
+                'value' => $rule['value'] ?? null,
+            ];
+        }
+
+        return $constraints;
+    }
+
+    protected function isNestedLocationRules(mixed $rules): bool
+    {
+        if (! is_array($rules) || $rules === []) {
+            return false;
+        }
+
+        $first = $rules[0] ?? null;
+
+        return is_array($first) && array_is_list($first);
+    }
+
+    /**
+     * @param  list<list<array{param?: string, operator?: string, value?: mixed}>>  $rules
+     * @return list<list<array{param: string, operator: string, value: mixed}>>
+     */
+    public function normalizeNestedLocationRules(array $rules): array
+    {
+        $normalized = [];
+
+        foreach ($rules as $andGroup) {
+            if (! is_array($andGroup)) {
+                continue;
+            }
+
+            $group = [];
+
+            foreach ($andGroup as $rule) {
+                if (! is_array($rule) || blank($rule['param'] ?? null)) {
+                    continue;
+                }
+
+                $group[] = [
+                    'param' => (string) $rule['param'],
+                    'operator' => (string) ($rule['operator'] ?? '=='),
+                    'value' => $rule['value'] ?? null,
+                ];
+            }
+
+            if ($group !== []) {
+                $normalized[] = $group;
+            }
+        }
+
+        return $normalized;
     }
 
     /**

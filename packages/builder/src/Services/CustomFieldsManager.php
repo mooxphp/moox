@@ -41,7 +41,7 @@ class CustomFieldsManager
      */
     public function locationContextForResource(string $resourceClass): LocationContext
     {
-        return new LocationContext($resourceClass::resolveCustomFieldsEntityIdentifier());
+        return LocationContext::forResource($resourceClass);
     }
 
     /**

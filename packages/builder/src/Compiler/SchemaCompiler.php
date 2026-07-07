@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
+use Moox\Builder\Data\LocationContext;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -31,6 +32,7 @@ class SchemaCompiler
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected CustomFieldsManager $customFieldsManager,
         protected StorableFieldCollector $storableFieldCollector,
+        protected LocationMatcher $locationMatcher,
     ) {}
 
     /**
@@ -78,6 +80,17 @@ class SchemaCompiler
                 $section = $section->afterStateHydrated(
                     function (Component $component, mixed $state, ?Model $record) use ($groupScalarFields, $entity, $storableFields): void {
                         $this->applyScalarFieldDefaults($component, $groupScalarFields, $entity, $record, $storableFields);
+                    },
+                );
+            }
+
+            if ($resourceClass !== null && $group->locationRules !== []) {
+                $section = $section->visible(
+                    function (?Model $record) use ($group, $resourceClass): bool {
+                        return $this->locationMatcher->matches(
+                            $group->locationRules,
+                            LocationContext::forResource($resourceClass, $record),
+                        );
                     },
                 );
             }

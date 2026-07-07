@@ -26,18 +26,31 @@ final class FieldGroupDefinitionMapper
         bool $active,
         int $sort,
     ): array {
-        return [
+        $entities = $this->fieldGroupPersistence->entitiesFromLocationRules(
+            $definition->locationRules,
+        );
+        $constraints = $this->fieldGroupPersistence->constraintsFromLocationRules(
+            $definition->locationRules,
+        );
+
+        $payload = [
             'name' => $definition->name,
             'slug' => $definition->slug,
             'active' => $active,
             'sort' => $sort,
             'placement' => $definition->placement,
             'settings' => $definition->settings,
-            'target_entities' => $this->fieldGroupPersistence->entitiesFromLocationRules(
-                $definition->locationRules,
-            ),
             'fields' => $this->mapFieldsToRows($definition->fields),
         ];
+
+        if ($constraints === []) {
+            $payload['target_entities'] = $entities;
+        } else {
+            $payload['target_entities'] = $entities;
+            $payload['location_constraints'] = $constraints;
+        }
+
+        return $payload;
     }
 
     /**

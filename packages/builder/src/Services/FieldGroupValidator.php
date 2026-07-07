@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Support\FieldRelationTree;
+use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\StorableFieldCollector;
 
 class FieldGroupValidator
@@ -16,6 +18,7 @@ class FieldGroupValidator
     public function __construct(
         protected FieldGroupPersistence $fieldGroupPersistence,
         protected StorableFieldCollector $storableFieldCollector,
+        protected LocationConstraintOptions $locationConstraintOptions,
     ) {}
 
     /**
@@ -26,7 +29,13 @@ class FieldGroupValidator
         $locationRules = $this->fieldGroupPersistence->resolveLocationRules($data);
         $entities = $this->fieldGroupPersistence->entitiesFromLocationRules($locationRules);
         $fieldRows = $data['fields'] ?? [];
-        $messages = $this->rangeBoundsMessages($fieldRows);
+        $messages = array_merge(
+            $this->rangeBoundsMessages($fieldRows),
+            $this->locationConstraintMessages(
+                is_array($data['location_constraints'] ?? null) ? $data['location_constraints'] : [],
+                $data['target_entities'] ?? [],
+            ),
+        );
 
         if ($entities === [] || $fieldRows === []) {
             if ($messages !== []) {
@@ -227,5 +236,119 @@ class FieldGroupValidator
         }
 
         return $max + 0 <= $min + 0;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return array<string, list<string>>
+     */
+    protected function locationConstraintMessages(array $rows, mixed $entities): array
+    {
+        $messages = [];
+        $availableParams = array_keys($this->locationConstraintOptions->availableParamOptions());
+        $availableOperators = ['==', '!=', 'in', 'not in'];
+
+        foreach ($rows as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $param = (string) ($row['param'] ?? '');
+            $operator = (string) ($row['operator'] ?? '==');
+            $basePath = "location_constraints.{$index}";
+
+            if (! in_array($param, $availableParams, true)) {
+                $messages["{$basePath}.param"] = [__('builder::builder.validation.invalid_option')];
+
+                continue;
+            }
+
+            if (! in_array($operator, $availableOperators, true)) {
+                $messages["{$basePath}.operator"] = [__('builder::builder.validation.invalid_option')];
+            }
+
+            if ($param === 'taxonomy') {
+                $taxonomy = (string) ($row['taxonomy'] ?? '');
+
+                if ($taxonomy === '' || ! array_key_exists($taxonomy, $this->locationConstraintOptions->taxonomyKeysForEntities($entities))) {
+                    $messages["{$basePath}.taxonomy"] = [__('builder::builder.validation.invalid_option')];
+
+                    continue;
+                }
+
+                $valueMessages = $this->invalidConstraintValueMessages(
+                    Arr::wrap($row['value'] ?? null),
+                    array_keys($this->locationConstraintOptions->termOptionsForTaxonomy($taxonomy, $entities)),
+                );
+
+                if ($valueMessages !== []) {
+                    $messages["{$basePath}.value"] = $valueMessages;
+                }
+
+                continue;
+            }
+
+            if ($param === 'record_type') {
+                $valueMessages = $this->invalidConstraintValueMessages(
+                    Arr::wrap($row['value'] ?? null),
+                    array_keys($this->locationConstraintOptions->recordTypeOptionsForEntities($entities)),
+                );
+
+                if ($valueMessages !== []) {
+                    $messages["{$basePath}.value"] = $valueMessages;
+                }
+
+                continue;
+            }
+
+            if ($param === 'user_role') {
+                if (! $this->locationConstraintOptions->supportsUserRoles()) {
+                    $messages["{$basePath}.value"] = [
+                        $this->locationConstraintOptions->userRoleUnavailableReason()
+                            ?? __('builder::builder.validation.invalid_option'),
+                    ];
+
+                    continue;
+                }
+
+                $valueMessages = $this->invalidConstraintValueMessages(
+                    Arr::wrap($row['value'] ?? null),
+                    array_keys($this->locationConstraintOptions->roleOptions()),
+                );
+
+                if ($valueMessages !== []) {
+                    $messages["{$basePath}.value"] = $valueMessages;
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    /**
+     * @param  list<mixed>  $values
+     * @param  list<string|int>  $allowed
+     * @return list<string>
+     */
+    protected function invalidConstraintValueMessages(array $values, array $allowed): array
+    {
+        $normalizedValues = array_values(array_filter(
+            array_map(static fn (mixed $value): string => trim((string) $value), $values),
+            static fn (string $value): bool => $value !== '',
+        ));
+
+        if ($normalizedValues === []) {
+            return [];
+        }
+
+        $allowedLookup = array_fill_keys(array_map(static fn (mixed $value): string => (string) $value, $allowed), true);
+
+        foreach ($normalizedValues as $value) {
+            if (! isset($allowedLookup[$value])) {
+                return [__('builder::builder.validation.invalid_option')];
+            }
+        }
+
+        return [];
     }
 }

@@ -156,18 +156,41 @@ Field group names, field labels, option labels, and translatable field config (`
 
 **Not translated:** field keys (`name`), option values (`value`), structural `config`, location rules, validation rules.
 
-### Location Rules (internal)
+### Location Rules
 
-In admin you choose **"Show on"** (multi-select). Internally this becomes:
+In admin you choose **"Show on"** (multi-select) and optional **"Additional conditions"**.
+
+Internally this becomes OR groups with AND rules:
 
 ```json
 [
-  [{ "param": "entity", "operator": "==", "value": "item" }],
-  [{ "param": "entity", "operator": "==", "value": "record" }]
+  [
+    { "param": "entity", "operator": "==", "value": "draft" },
+    { "param": "record_type", "operator": "==", "value": "page" }
+  ]
 ]
 ```
 
-Each inner list = AND group, multiple groups = OR. The matcher currently only supports `param: entity` with `==` / `!=`. Without assignment ("Show on" empty) the group appears in no form.
+| Param | Example | Context source |
+|-------|---------|----------------|
+| `entity` | `item`, `draft` | Resource / model entity key |
+| `record_type` | `page`, `article` | `$record->type` or `customFieldsLocationParams()` |
+| `user_role` | `admin`, `editor` | Authenticated user roles (`in` / `not in` supported) |
+| `taxonomy:{key}` | term ID `12` or `12,34` | Taxonomy IDs on the record (`HasModelTaxonomy`) |
+
+- Outer array = **OR** groups; inner array = **AND** rules.
+- Empty rules = matches nothing (fail-closed).
+- On create forms (no record yet), record/taxonomy rules are ignored; entity and user-role rules still apply.
+- Per-record matching also runs on compiled form sections via `SchemaCompiler`.
+
+Override or extend auto-detected params on the resource/model:
+
+```php
+protected static function customFieldsLocationParams(?Model $record): array
+{
+    return ['record_type' => $record?->type];
+}
+```
 
 ---
 
@@ -843,6 +866,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Relation fields** — link to Moox Filament entities, scoped search/validation, API `{id, label}` output
 - **Conditional logic (v1)** — show/hide on root-level sibling fields; save-side enforcement
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
+- **Location rules** — entity, record type, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
@@ -852,9 +876,8 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 
 **v1 limitations (known):**
 
-- Location rules: only `entity` param (`==` / `!=`) — no taxonomy, template, user role, etc.
+- Location rules: no template/parent params yet; record/taxonomy rules need a saved record (ignored on create)
 - Conditional logic: root-level siblings only — not inside repeaters/groups/flexible content
-- `visible_frontend`: stored in admin, but no packaged Blade/theme renderer yet
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
 - No clone field type (ACF-style reusable field group in a field)
@@ -862,9 +885,8 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 **Not implemented yet:**
 
 - Clone field type (ACF)
-- Location params beyond `entity`
+- Location params beyond entity/record type/taxonomy/user role (e.g. template, parent)
 - Nested conditional logic (inside compound fields)
-- Frontend rendering helper (`get_field()`-style Blade component)
 - Custom validation rules UI in admin
 - Package-level policies on field group management
 
