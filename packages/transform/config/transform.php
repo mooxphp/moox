@@ -6,9 +6,9 @@ use Moox\Transform\Support\Operations\AnyTruthyInlineValueOperation;
 use Moox\Transform\Support\Operations\CaseInlineValueOperation;
 use Moox\Transform\Support\Operations\CoalesceInlineValueOperation;
 use Moox\Transform\Support\Operations\IntegerInlineValueOperation;
+use Moox\Transform\Support\Operations\LookupModelIdInlineValueOperation;
 use Moox\Transform\Support\Operations\MapInlineValueOperation;
 use Moox\Transform\Support\Operations\NotTruthyInlineValueOperation;
-use Moox\Transform\Support\Operations\StatusFromDeletedInlineValueOperation;
 use Moox\Transform\Support\Operations\TruthyInlineValueOperation;
 
 return [
@@ -43,6 +43,75 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Import record payload reader (application binding)
+    |--------------------------------------------------------------------------
+    |
+    | Class implementing Moox\Transform\Contracts\ImportRecordPayloadReader.
+    | Configure this in the application when using api_import_record sources.
+    |
+    */
+    'import_record_payload_reader' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Import record model for Filament run forms (application binding)
+    |--------------------------------------------------------------------------
+    */
+    'import_record_model' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Import record run context
+    |--------------------------------------------------------------------------
+    */
+    'import_record_context_key' => 'import_record_id',
+    'default_import_record_id_template' => '{{context.import_record_id}}',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Additional model scan paths for Filament destination model select
+    |--------------------------------------------------------------------------
+    |
+    | Each path should point to a directory containing Eloquent model classes.
+    | The application may add package model directories here.
+    |
+    */
+    'additional_model_scan_paths' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default source projection for ad-hoc transform runs
+    |--------------------------------------------------------------------------
+    */
+    'default_source_projection' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Locale variant resolver (application binding)
+    |--------------------------------------------------------------------------
+    |
+    | Class implementing Moox\Transform\Contracts\LocaleVariantResolver.
+    |
+    */
+    'locale_variant_resolver' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bulk transform defaults
+    |--------------------------------------------------------------------------
+    */
+    'bulk' => [
+        'chunk_size' => 100,
+        'persist_children' => true,
+        'write_strategy' => 'row',
+        'source' => [
+            'strategy' => 'eager',
+            'chunk_size' => 1000,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Inline value operations for source expressions
     |--------------------------------------------------------------------------
     |
@@ -50,6 +119,7 @@ return [
     |   source.field|map:1=a,2=b,*=c|upper
     |   coalesce:source.a,source.b
     |   any_truthy:source.deleted,source.inactive|not_truthy
+    |   lookup_id:App\\Models\\Post,external_id,source.post_id
     |
     */
     'inline_value_operations' => [
@@ -58,9 +128,9 @@ return [
         TruthyInlineValueOperation::class,
         NotTruthyInlineValueOperation::class,
         IntegerInlineValueOperation::class,
-        StatusFromDeletedInlineValueOperation::class,
         CoalesceInlineValueOperation::class,
         AnyTruthyInlineValueOperation::class,
+        LookupModelIdInlineValueOperation::class,
     ],
 
 ];

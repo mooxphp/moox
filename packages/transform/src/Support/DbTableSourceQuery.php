@@ -100,4 +100,51 @@ final class DbTableSourceQuery
 
         return $connection;
     }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    public static function normalizeRow(array $row): array
+    {
+        foreach ($row as $key => $value) {
+            if (! is_string($value)) {
+                continue;
+            }
+
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $row[$key] = $decoded;
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * @return iterable<int, list<array<string, mixed>>>
+     */
+    public static function orderedChunk(Builder $query, string $keyColumn, int $chunkSize): iterable
+    {
+        $chunkSize = max(1, $chunkSize);
+        $offset = 0;
+
+        do {
+            $rows = (clone $query)
+                ->orderBy($keyColumn)
+                ->offset($offset)
+                ->limit($chunkSize)
+                ->get()
+                ->map(static fn (object $row): array => self::normalizeRow((array) $row))
+                ->values()
+                ->all();
+
+            if ($rows === []) {
+                break;
+            }
+
+            yield $rows;
+            $offset += count($rows);
+        } while (count($rows) === $chunkSize);
+    }
 }
