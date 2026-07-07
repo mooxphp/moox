@@ -160,6 +160,13 @@ Field group names, field labels, option labels, and translatable field config (`
 
 In admin you choose **"Show on"** (multi-select) and optional **"Additional conditions"**.
 
+The admin UI stores the same `location_rules` structure as before, but the inputs are safer and more guided now:
+
+- **Taxonomy** conditions use selects for taxonomy keys and taxonomy terms. Labels are shown, internal IDs are stored.
+- **Record type** conditions use known type options from the target resource (`getTypeSelect()`) and existing records. If no records exist yet, resource-defined type options still appear.
+- **User role** remains visible in the UI, but becomes disabled with an explanation when roles are not configured, no roles exist yet, or the configured auth user model does not use `HasRoles`.
+- Changing the selected condition parameter resets dependent fields (`taxonomy`, operator default, value) to avoid stale form state.
+
 Internally this becomes OR groups with AND rules:
 
 ```json
@@ -175,13 +182,15 @@ Internally this becomes OR groups with AND rules:
 |-------|---------|----------------|
 | `entity` | `item`, `draft` | Resource / model entity key |
 | `record_type` | `page`, `article` | `$record->type` or `customFieldsLocationParams()` |
-| `user_role` | `admin`, `editor` | Authenticated user roles (`in` / `not in` supported) |
+| `user_role` | `admin`, `editor` | Authenticated user roles (`in` / `not in` supported when roles are available) |
 | `taxonomy:{key}` | term ID `12` or `12,34` | Taxonomy IDs on the record (`HasModelTaxonomy`) |
 
 - Outer array = **OR** groups; inner array = **AND** rules.
 - Empty rules = matches nothing (fail-closed).
 - On create forms (no record yet), record/taxonomy rules are ignored; entity and user-role rules still apply.
 - Per-record matching also runs on compiled form sections via `SchemaCompiler`.
+- `LocationConstraintOptions` resolves taxonomy term labels with locale fallback: active/admin locale → default locale → English → first available translation.
+- `FieldGroupValidator` re-validates condition params, operators, and submitted values server-side, so manipulated requests cannot persist invalid location constraints.
 
 Override or extend auto-detected params on the resource/model:
 
@@ -336,7 +345,7 @@ Navigation: **Fields → Field Groups**
 | Section | Content |
 |---------|---------|
 | **General** | Name, technical key, active, sort order |
-| **Assignment** | "Show on" multi-select (auto-discovered resources) |
+| **Assignment** | "Show on" multi-select (auto-discovered resources) + optional additional conditions (`record_type`, `user_role`, taxonomy) |
 | **Fields** | Repeater: label, type, field key, required |
 | **Settings** | Capability fields (only when the type has them) |
 | **Options** | For select/radio/multiselect/checkbox list |

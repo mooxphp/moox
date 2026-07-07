@@ -16,6 +16,7 @@ use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldRelationTree;
+use Moox\Builder\Support\FieldValidationRules;
 
 class FieldGroupPersistence
 {
@@ -24,6 +25,7 @@ class FieldGroupPersistence
         protected BuilderLocaleResolver $localeResolver,
         protected DefinitionTranslator $definitionTranslator,
         protected EntityRegistry $entityRegistry,
+        protected FieldValidationRules $fieldValidationRules,
     ) {}
 
     /**
@@ -394,6 +396,7 @@ class FieldGroupPersistence
                 'name' => $field->name,
                 'type' => $field->type,
                 'required' => (bool) ($field->validation['required'] ?? false),
+                'validation' => $this->fieldValidationRules->formStateFor($field->validation ?? [], $field->type),
                 'config' => $this->definitionTranslator->translatedFieldConfig($field, $locale),
                 'settings' => [
                     'show_in_table' => (bool) ($field->settings['show_in_table'] ?? false),
@@ -501,10 +504,10 @@ class FieldGroupPersistence
                         array_intersect_key($field->config ?? [], array_flip(BuilderLocaleResolver::TRANSLATABLE_CONFIG_KEYS)),
                         $structuralConfig,
                     ),
-                'validation' => [
+                'validation' => $this->fieldValidationRules->compileValidation([
+                    ...((is_array($row['validation'] ?? null) ? $row['validation'] : [])),
                     'required' => (bool) ($row['required'] ?? false),
-                    'rules' => $row['validation']['rules'] ?? [],
-                ],
+                ], (string) $row['type']),
                 'settings' => array_merge($field->settings ?? [], [
                     'show_in_table' => (bool) ($row['settings']['show_in_table'] ?? false),
                     'sortable' => (bool) ($row['settings']['sortable'] ?? true),

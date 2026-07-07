@@ -10,6 +10,7 @@ use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -39,6 +40,7 @@ use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\LocationConstraintOptions;
+use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\TypedValueColumns;
 
 class FieldGroupResource extends Resource
@@ -208,6 +210,7 @@ class FieldGroupResource extends Resource
                                         ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                                         ->live(onBlur: true),
                                     static::requirementAndWidthRow(),
+                                    ...static::validationSettingsSchema(),
                                     ...static::columnSettingsSchema(),
                                     ...static::visibilitySettingsSchema(),
                                     ...static::conditionalLogicSchema(),
@@ -399,6 +402,7 @@ class FieldGroupResource extends Resource
                 ->maxLength(255)
                 ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                 ->live(onBlur: true),
+            ...static::validationSettingsSchema(),
             Repeater::make('children')
                 ->label(__('builder::builder.field.subfields'))
                 ->orderColumn('sort')
@@ -523,6 +527,7 @@ class FieldGroupResource extends Resource
                 ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                 ->live(onBlur: true),
             static::requirementAndWidthRow(),
+            ...static::validationSettingsSchema(),
             ...static::optionFieldSections($registry),
         ];
     }
@@ -1087,6 +1092,76 @@ class FieldGroupResource extends Resource
             '1/4' => __('builder::builder.field.width_quarter'),
             '3/4' => __('builder::builder.field.width_three_quarters'),
         ];
+    }
+
+    /**
+     * @return list<Section>
+     */
+    protected static function validationSettingsSchema(): array
+    {
+        $rules = app(FieldValidationRules::class);
+
+        return [
+            Section::make(__('builder::builder.field.validation'))
+                ->description(__('builder::builder.field.validation_helper'))
+                ->icon(Heroicon::OutlinedShieldCheck)
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn (callable $get): bool => $rules->supportsType($get('type')))
+                ->schema([
+                    Repeater::make('validation.rule_rows')
+                        ->label(__('builder::builder.field.validation_rules'))
+                        ->helperText(__('builder::builder.field.validation_rules_helper'))
+                        ->defaultItems(0)
+                        ->collapsible()
+                        ->collapsed()
+                        ->itemLabel(fn (array $state): string => static::validationRuleItemLabel($state))
+                        ->schema([
+                            Select::make('rule')
+                                ->label(__('builder::builder.field.validation_rule'))
+                                ->options(fn (callable $get): array => app(FieldValidationRules::class)->availableRulesForType(static::resolveValidationRuleFieldType($get)))
+                                ->required()
+                                ->live()
+                                ->native(false),
+                            TextInput::make('value')
+                                ->label(__('builder::builder.field.validation_value'))
+                                ->visible(fn (callable $get): bool => app(FieldValidationRules::class)->ruleNeedsValue((string) $get('rule'))),
+                        ])
+                        ->columns(2),
+                    Textarea::make('validation.raw_rules')
+                        ->label(__('builder::builder.field.validation_raw_rules'))
+                        ->helperText(__('builder::builder.field.validation_raw_rules_helper'))
+                        ->rows(3)
+                        ->placeholder("starts_with:foo\nends_with:bar"),
+                ]),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    protected static function validationRuleItemLabel(array $state): string
+    {
+        $rule = filled($state['rule'] ?? null)
+            ? __('builder::builder.field.validation_rule_'.Str::snake((string) $state['rule']))
+            : __('builder::builder.field.validation_rule');
+
+        $value = filled($state['value'] ?? null) ? ': '.(string) $state['value'] : '';
+
+        return $rule.$value;
+    }
+
+    protected static function resolveValidationRuleFieldType(callable $get): ?string
+    {
+        foreach (['../../type', '../../../type', '../../../../type'] as $path) {
+            $type = $get($path);
+
+            if (is_string($type) && $type !== '') {
+                return $type;
+            }
+        }
+
+        return null;
     }
 
     /**

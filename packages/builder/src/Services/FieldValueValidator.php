@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\MediaFieldValueSupport;
 use Moox\Builder\Support\OptionValueRules;
 use Moox\Builder\Support\RelationValueRules;
@@ -18,6 +19,7 @@ class FieldValueValidator
 {
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
+        protected FieldValidationRules $fieldValidationRules,
     ) {}
 
     /**
@@ -222,6 +224,8 @@ class FieldValueValidator
             }
         }
 
+        $messages = array_merge($messages, $this->messagesForCustomRules($field, $value, $path));
+
         return $messages;
     }
 
@@ -321,6 +325,35 @@ class FieldValueValidator
         }
 
         return $messages;
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    protected function messagesForCustomRules(FieldDefinition $field, mixed $value, string $path): array
+    {
+        $rules = $this->fieldValidationRules->runtimeRulesFor($field);
+
+        if ($rules === []) {
+            return [];
+        }
+
+        $context = $this->fieldValidationRules->validatorContextForType($field->type, $value);
+
+        if ($context === null) {
+            return [];
+        }
+
+        $validator = Validator::make(
+            ['value' => $context['value']],
+            ['value' => array_merge([$context['type']], $rules)],
+        );
+
+        if (! $validator->fails()) {
+            return [];
+        }
+
+        return [$path => $validator->errors()->get('value')];
     }
 
     /**
