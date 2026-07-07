@@ -306,7 +306,6 @@ class FieldGroupImporter
     }
 
     /**
-     * @param  mixed  $rows
      * @return list<array<string, mixed>>
      */
     protected function canonicalizeFieldRows(mixed $rows): array
