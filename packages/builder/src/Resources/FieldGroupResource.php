@@ -552,7 +552,7 @@ class FieldGroupResource extends Resource
 
     protected static function fieldTypeSupportsColumn(?string $type): bool
     {
-        if (blank($type) || $type === 'password') {
+        if (blank($type) || in_array($type, ['password', 'rich_text'], true)) {
             return false;
         }
 
@@ -614,9 +614,15 @@ class FieldGroupResource extends Resource
             || static::fieldTypeSupportsRelationColumn($type);
     }
 
-    protected static function fieldTypeSupportsSortableSearchableColumn(?string $type): bool
+    protected static function fieldTypeSupportsSortableColumn(?string $type): bool
     {
         return static::fieldTypeSupportsColumn($type)
+            || static::fieldTypeSupportsRelationColumn($type);
+    }
+
+    protected static function fieldTypeSupportsSearchableColumn(?string $type): bool
+    {
+        return (static::fieldTypeSupportsColumn($type) && $type !== 'toggle')
             || static::fieldTypeSupportsRelationColumn($type);
     }
 
@@ -637,7 +643,7 @@ class FieldGroupResource extends Resource
 
     protected static function fieldTypeSupportsTextColumnPresentation(callable $get): bool
     {
-        return static::fieldTypeUsesTextColumn($get('type'))
+        return static::fieldTypeUsesTextColumn($get('type')) && $get('type') !== 'rich_text'
             || static::fieldTypeSupportsRelationBadge($get);
     }
 
@@ -702,14 +708,17 @@ class FieldGroupResource extends Resource
                             Toggle::make('settings.sortable')
                                 ->label(__('builder::builder.field.column_sortable'))
                                 ->inline(false)
-                                ->default(true),
+                                ->default(true)
+                                ->visible(fn (callable $get): bool => static::fieldTypeSupportsSortableColumn($get('type'))),
                             Toggle::make('settings.searchable')
                                 ->label(__('builder::builder.field.column_searchable'))
                                 ->inline(false)
-                                ->default(true),
+                                ->default(true)
+                                ->visible(fn (callable $get): bool => static::fieldTypeSupportsSearchableColumn($get('type'))),
                         ])
                         ->visible(fn (callable $get): bool => $enabled($get)
-                            && static::fieldTypeSupportsSortableSearchableColumn($get('type'))),
+                            && (static::fieldTypeSupportsSortableColumn($get('type'))
+                                || static::fieldTypeSupportsSearchableColumn($get('type')))),
                     static::configureFieldHint(
                         Toggle::make('settings.hidden_by_default'),
                         __('builder::builder.field.column_hidden_by_default'),

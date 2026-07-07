@@ -81,7 +81,7 @@ class TableColumnCompiler
 
     protected function isColumnable(FieldDefinition $field): bool
     {
-        return TypedValueColumns::isColumnableType($field->type);
+        return TypedValueColumns::isColumnableType($field->type) && $field->type !== 'rich_text';
     }
 
     protected function isImageColumn(FieldDefinition $field): bool
@@ -130,15 +130,15 @@ class TableColumnCompiler
                 $column->limit(50);
             }
 
-            if ($field->columnBadge()) {
+            if ($this->supportsTextColumnPresentation($field) && $field->columnBadge()) {
                 $column->badge();
             }
 
-            if (($color = $field->columnColor()) !== null) {
+            if ($this->supportsTextColumnPresentation($field) && ($color = $field->columnColor()) !== null) {
                 $column->color($color);
             }
 
-            if (($icon = $field->columnIcon()) !== null) {
+            if ($this->supportsTextColumnPresentation($field) && ($icon = $field->columnIcon()) !== null) {
                 $column->icon($icon);
             }
 
@@ -171,7 +171,7 @@ class TableColumnCompiler
             });
         }
 
-        if ($field->isColumnSearchable()) {
+        if ($field->isColumnSearchable() && $field->type !== 'toggle') {
             $column->searchable(query: function (Builder $query, string $search) use ($name): Builder {
                 return $query->where($name, 'like', "%{$search}%");
             });
@@ -191,6 +191,11 @@ class TableColumnCompiler
             'number', 'range' => $column->numeric(decimalPlaces: $this->numericDecimalPlaces($field)),
             default => null,
         };
+    }
+
+    protected function supportsTextColumnPresentation(FieldDefinition $field): bool
+    {
+        return $field->type !== 'rich_text';
     }
 
     protected function numericDecimalPlaces(FieldDefinition $field): ?int
