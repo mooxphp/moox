@@ -8,6 +8,7 @@ use Moox\Transform\Enums\TransformExecutionMode;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\DbTableSourceQuery;
+use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
 final class ExpandTransformExecutor
 {
@@ -42,6 +43,10 @@ final class ExpandTransformExecutor
         }
 
         $failed = 0;
+        $processed = 0;
+        $updated = 0;
+        $skipped = 0;
+        $failures = [];
 
         foreach ($projections as $projection) {
             $child = TransformRecord::query()->create([
@@ -52,25 +57,48 @@ final class ExpandTransformExecutor
             ]);
 
             $processRecord($child);
+            $child = $child->fresh();
+            $status = (string) ($child?->status ?? 'failed');
 
-            $status = (string) $child->fresh()?->status;
-            if (! in_array($status, ['processed', 'updated', 'skipped'], true)) {
+            if ($status === 'processed') {
+                $processed++;
+            } elseif ($status === 'updated') {
+                $updated++;
+            } elseif ($status === 'skipped') {
+                $skipped++;
+            } else {
                 $failed++;
+                $maxFailures = (int) config('transform.bulk.max_failure_samples', 50);
+                if ($maxFailures === 0 || count($failures) < $maxFailures) {
+                    $failures[] = [
+                        'transform_record_id' => $child?->id,
+                        'status' => $status,
+                        'error_message' => $child?->error_message,
+                        'source_label' => BulkTransformSummaryFormatter::projectionSourceLabel(
+                            $projection,
+                            is_array($definition->destination_match) ? $definition->destination_match : [],
+                        ),
+                    ];
+                }
             }
         }
+
+        $stats = [
+            'total' => count($projections),
+            'processed' => $processed,
+            'updated' => $updated,
+            'skipped' => $skipped,
+            'failed' => $failed,
+            'failures' => $failures,
+            'mode' => TransformExecutionMode::Expand->value,
+        ];
 
         $parent->forceFill([
             'status' => $failed === 0 ? 'processed' : 'failed',
             'validation_status' => $failed === 0 ? 'valid' : 'invalid',
             'degraded' => $failed > 0,
-            'bulk_stats' => [
-                'total' => count($projections),
-                'failed' => $failed,
-                'mode' => TransformExecutionMode::Expand->value,
-            ],
-            'error_message' => $failed === 0
-                ? 'Expanded iteration into '.count($projections).' transform records.'
-                : 'Expanded iteration into '.count($projections)." transform records with {$failed} failures.",
+            'bulk_stats' => $stats,
+            'error_message' => BulkTransformSummaryFormatter::formatMessage($stats),
             'last_success_at' => $failed === 0 ? now() : null,
         ])->save();
 

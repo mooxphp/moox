@@ -7,6 +7,7 @@ namespace Moox\Transform\Support\Execution;
 use Illuminate\Support\Facades\Config;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
 final class BulkTransformExecutor
 {
@@ -64,11 +65,19 @@ final class BulkTransformExecutor
                     $processRecord($child);
                     $child->refresh();
 
-                    $this->accumulateResult($stats, new BulkItemResult(
-                        status: (string) $child->status,
-                        errorMessage: $child->error_message,
-                        destinationKey: $child->destination_key,
-                    ), (int) $child->id);
+                    $this->accumulateResult(
+                        $stats,
+                        new BulkItemResult(
+                            status: (string) $child->status,
+                            errorMessage: $child->error_message,
+                            destinationKey: $child->destination_key !== null ? (string) $child->destination_key : null,
+                            sourceLabel: BulkTransformSummaryFormatter::projectionSourceLabel(
+                                is_array($child->source_projection) ? $child->source_projection : [],
+                                is_array($definition->destination_match) ? $definition->destination_match : [],
+                            ),
+                        ),
+                        (int) $child->id,
+                    );
 
                     continue;
                 }
@@ -90,9 +99,7 @@ final class BulkTransformExecutor
             'validation_status' => $failed === 0 ? 'valid' : 'invalid',
             'degraded' => $failed > 0,
             'bulk_stats' => $stats,
-            'error_message' => $failed === 0
-                ? "Bulk transform completed for {$stats['total']} projections."
-                : "Bulk transform completed with {$failed} failures out of {$stats['total']} projections.",
+            'error_message' => BulkTransformSummaryFormatter::formatMessage($stats),
             'last_success_at' => $failed === 0 ? now() : null,
         ])->save();
     }
@@ -145,7 +152,8 @@ final class BulkTransformExecutor
         }
 
         $stats['failed']++;
-        if (count($stats['failures']) >= 25) {
+        $maxFailures = (int) Config::get('transform.bulk.max_failure_samples', 50);
+        if ($maxFailures > 0 && count($stats['failures']) >= $maxFailures) {
             return;
         }
 
@@ -153,6 +161,10 @@ final class BulkTransformExecutor
             'status' => $result->status,
             'error_message' => $result->errorMessage,
         ];
+
+        if ($result->sourceLabel !== null && $result->sourceLabel !== '') {
+            $failure['source_label'] = $result->sourceLabel;
+        }
 
         if ($transformRecordId !== null) {
             $failure['transform_record_id'] = $transformRecordId;

@@ -10,5 +10,6 @@ final class BulkItemResult
         public readonly string $status,
         public readonly ?string $errorMessage = null,
         public readonly ?string $destinationKey = null,
+        public readonly ?string $sourceLabel = null,
     ) {}
 }

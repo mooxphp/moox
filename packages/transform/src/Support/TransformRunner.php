@@ -16,6 +16,7 @@ use Moox\Transform\Support\Exceptions\TransformDestinationConflictException;
 use Moox\Transform\Support\Execution\BatchDestinationWriterRegistry;
 use Moox\Transform\Support\Execution\BulkItemResult;
 use Moox\Transform\Support\Execution\BulkTransformExecutor;
+use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 use Moox\Transform\Support\Execution\ResolvedTransformDataFactory;
 use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
 use Moox\Transform\Support\Expansion\TransformProjectionExpander;
@@ -1075,8 +1076,11 @@ class TransformRunner
         $existingByIndex = [];
         /** @var Model $prototype */
         $prototype = new $destinationClass;
+        $destinationMatch = $this->resolveArrayAttribute($definition, 'destination_match');
 
         foreach ($projections as $index => $projection) {
+            $sourceLabel = BulkTransformSummaryFormatter::projectionSourceLabel($projection, $destinationMatch);
+
             try {
                 $resolvedRow = $this->resolvedTransformDataFactory->make(
                     $definition,
@@ -1086,7 +1090,11 @@ class TransformRunner
                 $validationRules = $this->resolveValidationRules($definition, $prototype, $resolvedRow->resolvedData);
                 $validation = $this->validator->validate($resolvedRow->resolvedData, $validationRules);
                 if (! $validation['passes']) {
-                    $results[$index] = new BulkItemResult('failed_validation', 'Validation failed.');
+                    $results[$index] = new BulkItemResult(
+                        'failed_validation',
+                        'Validation failed.',
+                        sourceLabel: $sourceLabel,
+                    );
 
                     continue;
                 }
@@ -1094,9 +1102,9 @@ class TransformRunner
                 $existingByIndex[$index] = $this->destinationExistsByMatch($destinationClass, $resolvedRow->destinationMatch);
                 $validRows[$index] = $resolvedRow;
             } catch (TransformDestinationConflictException $exception) {
-                $results[$index] = new BulkItemResult('failed', $exception->getMessage());
+                $results[$index] = new BulkItemResult('failed', $exception->getMessage(), sourceLabel: $sourceLabel);
             } catch (\Throwable $throwable) {
-                $results[$index] = new BulkItemResult('failed', $throwable->getMessage());
+                $results[$index] = new BulkItemResult('failed', $throwable->getMessage(), sourceLabel: $sourceLabel);
             }
         }
 
@@ -1121,7 +1129,14 @@ class TransformRunner
             $destinationKeys = $writer->write($destinationClass, $definition, array_values($validRows));
         } catch (\Throwable $throwable) {
             foreach (array_keys($validRows) as $index) {
-                $results[$index] = new BulkItemResult('failed', $throwable->getMessage());
+                $results[$index] = new BulkItemResult(
+                    'failed',
+                    $throwable->getMessage(),
+                    sourceLabel: BulkTransformSummaryFormatter::projectionSourceLabel(
+                        $projections[$index],
+                        $destinationMatch,
+                    ),
+                );
             }
 
             ksort($results);

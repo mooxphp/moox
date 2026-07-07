@@ -61,6 +61,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Import record select (Filament run form)
+    |--------------------------------------------------------------------------
+    |
+    | endpoint_relation: Eloquent relation name from the import record model to
+    | the API endpoint (e.g. apiEndpoint). Auto-detected when null.
+    | select_limit: maximum options loaded per search / initial open.
+    |
+    */
+    'import_record_endpoint_relation' => null,
+    'import_record_select_limit' => 100,
+
+    /*
+    |--------------------------------------------------------------------------
     | Import record run context
     |--------------------------------------------------------------------------
     */
@@ -104,6 +117,7 @@ return [
         'chunk_size' => 100,
         'persist_children' => true,
         'write_strategy' => 'row',
+        'max_failure_samples' => 50,
         'source' => [
             'strategy' => 'eager',
             'chunk_size' => 1000,

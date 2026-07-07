@@ -32,6 +32,7 @@ use Moox\Transform\Filament\Resources\TransformDefinitionResource\RelationManage
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\ImportRecordSelectOptionBuilder;
 
 class TransformDefinitionResource extends BaseItemResource
 {
@@ -759,17 +760,16 @@ class TransformDefinitionResource extends BaseItemResource
         }
 
         $contextKey = static::importRecordContextKey();
-        $importRecordModel = config('transform.import_record_model');
-        if (is_string($importRecordModel) && class_exists($importRecordModel) && is_subclass_of($importRecordModel, Model::class)) {
+        $optionBuilder = ImportRecordSelectOptionBuilder::fromConfig();
+        if ($optionBuilder instanceof ImportRecordSelectOptionBuilder) {
             return [
                 Select::make($contextKey)
                     ->label(__('transform::fields.import_record_context'))
-                    ->options(fn (): array => $importRecordModel::query()
-                        ->orderByDesc('id')
-                        ->limit(100)
-                        ->pluck('id', 'id')
-                        ->mapWithKeys(static fn (mixed $id): array => [(int) $id => '#'.(int) $id])
-                        ->all())
+                    ->helperText(__('transform::fields.import_record_context_help'))
+                    ->options(fn (): array => $optionBuilder->groupedOptions())
+                    ->getSearchResultsUsing(fn (string $search): array => $optionBuilder->groupedOptions($search))
+                    ->getOptionLabelUsing(fn (mixed $value): string => $optionBuilder->labelForId((int) $value)
+                        ?? '#'.(int) $value)
                     ->searchable()
                     ->required(),
             ];

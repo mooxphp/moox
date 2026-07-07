@@ -22,6 +22,7 @@ use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Transform\Filament\Resources\TransformRecordResource\Pages;
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
 class TransformRecordResource extends BaseItemResource
 {
@@ -82,6 +83,22 @@ class TransformRecordResource extends BaseItemResource
                                     Textarea::make('error_message')
                                         ->label(__('transform::fields.error_message'))
                                         ->rows(3),
+                                    Textarea::make('bulk_result_summary')
+                                        ->label(__('transform::fields.bulk_result'))
+                                        ->rows(12)
+                                        ->disabled()
+                                        ->dehydrated(false)
+                                        ->formatStateUsing(fn (?TransformRecord $record): string => $record instanceof TransformRecord
+                                            ? BulkTransformSummaryFormatter::formatForDisplay($record)
+                                            : '')
+                                        ->visible(fn (?TransformRecord $record): bool => $record instanceof TransformRecord
+                                            && is_array($record->bulk_stats)
+                                            && $record->bulk_stats !== []),
+                                    KeyValue::make('bulk_stats')
+                                        ->label(__('transform::fields.bulk_stats'))
+                                        ->visible(fn (?TransformRecord $record): bool => $record instanceof TransformRecord
+                                            && is_array($record->bulk_stats)
+                                            && $record->bulk_stats !== []),
                                 ])->columns(1)->columnSpan(2),
                         ])
                         ->columnSpan(2),
@@ -177,6 +194,22 @@ class TransformRecordResource extends BaseItemResource
                     ->label(__('transform::fields.last_success_at'))
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('bulk_stats.total')
+                    ->label(__('transform::fields.bulk_total'))
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('bulk_stats.failed')
+                    ->label(__('transform::fields.bulk_failed'))
+                    ->numeric()
+                    ->sortable()
+                    ->color(fn ($state): string => ((int) $state) > 0 ? 'danger' : 'gray')
+                    ->toggleable(),
+                TextColumn::make('error_message')
+                    ->label(__('transform::fields.error_message'))
+                    ->limit(80)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('id', 'desc')
             ->actions([
