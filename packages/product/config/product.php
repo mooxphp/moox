@@ -60,4 +60,6 @@ return [
         'inactive' => 'trans//product::product.status_inactive',
         'archived' => 'trans//product::product.status_archived',
     ],
+
+    'currency' => 'EUR',
 ];

@@ -32,8 +32,6 @@ class ProductFactory extends Factory
             'sku' => 'SKU-'.strtoupper($this->faker->unique()->bothify('??####')),
             'type' => $this->faker->randomElement(array_keys(config('product.types', ['simple' => 'simple']))),
             'status' => $this->faker->randomElement(array_keys(config('product.statuses', []))),
-            'ean' => $this->faker->optional(0.4)->ean13(),
-            'mpn' => $this->faker->optional(0.3)->bothify('MPN-#####'),
             'price' => $this->faker->randomFloat(2, 5, 500),
             'sale_price' => $this->faker->optional(0.3)->randomFloat(2, 3, 400),
             'cost_price' => $this->faker->optional(0.5)->randomFloat(2, 2, 300),
@@ -41,8 +39,7 @@ class ProductFactory extends Factory
             'stock_min' => $this->faker->numberBetween(0, 10),
             'weight' => $this->faker->optional(0.8)->randomFloat(3, 0.05, 25),
             'weight_unit' => $this->faker->optional(0.8)->randomElement(['kg', 'g']),
-            'unit_of_measure' => $this->faker->optional(0.7)->randomElement(['Stück', 'm', 'kg']),
-            'brand_id' => $this->faker->optional(0.5)->numberBetween(1, 50),
+            'unit_of_measure' => $this->faker->optional(0.7)->randomElement(['piece', 'm', 'kg']),
             'is_purchasable' => true,
             'is_sellable' => true,
             'custom_properties' => [

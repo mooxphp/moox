@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('sku', 64)->unique();
             $table->string('type')->default('simple');
             $table->string('status')->default('draft');
-            $table->string('ean', 32)->nullable()->index();
-            $table->string('mpn', 64)->nullable();
             $table->decimal('price', 10, 2)->default(0);
             $table->decimal('sale_price', 10, 2)->nullable();
             $table->decimal('cost_price', 10, 2)->nullable();
@@ -26,7 +24,6 @@ return new class extends Migration
             $table->decimal('weight', 10, 3)->nullable();
             $table->string('weight_unit', 16)->nullable();
             $table->string('unit_of_measure', 32)->nullable();
-            $table->unsignedBigInteger('brand_id')->nullable()->index();
             $table->boolean('is_purchasable')->default(true);
             $table->boolean('is_sellable')->default(true);
             $table->json('custom_properties')->nullable();

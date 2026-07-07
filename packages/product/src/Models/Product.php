@@ -13,8 +13,6 @@ use Moox\Product\Database\Factories\ProductFactory;
  * @property string $sku
  * @property string $type
  * @property string $status
- * @property string|null $ean
- * @property string|null $mpn
  * @property string|float $price
  * @property string|float|null $sale_price
  * @property string|float|null $cost_price
@@ -23,7 +21,6 @@ use Moox\Product\Database\Factories\ProductFactory;
  * @property string|float|null $weight
  * @property string|null $weight_unit
  * @property string|null $unit_of_measure
- * @property int|null $brand_id
  * @property bool $is_purchasable
  * @property bool $is_sellable
  * @property array|null $custom_properties
@@ -62,8 +59,6 @@ class Product extends BaseDraftModel
         'sku',
         'type',
         'status',
-        'ean',
-        'mpn',
         'price',
         'sale_price',
         'cost_price',
@@ -72,7 +67,6 @@ class Product extends BaseDraftModel
         'weight',
         'weight_unit',
         'unit_of_measure',
-        'brand_id',
         'is_purchasable',
         'is_sellable',
         'custom_properties',
@@ -91,7 +85,6 @@ class Product extends BaseDraftModel
             'cost_price' => 'decimal:2',
             'stock' => 'integer',
             'stock_min' => 'integer',
-            'brand_id' => 'integer',
             'weight' => 'decimal:3',
             'is_purchasable' => 'boolean',
             'is_sellable' => 'boolean',
