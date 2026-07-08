@@ -370,8 +370,7 @@ class FieldGroupPersistence
      */
     public function fieldRowsForForm(FieldGroup $group, ?string $locale = null): array
     {
-        $group->load(FieldRelationTree::eagerLoadForDefinition());
-        $group->load('translations');
+        $group->loadMissing(FieldRelationTree::eagerLoadForDefinition());
 
         return $this->mapFieldRows($group->fields, $locale);
     }

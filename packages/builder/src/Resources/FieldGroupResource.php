@@ -45,6 +45,14 @@ use Moox\Builder\Support\TypedValueColumns;
 
 class FieldGroupResource extends Resource
 {
+    /**
+     * @var array<string, string>
+     */
+    protected static array $fieldTypeIconSvgCache = [];
+
+    /** @var array<string, list<class-string>> */
+    protected static array $typeSettingsCapabilityCache = [];
+
     protected static ?string $model = FieldGroup::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
@@ -320,8 +328,7 @@ class FieldGroupResource extends Resource
      */
     protected static function fieldItemLabelHtml(FieldTypeRegistry $registry, ?string $type, string $title, array $meta): HtmlString
     {
-        $icon = static::fieldTypeIcon($registry, $type);
-        $iconSvg = svg($icon, 'moox-builder-field-item__icon')->toHtml();
+        $iconSvg = static::fieldTypeIconSvg($registry, $type);
 
         $metaHtml = $meta === []
             ? ''
@@ -334,6 +341,20 @@ class FieldGroupResource extends Resource
             .$metaHtml
             .'</span>'
         );
+    }
+
+    protected static function fieldTypeIconSvg(FieldTypeRegistry $registry, ?string $type): string
+    {
+        $cacheKey = $type ?? '__empty__';
+
+        if (! array_key_exists($cacheKey, static::$fieldTypeIconSvgCache)) {
+            static::$fieldTypeIconSvgCache[$cacheKey] = svg(
+                static::fieldTypeIcon($registry, $type),
+                'moox-builder-field-item__icon',
+            )->toHtml();
+        }
+
+        return static::$fieldTypeIconSvgCache[$cacheKey];
     }
 
     protected static function fieldTypeIcon(FieldTypeRegistry $registry, ?string $type): string
@@ -543,7 +564,15 @@ class FieldGroupResource extends Resource
 
     protected static function typeHasSettings(?string $type): bool
     {
-        return static::typeSettingsSchema($type) !== [];
+        if (blank($type)) {
+            return false;
+        }
+
+        try {
+            return app(FieldTypeRegistry::class)->get($type)->capabilities() !== [];
+        } catch (UnknownFieldTypeException) {
+            return false;
+        }
     }
 
     protected static function fieldTypeSupportsRequired(?string $type): bool
@@ -914,8 +943,7 @@ class FieldGroupResource extends Resource
      *
      * The rules Select lives several repeater levels deep, so instead of
      * hard-counting "../" segments (brittle if the editor layout changes) we
-     * probe a range of depths and use the first that yields the fields
-     * collection: an array whose entries are field rows with a "name".
+     * walk up the state path and return the first ancestor `fields` collection.
      *
      * @return array<string, string>
      */
@@ -958,17 +986,13 @@ class FieldGroupResource extends Resource
      */
     protected static function resolveSiblingFields(callable $get): array
     {
-        $prefix = '';
-
-        for ($depth = 0; $depth <= 8; $depth++) {
-            $candidate = $get($prefix);
+        for ($depth = 1; $depth <= 10; $depth++) {
+            $candidate = $get(str_repeat('../', $depth).'fields');
 
             if (static::looksLikeFieldRows($candidate)) {
                 /** @var array<int|string, array<string, mixed>> $candidate */
                 return array_values($candidate);
             }
-
-            $prefix .= '../';
         }
 
         return [];
@@ -1336,10 +1360,19 @@ class FieldGroupResource extends Resource
             return [];
         }
 
-        $fieldType = app(FieldTypeRegistry::class)->get($type);
+        if (! array_key_exists($type, static::$typeSettingsCapabilityCache)) {
+            try {
+                static::$typeSettingsCapabilityCache[$type] = app(FieldTypeRegistry::class)
+                    ->get($type)
+                    ->capabilities();
+            } catch (UnknownFieldTypeException) {
+                static::$typeSettingsCapabilityCache[$type] = [];
+            }
+        }
+
         $components = [];
 
-        foreach ($fieldType->capabilities() as $capabilityClass) {
+        foreach (static::$typeSettingsCapabilityCache[$type] as $capabilityClass) {
             $components = array_merge($components, app($capabilityClass)->builderFieldsFor($type));
         }
 
@@ -1436,12 +1469,21 @@ class FieldGroupResource extends Resource
                 })
                 ->options(function (Get $get) use ($targetEntitiesPath): array {
                     return match ($get('param')) {
-                        'taxonomy' => app(LocationConstraintOptions::class)
-                            ->termOptionsForTaxonomy((string) $get('taxonomy'), $get($targetEntitiesPath)),
                         'record_type' => app(LocationConstraintOptions::class)->recordTypeOptionsForEntities($get($targetEntitiesPath)),
                         'user_role' => app(LocationConstraintOptions::class)->roleOptions(),
                         default => [],
                     };
+                })
+                ->getSearchResultsUsing(function (string $search, Get $get) use ($targetEntitiesPath): array {
+                    if ($get('param') !== 'taxonomy' || blank($get('taxonomy'))) {
+                        return [];
+                    }
+
+                    return app(LocationConstraintOptions::class)->searchTermOptionsForTaxonomy(
+                        (string) $get('taxonomy'),
+                        $get($targetEntitiesPath),
+                        $search,
+                    );
                 })
                 ->visible(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true)
                     && ($get('param') !== 'taxonomy' || filled($get('taxonomy'))))
@@ -1484,8 +1526,8 @@ class FieldGroupResource extends Resource
                         default => [],
                     };
                 })
-                ->searchable()
-                ->preload()
+                ->searchable(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true))
+                ->preload(fn (Get $get): bool => $get('param') !== 'taxonomy')
                 ->native(false)
                 ->columnSpanFull(),
         ];

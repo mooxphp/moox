@@ -96,7 +96,7 @@ final class DefinitionTranslator
         );
 
         foreach ($this->localeResolver->fallbackChain($locale) as $candidate) {
-            $translation = $field->translate($candidate, false);
+            $translation = $this->translationRow($field, $candidate);
             $translatedConfig = is_object($translation) ? ($translation->config ?? null) : null;
 
             if (is_array($translatedConfig) && $translatedConfig !== []) {
@@ -181,7 +181,7 @@ final class DefinitionTranslator
         $locale = $this->localeResolver->current($locale);
 
         foreach ($this->localeResolver->fallbackChain($locale) as $candidate) {
-            $value = $model->translate($candidate, false)?->getAttribute($attribute);
+            $value = $this->translationAttribute($model, $candidate, $attribute);
 
             if (is_string($value) && $value !== '') {
                 return $value;
@@ -189,6 +189,34 @@ final class DefinitionTranslator
         }
 
         return $fallback;
+    }
+
+    /**
+     * @param  Model&TranslatableContract  $model
+     */
+    protected function translationAttribute(Model $model, string $locale, string $attribute): mixed
+    {
+        if ($model->relationLoaded('translations')) {
+            $localeKey = $model->getLocaleKey();
+
+            return $model->translations->firstWhere($localeKey, $locale)?->getAttribute($attribute);
+        }
+
+        return $model->translate($locale, false)?->getAttribute($attribute);
+    }
+
+    /**
+     * @param  Model&TranslatableContract  $model
+     */
+    protected function translationRow(Model $model, string $locale): ?Model
+    {
+        if ($model->relationLoaded('translations')) {
+            $localeKey = $model->getLocaleKey();
+
+            return $model->translations->firstWhere($localeKey, $locale);
+        }
+
+        return $model->translate($locale, false);
     }
 
     /**

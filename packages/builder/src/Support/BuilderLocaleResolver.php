@@ -13,6 +13,15 @@ final class BuilderLocaleResolver
 
     private ?string $overrideLocale = null;
 
+    private ?bool $hasLocalizationsTable = null;
+
+    private ?string $resolvedDefaultLocale = null;
+
+    private ?string $resolvedAdminDefaultLocale = null;
+
+    /** @var array<string, list<string>> */
+    private array $resolvedFallbackChains = [];
+
     /**
      * @return list<string>
      */
@@ -51,22 +60,30 @@ final class BuilderLocaleResolver
 
     public function defaultLocale(): string
     {
-        if (class_exists(Localization::class) && Schema::hasTable('localizations')) {
+        if ($this->resolvedDefaultLocale !== null) {
+            return $this->resolvedDefaultLocale;
+        }
+
+        if ($this->localizationsTableExists()) {
             $localization = Localization::query()
                 ->where('is_default', true)
                 ->first();
 
             if ($localization !== null && filled($localization->getAttribute('locale_variant'))) {
-                return (string) $localization->getAttribute('locale_variant');
+                return $this->resolvedDefaultLocale = (string) $localization->getAttribute('locale_variant');
             }
         }
 
-        return (string) config('builder.default_locale', config('app.locale', 'en_US'));
+        return $this->resolvedDefaultLocale = (string) config('builder.default_locale', config('app.locale', 'en_US'));
     }
 
     public function adminDefaultLocale(): string
     {
-        if (class_exists(Localization::class) && Schema::hasTable('localizations')) {
+        if ($this->resolvedAdminDefaultLocale !== null) {
+            return $this->resolvedAdminDefaultLocale;
+        }
+
+        if ($this->localizationsTableExists()) {
             $defaultLocale = Localization::query()
                 ->where('is_default', true)
                 ->where('is_active_admin', true)
@@ -76,7 +93,7 @@ final class BuilderLocaleResolver
                 $variant = $defaultLocale->getAttribute('locale_variant');
 
                 if (filled($variant)) {
-                    return (string) $variant;
+                    return $this->resolvedAdminDefaultLocale = (string) $variant;
                 }
             }
 
@@ -88,12 +105,12 @@ final class BuilderLocaleResolver
                 $variant = $firstActiveLocale->getAttribute('locale_variant');
 
                 if (filled($variant)) {
-                    return (string) $variant;
+                    return $this->resolvedAdminDefaultLocale = (string) $variant;
                 }
             }
         }
 
-        return $this->defaultLocale();
+        return $this->resolvedAdminDefaultLocale = $this->defaultLocale();
     }
 
     /**
@@ -101,16 +118,35 @@ final class BuilderLocaleResolver
      */
     public function fallbackChain(?string $locale = null): array
     {
+        $cacheKey = $this->current($locale);
+
+        if (array_key_exists($cacheKey, $this->resolvedFallbackChains)) {
+            return $this->resolvedFallbackChains[$cacheKey];
+        }
+
         $chain = [
-            $this->current($locale),
+            $cacheKey,
             $this->defaultLocale(),
             'en_US',
         ];
 
-        return array_values(array_unique(array_filter(
+        return $this->resolvedFallbackChains[$cacheKey] = array_values(array_unique(array_filter(
             $chain,
             static fn (string $value): bool => $value !== '',
         )));
+    }
+
+    public function localizationsTableExists(): bool
+    {
+        if ($this->hasLocalizationsTable !== null) {
+            return $this->hasLocalizationsTable;
+        }
+
+        if (! class_exists(Localization::class)) {
+            return $this->hasLocalizationsTable = false;
+        }
+
+        return $this->hasLocalizationsTable = Schema::hasTable('localizations');
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Moox\Builder\Registry;
 
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Moox\Builder\Concerns\HasCustomFields;
@@ -25,6 +26,21 @@ class EntityRegistry
      * @var array<string, class-string>|null
      */
     protected ?array $relatableCache = null;
+
+    /**
+     * @var array<class-string<Model>, bool>
+     */
+    protected array $queryableModelCache = [];
+
+    /**
+     * @var array<string, bool>
+     */
+    protected array $tableExistsCache = [];
+
+    /**
+     * @var array<string, array<string, bool>>
+     */
+    protected array $tableColumnsListingCache = [];
 
     /**
      * @return array<string, array{resource?: class-string, label?: string}>
@@ -175,6 +191,10 @@ class EntityRegistry
         $panelResources = $this->panelResources();
         sort($panelResources);
 
+        // Avoid N individual information_schema queries by preloading existence
+        // for all candidate model tables at once.
+        $candidateModelTables = [];
+
         foreach ($panelResources as $resourceClass) {
             if (! method_exists($resourceClass, 'getModel')) {
                 continue;
@@ -182,13 +202,44 @@ class EntityRegistry
 
             $model = $resourceClass::getModel();
 
-            if (! is_string($model) || $model === '' || ! $this->modelIsQueryable($model)) {
+            if (! is_string($model) || $model === '' || isset($candidateModelTables[$model])) {
                 continue;
             }
 
-            // A relation always points at a model, so multiple resources that
-            // expose the same model represent the same target: keep only one.
-            if (isset($seenModels[$model])) {
+            if (! is_subclass_of($model, Model::class)) {
+                continue;
+            }
+
+            try {
+                $table = (new $model)->getTable();
+            } catch (\Throwable) {
+                continue;
+            }
+
+            if (! filled($table)) {
+                continue;
+            }
+
+            $candidateModelTables[$model] = $table;
+        }
+
+        $this->preloadTableExistence(array_values($candidateModelTables));
+
+        foreach ($panelResources as $resourceClass) {
+            if (! method_exists($resourceClass, 'getModel')) {
+                continue;
+            }
+
+            $model = $resourceClass::getModel();
+
+            if (! is_string($model) || $model === '' || isset($seenModels[$model])) {
+                continue;
+            }
+
+            $table = $candidateModelTables[$model] ?? null;
+
+            // Model table missing -> not queryable -> skip.
+            if ($table === null || ! $this->tableExists($table)) {
                 continue;
             }
 
@@ -270,17 +321,87 @@ class EntityRegistry
      */
     public function modelIsQueryable(string $modelClass): bool
     {
+        if (array_key_exists($modelClass, $this->queryableModelCache)) {
+            return $this->queryableModelCache[$modelClass];
+        }
+
         if (! is_subclass_of($modelClass, Model::class)) {
-            return false;
+            return $this->queryableModelCache[$modelClass] = false;
         }
 
         try {
             $table = (new $modelClass)->getTable();
 
-            return filled($table) && Schema::hasTable($table);
+            return $this->queryableModelCache[$modelClass] = filled($table) && $this->tableExists($table);
         } catch (\Throwable) {
+            return $this->queryableModelCache[$modelClass] = false;
+        }
+    }
+
+    protected function tableExists(string $table): bool
+    {
+        return $this->tableExistsCache[$table] ??= Schema::hasTable($table);
+    }
+
+    /**
+     * @param  array<int, string>  $tables
+     */
+    protected function preloadTableExistence(array $tables): void
+    {
+        $tables = array_values(array_unique(array_filter($tables, static fn (mixed $table): bool => filled($table))));
+
+        if ($tables === []) {
+            return;
+        }
+
+        // The information_schema approach is MySQL-specific. In tests we often
+        // run against SQLite where information_schema tables do not exist.
+        if (! in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            foreach ($tables as $table) {
+                $this->tableExistsCache[$table] = Schema::hasTable($table);
+            }
+
+            return;
+        }
+
+        foreach (array_chunk($tables, 200) as $chunk) {
+            $existingTables = DB::table('information_schema.tables')
+                ->selectRaw('TABLE_NAME as table_name')
+                ->whereRaw('TABLE_SCHEMA = schema()')
+                ->whereIn('TABLE_TYPE', ['BASE TABLE', 'SYSTEM VERSIONED'])
+                ->whereIn('TABLE_NAME', $chunk)
+                ->pluck('table_name')
+                ->all();
+
+            $existingLookup = array_fill_keys($existingTables, true);
+
+            foreach ($chunk as $table) {
+                $this->tableExistsCache[$table] = isset($existingLookup[$table]);
+            }
+        }
+    }
+
+    public function databaseTableExists(string $table): bool
+    {
+        return $this->tableExists($table);
+    }
+
+    public function databaseTableHasColumn(string $table, string $column): bool
+    {
+        if (! $this->tableExists($table)) {
             return false;
         }
+
+        if (! isset($this->tableColumnsListingCache[$table])) {
+            try {
+                $columns = Schema::getColumnListing($table);
+                $this->tableColumnsListingCache[$table] = array_fill_keys($columns, true);
+            } catch (\Throwable) {
+                $this->tableColumnsListingCache[$table] = [];
+            }
+        }
+
+        return isset($this->tableColumnsListingCache[$table][$column]);
     }
 
     /**

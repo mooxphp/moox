@@ -7,7 +7,6 @@ namespace Moox\Builder\Support;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Registry\EntityRegistry;
 
 /**
@@ -337,7 +336,7 @@ final class RelationTargetResolver
         try {
             $table = (new $modelClass)->getTable();
 
-            return filled($table) && Schema::hasTable($table) && Schema::hasColumn($table, $column);
+            return filled($table) && $this->entityRegistry->databaseTableHasColumn($table, $column);
         } catch (\Throwable) {
             return false;
         }

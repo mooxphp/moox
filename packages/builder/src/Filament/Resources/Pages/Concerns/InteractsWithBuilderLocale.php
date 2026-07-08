@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Moox\Builder\Filament\Resources\Pages\Concerns;
 
 use Filament\Actions\Action;
-use Illuminate\Support\Facades\Schema;
+use Moox\Builder\Support\BuilderAdminLocalizationCatalog;
 use Moox\Builder\Support\BuilderLocaleResolver;
-use Moox\Localization\Models\Localization;
 
 trait InteractsWithBuilderLocale
 {
@@ -37,16 +36,13 @@ trait InteractsWithBuilderLocale
 
     protected function guardBuilderAdminLocale(): void
     {
-        if ($this->lang === '' || ! class_exists(Localization::class) || ! Schema::hasTable('localizations')) {
+        $catalog = app(BuilderAdminLocalizationCatalog::class);
+
+        if ($this->lang === '' || ! $catalog->isAvailable()) {
             return;
         }
 
-        $isAllowed = Localization::query()
-            ->where('locale_variant', $this->lang)
-            ->where('is_active_admin', true)
-            ->exists();
-
-        if ($isAllowed) {
+        if ($catalog->isAllowedAdminLocale($this->lang)) {
             return;
         }
 
@@ -73,6 +69,11 @@ trait InteractsWithBuilderLocale
         if (view()->exists('localization::lang-selector')) {
             return Action::make('language_selector')
                 ->view('localization::lang-selector');
+        }
+
+        if (view()->exists('builder::lang-selector')) {
+            return Action::make('language_selector')
+                ->view('builder::lang-selector');
         }
 
         return Action::make('language_selector')

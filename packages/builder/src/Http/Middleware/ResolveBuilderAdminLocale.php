@@ -6,11 +6,10 @@ namespace Moox\Builder\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Registry\EntityRegistry;
+use Moox\Builder\Support\BuilderAdminLocalizationCatalog;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\CustomFieldsTranslatability;
-use Moox\Localization\Models\Localization;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ResolveBuilderAdminLocale
@@ -19,6 +18,7 @@ final class ResolveBuilderAdminLocale
 
     public function __construct(
         protected BuilderLocaleResolver $localeResolver,
+        protected BuilderAdminLocalizationCatalog $localizationCatalog,
         protected EntityRegistry $entityRegistry,
         protected CustomFieldsTranslatability $translatability,
     ) {}
@@ -65,14 +65,7 @@ final class ResolveBuilderAdminLocale
 
     protected function isAllowedAdminLocale(string $locale): bool
     {
-        if (! class_exists(Localization::class) || ! Schema::hasTable('localizations')) {
-            return true;
-        }
-
-        return Localization::query()
-            ->where('locale_variant', $locale)
-            ->where('is_active_admin', true)
-            ->exists();
+        return $this->localizationCatalog->isAllowedAdminLocale($locale);
     }
 
     protected function shouldResolveLocale(Request $request): bool

@@ -7,7 +7,6 @@ namespace Moox\Builder\Support;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Core\Services\TaxonomyService;
@@ -16,6 +15,42 @@ use Spatie\Permission\Traits\HasRoles;
 
 final class LocationConstraintOptions
 {
+    /**
+     * @var array<string, array<string, string>>
+     */
+    protected array $taxonomyKeysCache = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    protected array $recordTypeOptionsCache = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    protected array $termOptionsCache = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    protected array $availableParamOptionsCache = [];
+
+    protected ?bool $supportsUserRolesCache = null;
+
+    protected bool $userRoleUnavailableReasonResolved = false;
+
+    protected ?string $userRoleUnavailableReasonCache = null;
+
+    /**
+     * @var array<string, string>|null
+     */
+    protected ?array $roleOptionsCache = null;
+
+    /**
+     * @var array<class-string<Model>, array<string, string>>
+     */
+    protected array $recordTypeOptionsByModelCache = [];
+
     public function __construct(
         protected EntityRegistry $entityRegistry,
         protected TaxonomyService $taxonomyService,
@@ -27,6 +62,12 @@ final class LocationConstraintOptions
      */
     public function taxonomyKeysForEntities(mixed $entities): array
     {
+        $cacheKey = $this->entitiesCacheKey($entities);
+
+        if (array_key_exists($cacheKey, $this->taxonomyKeysCache)) {
+            return $this->taxonomyKeysCache[$cacheKey];
+        }
+
         $options = [];
 
         foreach ($this->normalizeEntities($entities) as $entity) {
@@ -45,7 +86,7 @@ final class LocationConstraintOptions
 
         asort($options);
 
-        return $options;
+        return $this->taxonomyKeysCache[$cacheKey] = $options;
     }
 
     /**
@@ -57,29 +98,72 @@ final class LocationConstraintOptions
             return [];
         }
 
-        foreach ($this->normalizeEntities($entities) as $entity) {
-            $configKey = $this->configKeyForEntity($entity);
+        $cacheKey = $this->entitiesCacheKey($entities).'|'.$taxonomy;
 
-            if ($configKey === null) {
-                continue;
-            }
-
-            $this->taxonomyService->setCurrentResource($configKey);
-
-            if (! array_key_exists($taxonomy, $this->taxonomyService->getTaxonomies())) {
-                continue;
-            }
-
-            $modelClass = $this->taxonomyService->getTaxonomyModel($taxonomy);
-
-            if (! is_string($modelClass) || ! class_exists($modelClass)) {
-                continue;
-            }
-
-            return $this->termOptionsForModel($modelClass);
+        if (array_key_exists($cacheKey, $this->termOptionsCache)) {
+            return $this->termOptionsCache[$cacheKey];
         }
 
-        return [];
+        $modelClass = $this->taxonomyModelFor($taxonomy, $entities);
+
+        if ($modelClass === null) {
+            return $this->termOptionsCache[$cacheKey] = [];
+        }
+
+        return $this->termOptionsCache[$cacheKey] = $this->termOptionsForModel($modelClass);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function searchTermOptionsForTaxonomy(string $taxonomy, mixed $entities, string $search): array
+    {
+        $search = trim($search);
+
+        if ($taxonomy === '' || $search === '') {
+            return [];
+        }
+
+        $modelClass = $this->taxonomyModelFor($taxonomy, $entities);
+
+        if ($modelClass === null) {
+            return [];
+        }
+
+        $model = $modelClass::query()->getModel();
+        $query = $modelClass::query()
+            ->limit(50)
+            ->orderBy($model->getKeyName());
+
+        if (method_exists($model, 'translations')) {
+            $query->with('translations');
+        }
+
+        $like = '%'.addcslashes($search, '%_\\').'%';
+
+        $query->where(function ($builder) use ($model, $like): void {
+            foreach (['title', 'name', 'label', 'slug'] as $column) {
+                if ($this->entityRegistry->databaseTableHasColumn($model->getTable(), $column)) {
+                    $builder->orWhere($column, 'like', $like);
+                }
+            }
+
+            if (method_exists($model, 'translations')) {
+                $builder->orWhereHas('translations', function ($translationQuery) use ($like): void {
+                    $translationQuery
+                        ->where('title', 'like', $like)
+                        ->orWhere('name', 'like', $like)
+                        ->orWhere('label', 'like', $like);
+                });
+            }
+        });
+
+        return $query
+            ->get()
+            ->mapWithKeys(fn (Model $term): array => [
+                (string) $term->getKey() => $this->termLabel($term),
+            ])
+            ->all();
     }
 
     /**
@@ -87,13 +171,17 @@ final class LocationConstraintOptions
      */
     public function roleOptions(): array
     {
+        if ($this->roleOptionsCache !== null) {
+            return $this->roleOptionsCache;
+        }
+
         if (! $this->supportsUserRoles()) {
-            return [];
+            return $this->roleOptionsCache = [];
         }
 
         $rolesTable = (string) config('permission.table_names.roles');
 
-        return DB::table($rolesTable)
+        return $this->roleOptionsCache = DB::table($rolesTable)
             ->orderBy('name')
             ->pluck('name', 'name')
             ->mapWithKeys(fn (mixed $name, mixed $key): array => [(string) $key => (string) $name])
@@ -117,6 +205,12 @@ final class LocationConstraintOptions
      */
     public function availableParamOptionsForEntities(mixed $entities): array
     {
+        $cacheKey = $this->entitiesCacheKey($entities);
+
+        if (array_key_exists($cacheKey, $this->availableParamOptionsCache)) {
+            return $this->availableParamOptionsCache[$cacheKey];
+        }
+
         $options = [
             'user_role' => __('builder::builder.field_group.location_param_user_role'),
         ];
@@ -132,57 +226,67 @@ final class LocationConstraintOptions
             $options['taxonomy'] = __('builder::builder.field_group.location_param_taxonomy');
         }
 
-        return $options;
+        return $this->availableParamOptionsCache[$cacheKey] = $options;
     }
 
     public function supportsUserRoles(): bool
     {
+        if ($this->supportsUserRolesCache !== null) {
+            return $this->supportsUserRolesCache;
+        }
+
         if (! class_exists(Role::class) || ! trait_exists(HasRoles::class)) {
-            return false;
+            return $this->supportsUserRolesCache = false;
         }
 
         $rolesTable = config('permission.table_names.roles');
 
         if (! is_string($rolesTable) || $rolesTable === '') {
-            return false;
+            return $this->supportsUserRolesCache = false;
         }
 
-        if (! Schema::hasTable($rolesTable) || ! DB::table($rolesTable)->exists()) {
-            return false;
+        if (! $this->entityRegistry->databaseTableExists($rolesTable) || ! DB::table($rolesTable)->exists()) {
+            return $this->supportsUserRolesCache = false;
         }
 
         $userModel = $this->authUserModel();
 
         if ($userModel === null || ! class_exists($userModel)) {
-            return false;
+            return $this->supportsUserRolesCache = false;
         }
 
-        return in_array(HasRoles::class, class_uses_recursive($userModel), true);
+        return $this->supportsUserRolesCache = in_array(HasRoles::class, class_uses_recursive($userModel), true);
     }
 
     public function userRoleUnavailableReason(): ?string
     {
+        if ($this->userRoleUnavailableReasonResolved) {
+            return $this->userRoleUnavailableReasonCache;
+        }
+
+        $this->userRoleUnavailableReasonResolved = true;
+
         if (! class_exists(Role::class) || ! trait_exists(HasRoles::class)) {
-            return __('builder::builder.field_group.location_value_role_unavailable_permissions');
+            return $this->userRoleUnavailableReasonCache = __('builder::builder.field_group.location_value_role_unavailable_permissions');
         }
 
         $rolesTable = config('permission.table_names.roles');
 
-        if (! is_string($rolesTable) || $rolesTable === '' || ! Schema::hasTable($rolesTable)) {
-            return __('builder::builder.field_group.location_value_role_unavailable_permissions');
+        if (! is_string($rolesTable) || $rolesTable === '' || ! $this->entityRegistry->databaseTableExists($rolesTable)) {
+            return $this->userRoleUnavailableReasonCache = __('builder::builder.field_group.location_value_role_unavailable_permissions');
         }
 
         if (! DB::table($rolesTable)->exists()) {
-            return __('builder::builder.field_group.location_value_role_unavailable_empty');
+            return $this->userRoleUnavailableReasonCache = __('builder::builder.field_group.location_value_role_unavailable_empty');
         }
 
         $userModel = $this->authUserModel();
 
         if ($userModel === null || ! class_exists($userModel) || ! in_array(HasRoles::class, class_uses_recursive($userModel), true)) {
-            return __('builder::builder.field_group.location_value_role_unavailable_user_model');
+            return $this->userRoleUnavailableReasonCache = __('builder::builder.field_group.location_value_role_unavailable_user_model');
         }
 
-        return null;
+        return $this->userRoleUnavailableReasonCache = null;
     }
 
     /**
@@ -190,6 +294,12 @@ final class LocationConstraintOptions
      */
     public function recordTypeOptionsForEntities(mixed $entities): array
     {
+        $cacheKey = $this->entitiesCacheKey($entities);
+
+        if (array_key_exists($cacheKey, $this->recordTypeOptionsCache)) {
+            return $this->recordTypeOptionsCache[$cacheKey];
+        }
+
         $options = [];
 
         foreach ($this->normalizeEntities($entities) as $entity) {
@@ -206,7 +316,7 @@ final class LocationConstraintOptions
 
         asort($options);
 
-        return $options;
+        return $this->recordTypeOptionsCache[$cacheKey] = $options;
     }
 
     /**
@@ -244,12 +354,21 @@ final class LocationConstraintOptions
             return null;
         }
 
-        $options = $this->termOptionsForTaxonomy($taxonomy, $entities);
+        $modelClass = $this->taxonomyModelFor($taxonomy, $entities);
 
-        return $options[$value]
-            ?? $options[(int) $value]
-            ?? $options[(string) $value]
-            ?? null;
+        if ($modelClass === null) {
+            return null;
+        }
+
+        $query = $modelClass::query();
+
+        if (method_exists($modelClass, 'translations')) {
+            $query->with('translations');
+        }
+
+        $term = $query->find($value);
+
+        return $term instanceof Model ? $this->termLabel($term) : null;
     }
 
     public function recordTypeLabelForValue(mixed $entities, mixed $value): ?string
@@ -271,17 +390,41 @@ final class LocationConstraintOptions
      */
     public function termLabelsForValues(string $taxonomy, mixed $entities, array $values): array
     {
-        $options = $this->termOptionsForTaxonomy($taxonomy, $entities);
+        $modelClass = $this->taxonomyModelFor($taxonomy, $entities);
+
+        if ($modelClass === null || $values === []) {
+            return [];
+        }
+
+        $normalizedValues = array_values(array_filter(
+            $values,
+            static fn (mixed $value): bool => filled($value),
+        ));
+
+        if ($normalizedValues === []) {
+            return [];
+        }
+
+        $query = $modelClass::query()->whereIn(
+            $modelClass::query()->getModel()->getKeyName(),
+            $normalizedValues,
+        );
+
+        if (method_exists($modelClass, 'translations')) {
+            $query->with('translations');
+        }
+
+        $termsById = $query->get()->keyBy(
+            fn (Model $term): string => (string) $term->getKey(),
+        );
+
         $labels = [];
 
-        foreach ($values as $value) {
-            $label = $options[$value]
-                ?? $options[(int) $value]
-                ?? $options[(string) $value]
-                ?? null;
+        foreach ($normalizedValues as $value) {
+            $term = $termsById[(string) $value] ?? null;
 
-            if ($label !== null) {
-                $labels[$value] = $label;
+            if ($term instanceof Model) {
+                $labels[$value] = $this->termLabel($term);
             }
         }
 
@@ -339,14 +482,18 @@ final class LocationConstraintOptions
      */
     protected function recordTypeOptionsForModel(string $modelClass): array
     {
+        if (array_key_exists($modelClass, $this->recordTypeOptionsByModelCache)) {
+            return $this->recordTypeOptionsByModelCache[$modelClass];
+        }
+
         $model = $modelClass::query()->getModel();
         $table = $model->getTable();
 
-        if (! Schema::hasTable($table) || ! Schema::hasColumn($table, 'type')) {
-            return [];
+        if (! $this->entityRegistry->databaseTableExists($table) || ! $this->entityRegistry->databaseTableHasColumn($table, 'type')) {
+            return $this->recordTypeOptionsByModelCache[$modelClass] = [];
         }
 
-        return $modelClass::query()
+        return $this->recordTypeOptionsByModelCache[$modelClass] = $modelClass::query()
             ->whereNotNull('type')
             ->where('type', '!=', '')
             ->distinct()
@@ -500,6 +647,42 @@ final class LocationConstraintOptions
         }
 
         return $entity;
+    }
+
+    /**
+     * @return class-string<Model>|null
+     */
+    protected function taxonomyModelFor(string $taxonomy, mixed $entities): ?string
+    {
+        foreach ($this->normalizeEntities($entities) as $entity) {
+            $configKey = $this->configKeyForEntity($entity);
+
+            if ($configKey === null) {
+                continue;
+            }
+
+            $this->taxonomyService->setCurrentResource($configKey);
+
+            if (! array_key_exists($taxonomy, $this->taxonomyService->getTaxonomies())) {
+                continue;
+            }
+
+            $modelClass = $this->taxonomyService->getTaxonomyModel($taxonomy);
+
+            if (is_string($modelClass) && class_exists($modelClass)) {
+                return $modelClass;
+            }
+        }
+
+        return null;
+    }
+
+    protected function entitiesCacheKey(mixed $entities): string
+    {
+        $normalized = $this->normalizeEntities($entities);
+        sort($normalized);
+
+        return implode(',', $normalized);
     }
 
     /**

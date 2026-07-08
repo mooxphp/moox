@@ -52,8 +52,12 @@ use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
+use Moox\Builder\Support\BuilderAdminLocalizationCatalog;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\CustomFieldsFilamentHooks;
+use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\EntityModelDeletionRegistrar;
+use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\MediaIntegration;
 use Moox\Builder\Support\RelationTargetResolver;
 use Moox\Core\MooxServiceProvider;
@@ -93,10 +97,17 @@ class BuilderServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(EntityRegistry::class);
 
+        // Request-scoped: memoizes default locale / fallback chain (thousands of
+        // translate() calls during field group editor hydration otherwise each hit DB).
+        $this->app->scoped(BuilderLocaleResolver::class);
+        $this->app->scoped(DefinitionTranslator::class);
+        $this->app->scoped(BuilderAdminLocalizationCatalog::class);
+
         // Request-scoped so its relation-label memo is reused across table rows
         // and re-renders within a request, while staying Octane-safe (reset per
         // request, so target title changes are never served stale).
         $this->app->scoped(RelationTargetResolver::class);
+        $this->app->scoped(LocationConstraintOptions::class);
     }
 
     public function packageBooted(): void

@@ -69,12 +69,12 @@ final class CustomFieldsFilamentHooks
             FilamentView::registerRenderHook(
                 TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
                 static function (): string {
-                    if (view()->exists('builder::lang-selector')) {
-                        return view('builder::lang-selector')->render();
-                    }
-
                     if (view()->exists('localization::lang-selector')) {
                         return Blade::render('@include("localization::lang-selector")');
+                    }
+
+                    if (view()->exists('builder::lang-selector')) {
+                        return view('builder::lang-selector')->render();
                     }
 
                     return '';

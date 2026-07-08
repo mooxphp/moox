@@ -53,7 +53,6 @@ class EditFieldGroup extends EditRecord
 
         /** @var FieldGroup $record */
         $record = $this->getRecord();
-        $record->load(['fields.options', 'translations']);
 
         $persistence = app(FieldGroupPersistence::class);
 
