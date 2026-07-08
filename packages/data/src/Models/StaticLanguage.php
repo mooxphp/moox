@@ -80,6 +80,7 @@ class StaticLanguage extends Model
             'pl' => 'pl', // Polish -> Poland
             'zh' => 'cn', // Chinese -> China
             'de' => 'de', // German -> Germany
+            'gsw' => 'ch', // Swiss German -> Switzerland
             'hi' => 'in', // Hindi -> India
             'ja' => 'jp', // Japanese -> Japan
             'ko' => 'kr', // Korean -> South Korea
