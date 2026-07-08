@@ -111,7 +111,10 @@ class LocationMatcher
         $actual = $this->resolveActualValue($param, $context);
 
         if ($actual === null && $this->requiresRecord($param)) {
-            return $operator === '!=';
+            // Parameter is not available on this record (e.g. items have no
+            // `type`, so `record_type` cannot be evaluated). Treat the rule as
+            // non-applicable instead of excluding the entity.
+            return true;
         }
 
         return match ($param) {
@@ -225,7 +228,7 @@ class LocationMatcher
     }
 
     /**
-     * @param  list<int|string>  $haystack
+     * @param  list<int|string>  $list
      */
     protected function valueInList(mixed $list, mixed $needle): bool
     {
