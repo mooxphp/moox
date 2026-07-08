@@ -43,4 +43,20 @@ return [
     */
 
     'page_limit' => (int) env('REST_COUNTRIES_PAGE_LIMIT', 100),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Separate Language Codes
+    |--------------------------------------------------------------------------
+    |
+    | ISO 639-3 codes listed here are imported as their own static_languages row
+    | instead of being collapsed into a parent ISO 639-1 code. For example, gsw
+    | (Swiss German) is kept separate from de (German) so both appear in the
+    | Languages admin.
+    |
+    */
+
+    'separate_language_codes' => [
+        'gsw',
+    ],
 ];

@@ -64,7 +64,6 @@ class ImportStaticDataJob implements ShouldQueue
             'glg' => 'gl', // Galician
             'glv' => 'gv', // Manx
             'grn' => 'gn', // Guarani
-            'gsw' => 'de', // Swiss German (maps to German)
             'hat' => 'ht', // Haitian Creole
             'heb' => 'he', // Hebrew
             'her' => 'hz', // Herero
@@ -191,11 +190,12 @@ class ImportStaticDataJob implements ShouldQueue
             'zul' => 'zu', // Zulu
         ];
 
-        // Variant language codes to skip during import
-        // These are regional variants/creoles that aren't needed
-        $skipVariantCodes = [
-            // 'gsw', (skip german swiss variant for example)
-        ];
+        // Regional variants that map to a parent alpha2 via $alpha3ToAlpha2.
+        // They may still get a locale, but must not overwrite the parent language record.
+        // Codes in config('rest-countries.separate_language_codes') are excluded from this list.
+        $skipVariantCodes = [];
+
+        $separateLanguageCodes = config('rest-countries.separate_language_codes', ['gsw']);
 
         try {
             Log::channel('daily')->info('Attempting to fetch data from REST Countries API...');
@@ -312,24 +312,35 @@ class ImportStaticDataJob implements ShouldQueue
                     if (! empty($countryData['languages'])) {
                         foreach ($countryData['languages'] as $code => $name) {
                             try {
-                                // Skip variant codes that aren't needed
-                                if (in_array($code, $skipVariantCodes)) {
-                                    Log::channel('daily')->info("Skipping variant language {$code} ({$name}) for country {$country->alpha2}");
-
-                                    continue;
-                                }
-
-                                $alpha2 = $alpha3ToAlpha2[$code] ?? $code;
+                                $alpha2 = in_array($code, $separateLanguageCodes, true)
+                                    ? $code
+                                    : ($alpha3ToAlpha2[$code] ?? $code);
                                 $nativeName = $nativeNamesMap[$alpha2] ?? $name;
+                                $isVariantCode = in_array($code, $skipVariantCodes, true)
+                                    && ! in_array($code, $separateLanguageCodes, true);
 
-                                $language = StaticLanguage::updateOrCreate(
-                                    ['alpha2' => $alpha2],
-                                    [
-                                        'alpha3_b' => $code,
-                                        'common_name' => $name,
-                                        'native_name' => $nativeName,
-                                    ]
-                                );
+                                if ($isVariantCode) {
+                                    $language = StaticLanguage::query()->where('alpha2', $alpha2)->first();
+
+                                    if ($language === null) {
+                                        Log::channel('daily')->info("Skipping variant language {$code} ({$name}) for country {$country->alpha2} — parent language {$alpha2} not imported yet");
+
+                                        continue;
+                                    }
+
+                                    $localeName = $language->common_name;
+                                } else {
+                                    $language = StaticLanguage::updateOrCreate(
+                                        ['alpha2' => $alpha2],
+                                        [
+                                            'alpha3_b' => $code,
+                                            'common_name' => $name,
+                                            'native_name' => $nativeName,
+                                        ]
+                                    );
+
+                                    $localeName = $name;
+                                }
 
                                 $locale = $alpha2.'_'.strtoupper($country->alpha2);
                                 StaticLocale::updateOrCreate(
@@ -339,7 +350,7 @@ class ImportStaticDataJob implements ShouldQueue
                                     ],
                                     [
                                         'locale' => $locale,
-                                        'name' => $name,
+                                        'name' => $localeName,
                                         'is_official_language' => true,
                                     ]
                                 );
