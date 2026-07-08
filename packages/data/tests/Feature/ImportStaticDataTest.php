@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use Moox\Data\Jobs\ImportStaticDataJob;
 use Moox\Data\Models\StaticCountry;
 use Moox\Data\Models\StaticCurrency;
+use Moox\Data\Models\StaticLanguage;
+use Moox\Data\Models\StaticLocale;
 use Moox\Data\Tests\TestCase;
 
 uses(TestCase::class);
@@ -126,8 +128,8 @@ test('import static data job keeps german and swiss german as separate language 
 
     (new ImportStaticDataJob)->handle();
 
-    $german = \Moox\Data\Models\StaticLanguage::query()->where('alpha2', 'de')->first();
-    $swissGerman = \Moox\Data\Models\StaticLanguage::query()->where('alpha2', 'gsw')->first();
+    $german = StaticLanguage::query()->where('alpha2', 'de')->first();
+    $swissGerman = StaticLanguage::query()->where('alpha2', 'gsw')->first();
 
     expect($german)->not->toBeNull()
         ->and($german->common_name)->toBe('German')
@@ -136,6 +138,6 @@ test('import static data job keeps german and swiss german as separate language 
         ->and($swissGerman)->not->toBeNull()
         ->and($swissGerman->common_name)->toBe('Swiss German')
         ->and($swissGerman->alpha3_b)->toBe('gsw')
-        ->and(\Moox\Data\Models\StaticLocale::query()->where('locale', 'de_CH')->value('name'))->toBe('German')
-        ->and(\Moox\Data\Models\StaticLocale::query()->where('locale', 'gsw_CH')->value('name'))->toBe('Swiss German');
+        ->and(StaticLocale::query()->where('locale', 'de_CH')->value('name'))->toBe('German')
+        ->and(StaticLocale::query()->where('locale', 'gsw_CH')->value('name'))->toBe('Swiss German');
 });
