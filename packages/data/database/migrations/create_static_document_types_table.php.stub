@@ -11,9 +11,7 @@ return new class extends Migration
         Schema::create('static_document_types', function (Blueprint $table) {
             $table->id();
             $table->string('code', 10)->unique();
-            $table->string('common_name');
             $table->string('en16931_interpretation')->nullable();
-            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
