@@ -174,5 +174,4 @@ final class BlockEditorLocale
             default => $baseLanguage.'_'.strtoupper($baseLanguage),
         };
     }
-
 }

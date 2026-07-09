@@ -70,8 +70,7 @@ final class DynamicFeedController extends Controller
     public function preview(
         PreviewDynamicFeedRequest $request,
         DynamicFeedBlockRenderer $renderer,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $validated = $request->validated();
         $locale = BlockEditorLocale::resolveActive($request);
 

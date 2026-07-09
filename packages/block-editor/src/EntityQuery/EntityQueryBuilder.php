@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Moox\BlockEditor\EntityQuery;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\BlockEditor\Support\BlockEditorLocale;
 
 final class EntityQueryBuilder
 {
@@ -28,7 +30,7 @@ final class EntityQueryBuilder
     {
         $this->locale = $definition->locale;
 
-        /** @var \Illuminate\Database\Eloquent\Model $model */
+        /** @var Model $model */
         $model = new $modelClass;
 
         $this->parentTable = $model->getTable();
@@ -43,8 +45,8 @@ final class EntityQueryBuilder
 
     public function withDraftDefaults(string $locale): self
     {
-        $resolvedLocale = \Moox\BlockEditor\Support\BlockEditorLocale::resolveTranslationLocale($locale);
-        $localeCandidates = \Moox\BlockEditor\Support\BlockEditorLocale::localeCandidates($resolvedLocale);
+        $resolvedLocale = BlockEditorLocale::resolveTranslationLocale($locale);
+        $localeCandidates = BlockEditorLocale::localeCandidates($resolvedLocale);
 
         if ($localeCandidates === []) {
             $localeCandidates = [$resolvedLocale];
@@ -140,12 +142,12 @@ final class EntityQueryBuilder
     }
 
     /**
-     * @return Collection<int, \Illuminate\Database\Eloquent\Model>
+     * @return Collection<int, Model>
      */
     public function get(): Collection
     {
         $this->query->with([
-            'translations' => fn ($query) => $query->whereIn('locale', \Moox\BlockEditor\Support\BlockEditorLocale::localeCandidates($this->locale) ?: [$this->locale]),
+            'translations' => fn ($query) => $query->whereIn('locale', BlockEditorLocale::localeCandidates($this->locale) ?: [$this->locale]),
         ]);
 
         return $this->query->get();
