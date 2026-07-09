@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Adapters;
 
+use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
@@ -12,9 +13,19 @@ use Moox\Zugferd\Data\AllowanceCharge;
 
 final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 {
+    private readonly string $resolvedUnitCode;
+
     public function __construct(
         private InvoiceLine $line,
-    ) {}
+        private ?UnitCodeResolver $unitCodeResolver = null,
+    ) {
+        $this->unitCodeResolver ??= app(UnitCodeResolver::class);
+
+        $unit = trim((string) ($this->line->unit ?? ''));
+        $this->resolvedUnitCode = $unit !== ''
+            ? $this->unitCodeResolver->resolveLabel($unit)
+            : '';
+    }
 
     public int $position {
         get => (int) $this->line->position;
@@ -41,7 +52,11 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     }
 
     public string $unit {
-        get => (string) ($this->line->unit ?? 'Stück');
+        get => (string) ($this->line->unit ?? '');
+    }
+
+    public string $unitCode {
+        get => $this->resolvedUnitCode;
     }
 
     public float $lineTotal {
