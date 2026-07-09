@@ -493,6 +493,18 @@ Type `relation` links a custom field to records of another Moox entity (any Fila
 
 **API:** `presentValue()` resolves `{id, label}` objects via `RelationTargetResolver`.
 
+**Label resolution** (picker, API output, validation labels — all via `RelationTargetResolver`):
+
+1. Target resource `recordTitleAttribute` / `getRecordTitle()` when configured on the Filament resource
+2. Otherwise the first filled value from: `display_title` → `display_name` → `title` → `name` → `label`
+3. A candidate applies when it is a main-table column, an Eloquent accessor (e.g. `getDisplayTitleAttribute()`), or listed in the model's `translatedAttributes` (Astrotomic / Moox draft entities such as categories)
+4. Search uses main-table `title` / `name` / `label` when present; otherwise it searches the `translations` relation for those attributes
+5. If nothing resolves, the record ID is shown as a last resort
+
+For new relation targets, set `protected static ?string $recordTitleAttribute = 'title';` (or the correct attribute) on the target resource when the display name is not one of the defaults above — especially for translatable entities.
+
+Relation **table columns** (`show in table`) use the same resolver for display; SQL sort/search on relation columns may still fall back to IDs when the title exists only in translation tables.
+
 Invalid or non-relatable `related_entity` values are stripped when field groups are saved.
 
 ### Conditional logic (v1)
