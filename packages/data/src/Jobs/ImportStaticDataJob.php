@@ -190,12 +190,11 @@ class ImportStaticDataJob implements ShouldQueue
             'zul' => 'zu', // Zulu
         ];
 
-        // Regional variants that map to a parent alpha2 via $alpha3ToAlpha2.
-        // They may still get a locale, but must not overwrite the parent language record.
-        // Codes in config('rest-countries.separate_language_codes') are excluded from this list.
-        $skipVariantCodes = [];
-
-        $separateLanguageCodes = config('rest-countries.separate_language_codes', ['gsw']);
+        // Variant language codes to skip during import
+        // These are regional variants/creoles that aren't needed
+        $skipVariantCodes = [
+            'gsw', // skip german swiss variant for example
+        ];
 
         try {
             Log::channel('daily')->info('Attempting to fetch data from REST Countries API...');
