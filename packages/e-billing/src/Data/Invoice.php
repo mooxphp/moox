@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
+use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
@@ -14,7 +15,8 @@ class Invoice implements ZugferdInvoice
     public function __construct(
         public string $invoiceNumber,
         public string $invoiceDate,
-        public string $documentType = 'Rechnung',
+        public string $documentType = '',
+        public string $documentTypeCode = '',
         public ?string $dueDate = null,
 
         // Customer
@@ -67,7 +69,10 @@ class Invoice implements ZugferdInvoice
 
         // Currency
         public string $currency = 'EUR',
-    ) {}
+    ) {
+        $this->customerVatId = VatIdNormalizer::normalize($this->customerVatId);
+        $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
+    }
 
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts {
@@ -218,7 +223,8 @@ class Invoice implements ZugferdInvoice
         $invoice = new self(
             invoiceNumber: is_string($data['invoice_number'] ?? null) ? $data['invoice_number'] : '',
             invoiceDate: is_string($data['invoice_date'] ?? null) ? $data['invoice_date'] : '',
-            documentType: is_string($data['document_type'] ?? null) && $data['document_type'] !== '' ? $data['document_type'] : 'Rechnung',
+            documentType: is_string($data['document_type'] ?? null) ? $data['document_type'] : '',
+            documentTypeCode: is_string($data['document_type_code'] ?? null) ? $data['document_type_code'] : '',
             dueDate: isset($data['due_date']) && is_string($data['due_date']) ? $data['due_date'] : null,
             customerNumber: is_string($data['customer_number'] ?? null) ? $data['customer_number'] : '',
             customerName: $customerName,
@@ -310,6 +316,7 @@ class Invoice implements ZugferdInvoice
             'invoice_number' => $this->invoiceNumber,
             'invoice_date' => $this->invoiceDate,
             'document_type' => $this->documentType,
+            'document_type_code' => $this->documentTypeCode,
             'due_date' => $this->dueDate,
 
             'customer_number' => $this->customerNumber,
