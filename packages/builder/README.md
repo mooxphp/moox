@@ -13,17 +13,18 @@ Admins define fields in the panel. Values are stored in typed `builder_field_val
 3. [Database](#database)
 4. [Runtime Flow](#runtime-flow)
 5. [Installation](#installation)
-6. [Connect a Resource](#connect-a-resource)
-7. [Field Groups in Admin](#field-groups-in-admin)
-8. [Field Types & Capabilities](#field-types--capabilities)
-9. [Translations](#translations)
-10. [Configuration](#configuration)
-11. [Extension](#extension)
-12. [Model API](#model-api)
-13. [API Serialization](#api-serialization)
-14. [Package Structure](#package-structure)
-15. [Testing](#testing)
-16. [Limits & Roadmap](#limits--roadmap)
+6. [Quick Start](#quick-start)
+7. [Connect a Resource](#connect-a-resource)
+8. [Field Groups in Admin](#field-groups-in-admin)
+9. [Field Types & Capabilities](#field-types--capabilities)
+10. [Translations](#translations)
+11. [Configuration](#configuration)
+12. [Extension](#extension)
+13. [Model API](#model-api)
+14. [API Serialization](#api-serialization)
+15. [Package Structure](#package-structure)
+16. [Testing](#testing)
+17. [Limits & Roadmap](#limits--roadmap)
 
 ---
 
@@ -284,12 +285,89 @@ $panel->plugins([
 
 ---
 
+## Quick Start
+
+Get custom fields on a Filament resource in a few minutes. No JSON column on the model, no per-field migrations.
+
+### 1. Install (once per project)
+
+Follow [Installation](#installation) above: package, migrations, `BuilderPlugin` in the panel. After that, **Fields → Field Groups** appears in the admin.
+
+### 2. Wire the Filament resource (required)
+
+Add the trait and spread compiled sections into your form schema:
+
+```php
+use Moox\Core\Traits\HasCustomFields; // Moox monorepo alias → moox/builder
+// Or: use Moox\Builder\Concerns\HasCustomFields;
+
+class ItemResource extends BaseItemResource
+{
+    use HasCustomFields;
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            // your own fields …
+            ...static::customFieldComponents(),           // main area (default)
+            ...static::customFieldComponents('sidebar'),  // optional sidebar slot
+        ]);
+    }
+}
+```
+
+Loading and saving run automatically via Filament `RecordSaved` — no `afterCreate`, no custom listeners.
+
+The **entity key** defaults to the model basename (`Item` → `item`). Override only when needed — see [Connect a Resource](#connect-a-resource).
+
+### 3. Create a field group in admin (required)
+
+**Fields → Field Groups → Create**
+
+| Setting | Action |
+|---------|--------|
+| **Show on** | Select your resource (e.g. Items) — auto-discovered when the resource uses `HasCustomFields` |
+| **Fields** | Add label, type, and technical key (`farbe`, `preis`, …) |
+| **Active** | On |
+
+Open the resource create/edit form — custom field sections should appear.
+
+### 4. Optional next steps
+
+| Goal | What to add |
+|------|-------------|
+| Read/write in PHP, queries, Tinker | `InteractsWithCustomFields` on the model — [Model API](#model-api) |
+| List table columns | `...static::customFieldColumns()` in `table()` (enable **Show in table** on the field) |
+| REST / JSON API | `MergesCustomFields` on your `JsonResource` — [API Serialization](#api-serialization) |
+| Per-locale values | Translatable model, or `customFieldsAreTranslatable(): true` — [Translations](#translations) |
+| Show only on some records | Location rules in the field group — [Location Rules](#location-rules) |
+
+### Live examples in this monorepo
+
+- Resource: `packages/item/src/Resources/ItemResource.php`
+- Model: `packages/item/src/Models/Item.php`
+- Tests: `packages/builder/tests/Support/TestItemResource.php`
+
+### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Resource missing from **Show on** | Resource has no `HasCustomFields` | Add trait; ensure resource is in a registered Filament panel |
+| No sections on the form | Inactive group, wrong entity, or location rules | Check group is active, **Show on**, and [location rules](#location-rules) |
+| Sidebar empty | Group placement is `sidebar` but form has no sidebar call | Add `...static::customFieldComponents('sidebar')` in the sidebar column |
+| `$item->feld` does not work | Model missing trait | Add `InteractsWithCustomFields` to the model |
+| Image/gallery/file types missing | `moox/media` not installed | Install media package (optional integration) |
+
+Details and overrides: [Connect a Resource](#connect-a-resource). Manual verification: [Testing → Checklist](#checklist).
+
+---
+
 ## Connect a Resource
 
 ### Step 1: Trait on the Filament resource
 
 ```php
-use Moox\Builder\Concerns\HasCustomFields;
+use Moox\Core\Traits\HasCustomFields; // Moox monorepo — or Moox\Builder\Concerns\HasCustomFields
 
 class ItemResource extends Resource
 {
