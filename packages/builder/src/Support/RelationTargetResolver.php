@@ -6,6 +6,7 @@ namespace Moox\Builder\Support;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\QueryException;
 use Moox\Builder\Registry\EntityRegistry;
 
@@ -427,7 +428,7 @@ final class RelationTargetResolver
             'localeColumn' => $localeColumn,
             'titleColumn' => $titleColumn,
             'softDeletes' => in_array(
-                \Illuminate\Database\Eloquent\SoftDeletes::class,
+                SoftDeletes::class,
                 class_uses_recursive($translationModelClass),
                 true,
             ),
