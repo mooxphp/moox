@@ -86,7 +86,7 @@ class FieldTypeRegistry
         $options = [];
 
         foreach ($this->types as $key => $type) {
-            if ($type->isLayoutMarker() || $type->hasSubFields() || $type->isInternal()) {
+            if ($type->hasSubFields() || $type->isInternal()) {
                 continue;
             }
 

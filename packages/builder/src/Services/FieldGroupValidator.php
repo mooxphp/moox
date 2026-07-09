@@ -290,6 +290,16 @@ class FieldGroupValidator
                 }
             }
 
+            foreach ($this->fieldValidationRules->rawRulesFromText($validation['raw_rules'] ?? null) as $rawRuleIndex => $rawRule) {
+                $message = $this->fieldValidationRules->validateRuleExpression($type, $rawRule);
+
+                if ($message !== null) {
+                    $messages["{$basePath}.validation.raw_rules"] = [$message];
+
+                    break;
+                }
+            }
+
             if ($type === 'tab') {
                 $messages = array_merge(
                     $messages,

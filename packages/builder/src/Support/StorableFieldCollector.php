@@ -34,7 +34,7 @@ final class StorableFieldCollector
 
         $fieldType = $this->fieldTypeRegistry->get($field->type);
 
-        if ($fieldType->isLayoutMarker() || ! $fieldType->storesValue()) {
+        if (! $fieldType->storesValue()) {
             return collect();
         }
 

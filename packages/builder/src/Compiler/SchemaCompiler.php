@@ -282,10 +282,6 @@ class SchemaCompiler
         $rules = [];
         $fieldType = $this->fieldTypeRegistry->get($field->type);
 
-        if ($fieldType->isLayoutMarker()) {
-            return [];
-        }
-
         if (in_array($field->type, ['tab', 'section'], true)) {
             $rules = [];
 

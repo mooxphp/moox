@@ -26,11 +26,6 @@ class FlexibleContentFieldType extends FieldType
         return true;
     }
 
-    public function hasLayouts(): bool
-    {
-        return true;
-    }
-
     public function capabilities(): array
     {
         return [

@@ -35,10 +35,6 @@ class FieldValueValidator
             return [];
         }
 
-        if ($fieldType->isLayoutMarker()) {
-            return [];
-        }
-
         if ($fieldType->hasSubFields()) {
             return $this->messagesForCompound($field, $value, $path, $record);
         }

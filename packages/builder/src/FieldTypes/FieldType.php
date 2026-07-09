@@ -92,17 +92,7 @@ abstract class FieldType
         return true;
     }
 
-    public function isLayoutMarker(): bool
-    {
-        return false;
-    }
-
     public function hasSubFields(): bool
-    {
-        return false;
-    }
-
-    public function hasLayouts(): bool
     {
         return false;
     }

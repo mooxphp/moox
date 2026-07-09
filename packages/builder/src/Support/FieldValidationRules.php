@@ -107,7 +107,7 @@ final class FieldValidationRules
             $rules[] = $rule;
         }
 
-        foreach ($this->rawRulesFromText($validation['raw_rules'] ?? null) as $rule) {
+        foreach ($this->allowedRawRulesFromText($validation['raw_rules'] ?? null, $supportedRules, $type) as $rule) {
             $rules[] = $rule;
         }
 
@@ -126,7 +126,88 @@ final class FieldValidationRules
             return [];
         }
 
-        return $this->normalizeRules($field->validation['rules'] ?? []);
+        return array_values(array_filter(
+            $this->normalizeRules($field->validation['rules'] ?? []),
+            fn (string $rule): bool => $this->validateRuleExpression($field->type, $rule) === null,
+        ));
+    }
+
+    public function validateRuleExpression(?string $type, string $rule): ?string
+    {
+        if (! $this->supportsType($type)) {
+            return __('builder::builder.validation.invalid_option');
+        }
+
+        $supportedRules = array_keys($this->availableRulesForType($type));
+        $parsed = $this->parseRule($rule, $supportedRules);
+
+        if ($parsed === null) {
+            return __('builder::builder.validation.invalid_option');
+        }
+
+        $ruleName = $parsed['rule'];
+
+        if (! $this->ruleNeedsValue($ruleName)) {
+            return null;
+        }
+
+        $value = trim((string) ($parsed['value'] ?? ''));
+
+        if ($value === '') {
+            return __('builder::builder.validation.validation_rule_value_required');
+        }
+
+        if ($this->ruleExpectsNumericValue((string) $type, $ruleName) && ! is_numeric($value)) {
+            return __('builder::builder.validation.validation_rule_value_numeric');
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function rawRulesFromText(mixed $rawRules): array
+    {
+        if (! is_string($rawRules) || trim($rawRules) === '') {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map(static fn (string $rule): string => trim($rule), preg_split('/\r\n|\r|\n/', $rawRules) ?: []),
+            static fn (string $rule): bool => $rule !== '',
+        ));
+    }
+
+    /**
+     * @param  list<string>  $supportedRules
+     * @return list<string>
+     */
+    protected function allowedRawRulesFromText(mixed $rawRules, array $supportedRules, ?string $type): array
+    {
+        $rules = [];
+
+        foreach ($this->rawRulesFromText($rawRules) as $rule) {
+            if ($this->validateRuleExpression($type, $rule) !== null) {
+                continue;
+            }
+
+            $parsed = $this->parseRule($rule, $supportedRules);
+
+            if ($parsed === null) {
+                continue;
+            }
+
+            if ($this->ruleNeedsValue($parsed['rule'])) {
+                $rules[] = "{$parsed['rule']}:{$parsed['value']}";
+
+                continue;
+            }
+
+            $rules[] = $parsed['rule'];
+        }
+
+        return $rules;
     }
 
     /**
@@ -216,21 +297,6 @@ final class FieldValidationRules
             'rule' => $name,
             'value' => $value,
         ];
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected function rawRulesFromText(mixed $rawRules): array
-    {
-        if (! is_string($rawRules) || trim($rawRules) === '') {
-            return [];
-        }
-
-        return array_values(array_filter(
-            array_map(static fn (string $rule): string => trim($rule), preg_split('/\r\n|\r|\n/', $rawRules) ?: []),
-            static fn (string $rule): bool => $rule !== '',
-        ));
     }
 
     protected function categoryForType(?string $type): ?string

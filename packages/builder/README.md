@@ -489,7 +489,7 @@ Widths apply inside groups, tabs, sections, and repeaters. Defaulting to `full` 
 | `GalleryFiles` | Min/max files (gallery) |
 | `RelationSettings` | Target entity, multiple, min/max (relation) |
 
-Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilities()`, optionally `castValue()`, `hasSubFields()`, `hasLayouts()`.
+Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilities()`, optionally `castValue()`, `hasSubFields()`.
 
 ### Validation
 
