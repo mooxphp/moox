@@ -196,6 +196,8 @@ class ImportStaticDataJob implements ShouldQueue
             'gsw', // skip german swiss variant for example
         ];
 
+        $separateLanguageCodes = config('rest-countries.separate_language_codes', ['gsw']);
+
         try {
             Log::channel('daily')->info('Attempting to fetch data from REST Countries API...');
 
