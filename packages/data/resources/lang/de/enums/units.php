@@ -12,7 +12,7 @@ return [
     'MTK' => 'Quadratmeter',
     'MTQ' => 'Kubikmeter',
     'TNE' => 'Tonne',
-    'H87' => 'Stück',
+    'H87' => 'Stückzahl',
     'PR' => 'Paar',
     'NPR' => 'Anzahl Paare',
     'SET' => 'Satz',
