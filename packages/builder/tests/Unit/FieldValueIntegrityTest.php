@@ -6,27 +6,23 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
-uses(TestCase::class);
-
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\FieldTypes\Value\StoredPassword;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldValue;
+use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Services\FieldValuePurger;
-use Moox\Builder\Storage\TypedValueDriver;
-use Moox\Builder\Support\EntityModelDeletionRegistrar;
 use Moox\Builder\Tests\Support\TestItem;
-use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\TestCase;
+
+uses(TestCase::class);
 
 beforeEach(function (): void {
     $this->createItemsTable();
-
-    config()->set('builder.entities', [
-        'item' => ['resource' => TestItemResource::class],
-    ]);
 });
 
 it('purges values when a record is deleted', function (): void {
@@ -39,7 +35,9 @@ it('purges values when a record is deleted', function (): void {
         'value_string' => 'red',
     ]);
 
-    app(EntityModelDeletionRegistrar::class)->register();
+    TestItem::deleted(function (TestItem $deleted): void {
+        app(FieldValuePurger::class)->purgeForRecord('item', $deleted->getKey());
+    });
 
     $record->delete();
 
@@ -138,23 +136,42 @@ it('rejects duplicate field names across groups for the same entity', function (
     ]))->toThrow(ValidationException::class);
 });
 
-it('hashes password values on save', function (): void {
+it('stores password values hashed', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
-    $driver = app(TypedValueDriver::class);
-
-    $driver->save('item', $record, [
-        'secret' => 'plain-text',
-    ], collect([
+    $fields = collect([
         new FieldDefinition('secret', 'Secret', 'password'),
-    ]));
+    ]);
+
+    app(CustomFieldsManager::class)->saveValues('item', $record, [
+        'secret' => 'plain-text',
+    ], $fields);
 
     $stored = FieldValue::query()->forRecord('item', $record->getKey())->first();
 
     expect($stored?->value_string)->not->toBe('plain-text')
-        ->and(password_verify('plain-text', (string) $stored?->value_string))->toBeTrue();
+        ->and(Hash::check('plain-text', (string) $stored?->value_string))->toBeTrue();
 });
 
-it('does not load password values back into forms', function (): void {
+it('never reloads plaintext password values for editing', function (): void {
+    $record = TestItem::query()->create(['title' => 'Demo']);
+
+    FieldValue::query()->create([
+        'entity' => 'item',
+        'record_id' => $record->getKey(),
+        'field_name' => 'secret',
+        'value_string' => Hash::make('api-key-123'),
+    ]);
+
+    $loaded = app(CustomFieldsManager::class)->loadValues(
+        'item',
+        $record,
+        collect([new FieldDefinition('secret', 'Secret', 'password')]),
+    );
+
+    expect($loaded['secret'])->toBe(StoredPassword::instance());
+});
+
+it('treats legacy hashed password values as stored markers when loading', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
 
     FieldValue::query()->create([
@@ -164,13 +181,13 @@ it('does not load password values back into forms', function (): void {
         'value_string' => bcrypt('hidden'),
     ]);
 
-    $loaded = app(TypedValueDriver::class)->load(
+    $loaded = app(CustomFieldsManager::class)->loadValues(
         'item',
         $record,
         collect([new FieldDefinition('secret', 'Secret', 'password')]),
     );
 
-    expect($loaded)->toBe([]);
+    expect($loaded['secret'])->toBe(StoredPassword::instance());
 });
 
 it('purges values for a record via purger service', function (): void {

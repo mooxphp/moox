@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../TestCase.php';
 
-uses(TestCase::class);
-
 use Illuminate\Support\Facades\Cache;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Tests\TestCase;
+
+uses(TestCase::class);
 
 it('caches definitions and invalidates on save', function (): void {
     Cache::forget(DefinitionRegistry::CACHE_KEY);
@@ -105,4 +105,19 @@ it('preserves field sort order when hydrating from cache', function (): void {
     $groups = $registry->fieldGroupsFor(new LocationContext('item'));
 
     expect($groups->first()->fields->pluck('name')->all())->toBe(['first', 'second', 'third']);
+});
+
+it('excludes field groups without location rules from matching resources', function (): void {
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+
+    FieldGroup::query()->create([
+        'name' => 'Unassigned',
+        'slug' => 'unassigned',
+        'location_rules' => [],
+        'active' => true,
+    ]);
+
+    $groups = app(DefinitionRegistry::class)->fieldGroupsFor(new LocationContext('item'));
+
+    expect($groups)->toHaveCount(0);
 });

@@ -12,4 +12,11 @@ class TestItemResource extends Resource
     use HasCustomFields;
 
     protected static ?string $model = TestItem::class;
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    protected static function customFieldsEntity(): ?string
+    {
+        return 'item';
+    }
 }

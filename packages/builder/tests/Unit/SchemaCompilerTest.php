@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../TestCase.php';
 
-uses(TestCase::class);
-
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Moox\Builder\Compiler\SchemaCompiler;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Tests\TestCase;
+
+uses(TestCase::class);
 
 it('compiles a section with sorted fields and merged rules', function (): void {
     $group = FieldGroup::query()->create([
@@ -60,4 +61,68 @@ it('compiles a section with sorted fields and merged rules', function (): void {
 
     expect($rules['first'])->toContain('required')
         ->and($rules['second'])->toContain('min:1');
+});
+
+it('compiles tabs spanning the full section width', function (): void {
+    $definition = FieldGroupDefinition::fromArray([
+        'name' => 'Tabbed',
+        'slug' => 'tabbed',
+        'placement' => 'default',
+        'fields' => [
+            [
+                'name' => 'first_tab',
+                'label' => 'First tab',
+                'type' => 'tab',
+                'children' => [
+                    ['name' => 'inside', 'label' => 'Inside', 'type' => 'text'],
+                ],
+            ],
+        ],
+    ]);
+
+    $compiler = app(SchemaCompiler::class);
+    $sections = $compiler->compile(collect([$definition]));
+
+    $sectionReflection = new ReflectionProperty(Section::class, 'childComponents');
+    $sectionReflection->setAccessible(true);
+    $children = collect($sectionReflection->getValue($sections[0]))->flatten();
+
+    $tabs = $children->first(fn (mixed $component): bool => $component instanceof Tabs);
+
+    expect($tabs)->toBeInstanceOf(Tabs::class)
+        ->and($tabs->getColumnSpan())->toBe(['default' => 'full']);
+});
+
+it('collects conditional trigger field names for a field group', function (): void {
+    $definition = FieldGroupDefinition::fromArray([
+        'name' => 'Conditional',
+        'slug' => 'conditional',
+        'placement' => 'default',
+        'fields' => [
+            ['name' => 'customer_type', 'label' => 'Customer type', 'type' => 'text'],
+            [
+                'name' => 'company',
+                'label' => 'Company',
+                'type' => 'text',
+                'settings' => [
+                    'conditions' => [
+                        'enabled' => true,
+                        'action' => 'show',
+                        'logic' => 'and',
+                        'rules' => [
+                            ['field' => 'customer_type', 'operator' => 'equals', 'value' => 'business'],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ]);
+
+    $compiler = app(SchemaCompiler::class);
+    $reflection = new ReflectionClass($compiler);
+    $method = $reflection->getMethod('conditionalTriggerNames');
+    $method->setAccessible(true);
+
+    expect($method->invoke($compiler, $definition->fields))->toBe(['customer_type'])
+        ->and($definition->fields->firstWhere('name', 'company')?->hasConditions())->toBeTrue();
 });

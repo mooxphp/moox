@@ -1,12 +1,7 @@
 <?php
 
 declare(strict_types=1);
-
 use Composer\Autoload\ClassLoader;
-
-if (class_exists(ClassLoader::class, false)) {
-    return;
-}
 
 $autoload = dirname(__DIR__, 3).'/vendor/autoload.php';
 
@@ -17,4 +12,8 @@ if (! is_file($autoload)) {
     );
 }
 
-require_once $autoload;
+if (! class_exists(ClassLoader::class, false)) {
+    require_once $autoload;
+}
+
+require_once __DIR__.'/TestCase.php';

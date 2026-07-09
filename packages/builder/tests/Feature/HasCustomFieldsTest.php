@@ -6,8 +6,6 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
-uses(TestCase::class);
-
 use Filament\Resources\Events\RecordSaved;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -18,19 +16,15 @@ use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\TestCase;
 
+uses(TestCase::class);
+
 beforeEach(function (): void {
     $this->createItemsTable();
-
-    config()->set('builder.entities', [
-        'item' => [
-            'resource' => TestItemResource::class,
-            'label' => 'Item',
-        ],
-    ]);
 
     Cache::forget(DefinitionRegistry::CACHE_KEY);
 
@@ -63,8 +57,8 @@ it('exposes compiled custom field components for matching resources', function (
         ->and($components[0])->toBeInstanceOf(Section::class);
 });
 
-it('returns no components when the resource is not registered', function (): void {
-    config()->set('builder.entities', []);
+it('returns no components when no field groups match the entity', function (): void {
+    FieldGroup::query()->delete();
 
     expect(TestItemResource::customFieldComponents())->toBe([]);
 });
@@ -98,6 +92,9 @@ it('loads and saves custom field values for a record', function (): void {
 it('persists custom fields when filament dispatches record saved', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
 
+    session([BuilderLocaleResolver::ADMIN_SESSION_KEY => 'de_CH']);
+    request()->merge(['lang' => 'de_CH']);
+
     $page = new class extends Page
     {
         protected static string $resource = TestItemResource::class;
@@ -118,5 +115,6 @@ it('persists custom fields when filament dispatches record saved', function (): 
         ->keyBy('field_name');
 
     expect($values['fahrzeugtyp-modell']->value_string)->toBe('Polo')
-        ->and((float) $values['bruttolistenpreis']->value_decimal)->toBe(24990.0);
+        ->and((float) $values['bruttolistenpreis']->value_decimal)->toBe(24990.0)
+        ->and($values['fahrzeugtyp-modell']->locale)->toBe(app(BuilderLocaleResolver::class)->defaultLocale());
 });
