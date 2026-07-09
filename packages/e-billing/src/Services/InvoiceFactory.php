@@ -11,6 +11,7 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\ChargeDraft;
@@ -28,7 +29,13 @@ class InvoiceFactory
 {
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
+        private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
     ) {}
+
+    private function documentTypeCodeResolver(): DocumentTypeCodeResolver
+    {
+        return $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
+    }
 
     public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice
     {
@@ -88,7 +95,7 @@ class InvoiceFactory
         return new InvoiceDraft(
             invoice_number: $dto->invoiceNumber,
             invoice_date: $dto->invoiceDate,
-            document_type: $this->mapDocumentType($dto->documentType),
+            document_type: $this->resolveDocumentTypeCode($dto),
             due_date: $dto->dueDate,
             currency: $dto->currency,
             customer_reference: $dto->customerReference,
@@ -218,16 +225,13 @@ class InvoiceFactory
         );
     }
 
-    /**
-     * UNTDID 1001 (BT-3): Rechnung→380, Gutschrift→381; other values default to 380 until validator slice marks review.
-     */
-    private function mapDocumentType(string $documentType): string
+    private function resolveDocumentTypeCode(InvoiceDto $dto): string
     {
-        return match (mb_strtolower(trim($documentType))) {
-            'rechnung' => '380',
-            'gutschrift' => '381',
-            default => '380',
-        };
+        if ($dto->documentTypeCode !== '') {
+            return $dto->documentTypeCode;
+        }
+
+        return $this->documentTypeCodeResolver()->resolveLabel($dto->documentType);
     }
 
     private function mapSeller(InvoiceDto $dto): ?InvoiceParty

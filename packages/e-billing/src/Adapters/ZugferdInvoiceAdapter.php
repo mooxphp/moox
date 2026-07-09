@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Adapters;
 
+use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -17,7 +18,10 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
 {
     public function __construct(
         private Invoice $model,
-    ) {}
+        private ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
+    ) {
+        $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
+    }
 
     public string $invoiceNumber {
         get => (string) $this->model->invoice_number;
@@ -28,6 +32,10 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     }
 
     public string $documentType {
+        get => $this->documentTypeCodeResolver->labelFor((string) $this->model->document_type);
+    }
+
+    public string $documentTypeCode {
         get => (string) $this->model->document_type;
     }
 

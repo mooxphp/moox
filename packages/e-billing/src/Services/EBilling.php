@@ -7,6 +7,7 @@ namespace Moox\EBilling\Services;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice;
+use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\PdfParser\PdfParser;
 use Moox\Zugferd\ZugferdConverter;
 
@@ -27,7 +28,7 @@ class EBilling
         $invoice = $this->parser->parse($parsed->text);
         $supplier = config('e-billing.supplier');
         $invoice->supplierName = $supplier['name'] ?? '';
-        $invoice->supplierVatId = $supplier['vat_id'] ?? null;
+        $invoice->supplierVatId = VatIdNormalizer::normalize($supplier['vat_id'] ?? null);
         $invoice->supplierTaxNumber = $supplier['tax_number'] ?? null;
         $invoice->supplierAddress = Address::fromMixedWithParty($supplier['address'] ?? null, $supplier['name'] ?? '');
         $invoice->supplierPhone = $supplier['phone'] ?? null;
