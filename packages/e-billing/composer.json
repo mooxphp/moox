@@ -24,6 +24,7 @@
     "require": {
         "moox/company": "dev-main",
         "moox/core": "dev-main",
+        "moox/data": "dev-main",
         "moox/invoice": "dev-main",
         "moox/jobs": "dev-main",
         "moox/kosit-validator": "dev-main",

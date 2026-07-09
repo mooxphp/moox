@@ -15,6 +15,8 @@ use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
+use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
 use Spatie\LaravelPackageTools\Package;
@@ -52,6 +54,8 @@ class EBillingServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
+        $this->app->singleton(DocumentTypeCodeResolver::class);
+        $this->app->singleton(UnitCodeResolver::class);
 
         $this->registerInvoiceParser();
     }
