@@ -172,11 +172,9 @@ class ZugferdConverter
 
     private function setDocumentInfo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
-        $typeCode = str_contains(mb_strtolower($invoice->documentType), 'gutschrift') ? '381' : '380';
-
         $doc->setDocumentInformation(
             $invoice->invoiceNumber,
-            $typeCode,
+            $invoice->documentTypeCode,
             \DateTime::createFromFormat('Y-m-d', $invoice->invoiceDate) ?: new \DateTime,
             $invoice->currency,
         );
@@ -221,9 +219,7 @@ class ZugferdConverter
         $doc->setDocumentSellerCommunication('EM', $invoice->supplierEmail);
 
         if ($invoice->supplierVatId) {
-            // Remove spaces from VAT ID (DE 123 456 789 → DE123456789)
-            $vatId = preg_replace('/\s+/', '', $invoice->supplierVatId);
-            $doc->addDocumentSellerTaxRegistration('VA', $vatId);
+            $doc->addDocumentSellerTaxRegistration('VA', $invoice->supplierVatId);
         }
         if ($invoice->supplierTaxNumber) {
             $doc->addDocumentSellerTaxRegistration('FC', $invoice->supplierTaxNumber);
@@ -314,7 +310,7 @@ class ZugferdConverter
             $doc->setDocumentPositionNetPrice($line->unitPrice);
             $doc->setDocumentPositionQuantity(
                 $line->quantity,
-                $this->mapUnitCode($line->unit),
+                $line->unitCode,
             );
 
             // Line total WITHOUT surcharges (surcharges go to document level)
@@ -404,19 +400,6 @@ class ZugferdConverter
     }
 
     // ─── Helper functions ─────────────────────────────────────────
-
-    private function mapUnitCode(string $unit): string
-    {
-        return match ($unit) {
-            'Stück' => 'C62',
-            'Meter' => 'MTR',
-            'Liter' => 'LTR',
-            'kg' => 'KGM',
-            'Satz' => 'SET',
-            'Pauschal' => 'LS',
-            default => 'C62',
-        };
-    }
 
     /**
      * @return array{0: ?string, 1: ?string, 2: ?string}

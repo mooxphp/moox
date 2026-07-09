@@ -20,6 +20,8 @@ interface ZugferdInvoiceLine
 
     public string $unit { get; }
 
+    public string $unitCode { get; }
+
     public float $lineTotal { get; }
 
     /** @var list<ZugferdAllowanceCharge> */

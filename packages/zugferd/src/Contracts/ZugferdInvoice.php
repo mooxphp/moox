@@ -12,6 +12,8 @@ interface ZugferdInvoice
 
     public string $documentType { get; }
 
+    public string $documentTypeCode { get; }
+
     public ?string $dueDate { get; }
 
     public string $currency { get; }
