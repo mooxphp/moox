@@ -6,8 +6,12 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 require_once __DIR__.'/../Support/TestLocalizationLikeResource.php';
+require_once __DIR__.'/../Support/TestCategoryLike.php';
+require_once __DIR__.'/../Support/TestCategoryLikeTranslation.php';
+require_once __DIR__.'/../Support/TestCategoryLikeResource.php';
 
 use Filament\Forms\Components\Select;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +27,9 @@ use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\RelationTargetResolver;
 use Moox\Builder\Support\RelationValueRules;
+use Moox\Builder\Tests\Support\TestCategoryLike;
+use Moox\Builder\Tests\Support\TestCategoryLikeResource;
+use Moox\Builder\Tests\Support\TestCategoryLikeTranslation;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\Support\TestLocalizationLikeResource;
@@ -314,4 +321,45 @@ it('returns an empty search result when the target table is missing', function (
     Schema::dropIfExists('items');
 
     expect(app(RelationTargetResolver::class)->search('item', 'ad'))->toBe([]);
+});
+
+it('resolves display titles for translation-backed relation targets', function (): void {
+    Schema::dropIfExists('category_translations');
+    Schema::dropIfExists('categories');
+
+    Schema::create('categories', function (Blueprint $table): void {
+        $table->id();
+    });
+
+    Schema::create('category_translations', function (Blueprint $table): void {
+        $table->id();
+        $table->foreignId('category_id');
+        $table->string('locale');
+        $table->string('title')->nullable();
+    });
+
+    $registry = new class extends EntityRegistry
+    {
+        protected function panelResources(): array
+        {
+            return [TestCategoryLikeResource::class];
+        }
+    };
+
+    app()->instance(EntityRegistry::class, $registry);
+
+    $category = TestCategoryLike::query()->create();
+    TestCategoryLikeTranslation::query()->create([
+        'category_id' => $category->getKey(),
+        'locale' => 'en_US',
+        'title' => 'News',
+    ]);
+
+    $resolver = app(RelationTargetResolver::class);
+
+    expect($resolver->search('test_category_like', ''))->toBe([
+        $category->getKey() => 'News',
+    ])->and($resolver->labelsFor('test_category_like', [$category->getKey()]))->toBe([
+        $category->getKey() => 'News',
+    ])->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
 });

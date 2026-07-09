@@ -55,17 +55,15 @@ final class RelationTargetResolver
             return [];
         }
 
-        $titleAttribute = $this->titleAttributeFor($entity);
-
-        if (! $this->modelHasColumn($modelClass, $titleAttribute)) {
-            return [];
-        }
-
         try {
             $query = $this->scopedQuery($entity, $modelClass);
 
             if ($term !== '') {
-                $query->where($titleAttribute, 'like', "%{$term}%");
+                $this->applySearchFilter($query, $modelClass, $term);
+            }
+
+            if ($this->modelUsesTranslations($modelClass)) {
+                $query->with('translations');
             }
 
             $results = [];
@@ -111,7 +109,13 @@ final class RelationTargetResolver
             $model = new $modelClass;
 
             try {
-                foreach ($modelClass::query()->whereIn($model->getKeyName(), $missing)->get() as $record) {
+                $query = $modelClass::query()->whereIn($model->getKeyName(), $missing);
+
+                if ($this->modelUsesTranslations($modelClass)) {
+                    $query->with('translations');
+                }
+
+                foreach ($query->get() as $record) {
                     $memo[$record->getKey()] = $this->titleFor($entity, $record);
                 }
 
@@ -275,7 +279,7 @@ final class RelationTargetResolver
         }
 
         $modelClass = $this->modelClass($entity);
-        $candidates = ['display_name', 'title', 'name', 'label'];
+        $candidates = ['display_title', 'display_name', 'title', 'name', 'label'];
 
         if ($modelClass === null) {
             return $candidates;
@@ -284,27 +288,94 @@ final class RelationTargetResolver
         return array_values(array_filter(
             $candidates,
             fn (string $candidate): bool => $this->modelHasColumn($modelClass, $candidate)
-                || $this->modelHasAccessor($modelClass, $candidate),
+                || $this->modelHasAccessor($modelClass, $candidate)
+                || $this->modelHasTranslatableAttribute($modelClass, $candidate),
         ));
     }
 
     protected function titleAttributeFor(string $entity): string
     {
-        $candidates = $this->titleAttributeCandidates($entity);
+        $modelClass = $this->modelClass($entity);
 
-        foreach ($candidates as $candidate) {
-            if ($candidate === 'display_name') {
-                continue;
-            }
-
-            $modelClass = $this->modelClass($entity);
-
+        foreach (['title', 'name', 'label'] as $candidate) {
             if ($modelClass !== null && $this->modelHasColumn($modelClass, $candidate)) {
                 return $candidate;
             }
         }
 
+        if ($modelClass !== null && $this->modelHasTranslatableAttribute($modelClass, 'title')) {
+            return 'title';
+        }
+
+        if ($modelClass !== null && $this->modelHasTranslatableAttribute($modelClass, 'name')) {
+            return 'name';
+        }
+
         return 'id';
+    }
+
+    /**
+     * @param  Builder<Model>  $query
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function applySearchFilter(Builder $query, string $modelClass, string $term): void
+    {
+        foreach (['title', 'name', 'label'] as $column) {
+            if ($this->modelHasColumn($modelClass, $column)) {
+                $query->where($column, 'like', "%{$term}%");
+
+                return;
+            }
+        }
+
+        foreach (['title', 'name', 'label'] as $attribute) {
+            if (! $this->modelHasTranslatableAttribute($modelClass, $attribute)) {
+                continue;
+            }
+
+            $query->whereHas('translations', function (Builder $translationQuery) use ($attribute, $term): void {
+                $translationQuery->where($attribute, 'like', "%{$term}%");
+            });
+
+            return;
+        }
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function modelUsesTranslations(string $modelClass): bool
+    {
+        if (! is_subclass_of($modelClass, Model::class)) {
+            return false;
+        }
+
+        $instance = new $modelClass;
+
+        return method_exists($instance, 'translations')
+            && (
+                $this->modelHasTranslatableAttribute($modelClass, 'title')
+                || $this->modelHasTranslatableAttribute($modelClass, 'name')
+                || $this->modelHasTranslatableAttribute($modelClass, 'label')
+            );
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function modelHasTranslatableAttribute(string $modelClass, string $attribute): bool
+    {
+        if (! is_subclass_of($modelClass, Model::class)) {
+            return false;
+        }
+
+        $instance = new $modelClass;
+
+        if (! property_exists($instance, 'translatedAttributes') || ! is_array($instance->translatedAttributes)) {
+            return false;
+        }
+
+        return in_array($attribute, $instance->translatedAttributes, true);
     }
 
     /**
