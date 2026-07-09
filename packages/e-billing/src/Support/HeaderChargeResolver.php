@@ -79,15 +79,6 @@ final class HeaderChargeResolver
             if ($charge->percentage !== null && $charge->percentage !== '' && (float) $charge->percentage > 0) {
                 return (float) $charge->percentage;
             }
-
-            $reasonText = (string) ($charge->reason_text ?? '');
-            if (str_contains($reasonText, '%')) {
-                if (preg_match('/(\d+(?:[.,]\d+)?)\s*%/u', $reasonText, $matches) === 1) {
-                    return (float) str_replace(',', '.', $matches[1]);
-                }
-
-                return 0.0;
-            }
         }
 
         return null;
