@@ -46,7 +46,13 @@ final class BillDataAllowanceChargeMapper
                 ? sprintf('%.0f %% vom Warenwert', $discountPercent)
                 : 'Rabatt';
 
-            $items[] = new AllowanceCharge(isCharge: false, amount: $discountAmount, reasonText: $reasonText);
+            $items[] = new AllowanceCharge(
+                isCharge: false,
+                amount: $discountAmount,
+                reasonCode: '95',
+                reasonText: $reasonText,
+                percentage: $discountPercent,
+            );
         }
 
         return $items;
