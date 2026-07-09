@@ -12,7 +12,8 @@ class InvoiceLine implements ZugferdInvoiceLine
 {
     public function __construct(
         public int $position = 0,
-        public string $unit = 'Stück',
+        public string $unit = '',
+        public string $unitCode = '',
         public float $quantity = 0,
         public string $description = '',
         public ?string $descriptionDetail = null,
@@ -68,7 +69,8 @@ class InvoiceLine implements ZugferdInvoiceLine
 
         return new self(
             position: (int) ($data['position'] ?? 0),
-            unit: is_string($data['unit'] ?? null) && $data['unit'] !== '' ? $data['unit'] : 'Stück',
+            unit: is_string($data['unit'] ?? null) ? $data['unit'] : '',
+            unitCode: is_string($data['unit_code'] ?? null) ? $data['unit_code'] : '',
             quantity: (float) ($data['quantity'] ?? 0),
             description: is_string($data['description'] ?? null) ? $data['description'] : '',
             descriptionDetail: isset($data['description_detail']) && is_string($data['description_detail']) ? $data['description_detail'] : null,
@@ -97,6 +99,7 @@ class InvoiceLine implements ZugferdInvoiceLine
         return [
             'position' => $this->position,
             'unit' => $this->unit,
+            'unit_code' => $this->unitCode,
             'quantity' => $this->quantity,
             'description' => $this->description,
             'description_detail' => $this->descriptionDetail,
