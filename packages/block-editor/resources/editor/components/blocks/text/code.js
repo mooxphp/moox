@@ -72,6 +72,7 @@ export const CodeBlock = {
                             contenteditable="true"
                             data-placeholder="${placeholder}"
                             x-init="$nextTick(() => initBlockContent($el, ${scope}, true))"
+                            @paste.prevent="handlePlainTextPaste($event, { lineBreakMode: 'text' })"
                             @input="updateBlockContent(${scope}.id, getCodeEditableText($event.target))"
                             @blur="commitBlockContent(${scope}.id, getCodeEditableText($event.target))"
                             @keydown.enter.exact.prevent="insertCodeNewLine(${scope}.id, $event)"

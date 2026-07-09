@@ -1,6 +1,7 @@
 import { BlockManagement } from '../blocks/management.js';
 import { getRequiredTrimmedUrl } from '../input/url-input.js';
 import { normalizeEmbedUrl } from '../utils/embed-url.js';
+import { ensureMatchingPageProtocol } from '../utils/format.js';
 import { pickFile } from './file-upload.js';
 import {
     getDefaultImageSettingsState,
@@ -26,13 +27,13 @@ function resolveFirstString(values) {
 }
 
 function resolveMediaItemUrl(item) {
-    return resolveFirstString([
+    return ensureMatchingPageProtocol(resolveFirstString([
         item?.url,
         item?.original_url,
         item?.originalUrl,
         item?.full_url,
         item?.fullUrl,
-    ]);
+    ]));
 }
 
 function resolveFallbackMediaItemUrl(item) {
@@ -130,6 +131,38 @@ function parseMediaUploadError(payload, fallbackMessage) {
     ]);
 }
 
+export function exceedsMediaUploadMaxFileSize(fileSizeBytes, maxSizeKb) {
+    const size = Number(fileSizeBytes);
+    const limitKb = Number(maxSizeKb);
+
+    if (!Number.isFinite(size) || size <= 0 || !Number.isInteger(limitKb) || limitKb <= 0) {
+        return false;
+    }
+
+    return size > limitKb * 1024;
+}
+
+export function buildMediaUploadSizeError(fileSizeBytes, maxSizeKb) {
+    const limitBytes = Number(maxSizeKb) * 1024;
+
+    return `Die Datei ist zu groß (${formatFileSize(fileSizeBytes)}). Maximal erlaubt: ${formatFileSize(limitBytes)}.`;
+}
+
+export function buildMediaUploadHttpError(status, payload, maxSizeKb = null) {
+    if (status === 413) {
+        const limitHint = Number.isInteger(Number(maxSizeKb)) && Number(maxSizeKb) > 0
+            ? ` Maximal erlaubt: ${formatFileSize(Number(maxSizeKb) * 1024)}.`
+            : '';
+
+        return parseMediaUploadError(
+            payload,
+            `Die Datei ist zu groß für den Server (HTTP 413).${limitHint} Bitte eine kleinere Datei wählen oder die Upload-Limits erhöhen (nginx client_max_body_size, PHP upload_max_filesize und post_max_size).`
+        );
+    }
+
+    return parseMediaUploadError(payload, `Upload fehlgeschlagen (HTTP ${status}).`);
+}
+
 function normalizeMediaUploadLocale(locale) {
     const normalized = String(locale ?? '')
         .trim()
@@ -192,18 +225,22 @@ function uploadMediaWithProgress({
     url,
     formData,
     csrfToken,
-    onProgress
+    onProgress,
+    onProcessing
 }) {
     return new Promise((resolve, reject) => {
         const request = new XMLHttpRequest();
         request.open('POST', url, true);
         request.withCredentials = true;
         request.responseType = 'json';
+        request.timeout = 600000;
         request.setRequestHeader('Accept', 'application/json');
         request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         if (csrfToken !== '') {
             request.setRequestHeader('X-CSRF-TOKEN', csrfToken);
         }
+
+        let processingNotified = false;
 
         request.upload.onprogress = (event) => {
             if (!event.lengthComputable || typeof onProgress !== 'function') {
@@ -212,10 +249,21 @@ function uploadMediaWithProgress({
 
             const percent = Math.min(100, Math.max(0, Math.round((event.loaded / event.total) * 100)));
             onProgress(percent);
+
+            if (percent >= 100 && !processingNotified) {
+                processingNotified = true;
+                if (typeof onProcessing === 'function') {
+                    onProcessing();
+                }
+            }
         };
 
         request.onerror = () => {
             reject(new Error('Netzwerkfehler'));
+        };
+
+        request.ontimeout = () => {
+            reject(new Error('Zeitüberschreitung beim Upload'));
         };
 
         request.onload = () => {
@@ -306,6 +354,8 @@ export function normalizeMediaLibraryItems(payload, fallbackType = 'image') {
         rawItems = payload.items;
     } else if (Array.isArray(payload?.results)) {
         rawItems = payload.results;
+    } else if (payload && typeof payload === 'object' && resolveMediaItemUrl(payload)) {
+        rawItems = [payload];
     }
 
     return rawItems
@@ -499,6 +549,7 @@ export const editorMediaMethods = {
         this.mediaUploadLoading = false;
         this.mediaUploadError = '';
         this.mediaUploadProgressPercent = 0;
+        this.mediaUploadProcessing = false;
         this.mediaUploadFileName = '';
         this.mediaUploadFileSizeLabel = '';
     },
@@ -755,6 +806,7 @@ export const editorMediaMethods = {
         this.mediaUploadLoading = false;
         this.mediaUploadError = '';
         this.mediaUploadProgressPercent = 0;
+        this.mediaUploadProcessing = false;
         this.mediaUploadFileName = '';
         this.mediaUploadFileSizeLabel = '';
     },
@@ -885,8 +937,14 @@ export const editorMediaMethods = {
         const collectionId = resolveFirstString([this.mediaLibraryCollection]);
         let effectiveCollectionId = collectionId;
 
-        if (effectiveCollectionId === '' && mediaType === 'image') {
+        if (effectiveCollectionId === '' && (mediaType === 'image' || mediaType === 'video')) {
             effectiveCollectionId = '1';
+        }
+
+        if (exceedsMediaUploadMaxFileSize(file.size, this.mediaUploadMaxFileSizeKb)) {
+            this.mediaUploadError = buildMediaUploadSizeError(file.size, this.mediaUploadMaxFileSizeKb);
+            this.showNotification(this.mediaUploadError, 'warning');
+            return;
         }
 
         const metadataTitle = mediaType === 'video'
@@ -915,7 +973,12 @@ export const editorMediaMethods = {
         this.mediaUploadFileName = file.name || '';
         this.mediaUploadFileSizeLabel = formatFileSize(file.size);
         this.mediaUploadProgressPercent = 0;
+        this.mediaUploadProcessing = false;
         this.mediaLibraryRecentlyUploadedUrl = '';
+
+        if (!this.mediaLibraryTarget) {
+            this.mediaLibraryTarget = mediaType === 'video' ? 'video' : 'image';
+        }
 
         try {
             const response = await uploadMediaWithProgress({
@@ -924,15 +987,21 @@ export const editorMediaMethods = {
                 csrfToken,
                 onProgress: (percent) => {
                     this.mediaUploadProgressPercent = percent;
+                },
+                onProcessing: () => {
+                    this.mediaUploadProcessing = true;
                 }
             });
 
             const payload = response.payload ?? {};
 
             if (!response.ok) {
-                this.mediaUploadError = parseMediaUploadError(
+                this.mediaUploadProgressPercent = 0;
+                this.mediaUploadProcessing = false;
+                this.mediaUploadError = buildMediaUploadHttpError(
+                    response.status,
                     payload,
-                    `Upload fehlgeschlagen (HTTP ${response.status}).`
+                    this.mediaUploadMaxFileSizeKb
                 );
                 this.showNotification(this.mediaUploadError, response.status === 409 ? 'warning' : 'error');
                 return;
@@ -978,6 +1047,7 @@ export const editorMediaMethods = {
             this.showNotification(this.mediaUploadError, 'error');
         } finally {
             this.mediaUploadLoading = false;
+            this.mediaUploadProcessing = false;
         }
     },
 

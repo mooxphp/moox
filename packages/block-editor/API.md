@@ -265,3 +265,32 @@ Der Editor ermittelt die Templates-API URL in dieser Reihenfolge:
 3. Fallback `/api/editor/v1/templates`
 
 Damit bleibt die Frontend-Integration stabil, auch wenn Prefix/Version in der Config angepasst werden.
+
+## Dynamic Feed API
+
+Basis: `{prefix}/{version}/dynamic-feeds`
+
+Endpunkte:
+
+- `GET /dynamic-feeds/sources` – registrierte Quellen inkl. Filter-Schema und Views
+- `GET /dynamic-feeds/sources/{sourceKey}/views` – Views einer Quelle
+- `GET /dynamic-feeds/sources/{sourceKey}/filter-options/{filter}?lang=de` – Filteroptionen (locale-aware)
+- `GET /dynamic-feeds/preview?sourceKey=news&limit=5&filters[category_id]=12&lang=de` – Editor-Vorschau
+
+Auth/Middleware entsprechen der Template-API (`config/moox-editor.php`).
+
+Editor-Frontend URL-Auflösung:
+
+1. `data-dynamic-feeds-api-url` am Root (Route `moox-editor.dynamic-feeds.sources`, `/sources` wird intern entfernt)
+2. `window.mooxEditorDynamicFeedsApiUrl`
+3. Fallback `/api/editor/v1/dynamic-feeds`
+
+## Frontend-Rendering (Public Pages)
+
+Block-Inhalte serverseitig rendern:
+
+```blade
+<x-moox-editor::block-content :content="$translation->content" :locale="app()->getLocale()" />
+```
+
+Der Block-Typ `dynamicFeed` speichert nur Query-Konfiguration (`sourceKey`, `limit`, `filters`, `view`, …). Daten werden zur Laufzeit über registrierte Entity-Sources geladen.

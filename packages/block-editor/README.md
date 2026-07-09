@@ -223,3 +223,19 @@ Eine ausführliche Beschreibung des Frontends und des JSON‑Formats steht in:
 
 Damit ist der Block‑Editor in deinem Filament‑/Laravel‑Projekt einsatzbereit.
 
+---
+
+## 8. Public Frontend (Pages)
+
+Für öffentliche Seiten mit Block-JSON:
+
+1. `composer require moox/frontend` (Layout `moox::page.default`)
+2. `moox/page` liefert `PageController` + Route `page.show` (`/pages/{slug}`)
+3. Im Template:
+
+```blade
+<x-moox-editor::block-content :content="$translation->content" :locale="$locale" />
+```
+
+Locale explizit übergeben (`BlockEditorLocale::resolveActive()`). Details: `API.md` und Cursor-Skill `moox-block-editor`.
+

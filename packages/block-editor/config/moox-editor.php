@@ -47,4 +47,11 @@ return [
         */
         'authorization' => null,
     ],
+
+    'dynamic_feed' => [
+        'max_limit' => 50,
+        'default_limit' => 5,
+        'default_order_by' => 'published_at',
+        'default_order_direction' => 'desc',
+    ],
 ];

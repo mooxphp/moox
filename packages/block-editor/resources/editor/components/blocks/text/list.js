@@ -61,6 +61,7 @@ export const ListBlock = {
                             contenteditable="true"
                             data-placeholder="Listen-Eintrag..."
                             x-init="$nextTick(() => { if (item.text !== undefined && item.text !== null) { $el.innerHTML = $sanitizeHtml(item.text || ''); } })"
+                            @paste.prevent="handlePlainTextPaste($event)"
                             @input="updateListItemText('${blockId}', item.id, $event.target.innerHTML)"
                             @blur="commitListItemText('${blockId}', item.id, $event.target.innerHTML)"
                             @keydown.enter.prevent="addListItem('${blockId}', 'bottom')"

@@ -101,6 +101,16 @@ export const editorRenderMethods = {
             return '';
         }
 
+        if (block.type === 'dynamicFeed') {
+            // Alpine-Abhängigkeiten für Vorschau und Inline-Konfiguration
+            void this.blockSettingsVersion;
+            void this.dynamicFeedSourcesLoading;
+            void this.dynamicFeedSources.length;
+            void this.dynamicFeedPreviewLoading[block.id];
+            void this.dynamicFeedPreviewError[block.id];
+            void this.dynamicFeedPreviewByBlockId[block.id];
+        }
+
         // Render-Signatur pro Block (nur bei Änderungen neu rendern)
         const signature = this.getRenderSignature(block);
         const cached = this.renderBlockCache.get(block.id);

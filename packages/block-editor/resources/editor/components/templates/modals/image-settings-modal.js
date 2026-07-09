@@ -71,7 +71,7 @@ export function getImageSettingsModalTemplate() {
 
                         <div x-show="mediaUploadLoading" class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
                             <div class="flex items-center justify-between gap-3">
-                                <span>Bild wird hochgeladen...</span>
+                                <span x-text="mediaUploadProcessing ? 'Server verarbeitet Upload...' : 'Bild wird hochgeladen...'"></span>
                                 <span class="font-semibold" x-text="mediaUploadProgressPercent + '%'"></span>
                             </div>
                             <div class="mt-1 text-xs text-blue-700" x-show="mediaUploadFileName">

@@ -63,6 +63,7 @@ export const ChecklistBlock = {
                             contenteditable="true"
                             data-placeholder="Checkliste-Eintrag..."
                             x-init="$nextTick(() => { if (item.text !== undefined && item.text !== null) { $el.innerHTML = $sanitizeHtml(item.text || ''); } })"
+                            @paste.prevent="handlePlainTextPaste($event)"
                             @input="updateChecklistItemText('${blockId}', item.id, $event.target.innerHTML)"
                             @blur="commitChecklistItemText('${blockId}', item.id, $event.target.innerHTML)"
                             @keydown.enter.prevent="addChecklistItem('${blockId}', 'bottom')"

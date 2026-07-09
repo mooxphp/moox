@@ -219,6 +219,16 @@ export const BLOCK_TYPES = {
         isContainer: false,
         canHaveChildren: false,
         hasAccordionData: true
+    },
+    dynamicFeed: {
+        label: 'Dynamischer Inhalt',
+        category: 'interactive',
+        tag: 'div',
+        placeholder: '',
+        classes: 'rounded-lg border border-slate-200 bg-white p-4 shadow-sm',
+        isContainer: false,
+        canHaveChildren: false,
+        hasDynamicFeedData: true
     }
 };
 

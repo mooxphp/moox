@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(__dirname, '..');
 const repoRoot = join(__dirname, '../../../..');
 const src = join(packageRoot, 'resources', 'editor');
-const dest = join(repoRoot, 'public', 'vendor', 'moox', 'editor');
+const dest = join(repoRoot, 'public', 'vendor', 'moox', 'block-editor');
 
 await mkdir(dirname(dest), { recursive: true });
 await cp(src, dest, { recursive: true, force: true });

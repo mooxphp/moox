@@ -107,6 +107,117 @@ export function sanitizeHtmlContent(content) {
     return template.innerHTML;
 }
 
+function insertNodesAtRange(range, nodes) {
+    if (!range || !Array.isArray(nodes) || nodes.length === 0) {
+        return null;
+    }
+
+    range.deleteContents();
+
+    const fragment = document.createDocumentFragment();
+    nodes.forEach((node) => {
+        if (node) {
+            fragment.appendChild(node);
+        }
+    });
+
+    const lastNode = fragment.lastChild;
+    range.insertNode(fragment);
+
+    return lastNode;
+}
+
+function createPlainTextNodes(text, lineBreakMode = 'br') {
+    const normalizedText = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    if (normalizedText.length === 0) {
+        return [document.createTextNode('')];
+    }
+
+    if (lineBreakMode === 'text') {
+        return [document.createTextNode(normalizedText)];
+    }
+
+    const parts = normalizedText.split('\n');
+    const nodes = [];
+
+    parts.forEach((part, index) => {
+        nodes.push(document.createTextNode(part));
+        if (index < parts.length - 1) {
+            nodes.push(document.createElement('br'));
+        }
+    });
+
+    return nodes;
+}
+
+export function insertPlainTextAtSelection(target, text, options = {}) {
+    if (!target) {
+        return false;
+    }
+
+    const lineBreakMode = options.lineBreakMode === 'text' ? 'text' : 'br';
+    const selection = window.getSelection();
+
+    if (!selection || selection.rangeCount === 0) {
+        target.focus();
+    }
+
+    const activeSelection = window.getSelection();
+    if (!activeSelection || activeSelection.rangeCount === 0) {
+        return false;
+    }
+
+    let range = activeSelection.getRangeAt(0);
+
+    if (!target.contains(range.commonAncestorContainer)) {
+        range = document.createRange();
+        range.selectNodeContents(target);
+        range.collapse(false);
+    }
+
+    const lastInsertedNode = insertNodesAtRange(range, createPlainTextNodes(text, lineBreakMode));
+
+    if (!lastInsertedNode) {
+        return false;
+    }
+
+    const nextRange = document.createRange();
+    nextRange.setStartAfter(lastInsertedNode);
+    nextRange.collapse(true);
+    activeSelection.removeAllRanges();
+    activeSelection.addRange(nextRange);
+
+    return true;
+}
+
+export function handlePlainTextPaste(event, options = {}) {
+    if (!event) {
+        return false;
+    }
+
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    const clipboardData = event.clipboardData || window.clipboardData;
+    const pastedText = clipboardData?.getData?.('text/plain');
+
+    if (typeof pastedText !== 'string') {
+        return false;
+    }
+
+    const inserted = insertPlainTextAtSelection(target, pastedText, options);
+    if (!inserted) {
+        return false;
+    }
+
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+
+    return true;
+}
+
 export function initBlockContent(element, block, isTextContent = false) {
     // Prüfe ob Element existiert
     if (!element || !block) return;

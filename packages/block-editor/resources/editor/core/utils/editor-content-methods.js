@@ -70,6 +70,15 @@ export const editorContentMethods = {
         }
     },
 
+    handlePlainTextPaste(event, options = {}) {
+        try {
+            return Utils.handlePlainTextPaste(event, options);
+        } catch (error) {
+            console.warn('Fehler beim Einfügen von Plaintext:', error);
+            return false;
+        }
+    },
+
     getCalloutVariantClasses(variant) {
         if (variant === 'warning') {
             return 'bg-amber-50 border-amber-300 text-amber-900';

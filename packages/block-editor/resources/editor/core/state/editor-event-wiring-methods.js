@@ -1,5 +1,69 @@
+function flushEditorStateBeforeLivewireCommit() {
+    const editor = typeof window !== 'undefined' ? window.__mooxEditorActiveInstance : null;
+
+    if (!editor) {
+        return;
+    }
+
+    editor.flushInlineContentUpdates?.(false);
+    editor.syncLivewireState?.(true);
+}
+
+function registerLivewireCommitFlushHook() {
+    if (typeof window === 'undefined' || window.__mooxEditorLivewireFlushHookRegistered) {
+        return;
+    }
+
+    const attachHook = () => {
+        if (!window.Livewire?.hook) {
+            return;
+        }
+
+        window.Livewire.hook('commit', () => {
+            flushEditorStateBeforeLivewireCommit();
+        });
+        window.__mooxEditorLivewireFlushHookRegistered = true;
+    };
+
+    if (window.Livewire?.hook) {
+        attachHook();
+    } else {
+        document.addEventListener('livewire:init', attachHook, { once: true });
+    }
+}
+
+function registerSaveButtonFlushListener() {
+    if (typeof window === 'undefined' || window.__mooxEditorSaveButtonFlushListenerRegistered) {
+        return;
+    }
+
+    document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+            return;
+        }
+
+        const button = target.closest('button');
+        if (!button) {
+            return;
+        }
+
+        const label = (button.textContent ?? '').trim();
+        if (!/^(Save|Speichern)/i.test(label)) {
+            return;
+        }
+
+        flushEditorStateBeforeLivewireCommit();
+    }, true);
+
+    window.__mooxEditorSaveButtonFlushListenerRegistered = true;
+}
+
 export const editorEventWiringMethods = {
     setupEditorEventListeners() {
+        registerLivewireCommitFlushHook();
+        registerSaveButtonFlushListener();
+
         // Optimierte Event Listener mit Debouncing für Text-Selektion
         const handleTextSelectionDebounced = () => {
             if (this.textSelectionTimeout) {

@@ -55,6 +55,7 @@ export const AccordionBlock = {
                                 contenteditable="true"
                                 data-placeholder="Frage eingeben..."
                                 x-init="$nextTick(() => { $el.innerHTML = $sanitizeHtml(item.question || ''); })"
+                                @paste.prevent="handlePlainTextPaste($event)"
                                 @input="updateAccordionQuestion('${blockId}', item.id, $event.target.innerHTML)"
                                 @blur="commitAccordionQuestion('${blockId}', item.id, $event.target.innerHTML)"
                                 @focus="initBlockContent($event.target, { content: item.question || '' })"

@@ -230,6 +230,21 @@ export function resolveMediaUploadLanguage(rootElement) {
     return readStringAttribute(rootElement, 'mediaUploadLanguage', 'data-media-upload-language');
 }
 
+export function resolveMediaUploadMaxFileSizeKb(rootElement) {
+    const raw = readStringAttribute(rootElement, 'mediaUploadMaxFileSizeKb', 'data-media-upload-max-file-size-kb');
+    const parsed = Number(raw);
+
+    if (Number.isInteger(parsed) && parsed > 0) {
+        return parsed;
+    }
+
+    return 10240;
+}
+
 export function resolveEditorAssetVersion(rootElement) {
     return readStringAttribute(rootElement, 'editorAssetVersion', 'data-editor-asset-version');
+}
+
+export function resolveDynamicFeedsApiUrl(rootElement) {
+    return readStringAttribute(rootElement, 'dynamicFeedsApiUrl', 'data-dynamic-feeds-api-url');
 }

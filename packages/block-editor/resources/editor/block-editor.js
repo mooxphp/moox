@@ -12,6 +12,7 @@ import { editorThemeMethods } from './core/themes/editor-theme-methods.js';
 import { editorLinkMethods } from './core/links/editor-link-methods.js';
 import { editorRenderMethods } from './core/render/editor-render-methods.js';
 import { editorBlockSettingsMethods } from './core/render/editor-block-settings-methods.js';
+import { editorDynamicFeedMethods } from './core/dynamic-feed/editor-dynamic-feed-methods.js';
 import { editorSelectionMethods } from './core/selection/editor-selection-methods.js';
 import { editorContentMethods } from './core/utils/editor-content-methods.js';
 import { editorElementCacheMethods } from './core/utils/editor-element-cache-methods.js';
@@ -135,7 +136,9 @@ function blockEditor() {
         mediaUploadLoading: false,
         mediaUploadError: '',
         mediaUploadLanguage: '',
+        mediaUploadMaxFileSizeKb: null,
         mediaUploadProgressPercent: 0,
+        mediaUploadProcessing: false,
         mediaUploadFileName: '',
         mediaUploadFileSizeLabel: '',
         templateSlug: null,
@@ -183,6 +186,7 @@ function blockEditor() {
         // Performance: Block-Lookup Cache
         blockLookupCache: new Map(), // Cache für findBlockById Ergebnisse
         blockLookupCacheVersion: 0, // Version für Cache-Invalidierung
+        dynamicFeedPreviewRefreshTimeouts: new Map(),
 
         // Mixins: bei gleichnamigen Keys gewinnt der spätere Spread.
         // Reihenfolge: Entry (init, Livewire-Dirty) → Domänen (Selection, CRUD, Tabelle, …)
@@ -211,6 +215,7 @@ function blockEditor() {
         ...editorLinkMethods,
         ...editorRenderMethods,
         ...editorBlockSettingsMethods,
+        ...editorDynamicFeedMethods,
 
         ...editorFeedbackMethods,
 

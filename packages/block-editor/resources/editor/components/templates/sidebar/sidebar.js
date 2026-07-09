@@ -121,7 +121,18 @@ export function getSidebarTemplate() {
                                 </div>
 
                                 <!-- Block-spezifische Einstellungen -->
-                                <div x-html="getBlockSettingsHTML(block)"></div>
+                                <div
+                                    x-html="getBlockSettingsHTML(block)"
+                                    x-init="$nextTick(() => window.Alpine && window.Alpine.initTree($el))"
+                                    x-effect="$nextTick(() => {
+                                        if (window.Alpine) {
+                                            window.Alpine.initTree($el);
+                                        }
+                                        if (block?.type === 'dynamicFeed' && typeof ensureDynamicFeedSourcesLoaded === 'function') {
+                                            ensureDynamicFeedSourcesLoaded();
+                                        }
+                                    })"
+                                ></div>
                             </div>
                         </template>
                     </div>

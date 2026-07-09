@@ -2,6 +2,10 @@ export const editorUiMethods = {
     openSidebar(blockId = null) {
         if (blockId) {
             this.selectedBlockId = blockId;
+            const { block } = this.findBlockById(blockId);
+            if (block?.type === 'dynamicFeed' && typeof this.ensureDynamicFeedSourcesLoaded === 'function') {
+                this.ensureDynamicFeedSourcesLoaded();
+            }
             // Setze Fokus auf den Block, wenn Sidebar geöffnet wird
             this.$nextTick(() => {
                 this.focusBlockElement(blockId);

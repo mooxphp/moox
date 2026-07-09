@@ -5,6 +5,9 @@ import {
     buildMediaLibraryUrl,
     buildMediaLibraryCacheKey,
     buildMediaUploadUrl,
+    buildMediaUploadHttpError,
+    buildMediaUploadSizeError,
+    exceedsMediaUploadMaxFileSize,
     normalizeMediaLibraryItems
 } from '../../resources/editor/core/media/editor-media-methods.js';
 import {
@@ -60,6 +63,24 @@ describe('editorMediaMethods helper', () => {
     it('baut die Upload-URL ohne Query-Parameter', () => {
         const url = buildMediaUploadUrl('/api/media');
         assert.equal(url, 'http://localhost/api/media');
+    });
+
+    it('erkennt Dateien oberhalb des Upload-Limits', () => {
+        assert.equal(exceedsMediaUploadMaxFileSize(1024 * 1024 + 1, 1024), true);
+        assert.equal(exceedsMediaUploadMaxFileSize(1024 * 1024, 1024), false);
+    });
+
+    it('formuliert Upload-Größenfehler verständlich', () => {
+        const message = buildMediaUploadSizeError(3 * 1024 * 1024, 2048);
+        assert.match(message, /zu groß/);
+        assert.match(message, /Maximal erlaubt/);
+    });
+
+    it('formuliert HTTP-413-Fehler mit Server-Hinweis', () => {
+        const message = buildMediaUploadHttpError(413, {}, 10240);
+        assert.match(message, /HTTP 413/);
+        assert.match(message, /client_max_body_size/);
+        assert.match(message, /upload_max_filesize/);
     });
 
     it('erstellt stabilen Cache-Key aus Request-Parametern', () => {
@@ -126,6 +147,20 @@ describe('editorMediaMethods helper', () => {
         assert.equal(items[0].url, 'https://cdn.test/original.jpg');
         assert.equal(items[0].originalUrl, 'https://cdn.test/original.jpg');
         assert.equal(items[0].previewUrl, 'https://cdn.test/original.jpg');
+    });
+
+    it('normalisiert ein einzelnes Upload-Objekt ohne data-Wrapper', () => {
+        const items = normalizeMediaLibraryItems({
+            id: 42,
+            url: 'https://cdn.test/video.mp4',
+            mime_type: 'video/mp4',
+            type: 'video',
+            title: 'Demo Video'
+        }, 'video');
+
+        assert.equal(items.length, 1);
+        assert.equal(items[0].url, 'https://cdn.test/video.mp4');
+        assert.equal(items[0].type, 'video');
     });
 
     it('öffnet Bild/Video standardmäßig im Mediathek-Tab', () => {

@@ -334,12 +334,52 @@ function renderDefaultBlock(block, blockIdCounter) {
     return block;
 }
 
+function renderDynamicFeedBlock(block, blockIdCounter) {
+    block = ensureSpecificComponent(block, blockIdCounter, 'dynamicFeed', 'sourceKey');
+
+    if (!block.sourceKey) {
+        block.sourceKey = '';
+    }
+
+    if (block.limit === undefined || block.limit === null) {
+        block.limit = 5;
+    } else {
+        const parsedLimit = Number(block.limit);
+        block.limit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(50, Math.round(parsedLimit))) : 5;
+    }
+
+    if (!block.orderBy) {
+        block.orderBy = 'published_at';
+    }
+
+    if (!block.orderDirection) {
+        block.orderDirection = 'desc';
+    } else {
+        block.orderDirection = String(block.orderDirection).toLowerCase() === 'asc' ? 'asc' : 'desc';
+    }
+
+    if (!block.filters || typeof block.filters !== 'object') {
+        block.filters = {};
+    }
+
+    if (block.view === undefined) {
+        block.view = '';
+    }
+
+    if (block.emptyMessage === undefined) {
+        block.emptyMessage = '';
+    }
+
+    return block;
+}
+
 const BLOCK_RENDERERS = {
     table: renderTableBlock,
     checklist: renderChecklistBlock,
     list: renderListBlock,
     tabs: renderTabsBlock,
     accordion: renderAccordionBlock,
+    dynamicFeed: renderDynamicFeedBlock,
 };
 
 /**

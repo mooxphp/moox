@@ -31,6 +31,16 @@ export const editorEntryMethods = {
 
         const serializedBlocks = JSON.stringify(this.blocks ?? []);
         hiddenInput.value = serializedBlocks;
+
+        const wireRoot = hiddenInput.closest('[wire\\:id]');
+        const wireId = wireRoot?.getAttribute('wire:id');
+        if (wireId && window.Livewire?.find) {
+            const component = window.Livewire.find(wireId);
+            if (component) {
+                component.set('state', serializedBlocks);
+            }
+        }
+
         hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
         hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
         this.livewireSyncHash = blocksHash;

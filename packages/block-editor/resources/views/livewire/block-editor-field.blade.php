@@ -1,4 +1,6 @@
 @php
+    use Moox\BlockEditor\Support\BlockEditorLocale;
+
     $initialBlocksJson = '[]';
     $editorInstanceId = 'block-editor-'.str_replace('.', '-', $this->getId());
     $wrapperId = $editorInstanceId.'-wrapper';
@@ -35,6 +37,12 @@
     $editorCssUrl = asset('vendor/moox/block-editor/styles/editor.css').'?v='.$editorAssetVersion;
     $editorBrowserUrl = asset('vendor/moox/block-editor/browser@4.js').'?v='.$editorAssetVersion;
     $editorMountUrl = asset('vendor/moox/block-editor/core/render/mount-editor.js').'?v='.$editorAssetVersion;
+    $configuredMediaUploadMaxFileSizeKb = (int) config('media.upload.resource.max_file_size', 10240);
+    $phpMediaUploadMaxFileSizeKb = max(1, (int) floor(\Illuminate\Http\UploadedFile::getMaxFilesize() / 1024));
+    $mediaUploadMaxFileSizeKb = min(
+        $configuredMediaUploadMaxFileSizeKb > 0 ? $configuredMediaUploadMaxFileSizeKb : 10240,
+        $phpMediaUploadMaxFileSizeKb
+    );
 @endphp
 
 <div>
@@ -60,6 +68,7 @@
             data-mount-editor-url="{{ $editorMountUrl }}"
             data-editor-asset-version="{{ e($editorAssetVersion) }}"
             data-templates-api-url="{{ route('moox-editor.templates.index') }}"
+            data-dynamic-feeds-api-url="{{ route('moox-editor.dynamic-feeds.sources') }}"
             @if($mediaLibraryApiUrl)
                 data-media-library-api-url="{{ e($mediaLibraryApiUrl) }}"
             @endif
@@ -72,7 +81,8 @@
             @if($mediaUsableId)
                 data-media-usable-id="{{ e($mediaUsableId) }}"
             @endif
-            data-media-upload-language="{{ e(app()->getLocale()) }}"
+            data-media-upload-language="{{ e(BlockEditorLocale::resolveActive(request())) }}"
+            data-media-upload-max-file-size-kb="{{ $mediaUploadMaxFileSizeKb }}"
             data-moox-theme-templates="{{ $themeTemplatesEnabled ? '1' : '0' }}"
             @if($templateSlug)
                 data-template-slug="{{ e($templateSlug) }}"
@@ -81,8 +91,7 @@
         ></div>
     </div>
 
-    <!-- Defer verhindert, dass Filament/Livewire bei jeder Editor-Mikroänderung sofort Autosave/Toast triggert. -->
-    <input type="hidden" id="{{ $hiddenInputId }}" wire:model.defer="state" />
+    <input type="hidden" id="{{ $hiddenInputId }}" wire:model="state" />
 
     <script type="module" src="{{ $editorMountUrl }}"></script>
 </div>

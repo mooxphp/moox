@@ -4,6 +4,20 @@ import { renderJSONBlocks } from '../render/json-renderer.js';
 import { BlockTypes } from '../../components/block-types.js';
 import { apiRequest, fetchTemplatesFromApi, normalizeTemplate } from './templates-api.js';
 import { loadThemesFromLocalStorage, saveThemesToLocalStorage } from './theme-local-storage.js';
+import { ensureMatchingPageProtocol } from '../utils/format.js';
+import { getAllBlocks } from '../utils/json.js';
+
+const BLOCK_ASSET_URL_FIELDS = ['imageUrl', 'videoUrl', 'videoPoster'];
+
+function normalizeBlockAssetUrls(blocks) {
+    for (const block of getAllBlocks(blocks)) {
+        for (const field of BLOCK_ASSET_URL_FIELDS) {
+            if (typeof block[field] === 'string' && block[field].trim() !== '') {
+                block[field] = ensureMatchingPageProtocol(block[field]);
+            }
+        }
+    }
+}
 let generatedIdSequence = 0;
 
 function createGeneratedId(prefix = 'block') {
@@ -220,6 +234,7 @@ export const Storage = {
 
             // Re-generiere IDs rekursiv, um Kollisionen mit bestehenden IDs zu vermeiden.
             const blocksWithFreshIds = regenerateBlockIdsRecursive(parsedBlocks);
+            normalizeBlockAssetUrls(blocksWithFreshIds);
 
             // Rendere alle Blöcke aus dem JSON (zentrale Funktion)
             const renderedBlocks = renderJSONBlocks(blocksWithFreshIds, blockIdCounter);

@@ -72,6 +72,9 @@ export const editorInitMethods = {
         this.mediaUploadLanguage = typeof EditorConfig.resolveMediaUploadLanguage === 'function'
             ? (EditorConfig.resolveMediaUploadLanguage(this.$root) ?? '')
             : '';
+        this.mediaUploadMaxFileSizeKb = typeof EditorConfig.resolveMediaUploadMaxFileSizeKb === 'function'
+            ? EditorConfig.resolveMediaUploadMaxFileSizeKb(this.$root)
+            : null;
         this.livewireHiddenInputId = String(this.$root?.parentElement?.dataset?.hiddenInputId ?? '').trim();
         this.templateSlug = resolveTemplateSlugFromRoot(this.$root);
         if (!this.themeTemplatesEnabled) {
@@ -144,6 +147,10 @@ export const editorInitMethods = {
         this.$nextTick(() => {
             this.syncLivewireState(true);
         });
+
+        if (typeof this.ensureDynamicFeedSourcesLoaded === 'function') {
+            this.ensureDynamicFeedSourcesLoaded();
+        }
     },
 
     loadConfiguredTemplateBySlug(importedInitialBlocks = false) {

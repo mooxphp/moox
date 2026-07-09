@@ -53,6 +53,7 @@ export const ToggleListBlock = {
                         contenteditable="true"
                         data-placeholder="${placeholder}"
                         x-init="$nextTick(() => initBlockContent($el, ${scope}))"
+                        @paste.prevent="handlePlainTextPaste($event)"
                         @input="updateBlockContent(${scope}.id, $event.target.innerHTML)"
                         @blur="commitBlockContent(${scope}.id, $event.target.innerHTML)"
                         @keydown.enter.prevent="${enterHandler}"

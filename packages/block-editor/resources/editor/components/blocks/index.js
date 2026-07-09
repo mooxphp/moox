@@ -17,6 +17,7 @@ import { GroupBlock } from './layout/group.js';
 import { TableBlock } from './data/table.js';
 import { TabsBlock } from './data/tabs.js';
 import { AccordionBlock } from './data/accordion.js';
+import { DynamicFeedBlock } from './data/dynamic-feed.js';
 import { ChecklistBlock } from './text/checklist.js';
 import { ListBlock } from './text/list.js';
 import { LinkBlock } from './layout/link.js';
@@ -45,6 +46,7 @@ export const BlockComponents = {
     table: TableBlock,
     tabs: TabsBlock,
     accordion: AccordionBlock,
+    dynamicFeed: DynamicFeedBlock,
     image: ImageBlock,
     video: VideoBlock,
     embed: EmbedBlock,

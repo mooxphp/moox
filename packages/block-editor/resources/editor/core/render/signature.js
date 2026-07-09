@@ -1,7 +1,7 @@
 import { BlockTypes } from '../../components/block-types.js';
 
 /** Erhöhen, wenn sich Block-HTML-Templates ändern (invalidiert renderBlockCache). */
-export const EDITOR_RENDER_TEMPLATE_REVISION = 1;
+export const EDITOR_RENDER_TEMPLATE_REVISION = 5;
 
 export function getRenderSignature(block) {
     if (!block || !block.id) {
@@ -49,6 +49,11 @@ export function getRenderSignature(block) {
 
     if (block.type === 'link') {
         key += `_${block.linkUrl || ''}_${block.linkText || ''}_${block.linkTarget || ''}`;
+    }
+
+    if (block.type === 'dynamicFeed') {
+        const filters = block.filters && typeof block.filters === 'object' ? block.filters : {};
+        key += `_df_${block.sourceKey || ''}_${block.limit || 5}_${block.view || ''}_${JSON.stringify(filters)}_${block.emptyMessage || ''}`;
     }
 
     if (BlockTypes.isColumnLikeBlock(block.type) && block.children) {

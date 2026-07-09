@@ -10,8 +10,11 @@ it('registers template policy', function (): void {
 });
 
 it('registers editor api routes', function (): void {
-    $route = Route::getRoutes()->getByName('moox-editor.templates.index');
+    $templatesRoute = Route::getRoutes()->getByName('moox-editor.templates.index');
+    $dynamicFeedsRoute = Route::getRoutes()->getByName('moox-editor.dynamic-feeds.sources');
 
-    expect($route)->not->toBeNull()
-        ->and($route?->uri())->toBe('api/editor/v1/templates');
+    expect($templatesRoute)->not->toBeNull()
+        ->and($templatesRoute?->uri())->toBe('api/editor/v1/templates')
+        ->and($dynamicFeedsRoute)->not->toBeNull()
+        ->and($dynamicFeedsRoute?->uri())->toBe('api/editor/v1/dynamic-feeds/sources');
 });

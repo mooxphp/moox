@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace Moox\BlockEditor;
 
 use Illuminate\Support\Facades\Gate;
+use Moox\BlockEditor\EntityQuery\EntityQueryBuilder;
 use Moox\BlockEditor\Models\Template;
 use Moox\BlockEditor\Policies\TemplatePolicy;
+use Moox\BlockEditor\Rendering\BlockContentRenderer;
+use Moox\BlockEditor\Rendering\Blocks\DynamicFeedBlockRenderer;
+use Moox\BlockEditor\Rendering\Blocks\HeadingBlockRenderer;
+use Moox\BlockEditor\Rendering\Blocks\ParagraphBlockRenderer;
+use Moox\BlockEditor\Rendering\Contracts\BlockRenderer;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -25,6 +31,24 @@ class BlockEditorServiceProvider extends MooxServiceProvider
     public function bootingPackage(): void
     {
         Gate::policy(Template::class, TemplatePolicy::class);
+
+        $this->app->singleton(EntityQueryBuilder::class);
+
+        $this->app->singleton(BlockContentRenderer::class, function ($app): BlockContentRenderer {
+            $renderers = [
+                $app->make(ParagraphBlockRenderer::class),
+                $app->make(HeadingBlockRenderer::class),
+                $app->make(DynamicFeedBlockRenderer::class),
+            ];
+
+            return new BlockContentRenderer($renderers);
+        });
+
+        $this->app->tag([
+            ParagraphBlockRenderer::class,
+            HeadingBlockRenderer::class,
+            DynamicFeedBlockRenderer::class,
+        ], BlockRenderer::class);
     }
 
     public function packageBooted(): void
