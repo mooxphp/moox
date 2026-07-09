@@ -6,16 +6,18 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\Traits\HasRoles;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Tests\TestCase;
+use Moox\Core\Services\TaxonomyService;
+use Spatie\Permission\Traits\HasRoles;
 
 uses(TestCase::class);
 
@@ -96,8 +98,8 @@ it('falls back to any available translation when preferred locales are missing',
 
     $resolver = app(BuilderLocaleResolver::class);
     $options = new LocationConstraintOptions(
-        app(\Moox\Builder\Registry\EntityRegistry::class),
-        app(\Moox\Core\Services\TaxonomyService::class),
+        app(EntityRegistry::class),
+        app(TaxonomyService::class),
         $resolver,
     );
 
@@ -139,7 +141,7 @@ it('collects record type options from selected entities', function (): void {
 
     $options = new LocationConstraintOptions(
         $registry,
-        app(\Moox\Core\Services\TaxonomyService::class),
+        app(TaxonomyService::class),
         app(BuilderLocaleResolver::class),
     );
 
@@ -157,9 +159,9 @@ it('falls back to resource type select options when no records exist yet', funct
 
     $resourceClass = new class
     {
-        public static function getTypeSelect(): \Filament\Forms\Components\Select
+        public static function getTypeSelect(): Select
         {
-            return \Filament\Forms\Components\Select::make('type')
+            return Select::make('type')
                 ->options([
                     'Post' => 'Post',
                     'Page' => 'Page',
@@ -187,7 +189,7 @@ it('falls back to resource type select options when no records exist yet', funct
 
     $options = new LocationConstraintOptions(
         $registry,
-        app(\Moox\Core\Services\TaxonomyService::class),
+        app(TaxonomyService::class),
         app(BuilderLocaleResolver::class),
     );
 
@@ -220,7 +222,7 @@ it('shows user role param only when roles exist and user model has hasroles', fu
 
     config()->set('auth.providers.users.model', RolesUser::class);
 
-    \Illuminate\Support\Facades\DB::table('roles')->insert([
+    DB::table('roles')->insert([
         'name' => 'editor',
         'guard_name' => 'web',
         'created_at' => now(),
@@ -260,9 +262,9 @@ it('returns entity-aware condition params', function (): void {
 
     $resourceClass = new class
     {
-        public static function getTypeSelect(): \Filament\Forms\Components\Select
+        public static function getTypeSelect(): Select
         {
-            return \Filament\Forms\Components\Select::make('type')
+            return Select::make('type')
                 ->options([
                     'Post' => 'Post',
                 ]);
@@ -289,7 +291,7 @@ it('returns entity-aware condition params', function (): void {
 
     $options = new LocationConstraintOptions(
         $registry,
-        app(\Moox\Core\Services\TaxonomyService::class),
+        app(TaxonomyService::class),
         app(BuilderLocaleResolver::class),
     );
 
@@ -328,7 +330,7 @@ it('memoizes record type options per model', function (): void {
 
     $options = new LocationConstraintOptions(
         $registry,
-        app(\Moox\Core\Services\TaxonomyService::class),
+        app(TaxonomyService::class),
         app(BuilderLocaleResolver::class),
     );
 

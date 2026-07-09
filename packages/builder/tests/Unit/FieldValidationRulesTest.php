@@ -6,6 +6,7 @@ require_once __DIR__.'/../TestCase.php';
 
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\Services\FieldValueValidator;
 use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Tests\TestCase;
 
@@ -76,7 +77,7 @@ it('enforces custom text validation rules server side', function (): void {
         validation: ['required' => false, 'rules' => ['min:3', 'alpha_dash']],
     );
 
-    expect(fn () => app(\Moox\Builder\Services\FieldValueValidator::class)->assertValid($field, 'a!'))
+    expect(fn () => app(FieldValueValidator::class)->assertValid($field, 'a!'))
         ->toThrow(ValidationException::class);
 });
 
@@ -88,6 +89,6 @@ it('enforces custom numeric validation rules server side', function (): void {
         validation: ['required' => false, 'rules' => ['gte:10']],
     );
 
-    expect(fn () => app(\Moox\Builder\Services\FieldValueValidator::class)->assertValid($field, 5))
+    expect(fn () => app(FieldValueValidator::class)->assertValid($field, 5))
         ->toThrow(ValidationException::class);
 });

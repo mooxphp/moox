@@ -7,10 +7,10 @@ namespace Moox\Builder\Tests;
 use Astrotomic\Translatable\TranslatableServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Illuminate\Contracts\Config\Repository;
-use Livewire\LivewireServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use Livewire\LivewireServiceProvider;
 use Moox\Builder\BuilderServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 

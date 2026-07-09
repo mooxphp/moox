@@ -12,7 +12,6 @@ use Moox\Builder\Services\FieldGroupExporter;
 use Moox\Builder\Services\FieldGroupImporter;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\FieldGroupExportSchema;
-use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\TestCase;
 
 uses(TestCase::class);

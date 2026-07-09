@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Compiler\LocationMatcher;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Services\FieldGroupPersistence;
@@ -115,9 +116,7 @@ it('ignores record specific params when the param is missing on an existing reco
         ['param' => 'record_type', 'operator' => '==', 'value' => 'page'],
     ]];
 
-    $record = new class extends \Illuminate\Database\Eloquent\Model
-    {
-    };
+    $record = new class extends Model {};
 
     expect($matcher->matches($rules, new LocationContext('item', [], $record)))
         ->toBeTrue();
@@ -131,9 +130,7 @@ it('does not ignore record specific params when the param is present and mismatc
         ['param' => 'record_type', 'operator' => '==', 'value' => 'page'],
     ]];
 
-    $record = new class extends \Illuminate\Database\Eloquent\Model
-    {
-    };
+    $record = new class extends Model {};
 
     expect($matcher->matches($rules, new LocationContext('item', ['record_type' => 'post'], $record)))
         ->toBeFalse();
