@@ -187,7 +187,19 @@ final class RelationTargetResolver
     }
 
     /**
-     * @return array{modelClass: class-string<Model>, table: string, key: string, titleColumn: string}|null
+     * @return array{
+     *     modelClass: class-string<Model>,
+     *     table: string,
+     *     key: string,
+     *     titleColumn: string,
+     *     translation?: array{
+     *         table: string,
+     *         foreignKey: string,
+     *         localeColumn: string,
+     *         titleColumn: string,
+     *         softDeletes: bool,
+     *     },
+     * }|null
      */
     public function queryTarget(string $entity): ?array
     {
@@ -198,18 +210,36 @@ final class RelationTargetResolver
         }
 
         $model = new $modelClass;
-        $titleColumn = $this->titleAttributeFor($entity);
+        $translation = null;
+        $titleColumn = 'id';
 
-        if ($titleColumn !== 'id' && ! $this->modelHasColumn($modelClass, $titleColumn)) {
-            $titleColumn = 'id';
+        foreach (['title', 'name', 'label'] as $candidate) {
+            if ($this->modelHasColumn($modelClass, $candidate)) {
+                $titleColumn = $candidate;
+                break;
+            }
         }
 
-        return [
+        if ($titleColumn === 'id') {
+            $translation = $this->translationTargetForModel($modelClass);
+
+            if ($translation !== null) {
+                $titleColumn = $translation['titleColumn'];
+            }
+        }
+
+        $target = [
             'modelClass' => $modelClass,
             'table' => $model->getTable(),
             'key' => $model->getKeyName(),
             'titleColumn' => $titleColumn,
         ];
+
+        if ($translation !== null) {
+            $target['translation'] = $translation;
+        }
+
+        return $target;
     }
 
     /**
@@ -339,6 +369,69 @@ final class RelationTargetResolver
 
             return;
         }
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     * @return array{
+     *     table: string,
+     *     foreignKey: string,
+     *     localeColumn: string,
+     *     titleColumn: string,
+     *     softDeletes: bool,
+     * }|null
+     */
+    protected function translationTargetForModel(string $modelClass): ?array
+    {
+        if (! $this->modelUsesTranslations($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
+            return null;
+        }
+
+        $instance = new $modelClass;
+
+        if (! method_exists($instance, 'translations')) {
+            return null;
+        }
+
+        $titleColumn = null;
+
+        foreach (['title', 'name', 'label'] as $candidate) {
+            if ($this->modelHasTranslatableAttribute($modelClass, $candidate)) {
+                $titleColumn = $candidate;
+                break;
+            }
+        }
+
+        if ($titleColumn === null) {
+            return null;
+        }
+
+        $relation = $instance->translations();
+        $translationModel = $relation->getRelated();
+
+        if (! $translationModel instanceof Model) {
+            return null;
+        }
+
+        $translationModelClass = $translationModel::class;
+        $localeColumn = method_exists($instance, 'getLocaleKey')
+            ? $instance->getLocaleKey()
+            : 'locale';
+        $foreignKey = method_exists($instance, 'getTranslationRelationKey')
+            ? $instance->getTranslationRelationKey()
+            : $relation->getForeignKeyName();
+
+        return [
+            'table' => $translationModel->getTable(),
+            'foreignKey' => $foreignKey,
+            'localeColumn' => $localeColumn,
+            'titleColumn' => $titleColumn,
+            'softDeletes' => in_array(
+                \Illuminate\Database\Eloquent\SoftDeletes::class,
+                class_uses_recursive($translationModelClass),
+                true,
+            ),
+        ];
     }
 
     /**

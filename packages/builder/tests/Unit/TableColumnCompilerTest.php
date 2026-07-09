@@ -5,13 +5,18 @@ declare(strict_types=1);
 require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
+require_once __DIR__.'/../Support/TestCategoryLike.php';
+require_once __DIR__.'/../Support/TestCategoryLikeTranslation.php';
+require_once __DIR__.'/../Support/TestCategoryLikeResource.php';
 
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Compiler\TableColumnCompiler;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\LocationContext;
@@ -24,6 +29,9 @@ use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\RelationTableColumnQuery;
+use Moox\Builder\Tests\Support\TestCategoryLike;
+use Moox\Builder\Tests\Support\TestCategoryLikeResource;
+use Moox\Builder\Tests\Support\TestCategoryLikeTranslation;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\TestCase;
@@ -873,6 +881,97 @@ it('searches records by relation column labels', function (): void {
     $manager->saveValues('item', $otherOwner, ['linked-item' => $otherTarget->getKey()], $fields, $locale);
 
     $field = $fields->firstWhere('name', 'linked-item');
+
+    $ids = TestItem::query()
+        ->whereKey([$matchOwner->getKey(), $otherOwner->getKey()])
+        ->tap(fn ($query) => app(RelationTableColumnQuery::class)->applySearch(
+            $query,
+            $field,
+            'item',
+            $locale,
+            (new FieldValue)->getTable(),
+            'Golf',
+        ))
+        ->pluck('id')
+        ->all();
+
+    expect($ids)->toBe([$matchOwner->getKey()]);
+});
+
+function bindTranslationBackedRelationColumnTestEntityRegistry(): void
+{
+    $registry = new class extends EntityRegistry
+    {
+        protected function panelResources(): array
+        {
+            return [TestItemResource::class, TestCategoryLikeResource::class];
+        }
+    };
+
+    app()->instance(EntityRegistry::class, $registry);
+}
+
+it('searches records by translation-backed relation column labels', function (): void {
+    Schema::dropIfExists('category_translations');
+    Schema::dropIfExists('categories');
+
+    Schema::create('categories', function (Blueprint $table): void {
+        $table->id();
+    });
+
+    Schema::create('category_translations', function (Blueprint $table): void {
+        $table->id();
+        $table->foreignId('category_id');
+        $table->string('locale');
+        $table->string('title')->nullable();
+    });
+
+    bindTranslationBackedRelationColumnTestEntityRegistry();
+
+    $group = FieldGroup::query()->create([
+        'name' => 'Translation relation search',
+        'slug' => 'translation-relation-search',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    Field::query()->create([
+        'field_group_id' => $group->getKey(),
+        'name' => 'linked-category',
+        'label' => 'Linked category',
+        'type' => 'relation',
+        'config' => ['related_entity' => 'test_category_like', 'multiple' => false],
+        'settings' => ['show_in_table' => true],
+        'sort' => 0,
+        'validation' => ['required' => false, 'rules' => []],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $matchTarget = TestCategoryLike::query()->create();
+    TestCategoryLikeTranslation::query()->create([
+        'category_id' => $matchTarget->getKey(),
+        'locale' => 'en_US',
+        'title' => 'Golf category',
+    ]);
+    $otherTarget = TestCategoryLike::query()->create();
+    TestCategoryLikeTranslation::query()->create([
+        'category_id' => $otherTarget->getKey(),
+        'locale' => 'en_US',
+        'title' => 'Polo category',
+    ]);
+    $matchOwner = TestItem::query()->create(['title' => 'Match owner']);
+    $otherOwner = TestItem::query()->create(['title' => 'Other owner']);
+
+    $locale = app(BuilderLocaleResolver::class)->defaultLocale();
+    $fields = app(CustomFieldsManager::class)->fieldsForEntity('item');
+    $manager = app(CustomFieldsManager::class);
+
+    $manager->saveValues('item', $matchOwner, ['linked-category' => $matchTarget->getKey()], $fields, $locale);
+    $manager->saveValues('item', $otherOwner, ['linked-category' => $otherTarget->getKey()], $fields, $locale);
+
+    $field = $fields->firstWhere('name', 'linked-category');
 
     $ids = TestItem::query()
         ->whereKey([$matchOwner->getKey(), $otherOwner->getKey()])

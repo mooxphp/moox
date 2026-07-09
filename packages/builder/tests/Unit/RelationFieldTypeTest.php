@@ -362,4 +362,10 @@ it('resolves display titles for translation-backed relation targets', function (
     ])->and($resolver->labelsFor('test_category_like', [$category->getKey()]))->toBe([
         $category->getKey() => 'News',
     ])->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
+
+    $queryTarget = $resolver->queryTarget('test_category_like');
+
+    expect($queryTarget)->not->toBeNull()
+        ->and($queryTarget['titleColumn'])->toBe('title')
+        ->and($queryTarget['translation']['table'] ?? null)->toBe('category_translations');
 });
