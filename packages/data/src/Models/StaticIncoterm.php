@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Data\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Core\Traits\Base\BaseInModel;
 use Moox\Core\Traits\Simple\SingleSimpleInModel;
 
-class StaticIncoterm extends Model
+class StaticIncoterm extends BaseStaticModel
 {
     use BaseInModel, SingleSimpleInModel;
 
@@ -17,7 +17,5 @@ class StaticIncoterm extends Model
     protected $fillable = [
         'code',
         'version',
-        'common_name',
-        'description',
     ];
 }
