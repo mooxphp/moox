@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__.'/../TestCase.php';
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Tests\TestCase;
 use Moox\Core\Enums\TranslationStatus;
@@ -26,7 +27,7 @@ it('resolves record status from the current locale translation on draft-like mod
 
     $record->setRawAttributes(['status' => 'draft']);
 
-    app()->instance('request', \Illuminate\Http\Request::create('/', 'GET', ['lang' => 'de_DE']));
+    app()->instance('request', Request::create('/', 'GET', ['lang' => 'de_DE']));
 
     $context = LocationContext::forEntity('page', $record);
 
