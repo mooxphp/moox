@@ -1470,6 +1470,13 @@ class FieldGroupResource extends Resource
                 })
                 ->options(function (Get $get) use ($targetEntitiesPath): array {
                     return match ($get('param')) {
+                        'taxonomy' => filled($get('taxonomy'))
+                            ? app(LocationConstraintOptions::class)->searchTermOptionsForTaxonomy(
+                                (string) $get('taxonomy'),
+                                $get($targetEntitiesPath),
+                                '',
+                            )
+                            : [],
                         'record_type' => app(LocationConstraintOptions::class)->recordTypeOptionsForEntities($get($targetEntitiesPath)),
                         'record_status' => app(LocationConstraintOptions::class)->recordStatusOptionsForEntities($get($targetEntitiesPath)),
                         'user_role' => app(LocationConstraintOptions::class)->roleOptions(),
@@ -1537,7 +1544,7 @@ class FieldGroupResource extends Resource
                     };
                 })
                 ->searchable(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'record_status', 'user_role'], true))
-                ->preload(fn (Get $get): bool => $get('param') !== 'taxonomy')
+                ->preload()
                 ->native(false)
                 ->columnSpanFull(),
         ];

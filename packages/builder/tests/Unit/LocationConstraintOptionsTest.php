@@ -426,6 +426,63 @@ it('exposes draft workflow statuses from resource helpers', function (): void {
     ]);
 });
 
+it('returns initial taxonomy term options when search is empty', function (): void {
+    Schema::create('taxonomy_terms', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title')->nullable();
+        $table->timestamps();
+    });
+
+    DB::table('taxonomy_terms')->insert([
+        ['title' => 'News', 'created_at' => now(), 'updated_at' => now()],
+        ['title' => 'Sports', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    config([
+        'page.taxonomies' => [
+            'category' => [
+                'label' => 'Category',
+                'model' => TaxonomyTermTestModel::class,
+            ],
+        ],
+    ]);
+
+    $registry = new class extends EntityRegistry
+    {
+        public function modelFor(string $entity): ?string
+        {
+            return $entity === 'page' ? PageTaxonomyTestModel::class : null;
+        }
+    };
+
+    $options = new LocationConstraintOptions(
+        $registry,
+        app(TaxonomyService::class),
+        app(BuilderLocaleResolver::class),
+    );
+
+    expect($options->searchTermOptionsForTaxonomy('category', ['page'], ''))
+        ->toMatchArray([
+            '1' => 'News',
+            '2' => 'Sports',
+        ])
+        ->and($options->searchTermOptionsForTaxonomy('category', ['page'], 'new'))
+        ->toBe(['1' => 'News']);
+});
+
+class PageTaxonomyTestModel extends Model
+{
+    public static function getResourceName(): string
+    {
+        return 'page';
+    }
+}
+
+class TaxonomyTermTestModel extends Model
+{
+    protected $table = 'taxonomy_terms';
+}
+
 class NoRolesUser extends Model {}
 
 class RolesUser extends Model

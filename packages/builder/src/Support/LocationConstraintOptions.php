@@ -126,11 +126,11 @@ final class LocationConstraintOptions
     /**
      * @return array<string, string>
      */
-    public function searchTermOptionsForTaxonomy(string $taxonomy, mixed $entities, string $search): array
+    public function searchTermOptionsForTaxonomy(string $taxonomy, mixed $entities, string $search, int $limit = 50): array
     {
         $search = trim($search);
 
-        if ($taxonomy === '' || $search === '') {
+        if ($taxonomy === '') {
             return [];
         }
 
@@ -142,31 +142,33 @@ final class LocationConstraintOptions
 
         $model = $modelClass::query()->getModel();
         $query = $modelClass::query()
-            ->limit(50)
+            ->limit($limit)
             ->orderBy($model->getKeyName());
 
         if (method_exists($model, 'translations')) {
             $query->with('translations');
         }
 
-        $like = '%'.addcslashes($search, '%_\\').'%';
+        if ($search !== '') {
+            $like = '%'.addcslashes($search, '%_\\').'%';
 
-        $query->where(function ($builder) use ($model, $like): void {
-            foreach (['title', 'name', 'label', 'slug'] as $column) {
-                if ($this->entityRegistry->databaseTableHasColumn($model->getTable(), $column)) {
-                    $builder->orWhere($column, 'like', $like);
+            $query->where(function ($builder) use ($model, $like): void {
+                foreach (['title', 'name', 'label', 'slug'] as $column) {
+                    if ($this->entityRegistry->databaseTableHasColumn($model->getTable(), $column)) {
+                        $builder->orWhere($column, 'like', $like);
+                    }
                 }
-            }
 
-            if (method_exists($model, 'translations')) {
-                $builder->orWhereHas('translations', function ($translationQuery) use ($like): void {
-                    $translationQuery
-                        ->where('title', 'like', $like)
-                        ->orWhere('name', 'like', $like)
-                        ->orWhere('label', 'like', $like);
-                });
-            }
-        });
+                if (method_exists($model, 'translations')) {
+                    $builder->orWhereHas('translations', function ($translationQuery) use ($like): void {
+                        $translationQuery
+                            ->where('title', 'like', $like)
+                            ->orWhere('name', 'like', $like)
+                            ->orWhere('label', 'like', $like);
+                    });
+                }
+            });
+        }
 
         return $query
             ->get()
