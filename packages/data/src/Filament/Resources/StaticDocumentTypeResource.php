@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources;
 
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -13,15 +12,18 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Entities\Items\Static\BaseStaticResource;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\CreateStaticDocumentType;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\EditStaticDocumentType;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ListStaticDocumentTypes;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ViewStaticDocumentType;
 use Moox\Data\Models\StaticDocumentType;
+use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
-class StaticDocumentTypeResource extends BaseRecordResource
+class StaticDocumentTypeResource extends BaseStaticResource
 {
+    use HasStaticCodelistResource;
+
     protected static ?string $model = StaticDocumentType::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
@@ -63,15 +65,10 @@ class StaticDocumentTypeResource extends BaseRecordResource
                                     ->label(__('data::fields.code'))
                                     ->maxLength(10)
                                     ->required(),
-                                TextInput::make('common_name')
-                                    ->label(__('data::fields.common_name'))
-                                    ->required(),
                                 TextInput::make('en16931_interpretation')
                                     ->label(__('data::fields.en16931_interpretation'))
                                     ->maxLength(50),
-                                Textarea::make('description')
-                                    ->label(__('data::fields.description'))
-                                    ->columnSpanFull(),
+                                ...static::staticCodelistFormFields(),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -92,47 +89,16 @@ class StaticDocumentTypeResource extends BaseRecordResource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('code')
-                    ->label(__('data::fields.code'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('common_name')
-                    ->label(__('data::fields.common_name'))
-                    ->sortable()
-                    ->searchable(),
+            ->columns(static::staticCodelistTableColumns(extraColumns: [
                 TextColumn::make('en16931_interpretation')
                     ->label(__('data::fields.en16931_interpretation'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('description')
-                    ->label(__('data::fields.description'))
-                    ->limit(80)
-                    ->wrap(),
-            ])
-            ->defaultSort('common_name', 'asc')
+            ]))
+            ->defaultSort('code', 'asc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
-                Filter::make('id')
-                    ->schema([
-                        TextInput::make('id')
-                            ->label(__('data::fields.id'))
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['id'],
-                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['id']) {
-                            return null;
-                        }
-
-                        return 'ID: '.$data['id'];
-                    }),
                 Filter::make('code')
                     ->schema([
                         TextInput::make('code')
@@ -141,55 +107,18 @@ class StaticDocumentTypeResource extends BaseRecordResource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data['code'],
-                            fn (Builder $query, $value): Builder => $query->where('code', 'like', "%{$value}%"),
+                            $data['code'] ?? null,
+                            fn (Builder $query, string $value): Builder => $query->where('code', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
-                        if (! $data['code']) {
+                        if (empty($data['code'])) {
                             return null;
                         }
 
                         return 'Code: '.$data['code'];
                     }),
-                Filter::make('common_name')
-                    ->schema([
-                        TextInput::make('common_name')
-                            ->label(__('data::fields.common_name'))
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['common_name'],
-                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['common_name']) {
-                            return null;
-                        }
-
-                        return 'Common Name: '.$data['common_name'];
-                    }),
-                Filter::make('en16931_interpretation')
-                    ->schema([
-                        TextInput::make('en16931_interpretation')
-                            ->label(__('data::fields.en16931_interpretation'))
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['en16931_interpretation'],
-                            fn (Builder $query, $value): Builder => $query->where('en16931_interpretation', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['en16931_interpretation']) {
-                            return null;
-                        }
-
-                        return 'EN 16931: '.$data['en16931_interpretation'];
-                    }),
+                static::staticCodelistCommonNameFilter(),
             ]);
     }
 

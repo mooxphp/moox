@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Core\Entities\Items\Static\Pages\BaseListStatic;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticEasSchemeResource;
 use Moox\Data\Models\StaticEasScheme;
 
-class ListStaticEasSchemes extends BaseListRecords
+class ListStaticEasSchemes extends BaseListStatic
 {
     use HasListPageTabs;
 
