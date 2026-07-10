@@ -6,6 +6,7 @@ namespace Moox\Core\Entities\Items\Static\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 use Moox\Localization\Models\Localization;
@@ -55,8 +56,10 @@ abstract class BaseViewStatic extends ViewRecord
         $record = $this->getRecord();
 
         if (property_exists($record, 'translatedAttributes')) {
+            $translationLocale = BaseStaticModel::resolveTranslationLocale((string) $this->lang);
+
             foreach ($record->translatedAttributes as $attr) {
-                $translation = $record->translate($this->lang, true);
+                $translation = $record->translate($translationLocale, true);
                 $data[$attr] = $translation?->getAttribute($attr);
             }
         }

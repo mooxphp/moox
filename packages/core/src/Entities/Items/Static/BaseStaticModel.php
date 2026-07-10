@@ -8,6 +8,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Localization\Models\Localization;
 
 /**
  * Lean astrotomic translatable base for static reference data (no draft/publishing machinery).
@@ -80,8 +81,31 @@ abstract class BaseStaticModel extends Model implements TranslatableContract
         return trim($normalized);
     }
 
+    /**
+     * Map an admin locale_variant (e.g. de_DE) to the codelist translation locale (e.g. de).
+     */
+    public static function resolveTranslationLocale(string $localeVariant): string
+    {
+        $localization = Localization::query()
+            ->with('language')
+            ->where('locale_variant', $localeVariant)
+            ->first();
+
+        if ($localization?->language !== null) {
+            return $localization->language->alpha2;
+        }
+
+        if (str_contains($localeVariant, '_')) {
+            return explode('_', $localeVariant)[0];
+        }
+
+        return $localeVariant;
+    }
+
     public static function resolveCodeByTranslation(string $label, string $locale, string $attribute = 'common_name'): ?string
     {
+        $locale = static::resolveTranslationLocale($locale);
+
         /** @var static|null $record */
         $record = static::query()
             ->whereTranslation($attribute, $label, $locale)

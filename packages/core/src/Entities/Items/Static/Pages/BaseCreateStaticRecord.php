@@ -8,6 +8,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
@@ -35,7 +36,7 @@ abstract class BaseCreateStaticRecord extends CreateRecord
         /** @var Model&TranslatableContract $record */
         $record = new $model;
 
-        $record->setDefaultLocale($this->lang);
+        $record->setDefaultLocale(BaseStaticModel::resolveTranslationLocale((string) $this->lang));
 
         $translatableAttributes = property_exists($record, 'translatedAttributes')
             ? $record->translatedAttributes
@@ -47,9 +48,11 @@ abstract class BaseCreateStaticRecord extends CreateRecord
         ScopedResourceContext::applyDefaults($record, static::getResource());
         $record->save();
 
+        $translationLocale = BaseStaticModel::resolveTranslationLocale((string) $this->lang);
+
         /** @var Model $translation */
         $translation = $record->translations()->firstOrNew([
-            'locale' => $this->lang,
+            'locale' => $translationLocale,
         ]);
 
         foreach ($translatableAttributes as $attr) {

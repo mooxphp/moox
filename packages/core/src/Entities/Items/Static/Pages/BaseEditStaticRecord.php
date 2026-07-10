@@ -8,6 +8,7 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Core\Traits\CanResolveResourceClass;
 use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 use Moox\Localization\Models\Localization;
@@ -56,8 +57,10 @@ abstract class BaseEditStaticRecord extends EditRecord
         $record = $this->getRecord();
 
         if (property_exists($record, 'translatedAttributes')) {
+            $translationLocale = BaseStaticModel::resolveTranslationLocale((string) $this->lang);
+
             foreach ($record->translatedAttributes as $attr) {
-                $translation = $record->getTranslation($this->lang, false);
+                $translation = $record->getTranslation($translationLocale, false);
                 $data[$attr] = $translation !== null ? $translation->$attr : null;
             }
         }
@@ -83,7 +86,8 @@ abstract class BaseEditStaticRecord extends EditRecord
 
         $record->update($baseData);
 
-        $translation = $record->translations()->firstOrNew(['locale' => $this->lang]);
+        $translationLocale = BaseStaticModel::resolveTranslationLocale((string) $this->lang);
+        $translation = $record->translations()->firstOrNew(['locale' => $translationLocale]);
 
         foreach ($translatable as $attr) {
             if (array_key_exists($attr, $translationData)) {

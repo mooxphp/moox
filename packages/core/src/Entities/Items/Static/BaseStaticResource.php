@@ -121,9 +121,10 @@ abstract class BaseStaticResource extends BaseResource
         return EditAction::make('edit')
             ->label(function ($record, $livewire) {
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
                 if (method_exists($record, 'translations')) {
-                    $translation = $record->translations()->where('locale', $currentLang)->first();
+                    $translation = $record->translations()->where('locale', $translationLocale)->first();
 
                     return $translation ? __('core::core.edit') : __('core::core.create');
                 }
@@ -132,9 +133,10 @@ abstract class BaseStaticResource extends BaseResource
             })
             ->icon(function ($record, $livewire) {
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
                 if (method_exists($record, 'translations')) {
-                    $translation = $record->translations()->where('locale', $currentLang)->first();
+                    $translation = $record->translations()->where('locale', $translationLocale)->first();
 
                     return $translation ? 'heroicon-o-pencil-square' : 'heroicon-o-plus';
                 }
@@ -175,8 +177,9 @@ abstract class BaseStaticResource extends BaseResource
                 }
 
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
-                return $record->translations()->where('locale', $currentLang)->doesntExist();
+                return $record->translations()->where('locale', $translationLocale)->doesntExist();
             });
     }
 
@@ -248,8 +251,9 @@ abstract class BaseStaticResource extends BaseResource
                 }
 
                 $currentLang = $livewire->lang ?? request()->query('lang') ?? app()->getLocale();
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
-                return $livewire->record->translations()->where('locale', $currentLang)->exists();
+                return $livewire->record->translations()->where('locale', $translationLocale)->exists();
             });
     }
 }
