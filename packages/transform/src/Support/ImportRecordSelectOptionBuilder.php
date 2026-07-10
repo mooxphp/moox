@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Support;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
@@ -194,7 +195,7 @@ final class ImportRecordSelectOptionBuilder
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<Model>
+     * @return Builder<Model>
      */
     private function queryRecords(?string $search)
     {
