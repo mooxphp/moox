@@ -142,6 +142,9 @@ class ProductResource extends BaseDraftResource
                                 RichEditor::make('description')
                                     ->label(__('product::product.description'))
                                     ->columnSpanFull(),
+                                KeyValue::make('custom_properties')
+                                    ->label(__('product::product.custom_properties'))
+                                    ->columnSpanFull(),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -208,12 +211,7 @@ class ProductResource extends BaseDraftResource
                                             ->label(__('product::product.is_sellable'))
                                             ->default(true),
                                     ]),
-                                Section::make(__('product::product.custom_properties'))
-                                    ->schema([
-                                        KeyValue::make('custom_properties')
-                                            ->label(__('product::product.custom_properties'))
-                                            ->columnSpanFull(),
-                                    ]),
+                                
                                 Section::make(__('product::product.section_seo'))
                                     ->schema([
                                         TextInput::make('meta_title')
@@ -307,7 +305,17 @@ class ProductResource extends BaseDraftResource
                     ->toggleable(),
                 TextColumn::make('custom_properties')
                     ->label(__('product::product.custom_properties'))
-                    ->formatStateUsing(fn (?array $state): string => $state ? json_encode($state, JSON_UNESCAPED_UNICODE) : '')
+                    ->formatStateUsing(function (mixed $state): string {
+                        if ($state === null || $state === []) {
+                            return '';
+                        }
+
+                        if (is_array($state)) {
+                            return json_encode($state, JSON_UNESCAPED_UNICODE) ?: '';
+                        }
+
+                        return is_scalar($state) ? (string) $state : (json_encode($state, JSON_UNESCAPED_UNICODE) ?: '');
+                    })
                     ->limit(50)
                     ->toggleable(),
                 TextColumn::make('uuid')
