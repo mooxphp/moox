@@ -50,7 +50,7 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
             return null;
         }
 
-        $matchValue = Arr::get($payload, $valuePath);
+        $matchValue = $this->resolveLookupValue($payload, $valuePath, $destinationField, $warnings);
         if ($this->isEmptyLookupValue($matchValue)) {
             return null;
         }
@@ -71,7 +71,21 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
     {
         [, , $valuePath] = $this->parseLookupConfig($operationSegment);
 
-        return is_string($valuePath) && Arr::has($payload, $valuePath);
+        if (! is_string($valuePath) || $valuePath === '') {
+            return false;
+        }
+
+        $segments = array_values(array_filter(array_map('trim', explode('|', $valuePath))));
+        $basePath = array_shift($segments);
+        if (! is_string($basePath) || $basePath === '') {
+            return false;
+        }
+
+        $registry = app(InlineOperationRegistry::class);
+
+        return $registry->isPayloadBaseExpression($basePath)
+            ? $registry->payloadBaseExpressionExists($payload, $basePath)
+            : Arr::has($payload, $basePath);
     }
 
     /**
@@ -111,5 +125,33 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
         }
 
         return false;
+    }
+
+    private function resolveLookupValue(
+        array $payload,
+        string $valueExpression,
+        string $destinationField,
+        array &$warnings,
+    ): mixed {
+        $segments = array_values(array_filter(array_map('trim', explode('|', $valueExpression))));
+        if ($segments === []) {
+            return null;
+        }
+
+        $basePath = array_shift($segments);
+        if (! is_string($basePath) || $basePath === '') {
+            return null;
+        }
+
+        $registry = app(InlineOperationRegistry::class);
+        $value = $registry->isPayloadBaseExpression($basePath)
+            ? $registry->applyOperation($basePath, null, $destinationField, $warnings, $payload)
+            : Arr::get($payload, $basePath);
+
+        foreach ($segments as $operation) {
+            $value = $registry->applyOperation($operation, $value, $destinationField, $warnings, $payload);
+        }
+
+        return $value;
     }
 }

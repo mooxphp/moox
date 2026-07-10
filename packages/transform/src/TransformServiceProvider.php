@@ -16,6 +16,7 @@ use Moox\Transform\Support\Execution\TranslatableBatchDestinationWriter;
 use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
 use Moox\Transform\Support\Expansion\TransformProjectionExpander;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
+use Moox\Transform\Support\SourceContextResolver;
 use Moox\Transform\Support\SourcePayloadResolver;
 use Moox\Transform\Support\TemplateValueResolver;
 use Moox\Transform\Support\TransformRunner;
@@ -31,6 +32,7 @@ class TransformServiceProvider extends MooxServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/transform-definition.php', 'transform-definition');
         $this->mergeConfigFrom(__DIR__.'/../config/transform-record.php', 'transform-record');
 
+        $this->app->singleton(SourceContextResolver::class);
         $this->app->singleton(SourcePayloadResolver::class);
         $this->app->singleton(TemplateValueResolver::class);
         $this->app->singleton(ConfiguredImportRecordPayloadReader::class);
@@ -40,6 +42,7 @@ class TransformServiceProvider extends MooxServiceProvider
         $this->app->singleton(ResolvedTransformDataFactory::class, function ($app): ResolvedTransformDataFactory {
             return new ResolvedTransformDataFactory(
                 $app->make(InlineOperationRegistry::class),
+                $app->make(SourceContextResolver::class),
             );
         });
         $this->app->singleton(EloquentUpsertBatchDestinationWriter::class);

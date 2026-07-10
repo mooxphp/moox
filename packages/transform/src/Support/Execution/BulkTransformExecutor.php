@@ -64,16 +64,19 @@ final class BulkTransformExecutor
                     $processRecord($child);
                     $child->refresh();
 
+                    $failureContext = BulkTransformSummaryFormatter::failureContext(
+                        $definition,
+                        is_array($child->source_projection) ? $child->source_projection : [],
+                    );
+
                     $this->accumulateResult(
                         $stats,
                         new BulkItemResult(
                             status: (string) $child->status,
                             errorMessage: $child->error_message,
                             destinationKey: $child->destination_key !== null ? (string) $child->destination_key : null,
-                            sourceLabel: BulkTransformSummaryFormatter::projectionSourceLabel(
-                                is_array($child->source_projection) ? $child->source_projection : [],
-                                is_array($definition->destination_match) ? $definition->destination_match : [],
-                            ),
+                            sourceLabel: $failureContext['source_label'],
+                            sourceReference: $failureContext['source_reference'],
                         ),
                         (int) $child->id,
                     );
@@ -163,6 +166,10 @@ final class BulkTransformExecutor
 
         if ($result->sourceLabel !== null && $result->sourceLabel !== '') {
             $failure['source_label'] = $result->sourceLabel;
+        }
+
+        if ($result->sourceReference !== null && $result->sourceReference !== '') {
+            $failure['source_reference'] = $result->sourceReference;
         }
 
         if ($transformRecordId !== null) {

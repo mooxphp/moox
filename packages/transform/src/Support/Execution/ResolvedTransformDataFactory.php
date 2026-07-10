@@ -9,12 +9,14 @@ use Illuminate\Support\Arr;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\Exceptions\TransformDestinationConflictException;
+use Moox\Transform\Support\SourceContextResolver;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
 
 final class ResolvedTransformDataFactory
 {
     public function __construct(
         private readonly InlineOperationRegistry $inlineOperationRegistry,
+        private readonly SourceContextResolver $sourceContextResolver,
     ) {}
 
     /**
@@ -34,7 +36,14 @@ final class ResolvedTransformDataFactory
         $destinationClass = $definition->destination_model;
         /** @var Model $prototype */
         $prototype = new $destinationClass;
-        $sourceContext = $this->resolveSourceContext($record, $definition, $payload);
+        $sourceContext = $this->sourceContextResolver->resolve(
+            $this->resolveArrayAttribute($definition, 'source_references'),
+            $record instanceof TransformRecord
+                ? $this->resolveArrayAttribute($record, 'source_references')
+                : [],
+            $payload,
+        );
+        $sourceContext = $this->appendProjectionSourceReferences($definition, $payload, $sourceContext);
         $destinationMatch = $this->resolveDestinationMatchData(
             $definition,
             $payload,
@@ -171,83 +180,40 @@ final class ResolvedTransformDataFactory
 
     /**
      * @param  array<string, mixed>  $payload
+     * @param  array{references: list<array<string, mixed>>, primary_source_id: string|int|null}  $sourceContext
      * @return array{references: list<array<string, mixed>>, primary_source_id: string|int|null}
      */
-    private function resolveSourceContext(?TransformRecord $record, TransformDefinition $definition, array $payload): array
-    {
-        $definitionReferences = $this->resolveArrayAttribute($definition, 'source_references');
-        $runtimeReferences = $record instanceof TransformRecord
-            ? $this->resolveArrayAttribute($record, 'source_references')
-            : [];
-        $references = $runtimeReferences !== [] ? $runtimeReferences : $definitionReferences;
-        $resolvedReferences = [];
+    private function appendProjectionSourceReferences(
+        TransformDefinition $definition,
+        array $payload,
+        array $sourceContext,
+    ): array {
+        if (($sourceContext['primary_source_id'] ?? null) !== null) {
+            return $sourceContext;
+        }
 
-        foreach ($references as $reference) {
-            if (! is_array($reference)) {
+        $warnings = [];
+        foreach ($this->resolveArrayAttribute($definition, 'destination_match') as $destinationField => $sourcePath) {
+            if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
                 continue;
             }
 
-            $sourceType = $reference['source_type'] ?? null;
-            if (! is_string($sourceType) || $sourceType === '') {
+            $sourceId = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
+            if ($this->isMissingDestinationMatchValue($sourceId)) {
                 continue;
             }
 
-            $sourceId = $reference['row_key'] ?? null;
-            if ($sourceId === null && $sourceType === 'db_table') {
-                $keyColumn = is_string($reference['key_column'] ?? null) && $reference['key_column'] !== ''
-                    ? $reference['key_column']
-                    : 'id';
-                $alias = is_string($reference['alias'] ?? null) && $reference['alias'] !== ''
-                    ? $reference['alias'].'.'
-                    : '';
-                $sourceId = Arr::get($payload, $alias.$keyColumn) ?? Arr::get($payload, $keyColumn);
-            }
-
-            $resolvedReferences[] = array_filter([
-                'source_type' => $sourceType,
-                'connection' => $reference['connection'] ?? null,
-                'table' => $reference['table'] ?? null,
-                'key_column' => $reference['key_column'] ?? null,
-                'path' => $reference['path'] ?? null,
-                'url' => $reference['url'] ?? null,
-                'alias' => $reference['alias'] ?? null,
+            $sourceContext['references'][] = [
+                'source_type' => 'projection',
+                'source_path' => $sourcePath,
                 'source_id' => $sourceId,
-            ], static fn (mixed $value): bool => $value !== null && $value !== '');
+            ];
+            $sourceContext['primary_source_id'] = $sourceId;
+
+            break;
         }
 
-        if ($resolvedReferences === []) {
-            $warnings = [];
-            foreach ($this->resolveArrayAttribute($definition, 'destination_match') as $destinationField => $sourcePath) {
-                if (! is_string($destinationField) || $destinationField === '' || ! is_string($sourcePath) || $sourcePath === '') {
-                    continue;
-                }
-
-                $sourceId = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
-                if ($this->isMissingDestinationMatchValue($sourceId)) {
-                    continue;
-                }
-
-                $resolvedReferences[] = [
-                    'source_type' => 'projection',
-                    'source_path' => $sourcePath,
-                    'source_id' => $sourceId,
-                ];
-            }
-        }
-
-        $primarySourceId = null;
-        foreach ($resolvedReferences as $reference) {
-            if (($reference['source_id'] ?? null) !== null) {
-                $primarySourceId = $reference['source_id'];
-
-                break;
-            }
-        }
-
-        return [
-            'references' => $resolvedReferences,
-            'primary_source_id' => $primarySourceId,
-        ];
+        return $sourceContext;
     }
 
     /**

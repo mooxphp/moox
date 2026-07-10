@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Moox\Transform\Support\Execution;
 
 use Illuminate\Support\Arr;
+use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\SourceContextResolver;
 
 final class BulkTransformSummaryFormatter
 {
@@ -89,10 +91,29 @@ final class BulkTransformSummaryFormatter
     }
 
     /**
+     * @param  array<string, mixed>  $projection
+     * @return array{source_label: ?string, source_reference: ?string}
+     */
+    public static function failureContext(TransformDefinition $definition, array $projection): array
+    {
+        $destinationMatch = is_array($definition->destination_match) ? $definition->destination_match : [];
+        $sourceReferences = is_array($definition->source_references) ? $definition->source_references : [];
+        $sourceContext = app(SourceContextResolver::class)->resolve($sourceReferences, [], $projection);
+
+        return [
+            'source_label' => self::projectionSourceLabel($projection, $destinationMatch, $sourceReferences),
+            'source_reference' => app(SourceContextResolver::class)->sourceReferenceLabel($sourceContext),
+        ];
+    }
+
+    /**
      * @param  array<string, mixed>  $definitionDestinationMatch
      */
-    public static function projectionSourceLabel(array $projection, array $definitionDestinationMatch): ?string
-    {
+    public static function projectionSourceLabel(
+        array $projection,
+        array $definitionDestinationMatch,
+        array $sourceReferences = [],
+    ): ?string {
         foreach ($definitionDestinationMatch as $field => $path) {
             if (! is_string($field) || $field === '' || ! is_string($path) || $path === '') {
                 continue;
@@ -104,6 +125,13 @@ final class BulkTransformSummaryFormatter
             }
 
             return "{$field}={$value}";
+        }
+
+        $sourceReferenceLabel = app(SourceContextResolver::class)->sourceReferenceLabel(
+            app(SourceContextResolver::class)->resolve($sourceReferences, [], $projection),
+        );
+        if ($sourceReferenceLabel !== null) {
+            return $sourceReferenceLabel;
         }
 
         $fallbackKeys = ['sku', 'code', 'external_key', 'id'];
@@ -162,6 +190,10 @@ final class BulkTransformSummaryFormatter
 
         if (is_string($failure['source_label'] ?? null) && $failure['source_label'] !== '') {
             $parts[] = $failure['source_label'];
+        }
+
+        if (is_string($failure['source_reference'] ?? null) && $failure['source_reference'] !== '') {
+            $parts[] = '('.$failure['source_reference'].')';
         }
 
         if (is_string($failure['status'] ?? null) && $failure['status'] !== '') {
