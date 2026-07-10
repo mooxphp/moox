@@ -12,8 +12,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiLog;
-use Moox\Connect\Support\EndpointListToDetailOrchestrator;
 use Moox\Connect\Support\ConnectQueueSettingsResolver;
+use Moox\Connect\Support\EndpointListToDetailOrchestrator;
 use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Throwable;
 

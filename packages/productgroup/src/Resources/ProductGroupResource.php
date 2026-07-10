@@ -177,7 +177,7 @@ class ProductGroupResource extends BaseDraftResource
                                             ->label(__('productgroup::productgroup.sku_prefix'))
                                             ->maxLength(64),
                                     ]),
-                               
+
                                 Section::make(__('productgroup::productgroup.section_seo'))
                                     ->schema([
                                         TextInput::make('meta_title')

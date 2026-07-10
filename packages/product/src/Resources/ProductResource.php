@@ -211,7 +211,7 @@ class ProductResource extends BaseDraftResource
                                             ->label(__('product::product.is_sellable'))
                                             ->default(true),
                                     ]),
-                                
+
                                 Section::make(__('product::product.section_seo'))
                                     ->schema([
                                         TextInput::make('meta_title')

@@ -9,8 +9,8 @@ use Illuminate\Support\Arr;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\Exceptions\TransformDestinationConflictException;
-use Moox\Transform\Support\SourceContextResolver;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
+use Moox\Transform\Support\SourceContextResolver;
 
 final class ResolvedTransformDataFactory
 {

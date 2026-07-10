@@ -17,8 +17,8 @@ use Illuminate\Support\Str;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
 use Moox\Connect\Models\ApiLog;
-use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Moox\Connect\Support\ApiEndpointRunner;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Throwable;
 
 final class RunEndpointForItemJob implements ShouldQueue
