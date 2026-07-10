@@ -18,6 +18,7 @@ class StaticServiceProvider extends MooxServiceProvider
         $package
             ->name('static')
             ->hasConfigFile()
+            ->hasViews()
             ->hasTranslations()
             ->hasMigrations('create_static_entries_table', 'create_static_entry_translations_table');
     }
