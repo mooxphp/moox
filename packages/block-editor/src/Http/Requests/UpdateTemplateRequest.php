@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;

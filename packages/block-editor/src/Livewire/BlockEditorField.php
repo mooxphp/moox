@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Livewire;
 
 use Illuminate\View\View;
@@ -8,6 +10,8 @@ use Livewire\Component;
 
 class BlockEditorField extends Component
 {
+    private const string VIEW = 'moox-editor::livewire.block-editor-field';
+
     #[Modelable]
     public mixed $state = '[]';
 
@@ -45,8 +49,8 @@ class BlockEditorField extends Component
     public ?string $mediaUsableId = null;
 
     /**
-     * @param  array<int, string>|null  $allowedBlockTypes
-     * @param  array<int, string>|null  $excludedBlockTypes
+     * @param  array<int, mixed>|null  $allowedBlockTypes
+     * @param  array<int, mixed>|null  $excludedBlockTypes
      */
     public function mount(
         ?array $allowedBlockTypes = null,
@@ -91,18 +95,18 @@ class BlockEditorField extends Component
             $this->state = '[]';
         }
 
-        if (is_array($this->allowedBlockTypes)) {
+        if (is_array($allowedBlockTypes)) {
             $this->allowedBlockTypes = array_values(array_filter(
-                $this->allowedBlockTypes,
+                $allowedBlockTypes,
                 static fn (mixed $block): bool => is_string($block) && $block !== ''
             ));
         } else {
             $this->allowedBlockTypes = null;
         }
 
-        if (is_array($this->excludedBlockTypes)) {
+        if (is_array($excludedBlockTypes)) {
             $this->excludedBlockTypes = array_values(array_filter(
-                $this->excludedBlockTypes,
+                $excludedBlockTypes,
                 static fn (mixed $block): bool => is_string($block) && $block !== ''
             ));
         } else {
@@ -112,6 +116,6 @@ class BlockEditorField extends Component
 
     public function render(): View
     {
-        return view('moox-editor::livewire.block-editor-field');
+        return view(self::VIEW);
     }
 }

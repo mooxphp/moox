@@ -53,7 +53,7 @@ export function getRenderSignature(block) {
 
     if (block.type === 'dynamicFeed') {
         const filters = block.filters && typeof block.filters === 'object' ? block.filters : {};
-        key += `_df_${block.sourceKey || ''}_${block.limit || 5}_${block.view || ''}_${JSON.stringify(filters)}_${block.emptyMessage || ''}`;
+        key += `_df_${block.sourceKey || ''}_${block.limit || 5}_${block.view || ''}_${JSON.stringify(filters)}`;
     }
 
     if (BlockTypes.isColumnLikeBlock(block.type) && block.children) {

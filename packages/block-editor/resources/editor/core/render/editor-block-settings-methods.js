@@ -104,10 +104,7 @@ export const editorBlockSettingsMethods = {
         if (block.type === 'dynamicFeed') {
             const filters = block.filters && typeof block.filters === 'object' ? block.filters : {};
             const sourcesCount = Array.isArray(this.dynamicFeedSources) ? this.dynamicFeedSources.length : 0;
-            const sourcesState = this.dynamicFeedSourcesLoading
-                ? 'loading'
-                : (this.dynamicFeedSourcesError ? 'error' : 'ready');
-            key += `_${block.sourceKey || ''}_${block.limit || 5}_${block.view || ''}_${JSON.stringify(filters)}_${sourcesCount}_${sourcesState}`;
+            key += `_${block.sourceKey || ''}_${block.limit || 5}_${block.view || ''}_${JSON.stringify(filters)}_${sourcesCount}`;
         }
 
         return key;

@@ -1,5 +1,6 @@
 @php
     use Moox\BlockEditor\Support\BlockEditorLocale;
+    use Moox\BlockEditor\Support\DynamicFeedEditorCatalog;
 
     $initialBlocksJson = '[]';
     $editorInstanceId = 'block-editor-'.str_replace('.', '-', $this->getId());
@@ -68,7 +69,7 @@
             data-mount-editor-url="{{ $editorMountUrl }}"
             data-editor-asset-version="{{ e($editorAssetVersion) }}"
             data-templates-api-url="{{ route('moox-editor.templates.index') }}"
-            data-dynamic-feeds-api-url="{{ route('moox-editor.dynamic-feeds.sources') }}"
+            data-dynamic-feed-sources='@json(DynamicFeedEditorCatalog::sources(BlockEditorLocale::resolveActive(request())))'
             @if($mediaLibraryApiUrl)
                 data-media-library-api-url="{{ e($mediaLibraryApiUrl) }}"
             @endif

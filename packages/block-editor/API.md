@@ -1,14 +1,14 @@
 # Moox Editor Template API
 
-Diese Datei beschreibt die Template-API des `moox/block-editor` Packages auf Basis des aktuellen Codes in `routes/api.php`, `TemplateController` und den Form Requests.
+This document describes the Template API of the `moox/block-editor` package, based on the current implementation in `routes/api.php`, `TemplateController`, and the Form Requests.
 
-## Basis und Konfiguration
+## Base URL and Configuration
 
-Die Route-Basis setzt sich so zusammen:
+Routes are registered under:
 
 - `{prefix}/{version}/templates`
 
-Konfiguration in `config/moox-editor.php`:
+Configuration in `config/moox-editor.php`:
 
 ```php
 return [
@@ -21,37 +21,53 @@ return [
 ];
 ```
 
-Beispiele:
+Examples:
 
-- `prefix=api/editor`, `version=v1` -> `/api/editor/v1/templates`
-- `prefix=api/editor`, `version=''` -> `/api/editor/templates`
+- `prefix=api/editor`, `version=v1` → `/api/editor/v1/templates`
+- `prefix=api/editor`, `version=''` → `/api/editor/templates`
 
-## Endpunkte
+### Named routes
 
-Alle Endpunkte basieren auf `{prefix}/{version}/templates`:
+All routes use the `moox-editor.` name prefix:
 
-- `GET /templates` - Liste (Pagination, Search, Sort)
-- `POST /templates` - Template erstellen
-- `GET /templates/{id}` - einzelnes Template laden
-- `PATCH /templates/{id}` - teilweise aktualisieren
-- `PUT /templates/{id}` - vollständig oder teilweise aktualisieren
-- `DELETE /templates/{id}` - löschen
+| Method | Path | Route name |
+|--------|------|------------|
+| `GET` | `/templates` | `moox-editor.templates.index` |
+| `POST` | `/templates` | `moox-editor.templates.store` |
+| `PUT`/`PATCH` | `/templates/{template}` | `moox-editor.templates.update` |
+| `DELETE` | `/templates/{template}` | `moox-editor.templates.destroy` |
 
-## Quickstart mit cURL
+There is **no** `show` endpoint. Individual templates are loaded via the paginated index or from the create/update response.
 
-Die folgenden Beispiele verwenden den Standardpfad `/api/editor/v1/templates`.
-Passe die URL an, wenn `prefix` oder `version` in der Config geaendert wurden.
+## Endpoints
+
+All endpoints are relative to `{prefix}/{version}/templates`:
+
+- `GET /templates` — list (pagination, search, sort)
+- `POST /templates` — create a template
+- `PATCH /templates/{id}` — partial update
+- `PUT /templates/{id}` — full or partial update
+- `DELETE /templates/{id}` — delete
+
+## Quickstart with cURL
+
+The examples below use the default path `/api/editor/v1/templates`.
+Adjust the URL if `prefix` or `version` were changed in config.
 
 ```bash
 BASE_URL="https://your-app.test/api/editor/v1/templates"
 ```
 
-Hinweis zu Auth:
+### Authentication
 
-- Bei Session-Auth (Standard mit `web` + `auth`) musst du die Requests als eingeloggter User ausfuehren (z. B. mit Browser-Cookie).
-- Bei API-Auth/Bearer-Setup kannst du z. B. `-H "Authorization: Bearer <token>"` ergaenzen.
+With the default middleware (`web`, `auth`), requests must be made as an authenticated user:
 
-### 1) Template erstellen
+- **Session auth**: send the session cookie (e.g. from the browser) and include the CSRF token header `X-CSRF-TOKEN` for mutating requests.
+- **API/Bearer auth**: add `-H "Authorization: Bearer <token>"` when your app is configured for token-based auth.
+
+The editor frontend sends `credentials: 'same-origin'`, `Accept: application/json`, and `X-CSRF-TOKEN` automatically.
+
+### 1) Create a template
 
 ```bash
 curl -X POST "$BASE_URL" \
@@ -66,21 +82,14 @@ curl -X POST "$BASE_URL" \
   }'
 ```
 
-### 2) Templates auflisten (mit Filter/Sortierung)
+### 2) List templates (with filter/sort)
 
 ```bash
 curl -X GET "$BASE_URL?search=landing&per_page=20&sort=updated_at&direction=desc" \
   -H "Accept: application/json"
 ```
 
-### 3) Ein Template laden
-
-```bash
-curl -X GET "$BASE_URL/1" \
-  -H "Accept: application/json"
-```
-
-### 4) Template aktualisieren (PATCH)
+### 3) Update a template (PATCH)
 
 ```bash
 curl -X PATCH "$BASE_URL/1" \
@@ -91,68 +100,70 @@ curl -X PATCH "$BASE_URL/1" \
   }'
 ```
 
-### 5) Template loeschen
+### 4) Delete a template
 
 ```bash
 curl -X DELETE "$BASE_URL/1" \
   -H "Accept: application/json"
 ```
 
-## Authorization und Middleware
+## Authorization and Middleware
 
-`authorization` wird von `Moox\BlockEditor\Support\ApiAuthorization::isEnabled()` gesteuert:
+`authorization` is controlled by `Moox\BlockEditor\Support\ApiAuthorization::isEnabled()`:
 
-- `authorization=true`: Policies/FormRequest-`authorize()` immer aktiv
-- `authorization=false`: Policies/FormRequest-`authorize()` aus
-- `authorization=null` (Default): Auto-Modus
-  - Middleware-Liste leer (`null` oder `[]`) -> Authorization aus
-  - Middleware-Liste nicht leer -> Authorization an
+- `authorization=true` — policies and Form Request `authorize()` are always enforced
+- `authorization=false` — policies and Form Request `authorize()` are disabled
+- `authorization=null` (default) — auto mode:
+  - middleware list empty (`null` or `[]`) → authorization disabled
+  - middleware list not empty → authorization enabled
 
-Standard-Setup:
+Default setup:
 
 - Middleware: `web`, `auth`, `throttle:60,1`
-- Policy `TemplatePolicy`: erlaubt Zugriff fuer authentifizierte Benutzer
+- `TemplatePolicy`: allows access for any authenticated user
 
-Typische Fehlercodes:
+Typical error responses:
 
-- unauthenticated: haeufig `302` (Redirect) oder `401` JSON (bei API-Requests mit JSON-Expectations)
-- unauthorized (Policy verweigert): `403`
-- Validation-Fehler: `422`
+- unauthenticated: `401` for JSON requests (or `302` redirect for non-JSON)
+- unauthorized (policy denied): `403`
+- validation errors: `422`
 
-## Query-Parameter fuer `GET /templates`
+## Query parameters for `GET /templates`
 
-Validierung aus `IndexTemplateRequest`:
+Validated by `IndexTemplateRequest`:
 
-- `per_page`: optional, `integer`, `1..100`, Default in Controller: `50`
+- `per_page`: optional, `integer`, `1..100`, default in repository: `50`
 - `search`: optional, `string`, max `100`
-- `sort`: optional, einer von `id`, `name`, `slug`, `created_at`, `updated_at`
-- `direction`: optional, `asc` oder `desc`
+- `sort`: optional, one of `id`, `name`, `slug`, `created_at`, `updated_at`
+- `direction`: optional, `asc` or `desc`
 
-Controller-Defaults:
+Repository defaults when omitted:
 
 - `sort=id`
 - `direction=desc`
 
-Beispiel:
+Example:
 
 ```http
 GET /api/editor/v1/templates?search=landing&per_page=20&sort=updated_at&direction=desc
 Accept: application/json
 ```
 
-`search` sucht in `name` und `slug` per `LIKE %term%`.
+`search` matches `name` and `slug` via `LIKE %term%`.
 
-## Request-Payloads
+The editor frontend loads all templates by paginating the index with `per_page=100`, `sort=id`, and `direction=desc`.
+
+## Request payloads
 
 ### `POST /templates`
 
-Validierung aus `StoreTemplateRequest`:
+Validated by `StoreTemplateRequest`:
 
 - `name`: `required|string|max:255`
 - `slug`: `nullable|string|max:255|unique`
 - `content`: `nullable|array`
 
-Beispiel:
+Example:
 
 ```json
 {
@@ -168,15 +179,15 @@ Beispiel:
 }
 ```
 
-### `PATCH`/`PUT /templates/{id}`
+### `PATCH` / `PUT /templates/{id}`
 
-Validierung aus `UpdateTemplateRequest`:
+Validated by `UpdateTemplateRequest`:
 
 - `name`: `sometimes|required|string|max:255`
-- `slug`: `nullable|string|max:255|unique` (mit `ignore(currentId)`)
+- `slug`: `nullable|string|max:255|unique` (with `ignore(currentId)`)
 - `content`: `nullable|array`
 
-Beispiel:
+Example:
 
 ```json
 {
@@ -184,7 +195,7 @@ Beispiel:
 }
 ```
 
-oder reines Content-Update:
+Or a content-only update:
 
 ```json
 {
@@ -192,17 +203,17 @@ oder reines Content-Update:
     {
       "id": "block-1",
       "type": "heading2",
-      "content": "Titel"
+      "content": "Title"
     }
   ]
 }
 ```
 
-## Response-Formate
+## Response formats
 
 ### `GET /templates`
 
-Laravel-Paginator-JSON, z. B.:
+Laravel paginator JSON, for example:
 
 ```json
 {
@@ -226,71 +237,64 @@ Laravel-Paginator-JSON, z. B.:
 ### `POST /templates`
 
 - Status: `201`
-- Body: erstelltes Template als JSON
+- Body: created template as JSON
 
-### `GET /templates/{id}`
-
-- Status: `200`
-- Body: Template als JSON
-
-### `PATCH`/`PUT /templates/{id}`
+### `PATCH` / `PUT /templates/{id}`
 
 - Status: `200`
-- Body: aktualisiertes Template (`fresh()`)
+- Body: updated template (`fresh()`)
 
 ### `DELETE /templates/{id}`
 
 - Status: `204 No Content`
-- Body: leer
+- Body: empty
 
-## Sanitizing und Datensicherheit
+## Sanitizing and data model
 
-Beim Speichern/Update wird `content` ueber `TemplateContentSanitizer` normalisiert/sanitized:
+On store/update, `content` is normalized and sanitized via `TemplateContentSanitizer`:
 
 - `StoreTemplateRequest::passedValidation()`
 - `UpdateTemplateRequest::passedValidation()`
 
 Model `Moox\BlockEditor\Models\Template`:
 
-- Tabelle: `editor_templates`
+- Table: `editor_templates`
 - Fillable: `name`, `slug`, `content`
-- Cast: `content` -> `array`
+- Cast: `content` → `array`
 
-## Editor-Frontend Integration
+## Editor frontend integration
 
-Der Editor ermittelt die Templates-API URL in dieser Reihenfolge:
+The editor resolves the templates API URL in this order:
 
-1. `data-templates-api-url` am Root
-2. `window.mooxEditorTemplatesApiUrl`
+1. `window.mooxEditorTemplatesApiUrl`
+2. `data-templates-api-url` on the editor root element
 3. Fallback `/api/editor/v1/templates`
 
-Damit bleibt die Frontend-Integration stabil, auch wenn Prefix/Version in der Config angepasst werden.
+The Filament field sets `data-templates-api-url` to `route('moox-editor.templates.index')`, so the URL stays in sync when prefix or version change in config.
 
-## Dynamic Feed API
+On `401` or `403`, the editor disables further API calls for the current session to avoid repeated failed requests.
 
-Basis: `{prefix}/{version}/dynamic-feeds`
+## Dynamic feed (editor)
 
-Endpunkte:
+There is **no** HTTP API for dynamic feeds. Sources, filter schemas, views, and filter options are built server-side when the block editor field is rendered via `DynamicFeedEditorCatalog` and passed to the editor as `data-dynamic-feed-sources`.
 
-- `GET /dynamic-feeds/sources` – registrierte Quellen inkl. Filter-Schema und Views
-- `GET /dynamic-feeds/sources/{sourceKey}/views` – Views einer Quelle
-- `GET /dynamic-feeds/sources/{sourceKey}/filter-options/{filter}?lang=de` – Filteroptionen (locale-aware)
-- `GET /dynamic-feeds/preview?sourceKey=news&limit=5&filters[category_id]=12&lang=de` – Editor-Vorschau
+### Config layers
 
-Auth/Middleware entsprechen der Template-API (`config/moox-editor.php`).
+| Layer | File | Purpose |
+|-------|------|---------|
+| Global defaults | `config/moox-editor.php` → `dynamic_feed` | `max_limit`, `default_limit`, `default_order_by`, `default_order_direction` |
+| Source definition | Consumer config, e.g. `config/news.php` → `dynamic_feed` | `model`, `views`, `filter_schema`, `sortable_columns`, `feed_item_mapper`, … |
 
-Editor-Frontend URL-Auflösung:
+Publish global config: `php artisan vendor:publish --tag=moox-editor-config`
 
-1. `data-dynamic-feeds-api-url` am Root (Route `moox-editor.dynamic-feeds.sources`, `/sources` wird intern entfernt)
-2. `window.mooxEditorDynamicFeedsApiUrl`
-3. Fallback `/api/editor/v1/dynamic-feeds`
+Sources are registered in consumer packages via `EntityQuerySourceRegistry::register(...)` (e.g. in `news`). See `docs/DEVELOPER.md` § 9 and `.cursor/skills/moox-block-editor/integration.md`.
 
-## Frontend-Rendering (Public Pages)
+## Frontend rendering (public pages)
 
-Block-Inhalte serverseitig rendern:
+Render block content server-side:
 
 ```blade
 <x-moox-editor::block-content :content="$translation->content" :locale="app()->getLocale()" />
 ```
 
-Der Block-Typ `dynamicFeed` speichert nur Query-Konfiguration (`sourceKey`, `limit`, `filters`, `view`, …). Daten werden zur Laufzeit über registrierte Entity-Sources geladen.
+The `dynamicFeed` block type stores only query configuration (`sourceKey`, `limit`, `filters`, `view`, …). Data is loaded at runtime through registered entity sources.

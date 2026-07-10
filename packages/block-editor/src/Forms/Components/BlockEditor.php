@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Forms\Components;
 
 use Closure;

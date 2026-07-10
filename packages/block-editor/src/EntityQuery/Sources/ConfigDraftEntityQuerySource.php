@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Moox\BlockEditor\EntityQuery\Contracts\EntityQuerySource;
 use Moox\BlockEditor\EntityQuery\Contracts\FeedItemMapper;
+use Moox\BlockEditor\EntityQuery\Contracts\PreparesFeedItems;
 use Moox\BlockEditor\EntityQuery\EntityQueryBuilder;
 use Moox\BlockEditor\EntityQuery\EntityQueryDefinition;
+use Moox\BlockEditor\EntityQuery\Support\EagerLoadResolver;
 use Moox\BlockEditor\EntityQuery\Support\FilterOptionsResolver;
 
 final class ConfigDraftEntityQuerySource implements EntityQuerySource
@@ -96,13 +98,23 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
             return collect();
         }
 
+        $eagerLoads = app(EagerLoadResolver::class)->resolve(
+            $this->configuredEagerLoadPaths(),
+            $definition->locale,
+        );
+
         $items = app(EntityQueryBuilder::class)
             ->for($modelClass, $definition)
             ->withDraftDefaults($definition->locale)
             ->applyFilters($this->filterSchema(), $definition->filters)
             ->applySort($this->sortableColumns(), $definition)
             ->limit($definition->limit)
+            ->withEagerLoads($eagerLoads)
             ->get();
+
+        if ($mapper instanceof PreparesFeedItems) {
+            $mapper->prepare($items, $definition->locale);
+        }
 
         return $items->map(fn (Model $model): array => $mapper->map($model, $definition->locale));
     }
@@ -149,5 +161,22 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
         }
 
         return $mapper;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function configuredEagerLoadPaths(): array
+    {
+        $paths = $this->config['eager_load'] ?? [];
+
+        if (! is_array($paths)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $paths,
+            static fn (mixed $path): bool => is_string($path) && trim($path) !== ''
+        ));
     }
 }

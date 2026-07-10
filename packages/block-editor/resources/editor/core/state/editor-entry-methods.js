@@ -7,13 +7,6 @@ export const editorEntryMethods = {
         this.setupEditorEventListeners();
     },
 
-    consumeLivewireSyncDirty() {
-        const isDirty = this.needsLivewireSync === true;
-        this.needsLivewireSync = false;
-
-        return isDirty;
-    },
-
     syncLivewireState(force = false) {
         const blocksHash = this.getBlocksHash(this.blocks);
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\BlockEditor\Support;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -68,7 +67,7 @@ final class BlockEditorLocale
         }
 
         $hyphenated = str_replace('_', '-', $locale);
-        $candidates = array_values(array_filter([$locale, $hyphenated], static fn (string $value): bool => $value !== ''));
+        $candidates = [$locale, $hyphenated];
 
         if (str_contains($locale, '_')) {
             $baseLanguage = explode('_', $locale, 2)[0];
@@ -109,7 +108,6 @@ final class BlockEditorLocale
         $localizationClass = 'Moox\Localization\Models\Localization';
 
         if (class_exists($localizationClass)) {
-            /** @var class-string<Model> $localizationClass */
             $model = new $localizationClass;
 
             if (Schema::hasTable($model->getTable())) {
@@ -117,8 +115,8 @@ final class BlockEditorLocale
                     ->where('is_default', true)
                     ->first();
 
-                if ($defaultLocale !== null && filled($defaultLocale->locale_variant)) {
-                    return (string) $defaultLocale->locale_variant;
+                if ($defaultLocale !== null && filled($defaultLocale->getAttribute('locale_variant'))) {
+                    return (string) $defaultLocale->getAttribute('locale_variant');
                 }
             }
         }
@@ -143,14 +141,12 @@ final class BlockEditorLocale
             return [];
         }
 
-        /** @var class-string<Model> $localizationClass */
         $model = new $localizationClass;
 
         if (! Schema::hasTable($model->getTable())) {
             return [];
         }
 
-        /** @var class-string<Model> $localizationClass */
         return $localizationClass::query()
             ->whereHas('language', fn (Builder $languageQuery): Builder => $languageQuery->where('alpha2', $baseLanguage))
             ->orderByDesc('is_default')

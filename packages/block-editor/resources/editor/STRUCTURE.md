@@ -11,8 +11,7 @@ editor/
 │   └── editor.css                  # Editor-spezifische Styles
 ├── core/                           # Zentrale App-Logik (keine UI)
 │   ├── state/
-│   │   ├── editor.js               # Entry für Editor-State
-│   │   └── default-state.js        # Default-Inhalt / Initial-Blocks
+│   │   └── editor.js               # Entry für Editor-State
 │   ├── io/
 │   │   ├── storage.js              # Orchestrierung für Import/Export + Theme-Handling
 │   │   ├── editor-json-methods.js  # JSON Import/Export fuer Editor-Inhalte

@@ -108,6 +108,5 @@ export const editorJsonDisplayMethods = {
         }
         this.jsonDisplayCache = '';
         this.jsonDisplayHash = '';
-        this.needsLivewireSync = true;
     },
 };

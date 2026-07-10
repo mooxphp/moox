@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -9,26 +11,26 @@ class TemplatePolicy
 {
     public function viewAny(Authenticatable $user): bool
     {
-        return $user !== null;
+        return true;
     }
 
     public function view(Authenticatable $user, Template $template): bool
     {
-        return $user !== null;
+        return true;
     }
 
     public function create(Authenticatable $user): bool
     {
-        return $user !== null;
+        return true;
     }
 
     public function update(Authenticatable $user, Template $template): bool
     {
-        return $user !== null;
+        return true;
     }
 
     public function delete(Authenticatable $user, Template $template): bool
     {
-        return $user !== null;
+        return true;
     }
 }

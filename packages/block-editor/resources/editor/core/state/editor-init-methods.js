@@ -148,8 +148,8 @@ export const editorInitMethods = {
             this.syncLivewireState(true);
         });
 
-        if (typeof this.ensureDynamicFeedSourcesLoaded === 'function') {
-            this.ensureDynamicFeedSourcesLoaded();
+        if (typeof this.initializeDynamicFeedSources === 'function') {
+            this.initializeDynamicFeedSources();
         }
     },
 

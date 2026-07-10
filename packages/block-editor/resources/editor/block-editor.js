@@ -173,7 +173,6 @@ function blockEditor() {
         inlineContentBuffer: new Map(), // Zwischenspeicher für contenteditable Inhalte
         inlineContentDebounceMs: 400, // Debounce-Zeit für Content-Updates
         validateJSONTimeout: null, // Debounce-Timeout für JSON-Validierung
-        needsLivewireSync: true, // Dirty-Flag für inkrementellen Livewire-Sync
         // Performance: Caching für Rendering
         renderBlockCache: new Map(), // Cache für gerenderte Blöcke (pro Block-ID)
         renderChildCache: new Map(), // Cache für gerenderte Child-Blöcke (pro Block-ID)
@@ -186,7 +185,6 @@ function blockEditor() {
         // Performance: Block-Lookup Cache
         blockLookupCache: new Map(), // Cache für findBlockById Ergebnisse
         blockLookupCacheVersion: 0, // Version für Cache-Invalidierung
-        dynamicFeedPreviewRefreshTimeouts: new Map(),
 
         // Mixins: bei gleichnamigen Keys gewinnt der spätere Spread.
         // Reihenfolge: Entry (init, Livewire-Dirty) → Domänen (Selection, CRUD, Tabelle, …)

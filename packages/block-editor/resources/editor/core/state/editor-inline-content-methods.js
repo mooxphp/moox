@@ -10,7 +10,6 @@ export const editorInlineContentMethods = {
         }
 
         this.inlineContentBuffer.set(key, { content, applyUpdate });
-        this.needsLivewireSync = true;
     },
 
     queueInlineContentUpdate(key, content, applyUpdate, debounceMs = null) {

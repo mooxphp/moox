@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\BlockEditor\EntityQuery;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\BlockEditor\Support\BlockEditorLocale;
 
 final class EntityQueryBuilder
@@ -26,11 +28,22 @@ final class EntityQueryBuilder
 
     private bool $joinedTranslations = false;
 
+    /** @var array<int|string, mixed> */
+    private array $eagerLoads = [];
+
     public function for(string $modelClass, EntityQueryDefinition $definition): self
     {
+        if (! is_subclass_of($modelClass, Model::class)) {
+            throw new InvalidArgumentException("Model class [{$modelClass}] must extend ".Model::class.'.');
+        }
+
+        if (! is_subclass_of($modelClass, TranslatableContract::class)) {
+            throw new InvalidArgumentException("Model class [{$modelClass}] must implement ".TranslatableContract::class.'.');
+        }
+
         $this->locale = $definition->locale;
 
-        /** @var Model $model */
+        /** @var Model&TranslatableContract $model */
         $model = new $modelClass;
 
         $this->parentTable = $model->getTable();
@@ -54,15 +67,7 @@ final class EntityQueryBuilder
 
         $this->locale = $resolvedLocale;
 
-        $this->query
-            ->where($this->parentTable.'.is_active', true)
-            ->whereHas('translations', function ($query) use ($localeCandidates): void {
-                $query
-                    ->whereIn('locale', $localeCandidates)
-                    ->where('translation_status', 'published')
-                    ->whereNotNull('published_at')
-                    ->whereNull('deleted_at');
-            });
+        $this->query->where($this->parentTable.'.is_active', true);
 
         if (! $this->joinedTranslations) {
             $alias = $this->translationAlias;
@@ -74,11 +79,14 @@ final class EntityQueryBuilder
                         ->on("{$this->parentTable}.id", '=', "{$alias}.{$this->translationForeignKey}")
                         ->whereIn("{$alias}.locale", $localeCandidates)
                         ->where("{$alias}.translation_status", 'published')
+                        ->whereNotNull("{$alias}.published_at")
                         ->whereNull("{$alias}.deleted_at");
                 }
             );
 
-            $this->query->select("{$this->parentTable}.*");
+            $this->query
+                ->select("{$this->parentTable}.*")
+                ->distinct();
             $this->joinedTranslations = true;
         }
 
@@ -92,10 +100,6 @@ final class EntityQueryBuilder
     public function applyFilters(array $filterSchema, array $filters): self
     {
         foreach ($filterSchema as $filterKey => $schema) {
-            if (! is_array($schema)) {
-                continue;
-            }
-
             $value = $filters[$filterKey] ?? null;
 
             if ($value === null || $value === '' || $value === []) {
@@ -127,6 +131,10 @@ final class EntityQueryBuilder
             return $this;
         }
 
+        if ($this->joinedTranslations) {
+            $this->query->addSelect($column);
+        }
+
         $direction = $definition->orderDirection === 'asc' ? 'asc' : 'desc';
         $this->query->orderBy($column, $direction);
 
@@ -142,13 +150,29 @@ final class EntityQueryBuilder
     }
 
     /**
+     * @param  array<int|string, mixed>  $relations
+     */
+    public function withEagerLoads(array $relations): self
+    {
+        $this->eagerLoads = $relations;
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, Model>
      */
     public function get(): Collection
     {
-        $this->query->with([
-            'translations' => fn ($query) => $query->whereIn('locale', BlockEditorLocale::localeCandidates($this->locale) ?: [$this->locale]),
-        ]);
+        $localeCandidates = BlockEditorLocale::localeCandidates($this->locale) ?: [$this->locale];
+
+        $relations = $this->eagerLoads;
+
+        if (! array_key_exists('translations', $relations)) {
+            $relations['translations'] = fn ($query) => $query->whereIn('locale', $localeCandidates);
+        }
+
+        $this->query->with($relations);
 
         return $this->query->get();
     }

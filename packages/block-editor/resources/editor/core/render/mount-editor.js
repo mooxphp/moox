@@ -1,7 +1,7 @@
 // Keine statischen Imports – alles wird per import() geladen, damit
 // Fehler während der Modul-Auswertung (z. B. in state/editor oder editor-shell)
 // im gleichen try/catch abgefangen werden können.
-// cache-bust-marker: 20260423-image-scope-fix-2
+// cache-bust-marker: 20260710-dynamic-feed-sources-embedded
 
 function ensureModalHelpers() {
     if (window.modalHelpers) {

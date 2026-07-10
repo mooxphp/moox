@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Moox\BlockEditor\Http\Controllers\DynamicFeedController;
 use Moox\BlockEditor\Http\Controllers\TemplateController;
 
 /** @var mixed $middlewareConfig */
@@ -21,14 +20,5 @@ Route::middleware($middleware)
     ->prefix($prefix)
     ->name('moox-editor.')
     ->group(function (): void {
-        Route::apiResource('templates', TemplateController::class);
-
-        Route::prefix('dynamic-feeds')
-            ->name('dynamic-feeds.')
-            ->group(function (): void {
-                Route::get('sources', [DynamicFeedController::class, 'sources'])->name('sources');
-                Route::get('sources/{sourceKey}/views', [DynamicFeedController::class, 'views'])->name('views');
-                Route::get('sources/{sourceKey}/filter-options/{filter}', [DynamicFeedController::class, 'filterOptions'])->name('filter-options');
-                Route::get('preview', [DynamicFeedController::class, 'preview'])->name('preview');
-            });
+        Route::apiResource('templates', TemplateController::class)->except(['show']);
     });

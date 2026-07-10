@@ -10,15 +10,33 @@ use Moox\Category\Models\Category;
 
 final class FilterOptionsResolver
 {
+    /** @var array<string, list<array{value: int|string, label: string}>> */
+    private static array $resolvedOptionsCache = [];
+
     /**
      * @return list<array{value: int|string, label: string}>
      */
     public function resolve(string $resolver, string $locale): array
     {
-        return match ($resolver) {
+        $cacheKey = $resolver.':'.BlockEditorLocale::resolveTranslationLocale($locale);
+
+        if (array_key_exists($cacheKey, self::$resolvedOptionsCache)) {
+            return self::$resolvedOptionsCache[$cacheKey];
+        }
+
+        $resolved = match ($resolver) {
             'category' => $this->resolveCategories($locale),
             default => [],
         };
+
+        self::$resolvedOptionsCache[$cacheKey] = $resolved;
+
+        return $resolved;
+    }
+
+    public static function clearCache(): void
+    {
+        self::$resolvedOptionsCache = [];
     }
 
     /**

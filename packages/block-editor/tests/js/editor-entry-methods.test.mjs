@@ -19,12 +19,4 @@ describe('editorEntryMethods', () => {
         assert.equal(bootstrap, 1);
         assert.equal(wired, 1);
     });
-
-    it('consumeLivewireSyncDirty liefert Dirty nur einmal', () => {
-        const ctx = { needsLivewireSync: true };
-        Object.assign(ctx, editorEntryMethods);
-        assert.equal(ctx.consumeLivewireSyncDirty(), true);
-        assert.equal(ctx.needsLivewireSync, false);
-        assert.equal(ctx.consumeLivewireSyncDirty(), false);
-    });
 });

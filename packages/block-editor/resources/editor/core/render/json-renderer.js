@@ -366,10 +366,6 @@ function renderDynamicFeedBlock(block, blockIdCounter) {
         block.view = '';
     }
 
-    if (block.emptyMessage === undefined) {
-        block.emptyMessage = '';
-    }
-
     return block;
 }
 

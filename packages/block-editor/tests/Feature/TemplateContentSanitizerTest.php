@@ -24,11 +24,13 @@ it('removes unsafe html and javascript urls from blocks', function (): void {
 it('adds noopener noreferrer for target blank links', function (): void {
     $sanitizer = new TemplateContentSanitizer;
 
-    $result = $sanitizer->sanitizeMeta([
-        'content' => '<a href="https://example.com" target="_blank">Example</a>',
+    $result = $sanitizer->sanitizeBlocks([
+        [
+            'content' => '<a href="https://example.com" target="_blank">Example</a>',
+        ],
     ]);
 
-    expect($result['content'])->toContain('rel="noopener noreferrer"');
+    expect($result[0]['content'])->toContain('rel="noopener noreferrer"');
 });
 
 it('sanitizes nested tabs child blocks recursively', function (): void {

@@ -16,7 +16,6 @@ describe('editorInlineContentMethods', () => {
             renderInvalidations: 0,
             highlighted: 0,
             nextTickCalls: 0,
-            needsLivewireSync: false,
             invalidateJSONDisplayCache() {
                 this.jsonInvalidations += 1;
             },
@@ -40,7 +39,6 @@ describe('editorInlineContentMethods', () => {
         await new Promise((r) => setTimeout(r, 15));
         assert.equal(blocks[0].content, 'a');
         assert.equal(ctx.inlineContentBuffer.get('block:1')?.content, 'b');
-        assert.equal(ctx.needsLivewireSync, true);
         assert.equal(ctx.renderInvalidations, 0);
 
         ctx.commitBlockContent('1');

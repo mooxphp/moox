@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BlockEditor\Filament\Concerns;
 
 use Moox\BlockEditor\Support\TemplateContentSanitizer;

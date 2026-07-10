@@ -245,6 +245,26 @@ export function resolveEditorAssetVersion(rootElement) {
     return readStringAttribute(rootElement, 'editorAssetVersion', 'data-editor-asset-version');
 }
 
-export function resolveDynamicFeedsApiUrl(rootElement) {
-    return readStringAttribute(rootElement, 'dynamicFeedsApiUrl', 'data-dynamic-feeds-api-url');
+export function resolveDynamicFeedSources(rootElement) {
+    const raw = readStringAttribute(rootElement, 'dynamicFeedSources', 'data-dynamic-feed-sources');
+
+    if (!raw) {
+        return [];
+    }
+
+    const candidates = parseJsonCandidates(raw);
+
+    for (const candidate of candidates) {
+        try {
+            const parsed = JSON.parse(candidate);
+
+            if (Array.isArray(parsed)) {
+                return parsed;
+            }
+        } catch (_error) {
+            // Try next candidate.
+        }
+    }
+
+    return [];
 }

@@ -128,9 +128,6 @@ export function getSidebarTemplate() {
                                         if (window.Alpine) {
                                             window.Alpine.initTree($el);
                                         }
-                                        if (block?.type === 'dynamicFeed' && typeof ensureDynamicFeedSourcesLoaded === 'function') {
-                                            ensureDynamicFeedSourcesLoaded();
-                                        }
                                     })"
                                 ></div>
                             </div>
