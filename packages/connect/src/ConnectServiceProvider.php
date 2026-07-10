@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Connect;
 
+use Moox\Connect\Console\ConnectQueueListenCommand;
 use Moox\Connect\Console\PurgeImportRecordsCommand;
 use Moox\Connect\Filament\Providers\ConnectPanelProvider;
 use Moox\Connect\Models\ApiConnection;
@@ -68,6 +69,7 @@ class ConnectServiceProvider extends MooxServiceProvider
                 'add_options_to_api_connections_table',
             ])
             ->hasCommand(PurgeImportRecordsCommand::class)
+            ->hasCommand(ConnectQueueListenCommand::class)
             ->hasTranslations()
             ->hasViews();
     }
