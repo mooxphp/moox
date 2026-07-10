@@ -1463,6 +1463,7 @@ class FieldGroupResource extends Resource
                 ->helperText(fn (Get $get): string => match ($get('param')) {
                     'taxonomy' => __('builder::builder.field_group.location_value_taxonomy_helper'),
                     'record_type' => __('builder::builder.field_group.location_value_record_type_helper'),
+                    'record_status' => __('builder::builder.field_group.location_value_record_status_helper'),
                     'user_role' => app(LocationConstraintOptions::class)->userRoleUnavailableReason()
                         ?? __('builder::builder.field_group.location_value_role_helper'),
                     default => __('builder::builder.field_group.location_value_helper'),
@@ -1470,6 +1471,7 @@ class FieldGroupResource extends Resource
                 ->options(function (Get $get) use ($targetEntitiesPath): array {
                     return match ($get('param')) {
                         'record_type' => app(LocationConstraintOptions::class)->recordTypeOptionsForEntities($get($targetEntitiesPath)),
+                        'record_status' => app(LocationConstraintOptions::class)->recordStatusOptionsForEntities($get($targetEntitiesPath)),
                         'user_role' => app(LocationConstraintOptions::class)->roleOptions(),
                         default => [],
                     };
@@ -1485,9 +1487,9 @@ class FieldGroupResource extends Resource
                         $search,
                     );
                 })
-                ->visible(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true)
+                ->visible(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'record_status', 'user_role'], true)
                     && ($get('param') !== 'taxonomy' || filled($get('taxonomy'))))
-                ->required(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true)
+                ->required(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'record_status', 'user_role'], true)
                     && ($get('param') !== 'user_role' || app(LocationConstraintOptions::class)->supportsUserRoles())
                     && ($get('param') !== 'taxonomy' || filled($get('taxonomy'))))
                 ->disabled(fn (Get $get): bool => $get('param') === 'user_role'
@@ -1501,6 +1503,10 @@ class FieldGroupResource extends Resource
                             $value,
                         ),
                         'record_type' => app(LocationConstraintOptions::class)->recordTypeLabelForValue(
+                            $get($targetEntitiesPath),
+                            $value,
+                        ),
+                        'record_status' => app(LocationConstraintOptions::class)->recordStatusLabelForValue(
                             $get($targetEntitiesPath),
                             $value,
                         ),
@@ -1519,6 +1525,10 @@ class FieldGroupResource extends Resource
                             $get($targetEntitiesPath),
                             $values,
                         ),
+                        'record_status' => app(LocationConstraintOptions::class)->recordStatusLabelsForValues(
+                            $get($targetEntitiesPath),
+                            $values,
+                        ),
                         'user_role' => collect($values)
                             ->filter(fn (mixed $value): bool => filled($value))
                             ->mapWithKeys(fn (mixed $value): array => [$value => (string) $value])
@@ -1526,7 +1536,7 @@ class FieldGroupResource extends Resource
                         default => [],
                     };
                 })
-                ->searchable(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'user_role'], true))
+                ->searchable(fn (Get $get): bool => in_array($get('param'), ['taxonomy', 'record_type', 'record_status', 'user_role'], true))
                 ->preload(fn (Get $get): bool => $get('param') !== 'taxonomy')
                 ->native(false)
                 ->columnSpanFull(),
@@ -1595,6 +1605,14 @@ class FieldGroupResource extends Resource
             return $options->recordTypeLabelForValue($targetEntities, $value) ?? (string) $value;
         }
 
+        if (($state['param'] ?? null) === 'record_status') {
+            if (is_array($value)) {
+                return implode(', ', $options->recordStatusLabelsForValues($targetEntities, $value));
+            }
+
+            return $options->recordStatusLabelForValue($targetEntities, $value) ?? (string) $value;
+        }
+
         if (is_array($value)) {
             return implode(', ', array_map(static fn (mixed $item): string => (string) $item, $value));
         }
@@ -1650,9 +1668,10 @@ class FieldGroupResource extends Resource
         $allowedParams = array_keys($options->availableParamOptionsForEntities($entities));
         $allowedTaxonomies = $options->taxonomyKeysForEntities($entities);
         $recordTypeOptions = $options->recordTypeOptionsForEntities($entities);
+        $recordStatusOptions = $options->recordStatusOptionsForEntities($entities);
 
         return array_values(array_map(
-            static function (array $constraint) use ($allowedParams, $allowedTaxonomies, $recordTypeOptions): array {
+            static function (array $constraint) use ($allowedParams, $allowedTaxonomies, $recordTypeOptions, $recordStatusOptions): array {
                 $param = (string) ($constraint['param'] ?? '');
 
                 if ($param === '' || ! in_array($param, $allowedParams, true)) {
@@ -1678,6 +1697,13 @@ class FieldGroupResource extends Resource
                 }
 
                 if ($param === 'record_type' && $recordTypeOptions === []) {
+                    return [
+                        ...$constraint,
+                        'value' => null,
+                    ];
+                }
+
+                if ($param === 'record_status' && $recordStatusOptions === []) {
                     return [
                         ...$constraint,
                         'value' => null,

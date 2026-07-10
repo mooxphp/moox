@@ -347,6 +347,85 @@ it('memoizes record type options per model', function (): void {
         ->and(count(DB::getQueryLog()))->toBe($queriesAfterFirst);
 });
 
+it('memoizes record status options per model', function (): void {
+    Schema::create('status_items', function (Blueprint $table): void {
+        $table->id();
+        $table->string('status')->nullable();
+        $table->timestamps();
+    });
+
+    DB::table('status_items')->insert([
+        ['status' => 'draft', 'created_at' => now(), 'updated_at' => now()],
+        ['status' => 'published', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    $modelClass = new class extends Model
+    {
+        protected $table = 'status_items';
+    };
+
+    $registry = new class($modelClass::class) extends EntityRegistry
+    {
+        public function __construct(protected string $modelClass) {}
+
+        public function modelFor(string $entity): ?string
+        {
+            return $entity === 'status-item' ? $this->modelClass : null;
+        }
+    };
+
+    $options = new LocationConstraintOptions(
+        $registry,
+        app(TaxonomyService::class),
+        app(BuilderLocaleResolver::class),
+    );
+
+    expect($options->availableParamOptionsForEntities(['status-item']))
+        ->toHaveKey('record_status')
+        ->and($options->recordStatusOptionsForEntities(['status-item']))
+        ->toHaveKeys(['draft', 'published']);
+});
+
+it('exposes draft workflow statuses from resource helpers', function (): void {
+    $resourceClass = new class
+    {
+        public static function getEditableTranslationStatusOptions(): array
+        {
+            return [
+                'draft' => 'Draft',
+                'waiting' => 'Waiting',
+                'private' => 'Private',
+                'scheduled' => 'Scheduled',
+                'published' => 'Published',
+            ];
+        }
+    };
+
+    $registry = new class($resourceClass::class) extends EntityRegistry
+    {
+        public function __construct(protected string $resourceClass) {}
+
+        public function resourceFor(string $entity): ?string
+        {
+            return $entity === 'draft-page' ? $this->resourceClass : null;
+        }
+    };
+
+    $options = new LocationConstraintOptions(
+        $registry,
+        app(TaxonomyService::class),
+        app(BuilderLocaleResolver::class),
+    );
+
+    expect($options->recordStatusOptionsForEntities(['draft-page']))->toHaveKeys([
+        'draft',
+        'waiting',
+        'private',
+        'scheduled',
+        'published',
+    ]);
+});
+
 class NoRolesUser extends Model {}
 
 class RolesUser extends Model

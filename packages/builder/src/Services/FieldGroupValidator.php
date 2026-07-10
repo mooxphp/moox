@@ -401,6 +401,19 @@ class FieldGroupValidator
                 continue;
             }
 
+            if ($param === 'record_status') {
+                $valueMessages = $this->invalidConstraintValueMessages(
+                    Arr::wrap($row['value'] ?? null),
+                    array_keys($this->locationConstraintOptions->recordStatusOptionsForEntities($entities)),
+                );
+
+                if ($valueMessages !== []) {
+                    $messages["{$basePath}.value"] = $valueMessages;
+                }
+
+                continue;
+            }
+
             if ($param === 'user_role') {
                 if (! $this->locationConstraintOptions->supportsUserRoles()) {
                     $messages["{$basePath}.value"] = [

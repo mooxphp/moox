@@ -28,6 +28,11 @@ final class LocationConstraintOptions
     /**
      * @var array<string, array<string, string>>
      */
+    protected array $recordStatusOptionsCache = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
     protected array $termOptionsCache = [];
 
     /**
@@ -50,6 +55,11 @@ final class LocationConstraintOptions
      * @var array<class-string<Model>, array<string, string>>
      */
     protected array $recordTypeOptionsByModelCache = [];
+
+    /**
+     * @var array<class-string<Model>, array<string, string>>
+     */
+    protected array $recordStatusOptionsByModelCache = [];
 
     public function __construct(
         protected EntityRegistry $entityRegistry,
@@ -195,6 +205,7 @@ final class LocationConstraintOptions
     {
         return [
             'record_type' => __('builder::builder.field_group.location_param_record_type'),
+            'record_status' => __('builder::builder.field_group.location_param_record_status'),
             'user_role' => __('builder::builder.field_group.location_param_user_role'),
             'taxonomy' => __('builder::builder.field_group.location_param_taxonomy'),
         ];
@@ -218,6 +229,13 @@ final class LocationConstraintOptions
         if ($this->recordTypeOptionsForEntities($entities) !== []) {
             $options = [
                 'record_type' => __('builder::builder.field_group.location_param_record_type'),
+                ...$options,
+            ];
+        }
+
+        if ($this->recordStatusOptionsForEntities($entities) !== []) {
+            $options = [
+                'record_status' => __('builder::builder.field_group.location_param_record_status'),
                 ...$options,
             ];
         }
@@ -330,22 +348,10 @@ final class LocationConstraintOptions
             return [];
         }
 
-        $options = $resourceClass::getTypeSelect()->getOptions();
-
-        if ($options instanceof \Closure) {
-            $options = $options();
-        }
-
-        if (! is_array($options)) {
-            return [];
-        }
-
-        return collect($options)
-            ->filter(fn (mixed $label, mixed $value): bool => filled($value))
-            ->mapWithKeys(fn (mixed $label, mixed $value): array => [
-                (string) $value => filled($label) ? (string) $label : $this->recordTypeLabel((string) $value),
-            ])
-            ->all();
+        return $this->normalizeSelectOptions(
+            $resourceClass::getTypeSelect()->getOptions(),
+            fn (string $value): string => $this->recordTypeLabel($value),
+        );
     }
 
     public function termLabelForValue(string $taxonomy, mixed $entities, mixed $value): ?string
@@ -454,6 +460,71 @@ final class LocationConstraintOptions
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function recordStatusOptionsForEntities(mixed $entities): array
+    {
+        $cacheKey = $this->entitiesCacheKey($entities);
+
+        if (array_key_exists($cacheKey, $this->recordStatusOptionsCache)) {
+            return $this->recordStatusOptionsCache[$cacheKey];
+        }
+
+        $options = [];
+
+        foreach ($this->normalizeEntities($entities) as $entity) {
+            $options = array_replace($options, $this->recordStatusOptionsForEntity($entity));
+
+            $modelClass = $this->entityRegistry->modelFor($entity);
+
+            if (! is_string($modelClass) || ! class_exists($modelClass)) {
+                continue;
+            }
+
+            $options = array_replace($options, $this->recordStatusOptionsForModel($modelClass));
+        }
+
+        asort($options);
+
+        return $this->recordStatusOptionsCache[$cacheKey] = $options;
+    }
+
+    public function recordStatusLabelForValue(mixed $entities, mixed $value): ?string
+    {
+        if (! filled($value)) {
+            return null;
+        }
+
+        $options = $this->recordStatusOptionsForEntities($entities);
+
+        return $options[$value]
+            ?? $options[(string) $value]
+            ?? $this->recordStatusLabel((string) $value);
+    }
+
+    /**
+     * @param  array<int, mixed>  $values
+     * @return array<int|string, string>
+     */
+    public function recordStatusLabelsForValues(mixed $entities, array $values): array
+    {
+        $options = $this->recordStatusOptionsForEntities($entities);
+        $labels = [];
+
+        foreach ($values as $value) {
+            if (! filled($value)) {
+                continue;
+            }
+
+            $labels[$value] = $options[$value]
+                ?? $options[(string) $value]
+                ?? $this->recordStatusLabel((string) $value);
+        }
+
+        return $labels;
+    }
+
+    /**
      * @param  class-string<Model>  $modelClass
      * @return array<string, string>
      */
@@ -505,6 +576,56 @@ final class LocationConstraintOptions
             ->all();
     }
 
+    /**
+     * @return array<string, string>
+     */
+    protected function recordStatusOptionsForEntity(string $entity): array
+    {
+        $resourceClass = $this->entityRegistry->resourceFor($entity);
+
+        if (! is_string($resourceClass) || ! class_exists($resourceClass)) {
+            return [];
+        }
+
+        if (method_exists($resourceClass, 'getEditableTranslationStatusOptions')) {
+            return $this->normalizeSelectOptions(
+                $resourceClass::getEditableTranslationStatusOptions(),
+                fn (string $value): string => $this->recordStatusLabel($value),
+            );
+        }
+
+        return [];
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     * @return array<string, string>
+     */
+    protected function recordStatusOptionsForModel(string $modelClass): array
+    {
+        if (array_key_exists($modelClass, $this->recordStatusOptionsByModelCache)) {
+            return $this->recordStatusOptionsByModelCache[$modelClass];
+        }
+
+        $model = $modelClass::query()->getModel();
+        $table = $model->getTable();
+
+        if (! $this->entityRegistry->databaseTableExists($table) || ! $this->entityRegistry->databaseTableHasColumn($table, 'status')) {
+            return $this->recordStatusOptionsByModelCache[$modelClass] = [];
+        }
+
+        return $this->recordStatusOptionsByModelCache[$modelClass] = $modelClass::query()
+            ->whereNotNull('status')
+            ->where('status', '!=', '')
+            ->distinct()
+            ->orderBy('status')
+            ->pluck('status', 'status')
+            ->mapWithKeys(fn (mixed $status): array => [
+                (string) $status => $this->recordStatusLabel((string) $status),
+            ])
+            ->all();
+    }
+
     protected function termLabel(Model $term): string
     {
         $translatedTitle = $this->translatedTermAttribute($term, 'title');
@@ -541,6 +662,32 @@ final class LocationConstraintOptions
     protected function recordTypeLabel(string $value): string
     {
         return Str::headline($value);
+    }
+
+    protected function recordStatusLabel(string $value): string
+    {
+        return Str::headline($value);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function normalizeSelectOptions(mixed $options, callable $fallbackLabel): array
+    {
+        if ($options instanceof \Closure) {
+            $options = $options();
+        }
+
+        if (! is_array($options)) {
+            return [];
+        }
+
+        return collect($options)
+            ->filter(fn (mixed $label, mixed $value): bool => filled($value))
+            ->mapWithKeys(fn (mixed $label, mixed $value): array => [
+                (string) $value => filled($label) ? (string) $label : $fallbackLabel((string) $value),
+            ])
+            ->all();
     }
 
     /**

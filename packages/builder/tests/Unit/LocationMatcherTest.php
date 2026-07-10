@@ -82,6 +82,47 @@ it('matches record type and user role params when present in the context', funct
     expect($matcher->matches($rules, $context))->toBeTrue();
 });
 
+it('matches record status when present in the context', function (): void {
+    $matcher = new LocationMatcher;
+    $record = new class extends Model {};
+
+    $rules = [[
+        ['param' => 'entity', 'operator' => '==', 'value' => 'draft'],
+        ['param' => 'record_status', 'operator' => '==', 'value' => 'published'],
+    ]];
+
+    $context = new LocationContext('draft', [
+        'record_status' => 'published',
+    ], $record);
+
+    expect($matcher->matches($rules, $context))->toBeTrue()
+        ->and($matcher->matches($rules, new LocationContext('draft', ['record_status' => 'draft'], $record)))->toBeFalse();
+});
+
+it('ignores record status on create forms without a record', function (): void {
+    $matcher = new LocationMatcher;
+
+    $rules = [[
+        ['param' => 'entity', 'operator' => '==', 'value' => 'draft'],
+        ['param' => 'record_status', 'operator' => '==', 'value' => 'published'],
+    ]];
+
+    expect($matcher->matches($rules, new LocationContext('draft')))->toBeTrue();
+});
+
+it('ignores record status when the param is missing on an existing record', function (): void {
+    $matcher = new LocationMatcher;
+
+    $rules = [[
+        ['param' => 'entity', 'operator' => '==', 'value' => 'item'],
+        ['param' => 'record_status', 'operator' => '==', 'value' => 'published'],
+    ]];
+
+    $record = new class extends Model {};
+
+    expect($matcher->matches($rules, new LocationContext('item', [], $record)))->toBeTrue();
+});
+
 it('matches taxonomy term ids using taxonomy param prefixes', function (): void {
     $matcher = new LocationMatcher;
 

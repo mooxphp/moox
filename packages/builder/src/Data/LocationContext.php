@@ -85,6 +85,12 @@ readonly class LocationContext
             $params['record_type'] = (string) $record->getAttribute('type');
         }
 
+        $recordStatus = self::resolveRecordStatus($record);
+
+        if ($recordStatus !== null) {
+            $params['record_status'] = $recordStatus;
+        }
+
         if (in_array(HasModelTaxonomy::class, class_uses_recursive($record), true)) {
             $resourceName = method_exists($record, 'getResourceName')
                 ? $record::getResourceName()
@@ -110,6 +116,31 @@ readonly class LocationContext
         }
 
         return $params;
+    }
+
+    protected static function resolveRecordStatus(Model $record): ?string
+    {
+        if (method_exists($record, 'translate')) {
+            $locale = request()->query('lang') ?? request()->input('lang');
+
+            if (! is_string($locale) || $locale === '') {
+                $locale = app()->getLocale();
+            }
+
+            $translation = $record->translate($locale);
+
+            if ($translation !== null && filled($translation->translation_status ?? null)) {
+                $status = $translation->translation_status;
+
+                return $status instanceof \BackedEnum ? $status->value : (string) $status;
+            }
+        }
+
+        if ($record->offsetExists('status') && filled($record->getAttribute('status'))) {
+            return (string) $record->getAttribute('status');
+        }
+
+        return null;
     }
 
     /**

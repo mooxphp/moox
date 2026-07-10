@@ -183,6 +183,7 @@ Internally this becomes OR groups with AND rules:
 |-------|---------|----------------|
 | `entity` | `item`, `draft` | Resource / model entity key |
 | `record_type` | `page`, `article` | `$record->type` or `customFieldsLocationParams()` |
+| `record_status` | `draft`, `published` | Draft entities: current locale `translation_status`; otherwise main-table `status` when present |
 | `user_role` | `admin`, `editor` | Authenticated user roles (`in` / `not in` supported when roles are available) |
 | `taxonomy:{key}` | term ID `12` or `12,34` | Taxonomy IDs on the record (`HasModelTaxonomy`) |
 
@@ -965,7 +966,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Relation fields** — link to Moox Filament entities, scoped search/validation, API `{id, label}` output
 - **Conditional logic (v1)** — show/hide on root-level sibling fields; save-side enforcement
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
-- **Location rules** — entity, record type, user role, taxonomy term IDs (admin constraints + import/export)
+- **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
@@ -975,7 +976,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 
 **v1 limitations (known):**
 
-- Location rules: no template/parent params yet; record/taxonomy rules need a saved record (ignored on create)
+- Location rules: no template/parent params yet; record/taxonomy/status rules need a saved record (ignored on create)
 - Conditional logic: root-level siblings only — not inside repeaters/groups/flexible content
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)

@@ -118,14 +118,15 @@ class LocationMatcher
         }
 
         return match ($param) {
-            'record_type', 'user_role' => $this->compare($actual, $expected, $operator),
+            'record_type', 'record_status', 'user_role' => $this->compare($actual, $expected, $operator),
             default => $this->matchesDynamicParam($param, $actual, $expected, $operator),
         };
     }
 
     protected function requiresRecord(string $param): bool
     {
-        return $param === 'record_type' || str_starts_with($param, 'taxonomy:');
+        return in_array($param, ['record_type', 'record_status'], true)
+            || str_starts_with($param, 'taxonomy:');
     }
 
     protected function resolveActualValue(string $param, LocationContext $context): mixed
@@ -144,6 +145,10 @@ class LocationMatcher
 
         if ($param === 'record_type') {
             return $context->get('record_type');
+        }
+
+        if ($param === 'record_status') {
+            return $context->get('record_status');
         }
 
         if ($param === 'user_role') {
