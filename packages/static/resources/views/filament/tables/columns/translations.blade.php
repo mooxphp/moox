@@ -36,24 +36,33 @@
     }
 @endphp
 
-<div class="flex items-center justify-center" style="position: relative; height: 28px; min-width: 66px;">
-    @foreach ($visibleFlags as $index => $flag)
-        @php
-            $flagComponent = str_replace(' trashed', '', $flag);
-        @endphp
-        <span style="position: absolute; left: {{ $index * 18 }}px; z-index: {{ 5 + $index }};">
-            <x-dynamic-component
-                :component="$flagComponent"
-                style="width: 24px; height: 24px; border-radius: 50%; background: #fff;"
-            />
-        </span>
-    @endforeach
+{{-- Match default TextColumn cell padding (fi-ta-text) so flags align with sibling columns. --}}
+<div class="fi-ta-text w-full">
+    <div class="flex w-full items-center justify-start" style="min-height: 28px;">
+        @foreach ($visibleFlags as $index => $flag)
+            @php
+                $flagComponent = str_replace(' trashed', '', $flag);
+            @endphp
+            <span
+                class="inline-flex shrink-0"
+                style="margin-left: {{ $index === 0 ? 0 : -6 }}px; z-index: {{ 5 + $index }};"
+            >
+                <x-dynamic-component
+                    :component="$flagComponent"
+                    style="width: 24px; height: 24px; border-radius: 50%; background: #fff;"
+                />
+            </span>
+        @endforeach
 
-    @if ($remainingFlags > 0)
-        <span style="position: absolute; left: {{ (count($visibleFlags) * 18) + 8 }}px; z-index: {{ 5 + $index }};">
-            <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
-                +{{ $remainingFlags }}
-            </div>
-        </span>
-    @endif
+        @if ($remainingFlags > 0)
+            <span
+                class="inline-flex shrink-0"
+                style="margin-left: {{ count($visibleFlags) > 0 ? -6 : 0 }}px; z-index: {{ 5 + count($visibleFlags) }};"
+            >
+                <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
+                    +{{ $remainingFlags }}
+                </div>
+            </span>
+        @endif
+    </div>
 </div>
