@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Connect\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Moox\Connect\Jobs\RunEndpointForItemJob;
@@ -17,28 +18,46 @@ use Moox\Connect\Support\QueueJobStatsService;
 
 final class ApiImportRecordRenderController
 {
+    private const RECENT_RECORDS_PER_ENDPOINT = 50;
+
+    private const EXTERNAL_ROUTE_COUNTS_LIMIT = 20;
+
     public function showParentEndpoint(Request $request, int $parentEndpointId): View
     {
         $parentEndpoint = ApiEndpoint::query()->findOrFail($parentEndpointId);
         $endpointIds = $this->collectEndpointTreeIds((int) $parentEndpoint->id);
 
-        $recordsQuery = ApiImportRecord::query()
-            ->with('apiEndpoint')
-            ->orderByDesc('id');
-
         $parentKey = $request->query('parent_key');
-        if (is_string($parentKey) && $parentKey !== '') {
-            $recordsQuery->where('sync_scope_hash', hash('sha256', $parentKey));
-        } else {
+        $scopeHash = is_string($parentKey) && $parentKey !== ''
+            ? hash('sha256', $parentKey)
+            : null;
+
+        if (! is_string($parentKey) || $parentKey === '') {
             $parentKey = null;
-            $recordsQuery->whereIn('api_endpoint_id', $endpointIds);
         }
 
-        $records = $recordsQuery->get();
-        $overview = $this->buildOverviewFromRecords($records);
-        $stats = $this->buildOverviewStats($overview);
+        $endpointIdsWithRecords = $this->endpointIdsWithRecords($endpointIds, $scopeHash);
+        $apiConnectionId = $this->resolveApiConnectionId($endpointIds, $scopeHash);
+        $recordTotalsByEndpoint = $this->loadRecordTotalsByEndpoint($endpointIds, $scopeHash);
+        $externalRouteCountsByEndpoint = $this->loadExternalRouteCountsByEndpoint(
+            $endpointIdsWithRecords,
+            $scopeHash,
+        );
+        $recentRecords = $this->loadRecentRecordsPerEndpoint($endpointIdsWithRecords, $scopeHash);
+        $overview = $this->buildOverviewFromRecords(
+            $recentRecords,
+            $externalRouteCountsByEndpoint,
+            $recordTotalsByEndpoint,
+            $scopeHash,
+            $apiConnectionId,
+        );
+        $stats = $this->buildOverviewStatsFromQuery(
+            $endpointIdsWithRecords,
+            $scopeHash,
+            $apiConnectionId,
+            $recordTotalsByEndpoint,
+        );
 
-        // dd($overview,$stats,$parentEndpoint );
         return view('connect::api-import-record-parent-overview', [
             'parentKey' => $parentKey,
             'overview' => $overview,
@@ -52,32 +71,50 @@ final class ApiImportRecordRenderController
         ]);
     }
 
-    private function buildOverviewFromRecords(Collection $records): Collection
-    {
+    /**
+     * @param  array<int, array<int, array{
+     *   external_key: string|null,
+     *   route_method: string|null,
+     *   route_path: string|null,
+     *   count: int
+     * }>>  $externalRouteCountsByEndpoint
+     * @param  array<int, int>  $recordTotalsByEndpoint
+     */
+    private function buildOverviewFromRecords(
+        Collection $records,
+        array $externalRouteCountsByEndpoint,
+        array $recordTotalsByEndpoint,
+        ?string $scopeHash,
+        ?int $apiConnectionId,
+    ): Collection {
         $endpointIds = $records->pluck('api_endpoint_id')->filter()->unique()->values()->all();
-        $apiConnectionId = $records->first()?->api_connection_id;
         $queueStats = app(QueueJobStatsService::class)->summarizeRunEndpointForItemJobsByEndpoint();
-
-        $latestLogByEndpoint = collect();
-        if ($apiConnectionId && $endpointIds !== []) {
-            $latestLogByEndpoint = ApiLog::query()
-                ->where('api_connection_id', $apiConnectionId)
-                ->whereIn('endpoint_id', $endpointIds)
-                ->orderByDesc('id')
-                ->get(['id', 'endpoint_id', 'status_code', 'error_message', 'created_at'])
-                ->unique('endpoint_id')
-                ->keyBy('endpoint_id');
-        }
+        $latestLogByEndpoint = $this->loadLatestLogsByEndpoint($endpointIds, $apiConnectionId);
+        $endpoints = ApiEndpoint::query()
+            ->whereIn('id', $endpointIds)
+            ->get(['id', 'name', 'method', 'path'])
+            ->keyBy('id');
 
         return $records->groupBy('api_endpoint_id')->map(
-            function (Collection $endpointRecords, int|string $endpointId) use ($latestLogByEndpoint, $queueStats): array {
+            function (Collection $endpointRecords, int|string $endpointId) use (
+                $latestLogByEndpoint,
+                $queueStats,
+                $externalRouteCountsByEndpoint,
+                $recordTotalsByEndpoint,
+                $scopeHash,
+                $endpoints,
+            ): array {
+                $endpointId = (int) $endpointId;
                 /** @var ApiImportRecord|null $first */
                 $first = $endpointRecords->first();
-                $latestLog = $latestLogByEndpoint->get((int) $endpointId);
+                $endpoint = $endpoints->get($endpointId);
+                $latestLog = $latestLogByEndpoint->get($endpointId);
                 $statusCode = is_object($latestLog) ? (string) ($latestLog->status_code ?? '') : '';
-                $routeMethod = $first?->apiEndpoint?->method;
-                $routePath = $first?->apiEndpoint?->path;
-                $queuedJobsForRoute = (int) ($queueStats['by_endpoint'][(int) $endpointId] ?? 0);
+                $routeMethod = $endpoint?->method ?? $first?->apiEndpoint?->method;
+                $routePath = $endpoint?->path ?? $first?->apiEndpoint?->path;
+                $queuedJobsForRoute = (int) ($queueStats['by_endpoint'][$endpointId] ?? 0);
+                $recordsTotal = (int) ($recordTotalsByEndpoint[$endpointId] ?? $endpointRecords->count());
+                $recordsShown = $endpointRecords->count();
                 /** @var ApiImportRecord|null $latestFailedRecord */
                 $latestFailedRecord = $endpointRecords
                     ->filter(function (ApiImportRecord $record): bool {
@@ -86,33 +123,48 @@ final class ApiImportRecordRenderController
                     ->sortByDesc('id')
                     ->first();
 
-                $externalRouteCounts = $endpointRecords
-                    ->groupBy(function (ApiImportRecord $record): string {
-                        return is_string($record->external_key) && $record->external_key !== ''
-                            ? $record->external_key
-                            : '__null__';
-                    })
-                    ->map(function (Collection $recordsByKey) use ($routeMethod, $routePath): array {
-                        /** @var ApiImportRecord|null $firstByKey */
-                        $firstByKey = $recordsByKey->first();
-                        $externalKey = is_string($firstByKey?->external_key) && $firstByKey->external_key !== ''
-                            ? $firstByKey->external_key
-                            : null;
+                if ($latestFailedRecord === null && $recordsTotal > $recordsShown) {
+                    $latestFailedRecord = ApiImportRecord::query()
+                        ->where('api_endpoint_id', $endpointId)
+                        ->when(
+                            $scopeHash !== null,
+                            fn (Builder $query): Builder => $query->where('sync_scope_hash', $scopeHash),
+                        )
+                        ->where('status', 'failed')
+                        ->orderByDesc('id')
+                        ->first(['id', 'external_key']);
+                }
 
-                        return [
-                            'external_key' => $externalKey,
-                            'route_method' => $routeMethod,
-                            'route_path' => $routePath,
-                            'count' => $recordsByKey->count(),
-                        ];
-                    })
-                    ->sortByDesc('count')
-                    ->values()
-                    ->all();
+                $externalRouteCounts = $externalRouteCountsByEndpoint[$endpointId] ?? [];
+                if ($externalRouteCounts === []) {
+                    $externalRouteCounts = $endpointRecords
+                        ->groupBy(function (ApiImportRecord $record): string {
+                            return is_string($record->external_key) && $record->external_key !== ''
+                                ? $record->external_key
+                                : '__null__';
+                        })
+                        ->map(function (Collection $recordsByKey) use ($routeMethod, $routePath): array {
+                            /** @var ApiImportRecord|null $firstByKey */
+                            $firstByKey = $recordsByKey->first();
+                            $externalKey = is_string($firstByKey?->external_key) && $firstByKey->external_key !== ''
+                                ? $firstByKey->external_key
+                                : null;
+
+                            return [
+                                'external_key' => $externalKey,
+                                'route_method' => $routeMethod,
+                                'route_path' => $routePath,
+                                'count' => $recordsByKey->count(),
+                            ];
+                        })
+                        ->sortByDesc('count')
+                        ->values()
+                        ->all();
+                }
 
                 return [
-                    'endpoint_id' => (int) $endpointId,
-                    'endpoint_name' => $first?->apiEndpoint?->name,
+                    'endpoint_id' => $endpointId,
+                    'endpoint_name' => $endpoint?->name ?? $first?->apiEndpoint?->name,
                     'endpoint_path' => $routePath,
                     'endpoint_method' => $routeMethod,
                     'queue_name' => (string) ($queueStats['queue'] ?? config('queue.default', 'default')),
@@ -127,6 +179,8 @@ final class ApiImportRecordRenderController
                         ? route('connect.import-records.show', ['externalKey' => $latestFailedRecord->external_key])
                         : null,
                     'external_route_counts' => $externalRouteCounts,
+                    'records_total' => $recordsTotal,
+                    'records_truncated' => $recordsTotal > $recordsShown,
                     'records' => $endpointRecords->map(function (ApiImportRecord $record): array {
                         return [
                             'id' => $record->id,
@@ -144,11 +198,8 @@ final class ApiImportRecordRenderController
     }
 
     /**
-     * @param Collection<int, array{
-     *   endpoint_id: int,
-     *   latest_log_ok: bool|null,
-     *   records: array<int, array{id:int, status:string|null}>
-     * }> $overview
+     * @param  array<int, int>  $endpointIds
+     * @param  array<int, int>  $recordTotalsByEndpoint
      * @return array{
      *   endpoints_total: int,
      *   endpoints_ok: int,
@@ -163,39 +214,41 @@ final class ApiImportRecordRenderController
      *   queued_jobs_total: int
      * }
      */
-    private function buildOverviewStats(Collection $overview): array
-    {
+    private function buildOverviewStatsFromQuery(
+        array $endpointIds,
+        ?string $scopeHash,
+        ?int $apiConnectionId,
+        array $recordTotalsByEndpoint,
+    ): array {
         $queueStats = app(QueueJobStatsService::class)->summarizeRunEndpointForItemJobsByEndpoint();
-        $endpointsTotal = $overview->count();
+        $byStatus = $this->scopedRecordsQuery($endpointIds, $scopeHash)
+            ->selectRaw('status, count(*) as c')
+            ->groupBy('status')
+            ->pluck('c', 'status');
+
+        $recordsFailed = (int) ($byStatus['failed'] ?? 0);
+        $recordsProcessed = (int) ($byStatus['processed'] ?? 0);
+        $recordsNew = (int) ($byStatus['new'] ?? 0)
+            + (int) ($byStatus['fetched'] ?? 0)
+            + (int) ($byStatus['update'] ?? 0);
+        $recordsTotal = (int) $byStatus->sum();
+
+        $latestLogByEndpoint = $this->loadLatestLogsByEndpoint($endpointIds, $apiConnectionId);
+        $endpointsTotal = count($recordTotalsByEndpoint);
         $endpointsOk = 0;
         $endpointsError = 0;
         $endpointsUnknown = 0;
-        $recordsTotal = 0;
-        $recordsFailed = 0;
-        $recordsProcessed = 0;
-        $recordsNew = 0;
 
-        foreach ($overview as $endpoint) {
-            $latestLogOk = $endpoint['latest_log_ok'] ?? null;
-            if ($latestLogOk === true) {
-                $endpointsOk++;
-            } elseif ($latestLogOk === false) {
-                $endpointsError++;
-            } else {
+        foreach (array_keys($recordTotalsByEndpoint) as $endpointId) {
+            $latestLog = $latestLogByEndpoint->get((int) $endpointId);
+            $statusCode = is_object($latestLog) ? (string) ($latestLog->status_code ?? '') : '';
+
+            if ($statusCode === '') {
                 $endpointsUnknown++;
-            }
-
-            $records = $endpoint['records'] ?? [];
-            $recordsTotal += count($records);
-            foreach ($records as $record) {
-                $status = strtolower((string) ($record['status'] ?? ''));
-                if ($status === 'failed') {
-                    $recordsFailed++;
-                } elseif ($status === 'processed') {
-                    $recordsProcessed++;
-                } elseif ($status === 'new' || $status === 'fetched' || $status === 'update') {
-                    $recordsNew++;
-                }
+            } elseif (str_starts_with($statusCode, '2')) {
+                $endpointsOk++;
+            } else {
+                $endpointsError++;
             }
         }
 
@@ -212,6 +265,179 @@ final class ApiImportRecordRenderController
             'job_class' => RunEndpointForItemJob::class,
             'queued_jobs_total' => (int) ($queueStats['total'] ?? 0),
         ];
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     */
+    private function scopedRecordsQuery(array $endpointIds, ?string $scopeHash): Builder
+    {
+        $query = ApiImportRecord::query();
+
+        if ($scopeHash !== null) {
+            return $query->where('sync_scope_hash', $scopeHash);
+        }
+
+        return $query->whereIn('api_endpoint_id', $endpointIds);
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     * @return array<int, int>
+     */
+    private function endpointIdsWithRecords(array $endpointIds, ?string $scopeHash): array
+    {
+        return $this->scopedRecordsQuery($endpointIds, $scopeHash)
+            ->distinct()
+            ->orderBy('api_endpoint_id')
+            ->pluck('api_endpoint_id')
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     */
+    private function resolveApiConnectionId(array $endpointIds, ?string $scopeHash): ?int
+    {
+        $apiConnectionId = $this->scopedRecordsQuery($endpointIds, $scopeHash)
+            ->value('api_connection_id');
+
+        return is_numeric($apiConnectionId) ? (int) $apiConnectionId : null;
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     * @return Collection<int, ApiLog>
+     */
+    private function loadLatestLogsByEndpoint(array $endpointIds, ?int $apiConnectionId): Collection
+    {
+        if ($apiConnectionId === null || $endpointIds === []) {
+            return collect();
+        }
+
+        $latestLogIds = ApiLog::query()
+            ->where('api_connection_id', $apiConnectionId)
+            ->whereIn('endpoint_id', $endpointIds)
+            ->selectRaw('MAX(id) as id')
+            ->groupBy('endpoint_id')
+            ->pluck('id');
+
+        if ($latestLogIds->isEmpty()) {
+            return collect();
+        }
+
+        return ApiLog::query()
+            ->whereIn('id', $latestLogIds)
+            ->get(['id', 'endpoint_id', 'status_code', 'error_message', 'created_at'])
+            ->keyBy('endpoint_id');
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     * @return array<int, int>
+     */
+    private function loadRecordTotalsByEndpoint(array $endpointIds, ?string $scopeHash): array
+    {
+        return $this->scopedRecordsQuery($endpointIds, $scopeHash)
+            ->selectRaw('api_endpoint_id, count(*) as c')
+            ->groupBy('api_endpoint_id')
+            ->pluck('c', 'api_endpoint_id')
+            ->map(fn (mixed $count): int => (int) $count)
+            ->all();
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     * @return array<int, array<int, array{
+     *   external_key: string|null,
+     *   route_method: string|null,
+     *   route_path: string|null,
+     *   count: int
+     * }>>
+     */
+    private function loadExternalRouteCountsByEndpoint(array $endpointIds, ?string $scopeHash): array
+    {
+        if ($endpointIds === []) {
+            return [];
+        }
+
+        $endpoints = ApiEndpoint::query()
+            ->whereIn('id', $endpointIds)
+            ->get(['id', 'method', 'path'])
+            ->keyBy('id');
+
+        $result = [];
+
+        foreach ($endpointIds as $endpointId) {
+            $endpointId = (int) $endpointId;
+            $endpoint = $endpoints->get($endpointId);
+            $routeMethod = $endpoint?->method;
+            $routePath = $endpoint?->path;
+
+            $rows = ApiImportRecord::query()
+                ->where('api_endpoint_id', $endpointId)
+                ->when(
+                    $scopeHash !== null,
+                    fn (Builder $query): Builder => $query->where('sync_scope_hash', $scopeHash),
+                )
+                ->selectRaw('external_key, count(*) as c')
+                ->groupBy('external_key')
+                ->orderByDesc('c')
+                ->limit(self::EXTERNAL_ROUTE_COUNTS_LIMIT)
+                ->get();
+
+            $result[$endpointId] = $rows->map(function ($row) use ($routeMethod, $routePath): array {
+                $externalKey = is_string($row->external_key) && $row->external_key !== ''
+                    ? $row->external_key
+                    : null;
+
+                return [
+                    'external_key' => $externalKey,
+                    'route_method' => $routeMethod,
+                    'route_path' => $routePath,
+                    'count' => (int) ($row->c ?? 0),
+                ];
+            })->values()->all();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  array<int, int>  $endpointIds
+     * @return Collection<int, ApiImportRecord>
+     */
+    private function loadRecentRecordsPerEndpoint(array $endpointIds, ?string $scopeHash): Collection
+    {
+        $records = collect();
+
+        foreach ($endpointIds as $endpointId) {
+            $chunk = ApiImportRecord::query()
+                ->with('apiEndpoint')
+                ->where('api_endpoint_id', (int) $endpointId)
+                ->when(
+                    $scopeHash !== null,
+                    fn (Builder $query): Builder => $query->where('sync_scope_hash', $scopeHash),
+                )
+                ->orderByDesc('id')
+                ->limit(self::RECENT_RECORDS_PER_ENDPOINT)
+                ->get([
+                    'id',
+                    'api_endpoint_id',
+                    'api_connection_id',
+                    'external_key',
+                    'status',
+                    'created_at',
+                    'sync_scope_hash',
+                ]);
+
+            $records = $records->concat($chunk);
+        }
+
+        return $records;
     }
 
     /**
@@ -270,11 +496,13 @@ final class ApiImportRecordRenderController
         ApiImportPayloadExtractor $extractor
     ): View {
         $maxChars = $this->clampMaxChars($request->query('max_chars'), 5000, 200000);
-        $maxChunks = $this->clampMaxChunks($request->query('max_chunks'), 20, 200);
+        $maxChunks = $this->clampMaxChunks($request->query('max_chunks'), 100, 200);
 
         $recordPayload = $apiImportRecord->payload ?? [];
         $recordPayloadChunked = $recordPayload['chunked'] ?? null;
         $recordPayloadStrategy = $recordPayload['strategy'] ?? null;
+        $recordPayloadTotalItems = $recordPayload['total_items'] ?? null;
+        $recordPayloadPreview = $recordPayload['preview'] ?? null;
 
         $chunksCountAll = ApiImportPayloadChunk::query()
             ->where('api_import_record_id', $apiImportRecord->id)
@@ -410,6 +638,9 @@ final class ApiImportRecordRenderController
             'recordPayloadPretty' => $this->prettyPrintForView($recordPayload, $maxChars),
             'recordPayloadChunked' => $recordPayloadChunked,
             'recordPayloadStrategy' => $recordPayloadStrategy,
+            'recordPayloadTotalItems' => $recordPayloadTotalItems,
+            'recordPayloadPreviewPretty' => $this->prettyPrintForView($recordPayloadPreview, $maxChars),
+            'maxChunks' => $maxChunks,
             'reconstructedPayloadPretty' => $this->prettyPrintForView($reconstructedPayload, $maxChars),
             'chunksForView' => $chunksForView,
             'truncatedChunks' => $chunksForView !== [] && count($chunksForView) < $chunksCountAll,

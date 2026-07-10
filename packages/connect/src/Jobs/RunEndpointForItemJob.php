@@ -17,22 +17,20 @@ use Illuminate\Support\Str;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
 use Moox\Connect\Models\ApiLog;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Moox\Connect\Support\ApiEndpointRunner;
 use Throwable;
 
 final class RunEndpointForItemJob implements ShouldQueue
 {
     use Batchable;
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
 
-    public int $tries = 5;
-
     public int $maxExceptions = 3;
-
-    public int $timeout = 180;
 
     /**
      * @var array<int, int>
@@ -46,7 +44,7 @@ final class RunEndpointForItemJob implements ShouldQueue
         private ?string $treeRunId = null,
         private bool $throwOnFailure = false,
     ) {
-        $this->onQueue('connect-detail');
+        $this->configureConnectQueue('detail_item', $this->endpointId);
     }
 
     public function retryUntil(): DateTimeInterface

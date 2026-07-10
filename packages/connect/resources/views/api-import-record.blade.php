@@ -45,15 +45,54 @@
             <ul class="meta">
                 <li>payload.chunked={{ is_null($recordPayloadChunked) ? '-' : (string) $recordPayloadChunked }}</li>
                 <li>payload.strategy={{ is_null($recordPayloadStrategy) ? '-' : (string) $recordPayloadStrategy }}</li>
+                @if (!is_null($recordPayloadTotalItems))
+                    <li>payload.total_items={{ $recordPayloadTotalItems }}</li>
+                @endif
                 <li>chunks (all)={{ $chunksCountAll }}</li>
+                <li>chunks shown={{ count($chunksForView) }} / max_chunks={{ $maxChunks }}</li>
                 <li>external_key candidates={{ $externalKeyCandidatesCount }}</li>
             </ul>
+            @if (!empty($recordPayloadPreviewPretty) && $recordPayloadPreviewPretty !== 'null')
+                <details>
+                    <summary class="meta">payload.preview (inline)</summary>
+                    <pre>{{ $recordPayloadPreviewPretty }}</pre>
+                </details>
+            @endif
             @if (!empty($externalKeyCandidatesSample))
                 <div class="meta">sample: <span class="mono">{{ implode(', ', $externalKeyCandidatesSample) }}</span></div>
             @endif
             <div class="meta">max_chars={{ $maxChars }}</div>
         </section>
     </div>
+
+    <section class="card" style="margin-top: 12px;">
+        <h2>Payload</h2>
+        <details open>
+            <summary class="meta">Record payload (stored meta)</summary>
+            <pre>{{ $recordPayloadPretty }}</pre>
+        </details>
+        <details open>
+            <summary class="meta">Reconstructed payload</summary>
+            <pre>{{ $reconstructedPayloadPretty }}</pre>
+        </details>
+        @if (!empty($chunksForView))
+            <h3 style="margin-top: 12px;">Chunks</h3>
+            @if ($truncatedChunks)
+                <div class="meta">Nur {{ count($chunksForView) }} von {{ $chunksCountAll }} Chunks angezeigt. Erhoehe <code>max_chunks</code> fuer mehr.</div>
+            @endif
+            <div class="grid">
+                @foreach ($chunksForView as $chunk)
+                    <article class="card">
+                        <div class="meta">chunk #{{ $chunk['chunk_index'] }} | items={{ $chunk['items_count'] ?? '-' }} | bytes={{ $chunk['bytes_size'] ?? '-' }}</div>
+                        <details>
+                            <summary class="meta">Chunk payload</summary>
+                            <pre>{{ $chunk['payload_pretty'] }}</pre>
+                        </details>
+                    </article>
+                @endforeach
+            </div>
+        @endif
+    </section>
 
     <section class="card" style="margin-top: 12px;">
         <h2>Endpoint Uebersicht</h2>

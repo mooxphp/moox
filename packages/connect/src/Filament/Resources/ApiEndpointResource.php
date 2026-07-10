@@ -128,7 +128,7 @@ class ApiEndpointResource extends BaseItemResource
                                         ->helperText('Optional scope mapping for pruning: internal_field => external_payload_path, e.g. parent_id => Item.ParentId.'),
                                     KeyValue::make('options')
                                         ->label('Options')
-                                        ->helperText('Optionale JSON-Optionen pro Endpoint (z.B. tree.stop_on_http_error => true, sync.purge_after_days => 30).'),
+                                        ->helperText('Optionale JSON-Optionen pro Endpoint. Queue: queue, queue.tries, queue.timeout (überschreibt Connection/Config). Weitere Keys: tree.stop_on_http_error => true, sync.purge_after_days => 30.'),
                                     KeyValue::make('variables')
                                         ->label(__('connect::fields.variables'))
                                         ->helperText('Key-Value für Query-/Body-Parameter dieses Endpoints (z.B. ?page=1&limit=50 oder JSON-Body-Felder).'),

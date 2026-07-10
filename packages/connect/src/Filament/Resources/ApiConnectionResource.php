@@ -159,6 +159,9 @@ class ApiConnectionResource extends BaseItemResource
                                     KeyValue::make('headers')
                                         ->label(__('connect::fields.headers'))
                                         ->helperText('Optionale zusätzliche Header für alle Requests dieser Connection (z.B. Accept, X-Custom-Header).'),
+                                    KeyValue::make('options')
+                                        ->label('Options')
+                                        ->helperText('Optionale JSON-Optionen pro Connection. Queue: queue, queue.tries, queue.timeout (gilt für alle Endpoints dieser Connection, sofern nicht am Endpoint überschrieben).'),
                                     TextInput::make('rate_limit')
                                         ->label(__('connect::fields.rate_limit'))
                                         ->numeric(),

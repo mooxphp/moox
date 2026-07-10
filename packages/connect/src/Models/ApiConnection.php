@@ -33,12 +33,19 @@ class ApiConnection extends Model
         'default_locale',
         'status',
         'notify_on_failure',
+        'options',
     ];
 
     protected $casts = [
         'auth_credentials' => 'encrypted:array',
         'headers' => 'array',
+        'options' => 'array',
     ];
+
+    public function option(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->options ?? [], $key, $default);
+    }
 
     public function logs(): HasMany
     {
