@@ -1,0 +1,88 @@
+{
+    "name": "moox/static",
+    "description": "Static is a lean Moox Entity for translatable reference data without draft or publishing workflow.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/static",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "astrotomic/laravel-translatable": "^11.16",
+        "moox/core": "dev-main",
+        "moox/localization": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Static\\": "src",
+            "Moox\\Static\\Database\\Factories\\": "database/factories",
+            "Moox\\Static\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Static\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Static\\StaticServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Static",
+            "stability": "stable",
+            "type": "entity",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/StaticEntrySeeder.php",
+                "auto_publish": "moox-static-config",
+                "auto_entities": {
+                    "StaticEntry": true
+                },
+                "auto_class": {
+                    "StaticEntry": "Moox\\Static\\Models\\StaticEntry"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-static-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-static-config"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml --bootstrap=tests/bootstrap-arch.php tests/ArchTest.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
