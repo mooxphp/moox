@@ -18,6 +18,8 @@ class StaticTranslationColumn extends TextColumn
 
         $this->label(__('localization::fields.language'))
             ->toggleable()
+            ->alignLeft()
+            ->extraHeaderAttributes(['class' => 'fi-align-start'])
             ->searchable()
             ->state(function ($record): array {
                 $translations = $record->translations()->get();
