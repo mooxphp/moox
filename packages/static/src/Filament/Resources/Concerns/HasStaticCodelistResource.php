@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Static\Filament\Resources\Concerns;
 
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Localization\Models\Localization;
 use Moox\Static\Filament\Tables\Columns\StaticTranslationColumn;
 
 trait HasStaticCodelistResource
 {
     /**
-     * @return list<\Filament\Forms\Components\Component>
+     * @return list<Component>
      */
     protected static function staticCodelistFormFields(): array
     {
@@ -52,32 +54,34 @@ trait HasStaticCodelistResource
         return TextColumn::make('common_name')
             ->label(__('data::fields.common_name'))
             ->searchable(true, function (Builder $query, string $search, $livewire): void {
-                $currentLang = static::resolveCurrentLang($livewire);
-                $query->whereHas('translations', function (Builder $query) use ($search, $currentLang): void {
-                    $query->where('locale', $currentLang)
+                $translationLocale = static::resolveTranslationLocaleForLivewire($livewire);
+                $query->whereHas('translations', function (Builder $query) use ($search, $translationLocale): void {
+                    $query->where('locale', $translationLocale)
                         ->where('common_name', 'like', '%'.$search.'%');
                 });
             })
             ->extraAttributes(function ($record, $livewire): array {
-                $currentLang = static::resolveCurrentLang($livewire);
+                $translationLocale = static::resolveTranslationLocaleForLivewire($livewire);
 
                 return [
-                    'style' => $record->translations()->where('locale', $currentLang)->whereNotNull('common_name')->exists()
+                    'style' => $record->translations()->where('locale', $translationLocale)->whereNotNull('common_name')->exists()
                         ? ''
                         : 'color: var(--gray-500);',
                 ];
             })
             ->getStateUsing(function ($record, $livewire): string {
                 $currentLang = static::resolveCurrentLang($livewire);
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
-                $translation = $record->translations()->where('locale', $currentLang)->first();
+                $translation = $record->translations()->where('locale', $translationLocale)->first();
                 if ($translation && $translation->common_name) {
                     return $translation->common_name;
                 }
 
                 $defaultLocalization = Localization::query()->where('is_default', true)->first();
                 $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
-                $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
+                $defaultTranslationLocale = BaseStaticModel::resolveTranslationLocale($defaultLang);
+                $fallbackTranslation = $record->translations()->where('locale', $defaultTranslationLocale)->first();
 
                 if ($fallbackTranslation && $fallbackTranslation->common_name) {
                     return $fallbackTranslation->common_name.' ('.$defaultLang.')';
@@ -108,9 +112,10 @@ trait HasStaticCodelistResource
                 }
 
                 $currentLang = static::resolveCurrentLang($livewire);
+                $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
-                return $query->whereHas('translations', function (Builder $query) use ($value, $currentLang): void {
-                    $query->where('locale', $currentLang)
+                return $query->whereHas('translations', function (Builder $query) use ($value, $translationLocale): void {
+                    $query->where('locale', $translationLocale)
                         ->where('common_name', 'like', '%'.$value.'%');
                 });
             })
@@ -142,5 +147,10 @@ trait HasStaticCodelistResource
         $defaultLocalization = Localization::query()->where('is_default', true)->first();
 
         return $defaultLocalization->locale_variant ?? app()->getLocale();
+    }
+
+    protected static function resolveTranslationLocaleForLivewire($livewire = null): string
+    {
+        return BaseStaticModel::resolveTranslationLocale(static::resolveCurrentLang($livewire));
     }
 }
