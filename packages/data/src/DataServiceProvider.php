@@ -4,11 +4,24 @@ declare(strict_types=1);
 
 namespace Moox\Data;
 
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Data\Console\Commands\ImportCodelistsCommand;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Moox\Data\Filament\Providers\DataPanelProvider;
+use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\ListStaticAllowanceReasons;
+use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\ListStaticChargeReasons;
+use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ListStaticDocumentTypes;
+use Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages\ListStaticEasSchemes;
+use Moox\Data\Filament\Resources\StaticIcdSchemeResource\Pages\ListStaticIcdSchemes;
+use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\ListStaticIncoterms;
+use Moox\Data\Filament\Resources\StaticPaymentMeanResource\Pages\ListStaticPaymentMeans;
+use Moox\Data\Filament\Resources\StaticUnitResource\Pages\ListStaticUnits;
+use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\ListStaticVatCategories;
+use Moox\Data\Filament\Resources\StaticVatExemptionReasonResource\Pages\ListStaticVatExemptionReasons;
 use Moox\Data\Installers\StaticCodelistsInstaller;
 use Moox\Data\Installers\StaticDataInstaller;
 use Spatie\LaravelPackageTools\Package;
@@ -102,6 +115,26 @@ class DataServiceProvider extends MooxServiceProvider
                 'create_static_eas_schemes_table',
                 'create_static_eas_scheme_translations_table',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            scopes: [
+                ListStaticAllowanceReasons::class,
+                ListStaticChargeReasons::class,
+                ListStaticDocumentTypes::class,
+                ListStaticEasSchemes::class,
+                ListStaticIcdSchemes::class,
+                ListStaticIncoterms::class,
+                ListStaticPaymentMeans::class,
+                ListStaticUnits::class,
+                ListStaticVatCategories::class,
+                ListStaticVatExemptionReasons::class,
+            ],
+        );
     }
 
     /**
