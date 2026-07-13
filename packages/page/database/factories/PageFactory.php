@@ -5,14 +5,17 @@ namespace Moox\Page\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Moox\Page\Models\Page;
-use Moox\Page\Models\PageTranslation;
+use Moox\Page\Support\PageModels;
 
 /**
  * @extends Factory<Page>
  */
 class PageFactory extends Factory
 {
-    protected $model = Page::class;
+    public function modelName(): string
+    {
+        return PageModels::page();
+    }
 
     /**
      * Central locale configuration
@@ -29,6 +32,8 @@ class PageFactory extends Factory
         return [
             // Base model attributes (non-translated)
             'is_active' => $this->faker->boolean(80),
+            'is_startpage' => false,
+            'layout' => $this->faker->randomElement(array_keys(Page::layoutOptions()) ?: ['default']),
 
             'image' => [
                 'url' => $this->faker->imageUrl(800, 600, 'business'),
@@ -36,7 +41,6 @@ class PageFactory extends Factory
                 'caption' => $this->faker->optional()->sentence(),
             ],
             'type' => $this->faker->randomElement(['article', 'page', 'post', 'news', 'tutorial']),
-            'color' => $this->faker->hexColor(),
             'due_at' => $this->faker->optional(0.3)->dateTimeBetween('now', '+30 days'),
             'status' => $this->faker->randomElement(['draft', 'published', 'scheduled', 'waiting', 'private']),
             'custom_properties' => [
@@ -140,6 +144,16 @@ class PageFactory extends Factory
     }
 
     /**
+     * Create a page marked as the startpage.
+     */
+    public function homepage(): static
+    {
+        return $this->state(fn (): array => [
+            'is_startpage' => true,
+        ]);
+    }
+
+    /**
      * Create a published page
      */
     public function published(): static
@@ -151,7 +165,7 @@ class PageFactory extends Factory
         })->afterCreating(function (Page $page) {
             // Override translation status for published
             foreach ($page->translations as $translation) {
-                if (! $translation instanceof PageTranslation) {
+                if (! is_a($translation, PageModels::pageTranslation())) {
                     continue;
                 }
 
@@ -176,7 +190,7 @@ class PageFactory extends Factory
         })->afterCreating(function (Page $page) {
             // Override translation status for scheduled
             foreach ($page->translations as $translation) {
-                if (! $translation instanceof PageTranslation) {
+                if (! is_a($translation, PageModels::pageTranslation())) {
                     continue;
                 }
 

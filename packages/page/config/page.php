@@ -6,6 +6,8 @@ use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Resources\NewsResource;
 use Moox\Page\Models\Page;
+use Moox\Page\Models\PageTranslation;
+use Moox\Page\Support\BlockContentRendererAdapter;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 
@@ -24,6 +26,81 @@ use Moox\Tag\Resources\TagResource;
 |
 */
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Models
+    |--------------------------------------------------------------------------
+    |
+    | Host applications can swap in subclasses via config('page.models.*').
+    |
+    */
+    'models' => [
+        'page' => Page::class,
+        'page_translation' => PageTranslation::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend
+    |--------------------------------------------------------------------------
+    */
+    'frontend' => [
+        'enabled' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layout
+    |--------------------------------------------------------------------------
+    |
+    | The layout stored on pages.layout maps to a Blade view.
+    |
+    */
+    'default_layout' => 'default',
+
+    'layouts' => [
+        'default' => [
+            'label' => 'Standard',
+            'view' => 'default.page',
+        ],
+        'heco-group' => [
+            'label' => 'Heco Group',
+            'view' => 'heco-group.page',
+        ],
+        'heco' => [
+            'label' => 'Heco',
+            'view' => 'heco.page',
+        ],
+        'heltec' => [
+            'label' => 'Heltec',
+            'view' => 'heltec.page',
+        ],
+        'hecoform' => [
+            'label' => 'Hecoform',
+            'view' => 'hecoform.page',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reserved slugs
+    |--------------------------------------------------------------------------
+    */
+    'reserved_slugs' => [
+        'admin',
+        'up',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Content renderer
+    |--------------------------------------------------------------------------
+    |
+    | Class implementing Moox\Page\Contracts\PageContentRenderer.
+    |
+    */
+    'content_renderer' => BlockContentRendererAdapter::class,
+
     'readonly' => false,
     'resources' => [
         'page' => [

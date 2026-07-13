@@ -3,6 +3,7 @@
 namespace Moox\Page\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Moox\BlockEditor\BlockEditorServiceProvider;
 use Moox\Page\PageServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -20,6 +21,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
+            BlockEditorServiceProvider::class,
             PageServiceProvider::class,
         ];
     }

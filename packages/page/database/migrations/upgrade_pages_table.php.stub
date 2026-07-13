@@ -1,0 +1,60 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('pages')) {
+            return;
+        }
+
+        Schema::table('pages', function (Blueprint $table): void {
+            if (! Schema::hasColumn('pages', 'is_startpage') && ! Schema::hasColumn('pages', 'is_homepage')) {
+                $table->boolean('is_startpage')->default(false)->after('is_active');
+            }
+
+            if (! Schema::hasColumn('pages', 'layout')) {
+                $table->string('layout')->default('default')->after('type');
+            }
+
+            if (! Schema::hasColumn('pages', 'custom_properties')) {
+                $table->json('custom_properties')->nullable()->after('status');
+            }
+
+            if (! Schema::hasColumn('pages', 'created_at')) {
+                $table->timestamps();
+            }
+        });
+
+        if (Schema::hasColumn('pages', 'is_homepage') && ! Schema::hasColumn('pages', 'is_startpage')) {
+            Schema::table('pages', function (Blueprint $table): void {
+                $table->renameColumn('is_homepage', 'is_startpage');
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('pages')) {
+            return;
+        }
+
+        Schema::table('pages', function (Blueprint $table): void {
+            if (Schema::hasColumn('pages', 'layout')) {
+                $table->dropColumn('layout');
+            }
+
+            if (Schema::hasColumn('pages', 'is_startpage')) {
+                $table->dropColumn('is_startpage');
+            }
+
+            if (Schema::hasColumn('pages', 'custom_properties')) {
+                $table->dropColumn('custom_properties');
+            }
+        });
+    }
+};

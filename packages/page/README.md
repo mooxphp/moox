@@ -23,7 +23,6 @@ Draft is a publishable Moox Entity that can be used to create and manage Pages, 
 -   Author field (User)
 -   Type field (Select)
 -   Due field (DateTime)
--   Color field (Color)
 -   UUID field (UUID)
 -   ULID field (ULID)
 
@@ -81,7 +80,6 @@ The Draft model comes with several powerful features and capabilities:
 - `data` (json) - Flexible JSON data storage
 - `type` - Content type (Post/Page)
 - `status` - Publication status (draft/waiting/private/scheduled/published)
-- `color` - Custom color coding
 - `due_at` (datetime) - Due date
 - `uuid` - Universally Unique Identifier
 - `ulid` - Universally Unique Lexicographically Sortable Identifier

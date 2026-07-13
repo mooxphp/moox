@@ -89,20 +89,17 @@ test('draft can be created with real data in different languages', function () {
 test('draft can be updated', function () {
     $page = Page::factory()->create([
         'type' => 'article',
-        'color' => '#ff0000',
         'status' => 'draft',
     ]);
 
     $page->update([
         'type' => 'page',
-        'color' => '#00ff00',
         'status' => 'published',
     ]);
 
     $page->refresh();
 
     expect($page->type)->toBe('page');
-    expect($page->color)->toBe('#00ff00');
     expect($page->status)->toBe('published');
 });
 

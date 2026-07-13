@@ -1,0 +1,905 @@
+<?php
+
+declare(strict_types=1);
+
+return array (
+  0 => 
+  array (
+    'page' => 
+    array (
+      'is_active' => 1,
+      'is_startpage' => 0,
+      'type' => 'Page',
+      'layout' => 'heltec',
+      'uuid' => '70895b13-c602-4508-9baa-7b437d6f6bbc',
+      'ulid' => '01KWKJBRQ0Z9GTEGGCKH2XJG0R',
+      'status' => 'draft',
+    ),
+    'translations' => 
+    array (
+      0 => 
+      array (
+        'locale' => 'en_US',
+        'title' => 'heltec gmbh - Anlagenverrohrung und Rohrformbauteile',
+        'slug' => 'heltec-anlagenverrohrung-und-rohrformbauteile',
+        'permalink' => '/pages/heltec-anlagenverrohrung-und-rohrformbauteile',
+        'description' => '<p></p>',
+        'content' => 
+        array (
+          0 => 
+          array (
+            'id' => 'block-1783330361292-34-15fncb',
+            'type' => 'twoColumn',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'children' => 
+            array (
+              0 => 
+              array (
+                'id' => 'col-1783330361292-35-orohbf',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783330361292-36-6853bx',
+                    'type' => 'heading1',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Anlagenverrohrung und Rohrformbauteile',
+                    'createdAt' => '2026-07-06T08:11:14.593Z',
+                    'updatedAt' => '2026-07-06T08:13:22.113Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783330361292-37-wwgk1h',
+                    'type' => 'heading2',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Wir fertigen das',
+                    'createdAt' => '2026-07-06T07:47:03.607Z',
+                    'updatedAt' => '2026-07-06T07:47:23.167Z',
+                  ),
+                ),
+                'updatedAt' => '2026-07-06T08:11:45.454Z',
+              ),
+              1 => 
+              array (
+                'id' => 'col-1783330361292-38-rcfhys',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783330361292-39-hz7n7t',
+                    'type' => 'paragraph',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '<span>heltec ist Ihr zuverlässiger Partner für hochwertige Edelstahlkonstruktionen, Anlagenverrohrung, Rohrformstücke, Lohnfertigung und individuelle Sonderbauteile.</span>',
+                    'createdAt' => '2026-07-03T08:12:26.463Z',
+                    'updatedAt' => '2026-07-03T08:12:28.795Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783330361292-40-lw8ptl',
+                    'type' => 'paragraph',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '<span>Mit modernster Fertigungstechnik, langjähriger Erfahrung und höchsten Qualitätsstandards entwickeln und fertigen wir maßgeschneiderte Lösungen für anspruchsvolle industrielle Anwendungen. Von der ersten Idee über die Konstruktion bis zur fertigen Komponente erhalten Sie bei uns alles aus einer Hand.</span>',
+                    'createdAt' => '2026-07-03T08:12:28.785Z',
+                    'updatedAt' => '2026-07-03T08:12:36.978Z',
+                  ),
+                  2 => 
+                  array (
+                    'id' => 'block-1783330361292-41-r7t68r',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Mehr erfahren →',
+                    'linkUrl' => 'https://google.de',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'Mehr erfahren →',
+                    'createdAt' => '2026-07-03T08:12:45.802Z',
+                    'linkTarget' => '_blank',
+                  ),
+                ),
+                'updatedAt' => '2026-07-03T08:12:28.785Z',
+              ),
+            ),
+            'createdAt' => '2026-07-03T08:11:53.147Z',
+            'updatedAt' => '2026-07-06T08:11:48.397Z',
+          ),
+          1 => 
+          array (
+            'id' => 'block-1783330361292-42-0ngf0f',
+            'type' => 'image',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'imageAlt' => 'hero.jpg',
+            'imageUrl' => 'http://web.test/storage/media/3722/hero.jpg',
+            'createdAt' => '2026-07-03T08:13:46.530Z',
+            'updatedAt' => '2026-07-03T08:14:18.435Z',
+            'imageTitle' => 'hero.jpg',
+            'media_usables' => 
+            array (
+              0 => 
+              array (
+                'media_id' => '3722',
+                'media_usable_id' => '',
+                'media_usable_type' => '',
+              ),
+            ),
+          ),
+          2 => 
+          array (
+            'id' => '1783339777237',
+            'type' => 'paragraph',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => 'Präzision, Qualität und Zuverlässigkeit stehen bei heltec im Mittelpunkt. Zu unseren Kernleistungen gehören:',
+            'createdAt' => '2026-07-06T12:09:37.235Z',
+            'updatedAt' => '2026-07-06T12:10:11.276Z',
+          ),
+          3 => 
+          array (
+            'id' => 'block-1783330361292-44-dijg3o',
+            'type' => 'twoColumn',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'children' => 
+            array (
+              0 => 
+              array (
+                'id' => 'col-1783330361292-45-30xvvu',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783330361292-46-8gkpwt',
+                    'type' => 'heading2',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Geschäftsfelder',
+                    'createdAt' => '2026-07-06T07:46:10.474Z',
+                    'updatedAt' => '2026-07-06T07:46:17.299Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783330361292-47-ns7tnc',
+                    'type' => 'list',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '',
+                    'listData' => 
+                    array (
+                      'items' => 
+                      array (
+                        0 => 
+                        array (
+                          'id' => 'item-1783330361292-48-1efr5c',
+                          'text' => 'Anlagenverrohrung',
+                        ),
+                        1 => 
+                        array (
+                          'id' => 'item-1783330361292-49-e9xhg0',
+                          'text' => 'Rohrformstücke',
+                        ),
+                        2 => 
+                        array (
+                          'id' => 'item-1783330361292-50-w0dfk9',
+                          'text' => 'Lohnfertigung',
+                        ),
+                        3 => 
+                        array (
+                          'id' => 'item-1783330361292-51-112ka4',
+                          'text' => 'Sonderbauteile aus Edelstahl',
+                        ),
+                      ),
+                      'listStyle' => 'unordered',
+                      'lastItemIdCounter' => 1,
+                    ),
+                    'createdAt' => '2026-07-03T13:02:05.888Z',
+                    'updatedAt' => '2026-07-03T13:02:41.355Z',
+                  ),
+                ),
+                'updatedAt' => '2026-07-06T07:46:01.433Z',
+              ),
+              1 => 
+              array (
+                'id' => 'col-1783330361292-52-z8evi7',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783330361292-53-89xqux',
+                    'type' => 'heading2',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Fertigungsprozess',
+                    'createdAt' => '2026-07-06T07:46:20.510Z',
+                    'updatedAt' => '2026-07-06T07:46:27.558Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783330361292-54-fqq9kp',
+                    'type' => 'list',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '',
+                    'listData' => 
+                    array (
+                      'items' => 
+                      array (
+                        0 => 
+                        array (
+                          'id' => 'item-1783330361292-55-qpgd3q',
+                          'text' => 'Sägen',
+                        ),
+                        1 => 
+                        array (
+                          'id' => 'item-1783330361292-56-4nbcws',
+                          'text' => 'Aushalsen',
+                        ),
+                        2 => 
+                        array (
+                          'id' => 'item-1783330361292-57-91nleb',
+                          'text' => 'Schweißen',
+                        ),
+                        3 => 
+                        array (
+                          'id' => 'item-1783330361292-58-2s6c1d',
+                          'text' => 'Beizen',
+                        ),
+                      ),
+                      'listStyle' => 'unordered',
+                      'lastItemIdCounter' => 5,
+                    ),
+                    'createdAt' => '2026-07-03T13:02:55.845Z',
+                    'updatedAt' => '2026-07-03T13:03:24.211Z',
+                  ),
+                ),
+                'updatedAt' => '2026-07-06T07:46:05.678Z',
+              ),
+            ),
+            'createdAt' => '2026-07-03T09:47:51.990Z',
+            'updatedAt' => '2026-07-06T07:46:33.035Z',
+          ),
+          4 => 
+          array (
+            'id' => 'block-1783330361292-59-rn7mbd',
+            'type' => 'paragraph',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => 'Durch qualifizierte Fachkräfte und moderne Fertigungsverfahren gewährleisten wir langlebige, passgenaue und wirtschaftliche Lösungen für unterschiedlichste Branchen.',
+            'createdAt' => '2026-07-06T07:48:17.670Z',
+            'updatedAt' => '2026-07-06T07:48:49.678Z',
+          ),
+          5 => 
+          array (
+            'id' => 'block-1783330361292-60-4m650b',
+            'type' => 'paragraph',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => 'Dank der engen Zusammenarbeit mit unserem benachbarten Schwesterunternehmen hecoform und unserer Muttergesellschaft, der heco GmbH, können wir die Leistungen komplettieren:',
+            'createdAt' => '2026-07-06T07:48:49.654Z',
+            'updatedAt' => '2026-07-06T07:48:58.640Z',
+          ),
+          6 => 
+          array (
+            'id' => 'block-1783330361292-61-fxf1m6',
+            'type' => 'list',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'listData' => 
+            array (
+              'items' => 
+              array (
+                0 => 
+                array (
+                  'id' => 'item-1783330361292-62-ghao7m',
+                  'text' => 'Drehen',
+                ),
+                1 => 
+                array (
+                  'id' => 'item-1783330361292-63-jzk8p7',
+                  'text' => 'Fräsen',
+                ),
+                2 => 
+                array (
+                  'id' => 'item-1783330361292-64-lcxegd',
+                  'text' => 'Bohren',
+                ),
+                3 => 
+                array (
+                  'id' => 'item-1783330361292-65-9284l5',
+                  'text' => 'Pressen',
+                ),
+                4 => 
+                array (
+                  'id' => 'item-1783330361292-66-es6cg0',
+                  'text' => 'Umformen',
+                ),
+              ),
+              'listStyle' => 'unordered',
+              'lastItemIdCounter' => 1,
+            ),
+            'createdAt' => '2026-07-03T10:29:16.774Z',
+            'updatedAt' => '2026-07-03T10:30:01.445Z',
+          ),
+        ),
+        'translation_status' => 
+        \Moox\Core\Enums\TranslationStatus::PUBLISHED,
+        'published_at' => 
+        \Illuminate\Support\Carbon::__set_state(array(
+           'endOfTime' => false,
+           'startOfTime' => false,
+           'constructedObjectId' => '0000000000000ae00000000000000000',
+           'clock' => NULL,
+           'localMonthsOverflow' => NULL,
+           'localYearsOverflow' => NULL,
+           'localStrictModeEnabled' => NULL,
+           'localHumanDiffOptions' => NULL,
+           'localToStringFormat' => NULL,
+           'localSerializer' => NULL,
+           'localMacros' => NULL,
+           'localGenericMacros' => NULL,
+           'localFormatFunction' => NULL,
+           'localTranslator' => NULL,
+           'dumpProperties' => 
+          array (
+            0 => 'date',
+            1 => 'timezone_type',
+            2 => 'timezone',
+          ),
+           'dumpLocale' => NULL,
+           'dumpDateProperties' => NULL,
+           'date' => '2026-07-06 12:10:19.000000',
+           'timezone_type' => 3,
+           'timezone' => 'UTC',
+        )),
+      ),
+    ),
+  ),
+  1 => 
+  array (
+    'page' => 
+    array (
+      'is_active' => 1,
+      'is_startpage' => 0,
+      'type' => 'Page',
+      'layout' => 'heco',
+      'uuid' => 'acd00958-5bb9-4735-b7bb-f47d7281b539',
+      'ulid' => '01KWVPF4RFJ1VYR4723SKCZPPQ',
+      'status' => 'draft',
+    ),
+    'translations' => 
+    array (
+      0 => 
+      array (
+        'locale' => 'en_US',
+        'title' => 'heco',
+        'slug' => 'heco',
+        'permalink' => '/pages/heco',
+        'description' => '<p></p>',
+        'content' => 
+        array (
+          0 => 
+          array (
+            'id' => 'block-1783930640921-11-7v3ew6',
+            'type' => 'twoColumn',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'children' => 
+            array (
+              0 => 
+              array (
+                'id' => 'col-1783930640922-12-oudihr',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783930640922-13-9gufxr',
+                    'type' => 'heading1',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '<div>Rohrverbindungen</div><div>aus Edelstahl</div>',
+                    'createdAt' => '2026-07-06T12:26:29.693Z',
+                    'updatedAt' => '2026-07-09T09:01:43.000Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783930640922-14-u39tay',
+                    'type' => 'heading2',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => '<div>Wir verbinden das</div>',
+                    'createdAt' => '2026-07-06T12:26:39.164Z',
+                    'updatedAt' => '2026-07-06T12:26:43.698Z',
+                  ),
+                ),
+              ),
+              1 => 
+              array (
+                'id' => 'col-1783930640922-15-ecs1rg',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783930640922-16-5ufoq5',
+                    'type' => 'paragraph',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Wir sind Ihre Spezialisten für Fittings, Armaturen und alles Ergänzende. Mit großem technischem Know-how, ehrlicher Beratung und echter Erreichbarkeit bieten wir seit 1978 genau das, was Sie benötigen: Ein breites und tiefes Sortiment an hochwertigsten und geprüften Produkten, das digital und zeitnah verfügbar ist. Vertrauen Sie auf Erfahrung, die verbindet.',
+                    'createdAt' => '2026-07-06T12:26:57.281Z',
+                    'updatedAt' => '2026-07-06T12:27:01.486Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783930640922-17-24s5t2',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Mehr erfahren →',
+                    'linkUrl' => 'https://google.de',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'Mehr erfahren →',
+                    'createdAt' => '2026-07-06T12:27:14.021Z',
+                    'linkTarget' => '_blank',
+                  ),
+                ),
+              ),
+            ),
+            'createdAt' => '2026-07-06T12:26:26.950Z',
+            'updatedAt' => '2026-07-06T12:27:14.021Z',
+          ),
+          1 => 
+          array (
+            'id' => 'block-1783930640922-18-peseu6',
+            'type' => 'image',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'imageAlt' => 'hero_1.jpg',
+            'imageUrl' => 'https://web.test/storage/media/3723/hero_1.jpg',
+            'createdAt' => '2026-07-06T12:27:44.858Z',
+            'updatedAt' => '2026-07-06T12:28:06.015Z',
+            'imageTitle' => 'hero_1.jpg',
+            'media_usables' => 
+            array (
+              0 => 
+              array (
+                'media_id' => '3723',
+                'media_usable_id' => '',
+                'media_usable_type' => '',
+              ),
+            ),
+          ),
+          2 => 
+          array (
+            'id' => 'block-1783930640922-19-kxvjjr',
+            'type' => 'video',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'videoUrl' => 'https://web.test/storage/media/3724/heco-film-web.mp4',
+            'createdAt' => '2026-07-06T14:13:41.394Z',
+            'updatedAt' => '2026-07-06T14:13:59.253Z',
+            'videoTitle' => 'heco-film-web.mp4',
+            'videoPoster' => 'https://web.test/storage/media/3724/heco-film-web.mp4',
+          ),
+          3 => 
+          array (
+            'id' => 'block-1783930640922-20-ur38va',
+            'type' => 'video',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'videoUrl' => 'https://web.test/storage/media/3725/Big_Buck_Bunny_720_10s_1MB.mp4',
+            'createdAt' => '2026-07-07T12:14:45.882Z',
+            'updatedAt' => '2026-07-07T12:14:53.403Z',
+            'videoTitle' => 'Big_Buck_Bunny_720_10s_1MB.mp4',
+            'videoPoster' => '',
+          ),
+        ),
+        'translation_status' => 
+        \Moox\Core\Enums\TranslationStatus::PUBLISHED,
+        'published_at' => 
+        \Illuminate\Support\Carbon::__set_state(array(
+           'endOfTime' => false,
+           'startOfTime' => false,
+           'constructedObjectId' => '0000000000000ae30000000000000000',
+           'clock' => NULL,
+           'localMonthsOverflow' => NULL,
+           'localYearsOverflow' => NULL,
+           'localStrictModeEnabled' => NULL,
+           'localHumanDiffOptions' => NULL,
+           'localToStringFormat' => NULL,
+           'localSerializer' => NULL,
+           'localMacros' => NULL,
+           'localGenericMacros' => NULL,
+           'localFormatFunction' => NULL,
+           'localTranslator' => NULL,
+           'dumpProperties' => 
+          array (
+            0 => 'date',
+            1 => 'timezone_type',
+            2 => 'timezone',
+          ),
+           'dumpLocale' => NULL,
+           'dumpDateProperties' => NULL,
+           'date' => '2026-07-13 08:17:34.000000',
+           'timezone_type' => 3,
+           'timezone' => 'UTC',
+        )),
+      ),
+    ),
+  ),
+  2 => 
+  array (
+    'page' => 
+    array (
+      'is_active' => 1,
+      'is_startpage' => 0,
+      'type' => 'Page',
+      'layout' => 'hecoform',
+      'uuid' => '0be26a17-fdd5-43d0-9895-540bc5eb49b9',
+      'ulid' => '01KXD6ERB7CA60KDW6E0KYT5TS',
+      'status' => 'draft',
+    ),
+    'translations' => 
+    array (
+      0 => 
+      array (
+        'locale' => 'en_US',
+        'title' => 'hecoform - Serienfertigung aus Edelstahl',
+        'slug' => 'hecoform-serienfertigung-aus-edelstahl',
+        'permalink' => '/pages/hecoform-serienfertigung-aus-edelstahl',
+        'description' => '<p></p>',
+        'content' => 
+        array (
+          0 => 
+          array (
+            'id' => 'block-1783930671342-10-4cbvge',
+            'type' => 'twoColumn',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'children' => 
+            array (
+              0 => 
+              array (
+                'id' => 'col-1783930671342-11-nbn8q5',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783930671342-12-ogexjo',
+                    'type' => 'heading1',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Serienfertigung<br>aus Edelstahl',
+                    'createdAt' => '2026-07-13T07:33:53.287Z',
+                    'updatedAt' => '2026-07-13T07:33:58.589Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783930671342-13-32hawi',
+                    'type' => 'heading2',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Wir produzieren das',
+                    'createdAt' => '2026-07-13T07:34:08.026Z',
+                    'updatedAt' => '2026-07-13T07:34:11.993Z',
+                  ),
+                ),
+              ),
+              1 => 
+              array (
+                'id' => 'col-1783930671342-14-3ic4yg',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783930671342-15-kqcj9q',
+                    'type' => 'paragraph',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Wir sind Ihre Spezialisten für Fittings, Armaturen und alles Ergänzende. Mit großem technischem Know-how, ehrlicher Beratung und echter Erreichbarkeit bieten wir seit 1978 genau das, was Sie benötigen: Ein breites und tiefes Sortiment an hochwertigsten und geprüften Produkten, das digital und zeitnah verfügbar ist. Vertrauen Sie auf Erfahrung, die verbindet.',
+                    'createdAt' => '2026-07-13T07:34:19.793Z',
+                    'updatedAt' => '2026-07-13T07:34:21.883Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783930671342-16-c0w3n3',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Mehr erfahren →',
+                    'linkUrl' => 'https://google.de',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'Mehr erfahren →',
+                    'createdAt' => '2026-07-13T07:34:30.157Z',
+                    'linkTarget' => '_blank',
+                  ),
+                ),
+              ),
+            ),
+            'createdAt' => '2026-07-13T07:33:50.708Z',
+            'updatedAt' => '2026-07-13T07:34:30.157Z',
+          ),
+          1 => 
+          array (
+            'id' => 'block-1783930671342-17-f1gyys',
+            'type' => 'image',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'imageAlt' => 'hero_1.jpg',
+            'imageUrl' => 'https://web.test/storage/media/3723/hero_1.jpg',
+            'createdAt' => '2026-07-13T07:35:11.020Z',
+            'updatedAt' => '2026-07-13T07:35:17.409Z',
+            'imageTitle' => 'hero_1.jpg',
+            'media_usables' => 
+            array (
+              0 => 
+              array (
+                'media_id' => '3723',
+                'media_usable_id' => '',
+                'media_usable_type' => '',
+              ),
+            ),
+          ),
+          2 => 
+          array (
+            'id' => 'block-1783930671342-18-y1b48v',
+            'type' => 'dynamicFeed',
+            'view' => 'card',
+            'limit' => 3,
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'filters' => 
+            array (
+              'category_id' => '103',
+            ),
+            'orderBy' => 'published_at',
+            'createdAt' => '2026-07-13T07:35:33.573Z',
+            'sourceKey' => 'news',
+            'updatedAt' => '2026-07-13T07:35:45.749Z',
+            'orderDirection' => 'desc',
+          ),
+        ),
+        'translation_status' => 
+        \Moox\Core\Enums\TranslationStatus::PUBLISHED,
+        'published_at' => 
+        \Illuminate\Support\Carbon::__set_state(array(
+           'endOfTime' => false,
+           'startOfTime' => false,
+           'constructedObjectId' => '0000000000000cc20000000000000000',
+           'clock' => NULL,
+           'localMonthsOverflow' => NULL,
+           'localYearsOverflow' => NULL,
+           'localStrictModeEnabled' => NULL,
+           'localHumanDiffOptions' => NULL,
+           'localToStringFormat' => NULL,
+           'localSerializer' => NULL,
+           'localMacros' => NULL,
+           'localGenericMacros' => NULL,
+           'localFormatFunction' => NULL,
+           'localTranslator' => NULL,
+           'dumpProperties' => 
+          array (
+            0 => 'date',
+            1 => 'timezone_type',
+            2 => 'timezone',
+          ),
+           'dumpLocale' => NULL,
+           'dumpDateProperties' => NULL,
+           'date' => '2026-07-13 08:17:56.000000',
+           'timezone_type' => 3,
+           'timezone' => 'UTC',
+        )),
+        'author_id' => 1,
+        'author_type' => 'App\\Models\\User',
+      ),
+    ),
+  ),
+  3 => 
+  array (
+    'page' => 
+    array (
+      'is_active' => 1,
+      'is_startpage' => 1,
+      'type' => 'Page',
+      'layout' => 'default',
+      'uuid' => '00e5746b-8fa2-4144-a7e1-d1c64a25fd45',
+      'ulid' => '01KXDCJ0S49ND1F5G230DN49XV',
+      'status' => 'draft',
+    ),
+    'translations' => 
+    array (
+      0 => 
+      array (
+        'locale' => 'en_US',
+        'title' => 'Startseite',
+        'slug' => 'startseite',
+        'permalink' => '/startseite',
+        'description' => '<p>Willkommen auf der Startseite.</p>',
+        'content' => 
+        array (
+          0 => 
+          array (
+            'id' => 'block-1783935624484-10-2uiw8f',
+            'type' => 'twoColumn',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'children' => 
+            array (
+              0 => 
+              array (
+                'id' => 'col-1783935624484-11-qj24n1',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783935624484-12-tnshk1',
+                    'type' => 'heading1',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'HTML Preview<br>der heco group',
+                    'createdAt' => '2026-07-13T09:36:46.716Z',
+                    'updatedAt' => '2026-07-13T09:47:26.277Z',
+                  ),
+                ),
+              ),
+              1 => 
+              array (
+                'id' => 'col-1783935624484-13-zg9l31',
+                'type' => 'column',
+                'children' => 
+                array (
+                  0 => 
+                  array (
+                    'id' => 'block-1783935624484-14-wuskz1',
+                    'type' => 'paragraph',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'Dies ist ein HTML Preview für die heco group. Hier geht es zu den Websites:',
+                    'createdAt' => '2026-07-13T09:37:06.994Z',
+                    'updatedAt' => '2026-07-13T09:37:09.316Z',
+                  ),
+                  1 => 
+                  array (
+                    'id' => 'block-1783935624484-15-bt6o19',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'heco group →',
+                    'linkUrl' => 'https://web.test/ heco',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'heco group →',
+                    'createdAt' => '2026-07-13T09:37:26.452Z',
+                    'linkTarget' => '_blank',
+                  ),
+                  2 => 
+                  array (
+                    'id' => 'block-1783935624484-16-jfstjk',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'heltec GmbH →',
+                    'linkUrl' => 'https://web.test/ heltec-anlagenverrohrung-und-rohrformbauteile',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'heltec GmbH →',
+                    'createdAt' => '2026-07-13T09:38:48.191Z',
+                    'linkTarget' => '_blank',
+                  ),
+                  3 => 
+                  array (
+                    'id' => 'block-1783935624484-17-pfepz5',
+                    'type' => 'link',
+                    'style' => '',
+                    'classes' => '',
+                    'content' => 'hecoform GmbH →',
+                    'linkUrl' => 'https://web.test/ hecoform-serienfertigung-aus-edelstahl',
+                    'children' => 
+                    array (
+                    ),
+                    'linkText' => 'hecoform GmbH →',
+                    'createdAt' => '2026-07-13T09:39:38.986Z',
+                    'linkTarget' => '_blank',
+                  ),
+                ),
+                'updatedAt' => '2026-07-13T09:37:18.129Z',
+              ),
+            ),
+            'createdAt' => '2026-07-13T09:36:44.336Z',
+            'updatedAt' => '2026-07-13T09:39:38.986Z',
+          ),
+          1 => 
+          array (
+            'id' => 'block-1783935624484-18-2wq6v9',
+            'type' => 'video',
+            'style' => '',
+            'htmlId' => '',
+            'classes' => '',
+            'content' => '',
+            'videoUrl' => 'https://web.test/storage/media/3724/heco-film-web.mp4',
+            'createdAt' => '2026-07-13T09:40:02.932Z',
+            'updatedAt' => '2026-07-13T09:40:08.417Z',
+            'videoTitle' => 'heco-film-web.mp4',
+            'videoPoster' => '',
+          ),
+        ),
+        'translation_status' => 
+        \Moox\Core\Enums\TranslationStatus::PUBLISHED,
+        'published_at' => 
+        \Illuminate\Support\Carbon::__set_state(array(
+           'endOfTime' => false,
+           'startOfTime' => false,
+           'constructedObjectId' => '0000000000000ae10000000000000000',
+           'clock' => NULL,
+           'localMonthsOverflow' => NULL,
+           'localYearsOverflow' => NULL,
+           'localStrictModeEnabled' => NULL,
+           'localHumanDiffOptions' => NULL,
+           'localToStringFormat' => NULL,
+           'localSerializer' => NULL,
+           'localMacros' => NULL,
+           'localGenericMacros' => NULL,
+           'localFormatFunction' => NULL,
+           'localTranslator' => NULL,
+           'dumpProperties' => 
+          array (
+            0 => 'date',
+            1 => 'timezone_type',
+            2 => 'timezone',
+          ),
+           'dumpLocale' => NULL,
+           'dumpDateProperties' => NULL,
+           'date' => '2026-07-13 09:47:27.000000',
+           'timezone_type' => 3,
+           'timezone' => 'UTC',
+        )),
+      ),
+    ),
+  ),
+);

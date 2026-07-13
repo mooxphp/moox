@@ -4,8 +4,8 @@ namespace Moox\Page\Resources\PageResource\Pages;
 
 use Moox\Core\Entities\Items\Draft\Pages\BaseListDrafts;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
-use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource;
+use Moox\Page\Support\PageModels;
 
 class ListPages extends BaseListDrafts
 {
@@ -15,6 +15,6 @@ class ListPages extends BaseListDrafts
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('page.resources.page.tabs', Page::class);
+        return $this->getDynamicTabs('page.resources.page.tabs', PageModels::page());
     }
 }

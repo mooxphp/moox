@@ -2,10 +2,9 @@
 
 namespace Moox\Page\Resources;
 
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -16,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
+use Moox\BlockEditor\Forms\Components\BlockEditor;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
@@ -26,6 +26,7 @@ use Moox\Page\Resources\PageResource\Pages\CreatePage;
 use Moox\Page\Resources\PageResource\Pages\EditPage;
 use Moox\Page\Resources\PageResource\Pages\ListPages;
 use Moox\Page\Resources\PageResource\Pages\ViewPage;
+use Moox\Page\Support\PageModels;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class PageResource extends BaseDraftResource
@@ -34,6 +35,11 @@ class PageResource extends BaseDraftResource
     use HasResourceTaxonomy;
 
     protected static ?string $model = Page::class;
+
+    public static function getModel(): string
+    {
+        return PageModels::page();
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
 
@@ -75,7 +81,7 @@ class PageResource extends BaseDraftResource
                                 fieldTitle: 'title',
                                 fieldSlug: 'slug',
                                 fieldPermalink: 'permalink',
-                                urlPathEntityType: 'drafts',
+                                urlPathEntityType: null,
                                 slugRuleUniqueParameters: [
                                     'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
                                         $locale = $livewire->lang;
@@ -93,7 +99,7 @@ class PageResource extends BaseDraftResource
 
                                         return $rule;
                                     },
-                                    'table' => 'draft_translations',
+                                    'table' => 'page_translations',
                                     'column' => 'slug',
                                 ]
                             ),
@@ -101,10 +107,12 @@ class PageResource extends BaseDraftResource
                                 ->label(__('core::core.image')),
                             Toggle::make('is_active')
                                 ->label(__('core::core.active')),
+                            static::getHomepageToggle(),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
-                            MarkdownEditor::make('content')
-                                ->label(__('core::core.content')),
+                            BlockEditor::make('content')
+                                ->label(__('core::core.content'))
+                                ->columnSpanFull(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -119,6 +127,7 @@ class PageResource extends BaseDraftResource
                             Section::make('')
                                 ->schema([
                                     static::getTypeSelect(),
+                                    static::getLayoutSelect(),
                                     static::getTranslationStatusSelect(),
                                     static::getPublishDateField(),
                                     static::getUnpublishDateField(),
@@ -130,8 +139,6 @@ class PageResource extends BaseDraftResource
                                     static::getAuthorSelect(),
                                     DateTimePicker::make('due_at')
                                         ->label(__('core::core.due')),
-                                    ColorPicker::make('color')
-                                        ->label(__('core::core.color')),
                                 ]),
                             Section::make('')
                                 ->schema([
@@ -160,10 +167,18 @@ class PageResource extends BaseDraftResource
             ->columns([
                 static::getTitleColumn(),
                 static::getSlugColumn(),
+                TextColumn::make('layout')
+                    ->label('Layout')
+                    ->formatStateUsing(fn (?string $state): string => Page::layoutOptions()[$state] ?? (string) $state)
+                    ->sortable(),
                 TranslationColumn::make('translations.locale'),
                 IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
+                    ->sortable(),
+                IconColumn::make('is_startpage')
+                    ->boolean()
+                    ->label('Startseite')
                     ->sortable(),
                 TextColumn::make('description')
                     ->limit(50)
@@ -196,6 +211,9 @@ class PageResource extends BaseDraftResource
                 SelectFilter::make('type')
                     ->label(__('core::core.type'))
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
+                SelectFilter::make('layout')
+                    ->label('Layout')
+                    ->options(Page::layoutOptions()),
                 ...static::getTaxonomyFilters(),
                 static::getLocaleFilter(),
             ])->deferFilters(false)
@@ -212,8 +230,19 @@ class PageResource extends BaseDraftResource
         ];
     }
 
-    public static function setCurrentTab(?string $tab): void
+    protected static function getLayoutSelect(): Select
     {
-        static::$currentTab = $tab;
+        return Select::make('layout')
+            ->label('Layout')
+            ->options(Page::layoutOptions())
+            ->default('default')
+            ->required();
+    }
+
+    protected static function getHomepageToggle(): Toggle
+    {
+        return Toggle::make('is_startpage')
+            ->label('Startseite')
+            ->helperText('Es kann immer nur eine Seite als Startseite festgelegt werden.');
     }
 }

@@ -7,9 +7,13 @@ use Moox\Core\Enums\TranslationStatus;
 
 class PageTranslation extends BaseDraftTranslationModel
 {
-    protected $casts = [
-        'translation_status' => TranslationStatus::class,
-    ];
+    protected function getCustomCasts(): array
+    {
+        return [
+            'content' => 'array',
+            'translation_status' => TranslationStatus::class,
+        ];
+    }
 
     /**
      * Get custom fillable for Draft translations

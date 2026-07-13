@@ -11,7 +11,7 @@ class PagePlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'draft';
+        return 'page';
     }
 
     public function register(Panel $panel): void

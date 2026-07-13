@@ -4,181 +4,119 @@ declare(strict_types=1);
 
 namespace Moox\Page\Database\Seeders;
 
-use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Moox\Demo\Seeding\FormatsFakerLocaleText;
-use Moox\Demo\Seeding\LoadsImageMediaPool;
-use Moox\Demo\Seeding\ReportsMooxSeederProgress;
-use Moox\Demo\Seeding\RunsMooxDemoAssets;
-use Moox\Demo\Seeding\SeedingConfig;
-use Moox\Demo\Seeding\SeedOutput;
-use Moox\Page\Models\Page;
+use Illuminate\Support\Facades\Schema;
+use Moox\Page\Support\PageModels;
 
 class PageSeeder extends Seeder
 {
-    use FormatsFakerLocaleText;
-    use LoadsImageMediaPool;
-    use ReportsMooxSeederProgress;
-
-    public const DEMO_SLUG_PREFIX = 'demo-page';
-
-    public const DEFAULT_PAGE_COUNT = 100;
-
-    /** Fallback when moox/demo is not installed; otherwise {@see locales()}. */
-    public const LOCALES = ['cs_CZ', 'en_US', 'de_DE', 'pl_PL'];
-
-    /** @var list<string> */
-    private const TYPES = ['article', 'page', 'post', 'news', 'tutorial'];
-
-    /** @var list<string> */
-    private const TRANSLATION_STATUSES = ['draft', 'waiting', 'private', 'scheduled', 'published'];
-
-    private const MEDIA_ATTACH_PROBABILITY = 0.75;
-
-    private const PROGRESS_LOG_EVERY = 100;
-
     public function run(): void
     {
-        $this->seed();
+        $dataPath = __DIR__.'/data/pages.php';
 
-        if (class_exists(RunsMooxDemoAssets::class)) {
-            RunsMooxDemoAssets::invoke($this);
-        }
-    }
-
-    protected function seed(): void
-    {
-        if (! $this->assertRequiredLocalizations($this->locales())) {
+        if (! is_file($dataPath)) {
             return;
         }
 
-        $this->purgeDemoPages();
+        /** @var mixed $pages */
+        $pages = require $dataPath;
 
-        $author = $this->requireDemoAuthor();
-        if ($author === null) {
+        if (! is_array($pages)) {
             return;
         }
 
-        $count = $this->resolvePageCount();
-        $faker = fake();
-        $baseUrl = rtrim((string) config('app.url'), '/');
-        $mediaPool = $this->loadImageMediaPool();
-        $created = 0;
-
-        if ($mediaPool->isEmpty()) {
-            $this->command->warn('No images in `media` table — drafts will be seeded without mediathek images.');
-        }
-
-        $progress = $this->hasSeedOutput()
-            ? SeedOutput::progressBar($count, 'Demo drafts')
-            : null;
-
-        DB::transaction(function () use ($count, $faker, $author, $baseUrl, $mediaPool, $progress, &$created): void {
-            for ($index = 1; $index <= $count; $index++) {
-                $status = $faker->randomElement(self::TRANSLATION_STATUSES);
-                $contentLocale = $this->locales()[array_rand($this->locales())];
-                $image = $this->resolvePageImage($faker, $mediaPool, $contentLocale);
-
-                $page = Page::query()->create([
-                    'is_active' => $faker->boolean(85),
-                    'type' => $faker->randomElement(self::TYPES),
-                    'color' => $faker->hexColor(),
-                    'status' => $status,
-                    'due_at' => $faker->optional(0.4)->dateTimeBetween('now', '+45 days'),
-                    'image' => $image,
-                    'data' => json_encode([
-                        'seed_source' => 'draft_seeder_v1',
-                        'seed_index' => $index,
-                    ], JSON_THROW_ON_ERROR),
-                ]);
-
-                foreach ($this->locales() as $locale) {
-                    $localeFaker = $this->fakerForLocale($locale);
-                    $title = $this->formatFakerWords($locale, $localeFaker, 3, 7);
-                    $slug = self::DEMO_SLUG_PREFIX
-                        .'-'.Str::slug($title)
-                        .'-'.Str::lower($locale)
-                        .'-'.sprintf('%04d', $index);
-
-                    $translation = $page->translateOrNew($locale);
-                    $translation->title = $title;
-                    $translation->slug = Str::limit($slug, 180, '');
-                    $translation->permalink = $baseUrl.'/'.$locale.'/'.$translation->slug;
-                    $translation->description = $this->fakerLocaleText($locale, $localeFaker, preset: 'description');
-                    $translation->content = implode("\n\n", $this->fakerLocaleParagraphs(
-                        $locale,
-                        $localeFaker,
-                        3,
-                        6,
-                    ));
-                    $translation->translation_status = $status;
-
-                    $this->assignTranslationAuthor($translation, $author);
-                }
-
-                $page->save();
-                $created++;
-
-                if ($progress !== null) {
-                    $progress->advance();
-                } elseif ($index % self::PROGRESS_LOG_EVERY === 0 || $index === $count) {
-                    $this->reportCreated("Page {$page->getKey()}");
-                }
+        foreach ($pages as $entry) {
+            if (! is_array($entry)) {
+                continue;
             }
-        });
 
-        $progress?->finish("{$count} demo page(s)");
+            $pageAttributes = $entry['page'] ?? null;
+            $translations = $entry['translations'] ?? null;
 
-        $this->reportDetail(sprintf(
-            '%d faker page(s) seeded with %d locale(s) each.',
-            $created,
-            count($this->locales())
-        ));
+            if (! is_array($pageAttributes) || ! is_array($translations)) {
+                continue;
+            }
+
+            if ($this->entryAlreadySeeded($translations)) {
+                continue;
+            }
+
+            unset($pageAttributes['uuid'], $pageAttributes['ulid']);
+
+            if (array_key_exists('is_active', $pageAttributes)) {
+                $pageAttributes['is_active'] = (bool) $pageAttributes['is_active'];
+            }
+
+            if (array_key_exists('is_startpage', $pageAttributes)) {
+                $pageAttributes['is_startpage'] = (bool) $pageAttributes['is_startpage'];
+            }
+
+            $pageAttributes = collect($pageAttributes)
+                ->filter(fn (mixed $value, string $column): bool => Schema::hasColumn('pages', $column))
+                ->all();
+
+            $page = PageModels::page()::query()->create($pageAttributes);
+
+            foreach ($translations as $translationAttributes) {
+                if (! is_array($translationAttributes)) {
+                    continue;
+                }
+
+                if (isset($translationAttributes['content']) && is_string($translationAttributes['content'])) {
+                    $decodedContent = json_decode($translationAttributes['content'], true);
+                    $translationAttributes['content'] = is_array($decodedContent) ? $decodedContent : [];
+                }
+
+                if (isset($translationAttributes['author_id'], $translationAttributes['author_type'])) {
+                    $authorType = $translationAttributes['author_type'];
+                    $authorExists = false;
+
+                    if (
+                        is_string($authorType)
+                        && class_exists($authorType)
+                        && Schema::hasTable((new $authorType)->getTable())
+                    ) {
+                        $authorExists = $authorType::query()
+                            ->whereKey($translationAttributes['author_id'])
+                            ->exists();
+                    }
+
+                    if (! $authorExists) {
+                        unset($translationAttributes['author_id'], $translationAttributes['author_type']);
+                    }
+                }
+
+                $translationAttributes = collect($translationAttributes)
+                    ->filter(fn (mixed $value, string $column): bool => Schema::hasColumn('page_translations', $column))
+                    ->all();
+
+                $page->translations()->create($translationAttributes);
+            }
+        }
     }
 
     /**
-     * @return array{media_id: int, locale: string}|null
+     * @param  list<array<string, mixed>>  $translations
      */
-    private function resolvePageImage(Generator $faker, Collection $mediaPool, string $locale): ?array
+    private function entryAlreadySeeded(array $translations): bool
     {
-        if ($mediaPool->isNotEmpty() && $faker->boolean((int) (self::MEDIA_ATTACH_PROBABILITY * 100))) {
-            return $this->randomImageFieldFromPool($mediaPool, $locale);
+        foreach ($translations as $translationAttributes) {
+            if (! is_array($translationAttributes)) {
+                continue;
+            }
+
+            $slug = $translationAttributes['slug'] ?? null;
+            $locale = $translationAttributes['locale'] ?? null;
+
+            if (! is_string($slug) || ! is_string($locale)) {
+                continue;
+            }
+
+            if (PageModels::pageTranslation()::query()->where('slug', $slug)->where('locale', $locale)->exists()) {
+                return true;
+            }
         }
 
-        return null;
-    }
-
-    private function purgeDemoPages(): void
-    {
-        Page::query()
-            ->whereHas('translations', function ($query): void {
-                $query->where('slug', 'like', self::DEMO_SLUG_PREFIX.'-%');
-            })
-            ->forceDelete();
-    }
-
-    private function resolvePageCount(): int
-    {
-        if (class_exists(SeedingConfig::class)) {
-            return SeedingConfig::resolveCount('page', self::DEFAULT_PAGE_COUNT);
-        }
-
-        return self::DEFAULT_PAGE_COUNT;
-    }
-
-    private function fakerForLocale(string $locale): Generator
-    {
-        static $cache = [];
-        $resolvedLocale = in_array($locale, $this->locales(), true) ? $locale : 'en_US';
-
-        if (! isset($cache[$resolvedLocale])) {
-            $cache[$resolvedLocale] = FakerFactory::create($resolvedLocale);
-        }
-
-        return $cache[$resolvedLocale];
+        return false;
     }
 }

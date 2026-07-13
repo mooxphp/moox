@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('page_translations', function (Blueprint $table) {
+        if (Schema::hasTable('page_translations')) {
+            return;
+        }
+
+        Schema::create('page_translations', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedBigInteger('page_id');
             $table->string('locale')->index();
@@ -33,25 +34,20 @@ return new class extends Migration
             $table->nullableMorphs('created_by');
             $table->nullableMorphs('updated_by');
             $table->nullableMorphs('deleted_by');
-
             $table->nullableMorphs('author');
-
 
             $table->unique(['page_id', 'locale']);
             $table->unique(['slug', 'locale']);
             $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
 
-            // Schedule fields
             $table->timestamp('to_publish_at')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamp('to_unpublish_at')->nullable();
             $table->timestamp('unpublished_at')->nullable();
 
-            // Actor fields
             $table->nullableMorphs('published_by');
             $table->nullableMorphs('unpublished_by');
 
-            // Soft delete fields
             $table->softDeletes();
             $table->timestamp('restored_at')->nullable();
             $table->nullableMorphs('restored_by');
@@ -59,12 +55,8 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
-
     {
-        Schema::dropIfExists('draft_translations');
+        Schema::dropIfExists('page_translations');
     }
 };

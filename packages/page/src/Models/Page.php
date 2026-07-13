@@ -3,8 +3,10 @@
 namespace Moox\Page\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\ValidationException;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Media\Traits\HasMediaUsable;
@@ -38,6 +40,24 @@ class Page extends BaseDraftModel implements HasMedia
     use HasFactory, HasMediaUsable, HasModelTaxonomy, InteractsWithMedia;
 
     /**
+     * @return array<string, string>
+     */
+    public static function layoutOptions(): array
+    {
+        $layouts = config('page.layouts', []);
+
+        return collect($layouts)
+            ->mapWithKeys(function (array|string $layout, string $key): array {
+                if (is_array($layout)) {
+                    return [$key => (string) ($layout['label'] ?? $key)];
+                }
+
+                return [$key => $layout];
+            })
+            ->all();
+    }
+
+    /**
      * Get custom translated attributes for Draft
      */
     protected function getCustomTranslatedAttributes(): array
@@ -55,9 +75,10 @@ class Page extends BaseDraftModel implements HasMedia
 
     protected $fillable = [
         'is_active',
+        'is_startpage',
         'image',
         'type',
-        'color',
+        'layout',
         'due_at',
         'status',
         'uuid',
@@ -67,12 +88,47 @@ class Page extends BaseDraftModel implements HasMedia
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_startpage' => 'boolean',
         'image' => 'json',
         'due_at' => 'datetime',
         'uuid' => 'string',
         'ulid' => 'string',
         'custom_properties' => 'json',
     ];
+
+    /**
+     * @param  Builder<Page>  $query
+     * @return Builder<Page>
+     */
+    public function scopeHomepage(Builder $query): Builder
+    {
+        return $query->where('is_startpage', true);
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Page $page): void {
+            if ($page->isDirty('is_startpage') && ! $page->is_startpage && $page->getOriginal('is_startpage')) {
+                $hasReplacementHomepage = static::query()
+                    ->homepage()
+                    ->when($page->exists, fn (Builder $query) => $query->whereKeyNot($page->getKey()))
+                    ->exists();
+
+                if (! $hasReplacementHomepage) {
+                    throw ValidationException::withMessages([
+                        'is_startpage' => 'Es muss immer eine Startseite geben.',
+                    ]);
+                }
+            }
+
+            if ($page->is_startpage) {
+                static::query()
+                    ->homepage()
+                    ->when($page->exists, fn (Builder $query) => $query->whereKeyNot($page->getKey()))
+                    ->update(['is_startpage' => false]);
+            }
+        });
+    }
 
     public static function getResourceName(): string
     {
