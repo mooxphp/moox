@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\BlockEditor\EntityQuery\Support;
 
+use Moox\BlockEditor\EntityQuery\Mapping\FeedItemMapping;
 use Moox\BlockEditor\Support\BlockEditorLocale;
 
 final class EagerLoadResolver
@@ -22,19 +23,26 @@ final class EagerLoadResolver
         }
 
         $loads = [];
-        $includeTranslationAuthor = in_array('translations.author', $paths, true);
+        $includeTranslationAuthor = false;
 
         foreach ($paths as $path) {
             if (! is_string($path) || $path === '') {
                 continue;
             }
 
-            if ($path === 'translations' || $path === 'translations.author') {
+            if ($path === 'translations') {
                 continue;
             }
 
-            if ($path === 'category.translations') {
-                $loads['category'] = fn ($query) => $query->with([
+            if ($path === 'translations.author' || str_starts_with($path, 'translations.')) {
+                $includeTranslationAuthor = true;
+
+                continue;
+            }
+
+            if (preg_match('/^(.+)\.translations$/', $path, $matches) === 1) {
+                $relation = $matches[1];
+                $loads[$relation] = fn ($query) => $query->with([
                     'translations' => fn ($translationQuery) => $translationQuery->whereIn('locale', $localeCandidates),
                 ]);
 
@@ -44,14 +52,39 @@ final class EagerLoadResolver
             $loads[] = $path;
         }
 
-        $loads['translations'] = function ($query) use ($localeCandidates, $includeTranslationAuthor): void {
+        $loads['translations'] = function ($query) use ($localeCandidates, $includeTranslationAuthor, $paths): void {
             $query->whereIn('locale', $localeCandidates);
 
             if ($includeTranslationAuthor) {
-                $query->with('author');
+                $nestedRelations = [];
+
+                foreach ($paths as $path) {
+                    if (! is_string($path) || ! str_starts_with($path, 'translations.')) {
+                        continue;
+                    }
+
+                    $nestedRelations[] = substr($path, strlen('translations.'));
+                }
+
+                if ($nestedRelations !== []) {
+                    $query->with(array_values(array_unique($nestedRelations)));
+                } else {
+                    $query->with('author');
+                }
             }
         };
 
         return $loads;
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    public function resolveFromMapping(FeedItemMapping $mapping, string $locale, array $additionalPaths = []): array
+    {
+        return $this->resolve(
+            array_values(array_unique(array_merge($mapping->eagerLoadPaths(), $additionalPaths))),
+            $locale,
+        );
     }
 }

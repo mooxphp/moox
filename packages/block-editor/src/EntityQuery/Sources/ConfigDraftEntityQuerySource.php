@@ -9,10 +9,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Moox\BlockEditor\EntityQuery\Contracts\EntityQuerySource;
+use Moox\BlockEditor\EntityQuery\Contracts\ConfigurableFeedItemMapper;
 use Moox\BlockEditor\EntityQuery\Contracts\FeedItemMapper;
 use Moox\BlockEditor\EntityQuery\Contracts\PreparesFeedItems;
 use Moox\BlockEditor\EntityQuery\EntityQueryBuilder;
 use Moox\BlockEditor\EntityQuery\EntityQueryDefinition;
+use Moox\BlockEditor\EntityQuery\Mapping\DraftFeedItemResolver;
+use Moox\BlockEditor\EntityQuery\Mapping\FeedItemMapping;
+use Moox\BlockEditor\EntityQuery\Mappers\DraftFeedItemMapper;
 use Moox\BlockEditor\EntityQuery\Support\EagerLoadResolver;
 use Moox\BlockEditor\EntityQuery\Support\FilterOptionsResolver;
 
@@ -98,9 +102,12 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
             return collect();
         }
 
-        $eagerLoads = app(EagerLoadResolver::class)->resolve(
-            $this->configuredEagerLoadPaths(),
+        $mapping = $this->feedItemMapping();
+
+        $eagerLoads = app(EagerLoadResolver::class)->resolveFromMapping(
+            $mapping,
             $definition->locale,
+            $this->configuredEagerLoadPaths(),
         );
 
         $items = app(EntityQueryBuilder::class)
@@ -138,7 +145,16 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
 
     private function resolveMapper(): ?FeedItemMapper
     {
-        $mapperClass = $this->config['feed_item_mapper'] ?? null;
+        $mapping = $this->feedItemMapping();
+
+        $mapperClass = $this->config['feed_item_mapper'] ?? DraftFeedItemMapper::class;
+
+        if ($mapperClass === DraftFeedItemMapper::class) {
+            return new DraftFeedItemMapper(
+                app(DraftFeedItemResolver::class),
+                $mapping,
+            );
+        }
 
         if (! is_string($mapperClass) || ! class_exists($mapperClass)) {
             Log::warning('Dynamic feed mapper is missing or invalid.', [
@@ -151,6 +167,10 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
 
         $mapper = app($mapperClass);
 
+        if ($mapper instanceof ConfigurableFeedItemMapper) {
+            return $mapper->withMapping($mapping);
+        }
+
         if (! $mapper instanceof FeedItemMapper) {
             Log::warning('Dynamic feed mapper does not implement FeedItemMapper.', [
                 'source' => $this->key,
@@ -161,6 +181,15 @@ final class ConfigDraftEntityQuerySource implements EntityQuerySource
         }
 
         return $mapper;
+    }
+
+    private function feedItemMapping(): FeedItemMapping
+    {
+        return FeedItemMapping::fromConfig(
+            is_array($this->config['feed_item_mapping'] ?? null)
+                ? $this->config['feed_item_mapping']
+                : []
+        );
     }
 
     /**

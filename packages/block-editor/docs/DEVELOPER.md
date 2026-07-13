@@ -130,13 +130,22 @@ Shipped renderers: `paragraph`, `heading1`–`heading6`, `dynamicFeed`. Other ed
 
 ### Dynamic feeds (summary)
 
-Consumer packages register entity sources at boot:
+Define entity sources in `packages/block-editor/config/dynamic-feed-sources.php`. They are merged into `dynamic_feed.sources` and registered automatically at boot via `DynamicFeedSourceRegistrar`:
 
 ```php
-EntityQuerySourceRegistry::register('news', config('news.dynamic_feed', []));
+// config/moox-editor.php
+'dynamic_feed' => [
+    'sources' => [
+        'news' => [
+            'enabled' => true,
+            'model' => News::class,
+            // ...
+        ],
+    ],
+],
 ```
 
-The editor receives sources from the embedded catalog when the Filament field renders; public pages resolve data through `DynamicFeedBlockRenderer`. Gold-standard consumer: `packages/news`. Details: section 9.
+The editor receives sources from the embedded catalog when the Filament field renders; public pages resolve data through `DynamicFeedBlockRenderer`. Details: section 9.
 
 ### Choose your next step
 
@@ -145,7 +154,7 @@ The editor receives sources from the embedded catalog when the Filament field re
 | Install in a Laravel app | Section 1 → 7 |
 | Add field to Filament 4 resource | Section 4 |
 | Show blocks on a public page | Section 8 |
-| Register news/article feeds | Section 9, `packages/news` |
+| Register news/article feeds | Section 9, `packages/block-editor/config/dynamic-feed-sources.php` |
 | Extend editor block types (JS) | `resources/editor/components/blocks/README.md` |
 | Template CRUD / API integration | `API.md` |
 | Run or add tests | `tests/README.md` |
@@ -731,140 +740,125 @@ At render time, the package:
 5. maps each model into a feed item payload
 6. renders the configured Blade view
 
-### 9.2 Reference implementation: `packages/news`
+### 9.2 Reference implementation: block-editor package config
 
-The `moox/news` package is the canonical example for extending dynamic feeds. It wires together four pieces:
+Dynamic feed configuration lives entirely in the block-editor package:
 
 | Piece | Location |
 |-------|----------|
-| Source definition | `packages/news/config/news.php` → `dynamic_feed` |
-| Registration | `packages/news/src/NewsServiceProvider.php` |
-| Feed item mapper | `packages/news/src/BlockEditor/NewsFeedItemMapper.php` |
-| Blade views | `packages/news/resources/views/blocks/dynamic-feed/` |
+| Global defaults | `config/moox-editor.php` → `dynamic_feed.mapping_defaults` |
+| Source definitions | `config/dynamic-feed-sources.php` → merged into `dynamic_feed.sources` |
+| Registration | Automatic via `DynamicFeedSourceRegistrar` in `BlockEditorServiceProvider` |
+| Feed item mapper | `DraftFeedItemMapper` (default) or custom `FeedItemMapper` class |
+| Blade views | Theme package views referenced in `views.*.view` |
 
 Two keys matter and must not be confused:
 
-- **`news`** — the dynamic feed **source key**. This is the first argument to `EntityQuerySourceRegistry::register(...)` and the value persisted in block JSON as `sourceKey`.
-- **`dynamic_feed`** — the **config key** inside `config/news.php`. It holds the source definition array passed to the registry.
+- **`news`** — the dynamic feed **source key**. Array key under `dynamic_feed.sources`, persisted in block JSON as `sourceKey`.
+- **`feed_item_mapping.relations`** — explicit relation config per source (`taxonomy`, `translation_relation`, `attribute`).
 
 ### 9.3 Step-by-step: add or extend a dynamic feed source
 
-Follow these steps when you want to expose a new entity list in the block editor. Use `packages/news` as the template and replace package names, models, and keys with your own domain.
+Follow these steps when you want to expose a new entity list in the block editor.
 
-#### Step 1 — Add the source definition to your package config
+#### Step 1 — Add the source definition to `config/dynamic-feed-sources.php`
 
-Add a `dynamic_feed` array to your package config file. The structure below is copied from `packages/news/config/news.php`:
+Add an entry under `dynamic_feed.sources` (file: `packages/block-editor/config/dynamic-feed-sources.php`). Global `mapping_defaults` provide translation field defaults; per-source relations are defined explicitly:
 
 ```php
+use Moox\BlockEditor\EntityQuery\Mappers\DraftFeedItemMapper;
 use Moox\News\Models\News;
 
-// inside config/news.php
+// inside config/dynamic-feed-sources.php
 
-'dynamic_feed' => [
-    'enabled' => true,
-    'model' => News::class,
-    'label' => 'trans//news::news.news',
-    'default_view' => 'card',
-    'views' => [
-        'card' => [
-            'label' => 'Karten',
-            'view' => 'news::blocks.dynamic-feed.card',
+return [
+    'news' => [
+        'enabled' => true,
+        'model' => News::class,
+        'label' => 'trans//news::news.news',
+        'default_view' => 'card',
+        'views' => [
+            'card' => [
+                'label' => 'Karten',
+                'view' => 'myheco::news.blocks.dynamic-feed.card',
+            ],
+            'list' => [
+                'label' => 'Liste',
+                'view' => 'myheco::news.blocks.dynamic-feed.list',
+            ],
         ],
-        'list' => [
-            'label' => 'Liste',
-            'view' => 'news::blocks.dynamic-feed.list',
+        'filter_schema' => [
+            'category_id' => [
+                'type' => 'select',
+                'label' => 'Kategorie',
+                'nullable' => true,
+                'apply' => 'taxonomy:category',
+                'options_resolver' => 'category',
+            ],
+        ],
+        'sortable_columns' => [
+            'published_at' => 'nt.published_at',
+            'title' => 'nt.title',
+        ],
+        'feed_item_mapper' => DraftFeedItemMapper::class,
+        'feed_item_mapping' => [
+            'untitled_label' => 'trans//news::news.untitled',
+            'relations' => [
+                'category' => [
+                    'type' => 'taxonomy',
+                    'output' => 'categories',
+                    'label_attribute' => 'title',
+                    'eager_load' => 'category.translations',
+                ],
+                'author' => [
+                    'type' => 'translation_relation',
+                    'output' => 'author_name',
+                    'attributes' => ['name', 'title'],
+                    'eager_load' => 'translations.author',
+                ],
+                'image' => [
+                    'type' => 'attribute',
+                    'path' => 'image',
+                    'output' => 'image',
+                    'resolve_url' => true,
+                ],
+            ],
         ],
     ],
-    'filter_schema' => [
-        'category_id' => [
-            'type' => 'select',
-            'label' => 'Kategorie',
-            'nullable' => true,
-            'apply' => 'taxonomy:category',
-            'options_resolver' => 'category',
-        ],
-    ],
-    'sortable_columns' => [
-        'published_at' => 'nt.published_at',
-        'title' => 'nt.title',
-    ],
-    'feed_item_mapper' => 'Moox\\News\\BlockEditor\\NewsFeedItemMapper',
-],
+];
 ```
 
-This array is the single source of truth for model, views, filters, sorting, and mapper. Keep it in config so you can adjust behavior without touching registration code.
+`eager_load` paths are derived from `relations.*.eager_load` automatically — no separate root `eager_load` array is required.
 
-#### Step 2 — Register the source in your service provider
+Legacy flat keys (`taxonomy`, `author_relation`, `image_attribute`) are still normalized internally but deprecated.
 
-Register the source during package boot. The registration call from `packages/news/src/NewsServiceProvider.php`:
+#### Step 2 — Customize mapping (optional)
 
-```php
-use Moox\BlockEditor\EntityQuery\EntityQuerySourceRegistry;
+The default `DraftFeedItemMapper` works for most draft-based Moox entities. Configure field output via `feed_item_mapping.relations` in `config/dynamic-feed-sources.php` (see the `news` source for a full example).
 
-public function packageBooted(): void
-{
-    if (class_exists(EntityQuerySourceRegistry::class)) {
-        EntityQuerySourceRegistry::register('news', config('news.dynamic_feed', []));
-    }
-}
-```
-
-Notes:
-
-- The first argument (`news`) is your **source key** — choose a short, stable identifier for your entity.
-- The second argument is the config array from step 1.
-- The `class_exists` guard keeps your package usable when `moox/block-editor` is not installed.
-
-For another package, replace `news` with your source key and `config('news.dynamic_feed')` with your config path, for example `config('events.dynamic_feed')`.
-
-#### Step 3 — Implement a `FeedItemMapper`
-
-Create a mapper class that transforms each Eloquent model into the array your Blade views expect. The news reference implementation:
+Only implement a custom `FeedItemMapper` when relations-based mapping is not sufficient:
 
 ```php
-namespace Moox\News\BlockEditor;
+namespace App\BlockEditor;
 
 use Illuminate\Database\Eloquent\Model;
 use Moox\BlockEditor\EntityQuery\Contracts\FeedItemMapper;
-use Moox\News\Models\News;
 
-final class NewsFeedItemMapper implements FeedItemMapper
+final class CustomFeedItemMapper implements FeedItemMapper
 {
     public function map(Model $model, string $locale): array
     {
-        if (! $model instanceof News) {
-            return [];
-        }
-
-        // Resolve translation, image, categories, etc.
-        // Return a normalized array for your Blade views.
-
-        return [
-            'id' => $model->getKey(),
-            'title' => '...',
-            'slug' => '...',
-            'permalink' => '...',
-            'description' => '...',
-            'excerpt' => '...',
-            'description_plain' => '...',
-            'excerpt_plain' => '...',
-            'published_at' => null,
-            'image' => [],
-            'image_url' => null,
-            'author_name' => null,
-            'categories' => [],
-        ];
+        // Return normalized feed item payload for Blade views.
+        return [];
     }
 }
 ```
 
-Register the fully qualified class name in your config:
+Register the fully qualified class name in your source config:
 
 ```php
-'feed_item_mapper' => 'Moox\\News\\BlockEditor\\NewsFeedItemMapper',
+'feed_item_mapper' => CustomFeedItemMapper::class,
 ```
-
-See `packages/news/src/BlockEditor/NewsFeedItemMapper.php` for the complete locale-aware implementation.
 
 #### Step 4 — Create Blade views for each view variant
 
@@ -967,69 +961,60 @@ The left side is the logical key stored in `orderBy`. The right side is the SQL 
 
 Set `enabled` to `false`. The source disappears from the embedded catalog and existing blocks referencing it render nothing (with a logged warning).
 
-### 9.4.1 Copy-paste snippets from `packages/news`
+### 9.4.1 Copy-paste snippets
 
-All snippets below match the current `packages/news` implementation.
-
-**Config** (`packages/news/config/news.php`):
+**Config** (`packages/block-editor/config/dynamic-feed-sources.php`):
 
 ```php
-'dynamic_feed' => [
+'news' => [
     'enabled' => true,
     'model' => News::class,
-    'label' => 'trans//news::news.news',
-    'default_view' => 'card',
-    'views' => [
-        'card' => [
-            'label' => 'Karten',
-            'view' => 'news::blocks.dynamic-feed.card',
-        ],
-        'list' => [
-            'label' => 'Liste',
-            'view' => 'news::blocks.dynamic-feed.list',
+    // ...
+    'feed_item_mapping' => [
+        'untitled_label' => 'trans//news::news.untitled',
+        'relations' => [
+            'category' => [
+                'type' => 'taxonomy',
+                'output' => 'categories',
+                'label_attribute' => 'title',
+                'eager_load' => 'category.translations',
+            ],
+            'author' => [
+                'type' => 'translation_relation',
+                'output' => 'author_name',
+                'attributes' => ['name', 'title'],
+                'eager_load' => 'translations.author',
+            ],
+            'image' => [
+                'type' => 'attribute',
+                'path' => 'image',
+                'output' => 'image',
+                'resolve_url' => true,
+            ],
         ],
     ],
-    'filter_schema' => [
-        'category_id' => [
-            'type' => 'select',
-            'label' => 'Kategorie',
-            'nullable' => true,
-            'apply' => 'taxonomy:category',
-            'options_resolver' => 'category',
-        ],
-    ],
-    'sortable_columns' => [
-        'published_at' => 'nt.published_at',
-        'title' => 'nt.title',
-    ],
-    'feed_item_mapper' => 'Moox\\News\\BlockEditor\\NewsFeedItemMapper',
 ],
 ```
 
-**Registration** (`packages/news/src/NewsServiceProvider.php`):
+Sources are registered automatically at boot via `DynamicFeedSourceRegistrar` — no service provider registration is required.
+
+**Custom mapper** (optional, when `DraftFeedItemMapper` + `relations` is not sufficient):
 
 ```php
-if (class_exists(EntityQuerySourceRegistry::class)) {
-    EntityQuerySourceRegistry::register('news', config('news.dynamic_feed', []));
-}
-```
-
-**Mapper class** (`packages/news/src/BlockEditor/NewsFeedItemMapper.php`):
-
-```php
-final class NewsFeedItemMapper implements FeedItemMapper
+final class CustomFeedItemMapper implements FeedItemMapper
 {
     public function map(Model $model, string $locale): array
     {
-        // See packages/news/src/BlockEditor/NewsFeedItemMapper.php
+        // Return normalized feed item payload.
+        return [];
     }
 }
 ```
 
-**Blade views**:
+**Blade views** (example paths in a theme package):
 
-- `packages/news/resources/views/blocks/dynamic-feed/card.blade.php`
-- `packages/news/resources/views/blocks/dynamic-feed/list.blade.php`
+- `packages/myheco/resources/views/news/blocks/dynamic-feed/card.blade.php`
+- `packages/myheco/resources/views/news/blocks/dynamic-feed/list.blade.php`
 
 **Persisted block JSON** (with the `news` source key):
 
@@ -1358,7 +1343,7 @@ Your Blade view therefore receives already mapped feed items and can focus on pr
 
 ### 9.9 Practical notes and best practices
 
-- Register sources during application boot, for example in a service provider.
+- Define sources in `packages/block-editor/config/dynamic-feed-sources.php`. Registration happens automatically at boot.
 - Keep source keys stable because they are persisted in block JSON.
 - Always provide at least one valid `views` entry.
 - Always provide a valid `feed_item_mapper` for non-trivial output.
@@ -1369,12 +1354,12 @@ Your Blade view therefore receives already mapped feed items and can focus on pr
 
 ### 9.10 Example explained line by line
 
-Using the `packages/news` setup as reference:
+Using the `config/moox-editor.php` news source as reference:
 
-- `'news'` (registration key)
-  The source key persisted in block JSON as `sourceKey`. Registered via `EntityQuerySourceRegistry::register('news', ...)`.
-- `'dynamic_feed'` (config key)
-  The config path `news.dynamic_feed` that holds the source definition array. This is **not** the `sourceKey`.
+- `'news'` (source key)
+  The array key under `dynamic_feed.sources` and the value persisted in block JSON as `sourceKey`.
+- `'dynamic_feed.sources'` (config path)
+  Holds all source definitions in `config/moox-editor.php`. This is **not** the `sourceKey`.
 - `'enabled' => true`
   The source is active and can be used by editors and renderers.
 - `'model' => News::class`
@@ -1393,8 +1378,8 @@ Using the `packages/news` setup as reference:
   The editor asks the backend for selectable category options.
 - `'sortable_columns'`
   Allows logical sort keys such as `published_at` or `title` to map to real SQL columns.
-- `'feed_item_mapper' => 'Moox\\News\\BlockEditor\\NewsFeedItemMapper'`
-  Each `News` model is transformed into the payload consumed by the selected Blade view.
+- `'feed_item_mapper' => DraftFeedItemMapper::class`
+  Each model is transformed into the payload consumed by the selected Blade view (via `feed_item_mapping.relations`).
 
 ### 9.11 Failure behavior
 

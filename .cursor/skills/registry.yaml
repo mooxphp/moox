@@ -22,3 +22,12 @@ packages:
       - SKILL.md
       - integration.md
       - decisions.md
+
+  block-editor:
+    skill: moox-block-editor
+    skill_path: .cursor/skills/moox-block-editor
+    package_readme: packages/block-editor/README.md
+    skill_files:
+      - SKILL.md
+      - integration.md
+      - decisions.md

@@ -53,5 +53,29 @@ return [
         'default_limit' => 5,
         'default_order_by' => 'published_at',
         'default_order_direction' => 'desc',
+        'untitled_label' => 'Untitled',
+        'mapping_defaults' => [
+            'fallback_title_from' => ['excerpt', 'description'],
+            'translation_fields' => [
+                'title' => 'title',
+                'slug' => 'slug',
+                'permalink' => 'permalink',
+                'description' => 'description',
+                'excerpt' => 'excerpt',
+                'published_at' => 'published_at',
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dynamic Feed Sources
+        |--------------------------------------------------------------------------
+        |
+        | Entity sources registered automatically at boot. Keys become the
+        | sourceKey persisted in dynamicFeed block JSON. Defined in
+        | config/dynamic-feed-sources.php and merged at register time.
+        |
+        */
+        'sources' => [],
     ],
 ];
