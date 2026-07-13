@@ -713,13 +713,10 @@ class FieldGroupResource extends Resource
                     Toggle::make('settings.show_in_filter')
                         ->label(__('builder::builder.field.show_in_filter'))
                         ->helperText(fn (callable $get): string => match (true) {
-                            $get('type') === 'relation' && (bool) ($get('config.multiple') ?? false)
-                                => __('builder::builder.field.show_in_filter_relation_multiple_helper'),
-                            $get('type') === 'relation' && blank($get('config.related_entity'))
-                                => __('builder::builder.field.show_in_filter_relation_entity_helper'),
+                            $get('type') === 'relation' && (bool) ($get('config.multiple') ?? false) => __('builder::builder.field.show_in_filter_relation_multiple_helper'),
+                            $get('type') === 'relation' && blank($get('config.related_entity')) => __('builder::builder.field.show_in_filter_relation_entity_helper'),
                             in_array($get('type'), ['select', 'radio', 'button_group'], true)
-                                && ! static::fieldHasFilterableChoiceOptions($get)
-                                => __('builder::builder.field.show_in_filter_choice_options_helper'),
+                                && ! static::fieldHasFilterableChoiceOptions($get) => __('builder::builder.field.show_in_filter_choice_options_helper'),
                             default => __('builder::builder.field.show_in_filter_helper'),
                         })
                         ->inline(false)

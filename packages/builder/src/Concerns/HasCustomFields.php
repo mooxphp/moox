@@ -7,6 +7,7 @@ namespace Moox\Builder\Concerns;
 use Astrotomic\Translatable\Contracts\Translatable;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\Column;
+use Filament\Tables\Filters\BaseFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -94,7 +95,7 @@ trait HasCustomFields
     }
 
     /**
-     * @return list<\Filament\Tables\Filters\BaseFilter>
+     * @return list<BaseFilter>
      */
     public static function customFieldFilters(): array
     {

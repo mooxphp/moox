@@ -9,12 +9,12 @@ require_once __DIR__.'/../Support/TestItemResource.php';
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Support\Facades\Cache;
-use Moox\Builder\Compiler\TableFilterCompiler;
 use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\CustomFieldTableFilterQuery;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
@@ -327,7 +327,7 @@ it('syncs show in filter through field group persistence', function (): void {
         'active' => true,
     ]);
 
-    app(\Moox\Builder\Services\FieldGroupPersistence::class)->sync($group, [
+    app(FieldGroupPersistence::class)->sync($group, [
         'name' => 'Persist filter',
         'slug' => 'persist-filter',
         'target_entities' => ['item'],
