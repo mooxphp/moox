@@ -229,6 +229,7 @@ class FieldGroupResource extends Resource
                                     static::requirementAndWidthRow(),
                                     ...static::validationSettingsSchema(),
                                     ...static::columnSettingsSchema(),
+                                    ...static::filterSettingsSchema(),
                                     ...static::visibilitySettingsSchema(),
                                     ...static::conditionalLogicSchema(),
                                     ...static::optionFieldSections($registry),
@@ -484,6 +485,7 @@ class FieldGroupResource extends Resource
                 ->live(onBlur: true),
             static::requirementAndWidthRow(),
             ...static::columnSettingsSchema(),
+            ...static::filterSettingsSchema(),
             ...static::visibilitySettingsSchema(),
             ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
@@ -650,6 +652,80 @@ class FieldGroupResource extends Resource
         return static::fieldTypeSupportsColumn($type)
             || static::fieldTypeSupportsImageColumn($type)
             || static::fieldTypeSupportsRelationColumn($type);
+    }
+
+    protected static function fieldTypeSupportsFilter(?string $type): bool
+    {
+        if (blank($type)) {
+            return false;
+        }
+
+        return in_array($type, ['select', 'radio', 'button_group', 'toggle', 'relation'], true);
+    }
+
+    protected static function fieldHasFilterableChoiceOptions(callable $get): bool
+    {
+        if (! in_array($get('type'), ['select', 'radio', 'button_group'], true)) {
+            return true;
+        }
+
+        $options = $get('options') ?? [];
+
+        if (! is_array($options) || $options === []) {
+            return false;
+        }
+
+        foreach ($options as $option) {
+            if (is_array($option) && filled($option['value'] ?? null)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function fieldFilterCanBeEnabled(callable $get): bool
+    {
+        if (! static::fieldTypeSupportsFilter($get('type'))) {
+            return false;
+        }
+
+        if ($get('type') === 'relation') {
+            return ! (bool) ($get('config.multiple') ?? false)
+                && filled($get('config.related_entity'));
+        }
+
+        return static::fieldHasFilterableChoiceOptions($get);
+    }
+
+    /**
+     * @return list<Section>
+     */
+    protected static function filterSettingsSchema(): array
+    {
+        return [
+            Section::make(__('builder::builder.field.list_filter'))
+                ->description(__('builder::builder.field.list_filter_helper'))
+                ->icon(Heroicon::OutlinedFunnel)
+                ->collapsible()
+                ->visible(fn (callable $get): bool => static::fieldTypeSupportsFilter($get('type')))
+                ->schema([
+                    Toggle::make('settings.show_in_filter')
+                        ->label(__('builder::builder.field.show_in_filter'))
+                        ->helperText(fn (callable $get): string => match (true) {
+                            $get('type') === 'relation' && (bool) ($get('config.multiple') ?? false)
+                                => __('builder::builder.field.show_in_filter_relation_multiple_helper'),
+                            $get('type') === 'relation' && blank($get('config.related_entity'))
+                                => __('builder::builder.field.show_in_filter_relation_entity_helper'),
+                            in_array($get('type'), ['select', 'radio', 'button_group'], true)
+                                && ! static::fieldHasFilterableChoiceOptions($get)
+                                => __('builder::builder.field.show_in_filter_choice_options_helper'),
+                            default => __('builder::builder.field.show_in_filter_helper'),
+                        })
+                        ->inline(false)
+                        ->disabled(fn (callable $get): bool => ! static::fieldFilterCanBeEnabled($get)),
+                ]),
+        ];
     }
 
     protected static function fieldTypeSupportsSortableColumn(?string $type): bool

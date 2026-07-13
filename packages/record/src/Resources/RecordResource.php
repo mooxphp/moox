@@ -158,6 +158,7 @@ class RecordResource extends BaseRecordResource
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 ...static::getTaxonomyFilters(),
+                ...static::customFieldFilters(),
             ])->deferFilters(false)
             ->persistFiltersInSession();
     }

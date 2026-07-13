@@ -339,6 +339,7 @@ Open the resource create/edit form — custom field sections should appear.
 |------|-------------|
 | Read/write in PHP, queries, Tinker | `InteractsWithCustomFields` on the model — [Model API](#model-api) |
 | List table columns | `...static::customFieldColumns()` in `table()` (enable **Show in table** on the field) |
+| List table filters | `...static::customFieldFilters()` in `table()` (enable **Show in table filter** on the field) |
 | REST / JSON API | `MergesCustomFields` on your `JsonResource` — [API Serialization](#api-serialization) |
 | Per-locale values | Translatable model, or `customFieldsAreTranslatable(): true` — [Translations](#translations) |
 | Show only on some records | Location rules in the field group — [Location Rules](#location-rules) |
@@ -357,9 +358,38 @@ Open the resource create/edit form — custom field sections should appear.
 | No sections on the form | Inactive group, wrong entity, or location rules | Check group is active, **Show on**, and [location rules](#location-rules) |
 | Sidebar empty | Group placement is `sidebar` but form has no sidebar call | Add `...static::customFieldComponents('sidebar')` in the sidebar column |
 | `$item->feld` does not work | Model missing trait | Add `InteractsWithCustomFields` to the model |
-| Image/gallery/file types missing | `moox/media` not installed | Install media package (optional integration) |
+| No filter on list | Toggle not saved, wrong list resource, or unsupported field config | Enable **Show in table filter** under **List filter**, save the group, open Item/Record/Draft list, click the funnel icon |
+| Filter missing for relation | Multiple relation or no related entity | Use single relation and pick a related entity first |
 
 Details and overrides: [Connect a Resource](#connect-a-resource). Manual verification: [Testing → Checklist](#checklist).
+
+### Table filters
+
+Opt-in Filament list filters for **select**, **radio**, **button_group**, **toggle**, and **single relation** fields.
+
+1. In the field group, open **List filter** on the field and enable **Show in table filter**
+2. Save the field group
+3. On the resource list page, use the funnel icon in the table toolbar
+
+Wire filters on custom resources:
+
+```php
+public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            // ...
+            ...static::customFieldColumns(),
+        ])
+        ->filters([
+            // your own filters …
+            ...static::customFieldFilters(),
+        ])
+        ->deferFilters(false);
+}
+```
+
+Built-in on **Item**, **Record**, and **Draft** in this monorepo. Choice fields need at least one option; relation filters require a related entity and `multiple` off.
 
 ---
 
@@ -433,6 +463,7 @@ Navigation: **Fields → Field Groups**
 | **Visibility** | Per context: admin, frontend, API (`visible_*` toggles) |
 | **Conditional logic** | Show/hide rules based on sibling field values (root-level v1) |
 | **Table column** | Optional list-column settings for scalar, media, and relation fields |
+| **Table filter** | Optional list-filter for select, toggle, and single relation fields |
 
 Repeater rows are collapsed by default and show type, key, and required flag in the label.
 
@@ -943,6 +974,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Flexible content sortable | no errors after save/load |
 | Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
 | Relation field on a group | searchable select, save/load IDs, API shows labels |
+| Table filter on select/toggle/relation | filter chip on list pages narrows matching records |
 | Conditional logic (show/hide) | field visibility updates live; hidden required fields do not block save |
 | `?lang=` on translatable resource | values stored per `locale` column |
 
@@ -968,6 +1000,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
+- **Table filters** — opt-in list filters for select, toggle, and single relation fields (`TableFilterCompiler`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
 - **Translations** — definition + value locales (Astrotomic + `builder_field_values.locale`)

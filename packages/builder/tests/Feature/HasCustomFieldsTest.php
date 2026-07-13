@@ -57,6 +57,27 @@ it('exposes compiled custom field components for matching resources', function (
         ->and($components[0])->toBeInstanceOf(Section::class);
 });
 
+it('exposes compiled custom field filters for matching resources', function (): void {
+    Field::query()->create([
+        'field_group_id' => FieldGroup::query()->first()->getKey(),
+        'name' => 'fuel',
+        'label' => 'Fuel',
+        'type' => 'select',
+        'settings' => ['show_in_filter' => true],
+        'sort' => 2,
+        'validation' => ['required' => false, 'rules' => []],
+    ])->options()->create([
+        'label' => 'Petrol',
+        'value' => 'petrol',
+        'sort' => 0,
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    expect(TestItemResource::customFieldFilters())->toHaveCount(1);
+});
+
 it('returns no components when no field groups match the entity', function (): void {
     FieldGroup::query()->delete();
 

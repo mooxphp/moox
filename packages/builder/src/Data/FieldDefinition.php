@@ -40,6 +40,11 @@ readonly class FieldDefinition
         return (bool) ($this->settings['show_in_table'] ?? false);
     }
 
+    public function showInFilter(): bool
+    {
+        return (bool) ($this->settings['show_in_filter'] ?? false);
+    }
+
     public function isColumnSortable(): bool
     {
         return (bool) ($this->settings['sortable'] ?? true);

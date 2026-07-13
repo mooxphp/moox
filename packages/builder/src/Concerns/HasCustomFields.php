@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Moox\Builder\Compiler\SchemaCompiler;
 use Moox\Builder\Compiler\TableColumnCompiler;
+use Moox\Builder\Compiler\TableFilterCompiler;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Registry\DefinitionRegistry;
@@ -90,6 +91,20 @@ trait HasCustomFields
         }
 
         return app(TableColumnCompiler::class)->compile($groups, static::class);
+    }
+
+    /**
+     * @return list<\Filament\Tables\Filters\BaseFilter>
+     */
+    public static function customFieldFilters(): array
+    {
+        $groups = static::visibleCustomFieldGroups();
+
+        if ($groups->isEmpty()) {
+            return [];
+        }
+
+        return app(TableFilterCompiler::class)->compile($groups, static::class);
     }
 
     /**

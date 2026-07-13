@@ -112,7 +112,11 @@ class ItemResource extends BaseItemResource
             ->defaultSort('title', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
-            ->filters([]);
+            ->filters([
+                ...static::customFieldFilters(),
+            ])
+            ->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     public static function getPages(): array

@@ -399,6 +399,7 @@ class FieldGroupPersistence
                 'config' => $this->definitionTranslator->translatedFieldConfig($field, $locale),
                 'settings' => [
                     'show_in_table' => (bool) ($field->settings['show_in_table'] ?? false),
+                    'show_in_filter' => (bool) ($field->settings['show_in_filter'] ?? false),
                     'sortable' => (bool) ($field->settings['sortable'] ?? true),
                     'searchable' => (bool) ($field->settings['searchable'] ?? true),
                     'hidden_by_default' => (bool) ($field->settings['hidden_by_default'] ?? true),
@@ -509,6 +510,7 @@ class FieldGroupPersistence
                 ], (string) $row['type']),
                 'settings' => array_merge($field->settings ?? [], [
                     'show_in_table' => (bool) ($row['settings']['show_in_table'] ?? false),
+                    'show_in_filter' => (bool) ($row['settings']['show_in_filter'] ?? false),
                     'sortable' => (bool) ($row['settings']['sortable'] ?? true),
                     'searchable' => (bool) ($row['settings']['searchable'] ?? true),
                     'hidden_by_default' => (bool) ($row['settings']['hidden_by_default'] ?? true),

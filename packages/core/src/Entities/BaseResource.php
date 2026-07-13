@@ -52,6 +52,17 @@ abstract class BaseResource extends Resource
         return [];
     }
 
+    /**
+     * Custom field table filters. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no filters otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldFilters(): array
+    {
+        return [];
+    }
+
     public static function make(string $key = 'default'): ResourceConfiguration
     {
         return ScopedResourceConfiguration::make(static::class, $key);
