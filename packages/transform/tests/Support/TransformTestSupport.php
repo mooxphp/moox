@@ -21,6 +21,7 @@ use Moox\Transform\Support\Execution\TranslatableBatchDestinationWriter;
 use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
 use Moox\Transform\Support\Expansion\TransformProjectionExpander;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
+use Moox\Transform\Support\SourceContextResolver;
 use Moox\Transform\Support\SourcePayloadResolver;
 use Moox\Transform\Support\TemplateValueResolver;
 use Moox\Transform\Support\TransformRunner;
@@ -376,7 +377,10 @@ function makeRunner(): TransformRunner
         $localeVariantResolver,
         $templateValueResolver,
     );
-    $resolvedTransformDataFactory = new ResolvedTransformDataFactory($inlineOperationRegistry);
+    $resolvedTransformDataFactory = new ResolvedTransformDataFactory(
+        $inlineOperationRegistry,
+        new SourceContextResolver,
+    );
     $batchDestinationWriterRegistry = new BatchDestinationWriterRegistry([
         new TranslatableBatchDestinationWriter,
         new EloquentUpsertBatchDestinationWriter,
@@ -390,7 +394,6 @@ function makeRunner(): TransformRunner
         new BulkTransformExecutor,
         $resolvedTransformDataFactory,
         $batchDestinationWriterRegistry,
-        $inlineOperationRegistry,
     );
 }
 

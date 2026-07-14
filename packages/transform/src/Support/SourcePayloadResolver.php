@@ -143,6 +143,9 @@ final class SourcePayloadResolver
      */
     private function resolveImportRecordReferencePayload(array $reference, array $context, array &$warnings): ?array
     {
+        $rowKey = $reference['row_key'] ?? null;
+        $rowKeyFrom = $reference['row_key_from'] ?? null;
+
         $recordId = $this->templateValueResolver->resolve($reference['record_id'] ?? null, $context);
         if (! is_numeric($recordId)) {
             $warnings[] = 'Invalid api_import_record reference record_id.';
@@ -159,7 +162,6 @@ final class SourcePayloadResolver
         }
 
         $itemKey = $reference['item_key'] ?? null;
-        $rowKey = $reference['row_key'] ?? null;
 
         if (DbTableSourceQuery::hasRowKey($rowKey) && is_string($itemKey) && $itemKey !== '') {
             $items = $this->normalizeImportRecordList($payload, $reference);
@@ -178,13 +180,23 @@ final class SourcePayloadResolver
             return null;
         }
 
-        if (is_array($payload)) {
-            return $payload;
+        if (DbTableSourceQuery::hasRowKey($rowKey) || DbTableSourceQuery::hasRowKeyFrom($rowKeyFrom)) {
+            $warnings[] = 'Import record row_key could not be resolved from payload.';
+
+            return null;
         }
 
-        $warnings[] = 'Import record payload is not an array.';
+        if (! is_array($payload)) {
+            $warnings[] = 'Import record payload is not an array.';
 
-        return null;
+            return null;
+        }
+
+        if (array_is_list($payload)) {
+            return null;
+        }
+
+        return $payload;
     }
 
     /**

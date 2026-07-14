@@ -234,7 +234,10 @@ final class TransformProjectionExpander
         TransformDefinition $definition,
         array $reference,
     ): array {
-        $projection = $this->arrayAttribute($record, 'source_projection');
+        $definitionReferences = $this->arrayAttribute($definition, 'source_references');
+        $runtimeReferences = $this->arrayAttribute($record, 'source_references');
+        $references = $runtimeReferences !== [] ? $runtimeReferences : $definitionReferences;
+        $projection = $this->resolveSharedDbTableProjection($record, $definition, $references);
         $recordId = $this->templateValueResolver->resolve($reference['record_id'] ?? null, $projection);
         if (! is_numeric($recordId)) {
             return [];
@@ -391,13 +394,18 @@ final class TransformProjectionExpander
             ? $nested['alias']
             : 'nested';
         $dedupeBy = $nested['dedupe_by'] ?? null;
+        $skipWhenEmpty = ($nested['skip_when_empty'] ?? false) === true;
 
         $expanded = [];
         $seen = [];
 
         foreach ($projections as $projection) {
             $nestedItems = Arr::get($projection, $path);
-            if (! is_array($nestedItems)) {
+            if (! is_array($nestedItems) || $nestedItems === []) {
+                if (($nested['skip_when_empty'] ?? false) === true) {
+                    continue;
+                }
+
                 continue;
             }
 
@@ -421,7 +429,7 @@ final class TransformProjectionExpander
             }
         }
 
-        return $expanded === [] ? $projections : $expanded;
+        return $expanded === [] ? ($skipWhenEmpty ? [] : $projections) : $expanded;
     }
 
     /**

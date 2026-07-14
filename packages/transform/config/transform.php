@@ -54,6 +54,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Import record projection enricher (application binding)
+    |--------------------------------------------------------------------------
+    |
+    | Class implementing Moox\Transform\Contracts\ImportRecordProjectionEnricher.
+    | Used when building source_projection for api_import_record runs (e.g. locale
+    | from endpoint name when the payload filename has no locale suffix).
+    |
+    */
+    'import_record_projection_enricher' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Import record model for Filament run forms (application binding)
     |--------------------------------------------------------------------------
     */
@@ -70,7 +82,23 @@ return [
     |
     */
     'import_record_endpoint_relation' => null,
+    'import_record_endpoint_foreign_key' => 'api_endpoint_id',
     'import_record_select_limit' => 100,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Import record select label columns (application override)
+    |--------------------------------------------------------------------------
+    |
+    | Columns used when building Filament select labels for import records.
+    | Defaults match common API import record shapes (e.g. moox/connect).
+    |
+    */
+    'import_record_key_column' => 'external_key',
+    'import_record_meta_columns' => ['status', 'updated_at'],
+    'import_record_endpoint_relation_candidates' => ['apiEndpoint', 'endpoint'],
+    'import_record_endpoint_search_columns' => ['name', 'path', 'method'],
+    'import_record_endpoint_label_columns' => ['name', 'method', 'path'],
 
     /*
     |--------------------------------------------------------------------------
@@ -90,6 +118,17 @@ return [
     |
     */
     'additional_model_scan_paths' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Destination model Filament resources (application override)
+    |--------------------------------------------------------------------------
+    |
+    | Map destination model class names to Filament resource classes for links
+    | from transform records to the created/updated destination record.
+    |
+    */
+    'destination_resources' => [],
 
     /*
     |--------------------------------------------------------------------------
@@ -122,6 +161,15 @@ return [
             'strategy' => 'eager',
             'chunk_size' => 1000,
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Background bulk dispatch (Filament run-all-for-endpoint)
+    |--------------------------------------------------------------------------
+    */
+    'bulk_dispatch' => [
+        'chunk_size' => 100,
     ],
 
     /*

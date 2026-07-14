@@ -29,9 +29,11 @@ use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Transform\Enums\TransformExecutionMode;
 use Moox\Transform\Filament\Resources\TransformDefinitionResource\Pages;
 use Moox\Transform\Filament\Resources\TransformDefinitionResource\RelationManagers\TransformRecordsRelationManager;
+use Moox\Transform\Jobs\DispatchTransformDefinitionForEndpointJob;
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\ConfiguredImportRecordProjectionEnricher;
 use Moox\Transform\Support\ImportRecordSelectOptionBuilder;
 
 class TransformDefinitionResource extends BaseItemResource
@@ -633,6 +635,35 @@ class TransformDefinitionResource extends BaseItemResource
             ->defaultSort('id', 'desc')
             ->actions([
                 ...static::getTableActions(),
+                Action::make('runAllForEndpoint')
+                    ->label(__('transform::fields.run_all_for_endpoint'))
+                    ->icon('heroicon-o-play-circle')
+                    ->color('warning')
+                    ->visible(fn (TransformDefinition $record): bool => static::requiresImportRecordContext($record)
+                        && ImportRecordSelectOptionBuilder::fromConfig() instanceof ImportRecordSelectOptionBuilder)
+                    ->form(fn (): array => [
+                        Select::make('api_endpoint_id')
+                            ->label(__('transform::fields.run_all_endpoint'))
+                            ->helperText(__('transform::fields.run_all_for_endpoint_help'))
+                            ->options(fn (): array => ImportRecordSelectOptionBuilder::fromConfig()?->endpointSelectOptions() ?? [])
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->action(function (TransformDefinition $record, array $data): void {
+                        $endpointId = (int) ($data['api_endpoint_id'] ?? 0);
+                        $count = static::countImportRecordsForEndpoint($endpointId);
+
+                        DispatchTransformDefinitionForEndpointJob::dispatch(
+                            (int) $record->getKey(),
+                            $endpointId,
+                        );
+
+                        Notification::make()
+                            ->title(__('transform::fields.run_all_queued_title'))
+                            ->body(__('transform::fields.run_all_background_body', ['count' => $count]))
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('run')
                     ->label(__('transform::fields.run'))
                     ->icon('heroicon-o-play')
@@ -805,7 +836,76 @@ class TransformDefinitionResource extends BaseItemResource
         $context[$contextKey] = $importRecordId;
         $projection['context'] = $context;
 
-        return $projection;
+        return app(ConfiguredImportRecordProjectionEnricher::class)->enrich($importRecordId, $projection);
+    }
+
+    private static function countImportRecordsForEndpoint(int $endpointId): int
+    {
+        if ($endpointId <= 0) {
+            throw new \InvalidArgumentException('api_endpoint_id is required.');
+        }
+
+        $importRecordModel = config('transform.import_record_model');
+        if (! is_string($importRecordModel) || $importRecordModel === '' || ! class_exists($importRecordModel) || ! is_subclass_of($importRecordModel, Model::class)) {
+            throw new \RuntimeException('Import record model is not configured.');
+        }
+
+        $foreignKey = config('transform.import_record_endpoint_foreign_key', 'api_endpoint_id');
+        if (! is_string($foreignKey) || $foreignKey === '') {
+            $foreignKey = 'api_endpoint_id';
+        }
+
+        /** @var Model $prototype */
+        $prototype = new $importRecordModel;
+
+        return (int) $prototype->newQuery()->where($foreignKey, $endpointId)->count();
+    }
+
+    private static function dispatchAllForEndpoint(TransformDefinition $definition, int $endpointId): int
+    {
+        if ($endpointId <= 0) {
+            throw new \InvalidArgumentException('api_endpoint_id is required.');
+        }
+
+        $importRecordModel = config('transform.import_record_model');
+        if (! is_string($importRecordModel) || $importRecordModel === '' || ! class_exists($importRecordModel) || ! is_subclass_of($importRecordModel, Model::class)) {
+            throw new \RuntimeException('Import record model is not configured.');
+        }
+
+        $foreignKey = config('transform.import_record_endpoint_foreign_key', 'api_endpoint_id');
+        if (! is_string($foreignKey) || $foreignKey === '') {
+            $foreignKey = 'api_endpoint_id';
+        }
+
+        /** @var Model $prototype */
+        $prototype = new $importRecordModel;
+        $dispatched = 0;
+
+        $prototype->newQuery()
+            ->where($foreignKey, $endpointId)
+            ->orderBy($prototype->getKeyName())
+            ->chunkById(100, function ($records) use ($definition, &$dispatched): void {
+                foreach ($records as $importRecord) {
+                    if (! $importRecord instanceof Model) {
+                        continue;
+                    }
+
+                    $transformRecord = TransformRecord::query()->create([
+                        'transform_definition_id' => $definition->getKey(),
+                        'source_projection' => static::buildRunSourceProjection($definition, [
+                            static::importRecordContextKey() => (int) $importRecord->getKey(),
+                        ]),
+                        'source_references' => $definition->source_references,
+                        'status' => 'pending',
+                        'validation_status' => 'pending',
+                    ]);
+
+                    RunTransformRecordJob::dispatch((int) $transformRecord->getKey());
+                    $dispatched++;
+                }
+            });
+
+        return $dispatched;
     }
 
     private static function requiresImportRecordContext(TransformDefinition $definition): bool

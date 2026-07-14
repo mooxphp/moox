@@ -60,6 +60,51 @@ final class ImportRecordSelectOptionBuilder
         return $grouped;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function endpointSelectOptions(): array
+    {
+        $foreignKey = self::stringConfig('transform.import_record_endpoint_foreign_key', 'api_endpoint_id');
+        /** @var Model $prototype */
+        $prototype = new $this->importRecordModel;
+
+        if ($foreignKey === '' || ! $prototype->isFillable($foreignKey)) {
+            return [];
+        }
+
+        $endpointIds = $prototype->newQuery()
+            ->whereNotNull($foreignKey)
+            ->distinct()
+            ->orderBy($foreignKey)
+            ->pluck($foreignKey);
+
+        $options = [];
+
+        foreach ($endpointIds as $endpointId) {
+            if (! is_numeric($endpointId)) {
+                continue;
+            }
+
+            $endpointId = (int) $endpointId;
+            $sampleRecord = $prototype->newQuery()
+                ->where($foreignKey, $endpointId)
+                ->with(array_filter([$this->resolveEndpointRelationName($prototype)]))
+                ->orderByDesc($prototype->getKeyName())
+                ->first();
+
+            if (! $sampleRecord instanceof Model) {
+                $options[$endpointId] = (string) __('transform::fields.import_record_group_endpoint', ['id' => $endpointId]);
+
+                continue;
+            }
+
+            $options[$endpointId] = self::formatEndpointGroupLabel($this->resolveEndpoint($sampleRecord));
+        }
+
+        return $options;
+    }
+
     public function labelForId(int $importRecordId): ?string
     {
         if ($importRecordId <= 0) {
@@ -86,9 +131,23 @@ final class ImportRecordSelectOptionBuilder
             return (string) __('transform::fields.import_record_group_unknown');
         }
 
-        $name = trim((string) ($endpoint->getAttribute('name') ?? ''));
-        $method = strtoupper(trim((string) ($endpoint->getAttribute('method') ?? '')));
-        $path = trim((string) ($endpoint->getAttribute('path') ?? ''));
+        $labelColumns = self::stringListConfig('transform.import_record_endpoint_label_columns', ['name', 'method', 'path']);
+        $values = [];
+
+        foreach ($labelColumns as $column) {
+            $value = $endpoint->getAttribute($column);
+            if (! is_scalar($value) || trim((string) $value) === '') {
+                continue;
+            }
+
+            $values[$column] = $column === 'method'
+                ? strtoupper(trim((string) $value))
+                : trim((string) $value);
+        }
+
+        $name = $values['name'] ?? '';
+        $method = $values['method'] ?? '';
+        $path = $values['path'] ?? '';
         $route = trim($method !== '' ? "{$method} {$path}" : $path);
 
         if ($name !== '' && $route !== '') {
@@ -103,6 +162,11 @@ final class ImportRecordSelectOptionBuilder
             return $route;
         }
 
+        $parts = array_values(array_filter($values, static fn (string $value): bool => $value !== ''));
+        if ($parts !== []) {
+            return implode(' — ', $parts);
+        }
+
         $endpointId = $endpoint->getKey();
 
         return $endpointId !== null
@@ -112,25 +176,19 @@ final class ImportRecordSelectOptionBuilder
 
     public static function formatRecordOptionLabel(Model $record): string
     {
-        $externalKey = $record->getAttribute('external_key');
-        $keyPart = is_string($externalKey) && $externalKey !== ''
-            ? $externalKey
+        $keyColumn = self::stringConfig('transform.import_record_key_column', 'external_key');
+        $keyValue = $record->getAttribute($keyColumn);
+        $keyPart = is_string($keyValue) && trim($keyValue) !== ''
+            ? trim($keyValue)
             : (string) __('transform::fields.import_record_full_payload');
-
-        $status = trim((string) ($record->getAttribute('status') ?? ''));
-        $updatedAt = $record->getAttribute('updated_at');
-        $updatedPart = $updatedAt instanceof Carbon
-            ? $updatedAt->format('Y-m-d H:i')
-            : (is_string($updatedAt) && $updatedAt !== '' ? $updatedAt : '');
 
         $label = sprintf('#%s · %s', $record->getKey(), $keyPart);
 
-        if ($status !== '') {
-            $label .= ' · '.$status;
-        }
-
-        if ($updatedPart !== '') {
-            $label .= ' · '.$updatedPart;
+        foreach (self::stringListConfig('transform.import_record_meta_columns', ['status', 'updated_at']) as $column) {
+            $metaPart = self::formatMetaColumnValue($record->getAttribute($column));
+            if ($metaPart !== '') {
+                $label .= ' · '.$metaPart;
+            }
         }
 
         return $label;
@@ -144,6 +202,8 @@ final class ImportRecordSelectOptionBuilder
         /** @var Model $prototype */
         $prototype = new $this->importRecordModel;
         $relation = $this->resolveEndpointRelationName($prototype);
+        $keyColumn = self::stringConfig('transform.import_record_key_column', 'external_key');
+        $endpointSearchColumns = self::stringListConfig('transform.import_record_endpoint_search_columns', ['name', 'path', 'method']);
 
         $query = $prototype->newQuery()->orderByDesc($prototype->getKeyName());
 
@@ -153,21 +213,26 @@ final class ImportRecordSelectOptionBuilder
 
         $search = trim((string) $search);
         if ($search !== '') {
-            $query->where(function ($inner) use ($search, $relation, $prototype): void {
+            $query->where(function ($inner) use ($search, $relation, $prototype, $keyColumn, $endpointSearchColumns): void {
                 if (ctype_digit($search)) {
                     $inner->orWhere($prototype->getKeyName(), (int) $search);
                 }
 
-                if ($prototype->isFillable('external_key') || array_key_exists('external_key', $prototype->getAttributes())) {
-                    $inner->orWhere('external_key', 'like', '%'.$search.'%');
+                if ($keyColumn !== '' && ($prototype->isFillable($keyColumn) || array_key_exists($keyColumn, $prototype->getAttributes()))) {
+                    $inner->orWhere($keyColumn, 'like', '%'.$search.'%');
                 }
 
-                if ($relation !== null) {
-                    $inner->orWhereHas($relation, function ($endpointQuery) use ($search): void {
-                        $endpointQuery
-                            ->where('name', 'like', '%'.$search.'%')
-                            ->orWhere('path', 'like', '%'.$search.'%')
-                            ->orWhere('method', 'like', '%'.$search.'%');
+                if ($relation !== null && $endpointSearchColumns !== []) {
+                    $inner->orWhereHas($relation, function ($endpointQuery) use ($search, $endpointSearchColumns): void {
+                        foreach ($endpointSearchColumns as $index => $column) {
+                            if ($index === 0) {
+                                $endpointQuery->where($column, 'like', '%'.$search.'%');
+
+                                continue;
+                            }
+
+                            $endpointQuery->orWhere($column, 'like', '%'.$search.'%');
+                        }
                     });
                 }
             });
@@ -185,7 +250,7 @@ final class ImportRecordSelectOptionBuilder
             }
         }
 
-        foreach (['apiEndpoint', 'endpoint'] as $candidate) {
+        foreach (self::stringListConfig('transform.import_record_endpoint_relation_candidates', ['apiEndpoint', 'endpoint']) as $candidate) {
             if (! method_exists($prototype, $candidate)) {
                 continue;
             }
@@ -210,5 +275,64 @@ final class ImportRecordSelectOptionBuilder
         $endpoint = $record->getRelationValue($relation);
 
         return $endpoint instanceof Model ? $endpoint : null;
+    }
+
+    private static function formatMetaColumnValue(mixed $value): string
+    {
+        if ($value instanceof Carbon) {
+            return $value->format('Y-m-d H:i');
+        }
+
+        if (is_string($value)) {
+            return trim($value);
+        }
+
+        return '';
+    }
+
+    private static function hasConfig(): bool
+    {
+        if (! function_exists('config') || ! function_exists('app')) {
+            return false;
+        }
+
+        try {
+            return app()->bound('config');
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * @param  list<string>  $default
+     * @return list<string>
+     */
+    private static function stringListConfig(string $key, array $default): array
+    {
+        if (! self::hasConfig()) {
+            return $default;
+        }
+
+        $value = config($key, $default);
+
+        if (! is_array($value)) {
+            return $default;
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $item): string => is_string($item) ? trim($item) : '',
+            $value,
+        ), static fn (string $item): bool => $item !== ''));
+    }
+
+    private static function stringConfig(string $key, string $default): string
+    {
+        if (! self::hasConfig()) {
+            return $default;
+        }
+
+        $value = config($key, $default);
+
+        return is_string($value) && trim($value) !== '' ? trim($value) : $default;
     }
 }

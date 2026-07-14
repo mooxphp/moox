@@ -110,6 +110,16 @@ final class ResolvedTransformDataFactory
      */
     private function resolveMappedValue(array $payload, string $sourceExpression, string $destinationField, array &$warnings): mixed
     {
+        if ($this->inlineOperationRegistry->isPayloadBaseExpression($sourceExpression)) {
+            return $this->inlineOperationRegistry->applyOperation(
+                $sourceExpression,
+                null,
+                $destinationField,
+                $warnings,
+                $payload,
+            );
+        }
+
         $segments = array_values(array_filter(array_map('trim', explode('|', $sourceExpression))));
         if ($segments === []) {
             return null;
@@ -163,6 +173,10 @@ final class ResolvedTransformDataFactory
      */
     private function sourceExpressionPathExists(array $payload, string $sourceExpression): bool
     {
+        if ($this->inlineOperationRegistry->isPayloadBaseExpression($sourceExpression)) {
+            return $this->inlineOperationRegistry->payloadBaseExpressionExists($payload, $sourceExpression);
+        }
+
         $segments = array_values(array_filter(array_map('trim', explode('|', $sourceExpression))));
         if ($segments === []) {
             return false;

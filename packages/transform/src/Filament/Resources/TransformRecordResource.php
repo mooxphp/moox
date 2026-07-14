@@ -22,6 +22,7 @@ use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Transform\Filament\Resources\TransformRecordResource\Pages;
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\ConfiguredImportRecordProjectionEnricher;
 use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
 class TransformRecordResource extends BaseRecordResource
@@ -82,7 +83,14 @@ class TransformRecordResource extends BaseRecordResource
                                         ->required(),
                                     TextInput::make('destination_key')
                                         ->label(__('transform::fields.destination_key'))
-                                        ->maxLength(255),
+                                        ->maxLength(255)
+                                        ->suffixAction(
+                                            Action::make('openDestination')
+                                                ->icon('heroicon-o-arrow-top-right-on-square')
+                                                ->url(fn (?TransformRecord $record): ?string => static::resolveDestinationUrl($record))
+                                                ->openUrlInNewTab()
+                                                ->visible(fn (?TransformRecord $record): bool => static::resolveDestinationUrl($record) !== null)
+                                        ),
                                     KeyValue::make('source_projection')
                                         ->label(__('transform::fields.source_projection')),
                                     Textarea::make('error_message')
@@ -153,6 +161,15 @@ class TransformRecordResource extends BaseRecordResource
                     ->label(__('transform::fields.transform_definition'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('definition.destination_model')
+                    ->label(__('transform::fields.destination_model'))
+                    ->formatStateUsing(fn (?string $state): string => static::formatDestinationModelLabel($state))
+                    ->toggleable(),
+                TextColumn::make('destination_key')
+                    ->label(__('transform::fields.destination_key'))
+                    ->url(fn (TransformRecord $record): ?string => static::resolveDestinationUrl($record))
+                    ->openUrlInNewTab()
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->label(__('transform::fields.status'))
                     ->badge()
@@ -261,5 +278,62 @@ class TransformRecordResource extends BaseRecordResource
             'edit' => Pages\EditTransformRecord::route('/{record}/edit'),
             'view' => Pages\ViewTransformRecord::route('/{record}'),
         ];
+    }
+
+    public static function resolveDestinationUrl(?TransformRecord $record): ?string
+    {
+        if (! $record instanceof TransformRecord) {
+            return null;
+        }
+
+        $destinationKey = $record->destination_key;
+        if (! is_string($destinationKey) || $destinationKey === '') {
+            return null;
+        }
+
+        $definition = $record->definition;
+        if ($definition === null) {
+            return null;
+        }
+
+        $destinationModel = $definition->destination_model;
+        if (! is_string($destinationModel) || $destinationModel === '') {
+            return null;
+        }
+
+        $resourceClass = static::resolveDestinationResourceClass($destinationModel);
+        if (! is_string($resourceClass) || $resourceClass === '' || ! class_exists($resourceClass)) {
+            return null;
+        }
+
+        if (! method_exists($resourceClass, 'getUrl')) {
+            return null;
+        }
+
+        return $resourceClass::getUrl('edit', ['record' => $destinationKey]);
+    }
+
+    public static function formatDestinationModelLabel(?string $destinationModel): string
+    {
+        if (! is_string($destinationModel) || $destinationModel === '') {
+            return '';
+        }
+
+        return class_basename($destinationModel);
+    }
+
+    /**
+     * @return class-string|null
+     */
+    private static function resolveDestinationResourceClass(string $destinationModel): ?string
+    {
+        $configured = config('transform-record.destination_resources', config('transform.destination_resources', []));
+        if (! is_array($configured)) {
+            return null;
+        }
+
+        $resourceClass = $configured[$destinationModel] ?? null;
+
+        return is_string($resourceClass) && $resourceClass !== '' ? $resourceClass : null;
     }
 }
