@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Page\Models;
 
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
@@ -16,7 +18,7 @@ class PageTranslation extends BaseDraftTranslationModel
     }
 
     /**
-     * Get custom fillable for Draft translations
+     * @return list<string>
      */
     protected function getCustomFillable(): array
     {

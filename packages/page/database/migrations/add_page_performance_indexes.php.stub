@@ -1,0 +1,48 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (Schema::hasTable('page_translations')) {
+            Schema::table('page_translations', function (Blueprint $table): void {
+                $table->index(
+                    ['locale', 'translation_status', 'published_at'],
+                    'page_translations_published_lookup'
+                );
+                $table->index(
+                    ['permalink', 'locale'],
+                    'page_translations_permalink_locale'
+                );
+            });
+        }
+
+        if (Schema::hasTable('pages')) {
+            Schema::table('pages', function (Blueprint $table): void {
+                $table->index(['layout', 'is_active'], 'pages_layout_active');
+                $table->index(['is_startpage', 'is_active'], 'pages_startpage_active');
+            });
+        }
+    }
+
+    public function down(): void
+    {
+        if (Schema::hasTable('page_translations')) {
+            Schema::table('page_translations', function (Blueprint $table): void {
+                $table->dropIndex('page_translations_published_lookup');
+                $table->dropIndex('page_translations_permalink_locale');
+            });
+        }
+
+        if (Schema::hasTable('pages')) {
+            Schema::table('pages', function (Blueprint $table): void {
+                $table->dropIndex('pages_layout_active');
+                $table->dropIndex('pages_startpage_active');
+            });
+        }
+    }
+};

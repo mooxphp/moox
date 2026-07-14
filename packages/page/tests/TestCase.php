@@ -1,60 +1,138 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Page\Tests;
 
+use Composer\Autoload\ClassLoader;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Moox\BlockEditor\BlockEditorServiceProvider;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\View;
+use Moox\Page\Database\Factories\PageFactory;
 use Moox\Page\PageServiceProvider;
+use Moox\Page\Support\BlockContentRendererAdapter;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Tests\TestCase as ApplicationTestCase;
 
-class TestCase extends Orchestra
-{
-    protected function setUp(): void
-    {
-        parent::setUp();
+(static function (): void {
+    foreach (spl_autoload_functions() ?: [] as $autoloader) {
+        if (! is_array($autoloader)) {
+            continue;
+        }
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName): string => 'VendorName\\Draft\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
+        $loader = $autoloader[0];
+
+        if ($loader instanceof ClassLoader) {
+            $loader->addPsr4('Moox\\Page\\Tests\\', __DIR__);
+
+            return;
+        }
     }
+})();
 
-    protected function getPackageProviders($app)
+if (class_exists(Orchestra::class)) {
+    abstract class TestCase extends Orchestra
     {
-        return [
-            BlockEditorServiceProvider::class,
-            PageServiceProvider::class,
-        ];
-    }
+        use Concerns\CreatesPageSchema;
+        use RefreshDatabase;
 
-    public function getEnvironmentSetUp($app): void
-    {
-        config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_draft_table.php.stub';
-        $migration->up();
-        */
-    }
-
-    protected function createTestUser(): void
-    {
-        $this->app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->timestamps();
-        });
-
-        $user = new class extends User
+        protected function setUp(): void
         {
-            protected $table = 'users';
-        };
+            parent::setUp();
 
-        $user::create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-        ]);
+            $this->configurePagePackageTests();
+        }
+
+        protected function defineDatabaseMigrations(): void
+        {
+            $this->setUpPageSchema();
+        }
+
+        protected function getPackageProviders($app): array
+        {
+            return [
+                \Moox\Core\CoreServiceProvider::class,
+                \Moox\Localization\LocalizationServiceProvider::class,
+                \Moox\BlockEditor\BlockEditorServiceProvider::class,
+                PageServiceProvider::class,
+            ];
+        }
+
+        protected function getEnvironmentSetUp($app): void
+        {
+            $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+            $app['config']->set('database.default', 'testing');
+            $app['config']->set('database.connections.testing', [
+                'driver' => 'sqlite',
+                'database' => ':memory:',
+                'prefix' => '',
+            ]);
+            $app['config']->set('session.driver', 'array');
+            $app['config']->set('localization.enable-panel', false);
+            $this->applyPageTestConfig($app);
+        }
+
+        protected function configurePagePackageTests(): void
+        {
+            Factory::guessFactoryNamesUsing(
+                fn (string $modelName): string => PageFactory::class
+            );
+        }
+
+        protected function applyPageTestConfig(mixed $app): void
+        {
+            $config = is_object($app) && isset($app['config']) ? $app['config'] : config();
+
+            $config->set('page.cache.enabled', false);
+            $config->set('page.frontend.enabled', true);
+            $config->set('page.taxonomies', []);
+            $config->set('page.user_models', [
+                \Illuminate\Foundation\Auth\User::class => [
+                    'title_attribute' => 'name',
+                    'label' => 'User',
+                ],
+            ]);
+            $config->set('page.content_renderer', BlockContentRendererAdapter::class);
+
+            View::addLocation(__DIR__.'/stubs/views');
+        }
+    }
+} else {
+    abstract class TestCase extends ApplicationTestCase
+    {
+        use Concerns\CreatesPageSchema;
+
+        protected function setUp(): void
+        {
+            parent::setUp();
+
+            $this->setUpPageSchema();
+            $this->configurePagePackageTests();
+            $this->applyPageTestConfig($this->app);
+        }
+
+        protected function configurePagePackageTests(): void
+        {
+            Factory::guessFactoryNamesUsing(
+                fn (string $modelName): string => PageFactory::class
+            );
+        }
+
+        protected function applyPageTestConfig(mixed $app): void
+        {
+            $config = is_object($app) && isset($app['config']) ? $app['config'] : config();
+
+            $config->set('page.cache.enabled', false);
+            $config->set('page.frontend.enabled', true);
+            $config->set('page.taxonomies', []);
+            $config->set('page.user_models', [
+                \App\Models\User::class => [
+                    'title_attribute' => 'name',
+                    'label' => 'User',
+                ],
+            ]);
+
+            View::addLocation(__DIR__.'/stubs/views');
+        }
     }
 }

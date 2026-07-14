@@ -34,8 +34,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\Page\\Tests\\": "tests"
-        }
+            "Moox\\Page\\Tests\\": "tests/"
+        },
+        "files": [
+            "tests/helpers.php"
+        ]
     },
     "extra": {
         "laravel": {
@@ -70,7 +73,19 @@
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "dev-main",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../../vendor/bin/pest --configuration=phpunit.xml.dist tests/Unit tests/Feature"
+        ],
+        "test:arch": [
+            "@php ../../../vendor/bin/pest --configuration=phpunit.xml.dist --bootstrap=tests/bootstrap-arch.php tests/ArchTest.php"
+        ]
     },
     "config": {
         "allow-plugins": {

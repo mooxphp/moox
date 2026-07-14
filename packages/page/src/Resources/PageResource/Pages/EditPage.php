@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Page\Resources\PageResource\Pages;
 
 use Moox\BlockEditor\Filament\Concerns\InteractsWithTemplateForm;

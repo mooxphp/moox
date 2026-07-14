@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Page\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -126,7 +127,6 @@ class PageResource extends BaseDraftResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    static::getTypeSelect(),
                                     static::getLayoutSelect(),
                                     static::getTranslationStatusSelect(),
                                     static::getPublishDateField(),
@@ -137,8 +137,6 @@ class PageResource extends BaseDraftResource
                             Section::make('')
                                 ->schema([
                                     static::getAuthorSelect(),
-                                    DateTimePicker::make('due_at')
-                                        ->label(__('core::core.due')),
                                 ]),
                             Section::make('')
                                 ->schema([
@@ -189,8 +187,6 @@ class PageResource extends BaseDraftResource
                 TextColumn::make('author.name')
                     ->label('Author')
                     ->sortable(),
-                TextColumn::make('type')
-                    ->sortable(),
                 TextColumn::make('published_at')
                     ->dateTime()
                     ->sortable()
@@ -208,9 +204,6 @@ class PageResource extends BaseDraftResource
                 TernaryFilter::make('is_active')
                     ->label(__('core::core.active')),
                 static::getTranslationStatusFilter(),
-                SelectFilter::make('type')
-                    ->label(__('core::core.type'))
-                    ->options(['Post' => 'Post', 'Page' => 'Page']),
                 SelectFilter::make('layout')
                     ->label('Layout')
                     ->options(Page::layoutOptions()),

@@ -27,14 +27,9 @@ class ExportPageSeedData extends Command
                     'is_active',
                     'is_startpage',
                     'image',
-                    'type',
                     'layout',
-                    'due_at',
-                    'status',
                     'uuid',
                     'ulid',
-                    'custom_properties',
-                    'data',
                 ])->filter(fn (mixed $value): bool => $value !== null)->all(),
                 'translations' => $page->translations->map(function ($translation): array {
                     return [

@@ -17,14 +17,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_startpage')->default(false);
             $table->json('image')->nullable();
-            $table->string('type')->nullable();
             $table->string('layout')->default('default');
-            $table->dateTime('due_at')->nullable();
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
-            $table->string('status')->nullable();
-            $table->json('custom_properties')->nullable();
-            $table->json('data')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

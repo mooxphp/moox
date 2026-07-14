@@ -18,7 +18,7 @@ class PageFactory extends Factory
     }
 
     /**
-     * Central locale configuration
+     * @var array<string, string>
      */
     private const LOCALES = [
         'en_us' => 'English',
@@ -30,49 +30,29 @@ class PageFactory extends Factory
     public function definition(): array
     {
         return [
-            // Base model attributes (non-translated)
             'is_active' => $this->faker->boolean(80),
             'is_startpage' => false,
             'layout' => $this->faker->randomElement(array_keys(Page::layoutOptions()) ?: ['default']),
-
             'image' => [
                 'url' => $this->faker->imageUrl(800, 600, 'business'),
                 'alt' => $this->faker->sentence(4),
                 'caption' => $this->faker->optional()->sentence(),
             ],
-            'type' => $this->faker->randomElement(['article', 'page', 'post', 'news', 'tutorial']),
-            'due_at' => $this->faker->optional(0.3)->dateTimeBetween('now', '+30 days'),
-            'status' => $this->faker->randomElement(['draft', 'published', 'scheduled', 'waiting', 'private']),
-            'custom_properties' => [
-                'theme' => $this->faker->randomElement(['light', 'dark', 'auto']),
-                'layout' => $this->faker->randomElement(['grid', 'list', 'masonry']),
-                'show_author' => $this->faker->boolean(),
-                'allow_comments' => $this->faker->boolean(70),
-            ],
         ];
     }
 
-    /**
-     * Configure the factory to handle translations automatically
-     */
     public function configure()
     {
-        return $this->afterCreating(function (Page $page) {
-            // Set translated attributes directly on the model after it's created
+        return $this->afterCreating(function (Page $page): void {
             $this->setTranslatedAttributes($page);
         });
     }
 
-    /**
-     * Set translated attributes using Astrotomic's methods
-     */
     private function setTranslatedAttributes(Page $page): void
     {
-        $locales = $this->getLocales();
-
         $userModel = array_key_first(config('page.user_models'));
 
-        foreach ($locales as $locale) {
+        foreach ($this->getLocales() as $locale) {
             $page->translateOrNew($locale)->fill([
                 'title' => $this->getLocalizedTitle($locale),
                 'slug' => $this->getLocalizedSlug($locale),
@@ -88,16 +68,13 @@ class PageFactory extends Factory
     }
 
     /**
-     * Get locales to create translations for
+     * @return list<string>
      */
     private function getLocales(): array
     {
         return array_keys(self::LOCALES);
     }
 
-    /**
-     * Get localized title based on locale
-     */
     private function getLocalizedTitle(string $locale): string
     {
         $titles = [
@@ -110,42 +87,25 @@ class PageFactory extends Factory
         return $titles[$locale] ?? $titles['en_us'];
     }
 
-    /**
-     * Get localized slug based on locale
-     */
     private function getLocalizedSlug(string $locale): string
     {
-        $baseSlug = $this->faker->slug(3);
-
-        return $baseSlug.'-'.$locale;
+        return $this->faker->slug(3).'-'.$locale;
     }
 
-    /**
-     * Get localized description based on locale
-     */
     private function getLocalizedDescription(string $locale): string
     {
-        $baseDescription = $this->faker->paragraph(2);
         $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
 
-        return $baseDescription.$suffix;
+        return $this->faker->paragraph(2).$suffix;
     }
 
-    /**
-     * Get localized content based on locale
-     */
     private function getLocalizedContent(string $locale): string
     {
-        $content = $this->faker->paragraphs(rand(3, 8), true);
-
         $suffix = isset(self::LOCALES[$locale]) ? ' ('.self::LOCALES[$locale].' )' : '';
 
-        return $content.$suffix;
+        return $this->faker->paragraphs(rand(3, 8), true).$suffix;
     }
 
-    /**
-     * Create a page marked as the startpage.
-     */
     public function homepage(): static
     {
         return $this->state(fn (): array => [
@@ -153,17 +113,9 @@ class PageFactory extends Factory
         ]);
     }
 
-    /**
-     * Create a published page
-     */
     public function published(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'status' => 'published',
-            ];
-        })->afterCreating(function (Page $page) {
-            // Override translation status for published
+        return $this->afterCreating(function (Page $page): void {
             foreach ($page->translations as $translation) {
                 if (! is_a($translation, PageModels::pageTranslation())) {
                     continue;
@@ -178,17 +130,9 @@ class PageFactory extends Factory
         });
     }
 
-    /**
-     * Create a scheduled page
-     */
     public function scheduled(): static
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'status' => 'scheduled',
-            ];
-        })->afterCreating(function (Page $page) {
-            // Override translation status for scheduled
+        return $this->afterCreating(function (Page $page): void {
             foreach ($page->translations as $translation) {
                 if (! is_a($translation, PageModels::pageTranslation())) {
                     continue;
@@ -203,16 +147,13 @@ class PageFactory extends Factory
         });
     }
 
-    /**
-     * Create a page with specific locales
-     */
     public function withLocales(array $locales): static
     {
-        return $this->afterCreating(function (Page $page) use ($locales) {
-            // Clear existing translations
+        return $this->afterCreating(function (Page $page) use ($locales): void {
             $page->deleteTranslations();
 
-            // Create only specified locales
+            $userModel = array_key_first(config('page.user_models'));
+
             foreach ($locales as $locale) {
                 $page->translateOrNew($locale)->fill([
                     'title' => $this->getLocalizedTitle($locale),
@@ -221,7 +162,7 @@ class PageFactory extends Factory
                     'description' => $this->getLocalizedDescription($locale),
                     'content' => $this->getLocalizedContent($locale),
                     'author_id' => $this->faker->numberBetween(1, 10),
-                    'author_type' => array_key_first(config('page.user_models')),
+                    'author_type' => $userModel,
                     'translation_status' => 'draft',
                 ]);
                 $page->save();
@@ -229,27 +170,18 @@ class PageFactory extends Factory
         });
     }
 
-    /**
-     * Create a page with only English translation
-     */
     public function englishOnly(): static
     {
-        return $this->withLocales(['en']);
+        return $this->withLocales(['en_us']);
     }
 
-    /**
-     * Create a page with German and English
-     */
     public function bilingual(): static
     {
-        return $this->withLocales(['en', 'de']);
+        return $this->withLocales(['en_us', 'de_de']);
     }
 
-    /**
-     * Create a page with all supported languages
-     */
     public function multilingual(): static
     {
-        return $this->withLocales(['en', 'de', 'fr', 'es']);
+        return $this->withLocales(array_keys(self::LOCALES));
     }
 }

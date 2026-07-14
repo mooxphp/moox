@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We maintain the current version of `Moox Draft` actively.
+We maintain the current version of `Moox Page` actively.
 
 Do not expect security fixes for older versions.
 

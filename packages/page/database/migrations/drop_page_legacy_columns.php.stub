@@ -1,0 +1,52 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('pages')) {
+            return;
+        }
+
+        Schema::table('pages', function (Blueprint $table): void {
+            foreach (['data', 'type', 'due_at', 'status', 'custom_properties'] as $column) {
+                if (Schema::hasColumn('pages', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('pages')) {
+            return;
+        }
+
+        Schema::table('pages', function (Blueprint $table): void {
+            if (! Schema::hasColumn('pages', 'type')) {
+                $table->string('type')->nullable()->after('image');
+            }
+
+            if (! Schema::hasColumn('pages', 'due_at')) {
+                $table->dateTime('due_at')->nullable()->after('layout');
+            }
+
+            if (! Schema::hasColumn('pages', 'status')) {
+                $table->string('status')->nullable()->after('ulid');
+            }
+
+            if (! Schema::hasColumn('pages', 'custom_properties')) {
+                $table->json('custom_properties')->nullable()->after('status');
+            }
+
+            if (! Schema::hasColumn('pages', 'data')) {
+                $table->json('data')->nullable()->after('custom_properties');
+            }
+        });
+    }
+};

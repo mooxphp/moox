@@ -4,7 +4,6 @@ use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
-use Moox\News\Resources\NewsResource;
 use Moox\Page\Models\Page;
 use Moox\Page\Models\PageTranslation;
 use Moox\Page\Support\BlockContentRendererAdapter;
@@ -101,6 +100,17 @@ return [
     */
     'content_renderer' => BlockContentRendererAdapter::class,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cache
+    |--------------------------------------------------------------------------
+    */
+    'cache' => [
+        'enabled' => env('PAGE_CACHE_ENABLED', false),
+        'ttl' => env('PAGE_CACHE_TTL', 3600),
+        'locale_ttl' => env('PAGE_CACHE_LOCALE_TTL', 3600),
+    ],
+
     'readonly' => false,
     'resources' => [
         'page' => [
@@ -154,9 +164,6 @@ return [
 
             'scopes' => [
                 'allowed' => [
-                    'news' => [
-                        'resource' => NewsResource::class,
-                    ],
                     'media' => [
                         'resource' => MediaResource::class,
                     ],
@@ -175,7 +182,6 @@ return [
             ],
         ],
     ],
-    'relations' => [],
     'taxonomies' => [
         'category' => [
             'label' => 'trans//core::core.category',
@@ -213,15 +219,6 @@ return [
             'title_attribute' => 'name',
             'label' => 'App User',
         ],
-        User::class => [
-            'title_attribute' => 'name',
-            'label' => 'Moox User',
-        ],
-        // Add more user models as needed:
-        // \My\Custom\AdminUser::class => [
-        //     'title_attribute' => 'full_name',
-        //     'label' => 'Admin User',
-        // ],
     ],
 
     /*

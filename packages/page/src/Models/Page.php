@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Page\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
@@ -18,21 +20,18 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property bool $is_active
- * @property array $data
+ * @property bool $is_startpage
  * @property array $image
- * @property string $type
+ * @property string $layout
  * @property string[] $translatedAttributes
- * @property Carbon|null $due_at
  * @property string $uuid
  * @property string $ulid
  * @property-read string $title
  * @property-read string $slug
  * @property-read string $description
  * @property-read string $content
- * @property-read string $status
  * @property-read int|null $author_id
  * @property-read string|null $author_type
-
  * @property-read Collection<int, Media> $media
  */
 class Page extends BaseDraftModel implements HasMedia
@@ -58,7 +57,7 @@ class Page extends BaseDraftModel implements HasMedia
     }
 
     /**
-     * Get custom translated attributes for Draft
+     * @return list<string>
      */
     protected function getCustomTranslatedAttributes(): array
     {
@@ -77,23 +76,17 @@ class Page extends BaseDraftModel implements HasMedia
         'is_active',
         'is_startpage',
         'image',
-        'type',
         'layout',
-        'due_at',
-        'status',
         'uuid',
         'ulid',
-        'custom_properties',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_startpage' => 'boolean',
         'image' => 'json',
-        'due_at' => 'datetime',
         'uuid' => 'string',
         'ulid' => 'string',
-        'custom_properties' => 'json',
     ];
 
     /**
@@ -116,7 +109,7 @@ class Page extends BaseDraftModel implements HasMedia
 
                 if (! $hasReplacementHomepage) {
                     throw ValidationException::withMessages([
-                        'is_startpage' => 'Es muss immer eine Startseite geben.',
+                        'is_startpage' => __('page::page.homepage_required'),
                     ]);
                 }
             }
@@ -142,7 +135,7 @@ class Page extends BaseDraftModel implements HasMedia
             ->fit(Fit::Contain, 300, 300);
     }
 
-    public function mediaThroughUsables()
+    public function mediaThroughUsables(): BelongsToMany
     {
         return $this->belongsToMany(
             Media::class,
@@ -152,7 +145,7 @@ class Page extends BaseDraftModel implements HasMedia
         )->where('media_usables.media_usable_type', '=', static::class);
     }
 
-    protected static function newFactory()
+    protected static function newFactory(): PageFactory
     {
         return PageFactory::new();
     }
