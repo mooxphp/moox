@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Traits;
 
+use Moox\Connect\Support\ConnectQueueSettings;
 use Moox\Connect\Support\ConnectQueueSettingsResolver;
 
 trait ConfiguresConnectQueue
@@ -12,10 +13,13 @@ trait ConfiguresConnectQueue
 
     public int $timeout;
 
+    protected ConnectQueueSettings $connectQueueSettings;
+
     protected function configureConnectQueue(string $jobType, ?int $endpointId = null, ?int $connectionId = null): void
     {
-        app(ConnectQueueSettingsResolver::class)
-            ->resolve($jobType, $endpointId, $connectionId)
-            ->applyTo($this);
+        $this->connectQueueSettings = app(ConnectQueueSettingsResolver::class)
+            ->resolve($jobType, $endpointId, $connectionId);
+
+        $this->connectQueueSettings->applyTo($this);
     }
 }

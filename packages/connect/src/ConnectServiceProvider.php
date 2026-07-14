@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Connect;
 
-use Moox\Connect\Console\ConnectQueueListenCommand;
 use Moox\Connect\Console\PurgeImportRecordsCommand;
 use Moox\Connect\Filament\Providers\ConnectPanelProvider;
 use Moox\Connect\Models\ApiConnection;
 use Moox\Connect\Support\ConnectionHealthChecker;
+use Moox\Connect\Support\TransformerRegistry;
+use Moox\Connect\Transformers\ArrayTransformer;
+use Moox\Connect\Transformers\DateTimeTransformer;
+use Moox\Connect\Transformers\JsonTransformer;
+use Moox\Connect\Transformers\NumberTransformer;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -19,6 +23,16 @@ class ConnectServiceProvider extends MooxServiceProvider
         parent::register();
 
         $this->mergeConfigFiles();
+
+        $this->app->singleton(TransformerRegistry::class, function (): TransformerRegistry {
+            $registry = new TransformerRegistry;
+            $registry->register(new ArrayTransformer('array'));
+            $registry->register(new DateTimeTransformer('datetime'));
+            $registry->register(new JsonTransformer('json'));
+            $registry->register(new NumberTransformer('number'));
+
+            return $registry;
+        });
 
         if (config('connect.enable-panel')) {
             $this->app->register(ConnectPanelProvider::class);
@@ -54,7 +68,6 @@ class ConnectServiceProvider extends MooxServiceProvider
                 'add_options_to_api_connections_table',
             ])
             ->hasCommand(PurgeImportRecordsCommand::class)
-            ->hasCommand(ConnectQueueListenCommand::class)
             ->hasTranslations()
             ->hasViews();
     }
