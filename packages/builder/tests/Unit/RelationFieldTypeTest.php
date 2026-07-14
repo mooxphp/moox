@@ -28,6 +28,8 @@ use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\RelationTargetResolver;
 use Moox\Builder\Support\RelationValueRules;
 use Moox\Builder\Tests\Support\TestCategoryLike;
+use Moox\Builder\Tests\Support\TestStaticUnitLike;
+use Moox\Builder\Tests\Support\TestStaticUnitLikeResource;
 use Moox\Builder\Tests\Support\TestCategoryLikeResource;
 use Moox\Builder\Tests\Support\TestCategoryLikeTranslation;
 use Moox\Builder\Tests\Support\TestItem;
@@ -361,11 +363,47 @@ it('resolves display titles for translation-backed relation targets', function (
         $category->getKey() => 'News',
     ])->and($resolver->labelsFor('test_category_like', [$category->getKey()]))->toBe([
         $category->getKey() => 'News',
-    ])->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
+    ])        ->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
 
     $queryTarget = $resolver->queryTarget('test_category_like');
 
     expect($queryTarget)->not->toBeNull()
         ->and($queryTarget['titleColumn'])->toBe('title')
         ->and($queryTarget['translation']['table'] ?? null)->toBe('category_translations');
+});
+
+it('resolves labels for models that use common_name instead of title', function (): void {
+    require_once __DIR__.'/../Support/TestStaticUnitLike.php';
+    require_once __DIR__.'/../Support/TestStaticUnitLikeResource.php';
+
+    Schema::dropIfExists('static_units');
+
+    Schema::create('static_units', function (Blueprint $table): void {
+        $table->id();
+        $table->string('code', 10);
+        $table->string('common_name');
+        $table->string('symbol', 20)->nullable();
+    });
+
+    $registry = new class extends EntityRegistry
+    {
+        protected function panelResources(): array
+        {
+            return [TestStaticUnitLikeResource::class];
+        }
+    };
+
+    app()->instance(EntityRegistry::class, $registry);
+
+    $unit = TestStaticUnitLike::query()->create([
+        'code' => 'KGM',
+        'common_name' => 'Kilogram',
+        'symbol' => 'kg',
+    ]);
+
+    $resolver = app(RelationTargetResolver::class);
+
+    expect($resolver->search('test_static_unit_like', ''))->toBe([
+        $unit->getKey() => 'Kilogram',
+    ])->and($resolver->search('test_static_unit_like', 'kg'))->toHaveKey($unit->getKey());
 });

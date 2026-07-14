@@ -214,7 +214,7 @@ final class RelationTargetResolver
         $translation = null;
         $titleColumn = 'id';
 
-        foreach (['title', 'name', 'label'] as $candidate) {
+        foreach (['title', 'name', 'label', 'common_name', 'symbol', 'code'] as $candidate) {
             if ($this->modelHasColumn($modelClass, $candidate)) {
                 $titleColumn = $candidate;
                 break;
@@ -310,7 +310,16 @@ final class RelationTargetResolver
         }
 
         $modelClass = $this->modelClass($entity);
-        $candidates = ['display_title', 'display_name', 'title', 'name', 'label'];
+        $candidates = [
+            'display_title',
+            'display_name',
+            'title',
+            'name',
+            'label',
+            'common_name',
+            'symbol',
+            'code',
+        ];
 
         if ($modelClass === null) {
             return $candidates;
@@ -351,12 +360,22 @@ final class RelationTargetResolver
      */
     protected function applySearchFilter(Builder $query, string $modelClass, string $term): void
     {
-        foreach (['title', 'name', 'label'] as $column) {
-            if ($this->modelHasColumn($modelClass, $column)) {
-                $query->where($column, 'like', "%{$term}%");
+        $columns = [];
 
-                return;
+        foreach (['title', 'name', 'label', 'common_name', 'symbol', 'code'] as $column) {
+            if ($this->modelHasColumn($modelClass, $column)) {
+                $columns[] = $column;
             }
+        }
+
+        if ($columns !== []) {
+            $query->where(function (Builder $builder) use ($columns, $term): void {
+                foreach ($columns as $column) {
+                    $builder->orWhere($column, 'like', "%{$term}%");
+                }
+            });
+
+            return;
         }
 
         foreach (['title', 'name', 'label'] as $attribute) {

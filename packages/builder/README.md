@@ -16,15 +16,17 @@ Admins define fields in the panel. Values are stored in typed `builder_field_val
 6. [Quick Start](#quick-start)
 7. [Connect a Resource](#connect-a-resource)
 8. [Field Groups in Admin](#field-groups-in-admin)
-9. [Field Types & Capabilities](#field-types--capabilities)
-10. [Translations](#translations)
-11. [Configuration](#configuration)
-12. [Extension](#extension)
-13. [Model API](#model-api)
-14. [API Serialization](#api-serialization)
-15. [Package Structure](#package-structure)
-16. [Testing](#testing)
-17. [Limits & Roadmap](#limits--roadmap)
+9. [Table columns](#table-columns)
+10. [Table filters](#table-filters)
+11. [Field Types & Capabilities](#field-types--capabilities)
+12. [Translations](#translations)
+13. [Configuration](#configuration)
+14. [Extension](#extension)
+15. [Model API](#model-api)
+16. [API Serialization](#api-serialization)
+17. [Package Structure](#package-structure)
+18. [Testing](#testing)
+19. [Limits & Roadmap](#limits--roadmap)
 
 ---
 
@@ -346,9 +348,23 @@ Open the resource create/edit form — custom field sections should appear.
 
 ### Live examples in this monorepo
 
-- Resource: `packages/item/src/Resources/ItemResource.php`
-- Model: `packages/item/src/Models/Item.php`
-- Tests: `packages/builder/tests/Support/TestItemResource.php`
+Branch: **`feature/custom-fields`** (includes list table filters).
+
+```bash
+git fetch origin
+git checkout feature/custom-fields
+composer install
+php artisan migrate   # if builder tables are not present yet
+```
+
+| Piece | Path |
+|-------|------|
+| Resource (filters wired) | `packages/item/src/Resources/ItemResource.php` |
+| Model | `packages/item/src/Models/Item.php` |
+| Same pattern | `packages/record`, `packages/draft` |
+| Tests | `packages/builder/tests/Support/TestItemResource.php` |
+
+Built-in list resources already call `...static::customFieldFilters()` with `deferFilters(false)` and `persistFiltersInSession()` — see [Table filters](#table-filters).
 
 ### Troubleshooting
 
@@ -358,38 +374,12 @@ Open the resource create/edit form — custom field sections should appear.
 | No sections on the form | Inactive group, wrong entity, or location rules | Check group is active, **Show on**, and [location rules](#location-rules) |
 | Sidebar empty | Group placement is `sidebar` but form has no sidebar call | Add `...static::customFieldComponents('sidebar')` in the sidebar column |
 | `$item->feld` does not work | Model missing trait | Add `InteractsWithCustomFields` to the model |
-| No filter on list | Toggle not saved, wrong list resource, or unsupported field config | Enable **Show in table filter** under **List filter**, save the group, open Item/Record/Draft list, click the funnel icon |
+| No filter on list | Toggle not saved, wrong list resource, or unsupported field config | Enable **Show in table filter** under **List filter**, save the group, open Item/Record/Draft list, click the funnel icon — see [Table filters](#table-filters) |
 | Filter missing for relation | Multiple relation or no related entity | Use single relation and pick a related entity first |
+| Filter toggle disabled in admin | Choice field has no options yet | Add at least one option, then enable the list filter |
+| Filter chip visible but no results | Values stored under another locale | Switch `?lang=` on the list page to match stored `builder_field_values.locale` |
 
-Details and overrides: [Connect a Resource](#connect-a-resource). Manual verification: [Testing → Checklist](#checklist).
-
-### Table filters
-
-Opt-in Filament list filters for **select**, **radio**, **button_group**, **toggle**, and **single relation** fields.
-
-1. In the field group, open **List filter** on the field and enable **Show in table filter**
-2. Save the field group
-3. On the resource list page, use the funnel icon in the table toolbar
-
-Wire filters on custom resources:
-
-```php
-public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-            // ...
-            ...static::customFieldColumns(),
-        ])
-        ->filters([
-            // your own filters …
-            ...static::customFieldFilters(),
-        ])
-        ->deferFilters(false);
-}
-```
-
-Built-in on **Item**, **Record**, and **Draft** in this monorepo. Choice fields need at least one option; relation filters require a related entity and `multiple` off.
+Details and overrides: [Connect a Resource](#connect-a-resource). List views: [Table columns](#table-columns), [Table filters](#table-filters). Manual verification: [Testing → Checklist](#checklist).
 
 ---
 
@@ -438,6 +428,15 @@ protected static function customFieldsEntity(): ?string
 - Define fields
 - Keep active
 
+### Step 4: List views (optional)
+
+| Goal | Resource `table()` | Field group admin |
+|------|-------------------|-------------------|
+| Columns | `...static::customFieldColumns()` | **Table column** → **Show in table** |
+| Filters | `...static::customFieldFilters()` + `deferFilters(false)` | **List filter** → **Show in table filter** |
+
+See [Table columns](#table-columns) and [Table filters](#table-filters). Item, Record, and Draft in this monorepo already include both.
+
 **Not required:**
 
 - Trait or column on the Eloquent model
@@ -462,14 +461,152 @@ Navigation: **Fields → Field Groups**
 | **Layouts** | For flexible content (layout key + subfields) |
 | **Visibility** | Per context: admin, frontend, API (`visible_*` toggles) |
 | **Conditional logic** | Show/hide rules based on sibling field values (root-level v1) |
-| **Table column** | Optional list-column settings for scalar, media, and relation fields |
-| **Table filter** | Optional list-filter for select, toggle, and single relation fields |
+| **Table column** | Optional list-column settings for scalar, media, and relation fields — see [Table columns](#table-columns) |
+| **Table filter** | Optional list-filter for select, radio, button_group, toggle, and single relation fields — see [Table filters](#table-filters) |
 
 Repeater rows are collapsed by default and show type, key, and required flag in the label.
 
 Use the language selector (`?lang=`) on create/edit to translate group names, field labels, option labels, and translatable config. See [Translations](#translations).
 
 Package UI strings: `resources/lang/de/builder.php`, `en/builder.php`.
+
+---
+
+## Table columns
+
+Opt-in Filament list columns for custom fields. Values are read from `builder_field_values` (with locale resolution) — no extra column on the consumer model.
+
+### Supported field types
+
+| Category | Types | Filament column |
+|----------|-------|-----------------|
+| **Scalar** | `text`, `textarea`, `email`, `url`, `number`, `range`, `select`, `radio`, `button_group`, `multiselect`, `checkbox_list`, `date`, `datetime`, `time`, `color`, `link`, `oembed` | `TextColumn`, `ColorColumn`, or formatted text |
+| **Toggle** | `toggle` | `IconColumn` (boolean) |
+| **Media** *(requires `moox/media`)* | `image` | `ImageColumn` |
+| **Relation** | `relation` (single or multiple) | `TextColumn` with resolved labels |
+
+**Not supported as columns:** `password`, `rich_text`, layout/compound types (`group`, `repeater`, `flexible_content`, `tab`, `section`, `message`), `gallery`, `file`.
+
+### Admin setup
+
+1. **Fields → Field Groups** → open a field
+2. Section **Table column** → enable **Show in table**
+3. Optional: sortable, searchable, hidden by default, badge/color/icon presentation (text-based types)
+4. Save the field group
+
+### Wire on a resource
+
+```php
+public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            // your own columns …
+            ...static::customFieldColumns(),
+        ]);
+}
+```
+
+`HasCustomFields` also registers `customFieldsModifyTableQuery()` (via Moox `BaseResource` conventions) to eager-load values when columns are present — avoids N+1 on list pages.
+
+### Built-in in this monorepo
+
+**Item**, **Record**, and **Draft** already spread `...static::customFieldColumns()` in their `table()` definitions.
+
+### Notes
+
+- Relation columns resolve labels through `RelationTargetResolver` (same rules as relation fields).
+- Sort/search on relation columns may fall back to stored IDs when titles exist only in translation tables.
+- Columns respect the active list locale (`?lang=` / session) via `BuilderLocaleResolver`.
+
+---
+
+## Table filters
+
+Opt-in Filament list filters for custom fields. Filtering runs as subqueries on `builder_field_values` — the consumer model needs no filter scopes.
+
+### Supported field types
+
+| Field type | Filter UI | Requirements |
+|------------|-----------|--------------|
+| `select`, `radio`, `button_group` | `SelectFilter` (options from field definition) | At least one option |
+| `toggle` | `TernaryFilter` (yes / no / any) | — |
+| `relation` | `SelectFilter` (searchable, preloaded) | `related_entity` set, `multiple` off |
+
+**Not filterable:** all other types (text, number, media, compound fields, multiselect, etc.).
+
+### Admin setup
+
+1. **Fields → Field Groups** → open a filterable field
+2. Section **List filter** → enable **Show in table filter**
+3. Save the field group
+4. Open the resource list (e.g. Items) → funnel icon in the table toolbar → pick a value
+
+The toggle is disabled in admin when prerequisites are missing (e.g. relation without target entity, choice field without options, multiple relation).
+
+### Wire on a resource
+
+```php
+public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            // ...
+            ...static::customFieldColumns(),
+        ])
+        ->filters([
+            // your own filters …
+            ...static::customFieldFilters(),
+        ])
+        ->deferFilters(false)          // recommended: filters visible without "Apply"
+        ->persistFiltersInSession();   // optional: remember filter state per session
+}
+```
+
+| Method | Role |
+|--------|------|
+| `customFieldFilters()` | Compiles `TableFilterCompiler` output for visible field groups |
+| `deferFilters(false)` | Shows filter controls immediately (Filament default defers them) |
+| `persistFiltersInSession()` | Keeps selected filters across list navigation |
+
+### Built-in in this monorepo
+
+| Resource | Filters wired |
+|----------|---------------|
+| `packages/item/src/Resources/ItemResource.php` | `customFieldFilters()` + `deferFilters(false)` + `persistFiltersInSession()` |
+| `packages/record/src/Resources/RecordResource.php` | same |
+| `packages/draft/src/Resources/DraftResource.php` | same |
+
+Other resources with `HasCustomFields` do **not** get filters automatically — add the snippet above to `table()`.
+
+### How it works
+
+```
+FieldGroup (show_in_filter = true)
+    → DefinitionRegistry
+    → TableFilterCompiler
+    → SelectFilter / TernaryFilter
+    → CustomFieldTableFilterQuery (subquery on builder_field_values)
+```
+
+Only fields marked `settings.show_in_filter` in active, location-matched groups are compiled. Filter names use the field key (`fuel`, `accident_free`, …).
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| No funnel / no custom filters | Resource missing `...static::customFieldFilters()` in `table()` |
+| Filter not in admin toggle list | Field type not filterable, or choice/relation preconditions not met |
+| Relation filter empty | Set `related_entity`, disable **Multiple**, save, reload field group editor |
+| Filter has no effect | Save field group after enabling toggle; ensure records have values for the active locale |
+| Filters hidden behind "Apply" | Add `->deferFilters(false)` on the table |
+
+### Tests
+
+```bash
+php artisan test --compact packages/builder/tests/Unit/TableFilterCompilerTest.php
+php artisan test --compact packages/builder/tests/Unit/FilterableFieldTypesTest.php
+```
 
 ---
 
@@ -877,7 +1014,8 @@ packages/builder/
     ├── Compiler/
     │   ├── LocationMatcher.php
     │   ├── SchemaCompiler.php
-    │   └── TableColumnCompiler.php
+    │   ├── TableColumnCompiler.php
+    │   └── TableFilterCompiler.php
     ├── Data/
     │   ├── FieldDefinition.php
     │   ├── FieldGroupDefinition.php
@@ -916,6 +1054,8 @@ packages/builder/
     │   └── FieldValueValidator.php
     └── Support/
         ├── BuilderLocaleResolver.php
+        ├── CustomFieldTableFilterQuery.php
+        ├── FilterableFieldTypes.php
         ├── ConditionalLogic.php
         ├── CustomFieldsFilamentHooks.php
         ├── CustomFieldsTranslatability.php
@@ -974,7 +1114,8 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Flexible content sortable | no errors after save/load |
 | Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
 | Relation field on a group | searchable select, save/load IDs, API shows labels |
-| Table filter on select/toggle/relation | filter chip on list pages narrows matching records |
+| Table column on scalar/toggle/media/relation field | column appears (toggle via column picker if hidden by default) |
+| Table filter on select/radio/button_group/toggle/relation | filter chip on list pages narrows matching records |
 | Conditional logic (show/hide) | field visibility updates live; hidden required fields do not block save |
 | `?lang=` on translatable resource | values stored per `locale` column |
 
@@ -1000,7 +1141,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
-- **Table filters** — opt-in list filters for select, toggle, and single relation fields (`TableFilterCompiler`)
+- **Table filters** — opt-in list filters for select, radio, button_group, toggle, and single relation fields (`TableFilterCompiler`, `CustomFieldTableFilterQuery`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
 - **Translations** — definition + value locales (Astrotomic + `builder_field_values.locale`)
@@ -1011,12 +1152,14 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 
 - Location rules: no template/parent params yet; record/taxonomy/status rules need a saved record (ignored on create)
 - Conditional logic: root-level siblings only — not inside repeaters/groups/flexible content
+- Table filters: no centralized filter builder / preset groups yet (per-field opt-in only)
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
 - No clone field type (ACF-style reusable field group in a field)
 
 **Not implemented yet:**
 
+- Centralized filter groups / filter presets (per-field list filters only in v1)
 - Clone field type (ACF)
 - Location params beyond entity/record type/taxonomy/user role (e.g. template, parent)
 - Nested conditional logic (inside compound fields)
