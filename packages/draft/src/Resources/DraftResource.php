@@ -18,6 +18,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\HasCustomFields;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Draft\Models\Draft;
@@ -31,6 +32,7 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class DraftResource extends BaseDraftResource
 {
+    use HasCustomFields;
     use HasResourceTabs;
     use HasResourceTaxonomy;
 
@@ -106,6 +108,7 @@ class DraftResource extends BaseDraftResource
                                 ->label(__('core::core.description')),
                             MarkdownEditor::make('content')
                                 ->label(__('core::core.content')),
+                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -134,6 +137,7 @@ class DraftResource extends BaseDraftResource
                                     ColorPicker::make('color')
                                         ->label(__('core::core.color')),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardCopyableFields(),
@@ -166,6 +170,7 @@ class DraftResource extends BaseDraftResource
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('description')
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -201,6 +206,7 @@ class DraftResource extends BaseDraftResource
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 ...static::getTaxonomyFilters(),
                 static::getLocaleFilter(),
+                ...static::customFieldFilters(),
             ])->deferFilters(false)
             ->persistFiltersInSession();
     }

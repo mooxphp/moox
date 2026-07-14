@@ -1,0 +1,71 @@
+/*
+ * Builder field group admin — visual separation of field repeater items.
+ * Scoped via the `moox-builder-fields` class on the top-level fields repeater,
+ * so each field reads as a distinct card with a clear starting edge.
+ */
+
+.moox-builder-fields > .fi-fo-repeater-items {
+    gap: 1.25rem;
+}
+
+.moox-builder-fields > .fi-fo-repeater-items > .fi-fo-repeater-item {
+    border-inline-start-width: 4px;
+    border-inline-start-color: var(--primary-500);
+    box-shadow:
+        0 1px 2px 0 rgb(0 0 0 / 0.05),
+        0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.moox-builder-fields > .fi-fo-repeater-items > .fi-fo-repeater-item > .fi-fo-repeater-item-header {
+    background-color: var(--gray-50);
+}
+
+.dark .moox-builder-fields > .fi-fo-repeater-items > .fi-fo-repeater-item > .fi-fo-repeater-item-header {
+    background-color: color-mix(in oklab, var(--gray-950) 60%, transparent);
+}
+
+/*
+ * Item header label — type icon in a tinted circle acts as a visual anchor,
+ * followed by the field title and muted meta (type · name · required …).
+ */
+.moox-builder-field-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+}
+
+.moox-builder-field-item__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+    background-color: color-mix(in oklab, var(--primary-500) 15%, transparent);
+    color: var(--primary-600);
+}
+
+.moox-builder-field-item__icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.moox-builder-field-item__title {
+    font-weight: 600;
+}
+
+.moox-builder-field-item__meta {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.dark .moox-builder-field-item__badge {
+    color: var(--primary-400);
+}
+
+.dark .moox-builder-field-item__meta {
+    color: var(--gray-400);
+}

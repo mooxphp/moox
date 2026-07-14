@@ -4,12 +4,13 @@ namespace Moox\Record\Models;
 
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
+use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Record\Enums\RecordStatus;
 
 class Record extends BaseRecordModel
 {
-    use HasModelTaxonomy;
+    use HasModelTaxonomy, InteractsWithCustomFields;
 
     protected $fillable = [
         'title',

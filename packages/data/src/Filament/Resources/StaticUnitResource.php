@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\CreateStaticUnit;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\EditStaticUnit;
@@ -211,5 +212,39 @@ class StaticUnitResource extends BaseRecordResource
     public static function getNavigationBadge(): ?string
     {
         return (string) static::getModel()::count();
+    }
+
+    public static function hasRecordTitle(): bool
+    {
+        return true;
+    }
+
+    public static function getRecordTitle(?Model $record): string
+    {
+        if (! $record instanceof StaticUnit) {
+            return '';
+        }
+
+        /** @var StaticUnit $record */
+        $symbol = filled($record->symbol) ? (string) $record->symbol : null;
+        $name = filled($record->common_name) ? (string) $record->common_name : null;
+
+        if ($symbol !== null && $name !== null) {
+            return "{$symbol} — {$name}";
+        }
+
+        if ($symbol !== null) {
+            return $symbol;
+        }
+
+        if ($name !== null) {
+            return $name;
+        }
+
+        if (filled($record->code)) {
+            return (string) $record->code;
+        }
+
+        return (string) $record->getKey();
     }
 }
