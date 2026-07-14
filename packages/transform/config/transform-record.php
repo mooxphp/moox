@@ -25,7 +25,7 @@ return [
                     'field' => 'status',
                     'operator' => '=',
                     'value' => 'failed',
-               
+
                 ],
             ],
         ],
@@ -37,7 +37,7 @@ return [
                     'field' => 'status',
                     'operator' => '=',
                     'value' => 'updated',
-               
+
                 ],
             ],
         ],
@@ -49,7 +49,7 @@ return [
                     'field' => 'status',
                     'operator' => '=',
                     'value' => 'pending',
-               
+
                 ],
             ],
         ],
