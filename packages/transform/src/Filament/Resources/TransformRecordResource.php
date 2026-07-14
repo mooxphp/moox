@@ -22,6 +22,7 @@ use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Transform\Filament\Resources\TransformRecordResource\Pages;
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformRecord;
+use Moox\Transform\Support\ConfiguredImportRecordProjectionEnricher;
 use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
 class TransformRecordResource extends BaseRecordResource
