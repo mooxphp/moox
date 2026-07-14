@@ -18,17 +18,22 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Transform\Filament\Resources\TransformRecordResource\Pages;
 use Moox\Transform\Jobs\RunTransformRecordJob;
 use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
 
-class TransformRecordResource extends BaseItemResource
+class TransformRecordResource extends BaseRecordResource
 {
     protected static ?string $model = TransformRecord::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-clipboard-document-check';
+
+    protected static function getEntityType(): string
+    {
+        return 'transform-record';
+    }
 
     public static function getModelLabel(): string
     {

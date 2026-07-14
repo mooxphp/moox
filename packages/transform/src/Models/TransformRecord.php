@@ -6,14 +6,11 @@ namespace Moox\Transform\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\ValidationException;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 
-class TransformRecord extends BaseItemModel
+class TransformRecord extends BaseRecordModel
 {
-    use SoftDeletes;
-
     protected $table = 'transform_records';
 
     protected $fillable = [
@@ -47,6 +44,11 @@ class TransformRecord extends BaseItemModel
             'last_run_at' => 'datetime',
             'last_success_at' => 'datetime',
         ];
+    }
+
+    public static function getResourceName(): string
+    {
+        return 'transform-record';
     }
 
     protected static function booted(): void
