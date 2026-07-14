@@ -28,13 +28,13 @@ use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\RelationTargetResolver;
 use Moox\Builder\Support\RelationValueRules;
 use Moox\Builder\Tests\Support\TestCategoryLike;
-use Moox\Builder\Tests\Support\TestStaticUnitLike;
-use Moox\Builder\Tests\Support\TestStaticUnitLikeResource;
 use Moox\Builder\Tests\Support\TestCategoryLikeResource;
 use Moox\Builder\Tests\Support\TestCategoryLikeTranslation;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\Support\TestItemResource;
 use Moox\Builder\Tests\Support\TestLocalizationLikeResource;
+use Moox\Builder\Tests\Support\TestStaticUnitLike;
+use Moox\Builder\Tests\Support\TestStaticUnitLikeResource;
 use Moox\Builder\Tests\TestCase;
 
 uses(TestCase::class);
@@ -363,7 +363,7 @@ it('resolves display titles for translation-backed relation targets', function (
         $category->getKey() => 'News',
     ])->and($resolver->labelsFor('test_category_like', [$category->getKey()]))->toBe([
         $category->getKey() => 'News',
-    ])        ->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
+    ])->and($resolver->search('test_category_like', 'New'))->toHaveKey($category->getKey());
 
     $queryTarget = $resolver->queryTarget('test_category_like');
 
