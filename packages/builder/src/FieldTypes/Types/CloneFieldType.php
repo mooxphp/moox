@@ -7,6 +7,7 @@ namespace Moox\Builder\FieldTypes\Types;
 use Filament\Schemas\Components\Component;
 use Moox\Builder\Compiler\SchemaCompiler;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\FieldTypes\Capabilities\Capability;
 use Moox\Builder\FieldTypes\Capabilities\CloneSettings;
 use Moox\Builder\FieldTypes\FieldType;
 
@@ -23,7 +24,7 @@ class CloneFieldType extends FieldType
     }
 
     /**
-     * @return list<class-string<\Moox\Builder\FieldTypes\Capabilities\Capability>>
+     * @return list<class-string<Capability>>
      */
     public function capabilities(): array
     {

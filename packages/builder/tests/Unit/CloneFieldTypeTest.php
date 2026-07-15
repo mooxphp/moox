@@ -7,7 +7,9 @@ require_once __DIR__.'/../Support/TestItem.php';
 
 use Filament\Schemas\Components\Fieldset;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
+use Moox\Builder\Data\LocationContext;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Registry\DefinitionRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
@@ -126,7 +128,7 @@ it('persists and loads clone values as nested json', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
     $manager = app(CustomFieldsManager::class);
     $fields = app(DefinitionRegistry::class)
-        ->fieldGroupsFor(new Moox\Builder\Data\LocationContext(entity: 'item'))
+        ->fieldGroupsFor(new LocationContext(entity: 'item'))
         ->flatMap(fn ($group) => $group->fields);
 
     $manager->saveValues('item', $record, [
@@ -157,7 +159,7 @@ it('validates required fields inside a clone', function (): void {
     expect(fn () => app(FieldValueValidator::class)->assertValid($cloneField, [
         'email' => '',
         'phone' => '',
-    ]))->toThrow(Illuminate\Validation\ValidationException::class);
+    ]))->toThrow(ValidationException::class);
 
     expect(fn () => app(FieldValueValidator::class)->assertValid($cloneField, [
         'email' => 'hello@example.com',
@@ -180,7 +182,7 @@ it('rejects clone fields without a target field group', function (): void {
         ],
         'target_entities' => ['item'],
         'location_constraints' => [],
-    ]))->toThrow(Illuminate\Validation\ValidationException::class);
+    ]))->toThrow(ValidationException::class);
 });
 
 it('rejects cloning the same field group into itself', function (): void {
@@ -203,7 +205,7 @@ it('rejects cloning the same field group into itself', function (): void {
         ],
         'target_entities' => ['item'],
         'location_constraints' => [],
-    ]))->toThrow(Illuminate\Validation\ValidationException::class);
+    ]))->toThrow(ValidationException::class);
 });
 
 it('does not persist subfields for clone fields', function (): void {
