@@ -176,7 +176,7 @@ return [
         'conditional_logic_logic_and' => 'Alle Regeln (UND)',
         'conditional_logic_logic_or' => 'Eine Regel (ODER)',
         'conditional_logic_rules' => 'Regeln',
-        'conditional_logic_rules_helper' => 'Vergleicht Geschwisterfelder auf Root-Ebene dieser Feldgruppe.',
+        'conditional_logic_rules_helper' => 'Vergleicht Geschwisterfelder im gleichen Container (Feldgruppe, Group, Repeater-Zeile oder Flexible-Layout-Block).',
         'conditional_logic_field' => 'Feld',
         'conditional_logic_operator' => 'Operator',
         'conditional_logic_value' => 'Wert',

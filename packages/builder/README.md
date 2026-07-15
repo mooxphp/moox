@@ -460,7 +460,7 @@ Navigation: **Fields → Field Groups**
 | **Subfields** | For group and repeater |
 | **Layouts** | For flexible content (layout key + subfields) |
 | **Visibility** | Per context: admin, frontend, API (`visible_*` toggles) |
-| **Conditional logic** | Show/hide rules based on sibling field values (root-level v1) |
+| **Conditional logic** | Show/hide rules based on sibling field values (root, group, repeater, flexible layout) |
 | **Table column** | Optional list-column settings for scalar, media, and relation fields — see [Table columns](#table-columns) |
 | **Table filter** | Optional list-filter for select, radio, button_group, toggle, and single relation fields — see [Table filters](#table-filters) |
 
@@ -676,9 +676,9 @@ Relation **table columns** (`show in table`) use the same resolver for display; 
 
 Invalid or non-relatable `related_entity` values are stripped when field groups are saved.
 
-### Conditional logic (v1)
+### Conditional logic
 
-Fields can be shown or hidden based on other field values in the **same field group** (root-level siblings only — not inside repeaters, groups, or flexible layouts).
+Fields can be shown or hidden based on other field values in the **same container** — root-level siblings, or siblings inside a **group**, **repeater row**, or **flexible content layout**.
 
 | Setting | Values |
 |---------|--------|
@@ -1137,7 +1137,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - `BuilderMediaPicker` with isolated modal per field and MIME filter in the library
 - `media_usables` sync and metadata snapshot updates for media fields
 - **Relation fields** — link to Moox Filament entities, scoped search/validation, API `{id, label}` output
-- **Conditional logic (v1)** — show/hide on root-level sibling fields; save-side enforcement
+- **Conditional logic** — show/hide on sibling fields (root, group, repeater row, flexible layout); save-side enforcement
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
@@ -1151,7 +1151,6 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 **v1 limitations (known):**
 
 - Location rules: no template/parent params yet; record/taxonomy/status rules need a saved record (ignored on create)
-- Conditional logic: root-level siblings only — not inside repeaters/groups/flexible content
 - Table filters: no centralized filter builder / preset groups yet (per-field opt-in only)
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
@@ -1162,7 +1161,6 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Centralized filter groups / filter presets (per-field list filters only in v1)
 - Clone field type (ACF)
 - Location params beyond entity/record type/taxonomy/user role (e.g. template, parent)
-- Nested conditional logic (inside compound fields)
 - Custom validation rules UI in admin
 - Package-level policies on field group management
 

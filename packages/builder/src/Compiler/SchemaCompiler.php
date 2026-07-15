@@ -109,10 +109,17 @@ class SchemaCompiler
     {
         $storableFields ??= collect();
 
-        return $fields
+        $sorted = $fields
             ->sortBy(fn (FieldDefinition $field): int => $field->sort)
-            ->values()
-            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs, $defaultSpan, $conditionalTriggers))
+            ->values();
+
+        $triggers = array_values(array_unique([
+            ...$conditionalTriggers,
+            ...$this->conditionalTriggerNames($sorted),
+        ]));
+
+        return $sorted
+            ->map(fn (FieldDefinition $field): Component => $this->compileField($field, $entity, $storableFields, $insideTabs, $defaultSpan, $triggers))
             ->all();
     }
 
@@ -379,6 +386,7 @@ class SchemaCompiler
 
         if (ConditionalLogic::isConfigured($field)) {
             $component->visible(fn (Get $get): bool => ConditionalLogic::passesForm($field, $get));
+            $component->dehydrated(fn (Get $get): bool => ConditionalLogic::passesForm($field, $get));
 
             if (($field->validation['required'] ?? false) === true) {
                 $component->required(fn (Get $get): bool => ConditionalLogic::passesForm($field, $get));

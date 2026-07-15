@@ -487,6 +487,7 @@ class FieldGroupResource extends Resource
             ...static::columnSettingsSchema(),
             ...static::filterSettingsSchema(),
             ...static::visibilitySettingsSchema(),
+            ...static::conditionalLogicSchema(),
             ...static::optionFieldSections($registry),
             Section::make(__('builder::builder.field.subfields'))
                 ->description(__('builder::builder.field.subfields_helper'))
@@ -560,6 +561,7 @@ class FieldGroupResource extends Resource
                 ->live(onBlur: true),
             static::requirementAndWidthRow(),
             ...static::validationSettingsSchema(),
+            ...static::conditionalLogicSchema(),
             ...static::optionFieldSections($registry),
         ];
     }
@@ -887,7 +889,8 @@ class FieldGroupResource extends Resource
     }
 
     /**
-     * Dynamic show/hide rules based on sibling field values (root-level only in v1).
+     * Dynamic show/hide rules based on sibling field values in the same
+     * field container (root fields, group, repeater row, or flexible layout).
      *
      * @return list<Section>
      */
@@ -1012,11 +1015,8 @@ class FieldGroupResource extends Resource
     }
 
     /**
-     * Lists sibling root-level fields as conditional-logic trigger options.
-     *
-     * The rules Select lives several repeater levels deep, so instead of
-     * hard-counting "../" segments (brittle if the editor layout changes) we
-     * walk up the state path and return the first ancestor `fields` collection.
+     * Lists sibling fields in the nearest ancestor field repeater as
+     * conditional-logic trigger options (root `fields`, or nested `children`).
      *
      * @return array<string, string>
      */
@@ -1059,12 +1059,16 @@ class FieldGroupResource extends Resource
      */
     protected static function resolveSiblingFields(callable $get): array
     {
-        for ($depth = 1; $depth <= 10; $depth++) {
-            $candidate = $get(str_repeat('../', $depth).'fields');
+        for ($depth = 1; $depth <= 12; $depth++) {
+            $prefix = str_repeat('../', $depth);
 
-            if (static::looksLikeFieldRows($candidate)) {
-                /** @var array<int|string, array<string, mixed>> $candidate */
-                return array_values($candidate);
+            foreach (['children', 'fields'] as $key) {
+                $candidate = $get($prefix.$key);
+
+                if (static::looksLikeFieldRows($candidate)) {
+                    /** @var array<int|string, array<string, mixed>> $candidate */
+                    return array_values($candidate);
+                }
             }
         }
 

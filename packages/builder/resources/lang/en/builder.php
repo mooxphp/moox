@@ -176,7 +176,7 @@ return [
         'conditional_logic_logic_and' => 'All rules (AND)',
         'conditional_logic_logic_or' => 'Any rule (OR)',
         'conditional_logic_rules' => 'Rules',
-        'conditional_logic_rules_helper' => 'Compare sibling fields at the root level of this field group.',
+        'conditional_logic_rules_helper' => 'Compare sibling fields in the same container (field group, group, repeater row, or flexible layout block).',
         'conditional_logic_field' => 'Field',
         'conditional_logic_operator' => 'Operator',
         'conditional_logic_value' => 'Value',

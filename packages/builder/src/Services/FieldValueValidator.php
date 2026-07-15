@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\MediaFieldValueSupport;
 use Moox\Builder\Support\OptionValueRules;
@@ -159,6 +160,10 @@ class FieldValueValidator
         $messages = [];
 
         foreach ($parent->children as $child) {
+            if (! ConditionalLogic::isVisibleForValues($child, $row)) {
+                continue;
+            }
+
             $childPath = "{$path}.{$child->name}";
             $messages = array_merge(
                 $messages,
@@ -431,6 +436,10 @@ class FieldValueValidator
             $fieldType = $this->fieldTypeRegistry->get($child->type);
 
             if (! $fieldType->storesValue()) {
+                continue;
+            }
+
+            if (ConditionalLogic::isConfigured($child) && ! ConditionalLogic::isVisibleForValues($child, $row)) {
                 continue;
             }
 

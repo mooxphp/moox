@@ -13,6 +13,7 @@ use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\TypedValueColumns;
 
 class BuilderValuesResolver
@@ -144,11 +145,15 @@ class BuilderValuesResolver
         $persisted = [];
 
         foreach ($children as $child) {
-            if (! array_key_exists($child->name, $row)) {
-                continue;
+            $value = array_key_exists($child->name, $row)
+                ? $row[$child->name]
+                : null;
+
+            if (! ConditionalLogic::isVisibleForValues($child, $row)) {
+                $value = null;
             }
 
-            $persisted[$child->name] = $this->persistFieldValue($child, $row[$child->name]);
+            $persisted[$child->name] = $this->persistFieldValue($child, $value);
         }
 
         return $persisted;
