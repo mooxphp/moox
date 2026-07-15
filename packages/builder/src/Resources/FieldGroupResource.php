@@ -254,7 +254,7 @@ class FieldGroupResource extends Resource
                                                 ->schema(static::tabChildFieldSchema($registry))
                                                 ->defaultItems(0),
                                         ])
-                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
+                                        ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && ! in_array($get('type'), ['flexible_content', 'clone'], true)),
                                     Section::make(__('builder::builder.field.layouts'))
                                         ->description(__('builder::builder.field.layouts_helper'))
                                         ->icon(Heroicon::OutlinedSquaresPlus)
@@ -316,6 +316,10 @@ class FieldGroupResource extends Resource
             $meta[] = trans_choice('builder::builder.field.layouts_count', $layoutsCount, [
                 'count' => $layoutsCount,
             ]);
+        }
+
+        if ($type === 'clone' && filled($state['config']['field_group_slug'] ?? null)) {
+            $meta[] = (string) $state['config']['field_group_slug'];
         }
 
         return static::fieldItemLabelHtml($registry, $type, $title, $meta);
@@ -504,7 +508,7 @@ class FieldGroupResource extends Resource
                         ->schema(static::subFieldSchema($registry))
                         ->defaultItems(0),
                 ])
-                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && $get('type') !== 'flexible_content'),
+                ->visible(fn (callable $get): bool => filled($get('type')) && $registry->get($get('type'))->hasSubFields() && ! in_array($get('type'), ['flexible_content', 'clone'], true)),
             Section::make(__('builder::builder.field.layouts'))
                 ->description(__('builder::builder.field.layouts_helper'))
                 ->icon(Heroicon::OutlinedSquaresPlus)
@@ -1401,6 +1405,11 @@ class FieldGroupResource extends Resource
             $get('config.related_entity');
         }
 
+        if ($type === 'clone') {
+            $get('config.field_group_slug');
+            $get('../../slug');
+        }
+
         return static::typeSettingsSchema($type);
     }
 
@@ -1412,20 +1421,26 @@ class FieldGroupResource extends Resource
      */
     protected static function seedConfigForFieldType(string $type, callable $set, callable $get): void
     {
-        if ($type !== 'relation') {
-            return;
-        }
-
         $config = $get('config');
 
         if (! is_array($config)) {
             $config = [];
         }
 
-        $set('config', array_merge([
-            'related_entity' => null,
-            'multiple' => false,
-        ], $config));
+        if ($type === 'relation') {
+            $set('config', array_merge([
+                'related_entity' => null,
+                'multiple' => false,
+            ], $config));
+
+            return;
+        }
+
+        if ($type === 'clone') {
+            $set('config', array_merge([
+                'field_group_slug' => null,
+            ], $config));
+        }
     }
 
     /**

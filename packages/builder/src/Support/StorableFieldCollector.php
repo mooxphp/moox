@@ -106,6 +106,6 @@ final class StorableFieldCollector
 
     protected function isCompoundStorageType(string $type): bool
     {
-        return in_array($type, ['group', 'repeater', 'flexible_content'], true);
+        return in_array($type, ['group', 'clone', 'repeater', 'flexible_content'], true);
     }
 }

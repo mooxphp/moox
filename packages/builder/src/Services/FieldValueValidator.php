@@ -21,6 +21,7 @@ class FieldValueValidator
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected FieldValidationRules $fieldValidationRules,
+        protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
     ) {}
 
     /**
@@ -57,7 +58,7 @@ class FieldValueValidator
      */
     protected function messagesForCompound(FieldDefinition $field, mixed $value, string $path, ?Model $record = null): array
     {
-        if ($field->type === 'group') {
+        if (in_array($field->type, ['group', 'clone'], true)) {
             return $this->messagesForRow($field, $this->normalizeGroupRow($value), $path, $record);
         }
 
@@ -159,7 +160,7 @@ class FieldValueValidator
     {
         $messages = [];
 
-        foreach ($parent->children as $child) {
+        foreach ($this->clonedFieldGroupResolver->compoundChildren($parent) as $child) {
             if (! ConditionalLogic::isVisibleForValues($child, $row)) {
                 continue;
             }
@@ -432,7 +433,7 @@ class FieldValueValidator
      */
     protected function isRowEmpty(FieldDefinition $parent, array $row): bool
     {
-        foreach ($parent->children as $child) {
+        foreach ($this->clonedFieldGroupResolver->compoundChildren($parent) as $child) {
             $fieldType = $this->fieldTypeRegistry->get($child->type);
 
             if (! $fieldType->storesValue()) {

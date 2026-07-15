@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Services\ClonedFieldGroupResolver;
 use Moox\Builder\Support\RichTextValue;
 
 class DefaultValue extends Capability
@@ -364,7 +365,7 @@ class DefaultValue extends Capability
         return match ($field->type) {
             'flexible_content' => $this->mergeFlexibleContentDefaults($field, $state),
             'repeater' => $this->mergeListItemDefaults($field, $state),
-            'group' => $this->mergeGroupDefaults($field, $state),
+            'group', 'clone' => $this->mergeGroupDefaults($field, $state),
             default => $state,
         };
     }
@@ -427,11 +428,18 @@ class DefaultValue extends Capability
             return $state;
         }
 
+        $children = app(ClonedFieldGroupResolver::class)->compoundChildren($field);
+
         if (! array_is_list($state)) {
-            return [$this->mergeSubFieldDefaults($field->children, $state)];
+            return [$this->mergeSubFieldDefaults($children, $state)];
         }
 
-        return $this->mergeListItemDefaults($field, $state);
+        return array_values(array_map(
+            fn (mixed $item): array => is_array($item)
+                ? $this->mergeSubFieldDefaults($children, $item)
+                : [],
+            $state,
+        ));
     }
 
     /**
@@ -478,7 +486,7 @@ class DefaultValue extends Capability
     {
         $fieldType = app(FieldTypeRegistry::class)->get($child->type);
 
-        if ($fieldType->hasSubFields() && in_array($child->type, ['group', 'repeater', 'flexible_content'], true)) {
+        if ($fieldType->hasSubFields() && in_array($child->type, ['group', 'clone', 'repeater', 'flexible_content'], true)) {
             $key = $child->name;
             $nested = $data[$key] ?? [];
 
@@ -486,8 +494,11 @@ class DefaultValue extends Capability
                 $nested = [];
             }
 
-            if ($child->type === 'group' && ! array_is_list($nested)) {
-                $data[$key] = $this->mergeSubFieldDefaults($child->children, $nested);
+            if (in_array($child->type, ['group', 'clone'], true) && ! array_is_list($nested)) {
+                $data[$key] = $this->mergeSubFieldDefaults(
+                    app(ClonedFieldGroupResolver::class)->compoundChildren($child),
+                    $nested,
+                );
             } else {
                 $data[$key] = $this->mergeCompoundDefaults($child, $nested);
             }

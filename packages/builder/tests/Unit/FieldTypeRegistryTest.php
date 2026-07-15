@@ -45,7 +45,7 @@ it('resolves all default field types', function (): void {
     $keys = array_merge($keys, [
         'rich_text',
         'message', 'oembed',
-        'tab', 'group', 'repeater', 'flexible_content', 'flexible_layout',
+        'tab', 'group', 'clone', 'repeater', 'flexible_content', 'flexible_layout',
     ]);
 
     foreach ($keys as $key) {
@@ -58,7 +58,7 @@ it('exposes compound field types for tab children but not nested tabs', function
 
     $options = $registry->optionsForTabChildren();
 
-    expect($options)->toHaveKeys(['repeater', 'group', 'flexible_content', 'text'])
+    expect($options)->toHaveKeys(['repeater', 'group', 'clone', 'flexible_content', 'text'])
         ->and($options)->not->toHaveKey('tab')
         ->and($options)->not->toHaveKey('flexible_layout');
 });
@@ -70,5 +70,6 @@ it('limits subfield options to leaf field types', function (): void {
 
     expect($options)->toHaveKey('text')
         ->and($options)->not->toHaveKey('repeater')
-        ->and($options)->not->toHaveKey('group');
+        ->and($options)->not->toHaveKey('group')
+        ->and($options)->not->toHaveKey('clone');
 });

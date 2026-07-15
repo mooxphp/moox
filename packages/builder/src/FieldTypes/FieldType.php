@@ -141,6 +141,7 @@ abstract class FieldType
             'oembed' => 'heroicon-o-film',
             'repeater' => 'heroicon-o-queue-list',
             'group' => 'heroicon-o-square-2-stack',
+            'clone' => 'heroicon-o-document-duplicate',
             'tab' => 'heroicon-o-folder',
             'section' => 'heroicon-o-view-columns',
             'flexible_content', 'flexible_layout' => 'heroicon-o-squares-plus',

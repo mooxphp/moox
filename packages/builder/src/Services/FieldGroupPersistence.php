@@ -558,6 +558,8 @@ class FieldGroupPersistence
                 );
 
                 $this->syncFields($group, $layoutRows, $field->getKey());
+            } elseif ((string) $row['type'] === 'clone') {
+                $field->children()->each(fn (Field $child) => $child->delete());
             } elseif ($this->typeHasSubFields((string) $row['type'])) {
                 $this->syncFields($group, $row['children'] ?? [], $field->getKey());
             } else {

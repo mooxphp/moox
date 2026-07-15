@@ -18,8 +18,10 @@ use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\Data\LocationContext;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
+use Moox\Builder\FieldTypes\Types\CloneFieldType;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
 use Moox\Builder\Registry\FieldTypeRegistry;
+use Moox\Builder\Services\ClonedFieldGroupResolver;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldWidth;
@@ -200,6 +202,70 @@ class SchemaCompiler
             });
     }
 
+    public function buildCloneComponent(FieldDefinition $field, ?string $entity = null, ?Collection $storableFields = null): Component
+    {
+        $storableFields ??= collect();
+        $children = app(ClonedFieldGroupResolver::class)->resolveChildren($field);
+
+        $component = Fieldset::make($field->label)
+            ->schema($this->compileSubFields($children, $entity, $storableFields))
+            ->statePath($field->name)
+            ->columns(FieldWidth::GRID_COLUMNS)
+            ->columnSpan($field->columnSpan());
+
+        if ($entity === null) {
+            return $component;
+        }
+
+        $defaultValue = app(DefaultValue::class);
+
+        return $component
+            ->afterStateHydrated(function (Component $component, mixed $state, ?Model $record) use ($field, $entity, $storableFields, $children, $defaultValue): void {
+                $hasStoredValue = false;
+                $storedValue = null;
+
+                if ($record?->exists) {
+                    $values = $this->customFieldsManager->loadCachedValues(
+                        $entity,
+                        $record,
+                        $storableFields,
+                    );
+
+                    if (array_key_exists($field->name, $values)) {
+                        $hasStoredValue = true;
+                        $storedValue = (new CloneFieldType)->normalizeForForm($values[$field->name]);
+                    }
+                }
+
+                $flat = $hasStoredValue
+                    ? (is_array($storedValue) ? $storedValue : [])
+                    : (is_array($state) ? $state : []);
+
+                if (array_is_list($flat) && isset($flat[0]) && is_array($flat[0])) {
+                    $flat = $flat[0];
+                }
+
+                $component->state($defaultValue->mergeIntoData($children, $flat));
+            })
+            ->afterStateUpdated(function (Component $component) use ($children, $defaultValue): void {
+                $state = $component->getState();
+
+                if (! is_array($state)) {
+                    return;
+                }
+
+                if (array_is_list($state) && isset($state[0]) && is_array($state[0])) {
+                    $state = $state[0];
+                }
+
+                $merged = $defaultValue->mergeIntoData($children, $state);
+
+                if ($merged != $state) {
+                    $component->state($merged);
+                }
+            });
+    }
+
     /**
      * @param  Collection<int, FieldDefinition>  $fields
      * @param  Collection<int, FieldDefinition>  $storableFields
@@ -310,7 +376,7 @@ class SchemaCompiler
                 $childPrefix .= '.*';
             }
 
-            foreach ($field->children as $child) {
+            foreach (app(ClonedFieldGroupResolver::class)->compoundChildren($field) as $child) {
                 $rules = array_merge($rules, $this->rulesForFieldTree($child, $childPrefix));
             }
 

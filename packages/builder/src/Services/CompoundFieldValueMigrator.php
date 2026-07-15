@@ -94,7 +94,7 @@ class CompoundFieldValueMigrator
             return null;
         }
 
-        if (in_array($parent->type, ['group', 'repeater'], true)) {
+        if (in_array($parent->type, ['group', 'clone', 'repeater'], true)) {
             return new CompoundStorageContext($parent->name, $parent->type);
         }
 
@@ -122,7 +122,7 @@ class CompoundFieldValueMigrator
         }
 
         return match ($context->compoundType) {
-            'group' => $this->renameKeyInGroupValue($value, $from, $to),
+            'group', 'clone' => $this->renameKeyInGroupValue($value, $from, $to),
             'repeater' => $this->renameKeyInRepeaterValue($value, $from, $to),
             'flexible_content' => $this->renameKeyInFlexibleContentValue($value, $context->layoutName, $from, $to),
             default => $value,
@@ -136,7 +136,7 @@ class CompoundFieldValueMigrator
         }
 
         return match ($context->compoundType) {
-            'group' => $this->removeKeyInGroupValue($value, $key),
+            'group', 'clone' => $this->removeKeyInGroupValue($value, $key),
             'repeater' => $this->removeKeyInRepeaterValue($value, $key),
             'flexible_content' => $this->removeKeyInFlexibleContentValue($value, $context->layoutName, $key),
             default => $value,

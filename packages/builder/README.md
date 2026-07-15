@@ -712,10 +712,13 @@ Use `CustomFieldsManager::visibleFieldsForEntity($entity, FieldVisibility::API)`
 | `tab` | `Tabs` / `Tab` (marker, no value) | — (children store flat) |
 | `section` | `Section` (marker, no value) | — (children store flat) |
 | `group` | `Repeater` (min/max 1) | `value_json` (object) |
+| `clone` | `Fieldset` (references another field group) | `value_json` (object) |
 | `repeater` | `Repeater` | `value_json` (array) |
 | `flexible_content` | `Builder` with layout blocks | `value_json` (array with `type` + `data`) |
 
 Flexible content works like ACF **Flexible Content**: each row is a selectable layout with its own subfields.
+
+**Clone** works like ACF **Clone**: pick another active field group by slug and embed its root fields inside a `Fieldset`. Subfields are resolved at runtime (reference semantics) — no duplicate field definitions in the database. Values store as a nested JSON object under the clone field name, same as `group`.
 
 `tab` and `section` are **visual-only** markers: they wrap the following fields but their children still store flat at the top level (unlike `group`, which nests values).
 
@@ -1126,7 +1129,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 **Implemented:**
 
 - Nested fields via `parent_field_id` (group, repeater, flexible content)
-- Layout fields: tab, section, group, repeater, flexible content
+- Layout fields: tab, section, group, clone, repeater, flexible content
 - Entity discovery via `HasCustomFields` in Filament panels
 - Nested validation (`FieldValueValidator`)
 - `InteractsWithCustomFields` on consumer models (`customFields()`, attribute access, queries, eager load)
@@ -1138,6 +1141,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - `media_usables` sync and metadata snapshot updates for media fields
 - **Relation fields** — link to Moox Filament entities, scoped search/validation, API `{id, label}` output
 - **Conditional logic** — show/hide on sibling fields (root, group, repeater row, flexible layout); save-side enforcement
+- **Clone field** — embed another field group by reference (ACF-style)
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
@@ -1154,12 +1158,10 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Table filters: no centralized filter builder / preset groups yet (per-field opt-in only)
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
-- No clone field type (ACF-style reusable field group in a field)
 
 **Not implemented yet:**
 
 - Centralized filter groups / filter presets (per-field list filters only in v1)
-- Clone field type (ACF)
 - Location params beyond entity/record type/taxonomy/user role (e.g. template, parent)
 - Custom validation rules UI in admin
 - Package-level policies on field group management

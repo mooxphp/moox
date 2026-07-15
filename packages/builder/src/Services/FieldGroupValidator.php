@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldGroupDefinition;
 use Moox\Builder\FieldTypes\Capabilities\DefaultValue;
 use Moox\Builder\Models\FieldGroup;
+use Moox\Builder\Services\ClonedFieldGroupResolver;
 use Moox\Builder\Support\FieldRelationTree;
 use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\LocationConstraintOptions;
@@ -21,6 +22,7 @@ class FieldGroupValidator
         protected StorableFieldCollector $storableFieldCollector,
         protected LocationConstraintOptions $locationConstraintOptions,
         protected FieldValidationRules $fieldValidationRules,
+        protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
     ) {}
 
     /**
@@ -31,9 +33,11 @@ class FieldGroupValidator
         $locationRules = $this->fieldGroupPersistence->resolveLocationRules($data);
         $entities = $this->fieldGroupPersistence->entitiesFromLocationRules($locationRules);
         $fieldRows = $data['fields'] ?? [];
+        $groupSlug = (string) ($data['slug'] ?? $group->slug ?? '');
         $messages = array_merge(
             $this->rangeBoundsMessages($fieldRows),
             $this->validationRuleMessages($fieldRows),
+            $this->cloneConfigMessages($groupSlug, $fieldRows),
             $this->locationConstraintMessages(
                 is_array($data['location_constraints'] ?? null) ? $data['location_constraints'] : [],
                 $data['target_entities'] ?? [],
@@ -463,5 +467,90 @@ class FieldGroupValidator
         }
 
         return [];
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $rows
+     * @return array<string, list<string>>
+     */
+    protected function cloneConfigMessages(string $groupSlug, array $rows, string $prefix = 'fields'): array
+    {
+        $messages = [];
+
+        foreach ($rows as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $basePath = "{$prefix}.{$index}";
+            $type = (string) ($row['type'] ?? '');
+
+            if ($type === 'tab') {
+                $messages = array_merge(
+                    $messages,
+                    $this->cloneConfigMessages($groupSlug, $row['children'] ?? [], "{$basePath}.children"),
+                );
+
+                continue;
+            }
+
+            if ($type === 'flexible_content') {
+                foreach ($row['layouts'] ?? [] as $layoutIndex => $layout) {
+                    if (! is_array($layout)) {
+                        continue;
+                    }
+
+                    $messages = array_merge(
+                        $messages,
+                        $this->cloneConfigMessages(
+                            $groupSlug,
+                            $layout['children'] ?? [],
+                            "{$basePath}.layouts.{$layoutIndex}.children",
+                        ),
+                    );
+                }
+
+                continue;
+            }
+
+            if (in_array($type, ['group', 'repeater'], true)) {
+                $messages = array_merge(
+                    $messages,
+                    $this->cloneConfigMessages($groupSlug, $row['children'] ?? [], "{$basePath}.children"),
+                );
+
+                continue;
+            }
+
+            if ($type !== 'clone') {
+                continue;
+            }
+
+            $targetSlug = trim((string) (is_array($row['config'] ?? null) ? ($row['config']['field_group_slug'] ?? '') : ''));
+
+            if ($targetSlug === '') {
+                $messages["{$basePath}.config.field_group_slug"] = [
+                    __('builder::builder.validation.clone_field_group_required'),
+                ];
+
+                continue;
+            }
+
+            if ($groupSlug !== '' && $targetSlug === $groupSlug) {
+                $messages["{$basePath}.config.field_group_slug"] = [
+                    __('builder::builder.validation.clone_field_group_self'),
+                ];
+
+                continue;
+            }
+
+            if (! $this->clonedFieldGroupResolver->isActiveSlug($targetSlug)) {
+                $messages["{$basePath}.config.field_group_slug"] = [
+                    __('builder::builder.validation.clone_field_group_missing', ['slug' => $targetSlug]),
+                ];
+            }
+        }
+
+        return $messages;
     }
 }

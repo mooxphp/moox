@@ -16,6 +16,7 @@ use Moox\Builder\FieldTypes\Types\ColorFieldType;
 use Moox\Builder\FieldTypes\Types\DateFieldType;
 use Moox\Builder\FieldTypes\Types\DatetimeFieldType;
 use Moox\Builder\FieldTypes\Types\EmailFieldType;
+use Moox\Builder\FieldTypes\Types\CloneFieldType;
 use Moox\Builder\FieldTypes\Types\FlexibleContentFieldType;
 use Moox\Builder\FieldTypes\Types\FlexibleLayoutFieldType;
 use Moox\Builder\FieldTypes\Types\GroupFieldType;
@@ -52,6 +53,7 @@ use Moox\Builder\Observers\PurgeFieldValuesObserver;
 use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Registry\FieldTypeRegistry;
 use Moox\Builder\Services\BuilderFieldValueMediaMetadataSync;
+use Moox\Builder\Services\ClonedFieldGroupResolver;
 use Moox\Builder\Support\BuilderAdminLocalizationCatalog;
 use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Support\CustomFieldsFilamentHooks;
@@ -107,6 +109,7 @@ class BuilderServiceProvider extends MooxServiceProvider
         // and re-renders within a request, while staying Octane-safe (reset per
         // request, so target title changes are never served stale).
         $this->app->scoped(RelationTargetResolver::class);
+        $this->app->scoped(ClonedFieldGroupResolver::class);
         $this->app->scoped(LocationConstraintOptions::class);
     }
 
@@ -179,6 +182,7 @@ class BuilderServiceProvider extends MooxServiceProvider
             new TabFieldType,
             new SectionFieldType,
             new GroupFieldType,
+            new CloneFieldType,
             new RepeaterFieldType,
             new FlexibleContentFieldType,
             new FlexibleLayoutFieldType,

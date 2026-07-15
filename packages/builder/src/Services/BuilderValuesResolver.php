@@ -22,6 +22,7 @@ class BuilderValuesResolver
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected DefaultValue $defaultValue,
         protected BuilderLocaleResolver $localeResolver,
+        protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
     ) {}
 
     /**
@@ -111,6 +112,7 @@ class BuilderValuesResolver
             return match ($field->type) {
                 'repeater' => $this->presentRepeaterRows($field, $value),
                 'flexible_content' => $this->presentFlexibleContentItems($field, $value),
+                'clone' => $this->presentCompoundRow($this->clonedFieldGroupResolver->compoundChildren($field), $value),
                 default => $this->presentCompoundRow($field->children, $value),
             };
         }
@@ -128,6 +130,7 @@ class BuilderValuesResolver
             return match ($field->type) {
                 'repeater' => $this->persistRepeaterRows($field, $value),
                 'flexible_content' => $this->persistFlexibleContentItems($field, $value),
+                'clone' => $this->persistCompoundRow($this->clonedFieldGroupResolver->compoundChildren($field), $value),
                 default => $this->persistCompoundRow($field->children, $value),
             };
         }
