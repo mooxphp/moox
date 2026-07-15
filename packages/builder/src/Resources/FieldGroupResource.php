@@ -185,6 +185,7 @@ class FieldGroupResource extends Resource
                         ->schema([
                             Repeater::make('fields')
                                 ->hiddenLabel()
+                                ->addActionLabel(__('builder::builder.repeater.add_field'))
                                 ->extraAttributes(['class' => 'moox-builder-fields'])
                                 ->orderColumn('sort')
                                 ->reorderable()
@@ -246,6 +247,7 @@ class FieldGroupResource extends Resource
                                         ->schema([
                                             Repeater::make('children')
                                                 ->hiddenLabel()
+                                                ->addActionLabel(__('builder::builder.repeater.add_subfield'))
                                                 ->orderColumn('sort')
                                                 ->reorderable()
                                                 ->collapsible()
@@ -262,6 +264,7 @@ class FieldGroupResource extends Resource
                                         ->schema([
                                             Repeater::make('layouts')
                                                 ->hiddenLabel()
+                                                ->addActionLabel(__('builder::builder.repeater.add_layout'))
                                                 ->orderColumn('sort')
                                                 ->reorderable()
                                                 ->collapsible()
@@ -440,6 +443,7 @@ class FieldGroupResource extends Resource
             ...static::validationSettingsSchema(),
             Repeater::make('children')
                 ->label(__('builder::builder.field.subfields'))
+                ->addActionLabel(__('builder::builder.repeater.add_subfield'))
                 ->orderColumn('sort')
                 ->reorderable()
                 ->collapsible()
@@ -500,6 +504,7 @@ class FieldGroupResource extends Resource
                 ->schema([
                     Repeater::make('children')
                         ->hiddenLabel()
+                        ->addActionLabel(__('builder::builder.repeater.add_subfield'))
                         ->orderColumn('sort')
                         ->reorderable()
                         ->collapsible()
@@ -516,6 +521,7 @@ class FieldGroupResource extends Resource
                 ->schema([
                     Repeater::make('layouts')
                         ->hiddenLabel()
+                        ->addActionLabel(__('builder::builder.repeater.add_layout'))
                         ->orderColumn('sort')
                         ->reorderable()
                         ->collapsible()
@@ -949,6 +955,7 @@ class FieldGroupResource extends Resource
                         ->visible($enabled),
                     Repeater::make('settings.conditions.rules')
                         ->label(__('builder::builder.field.conditional_logic_rules'))
+                        ->addActionLabel(__('builder::builder.repeater.add_condition_rule'))
                         ->helperText(__('builder::builder.field.conditional_logic_rules_helper'))
                         ->defaultItems(0)
                         ->collapsible()
@@ -1234,6 +1241,7 @@ class FieldGroupResource extends Resource
                 ->schema([
                     Repeater::make('validation.rule_rows')
                         ->label(__('builder::builder.field.validation_rules'))
+                        ->addActionLabel(__('builder::builder.repeater.add_validation_rule'))
                         ->helperText(__('builder::builder.field.validation_rules_helper'))
                         ->defaultItems(0)
                         ->collapsible()
@@ -1345,6 +1353,7 @@ class FieldGroupResource extends Resource
                 ->schema([
                     Repeater::make('options')
                         ->label(__('builder::builder.field.options'))
+                        ->addActionLabel(__('builder::builder.repeater.add_option'))
                         ->orderColumn('sort')
                         ->reorderable()
                         ->live()
