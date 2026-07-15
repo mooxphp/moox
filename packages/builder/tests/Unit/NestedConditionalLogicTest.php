@@ -5,13 +5,13 @@ declare(strict_types=1);
 require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 
+use Illuminate\Validation\ValidationException;
 use Moox\Builder\Data\FieldDefinition;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Services\FieldValueValidator;
 use Moox\Builder\Support\ConditionalLogic;
-use Moox\Builder\Support\TypedValueColumns;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\TestCase;
 
@@ -73,7 +73,7 @@ it('skips validation for hidden nested fields', function (): void {
     expect(fn () => app(FieldValueValidator::class)->assertValid($field, [
         'has_company' => true,
         'company_name' => '',
-    ]))->toThrow(Illuminate\Validation\ValidationException::class);
+    ]))->toThrow(ValidationException::class);
 });
 
 it('clears hidden nested values on persist', function (): void {
