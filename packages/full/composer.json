@@ -85,6 +85,7 @@
         "moox/seo": "dev-main",
         "moox/settings": "dev-main",
         "moox/skeleton": "dev-main",
+        "moox/static": "dev-main",
         "moox/slug": "dev-main",
         "moox/staff": "dev-main",
         "moox/tag": "dev-main",

@@ -7,14 +7,15 @@ namespace Moox\Data\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
+use Moox\Data\Support\CodelistEnumTranslations;
 use Moox\Data\Support\CodelistRegistry;
 use RuntimeException;
 
 class ImportCodelistsService
 {
     /** @var list<string> */
-    private const OPTIONAL_ROW_ATTRIBUTES = [
-        'description',
+    private const STRUCTURAL_ROW_ATTRIBUTES = [
         'en16931_interpretation',
         'symbol',
         'version',
@@ -82,11 +83,9 @@ class ImportCodelistsService
                 $criteria[$key] = (string) $row[$key];
             }
 
-            $attributes = [
-                'common_name' => (string) $row['common_name'],
-            ];
+            $attributes = [];
 
-            foreach (self::OPTIONAL_ROW_ATTRIBUTES as $attribute) {
+            foreach (self::STRUCTURAL_ROW_ATTRIBUTES as $attribute) {
                 if (array_key_exists($attribute, $row)) {
                     $attributes[$attribute] = $row[$attribute] !== null
                         ? (string) $row[$attribute]
@@ -94,7 +93,9 @@ class ImportCodelistsService
                 }
             }
 
-            $modelClass::updateOrCreate($criteria, $attributes);
+            /** @var BaseStaticModel $record */
+            $record = $modelClass::updateOrCreate($criteria, $attributes);
+            $this->syncTranslations($record, $scheme, $row);
 
             $count++;
         }
@@ -102,6 +103,38 @@ class ImportCodelistsService
         Log::channel('daily')->info("Imported {$count} rows for codelist [{$scheme}] from {$entry['file']}.");
 
         return $count;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    protected function syncTranslations(BaseStaticModel $record, string $scheme, array $row): void
+    {
+        $code = (string) $row['code'];
+        $description = array_key_exists('description', $row) && $row['description'] !== null
+            ? (string) $row['description']
+            : null;
+
+        $english = $record->translateOrNew('en');
+        $english->common_name = (string) $row['common_name'];
+        $english->description = $description;
+        $english->save();
+
+        foreach (CodelistEnumTranslations::SHIPPED_LOCALES as $locale) {
+            if ($locale === 'en') {
+                continue;
+            }
+
+            $label = CodelistEnumTranslations::labelFor($scheme, $code, $locale);
+
+            if ($label === null) {
+                continue;
+            }
+
+            $translation = $record->translateOrNew($locale);
+            $translation->common_name = $label;
+            $translation->save();
+        }
     }
 
     protected function resolveJsonPath(string $filename): string

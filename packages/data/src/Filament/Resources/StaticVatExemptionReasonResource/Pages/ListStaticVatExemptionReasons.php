@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticVatExemptionReasonResource\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Core\Entities\Items\Static\Pages\BaseListStatic;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticVatExemptionReasonResource;
 use Moox\Data\Models\StaticVatExemptionReason;
 
-class ListStaticVatExemptionReasons extends BaseListRecords
+class ListStaticVatExemptionReasons extends BaseListStatic
 {
     use HasListPageTabs;
 

@@ -131,6 +131,46 @@ test('per-code lang files resolve under DE locale', function (): void {
         ->and(__('data::fields.code'))->toBe('Code');
 });
 
+test('per-code lang files resolve under CS locale', function (): void {
+    app()->setLocale('cs');
+
+    expect(__('data::enums/charge-reasons.FC'))->toBe('Náklady na dopravu')
+        ->and(__('data::enums/allowance-reasons.95'))->toBe('Sleva')
+        ->and(__('data::enums/vat-categories.S'))->toBe('Základní sazba')
+        ->and(__('data::enums/payment-means.58'))->toBe('SEPA převod')
+        ->and(__('data::enums/units.KGM'))->toBe('Kilogram')
+        ->and(__('data::enums/incoterms.FOB'))->toBe('Vyplaceně na loď')
+        ->and(__('data::enums/document-types.380'))->toBe('Obchodní faktura')
+        ->and(__('data::enums/vat-exemption-reasons.VATEX-EU-AE'))->toBe('Přenesení daňové povinnosti')
+        ->and(__('data::enums/icd-schemes.9930'))->toBe('Německé DIČ')
+        ->and(__('data::enums/eas-schemes.0204'))->toBe('Leitweg-ID');
+});
+
+test('codelist import seeds Czech translation rows from cs lang files', function (): void {
+    $this->artisan('moox:data:import-codelists')
+        ->assertSuccessful();
+
+    $documentType = StaticDocumentType::query()->where('code', '380')->first();
+
+    expect($documentType)->not->toBeNull()
+        ->and($documentType->translate('cs')?->common_name)->toBe('Obchodní faktura')
+        ->and($documentType->translate('cs')?->common_name)->not->toBe('Commercial invoice');
+});
+
+test('static codelist translation falls back to english for unseeded locale', function (): void {
+    config(['translatable.use_fallback' => false]);
+    config(['translatable.fallback_locale' => null]);
+
+    $this->artisan('moox:data:import-codelists')
+        ->assertSuccessful();
+
+    $documentType = StaticDocumentType::query()->where('code', '381')->first();
+
+    expect($documentType)->not->toBeNull()
+        ->and($documentType->translatedLabel('fr'))->toBe('Credit note')
+        ->and($documentType->translate('fr')?->common_name)->toBe('Credit note');
+});
+
 test('static_vat_exemption_reasons code column is unique', function (): void {
     StaticVatExemptionReason::query()->create([
         'code' => 'VATEX-EU-AE',
