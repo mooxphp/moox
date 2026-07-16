@@ -25,7 +25,7 @@ final class CodelistEnumTranslations
     ];
 
     /** @var list<string> */
-    public const SHIPPED_LOCALES = ['en', 'de'];
+    public const SHIPPED_LOCALES = ['en', 'de', 'cs'];
 
     public static function labelFor(string $scheme, string $code, string $locale): ?string
     {
