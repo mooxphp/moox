@@ -24,6 +24,7 @@
         "moox/backup-server": "dev-main",
         "moox/brand": "dev-main",
         "moox/build": "dev-main",
+        "moox/builder": "dev-main",
         "moox/cart": "dev-main",
         "moox/category": "dev-main",
         "moox/clipboard": "dev-main",

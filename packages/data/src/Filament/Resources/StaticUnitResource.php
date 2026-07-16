@@ -141,4 +141,38 @@ class StaticUnitResource extends BaseStaticResource
     {
         return (string) static::getModel()::count();
     }
+
+    public static function hasRecordTitle(): bool
+    {
+        return true;
+    }
+
+    public static function getRecordTitle(?Model $record): string
+    {
+        if (! $record instanceof StaticUnit) {
+            return '';
+        }
+
+        /** @var StaticUnit $record */
+        $symbol = filled($record->symbol) ? (string) $record->symbol : null;
+        $name = filled($record->common_name) ? (string) $record->common_name : null;
+
+        if ($symbol !== null && $name !== null) {
+            return "{$symbol} — {$name}";
+        }
+
+        if ($symbol !== null) {
+            return $symbol;
+        }
+
+        if ($name !== null) {
+            return $name;
+        }
+
+        if (filled($record->code)) {
+            return (string) $record->code;
+        }
+
+        return (string) $record->getKey();
+    }
 }

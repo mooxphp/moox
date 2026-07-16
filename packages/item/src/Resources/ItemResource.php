@@ -12,6 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Traits\HasCustomFields;
 use Moox\Item\Models\Item;
 use Moox\Item\Resources\ItemResource\Pages\CreateItem;
 use Moox\Item\Resources\ItemResource\Pages\EditItem;
@@ -20,6 +21,8 @@ use Moox\Item\Resources\ItemResource\Pages\ViewItem;
 
 class ItemResource extends BaseItemResource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Item::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-offer';
@@ -60,6 +63,7 @@ class ItemResource extends BaseItemResource
                                 ->label(__('core::core.title')),
                             MarkdownEditor::make('description')
                                 ->label(__('core::core.description')),
+                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -72,6 +76,7 @@ class ItemResource extends BaseItemResource
                                 ->schema([
                                     static::getFormActions(),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardTimestampFields(),
@@ -97,6 +102,7 @@ class ItemResource extends BaseItemResource
                     ->label(__('core::core.description'))
                     ->searchable()
                     ->sortable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->limit(50),
                 TextColumn::make('created_at')
@@ -106,7 +112,11 @@ class ItemResource extends BaseItemResource
             ->defaultSort('title', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
-            ->filters([]);
+            ->filters([
+                ...static::customFieldFilters(),
+            ])
+            ->deferFilters(false)
+            ->persistFiltersInSession();
     }
 
     public static function getPages(): array

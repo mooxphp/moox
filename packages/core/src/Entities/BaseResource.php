@@ -30,6 +30,39 @@ use Moox\Core\Support\Resources\ScopedResourceContext;
 
 abstract class BaseResource extends Resource
 {
+    /**
+     * Custom field form components. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no components otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldComponents(string $placement = 'main'): array
+    {
+        return [];
+    }
+
+    /**
+     * Custom field table columns. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no columns otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldColumns(): array
+    {
+        return [];
+    }
+
+    /**
+     * Custom field table filters. Overridden by the moox/builder HasCustomFields
+     * trait when the package is installed; returns no filters otherwise.
+     *
+     * @return array<int, mixed>
+     */
+    public static function customFieldFilters(): array
+    {
+        return [];
+    }
+
     public static function make(string $key = 'default'): ResourceConfiguration
     {
         return ScopedResourceConfiguration::make(static::class, $key);
