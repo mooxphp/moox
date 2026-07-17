@@ -24,8 +24,9 @@ return [
     /*
     | Installer
     |
-    | Greenfield veraPDF installer zip version and download URL.
+    | Greenfield veraPDF installer zip version, download URL, and pinned SHA-256.
     | Pin 1.30.1+ — that release splits CLI/GUI packs; auto-install selects CLI only.
+    | Update sha256 whenever version or download_url changes (see SECURITY.md).
     |
     */
     'installer' => [
@@ -33,6 +34,10 @@ return [
         'download_url' => env(
             'VERAPDF_DOWNLOAD_URL',
             'https://software.verapdf.org/releases/1.30/verapdf-greenfield-1.30.1-installer.zip'
+        ),
+        'sha256' => env(
+            'VERAPDF_INSTALLER_SHA256',
+            '9f03fc5da454348329f4054256351aa6c6a91683329978e8294f21fe8a5d7abc'
         ),
     ],
 
@@ -45,7 +50,6 @@ return [
     */
     'paths' => [
         'launcher' => 'verapdf',
-        'install_tmp' => 'tmp',
     ],
 
     /*
