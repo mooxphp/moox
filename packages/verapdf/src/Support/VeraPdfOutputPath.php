@@ -32,7 +32,17 @@ final class VeraPdfOutputPath
             return $path;
         }
 
-        $resolved = $path.'/'.trim(str_replace('\\', '/', $subdirectory), '/');
+        $segments = [];
+        foreach (explode('/', trim(str_replace('\\', '/', $subdirectory), '/')) as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
+                throw new \InvalidArgumentException(
+                    'VeraPdf output subdirectory must not contain empty or parent-path segments.'
+                );
+            }
+            $segments[] = $segment;
+        }
+
+        $resolved = $path.'/'.implode('/', $segments);
         File::ensureDirectoryExists($resolved, 0775, recursive: true);
 
         return $resolved;

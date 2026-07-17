@@ -16,7 +16,7 @@ veraPDF CLI wrapper for PDF/A-3 validation. The package headless-installs the of
 ## Responsibility Boundaries
 
 - `moox/verapdf` owns veraPDF installation, PDF/A-3 validation, report output paths, and validation audit persistence.
-- Owner packages (e.g. e-billing documents) are external; register allowed types under `verapdf.relations.verapdf_validatables.owner_types` when wiring morph history.
+- Owner packages are external; register allowed types under `verapdf.relations.verapdf_validatables.owner_types` when wiring morph history.
 - This package stays generic — no e-billing or host-app knowledge.
 
 ## Requirements
