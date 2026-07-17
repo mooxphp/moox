@@ -32,11 +32,18 @@ test('unresolved document type label throws', function (): void {
         ->toThrow(UnresolvedCodelistLabelException::class);
 });
 
-test('resolveFromCodeOrLabel returns non-empty raw code as-is', function (): void {
+test('resolveFromCodeOrLabel rejects non-allowlisted raw code', function (): void {
     $resolver = app(DocumentTypeCodeResolver::class);
 
-    expect($resolver->resolveFromCodeOrLabel('999', ''))->toBe('999')
-        ->and($resolver->resolveFromCodeOrLabel('380', 'Rechnung'))->toBe('380');
+    expect(fn () => $resolver->resolveFromCodeOrLabel('999', ''))
+        ->toThrow(UnresolvedCodelistLabelException::class);
+});
+
+test('resolveFromCodeOrLabel accepts allowlisted raw codes', function (): void {
+    $resolver = app(DocumentTypeCodeResolver::class);
+
+    expect($resolver->resolveFromCodeOrLabel('380', 'Rechnung'))->toBe('380')
+        ->and($resolver->resolveFromCodeOrLabel('381', 'Gutschrift'))->toBe('381');
 });
 
 test('resolveFromCodeOrLabel falls through to label resolution when code is empty', function (): void {
@@ -46,4 +53,18 @@ test('resolveFromCodeOrLabel falls through to label resolution when code is empt
 
     expect($resolver->resolveFromCodeOrLabel('', 'Gutschrift'))->toBe('381')
         ->and($resolver->resolveFromCodeOrLabel('', 'Rechnung'))->toBe('380');
+});
+
+test('numeric path rejects non-allowlisted codelist code', function (): void {
+    $this->seedDocumentTypeAndUnitCodelists();
+
+    expect(fn () => app(DocumentTypeCodeResolver::class)->resolveLabel('82'))
+        ->toThrow(UnresolvedCodelistLabelException::class);
+});
+
+test('contains path rejects label that only matches non-allowlisted code', function (): void {
+    $this->seedDocumentTypeAndUnitCodelists();
+
+    expect(fn () => app(DocumentTypeCodeResolver::class)->resolveLabel('Proforma'))
+        ->toThrow(UnresolvedCodelistLabelException::class);
 });
