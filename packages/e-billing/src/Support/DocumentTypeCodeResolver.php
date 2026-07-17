@@ -31,6 +31,15 @@ final class DocumentTypeCodeResolver
         return app(self::class)->labelFor($code);
     }
 
+    public function resolveFromCodeOrLabel(string $documentTypeCode, string $documentType): string
+    {
+        if ($documentTypeCode !== '') {
+            return $documentTypeCode;
+        }
+
+        return $this->resolveLabel($documentType);
+    }
+
     public function resolveLabel(string $documentType): string
     {
         $normalized = mb_strtolower(trim($documentType));
