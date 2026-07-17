@@ -62,6 +62,41 @@ it('rejects absolute zip entries', function (): void {
     File::deleteDirectory($target);
 });
 
+it('rejects zip entries with current-directory segments', function (): void {
+    $zipPath = sys_get_temp_dir().'/verapdf-dot-zip-'.uniqid('', true).'.zip';
+    $target = sys_get_temp_dir().'/verapdf-dot-out-'.uniqid('', true);
+    File::ensureDirectoryExists($target);
+
+    $zip = new ZipArchive;
+    expect($zip->open($zipPath, ZipArchive::CREATE))->toBeTrue();
+    $zip->addFromString('foo/./evil.txt', 'pwned');
+    $zip->close();
+
+    expect(fn () => SafeZipExtractor::extract($zipPath, $target))
+        ->toThrow(RuntimeException::class, 'unsafe ZIP entry');
+
+    File::delete($zipPath);
+    File::deleteDirectory($target);
+});
+
+it('rejects symlink zip entries', function (): void {
+    $zipPath = sys_get_temp_dir().'/verapdf-link-zip-'.uniqid('', true).'.zip';
+    $target = sys_get_temp_dir().'/verapdf-link-out-'.uniqid('', true);
+    File::ensureDirectoryExists($target);
+
+    $zip = new ZipArchive;
+    expect($zip->open($zipPath, ZipArchive::CREATE))->toBeTrue();
+    $zip->addFromString('escape-link', '/tmp/outside');
+    $zip->setExternalAttributesName('escape-link', ZipArchive::OPSYS_UNIX, (0o120000 | 0o777) << 16);
+    $zip->close();
+
+    expect(fn () => SafeZipExtractor::extract($zipPath, $target))
+        ->toThrow(RuntimeException::class, 'unsafe ZIP entry');
+
+    File::delete($zipPath);
+    File::deleteDirectory($target);
+});
+
 it('throws when the archive cannot be opened', function (): void {
     $path = sys_get_temp_dir().'/verapdf-not-a-zip-'.uniqid('', true).'.zip';
     file_put_contents($path, 'not-a-zip');
