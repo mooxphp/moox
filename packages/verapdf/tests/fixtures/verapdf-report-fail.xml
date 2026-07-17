@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <jobs>
+    <job>
+      <item size="1234">
+        <name>/tmp/sample-fail.pdf</name>
+      </item>
+      <validationReport profileName="PDF/A-3B validation profile" statement="PDF file is not compliant with Validation Profile requirements." isCompliant="false">
+        <details passedRules="9" failedRules="1" passedChecks="48" failedChecks="1">
+          <rule specification="ISO 19005-3:2012" clause="6.2.11.3" testNumber="1" status="failed" passedChecks="0" failedChecks="1">
+            <description>If an image dictionary contains the Interpolate key, its value shall be false.</description>
+            <object>PDXImage</object>
+            <test>isInterpolate == false</test>
+            <check status="failed">
+              <context>root/document[0]/pages[0]/contentStream[0]/operators[65]/xObject[0]</context>
+            </check>
+          </rule>
+        </details>
+      </validationReport>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0"/>
+</report>
