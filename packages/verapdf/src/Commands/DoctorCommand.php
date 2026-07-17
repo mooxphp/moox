@@ -42,6 +42,17 @@ class DoctorCommand extends Command
             $allGood = false;
         }
 
+        if ($veraPdf->hasCliBinaries()) {
+            $this->components->info('CLI binaries: OK');
+        } else {
+            $this->components->error('CLI binaries: NOT FOUND (expected bin/*cli*.jar from the veraPDF CLI pack)');
+            $allGood = false;
+        }
+
+        if ($veraPdf->hasGuiArtefacts()) {
+            $this->components->warn('GUI pack artefacts present; slim/headless installs use the CLI pack only.');
+        }
+
         $outputPath = VeraPdfOutputPath::resolve();
         try {
             File::ensureDirectoryExists($outputPath);

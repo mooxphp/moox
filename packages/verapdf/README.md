@@ -6,7 +6,7 @@ veraPDF CLI wrapper for PDF/A-3 validation. The package headless-installs the of
 
 ## Features
 
-- veraPDF greenfield install (`verapdf:install`, `--force`) via IzPack headless auto-install
+- veraPDF greenfield install (`verapdf:install`, `--force`) via IzPack headless auto-install (CLI pack only; no GUI)
 - Health checks (`verapdf:doctor`) and CLI validation (`verapdf:validate`)
 - Programmatic validation via `VeraPdfService` and structured `VeraPdfResult` (MRR XML parsing)
 - `RecordVeraPdfValidation` action for audit persistence
@@ -26,6 +26,28 @@ veraPDF CLI wrapper for PDF/A-3 validation. The package headless-installs the of
 | `moox/core` | Base model, Moox installer, morph pivot registry |
 | Java runtime | Headless IzPack install and veraPDF launcher (`VERAPDF_JAVA_BINARY`, default `java`) |
 
+### Server prerequisites (headless)
+
+Deploy on a server with a **JRE only** — no desktop/X11 packages required.
+
+| Prerequisite | Notes |
+|--------------|-------|
+| Java **8, 11, 17, or 21** | Prefer a headless JRE on Ubuntu: `sudo apt install default-jre-headless` (or Temurin 17 JRE) |
+| No GUI/X11 | `verapdf:install` runs IzPack automated mode with `-Djava.awt.headless=true` and selects the **veraPDF CLI** pack only (GUI/documentation/plugins excluded) |
+
+```bash
+# Headless install (CLI pack only)
+php artisan verapdf:install
+
+# Confirm Java + CLI launcher + bin/*cli*.jar
+php artisan verapdf:doctor
+
+# Smoke-test PDF/A-3 validation
+php artisan verapdf:validate /absolute/path/to/file.pdf
+```
+
+The auto-install stub matches the pinned greenfield installer **1.30.1+** pack list (`veraPDF CLI` / `veraPDF GUI`). Do not point `VERAPDF_DOWNLOAD_URL` at a pre-1.30 zip without updating `resources/install/auto-install.xml.stub`.
+
 ## Installation
 
 ```bash
@@ -33,13 +55,13 @@ composer require moox/verapdf
 php artisan moox:install
 ```
 
-Install veraPDF artefacts:
+Install veraPDF artefacts (CLI pack only; safe on headless servers):
 
 ```bash
 php artisan verapdf:install
 ```
 
-Verify Java, launcher, and report directory writability:
+Verify Java, CLI launcher, CLI jar, and report directory writability:
 
 ```bash
 php artisan verapdf:doctor
@@ -130,9 +152,9 @@ if (! app(VeraPdfService::class)->isInstalled()) {
 
 | Command | Options | Description |
 |---------|---------|-------------|
-| `verapdf:install` | `--force` | Download and headless-install veraPDF |
+| `verapdf:install` | `--force` | Download and headless-install veraPDF (CLI pack only) |
 | `verapdf:validate` | `{path}` | Validate PDF, persist audit row |
-| `verapdf:doctor` | — | Check Java, launcher, writable output path |
+| `verapdf:doctor` | — | Check Java, CLI launcher/jar, writable output path |
 
 ## Running tests
 

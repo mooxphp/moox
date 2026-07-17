@@ -25,6 +25,7 @@ return [
     | Installer
     |
     | Greenfield veraPDF installer zip version and download URL.
+    | Pin 1.30.1+ — that release splits CLI/GUI packs; auto-install selects CLI only.
     |
     */
     'installer' => [
