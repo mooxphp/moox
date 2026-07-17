@@ -36,6 +36,29 @@ test('isInstalled is true when launcher exists and is executable', function (): 
     expect(app(VeraPdfService::class)->isInstalled())->toBeTrue();
 });
 
+test('hasCliBinaries requires launcher and bin cli jar', function (): void {
+    $base = (string) config('verapdf.base_path');
+    File::ensureDirectoryExists($base.'/bin');
+    file_put_contents($base.'/verapdf', "#!/bin/sh\nexit 0\n");
+    chmod($base.'/verapdf', 0755);
+
+    $service = app(VeraPdfService::class);
+    expect($service->hasCliBinaries())->toBeFalse();
+
+    file_put_contents($base.'/bin/cli-1.30.1.jar', 'fake');
+    expect($service->hasCliBinaries())->toBeTrue();
+    expect($service->hasGuiArtefacts())->toBeFalse();
+});
+
+test('hasGuiArtefacts detects gui launcher or jar', function (): void {
+    $base = (string) config('verapdf.base_path');
+    File::ensureDirectoryExists($base.'/bin');
+    file_put_contents($base.'/verapdf-gui', "#!/bin/sh\nexit 0\n");
+    file_put_contents($base.'/bin/gui-1.30.1.jar', 'fake');
+
+    expect(app(VeraPdfService::class)->hasGuiArtefacts())->toBeTrue();
+});
+
 test('javaAvailable reflects process result', function (): void {
     Process::fake(fn () => Process::result(
         output: '',

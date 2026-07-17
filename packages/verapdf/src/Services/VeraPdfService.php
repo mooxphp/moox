@@ -121,12 +121,56 @@ class VeraPdfService
         }
     }
 
+    /**
+     * True when the CLI pack layout is present (launcher + bin/cli-*.jar).
+     */
+    public function hasCliBinaries(): bool
+    {
+        if (! $this->isInstalled()) {
+            return false;
+        }
+
+        return $this->findCliJar() !== null;
+    }
+
+    /**
+     * True when GUI pack artefacts are present (optional warning for slim installs).
+     */
+    public function hasGuiArtefacts(): bool
+    {
+        $basePath = rtrim((string) config('verapdf.base_path'), '/\\');
+
+        if (is_file($basePath.'/verapdf-gui') || is_file($basePath.'/verapdf-gui.bat')) {
+            return true;
+        }
+
+        return $this->findJarInBin('gui') !== null;
+    }
+
     public function javaAvailable(): bool
     {
         $java = config('verapdf.java_binary', 'java');
         $result = Process::run([$java, '-version']);
 
         return $result->successful();
+    }
+
+    public function findCliJar(): ?string
+    {
+        return $this->findJarInBin('cli');
+    }
+
+    private function findJarInBin(string $needle): ?string
+    {
+        $binDir = rtrim((string) config('verapdf.base_path'), '/\\').'/bin';
+
+        if (! is_dir($binDir)) {
+            return null;
+        }
+
+        $matches = glob($binDir.'/*'.$needle.'*.jar') ?: [];
+
+        return $matches[0] ?? null;
     }
 
     /**

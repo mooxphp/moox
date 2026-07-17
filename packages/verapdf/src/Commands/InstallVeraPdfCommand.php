@@ -107,9 +107,22 @@ class InstallVeraPdfCommand extends Command
             return self::FAILURE;
         }
 
+        if (! $veraPdf->hasCliBinaries()) {
+            $hint = $veraPdf->hasGuiArtefacts()
+                ? 'GUI pack artefacts found but CLI jar missing — auto-install must select the veraPDF CLI pack (not GUI).'
+                : 'CLI jar missing under bin/ — auto-install must select the veraPDF CLI pack.';
+            $this->components->error('Installation incomplete: '.$hint);
+
+            return self::FAILURE;
+        }
+
         $this->newLine();
-        $this->components->info('veraPDF installation successful.');
+        $this->components->info('veraPDF CLI installation successful.');
         $this->line("  Launcher: <info>{$launcherPath}</info>");
+        $cliJar = $veraPdf->findCliJar();
+        if ($cliJar !== null) {
+            $this->line("  CLI jar: <info>{$cliJar}</info>");
+        }
         $this->newLine();
         $this->line('Test with: <comment>php artisan verapdf:validate /path/to/file.pdf</comment>');
 
