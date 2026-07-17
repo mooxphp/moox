@@ -15,11 +15,8 @@ final class DocumentTypeCodeResolver
 
     private const PRIMARY_CREDIT_NOTE_CODE = '381';
 
-    /** @var array{exact: array<string, string>, contains: array<string, list<string>>}|null */
+    /** @var array{exact: array<string, string>, contains: array<string, list<string>>, labels: array<string, string>}|null */
     private ?array $lookup = null;
-
-    /** @var array<string, string>|null */
-    private ?array $labelsByCode = null;
 
     public static function resolve(string $documentType): string
     {
@@ -34,7 +31,7 @@ final class DocumentTypeCodeResolver
     public function resolveFromCodeOrLabel(string $documentTypeCode, string $documentType): string
     {
         if ($documentTypeCode !== '') {
-            return $documentTypeCode;
+            return $this->assertAllowed($documentTypeCode, 'document_type_code', $documentTypeCode);
         }
 
         return $this->resolveLabel($documentType);
@@ -51,16 +48,21 @@ final class DocumentTypeCodeResolver
         $lookup = $this->lookupMaps();
 
         if (preg_match('/^\d{2,3}$/', $normalized) === 1 && isset($lookup['labels'][$normalized])) {
-            return $normalized;
+            return $this->assertAllowed($normalized, 'document_type', $documentType);
         }
 
         if (isset($lookup['exact'][$normalized])) {
-            return $lookup['exact'][$normalized];
+            return $this->assertAllowed($lookup['exact'][$normalized], 'document_type', $documentType);
         }
 
+        $allowed = array_flip($this->allowedCodes());
         $containsMatches = [];
 
         foreach ($lookup['contains'] as $code => $labels) {
+            if (! isset($allowed[$code])) {
+                continue;
+            }
+
             foreach ($labels as $label) {
                 if (str_contains($label, $normalized)) {
                     $containsMatches[$code] = true;
@@ -79,7 +81,7 @@ final class DocumentTypeCodeResolver
                 return self::PRIMARY_INVOICE_CODE;
             }
 
-            return (string) array_key_first($containsMatches);
+            return $this->assertAllowed((string) array_key_first($containsMatches), 'document_type', $documentType);
         }
 
         Log::warning('Unresolved UNTDID 1001 document type label.', [
@@ -104,6 +106,29 @@ final class DocumentTypeCodeResolver
         }
 
         return $labels[$code];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function allowedCodes(): array
+    {
+        /** @var list<string|int>|array<int, string|int> $codes */
+        $codes = config('e-billing.allowed_document_type_codes', ['380', '381']);
+
+        return array_values(array_map(
+            static fn (string|int $code): string => (string) $code,
+            $codes,
+        ));
+    }
+
+    private function assertAllowed(string $code, string $codelist, string $input): string
+    {
+        if (! in_array($code, $this->allowedCodes(), true)) {
+            throw new UnresolvedCodelistLabelException($codelist, $input);
+        }
+
+        return $code;
     }
 
     /**

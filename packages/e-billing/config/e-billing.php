@@ -48,6 +48,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed BT-3 document type codes (UNTDID 1001)
+    |--------------------------------------------------------------------------
+    |
+    | DocumentTypeCodeResolver only accepts these codes. Anything else throws
+    | UnresolvedCodelistLabelException (routes to needs-review). Defaults cover
+    | commercial invoice (380) and credit note (381).
+    |
+    */
+
+    'allowed_document_type_codes' => ['380', '381'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Filament: Invoices (InvoiceResource)
     |--------------------------------------------------------------------------
     */
