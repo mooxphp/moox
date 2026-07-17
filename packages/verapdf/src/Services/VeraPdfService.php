@@ -67,15 +67,18 @@ class VeraPdfService
 
         $flavour = (string) config('verapdf.flavour', '3b');
         $launcher = $this->launcherPath();
+        $processEnv = $this->processEnvironment();
 
-        $result = Process::timeout(600)->run([
-            $launcher,
-            '-f', $flavour,
-            '--format', 'xml',
-            $inputPath,
-        ]);
+        $result = Process::timeout(600)
+            ->env($processEnv)
+            ->run([
+                $launcher,
+                '-f', $flavour,
+                '--format', 'xml',
+                $inputPath,
+            ]);
 
-        $baseName = pathinfo($pdfPath, PATHINFO_FILENAME);
+        $baseName = $this->safeReportBasename($pdfPath);
         $reportXml = $reportDir.'/'.$baseName.'-report.xml';
         $reportHtml = $reportDir.'/'.$baseName.'-report.html';
 
@@ -84,12 +87,14 @@ class VeraPdfService
             File::put($reportXml, $stdout);
         }
 
-        $htmlResult = Process::timeout(600)->run([
-            $launcher,
-            '-f', $flavour,
-            '--format', 'html',
-            $inputPath,
-        ]);
+        $htmlResult = Process::timeout(600)
+            ->env($processEnv)
+            ->run([
+                $launcher,
+                '-f', $flavour,
+                '--format', 'html',
+                $inputPath,
+            ]);
 
         if ($htmlResult->output() !== '') {
             File::put($reportHtml, $htmlResult->output());
@@ -122,5 +127,37 @@ class VeraPdfService
         $result = Process::run([$java, '-version']);
 
         return $result->successful();
+    }
+
+    /**
+     * Ensure a configured absolute Java binary is preferred by the veraPDF launcher script.
+     *
+     * @return array<string, string>
+     */
+    private function processEnvironment(): array
+    {
+        $java = (string) config('verapdf.java_binary', 'java');
+
+        if ($java === '' || $java === 'java' || (! str_contains($java, '/') && ! str_contains($java, '\\'))) {
+            return [];
+        }
+
+        $dir = dirname($java);
+        $path = $dir.PATH_SEPARATOR.(getenv('PATH') ?: '');
+
+        return ['PATH' => $path];
+    }
+
+    private function safeReportBasename(string $pdfPath): string
+    {
+        $baseName = basename(pathinfo($pdfPath, PATHINFO_FILENAME));
+        $baseName = preg_replace('/[^A-Za-z0-9._-]+/', '_', $baseName) ?? '';
+        $baseName = trim($baseName, '._-');
+
+        if ($baseName === '' || $baseName === '.' || $baseName === '..') {
+            return 'verapdf-input';
+        }
+
+        return $baseName;
     }
 }

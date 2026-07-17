@@ -93,7 +93,7 @@ return [
             'morph_name' => 'validatable',
             'pivot_columns' => [],
             'owner_types' => [
-                // \Moox\EBilling\Models\EbillingDocument::class => 'Invoice document',
+                // Register owner model FQCNs here when wiring morph history.
             ],
         ],
     ],
