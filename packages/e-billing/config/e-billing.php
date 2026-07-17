@@ -37,6 +37,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default e-invoice format
+    |--------------------------------------------------------------------------
+    |
+    | FormatRegistry key frozen onto ebilling_documents.format at generation.
+    |
+    */
+
+    'default_format' => 'zugferd',
+
+    /*
+    |--------------------------------------------------------------------------
     | Filament: Invoices (InvoiceResource)
     |--------------------------------------------------------------------------
     */
@@ -159,18 +170,6 @@ return [
     'foreign_invoice' => [
         'ignored_folder_name' => env('EBILLING_IGNORED_FOLDER', 'Ignored'),
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | ZUGFeRD Profile
-    |--------------------------------------------------------------------------
-    |
-    | The ZUGFeRD/XRechnung profile to use for conversion.
-    | Options: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG
-    |
-    */
-
-    'zugferd_profile' => 'EN16931',
 
     /*
     |--------------------------------------------------------------------------

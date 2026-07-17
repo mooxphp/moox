@@ -75,9 +75,9 @@ Published as `config/e-billing.php`.
 | --- | --- |
 | `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
-| `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`) |
+| `default_format` | FormatRegistry key frozen onto `ebilling_documents.format` at generation (default `zugferd`) |
+| `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`); profile lives in `moox/zugferd` (`config('zugferd.profile')`) |
 | `foreign_invoice` | Foreign-invoice handling (`ignored_folder_name`) |
-| `zugferd_profile` | ZUGFeRD / XRechnung profile (default `EN16931`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
@@ -142,9 +142,11 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `source_type` | `string` | nullable | Morph type (typically `InboxAttachment`) |
 | `source_id` | `unsignedBigInteger` | nullable | Morph key (`InboxAttachment` uses a bigInteger PK) |
 | `bill_data` | `json` | nullable | Parsed invoice DTO as JSON |
-| `xml_storage_path` | `string` | nullable | Relative path to generated XML on the `zugferd` disk |
-| `zugferd_storage_disk` | `string` | nullable | Filesystem disk name for ZUGFeRD artefacts |
-| `zugferd_storage_path` | `string` | nullable | Relative path to merged ZUGFeRD PDF |
+| `xml_storage_path` | `string` | nullable | Relative path to generated XML on the storage disk |
+| `storage_disk` | `string` | nullable | Filesystem disk name for e-billing artefacts |
+| `pdf_storage_path` | `string` | nullable | Relative path to merged hybrid PDF (ZUGFeRD/Factur-X) |
+| `format` | `string` | NOT NULL | Frozen format id at generation; default `zugferd` |
+| `artifact_content_hash` | `string` | nullable | SHA-256 of validated artifact (populated later) |
 | `ignored_reason` | `json` | nullable | Foreign-invoice classification details |
 | `gateway_status` | `string` | nullable | Pipeline stage (indexed) |
 | `review_status` | `string` | NOT NULL | Review stage; default `parser_created` (indexed) |

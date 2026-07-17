@@ -1,7 +1,7 @@
 @php
     $document = $invoice->ebillingDocument;
     $source = $document?->source;
-    $hasZugferdDownload = filled($document?->zugferd_storage_path) || filled($source?->zugferd_storage_path);
+    $hasZugferdDownload = filled($document?->pdf_storage_path) || filled($source?->zugferd_storage_path);
     $hasXmlDownload = filled($document?->xml_storage_path) || filled($source?->xml_storage_path);
 @endphp
 <div

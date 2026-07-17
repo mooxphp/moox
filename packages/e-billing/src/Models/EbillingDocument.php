@@ -31,6 +31,11 @@ use Moox\MailInbox\Models\InboxAttachment;
  * does not aggregate lines on the document yet.
  *
  * @property array<string, mixed>|null $bill_data
+ * @property string|null $xml_storage_path
+ * @property string|null $storage_disk
+ * @property string|null $pdf_storage_path
+ * @property string $format
+ * @property string|null $artifact_content_hash
  * @property array<string, mixed>|null $ignored_reason
  * @property EBillingAttachmentProcessingStatus|null $gateway_status
  * @property InvoiceProcessingStatus|null $review_status
@@ -52,6 +57,13 @@ class EbillingDocument extends BaseItemModel
     public $incrementing = false;
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'format' => 'zugferd',
+    ];
+
+    /**
      * @var list<string>
      */
     protected $fillable = [
@@ -59,8 +71,10 @@ class EbillingDocument extends BaseItemModel
         'source_id',
         'bill_data',
         'xml_storage_path',
-        'zugferd_storage_disk',
-        'zugferd_storage_path',
+        'storage_disk',
+        'pdf_storage_path',
+        'format',
+        'artifact_content_hash',
         'ignored_reason',
         'gateway_status',
         'review_status',

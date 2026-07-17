@@ -62,7 +62,7 @@ class MergeZugferdPdfJob implements ShouldQueue
         $document = EbillingDocument::forSourceAttachment($attachment);
 
         if ($document?->gateway_status === EBillingAttachmentProcessingStatus::ZugferdPdfGenerated
-            && $document->zugferd_storage_path !== null) {
+            && $document->pdf_storage_path !== null) {
             $this->setProgress(100);
 
             return;
@@ -107,7 +107,7 @@ class MergeZugferdPdfJob implements ShouldQueue
             $document->save();
         }
 
-        $diskName = $document?->zugferd_storage_disk
+        $diskName = $document?->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
 
         $xmlRelative = $document?->xml_storage_path;
@@ -146,8 +146,8 @@ class MergeZugferdPdfJob implements ShouldQueue
         $this->setProgress(85);
 
         if ($document !== null) {
-            $document->zugferd_storage_disk = $diskName;
-            $document->zugferd_storage_path = $relativePdfPath;
+            $document->storage_disk = $diskName;
+            $document->pdf_storage_path = $relativePdfPath;
             $document->gateway_status = EBillingAttachmentProcessingStatus::ZugferdPdfGenerated;
             $document->processed_at = now();
             $document->save();
