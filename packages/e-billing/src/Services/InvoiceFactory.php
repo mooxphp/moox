@@ -95,7 +95,7 @@ class InvoiceFactory
         return new InvoiceDraft(
             invoice_number: $dto->invoiceNumber,
             invoice_date: $dto->invoiceDate,
-            document_type: $this->resolveDocumentTypeCode($dto),
+            document_type: $this->documentTypeCodeResolver()->resolveFromCodeOrLabel($dto->documentTypeCode, $dto->documentType),
             due_date: $dto->dueDate,
             currency: $dto->currency,
             customer_reference: $dto->customerReference,
@@ -223,15 +223,6 @@ class InvoiceFactory
                 'weight_kg_net' => $dto->weightKgNet !== null ? (string) $dto->weightKgNet : null,
             ],
         );
-    }
-
-    private function resolveDocumentTypeCode(InvoiceDto $dto): string
-    {
-        if ($dto->documentTypeCode !== '') {
-            return $dto->documentTypeCode;
-        }
-
-        return $this->documentTypeCodeResolver()->resolveLabel($dto->documentType);
     }
 
     private function mapSeller(InvoiceDto $dto): ?InvoiceParty

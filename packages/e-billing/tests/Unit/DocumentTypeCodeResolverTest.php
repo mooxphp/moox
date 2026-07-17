@@ -31,3 +31,19 @@ test('unresolved document type label throws', function (): void {
     expect(fn () => app(DocumentTypeCodeResolver::class)->resolveLabel('NotARealDocumentType'))
         ->toThrow(UnresolvedCodelistLabelException::class);
 });
+
+test('resolveFromCodeOrLabel returns non-empty raw code as-is', function (): void {
+    $resolver = app(DocumentTypeCodeResolver::class);
+
+    expect($resolver->resolveFromCodeOrLabel('999', ''))->toBe('999')
+        ->and($resolver->resolveFromCodeOrLabel('380', 'Rechnung'))->toBe('380');
+});
+
+test('resolveFromCodeOrLabel falls through to label resolution when code is empty', function (): void {
+    $this->seedDocumentTypeAndUnitCodelists();
+
+    $resolver = app(DocumentTypeCodeResolver::class);
+
+    expect($resolver->resolveFromCodeOrLabel('', 'Gutschrift'))->toBe('381')
+        ->and($resolver->resolveFromCodeOrLabel('', 'Rechnung'))->toBe('380');
+});
