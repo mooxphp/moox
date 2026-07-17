@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <jobs>
+    <job>
+      <item size="1234">
+        <name>/tmp/sample-pass.pdf</name>
+      </item>
+      <validationReport profileName="PDF/A-3B validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="10" failedRules="0" passedChecks="50" failedChecks="0"/>
+      </validationReport>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0"/>
+</report>
