@@ -45,9 +45,17 @@ class InstallVeraPdfCommand extends Command
         }
 
         if ($veraPdf->isInstalled() && ! $this->option('force')) {
-            $this->components->info('veraPDF is already installed. Use --force to reinstall.');
+            if ($veraPdf->hasCliBinaries()) {
+                $this->components->info('veraPDF is already installed. Use --force to reinstall.');
 
-            return self::SUCCESS;
+                return self::SUCCESS;
+            }
+
+            $this->components->error(
+                'veraPDF launcher found but CLI pack is missing. Run php artisan verapdf:install --force to install the CLI pack only.'
+            );
+
+            return self::FAILURE;
         }
 
         File::ensureDirectoryExists($basePath);
