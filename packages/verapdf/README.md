@@ -61,6 +61,12 @@ Install veraPDF artefacts (CLI pack only; safe on headless servers):
 php artisan verapdf:install
 ```
 
+### Installer integrity
+
+`verapdf:install` verifies the downloaded greenfield zip against a **pinned SHA-256** (`verapdf.installer.sha256` / `VERAPDF_INSTALLER_SHA256`) before extraction, and rejects archive entries that resolve outside the extract directory (zip-slip). A mismatch or unsafe entry aborts with a clear error and does **not** wipe an existing install (even with `--force`).
+
+When bumping the pinned veraPDF version, update `installer.version`, `installer.download_url`, and `installer.sha256` together. How to recompute the digest is documented in [SECURITY.md](SECURITY.md).
+
 Verify Java, CLI launcher, CLI jar, and report directory writability:
 
 ```bash
@@ -84,6 +90,7 @@ php artisan config:clear
 | `VERAPDF_BASE_PATH` | `base_path` | Root for veraPDF install (default `storage/app/private/verapdf`) |
 | `VERAPDF_VERSION` | `installer.version` | Installer version label |
 | `VERAPDF_DOWNLOAD_URL` | `installer.download_url` | Greenfield installer zip URL |
+| `VERAPDF_INSTALLER_SHA256` | `installer.sha256` | Pinned SHA-256 of that zip (required) |
 | `VERAPDF_JAVA_BINARY` | `java_binary` | Java executable (default `java`) |
 | `VERAPDF_FLAVOUR` | `flavour` | PDF/A flavour code (default `3b`) |
 | `VERAPDF_OUTPUT_PATH` | `output.path` | Report output directory |

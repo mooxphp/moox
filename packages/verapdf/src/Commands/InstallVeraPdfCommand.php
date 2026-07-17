@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Moox\VeraPdf\Services\VeraPdfService;
+use Moox\VeraPdf\Support\InstallerChecksum;
+use Moox\VeraPdf\Support\SafeZipExtractor;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SplFileInfo;
-use ZipArchive;
 
 class InstallVeraPdfCommand extends Command
 {
@@ -37,12 +38,6 @@ class InstallVeraPdfCommand extends Command
         $this->components->info('Java found.');
 
         $basePath = rtrim((string) config('verapdf.base_path'), '/\\');
-        $tmpDir = $basePath.'/'.config('verapdf.paths.install_tmp', 'tmp');
-
-        if ($this->option('force') && File::exists($basePath)) {
-            $this->components->warn("Deleting existing installation at {$basePath}");
-            File::deleteDirectory($basePath);
-        }
 
         if ($veraPdf->isInstalled() && ! $this->option('force')) {
             if ($veraPdf->hasCliBinaries()) {
@@ -58,23 +53,40 @@ class InstallVeraPdfCommand extends Command
             return self::FAILURE;
         }
 
-        File::ensureDirectoryExists($basePath);
-        File::ensureDirectoryExists($tmpDir);
+        // Stage download/extract outside base_path so --force wipe happens only after integrity checks.
+        $stagingDir = rtrim(sys_get_temp_dir(), '/\\').'/verapdf-install-'.uniqid('', true);
 
         try {
-            $zipPath = $tmpDir.'/verapdf-installer.zip';
+            File::ensureDirectoryExists($stagingDir);
+
+            $zipPath = $stagingDir.'/verapdf-installer.zip';
+            $versionLabel = 'veraPDF v'.config('verapdf.installer.version');
             $this->downloadFile(
                 (string) config('verapdf.installer.download_url'),
                 $zipPath,
-                'veraPDF v'.config('verapdf.installer.version')
+                $versionLabel
             );
 
-            $extractDir = $tmpDir.'/extracted';
+            $this->components->info('Verifying installer checksum ...');
+            InstallerChecksum::assertMatches(
+                $zipPath,
+                (string) config('verapdf.installer.sha256', '')
+            );
+
+            $extractDir = $stagingDir.'/extracted';
             File::ensureDirectoryExists($extractDir);
-            $this->extractZip($zipPath, $extractDir, 'veraPDF installer');
+            $this->components->info('Extracting veraPDF installer ...');
+            SafeZipExtractor::extract($zipPath, $extractDir);
+
+            if ($this->option('force') && File::exists($basePath)) {
+                $this->components->warn("Deleting existing installation at {$basePath}");
+                File::deleteDirectory($basePath);
+            }
+
+            File::ensureDirectoryExists($basePath);
 
             $installerJar = $this->findInstallerJar($extractDir);
-            $autoInstallXml = $tmpDir.'/auto-install.xml';
+            $autoInstallXml = $stagingDir.'/auto-install.xml';
             $this->writeAutoInstallXml($autoInstallXml, $basePath);
 
             $this->components->info('Running headless veraPDF installer ...');
@@ -102,8 +114,8 @@ class InstallVeraPdfCommand extends Command
 
             return self::FAILURE;
         } finally {
-            if (File::exists($tmpDir)) {
-                File::deleteDirectory($tmpDir);
+            if (File::exists($stagingDir)) {
+                File::deleteDirectory($stagingDir);
             }
         }
 
@@ -155,23 +167,6 @@ class InstallVeraPdfCommand extends Command
         if (! File::exists($target) || File::size($target) === 0) {
             throw new RuntimeException("Download incomplete for {$label}");
         }
-    }
-
-    private function extractZip(string $zipFile, string $targetDir, string $label): void
-    {
-        $this->components->info("Extracting {$label} ...");
-
-        $zip = new ZipArchive;
-        if ($zip->open($zipFile) !== true) {
-            throw new RuntimeException("Cannot open ZIP: {$zipFile}");
-        }
-
-        if (! $zip->extractTo($targetDir)) {
-            $zip->close();
-            throw new RuntimeException("Cannot extract ZIP: {$zipFile}");
-        }
-
-        $zip->close();
     }
 
     private function findInstallerJar(string $extractDir): string
