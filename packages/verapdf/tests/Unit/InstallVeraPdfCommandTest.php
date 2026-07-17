@@ -139,3 +139,49 @@ test('install aborts on zip-slip archive before running the installer', function
 
     File::delete($zipPath);
 });
+
+test('install aborts on zip-slip with --force without wiping an existing install', function (): void {
+    $base = (string) config('verapdf.base_path');
+    File::ensureDirectoryExists($base.'/bin');
+    file_put_contents($base.'/verapdf', "#!/bin/sh\nexit 0\n");
+    chmod($base.'/verapdf', 0755);
+    file_put_contents($base.'/bin/cli-1.30.1.jar', 'existing-cli');
+
+    $zipPath = sys_get_temp_dir().'/verapdf-cmd-force-slip-'.uniqid('', true).'.zip';
+    $zip = new ZipArchive;
+    expect($zip->open($zipPath, ZipArchive::CREATE))->toBeTrue();
+    $zip->addFromString('../evil.txt', 'pwned');
+    $zip->close();
+
+    $bytes = (string) file_get_contents($zipPath);
+    config()->set('verapdf.installer.sha256', hash('sha256', $bytes));
+
+    Http::fake([
+        '*' => Http::response($bytes, 200),
+    ]);
+
+    $installerJarRan = false;
+    Process::fake(function (PendingProcess $process) use (&$installerJarRan) {
+        $command = $process->command;
+        if (is_array($command) && in_array('-jar', $command, true)) {
+            $installerJarRan = true;
+        }
+
+        return Process::result(
+            output: '',
+            errorOutput: 'openjdk version "17"',
+            exitCode: 0,
+        );
+    });
+
+    $this->artisan('verapdf:install', ['--force' => true])
+        ->expectsOutputToContain('unsafe ZIP entry')
+        ->assertFailed();
+
+    expect(is_file($base.'/verapdf'))->toBeTrue()
+        ->and(is_file($base.'/bin/cli-1.30.1.jar'))->toBeTrue()
+        ->and((string) file_get_contents($base.'/bin/cli-1.30.1.jar'))->toBe('existing-cli')
+        ->and($installerJarRan)->toBeFalse();
+
+    File::delete($zipPath);
+});

@@ -34,7 +34,7 @@ final class SafeZipExtractor
                     throw new RuntimeException('Refusing to extract unsafe ZIP entry: (empty name)');
                 }
 
-                self::assertEntryIsSafe($name, $targetDir);
+                self::assertEntryIsSafe($zip, $i, $name, $targetDir);
             }
 
             if (! $zip->extractTo($targetDir)) {
@@ -46,18 +46,22 @@ final class SafeZipExtractor
     }
 
     /**
-     * Reject absolute paths and parent-directory segments (aligned with VeraPdfOutputPath).
+     * Reject absolute paths, parent/current segments, and symlink entries (aligned with VeraPdfOutputPath).
      */
-    private static function assertEntryIsSafe(string $entryName, string $targetDir): void
+    private static function assertEntryIsSafe(ZipArchive $zip, int $index, string $entryName, string $targetDir): void
     {
+        if (self::isSymlinkEntry($zip, $index)) {
+            throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
+        }
+
         $normalized = str_replace('\\', '/', $entryName);
 
         if ($normalized === '' || str_starts_with($normalized, '/') || preg_match('#^[A-Za-z]:/#', $normalized) === 1) {
             throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
         }
 
-        foreach (explode('/', $normalized) as $segment) {
-            if ($segment === '..') {
+        foreach (explode('/', rtrim($normalized, '/')) as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
                 throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
             }
         }
@@ -68,5 +72,23 @@ final class SafeZipExtractor
         if ($destination !== $targetRoot && ! str_starts_with($destination, $targetRoot.'/')) {
             throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
         }
+    }
+
+    private static function isSymlinkEntry(ZipArchive $zip, int $index): bool
+    {
+        $opsys = 0;
+        $attr = 0;
+
+        if ($zip->getExternalAttributesIndex($index, $opsys, $attr) !== true) {
+            return false;
+        }
+
+        if ($opsys !== ZipArchive::OPSYS_UNIX) {
+            return false;
+        }
+
+        $mode = ($attr >> 16) & 0o170000;
+
+        return $mode === 0o120000;
     }
 }
