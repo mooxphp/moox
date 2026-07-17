@@ -11,6 +11,10 @@ use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
+use Moox\EBilling\Formats\ArtifactKind;
+use Moox\EBilling\Formats\FormatDefinition;
+use Moox\EBilling\Formats\FormatRegistry;
+use Moox\EBilling\Formats\Strategies\ZugferdGeneratorStrategy;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
@@ -56,8 +60,26 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(ConfirmInvoiceAction::class);
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);
+        $this->app->singleton(ZugferdGeneratorStrategy::class);
+        $this->registerFormatRegistry();
 
         $this->registerInvoiceParser();
+    }
+
+    private function registerFormatRegistry(): void
+    {
+        $this->app->singleton(FormatRegistry::class, function ($app): FormatRegistry {
+            $registry = new FormatRegistry;
+            $registry->register(new FormatDefinition(
+                id: 'zugferd',
+                label: 'ZUGFeRD',
+                artifactKind: ArtifactKind::Pdf,
+                profile: (string) config('zugferd.profile', 'EN16931'),
+                strategy: $app->make(ZugferdGeneratorStrategy::class),
+            ));
+
+            return $registry;
+        });
     }
 
     public function boot(): void

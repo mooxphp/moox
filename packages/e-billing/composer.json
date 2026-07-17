@@ -61,7 +61,7 @@
     },
     "scripts": {
         "test": [
-            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Unit tests/Feature"
+            "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/Formats"
         ],
         "test:arch": [
             "@php ../../vendor/bin/pest --configuration=phpunit.xml tests/ArchTest.php"

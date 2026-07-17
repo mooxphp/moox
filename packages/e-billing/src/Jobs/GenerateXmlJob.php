@@ -15,6 +15,7 @@ use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Events\XmlGenerated;
+use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
@@ -23,7 +24,6 @@ use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Models\InboxAttachment;
-use Moox\Zugferd\ZugferdConverter;
 use Throwable;
 
 class GenerateXmlJob implements ShouldQueue
@@ -48,7 +48,7 @@ class GenerateXmlJob implements ShouldQueue
     ) {}
 
     public function handle(
-        ZugferdConverter $zugferdConverter,
+        FormatRegistry $formatRegistry,
         ParsedInvoiceMapper $parsedInvoiceMapper,
         InvoiceFieldValidator $invoiceFieldValidator,
     ): void {
@@ -97,7 +97,11 @@ class GenerateXmlJob implements ShouldQueue
 
         $this->setProgress(45);
 
-        $xml = $zugferdConverter->convert(new ZugferdInvoiceAdapter($invoice));
+        $formatId = (string) config('e-billing.default_format', 'zugferd');
+        $xml = $formatRegistry
+            ->get($formatId)
+            ->strategy
+            ->generateXml(new ZugferdInvoiceAdapter($invoice));
 
         $diskName = (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $relativeDir = $attachment->scope.'/'.EBillingArtifactNaming::invoiceDatePathSegment($invoice->invoice_date);
@@ -121,8 +125,9 @@ class GenerateXmlJob implements ShouldQueue
         $billDataArray = $dto->toArray();
 
         if ($document !== null) {
-            $document->zugferd_storage_disk = null;
-            $document->zugferd_storage_path = null;
+            $document->format = $formatId;
+            $document->storage_disk = null;
+            $document->pdf_storage_path = null;
             $document->xml_storage_path = $relativeXmlPath;
             $document->bill_data = $billDataArray;
             $document->save();

@@ -68,7 +68,7 @@ class ValidateXmlJob implements ShouldQueue
         $document = EbillingDocument::forSourceAttachment($attachment);
 
         if ($document?->gateway_status === EBillingAttachmentProcessingStatus::XmlValidated) {
-            $zugferdPath = $document?->zugferd_storage_path;
+            $zugferdPath = $document?->pdf_storage_path;
             if (is_string($zugferdPath) && $zugferdPath !== '') {
                 $this->setProgress(100);
                 $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
@@ -107,7 +107,7 @@ class ValidateXmlJob implements ShouldQueue
             );
         }
 
-        $diskName = $document?->zugferd_storage_disk
+        $diskName = $document?->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
 
         $absoluteXmlPath = Storage::disk($diskName)->path($xmlRelative);

@@ -39,9 +39,9 @@ final class InvoiceDocumentController
     {
         $document = $this->guardAttachmentWithDocument($attachment);
 
-        $disk = $document->zugferd_storage_disk
+        $disk = $document->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
-        $path = $document->zugferd_storage_path;
+        $path = $document->pdf_storage_path;
 
         abort_unless(is_string($path) && $path !== '', 404);
         $this->guardPath($path);
@@ -50,7 +50,7 @@ final class InvoiceDocumentController
         return $this->streamedDownloadFromDisk(
             $disk,
             $path,
-            $this->artifactDownloadFilename($attachment, $document->zugferd_storage_path, 'pdf'),
+            $this->artifactDownloadFilename($attachment, $document->pdf_storage_path, 'pdf'),
         );
     }
 
@@ -61,7 +61,7 @@ final class InvoiceDocumentController
     {
         $document = $this->guardAttachmentWithDocument($attachment);
 
-        $disk = $document->zugferd_storage_disk
+        $disk = $document->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $path = $document->xml_storage_path;
 

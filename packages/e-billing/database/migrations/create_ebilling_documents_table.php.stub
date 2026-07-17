@@ -15,8 +15,10 @@ return new class extends Migration
             $table->nullableMorphs('source');
             $table->json('bill_data')->nullable();
             $table->string('xml_storage_path')->nullable();
-            $table->string('zugferd_storage_disk')->nullable();
-            $table->string('zugferd_storage_path')->nullable();
+            $table->string('storage_disk')->nullable();
+            $table->string('pdf_storage_path')->nullable();
+            $table->string('format')->default('zugferd');
+            $table->string('artifact_content_hash')->nullable();
             $table->json('ignored_reason')->nullable();
             $table->string('gateway_status')->nullable()->index();
             $table->string('review_status')->default('parser_created')->index();
