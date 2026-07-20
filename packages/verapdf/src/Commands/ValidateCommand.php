@@ -6,11 +6,14 @@ namespace Moox\VeraPdf\Commands;
 
 use Illuminate\Console\Command;
 use Moox\VeraPdf\Actions\RecordVeraPdfValidation;
+use Moox\VeraPdf\Commands\Concerns\InteractsWithVeraPdfEnvironment;
 use Moox\VeraPdf\Services\VeraPdfService;
 use RuntimeException;
 
 class ValidateCommand extends Command
 {
+    use InteractsWithVeraPdfEnvironment;
+
     protected $signature = 'verapdf:validate
         {path : Absolute path to the PDF file to validate}';
 
@@ -18,17 +21,11 @@ class ValidateCommand extends Command
 
     public function handle(VeraPdfService $veraPdf, RecordVeraPdfValidation $recordVeraPdfValidation): int
     {
-        if (! $veraPdf->javaAvailable()) {
-            $this->components->error(
-                'Java not found. Install a JRE/JDK on the server first (e.g. sudo apt install default-jre-headless).'
-            );
-
+        if ($this->requireJavaAvailable($veraPdf) !== null) {
             return self::FAILURE;
         }
 
-        if (! $veraPdf->isInstalled()) {
-            $this->components->error('veraPDF is not installed. Run php artisan verapdf:install first.');
-
+        if ($this->requireVeraPdfInstalled($veraPdf) !== null) {
             return self::FAILURE;
         }
 
