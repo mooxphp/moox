@@ -153,7 +153,7 @@ final class KositInstaller
             return $direct;
         }
 
-        $resolved = RecursiveFileFinder::find($unpackDir, $expectedJarName);
+        $resolved = RecursiveFileFinder::find($unpackDir, $expectedJarName, filesOnly: true);
 
         if ($resolved !== null) {
             return $resolved;
