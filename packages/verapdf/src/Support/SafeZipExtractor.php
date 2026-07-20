@@ -56,16 +56,29 @@ final class SafeZipExtractor
 
         $normalized = str_replace('\\', '/', $entryName);
 
+        self::assertPathIsRelative($entryName, $normalized);
+        self::assertPathHasNoUnsafeSegments($entryName, $normalized);
+        self::assertPathStaysUnderTarget($entryName, $normalized, $targetDir);
+    }
+
+    private static function assertPathIsRelative(string $entryName, string $normalized): void
+    {
         if ($normalized === '' || str_starts_with($normalized, '/') || preg_match('#^[A-Za-z]:/#', $normalized) === 1) {
             throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
         }
+    }
 
+    private static function assertPathHasNoUnsafeSegments(string $entryName, string $normalized): void
+    {
         foreach (explode('/', rtrim($normalized, '/')) as $segment) {
             if ($segment === '' || $segment === '.' || $segment === '..') {
                 throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
             }
         }
+    }
 
+    private static function assertPathStaysUnderTarget(string $entryName, string $normalized, string $targetDir): void
+    {
         $targetRoot = rtrim(str_replace('\\', '/', $targetDir), '/');
         $destination = $targetRoot.'/'.ltrim($normalized, '/');
 
