@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\DTOs\KositResult;
 use Moox\KositValidator\Support\KositOutputPath;
+use Moox\KositValidator\Support\KositValidatorArtifact;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -18,24 +19,14 @@ class KositService
     public function jarPath(): string
     {
         $dir = config('kosit-validator.base_path').'/'.config('kosit-validator.paths.validator_dir');
+        $expectedName = KositValidatorArtifact::expectedJarFilename();
+        $path = $dir.'/'.$expectedName;
 
-        // Match standalone JAR first, fall back to any validator JAR
-        $files = glob($dir.'/*-standalone.jar');
-
-        if (empty($files)) {
-            $files = glob($dir.'/validator-*.jar');
+        if (is_file($path)) {
+            return $path;
         }
 
-        if (! empty($files)) {
-            return $files[0];
-        }
-
-        $nested = $this->findStandaloneJarsRecursive($dir);
-        if ($nested !== []) {
-            return $nested[0];
-        }
-
-        throw new RuntimeException("No standalone JAR found in {$dir}. Run php artisan kosit:install first.");
+        throw new RuntimeException("Expected validator JAR {$expectedName} not found in {$dir}. Run php artisan kosit:install first.");
     }
 
     public function scenariosPath(): string
@@ -130,32 +121,5 @@ class KositService
         $result = Process::run([$java, '-version']);
 
         return $result->successful();
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function findStandaloneJarsRecursive(string $dir): array
-    {
-        if (! is_dir($dir)) {
-            return [];
-        }
-
-        $matches = [];
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
-        );
-
-        foreach ($iterator as $file) {
-            if (! $file instanceof SplFileInfo || ! $file->isFile()) {
-                continue;
-            }
-            $name = $file->getFilename();
-            if (str_ends_with($name, '-standalone.jar')) {
-                $matches[] = $file->getPathname();
-            }
-        }
-
-        return $matches;
     }
 }

@@ -49,12 +49,20 @@ return [
     |
     | KoSIT standalone validator JAR version and download URL.
     |
+    | When bumping version or download_url, download the new release asset and run:
+    |   curl -fsSL <download_url> | shasum -a 256
+    | then update sha256 below (or KOSIT_VALIDATOR_SHA256). Install aborts on mismatch.
+    |
     */
     'validator' => [
         'version' => env('KOSIT_VALIDATOR_VERSION', '1.6.2'),
         'download_url' => env(
             'KOSIT_VALIDATOR_URL',
             'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar'
+        ),
+        'sha256' => env(
+            'KOSIT_VALIDATOR_SHA256',
+            'c0c1225015d7b0182fc5dd011797ee29278a87f1aa9788fccb9cf185ce6c873b'
         ),
     ],
 
@@ -65,6 +73,10 @@ return [
     |
     | XRechnung validator configuration bundle version, release date, and URL.
     |
+    | When bumping version or download_url, download the new release asset and run:
+    |   curl -fsSL <download_url> | shasum -a 256
+    | then update sha256 below (or KOSIT_XRECHNUNG_SHA256). Install aborts on mismatch.
+    |
     */
     'xrechnung' => [
         'version' => env('KOSIT_XRECHNUNG_VERSION', '3.0.2'),
@@ -72,6 +84,10 @@ return [
         'download_url' => env(
             'KOSIT_XRECHNUNG_URL',
             'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip'
+        ),
+        'sha256' => env(
+            'KOSIT_XRECHNUNG_SHA256',
+            '5195a5400ad72d07abc74f38fa8eba535c6a0273bdfe7c39bfa4bc7d46775a12'
         ),
     ],
 
