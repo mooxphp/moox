@@ -9,7 +9,7 @@ use RuntimeException;
 use ZipArchive;
 
 /**
- * Extracts ZIP archives while rejecting path-traversal (zip-slip) entries.
+ * Extracts ZIP archives while rejecting unsafe entry names (null bytes, path traversal, symlinks).
  */
 final class SafeZipExtractor
 {
@@ -46,10 +46,14 @@ final class SafeZipExtractor
     }
 
     /**
-     * Reject absolute paths, parent/current segments, and symlink entries.
+     * Reject null bytes, absolute paths, parent/current segments, and symlink entries.
      */
     private static function assertEntryIsSafe(ZipArchive $zip, int $index, string $entryName, string $targetDir): void
     {
+        if (str_contains($entryName, "\0")) {
+            self::reject($entryName);
+        }
+
         if (self::isSymlinkEntry($zip, $index)) {
             self::reject($entryName);
         }

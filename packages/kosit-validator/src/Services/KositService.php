@@ -7,6 +7,8 @@ namespace Moox\KositValidator\Services;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\DTOs\KositResult;
+use Moox\KositValidator\Support\InstallerChecksum;
+use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositOutputPath;
 use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\RecursiveFileFinder;
@@ -16,7 +18,7 @@ class KositService
 {
     public function jarPath(): string
     {
-        $dir = config('kosit-validator.base_path').'/'.config('kosit-validator.paths.validator_dir');
+        $dir = $this->installPaths()->validatorDir;
         $expectedName = KositValidatorArtifact::expectedJarFilename();
         $path = $dir.'/'.$expectedName;
 
@@ -29,7 +31,7 @@ class KositService
 
     public function scenariosPath(): string
     {
-        $dir = config('kosit-validator.base_path').'/'.config('kosit-validator.paths.xrechnung_dir');
+        $dir = $this->installPaths()->xrechnungDir;
 
         if (! is_dir($dir)) {
             throw new RuntimeException("No scenarios.xml found in {$dir}. Run php artisan kosit:install first.");
@@ -70,9 +72,16 @@ class KositService
 
         $java = config('kosit-validator.java_binary', 'java');
 
+        $jar = $this->jarPath();
+
+        InstallerChecksum::assertValid(
+            $jar,
+            (string) config('kosit-validator.validator.sha256'),
+        );
+
         $result = Process::run([
             $java,
-            '-jar', $this->jarPath(),
+            '-jar', $jar,
             '-s', $this->scenariosPath(),
             '-r', $this->repositoryPath(),
             '-o', $reportDir,
@@ -112,5 +121,10 @@ class KositService
         $result = Process::run([$java, '-version']);
 
         return $result->successful();
+    }
+
+    private function installPaths(): KositInstallPaths
+    {
+        return KositInstallPaths::fromConfig();
     }
 }
