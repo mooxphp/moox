@@ -44,14 +44,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Release checksums (validator & XRechnung)
+    |--------------------------------------------------------------------------
+    |
+    | When bumping version or download_url for either artifact below, download the new
+    | release asset and run:
+    |   curl -fsSL <download_url> | shasum -a 256
+    | then update the matching sha256 env key. Install aborts on mismatch.
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
     | Validator
     |--------------------------------------------------------------------------
     |
     | KoSIT standalone validator JAR version and download URL.
-    |
-    | When bumping version or download_url, download the new release asset and run:
-    |   curl -fsSL <download_url> | shasum -a 256
-    | then update sha256 below (or KOSIT_VALIDATOR_SHA256). Install aborts on mismatch.
     |
     */
     'validator' => [
@@ -72,10 +80,6 @@ return [
     |--------------------------------------------------------------------------
     |
     | XRechnung validator configuration bundle version, release date, and URL.
-    |
-    | When bumping version or download_url, download the new release asset and run:
-    |   curl -fsSL <download_url> | shasum -a 256
-    | then update sha256 below (or KOSIT_XRECHNUNG_SHA256). Install aborts on mismatch.
     |
     */
     'xrechnung' => [
