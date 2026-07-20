@@ -11,7 +11,7 @@ use RuntimeException;
  */
 final class InstallerBasePathGuard
 {
-    public static function assertSafe(string $basePath): void
+    public static function assertValid(string $basePath): void
     {
         $normalized = self::normalizePath($basePath);
 

@@ -12,7 +12,7 @@ beforeEach(function (): void {
 });
 
 test('accepts default validator github release url', function (): void {
-    InstallerDownloadUrlGuard::assertAllowed(
+    InstallerDownloadUrlGuard::assertValid(
         'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar',
         'Validator v1.6.2',
     );
@@ -21,7 +21,7 @@ test('accepts default validator github release url', function (): void {
 });
 
 test('accepts default xrechnung github release url', function (): void {
-    InstallerDownloadUrlGuard::assertAllowed(
+    InstallerDownloadUrlGuard::assertValid(
         'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip',
         'XRechnung Configuration v3.0.2',
     );
@@ -30,14 +30,14 @@ test('accepts default xrechnung github release url', function (): void {
 });
 
 test('rejects non-https url', function (): void {
-    expect(fn () => InstallerDownloadUrlGuard::assertAllowed(
+    expect(fn () => InstallerDownloadUrlGuard::assertValid(
         'http://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar',
         'Validator v1.6.2',
     ))->toThrow(RuntimeException::class, 'must use HTTPS');
 });
 
 test('rejects untrusted host when allow flag false', function (): void {
-    expect(fn () => InstallerDownloadUrlGuard::assertAllowed(
+    expect(fn () => InstallerDownloadUrlGuard::assertValid(
         'https://evil.test/validator-1.6.2-standalone.jar',
         'Validator v1.6.2',
     ))->toThrow(RuntimeException::class, 'is not allowed');
@@ -46,7 +46,7 @@ test('rejects untrusted host when allow flag false', function (): void {
 test('allows example.test when allow flag true', function (): void {
     config()->set('kosit-validator.installer.allow_untrusted_download_hosts', true);
 
-    InstallerDownloadUrlGuard::assertAllowed(
+    InstallerDownloadUrlGuard::assertValid(
         'https://example.test/validator-1.6.2-standalone.jar',
         'Validator v1.6.2',
     );
@@ -55,7 +55,7 @@ test('allows example.test when allow flag true', function (): void {
 });
 
 test('rejects github url outside itplr-kosit prefixes', function (): void {
-    expect(fn () => InstallerDownloadUrlGuard::assertAllowed(
+    expect(fn () => InstallerDownloadUrlGuard::assertValid(
         'https://github.com/other-org/repo/releases/download/v1.0.0/artifact.jar',
         'Validator v1.6.2',
     ))->toThrow(RuntimeException::class, 'not an allowed itplr-kosit release');

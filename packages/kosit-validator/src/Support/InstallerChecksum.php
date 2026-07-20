@@ -16,7 +16,7 @@ final class InstallerChecksum
      *
      * @throws RuntimeException When the pin is missing/malformed, the file is unreadable, or digests differ.
      */
-    public static function assertMatches(string $filePath, string $expectedSha256): void
+    public static function assertValid(string $filePath, string $expectedSha256): void
     {
         $expected = strtolower(trim($expectedSha256));
 
