@@ -16,9 +16,18 @@ final readonly class KositInstallPaths
 
     public static function fromBasePath(string $basePath): self
     {
+        $validatorDir = InstallerPathSegmentGuard::assertValid(
+            (string) config('kosit-validator.paths.validator_dir'),
+            'paths.validator_dir',
+        );
+        $xrechnungDir = InstallerPathSegmentGuard::assertValid(
+            (string) config('kosit-validator.paths.xrechnung_dir'),
+            'paths.xrechnung_dir',
+        );
+
         return new self(
-            $basePath.'/'.config('kosit-validator.paths.validator_dir'),
-            $basePath.'/'.config('kosit-validator.paths.xrechnung_dir'),
+            $basePath.'/'.$validatorDir,
+            $basePath.'/'.$xrechnungDir,
         );
     }
 

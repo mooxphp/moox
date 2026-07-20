@@ -23,18 +23,32 @@ final class InstallerBasePathGuard
             return;
         }
 
-        $storageRoot = self::normalizePath((string) config('kosit-validator.installer.storage_root'));
+        $storageRoot = self::resolvePath((string) config('kosit-validator.installer.storage_root'));
+        $resolvedBase = self::resolvePath($basePath);
 
         if ($storageRoot === '') {
             throw new RuntimeException('KoSIT installer storage root must not be empty.');
         }
 
-        if ($normalized !== $storageRoot && ! str_starts_with($normalized.'/', $storageRoot.'/')) {
+        if ($resolvedBase !== $storageRoot && ! str_starts_with($resolvedBase.'/', $storageRoot.'/')) {
             throw new RuntimeException(
                 "KoSIT base path must be under {$storageRoot}. Got: {$basePath}. "
                 .'Set KOSIT_ALLOW_UNTRUSTED_BASE_PATH=true only for local/testing.'
             );
         }
+    }
+
+    private static function resolvePath(string $path): string
+    {
+        if (is_dir($path) || is_link($path)) {
+            $real = realpath($path);
+
+            if ($real !== false) {
+                return self::normalizePath($real);
+            }
+        }
+
+        return self::normalizePath($path);
     }
 
     private static function normalizePath(string $path): string

@@ -100,7 +100,7 @@ $panel->plugins([
 
 ### Install safety
 
-`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`). Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 

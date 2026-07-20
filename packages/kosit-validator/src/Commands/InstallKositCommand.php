@@ -33,10 +33,10 @@ class InstallKositCommand extends Command
         $this->components->info('Java found.');
 
         $basePath = (string) config('kosit-validator.base_path');
-        $paths = KositInstallPaths::fromBasePath($basePath);
 
         try {
             InstallerBasePathGuard::assertValid($basePath);
+            $paths = KositInstallPaths::fromBasePath($basePath);
         } catch (RuntimeException $e) {
             $this->components->error($e->getMessage());
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 use Composer\Autoload\ClassLoader;
 
 $autoloadCandidates = [
+    dirname(__DIR__, 3).'/vendor/autoload.php',
     dirname(__DIR__, 3).'/../../web/vendor/autoload.php',
     dirname(__DIR__, 3).'/../web/vendor/autoload.php',
-    dirname(__DIR__, 3).'/vendor/autoload.php',
 ];
 
 $autoloadLoaded = false;
@@ -35,7 +35,8 @@ foreach (spl_autoload_functions() ?: [] as $autoloader) {
     $loader = $autoloader[0];
 
     if ($loader instanceof ClassLoader) {
-        $loader->addPsr4('Moox\\KositValidator\\Tests\\', __DIR__);
+        $loader->addPsr4('Moox\\KositValidator\\Tests\\', __DIR__, prepend: true);
+        $loader->addPsr4('Moox\\KositValidator\\', dirname(__DIR__).'/src', prepend: true);
 
         break;
     }
