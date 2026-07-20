@@ -11,7 +11,7 @@ use RuntimeException;
  */
 final class InstallerDownloadUrlGuard
 {
-    public static function assertAllowed(string $url, string $label): void
+    public static function assertValid(string $url, string $label): void
     {
         if (! str_starts_with($url, 'https://')) {
             throw new RuntimeException("Download URL must use HTTPS: {$url}");
