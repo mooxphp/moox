@@ -106,6 +106,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Installer safety
+    |--------------------------------------------------------------------------
+    |
+    | Guards kosit:install against misconfigured base paths and download URLs.
+    | Escape hatches are for local/testing only — never enable in production.
+    |
+    */
+    'installer' => [
+        'storage_root' => storage_path('app/private'),
+        'allow_untrusted_base_path' => env('KOSIT_ALLOW_UNTRUSTED_BASE_PATH', false),
+        'allow_untrusted_download_hosts' => env('KOSIT_ALLOW_UNTRUSTED_DOWNLOAD_HOSTS', false),
+        'allowed_download_hosts' => [
+            'github.com',
+        ],
+        'allowed_download_path_prefixes' => [
+            '/itplr-kosit/validator/',
+            '/itplr-kosit/validator-configuration-xrechnung/',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Java Binary
     |--------------------------------------------------------------------------
     |

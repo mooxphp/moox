@@ -93,8 +93,14 @@ $panel->plugins([
 | `KOSIT_JAVA_BINARY` | `java_binary` | Java executable (default `java`) |
 | `KOSIT_OUTPUT_PATH` | `output.path` | Report output directory |
 | `KOSIT_REPORT_PATH` | `output.path` (legacy) | Fallback when `KOSIT_OUTPUT_PATH` is unset |
+| `KOSIT_ALLOW_UNTRUSTED_BASE_PATH` | `installer.allow_untrusted_base_path` | Skip storage-root check (local/testing only) |
+| `KOSIT_ALLOW_UNTRUSTED_DOWNLOAD_HOSTS` | `installer.allow_untrusted_download_hosts` | Skip GitHub/itplr-kosit download allowlist (local/testing only) |
 
 `KositOutputPath::resolve(?string $subdirectory)` reads `output.path`, creates the directory with mode `0775`, and optionally appends a subdirectory (e-billing uses a date segment per run).
+
+### Install safety
+
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 
