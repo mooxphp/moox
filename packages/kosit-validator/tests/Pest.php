@@ -2,6 +2,8 @@
 
 use Moox\KositValidator\Tests\TestCase;
 
+require_once __DIR__.'/Helpers.php';
+
 pest()->extends(TestCase::class)
     ->beforeEach(function (): void {
         $this->artisan('migrate');
