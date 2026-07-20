@@ -13,6 +13,12 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     cleanupKositConfiguredPaths('kosit-validator.base_path');
+
+    foreach (glob(sys_get_temp_dir().'/kosit-invoice-*') ?: [] as $xml) {
+        if (is_file($xml)) {
+            @unlink($xml);
+        }
+    }
 });
 
 it('rejects a tampered validator jar before running java', function (): void {
