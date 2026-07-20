@@ -9,10 +9,8 @@ use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\DTOs\KositResult;
 use Moox\KositValidator\Support\KositOutputPath;
 use Moox\KositValidator\Support\KositValidatorArtifact;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
+use Moox\KositValidator\Support\RecursiveFileFinder;
 use RuntimeException;
-use SplFileInfo;
 
 class KositService
 {
@@ -37,17 +35,10 @@ class KositService
             throw new RuntimeException("No scenarios.xml found in {$dir}. Run php artisan kosit:install first.");
         }
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
-        );
+        $resolved = RecursiveFileFinder::find($dir, 'scenarios.xml');
 
-        foreach ($iterator as $file) {
-            if (! $file instanceof SplFileInfo) {
-                continue;
-            }
-            if ($file->getFilename() === 'scenarios.xml') {
-                return $file->getPathname();
-            }
+        if ($resolved !== null) {
+            return $resolved;
         }
 
         throw new RuntimeException("No scenarios.xml found in {$dir}. Run php artisan kosit:install first.");

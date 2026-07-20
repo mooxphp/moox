@@ -10,6 +10,7 @@ use Moox\KositValidator\Support\InstallerChecksum;
 use Moox\KositValidator\Support\InstallerDownloadUrlGuard;
 use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositValidatorArtifact;
+use Moox\KositValidator\Support\RecursiveFileFinder;
 use Moox\KositValidator\Support\SafeZipExtractor;
 use RuntimeException;
 
@@ -151,18 +152,10 @@ final class KositInstaller
             return $direct;
         }
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($unpackDir, \RecursiveDirectoryIterator::SKIP_DOTS)
-        );
+        $resolved = RecursiveFileFinder::find($unpackDir, $expectedJarName);
 
-        foreach ($iterator as $file) {
-            if (! $file instanceof \SplFileInfo || ! $file->isFile()) {
-                continue;
-            }
-
-            if ($file->getFilename() === $expectedJarName) {
-                return $file->getPathname();
-            }
+        if ($resolved !== null) {
+            return $resolved;
         }
 
         throw new RuntimeException("Expected validator JAR {$expectedJarName} not found in downloaded archive.");
