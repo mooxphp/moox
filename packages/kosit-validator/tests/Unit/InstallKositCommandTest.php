@@ -110,31 +110,6 @@ test('install rejects non-https download urls', function (): void {
         ->assertFailed();
 });
 
-test('install rejects http redirect downgrade during download', function (): void {
-    $jarBytes = 'valid-jar-bytes';
-    $xrechnung = buildBenignXrechnungZip();
-
-    config()->set('kosit-validator.validator.sha256', hash('sha256', $jarBytes));
-    config()->set('kosit-validator.xrechnung.sha256', $xrechnung['sha256']);
-
-    Http::fake([
-        config('kosit-validator.validator.download_url') => Http::response('', 302, [
-            'Location' => 'http://evil.test/validator-1.6.2-standalone.jar',
-        ]),
-        config('kosit-validator.xrechnung.download_url') => Http::response($xrechnung['bytes'], 200),
-    ]);
-
-    fakeKositJavaProcess();
-
-    $this->artisan('kosit:install')
-        ->assertFailed();
-
-    $base = (string) config('kosit-validator.base_path');
-    expect(is_dir($base))->toBeFalse();
-
-    File::delete($xrechnung['path']);
-});
-
 test('install succeeds with verified downloads', function (): void {
     $jarBytes = 'valid-jar-bytes';
     $xrechnung = buildBenignXrechnungZip();

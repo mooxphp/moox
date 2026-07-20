@@ -7,6 +7,7 @@ namespace Moox\KositValidator\Services;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Moox\KositValidator\Support\InstallerChecksum;
+use Moox\KositValidator\Support\InstallerDownloadHttpOptions;
 use Moox\KositValidator\Support\InstallerDownloadUrlGuard;
 use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositValidatorArtifact;
@@ -179,11 +180,7 @@ final class KositInstaller
         try {
             $response = Http::timeout(600)
                 ->sink($target)
-                ->withOptions([
-                    'allow_redirects' => [
-                        'protocols' => ['https'],
-                    ],
-                ])
+                ->withOptions(InstallerDownloadHttpOptions::guzzle())
                 ->get($url);
 
             if (! $response->successful()) {
