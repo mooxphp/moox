@@ -462,7 +462,7 @@ Navigation: **Fields → Field Groups**
 | **Visibility** | Per context: admin, frontend, API (`visible_*` toggles) |
 | **Conditional logic** | Show/hide rules based on sibling field values (root, group, repeater, flexible layout) |
 | **Table column** | Optional list-column settings for scalar, media, and relation fields — see [Table columns](#table-columns) |
-| **Table filter** | Optional list-filter for select, radio, button_group, toggle, and single relation fields — see [Table filters](#table-filters) |
+| **Table filter** | Optional list-filter chip for select, radio, button_group, toggle, single relation, and text-like fields — see [Table filters](#table-filters) |
 
 Repeater rows are collapsed by default and show type, key, and required flag in the label.
 
@@ -523,17 +523,20 @@ public static function table(Table $table): Table
 
 ## Table filters
 
-Opt-in Filament list filters for custom fields. Filtering runs as subqueries on `builder_field_values` — the consumer model needs no filter scopes.
+Opt-in Filament list filter chips for custom fields. Filtering runs as subqueries on `builder_field_values` — the consumer model needs no filter scopes.
 
-### Supported field types
+One filter chip per filterable field, compiled from the **Show in table filter** toggle:
 
-| Field type | Filter UI | Requirements |
-|------------|-----------|--------------|
-| `select`, `radio`, `button_group` | `SelectFilter` (options from field definition) | At least one option |
-| `toggle` | `TernaryFilter` (yes / no / any) | — |
-| `relation` | `SelectFilter` (searchable, preloaded) | `related_entity` set, `multiple` off |
+| Field type | Filter chip |
+|------------|-------------|
+| `select`, `radio`, `button_group` | `SelectFilter` (options from field definition) |
+| `toggle` | `TernaryFilter` (yes / no / any) |
+| `relation` (single) | `SelectFilter` (searchable, preloaded) |
+| `text`, `textarea`, `email`, `url`, `rich_text` | `Filter` (free-text "contains" search) |
 
-**Not filterable:** all other types (text, number, media, compound fields, multiselect, etc.).
+Choice fields need at least one option; relation fields need `related_entity` set and `multiple` off.
+
+**Not filterable at all:** number, range, date, datetime, media, multiselect/checkbox list, and compound fields (group, repeater, clone, flexible content) — no dedicated filter chip is compiled for these.
 
 ### Admin setup
 
@@ -585,11 +588,11 @@ Other resources with `HasCustomFields` do **not** get filters automatically — 
 FieldGroup (show_in_filter = true)
     → DefinitionRegistry
     → TableFilterCompiler
-    → SelectFilter / TernaryFilter
+    → SelectFilter / TernaryFilter / Filter (text)
     → CustomFieldTableFilterQuery (subquery on builder_field_values)
 ```
 
-Only fields marked `settings.show_in_filter` in active, location-matched groups are compiled. Filter names use the field key (`fuel`, `accident_free`, …).
+Only fields marked `settings.show_in_filter` in active, location-matched groups are compiled. Filter (chip) names use the field key (`fuel`, `accident_free`, …).
 
 ### Troubleshooting
 
@@ -1118,7 +1121,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
 | Relation field on a group | searchable select, save/load IDs, API shows labels |
 | Table column on scalar/toggle/media/relation field | column appears (toggle via column picker if hidden by default) |
-| Table filter on select/radio/button_group/toggle/relation | filter chip on list pages narrows matching records |
+| Table filter on select/radio/button_group/toggle/relation/text-like field | filter chip on list pages narrows matching records |
 | Conditional logic (show/hide) | field visibility updates live; hidden required fields do not block save |
 | `?lang=` on translatable resource | values stored per `locale` column |
 
@@ -1145,7 +1148,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
 - **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
-- **Table filters** — opt-in list filters for select, radio, button_group, toggle, and single relation fields (`TableFilterCompiler`, `CustomFieldTableFilterQuery`)
+- **Table filters** — opt-in filter chips for select, radio, button_group, toggle, single relation, and text-like fields (`TableFilterCompiler`, `CustomFieldTableFilterQuery`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
 - **Translations** — definition + value locales (Astrotomic + `builder_field_values.locale`)
@@ -1155,7 +1158,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 **v1 limitations (known):**
 
 - Location rules: no template/parent params yet; record/taxonomy/status rules need a saved record (ignored on create)
-- Table filters: no centralized filter builder / preset groups yet (per-field opt-in only)
+- Table filters: number, range, date, datetime, media, multiselect/checkbox list, and compound fields have no filter chip yet
 - Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
 

@@ -6,6 +6,7 @@ require_once __DIR__.'/../TestCase.php';
 require_once __DIR__.'/../Support/TestItem.php';
 require_once __DIR__.'/../Support/TestItemResource.php';
 
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Support\Facades\Cache;
@@ -77,10 +78,13 @@ it('builds table filters for choice and toggle fields marked show in filter', fu
 
     $filters = TestItemResource::customFieldFilters();
 
-    expect($filters)->toHaveCount(2)
-        ->and(collect($filters)->map(fn ($filter) => $filter->getName())->all())->toBe(['fuel', 'accident_free'])
+    expect($filters)->toHaveCount(3)
         ->and($filters[0])->toBeInstanceOf(SelectFilter::class)
-        ->and($filters[1])->toBeInstanceOf(TernaryFilter::class);
+        ->and($filters[0]->getName())->toBe('fuel')
+        ->and($filters[1])->toBeInstanceOf(TernaryFilter::class)
+        ->and($filters[1]->getName())->toBe('accident_free')
+        ->and($filters[2])->toBeInstanceOf(Filter::class)
+        ->and($filters[2]->getName())->toBe('notes');
 });
 
 it('filters list queries by custom field values', function (): void {
@@ -135,6 +139,48 @@ it('filters list queries by custom field values', function (): void {
     )->pluck('id')->all();
 
     expect($filtered)->toBe([$petrolItem->getKey()]);
+});
+
+it('filters list queries by text custom fields via the contains filter chip', function (): void {
+    $group = FieldGroup::query()->create([
+        'name' => 'Notes filter',
+        'slug' => 'notes-filter',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    Field::query()->create([
+        'field_group_id' => $group->getKey(),
+        'name' => 'notes',
+        'label' => 'Notes',
+        'type' => 'text',
+        'settings' => ['show_in_filter' => true],
+        'sort' => 0,
+        'validation' => ['required' => false, 'rules' => []],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $filters = TestItemResource::customFieldFilters();
+    $textFilter = collect($filters)->first(fn ($filter) => $filter instanceof Filter);
+
+    expect($textFilter)->not->toBeNull()
+        ->and($textFilter->getName())->toBe('notes');
+
+    $matchingItem = TestItem::query()->create(['title' => 'Item with match']);
+    $otherItem = TestItem::query()->create(['title' => 'Item without match']);
+
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $matchingItem, [
+        'notes' => 'Needs a new clutch',
+    ]);
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $otherItem, [
+        'notes' => 'Fresh oil change',
+    ]);
+
+    $filtered = $textFilter->apply(TestItem::query(), ['value' => 'clutch'])->pluck('id')->all();
+
+    expect($filtered)->toBe([$matchingItem->getKey()]);
 });
 
 it('filters list queries by single relation custom fields', function (): void {

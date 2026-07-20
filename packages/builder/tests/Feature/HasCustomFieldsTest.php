@@ -9,6 +9,7 @@ require_once __DIR__.'/../Support/TestItemResource.php';
 use Filament\Resources\Events\RecordSaved;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Moox\Builder\Models\Field;
@@ -75,7 +76,10 @@ it('exposes compiled custom field filters for matching resources', function (): 
     Cache::forget(DefinitionRegistry::CACHE_KEY);
     TestItem::flushCustomFieldDefinitionCache();
 
-    expect(TestItemResource::customFieldFilters())->toHaveCount(1);
+    $filters = TestItemResource::customFieldFilters();
+
+    expect($filters)->toHaveCount(1)
+        ->and($filters[0])->toBeInstanceOf(SelectFilter::class);
 });
 
 it('returns no components when no field groups match the entity', function (): void {

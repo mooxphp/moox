@@ -135,7 +135,7 @@ return [
         'show_in_table' => 'In Tabelle anzeigen',
         'show_in_table_helper' => 'Fügt dieses Feld als Spalte auf den Listen-Seiten hinzu. Standardmäßig ausgeblendet; über den Spalten-Umschalter aktivierbar.',
         'show_in_filter' => 'Als Listenfilter',
-        'show_in_filter_helper' => 'Fügt einen Listenfilter für Auswahl-, Wahr/falsch- und Beziehungsfelder hinzu. Standardmäßig aus.',
+        'show_in_filter_helper' => 'Fügt einen Listenfilter für Auswahl-, Wahr/falsch-, Beziehungs- und Textfelder hinzu. Standardmäßig aus.',
         'show_in_filter_relation_multiple_helper' => 'Listenfilter gibt es nur für einfache Beziehungsfelder (ohne Mehrfachauswahl).',
         'show_in_filter_relation_entity_helper' => 'Zuerst „Beziehung zu“ wählen, dann den Listenfilter aktivieren.',
         'show_in_filter_choice_options_helper' => 'Mindestens eine Option hinzufügen, bevor der Listenfilter aktiviert werden kann.',

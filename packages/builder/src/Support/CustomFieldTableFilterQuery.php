@@ -37,6 +37,19 @@ final class CustomFieldTableFilterQuery
     }
 
     /**
+     * Case-insensitive "contains" search, for the free-text filter chip on
+     * text-like custom fields.
+     */
+    public function applyContains(Builder $query, FieldDefinition $field, mixed $value): Builder
+    {
+        if (! filled($value)) {
+            return $query;
+        }
+
+        return $query->where($field->name, 'like', '%'.$value.'%');
+    }
+
+    /**
      * @param  class-string<Model&InteractsWithCustomFields>  $modelClass
      */
     protected function applyRelationEquals(

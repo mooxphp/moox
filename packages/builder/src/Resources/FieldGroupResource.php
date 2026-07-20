@@ -40,6 +40,7 @@ use Moox\Builder\Support\ConditionalLogic;
 use Moox\Builder\Support\FieldGroupPlacement;
 use Moox\Builder\Support\FieldValidationRules;
 use Moox\Builder\Support\FieldWidth;
+use Moox\Builder\Support\FilterableFieldTypes;
 use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\TypedValueColumns;
 
@@ -672,7 +673,7 @@ class FieldGroupResource extends Resource
             return false;
         }
 
-        return in_array($type, ['select', 'radio', 'button_group', 'toggle', 'relation'], true);
+        return FilterableFieldTypes::supportsType($type);
     }
 
     protected static function fieldHasFilterableChoiceOptions(callable $get): bool

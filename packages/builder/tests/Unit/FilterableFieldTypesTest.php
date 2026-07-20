@@ -72,11 +72,21 @@ it('does not support relation fields without a related entity', function (): voi
     expect(FilterableFieldTypes::supports($field))->toBeFalse();
 });
 
+it('supports text-like fields', function (string $type): void {
+    $field = FieldDefinition::fromArray([
+        'name' => 'notes',
+        'label' => 'Notes',
+        'type' => $type,
+    ]);
+
+    expect(FilterableFieldTypes::supports($field))->toBeTrue();
+})->with(['text', 'textarea', 'email', 'url', 'rich_text']);
+
 it('does not support non-filterable field types', function (): void {
     $field = FieldDefinition::fromArray([
         'name' => 'notes',
         'label' => 'Notes',
-        'type' => 'text',
+        'type' => 'repeater',
     ]);
 
     expect(FilterableFieldTypes::supports($field))->toBeFalse();

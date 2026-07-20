@@ -135,7 +135,7 @@ return [
         'show_in_table' => 'Show in table',
         'show_in_table_helper' => 'Adds this field as a column on entity list pages. Hidden by default; enable via the column toggle.',
         'show_in_filter' => 'Show in table filter',
-        'show_in_filter_helper' => 'Adds a list filter for select, toggle, and single relation fields. Off by default.',
+        'show_in_filter_helper' => 'Adds a list filter for select, toggle, relation, and text fields. Off by default.',
         'show_in_filter_relation_multiple_helper' => 'List filters are only available for single relation fields. Disable “Multiple” first.',
         'show_in_filter_relation_entity_helper' => 'Choose a related entity before enabling the list filter.',
         'show_in_filter_choice_options_helper' => 'Add at least one option before enabling the list filter.',

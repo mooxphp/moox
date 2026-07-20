@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Compiler;
 
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\BaseFilter;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -54,15 +56,14 @@ class TableFilterCompiler
             return [];
         }
 
-        $fields = $this->storableFieldCollector
+        $filterableFields = $this->storableFieldCollector
             ->definitionsFromList($fieldGroups->flatMap(fn (FieldGroupDefinition $group): Collection => $group->fields))
-            ->filter(fn (FieldDefinition $field): bool => $field->showInFilter()
-                && FilterableFieldTypes::supports($field))
+            ->filter(fn (FieldDefinition $field): bool => $field->showInFilter())
             ->values();
 
         $filters = [];
 
-        foreach ($fields as $field) {
+        foreach ($filterableFields->filter(fn (FieldDefinition $field): bool => FilterableFieldTypes::supports($field)) as $field) {
             $filter = $this->compileFilter($field, $entity, $modelClass);
 
             if ($filter !== null) {
@@ -85,8 +86,26 @@ class TableFilterCompiler
             'toggle' => $this->compileToggleFilter($field, $entity, $modelClass),
             'select', 'radio', 'button_group' => $this->compileChoiceFilter($field, $entity, $modelClass),
             'relation' => $this->compileRelationFilter($field, $entity, $modelClass),
+            'text', 'textarea', 'email', 'url', 'rich_text' => $this->compileTextFilter($field),
             default => null,
         };
+    }
+
+    /**
+     * A simple "contains" search filter chip for text-like fields.
+     */
+    protected function compileTextFilter(FieldDefinition $field): Filter
+    {
+        return Filter::make($field->name)
+            ->label($field->label)
+            ->schema([
+                TextInput::make('value')
+                    ->label($field->label),
+            ])
+            ->query(fn (Builder $query, array $data): Builder => $this->filterQuery->applyContains($query, $field, $data['value'] ?? null))
+            ->indicateUsing(fn (array $data): ?string => filled($data['value'] ?? null)
+                ? "{$field->label}: {$data['value']}"
+                : null);
     }
 
     /**
