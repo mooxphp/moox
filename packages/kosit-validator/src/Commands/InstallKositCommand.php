@@ -8,7 +8,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Moox\KositValidator\Services\KositService;
+use Moox\KositValidator\Support\InstallerBasePathGuard;
 use Moox\KositValidator\Support\InstallerChecksum;
+use Moox\KositValidator\Support\InstallerDownloadUrlGuard;
 use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\SafeZipExtractor;
 use RuntimeException;
@@ -34,9 +36,17 @@ class InstallKositCommand extends Command
 
         $this->components->info('Java found.');
 
-        $basePath = config('kosit-validator.base_path');
+        $basePath = (string) config('kosit-validator.base_path');
         $validatorDir = $basePath.'/'.config('kosit-validator.paths.validator_dir');
         $xrechnungDir = $basePath.'/'.config('kosit-validator.paths.xrechnung_dir');
+
+        try {
+            InstallerBasePathGuard::assertSafe($basePath);
+        } catch (RuntimeException $e) {
+            $this->components->error($e->getMessage());
+
+            return self::FAILURE;
+        }
 
         if ($kosit->isInstalled() && ! $this->option('force')) {
             $this->components->info('KoSIT is already installed. Use --force to reinstall.');
@@ -55,12 +65,18 @@ class InstallKositCommand extends Command
             $this->stageValidator($stagingDir, $stagingJar, $expectedJarName);
             $this->stageXrechnung($stagingDir, $stagingXrechnungDir);
 
-            $backupPath = null;
+            /** @var array<string, string> $backups */
+            $backups = [];
 
-            if ($this->option('force') && File::exists($basePath)) {
-                $backupPath = $basePath.'.bak-'.uniqid('', true);
-                $this->components->warn("Backing up existing installation to {$backupPath}");
-                File::moveDirectory($basePath, $backupPath);
+            if ($this->option('force')) {
+                foreach ([$validatorDir, $xrechnungDir] as $dir) {
+                    if (File::isDirectory($dir)) {
+                        $backupPath = $dir.'.bak-'.uniqid('', true);
+                        $this->components->warn('Backing up '.basename($dir).' to '.basename($backupPath));
+                        File::moveDirectory($dir, $backupPath);
+                        $backups[$dir] = $backupPath;
+                    }
+                }
             }
 
             try {
@@ -73,12 +89,14 @@ class InstallKositCommand extends Command
 
                 File::copyDirectory($stagingXrechnungDir, $xrechnungDir);
             } catch (\Throwable $e) {
-                if ($backupPath !== null && File::isDirectory($backupPath)) {
-                    if (File::isDirectory($basePath)) {
-                        File::deleteDirectory($basePath);
+                foreach ($backups as $dir => $backupPath) {
+                    if (File::isDirectory($dir)) {
+                        File::deleteDirectory($dir);
                     }
 
-                    File::moveDirectory($backupPath, $basePath);
+                    if (File::isDirectory($backupPath)) {
+                        File::moveDirectory($backupPath, $dir);
+                    }
                 }
 
                 throw $e instanceof RuntimeException
@@ -86,8 +104,10 @@ class InstallKositCommand extends Command
                     : new RuntimeException($e->getMessage(), 0, $e);
             }
 
-            if ($backupPath !== null && File::isDirectory($backupPath)) {
-                File::deleteDirectory($backupPath);
+            foreach ($backups as $backupPath) {
+                if (File::isDirectory($backupPath)) {
+                    File::deleteDirectory($backupPath);
+                }
             }
         } catch (RuntimeException $e) {
             $this->components->error($e->getMessage());
@@ -180,9 +200,7 @@ class InstallKositCommand extends Command
 
     private function downloadFile(string $url, string $target, string $label): void
     {
-        if (! str_starts_with($url, 'https://')) {
-            throw new RuntimeException("Download URL must use HTTPS: {$url}");
-        }
+        InstallerDownloadUrlGuard::assertAllowed($url, $label);
 
         $this->components->info("Downloading {$label} ...");
 

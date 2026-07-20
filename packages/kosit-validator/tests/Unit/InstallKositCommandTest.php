@@ -156,3 +156,58 @@ test('install succeeds with verified downloads', function (): void {
 
     File::delete($xrechnung['path']);
 });
+
+test('install with --force removes only validator and xrechnung subdirectories', function (): void {
+    $base = seedKositInstallLayout();
+    file_put_contents($base.'/unrelated.txt', 'keep-me');
+
+    $jarBytes = 'fresh-jar-bytes';
+    $xrechnung = buildBenignXrechnungZip();
+    fakeKositDownloads($jarBytes, hash('sha256', $jarBytes), $xrechnung['bytes'], $xrechnung['sha256']);
+
+    fakeKositJavaProcess();
+
+    $this->artisan('kosit:install', ['--force' => true])
+        ->expectsOutputToContain('installation successful')
+        ->assertSuccessful();
+
+    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
+    $xrechnungDir = $base.'/'.config('kosit-validator.paths.xrechnung_dir');
+
+    expect(is_file($base.'/unrelated.txt'))->toBeTrue()
+        ->and((string) file_get_contents($base.'/unrelated.txt'))->toBe('keep-me')
+        ->and((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
+        ->and(is_file($xrechnungDir.'/scenarios.xml'))->toBeTrue();
+
+    File::delete($xrechnung['path']);
+});
+
+test('install rejects misconfigured base path before downloading', function (): void {
+    config()->set('kosit-validator.installer.allow_untrusted_base_path', false);
+    config()->set('kosit-validator.installer.storage_root', storage_path('app/private'));
+    config()->set('kosit-validator.base_path', '/tmp/kosit-evil-'.uniqid());
+
+    fakeKositJavaProcess();
+
+    $this->artisan('kosit:install')
+        ->expectsOutputToContain('must be under')
+        ->assertFailed();
+
+    Http::assertNothingSent();
+});
+
+test('install rejects untrusted download host before downloading', function (): void {
+    config()->set('kosit-validator.installer.allow_untrusted_download_hosts', false);
+    config()->set(
+        'kosit-validator.validator.download_url',
+        'https://evil.test/validator-1.6.2-standalone.jar',
+    );
+
+    fakeKositJavaProcess();
+
+    $this->artisan('kosit:install')
+        ->expectsOutputToContain('is not allowed')
+        ->assertFailed();
+
+    Http::assertNothingSent();
+});

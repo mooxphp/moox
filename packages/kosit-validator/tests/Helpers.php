@@ -85,6 +85,8 @@ function configureKositInstallTestDefaults(): void
         'kosit-validator.xrechnung.download_url',
         'https://example.test/xrechnung-configuration.zip',
     );
+    config()->set('kosit-validator.installer.allow_untrusted_base_path', true);
+    config()->set('kosit-validator.installer.allow_untrusted_download_hosts', true);
 }
 
 function cleanupKositConfiguredPaths(string ...$configKeys): void
