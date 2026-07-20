@@ -27,7 +27,10 @@ function verapdfTempDir(string $prefix): string
 function buildZipArchive(string $zipPath, array $entries): void
 {
     $zip = new ZipArchive;
-    expect($zip->open($zipPath, ZipArchive::CREATE))->toBeTrue();
+
+    if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
+        throw new RuntimeException('Cannot create ZIP archive: '.$zipPath);
+    }
 
     foreach ($entries as $entry) {
         $zip->addFromString($entry['name'], $entry['content']);
@@ -53,6 +56,17 @@ function buildZipAt(string $prefix, array $entries): string
     buildZipArchive($zipPath, $entries);
 
     return $zipPath;
+}
+
+function buildMaliciousZip(
+    string $prefix,
+    string $entryName,
+    string $content = 'pwned',
+    bool $symlink = false,
+): string {
+    return buildZipAt($prefix, [
+        ['name' => $entryName, 'content' => $content, 'symlink' => $symlink],
+    ]);
 }
 
 /**
@@ -135,7 +149,7 @@ function fakeJavaProcessTrackingJar(): array
 {
     $state = ['installerJarRan' => false];
 
-    Process::fake(function (PendingProcess $process) use ($state) {
+    Process::fake(function (PendingProcess $process) use (&$state) {
         $command = $process->command;
         if (is_array($command) && in_array('-jar', $command, true)) {
             $state['installerJarRan'] = true;

@@ -57,7 +57,13 @@ test('install aborts on checksum mismatch without wiping an existing install', f
         ->and($jarTracker['installerJarRan'])->toBeFalse();
 });
 
-test('install aborts on zip-slip archive before running the installer', function (): void {
+test('install aborts on zip-slip archive', function (bool $force, bool $seedExisting): void {
+    $base = $seedExisting ? seedCliInstallLayout() : (string) config('verapdf.base_path');
+
+    if ($seedExisting) {
+        file_put_contents($base.'/bin/cli-1.30.1.jar', 'existing-cli');
+    }
+
     $installer = buildInstallerZipWithChecksum('cmd-slip', [
         ['name' => '../evil.txt', 'content' => 'pwned'],
     ]);
@@ -66,37 +72,21 @@ test('install aborts on zip-slip archive before running the installer', function
 
     $jarTracker = fakeJavaProcessTrackingJar();
 
-    $this->artisan('verapdf:install')
-        ->expectsOutputToContain('unsafe ZIP entry')
-        ->assertFailed();
+    $command = $this->artisan('verapdf:install', $force ? ['--force' => true] : []);
+    $command->expectsOutputToContain('unsafe ZIP entry')->assertFailed();
 
-    $base = (string) config('verapdf.base_path');
-    expect(is_file($base.'/verapdf'))->toBeFalse()
-        ->and($jarTracker['installerJarRan'])->toBeFalse();
+    if ($seedExisting) {
+        expect(is_file($base.'/verapdf'))->toBeTrue()
+            ->and(is_file($base.'/bin/cli-1.30.1.jar'))->toBeTrue()
+            ->and((string) file_get_contents($base.'/bin/cli-1.30.1.jar'))->toBe('existing-cli');
+    } else {
+        expect(is_file($base.'/verapdf'))->toBeFalse();
+    }
 
-    File::delete($installer['path']);
-});
-
-test('install aborts on zip-slip with --force without wiping an existing install', function (): void {
-    $base = seedCliInstallLayout();
-    file_put_contents($base.'/bin/cli-1.30.1.jar', 'existing-cli');
-
-    $installer = buildInstallerZipWithChecksum('cmd-force-slip', [
-        ['name' => '../evil.txt', 'content' => 'pwned'],
-    ]);
-
-    fakeInstallerDownload($installer['bytes'], $installer['sha256']);
-
-    $jarTracker = fakeJavaProcessTrackingJar();
-
-    $this->artisan('verapdf:install', ['--force' => true])
-        ->expectsOutputToContain('unsafe ZIP entry')
-        ->assertFailed();
-
-    expect(is_file($base.'/verapdf'))->toBeTrue()
-        ->and(is_file($base.'/bin/cli-1.30.1.jar'))->toBeTrue()
-        ->and((string) file_get_contents($base.'/bin/cli-1.30.1.jar'))->toBe('existing-cli')
-        ->and($jarTracker['installerJarRan'])->toBeFalse();
+    expect($jarTracker['installerJarRan'])->toBeFalse();
 
     File::delete($installer['path']);
-});
+})->with([
+    'before running the installer' => [false, false],
+    'with --force without wiping an existing install' => [true, true],
+]);
