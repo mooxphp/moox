@@ -171,6 +171,18 @@ test('install rejects misconfigured base path before downloading', function (): 
     Http::assertNothingSent();
 });
 
+test('install rejects escaping path segment before downloading', function (): void {
+    config()->set('kosit-validator.paths.validator_dir', '../evil');
+
+    fakeKositJavaProcess();
+
+    $this->artisan('kosit:install')
+        ->expectsOutputToContain('single directory name')
+        ->assertFailed();
+
+    Http::assertNothingSent();
+});
+
 test('install rejects untrusted download host before downloading', function (): void {
     config()->set('kosit-validator.installer.allow_untrusted_download_hosts', false);
     config()->set(
