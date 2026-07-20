@@ -51,7 +51,7 @@ final class SafeZipExtractor
     private static function assertEntryIsSafe(ZipArchive $zip, int $index, string $entryName, string $targetDir): void
     {
         if (self::isSymlinkEntry($zip, $index)) {
-            throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
+            self::reject($entryName);
         }
 
         $normalized = str_replace('\\', '/', $entryName);
@@ -64,7 +64,7 @@ final class SafeZipExtractor
     private static function assertPathIsRelative(string $entryName, string $normalized): void
     {
         if ($normalized === '' || str_starts_with($normalized, '/') || preg_match('#^[A-Za-z]:/#', $normalized) === 1) {
-            throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
+            self::reject($entryName);
         }
     }
 
@@ -72,7 +72,7 @@ final class SafeZipExtractor
     {
         foreach (explode('/', rtrim($normalized, '/')) as $segment) {
             if ($segment === '' || $segment === '.' || $segment === '..') {
-                throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
+                self::reject($entryName);
             }
         }
     }
@@ -83,8 +83,16 @@ final class SafeZipExtractor
         $destination = $targetRoot.'/'.ltrim($normalized, '/');
 
         if ($destination !== $targetRoot && ! str_starts_with($destination, $targetRoot.'/')) {
-            throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
+            self::reject($entryName);
         }
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private static function reject(string $entryName): never
+    {
+        throw new RuntimeException("Refusing to extract unsafe ZIP entry: {$entryName}");
     }
 
     private static function isSymlinkEntry(ZipArchive $zip, int $index): bool
