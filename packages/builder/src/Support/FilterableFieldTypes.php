@@ -16,6 +16,7 @@ final class FilterableFieldTypes
             'relation' => ! RelationValueRules::isMultiple($field)
                 && filled($field->config['related_entity'] ?? null),
             'text', 'textarea', 'email', 'url', 'rich_text' => true,
+            'number', 'range', 'date', 'datetime' => true,
             default => false,
         };
     }
@@ -30,6 +31,7 @@ final class FilterableFieldTypes
         return match ($type) {
             'select', 'radio', 'button_group', 'toggle', 'relation' => true,
             'text', 'textarea', 'email', 'url', 'rich_text' => true,
+            'number', 'range', 'date', 'datetime' => true,
             default => false,
         };
     }

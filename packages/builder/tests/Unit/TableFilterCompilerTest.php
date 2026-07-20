@@ -290,6 +290,90 @@ it('does not build filters for select fields without options', function (): void
     expect(TestItemResource::customFieldFilters())->toBe([]);
 });
 
+it('filters list queries by number custom fields via the range filter chip', function (): void {
+    $group = FieldGroup::query()->create([
+        'name' => 'Mileage filter',
+        'slug' => 'mileage-filter',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    Field::query()->create([
+        'field_group_id' => $group->getKey(),
+        'name' => 'mileage',
+        'label' => 'Mileage',
+        'type' => 'number',
+        'settings' => ['show_in_filter' => true],
+        'sort' => 0,
+        'validation' => ['required' => false, 'rules' => []],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $filters = TestItemResource::customFieldFilters();
+    $rangeFilter = collect($filters)->first(fn ($filter) => $filter instanceof Filter);
+
+    expect($rangeFilter)->not->toBeNull()
+        ->and($rangeFilter->getName())->toBe('mileage');
+
+    $lowMileage = TestItem::query()->create(['title' => 'Low mileage car']);
+    $highMileage = TestItem::query()->create(['title' => 'High mileage car']);
+
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $lowMileage, [
+        'mileage' => 10000,
+    ]);
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $highMileage, [
+        'mileage' => 90000,
+    ]);
+
+    $filtered = $rangeFilter->apply(TestItem::query(), ['from' => 5000, 'until' => 50000])->pluck('id')->all();
+
+    expect($filtered)->toBe([$lowMileage->getKey()]);
+});
+
+it('filters list queries by date custom fields via the range filter chip using only one bound', function (): void {
+    $group = FieldGroup::query()->create([
+        'name' => 'Registered filter',
+        'slug' => 'registered-filter',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    Field::query()->create([
+        'field_group_id' => $group->getKey(),
+        'name' => 'registered_at',
+        'label' => 'Registered at',
+        'type' => 'date',
+        'settings' => ['show_in_filter' => true],
+        'sort' => 0,
+        'validation' => ['required' => false, 'rules' => []],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $filters = TestItemResource::customFieldFilters();
+    $rangeFilter = collect($filters)->first(fn ($filter) => $filter instanceof Filter);
+
+    expect($rangeFilter)->not->toBeNull()
+        ->and($rangeFilter->getName())->toBe('registered_at');
+
+    $older = TestItem::query()->create(['title' => 'Older car']);
+    $newer = TestItem::query()->create(['title' => 'Newer car']);
+
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $older, [
+        'registered_at' => '2020-01-01',
+    ]);
+    app(CustomFieldsManager::class)->saveFromFormData(TestItemResource::class, $newer, [
+        'registered_at' => '2024-01-01',
+    ]);
+
+    $filtered = $rangeFilter->apply(TestItem::query(), ['from' => '2023-01-01'])->pluck('id')->all();
+
+    expect($filtered)->toBe([$newer->getKey()]);
+});
+
 it('does not build filters for multiple relation fields', function (): void {
     $group = FieldGroup::query()->create([
         'name' => 'Multiple relation filter',

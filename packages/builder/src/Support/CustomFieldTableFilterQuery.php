@@ -50,6 +50,24 @@ final class CustomFieldTableFilterQuery
     }
 
     /**
+     * Inclusive "from"/"until" bounds, for the range filter chip on
+     * number, range, date, and datetime custom fields. Both bounds are
+     * optional and combine with AND when both are given.
+     */
+    public function applyRange(Builder $query, FieldDefinition $field, mixed $from, mixed $until): Builder
+    {
+        if (filled($from)) {
+            $query->where($field->name, '>=', $from);
+        }
+
+        if (filled($until)) {
+            $query->where($field->name, '<=', $until);
+        }
+
+        return $query;
+    }
+
+    /**
      * @param  class-string<Model&InteractsWithCustomFields>  $modelClass
      */
     protected function applyRelationEquals(

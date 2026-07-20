@@ -82,6 +82,16 @@ it('supports text-like fields', function (string $type): void {
     expect(FilterableFieldTypes::supports($field))->toBeTrue();
 })->with(['text', 'textarea', 'email', 'url', 'rich_text']);
 
+it('supports number, range, date, and datetime fields via the range filter', function (string $type): void {
+    $field = FieldDefinition::fromArray([
+        'name' => 'mileage',
+        'label' => 'Mileage',
+        'type' => $type,
+    ]);
+
+    expect(FilterableFieldTypes::supports($field))->toBeTrue();
+})->with(['number', 'range', 'date', 'datetime']);
+
 it('does not support non-filterable field types', function (): void {
     $field = FieldDefinition::fromArray([
         'name' => 'notes',

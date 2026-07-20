@@ -22,6 +22,7 @@ it('offers the "show in table filter" toggle for every compiler-supported field 
 })->with([
     'select', 'radio', 'button_group', 'toggle', 'relation',
     'text', 'textarea', 'email', 'url', 'rich_text',
+    'number', 'range', 'date', 'datetime',
 ]);
 
 it('does not offer the toggle for field types with no filter support', function (string $type): void {
@@ -29,7 +30,6 @@ it('does not offer the toggle for field types with no filter support', function 
 })->with([
     'multiselect', 'checkbox_list', 'image', 'gallery', 'file',
     'group', 'clone', 'repeater', 'flexible_content', 'password',
-    'number', 'range', 'date', 'datetime',
 ]);
 
 it('does not offer the toggle when no type is selected yet', function (): void {

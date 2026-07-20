@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Compiler;
 
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\BaseFilter;
 use Filament\Tables\Filters\Filter;
@@ -87,6 +89,7 @@ class TableFilterCompiler
             'select', 'radio', 'button_group' => $this->compileChoiceFilter($field, $entity, $modelClass),
             'relation' => $this->compileRelationFilter($field, $entity, $modelClass),
             'text', 'textarea', 'email', 'url', 'rich_text' => $this->compileTextFilter($field),
+            'number', 'range', 'date', 'datetime' => $this->compileRangeFilter($field),
             default => null,
         };
     }
@@ -106,6 +109,44 @@ class TableFilterCompiler
             ->indicateUsing(fn (array $data): ?string => filled($data['value'] ?? null)
                 ? "{$field->label}: {$data['value']}"
                 : null);
+    }
+
+    /**
+     * An inclusive "from"/"until" range filter chip for number, range,
+     * date, and datetime fields, since an exact-match chip rarely makes
+     * sense for these types.
+     */
+    protected function compileRangeFilter(FieldDefinition $field): Filter
+    {
+        [$fromInput, $untilInput] = match ($field->type) {
+            'date' => [DatePicker::make('from')->native(false), DatePicker::make('until')->native(false)],
+            'datetime' => [DateTimePicker::make('from')->native(false), DateTimePicker::make('until')->native(false)],
+            default => [TextInput::make('from')->numeric(), TextInput::make('until')->numeric()],
+        };
+
+        return Filter::make($field->name)
+            ->label($field->label)
+            ->schema([
+                $fromInput->label(__('builder::builder.filters.from')),
+                $untilInput->label(__('builder::builder.filters.until')),
+            ])
+            ->query(fn (Builder $query, array $data): Builder => $this->filterQuery->applyRange(
+                $query,
+                $field,
+                $data['from'] ?? null,
+                $data['until'] ?? null,
+            ))
+            ->indicateUsing(function (array $data) use ($field): ?string {
+                $from = $data['from'] ?? null;
+                $until = $data['until'] ?? null;
+
+                return match (true) {
+                    filled($from) && filled($until) => "{$field->label}: {$from} – {$until}",
+                    filled($from) => "{$field->label}: ≥ {$from}",
+                    filled($until) => "{$field->label}: ≤ {$until}",
+                    default => null,
+                };
+            });
     }
 
     /**
