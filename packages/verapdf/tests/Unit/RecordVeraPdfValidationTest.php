@@ -3,20 +3,15 @@
 declare(strict_types=1);
 
 use Moox\VeraPdf\Actions\RecordVeraPdfValidation;
-use Moox\VeraPdf\DTOs\VeraPdfResult;
 use Moox\VeraPdf\Models\VeraPdfValidation;
 use Moox\VeraPdf\Tests\TestCase;
 
 uses(TestCase::class);
 
 it('persists a VeraPdfValidation audit row with path columns', function (): void {
-    $validation = app(RecordVeraPdfValidation::class)(new VeraPdfResult(
-        exitCode: 0,
-        stdout: '',
-        stderr: '',
+    $validation = app(RecordVeraPdfValidation::class)(makeVeraPdfResult(
         reportXmlPath: '/tmp/report.xml',
         reportHtmlPath: '/tmp/report.html',
-        pdfPath: '/tmp/file.pdf',
     ));
 
     expect($validation)->toBeInstanceOf(VeraPdfValidation::class)
@@ -29,13 +24,9 @@ it('persists a VeraPdfValidation audit row with path columns', function (): void
 it('stores errors as JSON from report fixture', function (): void {
     $reportPath = __DIR__.'/../fixtures/verapdf-report-fail.xml';
 
-    $validation = app(RecordVeraPdfValidation::class)(new VeraPdfResult(
+    $validation = app(RecordVeraPdfValidation::class)(makeVeraPdfResult(
         exitCode: 1,
-        stdout: '',
-        stderr: '',
         reportXmlPath: $reportPath,
-        reportHtmlPath: null,
-        pdfPath: '/tmp/file.pdf',
     ));
 
     $validation->refresh();
@@ -54,12 +45,8 @@ it('stores errors as JSON from report fixture', function (): void {
 it('stores the validated_at timestamp', function (): void {
     $before = now()->subSecond();
 
-    $validation = app(RecordVeraPdfValidation::class)(new VeraPdfResult(
-        exitCode: 0,
-        stdout: '',
-        stderr: '',
-        reportXmlPath: null,
-        reportHtmlPath: null,
+    $validation = app(RecordVeraPdfValidation::class)(makeVeraPdfResult(
+        pdfPath: null,
     ));
 
     $after = now()->addSecond();
@@ -69,12 +56,7 @@ it('stores the validated_at timestamp', function (): void {
 });
 
 it('handles a null input path gracefully', function (): void {
-    $validation = app(RecordVeraPdfValidation::class)(new VeraPdfResult(
-        exitCode: 0,
-        stdout: '',
-        stderr: '',
-        reportXmlPath: null,
-        reportHtmlPath: null,
+    $validation = app(RecordVeraPdfValidation::class)(makeVeraPdfResult(
         pdfPath: null,
     ));
 
