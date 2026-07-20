@@ -74,19 +74,23 @@ function buildKositZipWithChecksum(string $prefix, array $entries): array
 
 function configureKositInstallTestDefaults(): void
 {
-    config()->set('kosit-validator.base_path', sys_get_temp_dir().'/kosit-install-'.uniqid());
+    config()->set('kosit-validator.installer.storage_root', storage_path('app/private'));
+    config()->set(
+        'kosit-validator.base_path',
+        storage_path('app/private/kosit-install-'.uniqid()),
+    );
     config()->set('kosit-validator.java_binary', 'java');
     config()->set('kosit-validator.validator.version', '1.6.2');
     config()->set(
         'kosit-validator.validator.download_url',
-        'https://example.test/validator-1.6.2-standalone.jar',
+        'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar',
     );
     config()->set(
         'kosit-validator.xrechnung.download_url',
-        'https://example.test/xrechnung-configuration.zip',
+        'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip',
     );
-    config()->set('kosit-validator.installer.allow_untrusted_base_path', true);
-    config()->set('kosit-validator.installer.allow_untrusted_download_hosts', true);
+    config()->set('kosit-validator.installer.allow_untrusted_base_path', false);
+    config()->set('kosit-validator.installer.allow_untrusted_download_hosts', false);
 }
 
 function cleanupKositConfiguredPaths(string ...$configKeys): void
