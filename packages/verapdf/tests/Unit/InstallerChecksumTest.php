@@ -9,9 +9,7 @@ use Moox\VeraPdf\Tests\TestCase;
 uses(TestCase::class);
 
 it('passes when the file matches the expected sha256', function (): void {
-    $path = sys_get_temp_dir().'/verapdf-checksum-'.uniqid('', true).'.bin';
-    file_put_contents($path, 'trusted-installer-bytes');
-
+    $path = tempFileWithContent('checksum', 'trusted-installer-bytes');
     $expected = hash('sha256', 'trusted-installer-bytes');
 
     expect(fn () => InstallerChecksum::assertMatches($path, $expected))
@@ -21,8 +19,7 @@ it('passes when the file matches the expected sha256', function (): void {
 });
 
 it('throws when the checksum does not match', function (): void {
-    $path = sys_get_temp_dir().'/verapdf-checksum-'.uniqid('', true).'.bin';
-    file_put_contents($path, 'tampered');
+    $path = tempFileWithContent('checksum', 'tampered');
 
     expect(fn () => InstallerChecksum::assertMatches($path, str_repeat('a', 64)))
         ->toThrow(RuntimeException::class, 'checksum mismatch');
@@ -31,8 +28,7 @@ it('throws when the checksum does not match', function (): void {
 });
 
 it('throws when the expected checksum is empty', function (): void {
-    $path = sys_get_temp_dir().'/verapdf-checksum-'.uniqid('', true).'.bin';
-    file_put_contents($path, 'bytes');
+    $path = tempFileWithContent('checksum', 'bytes');
 
     expect(fn () => InstallerChecksum::assertMatches($path, ''))
         ->toThrow(RuntimeException::class, 'checksum is not configured');
@@ -41,8 +37,7 @@ it('throws when the expected checksum is empty', function (): void {
 });
 
 it('throws when the expected checksum is malformed', function (): void {
-    $path = sys_get_temp_dir().'/verapdf-checksum-'.uniqid('', true).'.bin';
-    file_put_contents($path, 'bytes');
+    $path = tempFileWithContent('checksum', 'bytes');
 
     expect(fn () => InstallerChecksum::assertMatches($path, 'not-a-sha256'))
         ->toThrow(RuntimeException::class, 'checksum is not configured');
@@ -51,7 +46,7 @@ it('throws when the expected checksum is malformed', function (): void {
 });
 
 it('throws when the file is missing', function (): void {
-    $path = sys_get_temp_dir().'/verapdf-checksum-missing-'.uniqid('', true).'.bin';
+    $path = verapdfTempPath('checksum-missing').'.bin';
 
     expect(fn () => InstallerChecksum::assertMatches($path, str_repeat('b', 64)))
         ->toThrow(RuntimeException::class, 'Cannot verify checksum');

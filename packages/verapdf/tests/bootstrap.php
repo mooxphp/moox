@@ -14,4 +14,6 @@ if ($autoload instanceof ClassLoader) {
     $autoload->addPsr4('Moox\\VeraPdf\\Tests\\', $packageRoot.'/tests/');
 }
 
+require __DIR__.'/Pest.php';
+
 return $autoload;
