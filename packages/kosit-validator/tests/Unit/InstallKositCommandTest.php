@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Tests\TestCase;
 
 uses(TestCase::class);
@@ -27,8 +28,8 @@ test('install succeeds early when already installed', function (): void {
 
 test('install aborts on validator checksum mismatch without wiping an existing install', function (): void {
     $base = seedKositInstallLayout();
-    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
-    file_put_contents($validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
+    $paths = KositInstallPaths::fromBasePath($base);
+    file_put_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
 
     $xrechnung = buildBenignXrechnungZip();
     fakeKositDownloads('tampered-jar', hash('sha256', 'different-jar-bytes'), $xrechnung['bytes'], $xrechnung['sha256']);
@@ -39,8 +40,8 @@ test('install aborts on validator checksum mismatch without wiping an existing i
         ->expectsOutputToContain('checksum mismatch')
         ->assertFailed();
 
-    expect(is_file($validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
-        ->and((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar')
+    expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
+        ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar')
         ->and($jarTracker['jarRan'])->toBeFalse();
 
     File::delete($xrechnung['path']);
@@ -48,7 +49,7 @@ test('install aborts on validator checksum mismatch without wiping an existing i
 
 test('install aborts on xrechnung checksum mismatch without wiping an existing install', function (): void {
     $base = seedKositInstallLayout();
-    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
+    $paths = KositInstallPaths::fromBasePath($base);
 
     $jarBytes = 'valid-jar-bytes';
     fakeKositDownloads($jarBytes, hash('sha256', $jarBytes), 'tampered-zip', hash('sha256', 'different-zip-bytes'));
@@ -59,15 +60,15 @@ test('install aborts on xrechnung checksum mismatch without wiping an existing i
         ->expectsOutputToContain('checksum mismatch')
         ->assertFailed();
 
-    expect((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
+    expect((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
 });
 
 test('install aborts on zip-slip archive', function (bool $force, bool $seedExisting): void {
     $base = $seedExisting ? seedKositInstallLayout() : (string) config('kosit-validator.base_path');
-    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
+    $paths = KositInstallPaths::fromBasePath($base);
 
     if ($seedExisting) {
-        file_put_contents($validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
+        file_put_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
     }
 
     $jarBytes = 'valid-jar-bytes';
@@ -83,10 +84,10 @@ test('install aborts on zip-slip archive', function (bool $force, bool $seedExis
     $command->expectsOutputToContain('unsafe ZIP entry')->assertFailed();
 
     if ($seedExisting) {
-        expect(is_file($validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
-            ->and((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
+        expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
+            ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
     } else {
-        expect(is_dir($validatorDir))->toBeFalse();
+        expect(is_dir($paths->validatorDir))->toBeFalse();
     }
 
     expect($jarTracker['jarRan'])->toBeFalse();
@@ -121,13 +122,11 @@ test('install succeeds with verified downloads', function (): void {
         ->expectsOutputToContain('installation successful')
         ->assertSuccessful();
 
-    $base = (string) config('kosit-validator.base_path');
-    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
-    $xrechnungDir = $base.'/'.config('kosit-validator.paths.xrechnung_dir');
+    $paths = KositInstallPaths::fromConfig();
 
-    expect(is_file($validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
-        ->and((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
-        ->and(is_file($xrechnungDir.'/scenarios.xml'))->toBeTrue();
+    expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
+        ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
+        ->and(is_file($paths->xrechnungDir.'/scenarios.xml'))->toBeTrue();
 
     File::delete($xrechnung['path']);
 });
@@ -146,13 +145,12 @@ test('install with --force removes only validator and xrechnung subdirectories',
         ->expectsOutputToContain('installation successful')
         ->assertSuccessful();
 
-    $validatorDir = $base.'/'.config('kosit-validator.paths.validator_dir');
-    $xrechnungDir = $base.'/'.config('kosit-validator.paths.xrechnung_dir');
+    $paths = KositInstallPaths::fromBasePath($base);
 
     expect(is_file($base.'/unrelated.txt'))->toBeTrue()
         ->and((string) file_get_contents($base.'/unrelated.txt'))->toBe('keep-me')
-        ->and((string) file_get_contents($validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
-        ->and(is_file($xrechnungDir.'/scenarios.xml'))->toBeTrue();
+        ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
+        ->and(is_file($paths->xrechnungDir.'/scenarios.xml'))->toBeTrue();
 
     File::delete($xrechnung['path']);
 });
