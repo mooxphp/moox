@@ -10,14 +10,18 @@ use SplFileInfo;
 
 final class RecursiveFileFinder
 {
-    public static function find(string $directory, string $filename): ?string
+    public static function find(string $directory, string $filename, bool $filesOnly = false): ?string
     {
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS)
         );
 
         foreach ($iterator as $file) {
-            if (! $file instanceof SplFileInfo || ! $file->isFile()) {
+            if (! $file instanceof SplFileInfo) {
+                continue;
+            }
+
+            if ($filesOnly && ! $file->isFile()) {
                 continue;
             }
 

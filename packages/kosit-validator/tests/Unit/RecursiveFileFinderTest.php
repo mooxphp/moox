@@ -28,12 +28,12 @@ it('returns null when the file is not found', function (): void {
     rmdir($root);
 });
 
-it('ignores directories that share the target filename', function (): void {
+it('ignores directories that share the target filename when filesOnly is true', function (): void {
     $root = sys_get_temp_dir().'/kosit-recursive-finder-'.uniqid('', true);
     mkdir($root.'/nested/scenarios.xml/real', 0777, true);
     file_put_contents($root.'/nested/scenarios.xml/real/scenarios.xml', '<scenarios/>');
 
-    $found = RecursiveFileFinder::find($root, 'scenarios.xml');
+    $found = RecursiveFileFinder::find($root, 'scenarios.xml', filesOnly: true);
 
     expect($found)->toBe($root.'/nested/scenarios.xml/real/scenarios.xml');
 
