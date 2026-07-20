@@ -100,7 +100,7 @@ $panel->plugins([
 
 ### Install safety
 
-`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`). Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 
@@ -122,7 +122,7 @@ $result = app(KositService::class)->validate('/path/to/invoice.xml', $reportDir)
 $validation = app(RecordKositValidation::class)($result);
 ```
 
-`KositService::validate()` runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
+`KositService::validate()` re-verifies the on-disk validator JAR against `kosit-validator.validator.sha256` before spawning Java, then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
 
 ### E-billing integration
 
@@ -215,7 +215,7 @@ Class: `Moox\KositValidator\Models\KositValidatable` extends `MorphPivot`.
 
 | Method | Description |
 |--------|-------------|
-| `validate(string $xmlPath, ?string $reportDirectory = null): KositResult` | Runs KoSIT; default report dir from `KositOutputPath::resolve()` |
+| `validate(string $xmlPath, ?string $reportDirectory = null): KositResult` | Re-verifies JAR checksum, runs KoSIT; default report dir from `KositOutputPath::resolve()` |
 | `jarPath()` / `scenariosPath()` / `repositoryPath()` | Resolve installed artefacts |
 | `isInstalled()` / `javaAvailable()` | Preconditions for CLI and jobs |
 
@@ -275,7 +275,7 @@ File: `config/kosit-validator.php`
 |-----|-------------|
 | `navigation_group` | Filament navigation group |
 | `base_path` | KoSIT artefacts root |
-| `paths.validator_dir` / `paths.xrechnung_dir` | Subdirectories under `base_path` |
+| `paths.validator_dir` / `paths.xrechnung_dir` | Single-segment subdirectory names under `base_path` (validated by `KositInstallPaths` at install and runtime) |
 | `validator.*` / `xrechnung.*` | Download versions and URLs for `kosit:install` |
 | `java_binary` | Java executable |
 | `output.path` | KoSIT `-o` report directory |

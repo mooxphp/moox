@@ -23,6 +23,17 @@ it('extracts a benign zip under the target directory', function (): void {
     File::deleteDirectory($target);
 });
 
+it('rejects zip entries whose names contain null bytes', function (): void {
+    $zipPath = buildKositZipWithNullByteEntryAt('null-byte-zip');
+    $target = kositTempDir('null-byte-out');
+
+    expect(fn () => SafeZipExtractor::extract($zipPath, $target))
+        ->toThrow(RuntimeException::class, 'unsafe ZIP entry');
+
+    File::delete($zipPath);
+    File::deleteDirectory($target);
+});
+
 it('rejects unsafe zip entries', function (array $entry, ?string $escapedFileName): void {
     $zipPath = buildKositZipAt('unsafe-zip', [$entry]);
     $target = kositTempDir('unsafe-out');
