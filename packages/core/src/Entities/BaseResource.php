@@ -106,8 +106,11 @@ abstract class BaseResource extends Resource
 
         // When the IdentifyResourceConfiguration middleware sets a child config key
         // globally, it pollutes the navigation-building loop for bare-class resources.
-        // Temporarily clear the key so the resource's own default navigation is used.
-        if ($currentKey !== null && $panel && in_array(static::class, $panel->getResources(), true)) {
+        // Only clear the key when it does not belong to *this* resource class (i.e. it
+        // is a leftover from another resource) — otherwise this would also strip the
+        // key while NavigationManager is legitimately registering one of this
+        // resource's own scoped configurations, collapsing it back to the generic label.
+        if ($currentKey !== null && $panel && $panel->getResourceConfiguration(static::class, $currentKey) === null) {
             Filament::setCurrentResourceConfigurationKey(null);
             parent::registerNavigationItems();
             Filament::setCurrentResourceConfigurationKey($currentKey);
