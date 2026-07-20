@@ -6,15 +6,22 @@ namespace Moox\VeraPdf\Services;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
+use Moox\VeraPdf\DTOs\VeraPdfHealth;
 use Moox\VeraPdf\DTOs\VeraPdfResult;
 use Moox\VeraPdf\Support\VeraPdfOutputPath;
 use RuntimeException;
+use Throwable;
 
 class VeraPdfService
 {
+    public function basePath(): string
+    {
+        return rtrim((string) config('verapdf.base_path'), '/\\');
+    }
+
     public function launcherPath(): string
     {
-        $basePath = rtrim((string) config('verapdf.base_path'), '/\\');
+        $basePath = $this->basePath();
         $launcher = (string) config('verapdf.paths.launcher', 'verapdf');
         $path = $basePath.'/'.$launcher;
 
@@ -34,23 +41,74 @@ class VeraPdfService
         return $path;
     }
 
+    public function javaMissingMessage(): string
+    {
+        return 'Java not found. Install a JRE/JDK on the server first (e.g. sudo apt install default-jre-headless).';
+    }
+
+    public function notInstalledMessage(): string
+    {
+        return 'veraPDF is not installed. Run php artisan verapdf:install first.';
+    }
+
+    public function assertJavaAvailable(): void
+    {
+        if ($this->javaAvailable()) {
+            return;
+        }
+
+        throw new RuntimeException($this->javaMissingMessage());
+    }
+
+    public function assertInstalled(): void
+    {
+        if ($this->isInstalled()) {
+            return;
+        }
+
+        throw new RuntimeException($this->notInstalledMessage());
+    }
+
+    public function inspectHealth(): VeraPdfHealth
+    {
+        $launcherPath = null;
+        $launcherError = null;
+
+        try {
+            $launcherPath = $this->launcherPath();
+        } catch (RuntimeException $e) {
+            $launcherError = $e->getMessage();
+        }
+
+        $outputPath = VeraPdfOutputPath::resolve();
+        $outputPathWritable = true;
+
+        try {
+            File::ensureDirectoryExists($outputPath);
+        } catch (Throwable) {
+            $outputPathWritable = false;
+        }
+
+        return new VeraPdfHealth(
+            javaAvailable: $this->javaAvailable(),
+            launcherPath: $launcherPath,
+            launcherError: $launcherError,
+            installed: $this->isInstalled(),
+            cliBinariesPresent: $this->hasCliBinaries(),
+            guiArtefactsPresent: $this->hasGuiArtefacts(),
+            outputPath: $outputPath,
+            outputPathWritable: $outputPathWritable,
+        );
+    }
+
     /**
      * @param  string|null  $reportDirectory  Absolute filesystem directory for report output.
      *                                        When null, uses `verapdf.output.path` config.
      */
     public function validate(string $pdfPath, ?string $reportDirectory = null): VeraPdfResult
     {
-        if (! $this->javaAvailable()) {
-            throw new RuntimeException(
-                'Java not found. Install a JRE/JDK on the server first (e.g. sudo apt install default-jre-headless).'
-            );
-        }
-
-        if (! $this->isInstalled()) {
-            throw new RuntimeException(
-                'veraPDF is not installed. Run php artisan verapdf:install first.'
-            );
-        }
+        $this->assertJavaAvailable();
+        $this->assertInstalled();
 
         if (! file_exists($pdfPath)) {
             throw new RuntimeException("File not found: {$pdfPath}");
@@ -138,7 +196,7 @@ class VeraPdfService
      */
     public function hasGuiArtefacts(): bool
     {
-        $basePath = rtrim((string) config('verapdf.base_path'), '/\\');
+        $basePath = $this->basePath();
 
         if (is_file($basePath.'/verapdf-gui') || is_file($basePath.'/verapdf-gui.bat')) {
             return true;
@@ -162,7 +220,7 @@ class VeraPdfService
 
     private function findJarInBin(string $needle): ?string
     {
-        $binDir = rtrim((string) config('verapdf.base_path'), '/\\').'/bin';
+        $binDir = $this->basePath().'/bin';
 
         if (! is_dir($binDir)) {
             return null;

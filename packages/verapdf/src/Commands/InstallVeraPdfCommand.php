@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
+use Moox\VeraPdf\Commands\Concerns\InteractsWithVeraPdfEnvironment;
 use Moox\VeraPdf\Services\VeraPdfService;
 use Moox\VeraPdf\Support\InstallerChecksum;
 use Moox\VeraPdf\Support\SafeZipExtractor;
@@ -18,6 +19,8 @@ use SplFileInfo;
 
 class InstallVeraPdfCommand extends Command
 {
+    use InteractsWithVeraPdfEnvironment;
+
     protected $signature = 'verapdf:install
         {--force : Overwrite existing installation}';
 
@@ -27,17 +30,13 @@ class InstallVeraPdfCommand extends Command
     {
         $this->components->info('Checking Java ...');
 
-        if (! $veraPdf->javaAvailable()) {
-            $this->components->error(
-                'Java not found. Install a JRE/JDK on the server first (e.g. sudo apt install default-jre-headless).'
-            );
-
+        if ($this->requireJavaAvailable($veraPdf) !== null) {
             return self::FAILURE;
         }
 
         $this->components->info('Java found.');
 
-        $basePath = rtrim((string) config('verapdf.base_path'), '/\\');
+        $basePath = $veraPdf->basePath();
 
         if ($veraPdf->isInstalled() && ! $this->option('force')) {
             if ($veraPdf->hasCliBinaries()) {

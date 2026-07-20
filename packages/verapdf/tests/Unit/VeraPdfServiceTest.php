@@ -98,3 +98,28 @@ test('validate throws a clear error when java is missing', function (): void {
     expect(fn () => app(VeraPdfService::class)->validate('/tmp/missing.pdf'))
         ->toThrow(RuntimeException::class, 'Java not found');
 });
+
+test('inspectHealth reflects CLI-only install layout', function (): void {
+    seedCliInstallLayout();
+
+    Process::fake(fn () => Process::result(
+        output: '',
+        errorOutput: 'openjdk version "17"',
+        exitCode: 0,
+    ));
+
+    $health = app(VeraPdfService::class)->inspectHealth();
+
+    expect($health->javaAvailable)->toBeTrue()
+        ->and($health->installed)->toBeTrue()
+        ->and($health->cliBinariesPresent)->toBeTrue()
+        ->and($health->launcherPath)->not->toBeNull()
+        ->and($health->isHealthy())->toBeTrue();
+});
+
+test('canonical messages match command output', function (): void {
+    $service = app(VeraPdfService::class);
+
+    expect($service->javaMissingMessage())->toContain('Java not found')
+        ->and($service->notInstalledMessage())->toContain('verapdf:install');
+});
