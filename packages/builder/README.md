@@ -140,7 +140,7 @@ One row per value:
 | `value_date` | date |
 | `value_datetime` | datetime |
 | `value_boolean` | toggle |
-| `value_json` | multiselect, checkbox_list, link, relation, image, gallery, file, group, repeater, flexible_content |
+| `value_json` | multiselect, checkbox_list, link, relation, image, gallery, file, group, clone, repeater, flexible_content |
 | `locale` | Locale variant for this value (e.g. `en_US`, `de_CH`) |
 
 Unique: `(entity, record_id, field_name, locale)`.
@@ -348,14 +348,7 @@ Open the resource create/edit form — custom field sections should appear.
 
 ### Live examples in this monorepo
 
-Branch: **`feature/custom-fields`** (includes list table filters).
-
-```bash
-git fetch origin
-git checkout feature/custom-fields
-composer install
-php artisan migrate   # if builder tables are not present yet
-```
+On `main`, Item, Record, and Draft already wire custom field columns and filters:
 
 | Piece | Path |
 |-------|------|
@@ -482,10 +475,10 @@ Opt-in Filament list columns for custom fields. Values are read from `builder_fi
 |----------|-------|-----------------|
 | **Scalar** | `text`, `textarea`, `email`, `url`, `number`, `range`, `select`, `radio`, `button_group`, `multiselect`, `checkbox_list`, `date`, `datetime`, `time`, `color`, `link`, `oembed` | `TextColumn`, `ColorColumn`, or formatted text |
 | **Toggle** | `toggle` | `IconColumn` (boolean) |
-| **Media** *(requires `moox/media`)* | `image` | `ImageColumn` |
+| **Media** *(requires `moox/media`)* | `image`, `gallery` | `ImageColumn` (`gallery`: stacked, limit 3) |
 | **Relation** | `relation` (single or multiple) | `TextColumn` with resolved labels |
 
-**Not supported as columns:** `password`, `rich_text`, layout/compound types (`group`, `repeater`, `flexible_content`, `tab`, `section`, `message`), `gallery`, `file`.
+**Not supported as columns:** `password`, `rich_text`, `file`, layout/compound types (`group`, `clone`, `repeater`, `flexible_content`, `tab`, `section`, `message`).
 
 ### Admin setup
 
@@ -616,7 +609,9 @@ php artisan test --compact packages/builder/tests/Unit/FilterableFieldTypesTest.
 
 ## Field Types & Capabilities
 
-### Built-in field types (29 with `moox/media`, otherwise 26)
+### Built-in field types (31 selectable with `moox/media`, otherwise 28)
+
+Plus one internal type (`flexible_layout`) used only inside flexible content — not selectable in admin.
 
 | Category | Keys |
 |----------|------|
@@ -627,7 +622,7 @@ php artisan test --compact packages/builder/tests/Unit/FilterableFieldTypesTest.
 | **Other** | `color`, `link`, `message`, `oembed` |
 | **Relation** | `relation` (link to other Moox Filament entities) |
 | **Media** *(requires `moox/media`)* | `image`, `gallery`, `file` |
-| **Layout** | `tab`, `section`, `group`, `repeater`, `flexible_content` |
+| **Layout** | `tab`, `section`, `group`, `clone`, `repeater`, `flexible_content` |
 
 Internal only (DB, not selectable): `flexible_layout` — defines a layout inside flexible content.
 
@@ -754,12 +749,15 @@ Widths apply inside groups, tabs, sections, and repeaters. Defaulting to `full` 
 | `RepeaterItems` | Min/max entries (repeater, flexible content) |
 | `GalleryFiles` | Min/max files (gallery) |
 | `RelationSettings` | Target entity, multiple, min/max (relation) |
+| `CloneSettings` | Source field group slug (clone) |
 
 Each field type implements `FieldType`: `key()`, `formComponent()`, `capabilities()`, optionally `castValue()`, `hasSubFields()`.
 
 ### Validation
 
-- **Required fields** and **capabilities** are applied as Filament rules on the component.
+- **Required** toggle plus a **Validation** section in the field editor (per field type).
+- **Curated rules** via a repeater (`min`, `max`, `regex`, `starts_with`, … for text; comparison rules for numbers) — compiled through `FieldValidationRules`.
+- **Advanced rules:** multi-line `validation.raw_rules` textarea for any Laravel rule string not covered by the picker (one rule per line).
 - **Nested values** (repeater, group, flexible content) are also validated by `FieldValueValidator` — including empty repeater rows and unknown layouts.
 - **Media fields:** existence, scope, MIME type (image vs file), and min/max files for gallery.
 - **Relation fields:** target exists, scoped to the resource query, min/max when multiple.
@@ -897,7 +895,9 @@ $item->setCustomFields(['accident_free' => true]);
 $item->clearCustomField('color');
 
 // Queries & collections
-Item::query()->where('color', 'Blue')->get();        // normal where on custom fields
+Item::query()->where('color', 'Blue')->get();        // where on custom fields (CustomFieldsBuilder)
+Item::query()->where('mileage', '>=', 10000)->get(); // typed operators: =, !=, <, >, <=, >=, like
+Item::query()->whereIn('fuel', ['petrol', 'diesel'])->get();
 Item::query()->withCustomFields()->get();            // eager load (no N+1)
 Item::eagerLoadCustomFields($models);                // batch for existing collection
 
@@ -916,6 +916,7 @@ protected static function customFieldsEntity(): ?string
 
 **Notes:**
 
+- `where` / `whereIn` on custom field names are handled by `CustomFieldsBuilder` — EXISTS subqueries on `builder_field_values` with the correct typed column and locale. Table filters use the same layer via `CustomFieldTableFilterQuery`.
 - DB columns take precedence over custom fields with the same name (`$item->title` → column, not builder field).
 - Password fields are hashed on save (`Hash::make`) and never returned in plain text.
 - `dump($item)` / Tinker shows custom fields in `__debugInfo()` (passwords masked).
@@ -1030,7 +1031,7 @@ packages/builder/
     ├── FieldTypes/
     │   ├── FieldType.php
     │   ├── Capabilities/
-    │   └── Types/                         # 29 field types
+    │   └── Types/                         # 31 field type classes (+ internal flexible_layout)
     ├── Forms/Components/BuilderMediaPicker.php
     ├── Http/
     │   ├── Middleware/ResolveBuilderAdminLocale.php
@@ -1121,7 +1122,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 | Flexible content sortable | no errors after save/load |
 | Image/gallery/file (with `moox/media`) | library filtered, save/load works, `media_usables` updated |
 | Relation field on a group | searchable select, save/load IDs, API shows labels |
-| Table column on scalar/toggle/media/relation field | column appears (toggle via column picker if hidden by default) |
+| Table column on scalar/toggle/image/gallery/relation field | column appears (toggle via column picker if hidden by default) |
 | Table filter on select/radio/button_group/toggle/relation/text-like field | filter chip on list pages narrows matching records |
 | Table filter on number/range/date/datetime field | from/until range filter narrows matching records; either bound alone also works |
 | Conditional logic (show/hide) | field visibility updates live; hidden required fields do not block save |
@@ -1136,8 +1137,9 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Nested fields via `parent_field_id` (group, repeater, flexible content)
 - Layout fields: tab, section, group, clone, repeater, flexible content
 - Entity discovery via `HasCustomFields` in Filament panels
-- Nested validation (`FieldValueValidator`)
+- Nested validation (`FieldValueValidator`) plus admin validation UI (curated rules + `validation.raw_rules`)
 - `InteractsWithCustomFields` on consumer models (`customFields()`, attribute access, queries, eager load)
+- `CustomFieldsBuilder` — `where` / `whereIn` on custom field names via typed subqueries on `builder_field_values`
 - `MergesCustomFields` for API resources (respects `visible_api`)
 - `FieldType::presentValue()` for API serialization (ISO dates, password masking, nested fields, media, relations)
 - Repeater min/max (`RepeaterItems` capability)
@@ -1149,7 +1151,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - **Clone field** — embed another field group by reference (ACF-style)
 - **Per-context visibility** — `visible_admin`, `visible_api`, `visible_frontend` (admin + API wired)
 - **Location rules** — entity, record type, record status, user role, taxonomy term IDs (admin constraints + import/export)
-- **Table columns** — opt-in list columns for scalar, media, and relation fields (`TableColumnCompiler`)
+- **Table columns** — opt-in list columns for scalar, media (`image`, `gallery`), and relation fields (`TableColumnCompiler`)
 - **Table filters** — opt-in filter chips for select, radio, button_group, toggle, single relation, text-like, and number/range/date/datetime fields (`TableFilterCompiler`, `CustomFieldTableFilterQuery`)
 - **Field width grid** — 12-column layout per field (`FieldWidth`)
 - **Sidebar placement** — `main` vs `sidebar` field group slots
@@ -1161,14 +1163,13 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 
 - Location rules: no template/parent params yet; record/taxonomy/status rules need a saved record (ignored on create)
 - Table filters: media, multiselect/checkbox list, and compound fields (JSON-backed values) have no filter chip yet
-- Custom `validation.rules`: supported in schema/DB, no admin UI (programmatic only)
+- Validation: curated rule picker covers text and number fields only; other types rely on capabilities, required toggle, or `validation.raw_rules`
 - Relation targets: Filament-registered Moox resources only (not arbitrary Eloquent models)
 
 **Not implemented yet:**
 
 - Centralized filter groups / filter presets (per-field list filters only in v1)
 - Location params beyond entity/record type/taxonomy/user role (e.g. template, parent)
-- Custom validation rules UI in admin
 - Package-level policies on field group management
 
 **Intentionally out of scope:**
