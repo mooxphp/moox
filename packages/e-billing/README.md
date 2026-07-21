@@ -76,7 +76,7 @@ Published as `config/e-billing.php`.
 | --- | --- |
 | `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
-| `default_format` | FormatRegistry key frozen onto `ebilling_documents.format` at generation (default `zugferd`) |
+| `default_format` | FormatRegistry key frozen onto `ebilling_documents.format` at generation (default `zugferd`). Allowed: `xrechnung`, `zugferd`, `factur-x` |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`); profile lives in `moox/zugferd` (`config('zugferd.profile')`) |
 | `foreign_invoice` | Foreign-invoice handling (`ignored_folder_name`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |

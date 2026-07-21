@@ -10,19 +10,42 @@ use Moox\EBilling\Tests\ContainerTestCase;
 
 uses(ContainerTestCase::class);
 
-test('registry has and get return the zugferd format definition', function (): void {
+test('registry exposes all three format definitions', function (): void {
     $registry = app(FormatRegistry::class);
 
-    expect($registry->has('zugferd'))->toBeTrue()
-        ->and($registry->has('xrechnung'))->toBeFalse();
+    expect($registry->has('xrechnung'))->toBeTrue()
+        ->and($registry->has('zugferd'))->toBeTrue()
+        ->and($registry->has('factur-x'))->toBeTrue();
 
-    $definition = $registry->get('zugferd');
+    $xrechnung = $registry->get('xrechnung');
+    expect($xrechnung->id)->toBe('xrechnung')
+        ->and($xrechnung->label)->toBe('XRechnung')
+        ->and($xrechnung->artifactKind)->toBe(ArtifactKind::Xml)
+        ->and($xrechnung->profile)->toBe('XRECHNUNG')
+        ->and($xrechnung->strategy)->toBeInstanceOf(ZugferdGeneratorStrategy::class);
 
-    expect($definition->id)->toBe('zugferd')
-        ->and($definition->label)->toBe('ZUGFeRD')
-        ->and($definition->artifactKind)->toBe(ArtifactKind::Pdf)
-        ->and($definition->profile)->toBe((string) config('zugferd.profile', 'EN16931'))
-        ->and($definition->strategy)->toBeInstanceOf(ZugferdGeneratorStrategy::class);
+    $zugferd = $registry->get('zugferd');
+    expect($zugferd->id)->toBe('zugferd')
+        ->and($zugferd->label)->toBe('ZUGFeRD')
+        ->and($zugferd->artifactKind)->toBe(ArtifactKind::Pdf)
+        ->and($zugferd->profile)->toBe((string) config('zugferd.profile', 'EN16931'))
+        ->and($zugferd->strategy)->toBeInstanceOf(ZugferdGeneratorStrategy::class);
+
+    $facturX = $registry->get('factur-x');
+    expect($facturX->id)->toBe('factur-x')
+        ->and($facturX->label)->toBe('Factur-X')
+        ->and($facturX->artifactKind)->toBe(ArtifactKind::Pdf)
+        ->and($facturX->strategy)->toBeInstanceOf(ZugferdGeneratorStrategy::class);
+});
+
+test('registry labels returns all three customer-facing labels', function (): void {
+    $labels = app(FormatRegistry::class)->labels();
+
+    expect($labels)->toBe([
+        'xrechnung' => 'XRechnung',
+        'zugferd' => 'ZUGFeRD',
+        'factur-x' => 'Factur-X',
+    ]);
 });
 
 test('registry get throws on unknown format', function (): void {

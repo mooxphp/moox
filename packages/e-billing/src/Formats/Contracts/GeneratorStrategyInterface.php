@@ -8,5 +8,5 @@ use Moox\Zugferd\Contracts\ZugferdInvoice;
 
 interface GeneratorStrategyInterface
 {
-    public function generateXml(ZugferdInvoice $invoice): string;
+    public function generateXml(ZugferdInvoice $invoice, string $profile): string;
 }

@@ -70,12 +70,30 @@ class EBillingServiceProvider extends MooxServiceProvider
     {
         $this->app->singleton(FormatRegistry::class, function ($app): FormatRegistry {
             $registry = new FormatRegistry;
+            $strategy = $app->make(ZugferdGeneratorStrategy::class);
+
+            $registry->register(new FormatDefinition(
+                id: 'xrechnung',
+                label: 'XRechnung',
+                artifactKind: ArtifactKind::Xml,
+                profile: 'XRECHNUNG',
+                strategy: $strategy,
+            ));
+
             $registry->register(new FormatDefinition(
                 id: 'zugferd',
                 label: 'ZUGFeRD',
                 artifactKind: ArtifactKind::Pdf,
                 profile: (string) config('zugferd.profile', 'EN16931'),
-                strategy: $app->make(ZugferdGeneratorStrategy::class),
+                strategy: $strategy,
+            ));
+
+            $registry->register(new FormatDefinition(
+                id: 'factur-x',
+                label: 'Factur-X',
+                artifactKind: ArtifactKind::Pdf,
+                profile: (string) config('zugferd.profile', 'EN16931'),
+                strategy: $strategy,
             ));
 
             return $registry;

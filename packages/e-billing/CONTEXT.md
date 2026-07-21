@@ -16,14 +16,14 @@ Glossary for the generic e-billing conversion pipeline (`packages/e-billing`). K
 
 ## Proposed change
 
-Generate the customer-chosen artifact first (XRechnung XML / ZUGFeRD PDF / Factur-X PDF), *then* validate that artifact. (Under design — see grilling session.)
+Generate the customer-chosen artifact first (XRechnung XML / ZUGFeRD PDF / Factur-X PDF), *then* validate that artifact. ✅ Implemented.
 
-## Decisions (design in progress)
+## Decisions (implemented)
 
-- **Format = strategy seam.** Each format declares { label, generator strategy, artifact kind (xml|pdf), profile }. Adding UBL / Peppol BIS / a new profile / a national format = new registry entry + generator class; pipeline jobs unchanged. Customer-facing menu = XRechnung / ZUGFeRD / Factur-X (three labels); ZUGFeRD+Factur-X collapse to one hybrid-PDF generator + label flag.
-- **Scope now:** build the seam + the three **CII-based** formats. UBL and Peppol are deferred future strategies (UBL is a separate generator/library and the prerequisite for Peppol).
-- **Validator stays single.** KOSIT is the only validator (validates both CII and UBL). No validator-strategy interface — validation is format-*aware* (loose XML vs XML extracted from the PDF), not format-*pluggable*.
-- **Format binding.** Customer preference lives in `companies.data` JSON as `preferred_ebilling_format` (written by the future portal). Each document freezes the format actually produced in a real `ebilling_documents.format` column at generation time. Resolution: `document.format` ← `company.data.preferred_ebilling_format` ← global config default (**ZUGFeRD / EN16931 hybrid PDF**).
+- **Format = strategy seam.** ✅ Three formats registered: `xrechnung` (pure CII XML, `XRECHNUNG` profile), `zugferd` (hybrid PDF, `EN16931`), `factur-x` (hybrid PDF, `EN16931`). All share one `ZugferdGeneratorStrategy`; profile is per-format via `FormatDefinition.profile`. Adding UBL / Peppol = new registry entry + generator class; pipeline jobs unchanged.
+- **Scope now:** the three **CII-based** formats are live. UBL and Peppol are deferred future strategies.
+- **Validator stays single.** KOSIT is the only XML validator. XRechnung = KOSIT only. Hybrids = KOSIT + veraPDF.
+- **Format binding.** ✅ `EbillingFormatResolver` reads `companies.data.preferred_ebilling_format` → falls back to `default_format` config (default `zugferd`). Format frozen on `ebilling_documents.format` at generation time (freeze = `xml_storage_path` is set). Preference changes affect future documents only.
 - **Validation stack (validate the real artifact).** XML conformance → **KOSIT** for *every* format (pure XRechnung XML, or the XML **extracted from the hybrid PDF** via horstoeko `ZugferdDocumentPdfReader`). PDF/A-3 conformance → **veraPDF** (licensed MPL-2.0; commercial-safe as a CLI process). A hybrid passes iff **KOSIT(xml) AND veraPDF(pdf)**; a pure XRechnung passes iff **KOSIT(xml)**.
 - **`moox/verapdf` = own package** (mirrors `kosit-validator`/`zugferd` boundary): config + `verapdf:install` command + `VeraPdfService::validate()` + persisted `VeraPdfValidation` model + morph pivot. Generic, no e-billing knowledge; e-billing orchestrates KOSIT+veraPDF. Note: veraPDF ships as an **installer zip** (headless IzPack install → `verapdf` launcher script), *not* a single `java -jar` standalone like KOSIT — the install command is heavier.
 - **Failure handling.** Artifact is generated before validation; on failure it is **retained on disk + flagged** (never auto-deleted), validator reports persisted (KositValidation + VeraPdfValidation), `gateway_status` → failed, surfaced in "needs review". **Delivery is validation-gated** — an invalid artifact is never sent even though it exists.

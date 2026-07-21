@@ -24,6 +24,7 @@ use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Services\ParsedInvoiceMapper;
 use Moox\EBilling\Support\EBillingArtifactNaming;
+use Moox\EBilling\Support\EBillingFormatResolver;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Models\InboxAttachment;
@@ -52,6 +53,7 @@ class GenerateArtifactJob implements ShouldQueue
 
     public function handle(
         FormatRegistry $formatRegistry,
+        EBillingFormatResolver $formatResolver,
         ParsedInvoiceMapper $parsedInvoiceMapper,
         InvoiceFieldValidator $invoiceFieldValidator,
     ): void {
@@ -113,11 +115,11 @@ class GenerateArtifactJob implements ShouldQueue
 
         $this->setProgress(40);
 
-        $formatId = is_string($document?->format) && $document->format !== ''
-            ? $document->format
+        $formatId = $document !== null
+            ? $formatResolver->resolveForGeneration($document)
             : (string) config('e-billing.default_format', 'zugferd');
         $definition = $formatRegistry->get($formatId);
-        $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice));
+        $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice), $definition->profile);
 
         $diskName = (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $relativeDir = $attachment->scope.'/'.EBillingArtifactNaming::invoiceDatePathSegment($invoice->invoice_date);
