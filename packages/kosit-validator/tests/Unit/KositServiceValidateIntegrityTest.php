@@ -28,14 +28,12 @@ it('rejects a tampered validator jar before running java', function (): void {
 
     file_put_contents(app(KositService::class)->jarPath(), 'tampered');
 
-    $tracker = fakeKositJavaProcessTrackingJar();
+    fakeKositJavaProcessRejectingJarExecution();
     $xml = kositTempPath('invoice').'.xml';
     file_put_contents($xml, '<invoice/>');
 
     expect(fn () => app(KositService::class)->validate($xml))
         ->toThrow(RuntimeException::class, 'checksum mismatch');
-
-    expect($tracker['jarRan'])->toBeFalse();
 });
 
 it('allows validate when the validator jar matches the pinned checksum', function (): void {

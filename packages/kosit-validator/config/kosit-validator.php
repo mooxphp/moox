@@ -50,7 +50,8 @@ return [
     | When bumping version or download_url for either artifact below, download the new
     | release asset and run:
     |   curl -fsSL <download_url> | shasum -a 256
-    | then update the matching sha256 env key. Install aborts on mismatch.
+    | then update the matching sha256 env key. Install aborts on mismatch; runtime
+    | validation aborts before Java when the on-disk JAR digest does not match.
     |
     */
 

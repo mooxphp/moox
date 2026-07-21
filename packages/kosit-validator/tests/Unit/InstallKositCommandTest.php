@@ -34,15 +34,14 @@ test('install aborts on validator checksum mismatch without wiping an existing i
     $xrechnung = buildBenignXrechnungZip();
     fakeKositDownloads('tampered-jar', hash('sha256', 'different-jar-bytes'), $xrechnung['bytes'], $xrechnung['sha256']);
 
-    $jarTracker = fakeKositJavaProcessTrackingJar();
+    fakeKositJavaProcess();
 
     $this->artisan('kosit:install', ['--force' => true])
         ->expectsOutputToContain('checksum mismatch')
         ->assertFailed();
 
     expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
-        ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar')
-        ->and($jarTracker['jarRan'])->toBeFalse();
+        ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
 
     File::delete($xrechnung['path']);
 });

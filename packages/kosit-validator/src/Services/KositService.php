@@ -77,6 +77,7 @@ class KositService
         InstallerChecksum::assertValid(
             $jar,
             (string) config('kosit-validator.validator.sha256'),
+            InstallerChecksum::CONTEXT_RUNTIME,
         );
 
         $result = Process::run([
