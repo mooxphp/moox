@@ -117,9 +117,25 @@ Bindings are **null in the package** — the app must configure them.
 4. Map fields via `field_map` + inline operations
 5. Validate (model rules + definition rules)
 6. Upsert destination model (match via `destination_match`)
-7. Persist `TransformRecord` status, warnings, errors
+7. Persist optional Builder custom fields when the destination model supports them
+8. Persist `TransformRecord` status, warnings, errors
 
 Runs via `TransformRunner` (sync) or `RunTransformRecordJob` (queued).
+
+## Optional Builder custom fields
+
+`moox/transform` has **no composer dependency** on `moox/builder`.
+
+When a destination model exposes both `customFieldNames()` and `setCustomFields()` (for example via `InteractsWithCustomFields` on Product), transform treats matching `field_map` keys as Builder custom fields:
+
+| Key in `field_map` | Behaviour |
+|--------------------|-----------|
+| `material`, `is-available`, `sales-unit`, … | Must match a Builder field key on the entity |
+| `_builder_values_locale` | Optional locale for Builder values (e.g. `connect_locale:FileName`) |
+
+Custom fields are written **after** the destination model is saved (so `record_id` exists). Without `moox/builder` installed, models simply do not expose the methods and transform ignores nothing extra — same as before.
+
+When `moox/builder` is installed and `_builder_values_locale` is mapped, transform uses `CustomFieldsManager` at runtime for locale-aware writes.
 
 ## What this package does not provide
 

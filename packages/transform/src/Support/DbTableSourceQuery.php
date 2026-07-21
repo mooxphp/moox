@@ -72,6 +72,23 @@ final class DbTableSourceQuery
                 continue;
             }
 
+            if ($operator === 'not_in_subquery' && is_array($clause['value'] ?? null)) {
+                $subquery = $clause['value'];
+                $subTable = $subquery['table'] ?? null;
+                $subColumn = $subquery['column'] ?? null;
+
+                if (! is_string($subTable) || $subTable === '' || ! is_string($subColumn) || $subColumn === '') {
+                    continue;
+                }
+
+                $query->whereNotIn($column, function (Builder $sub) use ($subTable, $subColumn, $subquery): void {
+                    $sub->from($subTable)->select($subColumn);
+                    self::applyWhereClauses($sub, ['where' => $subquery['where'] ?? []]);
+                });
+
+                continue;
+            }
+
             if (array_key_exists('value', $clause)) {
                 $query->where($column, $operator, $clause['value']);
 

@@ -20,6 +20,7 @@ use Moox\Transform\Support\Execution\ResolvedTransformDataFactory;
 use Moox\Transform\Support\Execution\TranslatableBatchDestinationWriter;
 use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
 use Moox\Transform\Support\Expansion\TransformProjectionExpander;
+use Moox\Transform\Support\Operations\InlineLookupCache;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
 use Moox\Transform\Support\SourceContextResolver;
 use Moox\Transform\Support\SourcePayloadResolver;
@@ -47,6 +48,44 @@ final class TransformDummyModel extends Model
         return [
             'stock' => 'integer',
         ];
+    }
+}
+
+/**
+ * @property string|null $title
+ * @property array<string, mixed> $persistedCustomFields
+ */
+final class TransformCustomFieldDummyModel extends Model
+{
+    /** @var array<string, mixed> */
+    public static array $lastPersistedCustomFields = [];
+
+    /** @var array<string, mixed> */
+    public array $persistedCustomFields = [];
+
+    protected $table = 'transform_custom_field_dummy_models';
+
+    protected $fillable = [
+        'title',
+    ];
+
+    /**
+     * @return list<string>
+     */
+    public static function customFieldNames(): array
+    {
+        return ['material', 'dimension', 'is-available'];
+    }
+
+    /**
+     * @param  array<string, mixed>  $values
+     */
+    public function setCustomFields(array $values): static
+    {
+        self::$lastPersistedCustomFields = $values;
+        $this->persistedCustomFields = $values;
+
+        return $this;
     }
 }
 
@@ -212,6 +251,7 @@ function createTestTables(): void
     assertTransformTestsUseSafeDatabase();
 
     Schema::dropIfExists('transform_soft_delete_dummy_models');
+    Schema::dropIfExists('transform_custom_field_dummy_models');
     Schema::dropIfExists('transform_dummy_models');
     Schema::dropIfExists('transform_json_dummy_models');
     Schema::dropIfExists('transform_draft_main_model_translations');
@@ -264,6 +304,12 @@ function createTestTables(): void
         $table->string('title')->nullable();
         $table->integer('stock')->nullable();
         $table->string('price_label')->nullable()->unique();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_custom_field_dummy_models', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title')->nullable();
         $table->timestamps();
     });
 
@@ -366,6 +412,9 @@ function createTestTables(): void
 
 function makeRunner(): TransformRunner
 {
+    $lookupCache = new InlineLookupCache;
+    app()->instance(InlineLookupCache::class, $lookupCache);
+
     $inlineOperationRegistry = new InlineOperationRegistry;
     $templateValueResolver = new TemplateValueResolver;
     $importRecordPayloadReader = new ConfiguredImportRecordPayloadReader;
@@ -394,6 +443,7 @@ function makeRunner(): TransformRunner
         new BulkTransformExecutor,
         $resolvedTransformDataFactory,
         $batchDestinationWriterRegistry,
+        $lookupCache,
     );
 }
 

@@ -31,8 +31,9 @@ return [
     | timeout: 0 = no job timeout (requires a Horizon supervisor with timeout 0).
     |
     */
-    'job_queue' => 'transform',
-    'job_timeout' => 0,
+    'dispatch_queue' => env('TRANSFORM_DISPATCH_QUEUE', 'transform'),
+    'job_queue' => env('TRANSFORM_JOB_QUEUE', 'transform'),
+    'job_timeout' => env('TRANSFORM_JOB_TIMEOUT', 0),
 
     /*
     |--------------------------------------------------------------------------

@@ -27,6 +27,11 @@ final class TransformDestinationConflictException extends RuntimeException
         return $this->context;
     }
 
+    public function isIncompleteDestinationMatch(): bool
+    {
+        return ($this->context['type'] ?? null) === 'incomplete_destination_match';
+    }
+
     /**
      * @param  array<string, mixed>  $destinationMatch
      * @param  list<string|int>  $existingDestinationKeys

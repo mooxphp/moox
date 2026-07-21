@@ -14,6 +14,10 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
 
     private const string PREFIX = 'lookup_id:';
 
+    public function __construct(
+        private readonly InlineLookupCache $lookupCache = new InlineLookupCache,
+    ) {}
+
     public function supports(string $operationSegment): bool
     {
         return str_starts_with(strtolower($operationSegment), self::PREFIX);
@@ -56,15 +60,19 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
         }
 
         /** @var class-string<Model> $modelClass */
-        $id = $modelClass::query()
-            ->where($matchColumn, $matchValue)
-            ->value($modelClass::query()->getModel()->getKeyName());
+        $cacheKey = 'lookup_id:'.$modelClass.':'.$matchColumn.':'.json_encode($matchValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        if ($id === null) {
-            $warnings[] = "No [{$modelClass}] record found for [{$matchColumn}={$matchValue}].";
-        }
+        return $this->lookupCache->remember($cacheKey, function () use ($modelClass, $matchColumn, $matchValue, &$warnings): mixed {
+            $id = $modelClass::query()
+                ->where($matchColumn, $matchValue)
+                ->value($modelClass::query()->getModel()->getKeyName());
 
-        return $id;
+            if ($id === null) {
+                $warnings[] = "No [{$modelClass}] record found for [{$matchColumn}={$matchValue}].";
+            }
+
+            return $id;
+        });
     }
 
     public function hasResolvablePaths(array $payload, string $operationSegment): bool

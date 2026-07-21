@@ -14,6 +14,9 @@ use Moox\Transform\Support\SourceContextResolver;
 
 final class ResolvedTransformDataFactory
 {
+    /** @var array<string, mixed> */
+    private array $expressionMemo = [];
+
     public function __construct(
         private readonly InlineOperationRegistry $inlineOperationRegistry,
         private readonly SourceContextResolver $sourceContextResolver,
@@ -28,6 +31,8 @@ final class ResolvedTransformDataFactory
         string $inputHash,
         ?TransformRecord $record = null,
     ): ResolvedTransformRow {
+        $this->expressionMemo = [];
+
         $resolved = $this->resolveMappedData($definition, $payload);
         $resolvedData = $resolved['data'];
         $warnings = $resolved['warnings'];
@@ -53,6 +58,8 @@ final class ResolvedTransformDataFactory
             $record?->getKey() !== null ? (int) $record->getKey() : 0,
             (string) $definition->name,
         );
+
+        $this->expressionMemo = [];
 
         return new ResolvedTransformRow(
             destinationClass: $destinationClass,
@@ -90,7 +97,7 @@ final class ResolvedTransformDataFactory
             }
 
             $pathExists = $this->sourceExpressionPathExists($payload, $sourcePath);
-            $value = $this->resolveMappedValue($payload, $sourcePath, (string) $destinationField, $warnings);
+            $value = $this->resolveMappedValueMemoized($payload, $sourcePath, (string) $destinationField, $warnings);
             if (! $pathExists) {
                 $warnings[] = "Mapped source path [{$sourcePath}] was not found.";
             }
@@ -108,29 +115,51 @@ final class ResolvedTransformDataFactory
      * @param  array<string, mixed>  $payload
      * @param  array<int, string>  $warnings
      */
-    private function resolveMappedValue(array $payload, string $sourceExpression, string $destinationField, array &$warnings): mixed
-    {
-        if ($this->inlineOperationRegistry->isPayloadBaseExpression($sourceExpression)) {
-            return $this->inlineOperationRegistry->applyOperation(
-                $sourceExpression,
-                null,
-                $destinationField,
-                $warnings,
-                $payload,
-            );
+    private function resolveMappedValueMemoized(
+        array $payload,
+        string $sourceExpression,
+        string $destinationField,
+        array &$warnings,
+    ): mixed {
+        if (array_key_exists($sourceExpression, $this->expressionMemo)) {
+            return $this->expressionMemo[$sourceExpression];
         }
 
+        return $this->expressionMemo[$sourceExpression] = $this->resolveMappedValue(
+            $payload,
+            $sourceExpression,
+            $destinationField,
+            $warnings,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @param  array<int, string>  $warnings
+     */
+    private function resolveMappedValue(array $payload, string $sourceExpression, string $destinationField, array &$warnings): mixed
+    {
         $segments = array_values(array_filter(array_map('trim', explode('|', $sourceExpression))));
         if ($segments === []) {
             return null;
         }
 
-        $basePath = array_shift($segments);
-        if (! is_string($basePath) || $basePath === '') {
+        $baseSegment = array_shift($segments);
+        if (! is_string($baseSegment) || $baseSegment === '') {
             return null;
         }
 
-        $value = $this->resolveSourceBaseValue($payload, $basePath, $destinationField, $warnings);
+        if ($this->inlineOperationRegistry->isPayloadBaseExpression($baseSegment)) {
+            $value = $this->inlineOperationRegistry->applyOperation(
+                $baseSegment,
+                null,
+                $destinationField,
+                $warnings,
+                $payload,
+            );
+        } else {
+            $value = $this->resolveSourceBaseValue($payload, $baseSegment, $destinationField, $warnings);
+        }
 
         foreach ($segments as $operation) {
             $value = $this->inlineOperationRegistry->applyOperation(
@@ -173,23 +202,19 @@ final class ResolvedTransformDataFactory
      */
     private function sourceExpressionPathExists(array $payload, string $sourceExpression): bool
     {
-        if ($this->inlineOperationRegistry->isPayloadBaseExpression($sourceExpression)) {
-            return $this->inlineOperationRegistry->payloadBaseExpressionExists($payload, $sourceExpression);
-        }
-
         $segments = array_values(array_filter(array_map('trim', explode('|', $sourceExpression))));
         if ($segments === []) {
             return false;
         }
 
-        $basePath = array_shift($segments);
-        if (! is_string($basePath) || $basePath === '') {
+        $baseSegment = array_shift($segments);
+        if (! is_string($baseSegment) || $baseSegment === '') {
             return false;
         }
 
-        return $this->inlineOperationRegistry->isPayloadBaseExpression($basePath)
-            ? $this->inlineOperationRegistry->payloadBaseExpressionExists($payload, $basePath)
-            : Arr::has($payload, $basePath);
+        return $this->inlineOperationRegistry->isPayloadBaseExpression($baseSegment)
+            ? $this->inlineOperationRegistry->payloadBaseExpressionExists($payload, $baseSegment)
+            : Arr::has($payload, $baseSegment);
     }
 
     /**
@@ -212,7 +237,7 @@ final class ResolvedTransformDataFactory
                 continue;
             }
 
-            $sourceId = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
+            $sourceId = $this->resolveMappedValueMemoized($payload, $sourcePath, $destinationField, $warnings);
             if ($this->isMissingDestinationMatchValue($sourceId)) {
                 continue;
             }
@@ -260,7 +285,7 @@ final class ResolvedTransformDataFactory
                 continue;
             }
 
-            $value = $this->resolveMappedValue($payload, $sourcePath, $destinationField, $warnings);
+            $value = $this->resolveMappedValueMemoized($payload, $sourcePath, $destinationField, $warnings);
             if ($this->isMissingDestinationMatchValue($value)) {
                 $missing[] = "{$destinationField} (from {$sourcePath})";
 
@@ -303,7 +328,21 @@ final class ResolvedTransformDataFactory
             return true;
         }
 
-        return is_string($value) && trim($value) === '';
+        if (is_string($value) && trim($value) === '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function resolveArrayAttribute(Model $model, string $attribute): array
+    {
+        $value = $model->getAttribute($attribute);
+
+        return is_array($value) ? $value : [];
     }
 
     /**
@@ -334,15 +373,5 @@ final class ResolvedTransformDataFactory
         }
 
         return $resolvedData;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function resolveArrayAttribute(Model $model, string $attribute): array
-    {
-        $value = $model->getAttribute($attribute);
-
-        return is_array($value) ? $value : [];
     }
 }

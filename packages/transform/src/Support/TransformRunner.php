@@ -16,9 +16,11 @@ use Moox\Transform\Support\Execution\BatchDestinationWriterRegistry;
 use Moox\Transform\Support\Execution\BulkItemResult;
 use Moox\Transform\Support\Execution\BulkTransformExecutor;
 use Moox\Transform\Support\Execution\BulkTransformSummaryFormatter;
+use Moox\Transform\Support\Execution\CustomFieldTransformSupport;
 use Moox\Transform\Support\Execution\ResolvedTransformDataFactory;
 use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
 use Moox\Transform\Support\Expansion\TransformProjectionExpander;
+use Moox\Transform\Support\Operations\InlineLookupCache;
 
 class TransformRunner
 {
@@ -30,6 +32,7 @@ class TransformRunner
         private readonly BulkTransformExecutor $bulkExecutor,
         private readonly ResolvedTransformDataFactory $resolvedTransformDataFactory,
         private readonly BatchDestinationWriterRegistry $batchDestinationWriterRegistry,
+        private readonly InlineLookupCache $inlineLookupCache,
     ) {}
 
     public function run(TransformRecord $record): void
@@ -39,6 +42,8 @@ class TransformRunner
 
     public function runSingle(TransformRecord $record, bool $allowExpansion = false): void
     {
+        $this->inlineLookupCache->flush();
+
         $record->forceFill([
             'status' => 'processing',
             'last_run_at' => now(),
@@ -182,6 +187,12 @@ class TransformRunner
                     (string) $definition->name,
                 );
             }
+
+            CustomFieldTransformSupport::persistAfterSave(
+                $destination,
+                $assignment['custom_fields'],
+                $assignment['custom_fields_locale'],
+            );
 
             $isDegraded = $warnings !== [] || $assignment['ignored'] !== [];
             $record->forceFill([
@@ -397,12 +408,16 @@ class TransformRunner
     private function inferRulesFromModel(Model $destination, array $resolvedData): array
     {
         $fillable = $destination->getFillable();
-        $fillableMap = $fillable !== [] ? array_flip($fillable) : null;
+        $translated = $this->resolveTranslatedAttributes($destination);
+        $customFields = CustomFieldTransformSupport::fieldNames($destination);
+        $metaFields = CustomFieldTransformSupport::metaFieldNames($destination);
+        $allowed = array_flip(array_merge($fillable, $translated, $customFields, $metaFields));
+        $allowedMap = $allowed !== [] ? $allowed : null;
         $casts = $destination->getCasts();
         $rules = [];
 
         foreach ($resolvedData as $field => $value) {
-            if (is_array($fillableMap) && ! array_key_exists($field, $fillableMap)) {
+            if (is_array($allowedMap) && ! array_key_exists($field, $allowedMap)) {
                 continue;
             }
 
@@ -673,13 +688,20 @@ class TransformRunner
 
     /**
      * @param  array<string, mixed>  $resolvedData
-     * @return array{ignored: array<int, string>, warnings: array<int, string>}
+     * @return array{
+     *     ignored: array<int, string>,
+     *     warnings: array<int, string>,
+     *     custom_fields: array<string, mixed>,
+     *     custom_fields_locale: ?string
+     * }
      */
     private function assignAttributesWithGracefulDegradation(
         Model $destination,
         array $resolvedData,
         bool $isExistingDestination = false,
     ): array {
+        $partitioned = CustomFieldTransformSupport::partitionResolvedData($destination, $resolvedData);
+        $resolvedData = $partitioned['model_data'];
         $fillable = $destination->getFillable();
         $translated = $this->resolveTranslatedAttributes($destination);
         $allowed = $fillable !== [] ? array_flip(array_merge($fillable, $translated)) : null;
@@ -712,6 +734,8 @@ class TransformRunner
         return [
             'ignored' => $ignored,
             'warnings' => $warnings,
+            'custom_fields' => $partitioned['custom_fields'],
+            'custom_fields_locale' => $partitioned['custom_fields_locale'],
         ];
     }
 
@@ -769,12 +793,22 @@ class TransformRunner
             $assignment = $this->assignAttributesWithGracefulDegradation($destination, $resolvedRow->resolvedData, $isExistingDestination);
             $destination->save();
 
+            CustomFieldTransformSupport::persistAfterSave(
+                $destination,
+                $assignment['custom_fields'],
+                $assignment['custom_fields_locale'],
+            );
+
             return new BulkItemResult(
                 status: $isExistingDestination ? 'updated' : 'processed',
                 errorMessage: $assignment['warnings'] !== [] ? implode("\n", $assignment['warnings']) : null,
                 destinationKey: $destination->getKey() !== null ? (string) $destination->getKey() : null,
             );
         } catch (TransformDestinationConflictException $exception) {
+            if ($exception->isIncompleteDestinationMatch()) {
+                return new BulkItemResult('skipped', $exception->getMessage());
+            }
+
             return new BulkItemResult('failed', $exception->getMessage());
         } catch (\Throwable $throwable) {
             return new BulkItemResult('failed', $throwable->getMessage());
@@ -828,7 +862,11 @@ class TransformRunner
                 $existingByIndex[$index] = $this->destinationExistsByMatch($destinationClass, $resolvedRow->destinationMatch);
                 $validRows[$index] = $resolvedRow;
             } catch (TransformDestinationConflictException $exception) {
-                $results[$index] = new BulkItemResult('failed', $exception->getMessage(), sourceLabel: $sourceLabel);
+                $results[$index] = new BulkItemResult(
+                    $exception->isIncompleteDestinationMatch() ? 'skipped' : 'failed',
+                    $exception->getMessage(),
+                    sourceLabel: $sourceLabel,
+                );
             } catch (\Throwable $throwable) {
                 $results[$index] = new BulkItemResult('failed', $throwable->getMessage(), sourceLabel: $sourceLabel);
             }
