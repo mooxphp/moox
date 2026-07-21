@@ -49,6 +49,7 @@ class EditFieldGroup extends EditRecord
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        $this->ensureAllowedBuilderAdminLocale();
         $this->syncLangToRequest();
 
         /** @var FieldGroup $record */
@@ -77,6 +78,7 @@ class EditFieldGroup extends EditRecord
 
     protected function handleRecordUpdate($record, array $data): FieldGroup
     {
+        $this->ensureAllowedBuilderAdminLocale();
         $this->syncLangToRequest();
         $this->applyFieldGroupDefaultLocale($record);
 

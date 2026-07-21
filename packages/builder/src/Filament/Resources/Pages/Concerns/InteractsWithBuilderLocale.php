@@ -14,6 +14,7 @@ trait InteractsWithBuilderLocale
 
     public function hydrateInteractsWithBuilderLocale(): void
     {
+        $this->ensureAllowedBuilderAdminLocale();
         $this->syncLangToRequest();
     }
 
@@ -34,6 +35,23 @@ trait InteractsWithBuilderLocale
         }
     }
 
+    /**
+     * Reset an invalid Livewire lang to the admin default without redirecting.
+     * Used on hydrate/save so a mutated $lang cannot persist under a fake locale.
+     */
+    protected function ensureAllowedBuilderAdminLocale(): void
+    {
+        if ($this->lang === '') {
+            return;
+        }
+
+        if (app(BuilderAdminLocalizationCatalog::class)->isAllowedAdminLocale($this->lang)) {
+            return;
+        }
+
+        $this->lang = app(BuilderLocaleResolver::class)->adminDefaultLocale();
+    }
+
     protected function guardBuilderAdminLocale(): void
     {
         $catalog = app(BuilderAdminLocalizationCatalog::class);
@@ -46,11 +64,13 @@ trait InteractsWithBuilderLocale
             return;
         }
 
+        $this->lang = app(BuilderLocaleResolver::class)->adminDefaultLocale();
+
         if (! method_exists($this, 'getResource')) {
             return;
         }
 
-        $default = app(BuilderLocaleResolver::class)->adminDefaultLocale();
+        $default = $this->lang;
 
         if (method_exists($this, 'getRecord') && $this->getRecord() !== null) {
             $this->redirect(static::getResource()::getUrl('edit', [

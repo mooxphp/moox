@@ -40,6 +40,7 @@ class CreateFieldGroup extends CreateRecord
 
     protected function handleRecordCreation(array $data): FieldGroup
     {
+        $this->ensureAllowedBuilderAdminLocale();
         $this->syncLangToRequest();
 
         $group = new FieldGroup;
