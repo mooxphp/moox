@@ -28,6 +28,7 @@
         "moox/invoice": "dev-main",
         "moox/jobs": "dev-main",
         "moox/kosit-validator": "dev-main",
+        "moox/verapdf": "dev-main",
         "moox/mail-inbox": "dev-main",
         "moox/pdf-parser": "dev-main",
         "moox/zugferd": "dev-main"

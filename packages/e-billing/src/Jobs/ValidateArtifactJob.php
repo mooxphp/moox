@@ -28,6 +28,10 @@ use Moox\KositValidator\Actions\RecordKositValidation;
 use Moox\KositValidator\Services\KositService;
 use Moox\KositValidator\Support\KositOutputPath;
 use Moox\MailInbox\Models\InboxAttachment;
+use Moox\VeraPdf\Actions\RecordVeraPdfValidation;
+use Moox\VeraPdf\DTOs\VeraPdfResult;
+use Moox\VeraPdf\Services\VeraPdfService;
+use Moox\VeraPdf\Support\VeraPdfOutputPath;
 use Throwable;
 
 class ValidateArtifactJob implements ShouldQueue
@@ -55,6 +59,8 @@ class ValidateArtifactJob implements ShouldQueue
         FormatRegistry $formatRegistry,
         KositService $kosit,
         RecordKositValidation $recordKositValidation,
+        VeraPdfService $veraPdf,
+        RecordVeraPdfValidation $recordVeraPdfValidation,
         InboxMessagePipelineFinalizer $pipelineFinalizer,
     ): void {
         $this->setProgress(0);
@@ -114,6 +120,7 @@ class ValidateArtifactJob implements ShouldQueue
         $this->setProgress(20);
 
         $tempXmlPath = null;
+        $absolutePdfPath = null;
 
         try {
             if ($definition->artifactKind === ArtifactKind::Pdf) {
@@ -152,13 +159,38 @@ class ValidateArtifactJob implements ShouldQueue
             $dateSegment = EBillingArtifactNaming::invoiceDatePathSegment($invoiceDate);
             $kositReportDirectory = KositOutputPath::resolve($dateSegment);
 
-            $result = $kosit->validate($absoluteXmlPath, $kositReportDirectory);
+            $kositResult = $kosit->validate($absoluteXmlPath, $kositReportDirectory);
+
+            $this->setProgress(55);
+
+            $veraPdfResult = null;
+            $veraPdfConfigured = $definition->artifactKind === ArtifactKind::Pdf
+                && $veraPdf->isInstalled()
+                && $veraPdf->javaAvailable();
+
+            if ($veraPdfConfigured) {
+                if ($absolutePdfPath === null) {
+                    throw new LogicException('Hybrid validation requires an absolute PDF path.');
+                }
+
+                $veraPdfReportDirectory = VeraPdfOutputPath::resolve(
+                    $dateSegment.'/'.($document?->getKey() ?? 'unknown')
+                );
+                $veraPdfResult = $veraPdf->validate($absolutePdfPath, $veraPdfReportDirectory);
+            }
 
             $this->setProgress(70);
 
-            $errorStrings = $result->errors();
+            $kositPassed = $kositResult->passed();
+            $veraPdfPassed = $veraPdfResult === null || $veraPdfResult->passed();
+            $passed = $kositPassed && $veraPdfPassed;
 
-            if ($result->passed()) {
+            $errorStrings = array_values(array_merge(
+                $kositPassed ? [] : $kositResult->errors(),
+                ($veraPdfResult !== null && ! $veraPdfPassed) ? $veraPdfResult->errors() : [],
+            ));
+
+            if ($passed) {
                 $deliverablePath = $document?->deliverableStoragePath($definition->artifactKind);
                 if ($deliverablePath === null || $deliverablePath === '') {
                     throw new InvalidArgumentException('Validated document has no deliverable storage path.');
@@ -171,11 +203,25 @@ class ValidateArtifactJob implements ShouldQueue
 
                 $hash = hash('sha256', $artifactContent);
 
-                DB::transaction(function () use ($recordKositValidation, $result, $document, $attachment, $hash): void {
-                    $validation = $recordKositValidation($result);
+                DB::transaction(function () use (
+                    $recordKositValidation,
+                    $recordVeraPdfValidation,
+                    $kositResult,
+                    $veraPdfResult,
+                    $document,
+                    $attachment,
+                    $hash,
+                ): void {
+                    $kositValidation = $recordKositValidation($kositResult);
 
                     if ($document !== null) {
-                        $document->kositValidations()->attach($validation->id);
+                        $document->kositValidations()->attach($kositValidation->id);
+
+                        if ($veraPdfResult instanceof VeraPdfResult) {
+                            $veraPdfValidation = $recordVeraPdfValidation($veraPdfResult);
+                            $document->veraPdfValidations()->attach($veraPdfValidation->id);
+                        }
+
                         $document->artifact_content_hash = $hash;
                         $document->gateway_status = EBillingAttachmentProcessingStatus::Validated;
                         $document->processed_at = now();
@@ -189,11 +235,25 @@ class ValidateArtifactJob implements ShouldQueue
             } else {
                 $failureMessage = $errorStrings !== [] ? implode('; ', $errorStrings) : 'Artifact validation failed';
 
-                DB::transaction(function () use ($recordKositValidation, $result, $attachment, $document, $failureMessage): void {
-                    $validation = $recordKositValidation($result);
+                DB::transaction(function () use (
+                    $recordKositValidation,
+                    $recordVeraPdfValidation,
+                    $kositResult,
+                    $veraPdfResult,
+                    $attachment,
+                    $document,
+                    $failureMessage,
+                ): void {
+                    $kositValidation = $recordKositValidation($kositResult);
 
                     if ($document !== null) {
-                        $document->kositValidations()->attach($validation->id);
+                        $document->kositValidations()->attach($kositValidation->id);
+
+                        if ($veraPdfResult instanceof VeraPdfResult) {
+                            $veraPdfValidation = $recordVeraPdfValidation($veraPdfResult);
+                            $document->veraPdfValidations()->attach($veraPdfValidation->id);
+                        }
+
                         $document->gateway_status = EBillingAttachmentProcessingStatus::ValidationFailed;
                         $document->save();
                     }

@@ -23,6 +23,7 @@ use Moox\EBilling\Formats\ArtifactKind;
 use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
+use Moox\VeraPdf\Models\VeraPdfValidation;
 
 /**
  * Temporary duplication: review/score methods below mirror legacy {@see Invoice}
@@ -145,6 +146,28 @@ class EbillingDocument extends BaseItemModel
         }
 
         return $this->kositValidations()->orderByDesc('validated_at')->orderByDesc('id')->first();
+    }
+
+    /**
+     * @return MorphToMany<VeraPdfValidation, $this>
+     */
+    public function veraPdfValidations(): MorphToMany
+    {
+        return $this->morphPivotRelation('verapdf_validatables');
+    }
+
+    public function latestVeraPdfValidation(): ?VeraPdfValidation
+    {
+        if ($this->relationLoaded('veraPdfValidations')) {
+            /** @var VeraPdfValidation|null $latest */
+            $latest = $this->veraPdfValidations
+                ->sortByDesc(fn (VeraPdfValidation $validation): string => ($validation->validated_at?->format('Y-m-d H:i:s.u') ?? '').':'.$validation->getKey())
+                ->first();
+
+            return $latest;
+        }
+
+        return $this->veraPdfValidations()->orderByDesc('validated_at')->orderByDesc('id')->first();
     }
 
     public function isDeliverable(): bool

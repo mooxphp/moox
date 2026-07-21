@@ -10,9 +10,9 @@ Glossary for the generic e-billing conversion pipeline (`packages/e-billing`). K
 - **Validation** — KOSIT/EN16931 conformance check. For pure XML it runs on the `.xml`; for a hybrid PDF it must run on the XML **as embedded in the PDF/A-3** plus PDF-conformance/XMP checks that only exist once the PDF is built.
 - **Format choice** — customer-selected (planned: customer portal). Makes format a per-customer/per-invoice input rather than a global setting. Motivates generating the chosen artifact *first*, then validating that artifact.
 
-## Current pipeline (generate-first, KOSIT-only slice)
+## Current pipeline (generate-first, dual validation for hybrids)
 
-`GenerateArtifactJob` (build chosen artifact — for ZUGFeRD: decrypt input PDF, merge unencrypted PDF/A-3 with embedded XML) → `ValidateArtifactJob` (KOSIT on the XML that will be delivered; SHA-256 hash on pass). See ADR `docs/adr/0001-generate-then-validate-per-format-artifacts.md`.
+`GenerateArtifactJob` (build chosen artifact — for ZUGFeRD: decrypt input PDF, merge unencrypted PDF/A-3 with embedded XML) → `ValidateArtifactJob` (KOSIT on the XML that will be delivered; + veraPDF on the PDF for hybrids when installed; SHA-256 hash on pass). When veraPDF is not installed, hybrid validation runs KOSIT-only (degraded mode). See ADR `docs/adr/0001-generate-then-validate-per-format-artifacts.md`.
 
 ## Proposed change
 
