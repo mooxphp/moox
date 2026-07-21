@@ -6,6 +6,7 @@ namespace Moox\Transform\Support\Execution;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Moox\Builder\Services\CustomFieldsManager;
 
 /**
  * Optional Builder custom-field support for transform destinations.
@@ -161,7 +162,7 @@ final class CustomFieldTransformSupport
 
     private static function canUseBuilderManager(): bool
     {
-        return class_exists(\Moox\Builder\Services\CustomFieldsManager::class);
+        return class_exists(CustomFieldsManager::class);
     }
 
     /**
@@ -169,7 +170,7 @@ final class CustomFieldTransformSupport
      */
     private static function persistViaBuilderManager(Model $destination, array $values, string $locale): void
     {
-        $manager = app(\Moox\Builder\Services\CustomFieldsManager::class);
+        $manager = app(CustomFieldsManager::class);
         $entity = self::resolveCustomFieldsEntity($destination);
         $fields = $manager->fieldsForEntity($entity)->keyBy('name');
         $payload = array_intersect_key($values, $fields->all());

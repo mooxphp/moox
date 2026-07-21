@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\Execution\CustomFieldTransformSupport;
 use Tests\TestCase;
 
@@ -43,7 +44,7 @@ test('it persists custom fields after the destination model is saved', function 
         ],
     ]);
 
-    $record = \Moox\Transform\Models\TransformRecord::query()->create([
+    $record = TransformRecord::query()->create([
         'transform_definition_id' => $definition->id,
         'source_projection' => [
             'legacy' => [
@@ -87,7 +88,7 @@ test('it skips empty custom field values so existing values are merged not wiped
     TransformCustomFieldDummyModel::query()->create(['title' => 'SKU-1']);
     TransformCustomFieldDummyModel::$lastPersistedCustomFields = ['material' => 'Stahl'];
 
-    $record = \Moox\Transform\Models\TransformRecord::query()->create([
+    $record = TransformRecord::query()->create([
         'transform_definition_id' => $definition->id,
         'source_projection' => [
             'legacy' => [
