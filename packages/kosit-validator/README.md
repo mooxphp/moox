@@ -100,7 +100,7 @@ $panel->plugins([
 
 ### Install safety
 
-`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config. ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config (mismatch aborts install with *no files installed*). ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 
@@ -122,7 +122,7 @@ $result = app(KositService::class)->validate('/path/to/invoice.xml', $reportDir)
 $validation = app(RecordKositValidation::class)($result);
 ```
 
-`KositService::validate()` re-verifies the on-disk validator JAR against `kosit-validator.validator.sha256` before spawning Java, then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
+`KositService::validate()` re-verifies the on-disk validator JAR against `kosit-validator.validator.sha256` before spawning Java (checksum mismatch aborts validation before the JAR runs), then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
 
 ### E-billing integration
 

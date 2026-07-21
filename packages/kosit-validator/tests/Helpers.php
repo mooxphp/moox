@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Process\PendingProcess;
+use Illuminate\Process\ProcessResult;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
@@ -85,7 +86,7 @@ function buildKositZipWithNullByteEntryAt(string $prefix): string
     $contentLen = strlen($content);
     $crc = crc32($content);
 
-    $localHeader = pack('V', 0x04034b50)
+    $localHeader = pack('V', 0x04034B50)
         .pack('v', 20)
         .pack('v', 0)
         .pack('v', 0)
@@ -100,7 +101,7 @@ function buildKositZipWithNullByteEntryAt(string $prefix): string
     $localRecord = $localHeader.$content;
     $localLen = strlen($localRecord);
 
-    $centralHeader = pack('V', 0x02014b50)
+    $centralHeader = pack('V', 0x02014B50)
         .pack('v', 20)
         .pack('v', 20)
         .pack('v', 0)
@@ -119,7 +120,7 @@ function buildKositZipWithNullByteEntryAt(string $prefix): string
 
     $centralLen = strlen($centralHeader);
 
-    $endOfCentral = pack('V', 0x06054b50)
+    $endOfCentral = pack('V', 0x06054B50)
         .pack('v', 0)
         .pack('v', 0)
         .pack('v', 1)
@@ -184,6 +185,22 @@ function fakeKositJavaProcess(): void
         errorOutput: 'openjdk version "17"',
         exitCode: 0,
     ));
+}
+
+function fakeKositJavaProcessRejectingJarExecution(): void
+{
+    Process::fake(function (PendingProcess $process): ProcessResult {
+        $command = $process->command;
+        if (is_array($command) && in_array('-jar', $command, true)) {
+            throw new RuntimeException('Validator JAR must not be executed');
+        }
+
+        return Process::result(
+            output: '',
+            errorOutput: 'openjdk version "17"',
+            exitCode: 0,
+        );
+    });
 }
 
 /**
