@@ -110,7 +110,7 @@ final class RelationTargetResolver
             $model = new $modelClass;
 
             try {
-                $query = $modelClass::query()->whereIn($model->getKeyName(), $missing);
+                $query = $this->scopedQuery($entity, $modelClass)->whereIn($model->getKeyName(), $missing);
 
                 if ($this->modelUsesTranslations($modelClass)) {
                     $query->with('translations');
