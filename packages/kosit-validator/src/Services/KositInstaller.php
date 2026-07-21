@@ -13,6 +13,7 @@ use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\RecursiveFileFinder;
 use Moox\KositValidator\Support\SafeZipExtractor;
+use Moox\KositValidator\Support\XrechnungBundlePath;
 use RuntimeException;
 
 /**
@@ -144,6 +145,10 @@ final class KositInstaller
 
         InstallerChecksum::assertValid($xrechnungZip, (string) config('kosit-validator.xrechnung.sha256'));
         SafeZipExtractor::extract($xrechnungZip, $stagingXrechnungDir);
+
+        if (! File::copy($xrechnungZip, $stagingXrechnungDir.'/'.XrechnungBundlePath::BUNDLE_FILENAME)) {
+            throw new RuntimeException('Failed to stage verified XRechnung configuration bundle.');
+        }
     }
 
     private function resolveStagedJar(string $unpackDir, string $expectedJarName): string

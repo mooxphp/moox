@@ -100,7 +100,7 @@ $panel->plugins([
 
 ### Install safety
 
-`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config (mismatch aborts install with *no files installed*). ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config (mismatch aborts install with *no files installed*). ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. The verified XRechnung ZIP is also stored as `{xrechnung_dir}/.xrechnung-bundle.zip` for runtime re-verification. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 
@@ -122,7 +122,18 @@ $result = app(KositService::class)->validate('/path/to/invoice.xml', $reportDir)
 $validation = app(RecordKositValidation::class)($result);
 ```
 
-`KositService::validate()` re-verifies the on-disk validator JAR against `kosit-validator.validator.sha256` before spawning Java (checksum mismatch aborts validation before the JAR runs), then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
+`KositService::validate()` re-verifies both pinned artefacts at the moment of use:
+
+1. **Validator JAR** — read once, SHA-256 checked in memory, written to a private temp file, then passed to `java -jar` (the JVM executes the hashed bytes, not a second read of the install path).
+2. **XRechnung configuration** — `.xrechnung-bundle.zip` under `{xrechnung_dir}` is checksum-verified, extracted to a private temp directory, and `-s` / `-r` point at that extract (tampering the on-disk extracted tree is ignored).
+
+Checksum mismatch or a missing bundle aborts validation before Java runs. Installs created before this bundle was stored must be refreshed with `php artisan kosit:install --force`.
+
+**Residual TOCTOU:** Runtime verification confirms the bytes used for execution match the pinned digest at the moment of use. It does not protect against a local attacker with write access to the storage path during the sub-millisecond window between hashing and the OS handing the temp file to the JVM — restrict filesystem permissions on the KoSIT storage path to the application user.
+
+On a typical developer machine, verifying and extracting the pinned test bundle averages well under 5 ms per run in package tests (see `KositServiceValidateIntegrityTest`); production bundles are larger but validation cost remains dominated by JVM startup (hundreds of ms to seconds).
+
+Then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} -h {xmlPath}` and returns `KositResult` with expected `{basename}-report.xml` / `.html` paths when files exist.
 
 ### E-billing integration
 

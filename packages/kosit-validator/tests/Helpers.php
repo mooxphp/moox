@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\Support\KositInstallPaths;
+use Moox\KositValidator\Support\XrechnungBundlePath;
 
 function kositTempPath(string $prefix): string
 {
@@ -165,15 +166,21 @@ function cleanupKositConfiguredPaths(string ...$configKeys): void
     }
 }
 
-function seedKositInstallLayout(?string $base = null): string
+function seedKositInstallLayout(?string $base = null, ?array $xrechnungBundle = null): string
 {
     $base ??= (string) config('kosit-validator.base_path');
     $paths = KositInstallPaths::fromBasePath($base);
+    $xrechnungBundle ??= buildBenignXrechnungZip();
 
     File::ensureDirectoryExists($paths->validatorDir);
     File::ensureDirectoryExists($paths->xrechnungDir);
     file_put_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
     file_put_contents($paths->xrechnungDir.'/scenarios.xml', '<scenarios/>');
+    file_put_contents(
+        $paths->xrechnungDir.'/'.XrechnungBundlePath::BUNDLE_FILENAME,
+        $xrechnungBundle['bytes'],
+    );
+    config(['kosit-validator.xrechnung.sha256' => $xrechnungBundle['sha256']]);
 
     return $base;
 }

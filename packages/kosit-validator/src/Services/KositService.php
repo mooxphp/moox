@@ -7,11 +7,13 @@ namespace Moox\KositValidator\Services;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\DTOs\KositResult;
-use Moox\KositValidator\Support\InstallerChecksum;
+use Moox\KositValidator\Support\JarExecutionGuard;
 use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositOutputPath;
 use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\RecursiveFileFinder;
+use Moox\KositValidator\Support\XrechnungBundlePath;
+use Moox\KositValidator\Support\XrechnungExecutionGuard;
 use RuntimeException;
 
 class KositService
@@ -71,20 +73,64 @@ class KositService
         File::ensureDirectoryExists($reportDir);
 
         $java = config('kosit-validator.java_binary', 'java');
-
         $jar = $this->jarPath();
+        $validatorSha256 = (string) config('kosit-validator.validator.sha256');
+        $xrechnungSha256 = (string) config('kosit-validator.xrechnung.sha256');
 
-        InstallerChecksum::assertValid(
+        return JarExecutionGuard::withVerifiedTempCopy(
             $jar,
-            (string) config('kosit-validator.validator.sha256'),
-            InstallerChecksum::CONTEXT_RUNTIME,
+            $validatorSha256,
+            fn (string $verifiedJar): KositResult => XrechnungExecutionGuard::withVerifiedExtractedDir(
+                $this->installPaths(),
+                $xrechnungSha256,
+                fn (string $scenariosPath, string $repositoryPath): KositResult => $this->runValidatorProcess(
+                    $java,
+                    $verifiedJar,
+                    $scenariosPath,
+                    $repositoryPath,
+                    $reportDir,
+                    $inputPath,
+                    $xmlPath,
+                ),
+            ),
         );
+    }
 
+    public function isInstalled(): bool
+    {
+        try {
+            $paths = $this->installPaths();
+            $this->jarPath();
+            $this->scenariosPath();
+
+            return is_file(XrechnungBundlePath::resolve($paths));
+        } catch (RuntimeException) {
+            return false;
+        }
+    }
+
+    public function javaAvailable(): bool
+    {
+        $java = config('kosit-validator.java_binary', 'java');
+        $result = Process::run([$java, '-version']);
+
+        return $result->successful();
+    }
+
+    private function runValidatorProcess(
+        string $java,
+        string $jar,
+        string $scenariosPath,
+        string $repositoryPath,
+        string $reportDir,
+        string $inputPath,
+        string $xmlPath,
+    ): KositResult {
         $result = Process::run([
             $java,
             '-jar', $jar,
-            '-s', $this->scenariosPath(),
-            '-r', $this->repositoryPath(),
+            '-s', $scenariosPath,
+            '-r', $repositoryPath,
             '-o', $reportDir,
             '-h',
             $inputPath,
@@ -102,26 +148,6 @@ class KositService
             reportHtmlPath: file_exists($reportHtml) ? $reportHtml : null,
             xmlPath: $inputPath,
         );
-    }
-
-    public function isInstalled(): bool
-    {
-        try {
-            $this->jarPath();
-            $this->scenariosPath();
-
-            return true;
-        } catch (RuntimeException) {
-            return false;
-        }
-    }
-
-    public function javaAvailable(): bool
-    {
-        $java = config('kosit-validator.java_binary', 'java');
-        $result = Process::run([$java, '-version']);
-
-        return $result->successful();
     }
 
     private function installPaths(): KositInstallPaths

@@ -125,7 +125,9 @@ test('install succeeds with verified downloads', function (): void {
 
     expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
         ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
-        ->and(is_file($paths->xrechnungDir.'/scenarios.xml'))->toBeTrue();
+        ->and(is_file($paths->xrechnungDir.'/scenarios.xml'))->toBeTrue()
+        ->and(is_file($paths->xrechnungDir.'/.xrechnung-bundle.zip'))->toBeTrue()
+        ->and(hash('sha256', (string) file_get_contents($paths->xrechnungDir.'/.xrechnung-bundle.zip')))->toBe($xrechnung['sha256']);
 
     File::delete($xrechnung['path']);
 });
