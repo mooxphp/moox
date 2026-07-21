@@ -7,14 +7,11 @@ namespace Moox\Contact\Resources;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Resources\Contact\Pages\CreateContact;
@@ -93,6 +90,18 @@ class ContactResource extends BaseRecordResource
                             TextInput::make('display_name')
                                 ->label(__('contact::fields.display_name'))
                                 ->rules(ContactRules::for('display_name'))
+                                ->maxLength(160),
+                            TextInput::make('salutation_code')
+                                ->label(__('contact::fields.salutation_code'))
+                                ->rules(ContactRules::for('salutation_code'))
+                                ->maxLength(30),
+                            TextInput::make('academic_title')
+                                ->label(__('contact::fields.academic_title'))
+                                ->rules(ContactRules::for('academic_title'))
+                                ->maxLength(80),
+                            TextInput::make('job_title')
+                                ->label(__('contact::fields.job_title'))
+                                ->rules(ContactRules::for('job_title'))
                                 ->maxLength(120),
                             Select::make('contact_type')
                                 ->label(__('contact::fields.contact_type'))
@@ -144,14 +153,12 @@ class ContactResource extends BaseRecordResource
                                         ->email()
                                         ->rules(ContactRules::for('email'))
                                         ->maxLength(120),
-                                    Toggle::make('is_system_user')
-                                        ->label(__('contact::fields.is_system_user')),
-                                ]),
-                            Section::make(__('contact::fields.settings'))
-                                ->schema([
-                                    Toggle::make('is_active')
-                                        ->label(__('contact::fields.is_active'))
-                                        ->default(true),
+                                    Select::make('language_id')
+                                        ->label(__('contact::fields.language_id'))
+                                        ->relationship('language', 'common_name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->rules(ContactRules::for('language_id')),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -213,9 +220,9 @@ class ContactResource extends BaseRecordResource
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
-                IconColumn::make('is_active')
-                    ->label(__('contact::fields.is_active'))
-                    ->boolean(),
+                TextColumn::make('job_title')
+                    ->label(__('contact::fields.job_title'))
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -234,7 +241,7 @@ class ContactResource extends BaseRecordResource
     }
 
     /**
-     * @return array<SelectFilter|TernaryFilter>
+     * @return array<SelectFilter>
      */
     protected static function getContactTableFilters(): array
     {
@@ -245,8 +252,6 @@ class ContactResource extends BaseRecordResource
             SelectFilter::make('contact_type')
                 ->label(__('contact::fields.contact_type'))
                 ->options(static::configOptions('contact.contact_types')),
-            TernaryFilter::make('is_active')
-                ->label(__('contact::fields.is_active')),
         ];
     }
 

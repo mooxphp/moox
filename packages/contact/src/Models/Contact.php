@@ -7,10 +7,12 @@ namespace Moox\Contact\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Contact\Database\Factories\ContactFactory;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Data\Models\StaticLanguage;
 
 /**
  * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany<Model, $this> companies()
@@ -41,15 +43,11 @@ class Contact extends BaseRecordModel
         'last_name',
         'display_name',
         'job_title',
-        'department',
         'email',
         'phone',
         'mobile',
         'language_id',
-        'user_id',
         'contact_type',
-        'is_active',
-        'is_system_user',
         'note',
         'external_reference',
         'data',
@@ -59,11 +57,8 @@ class Contact extends BaseRecordModel
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'is_system_user' => 'boolean',
             'data' => 'array',
             'language_id' => 'integer',
-            'user_id' => 'integer',
         ];
     }
 
@@ -75,6 +70,14 @@ class Contact extends BaseRecordModel
     public static function newFactory(): ContactFactory
     {
         return ContactFactory::new();
+    }
+
+    /**
+     * @return BelongsTo<StaticLanguage, $this>
+     */
+    public function language(): BelongsTo
+    {
+        return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
 
     public function displayLabel(): string

@@ -22,18 +22,14 @@ return new class extends Migration
             $table->string('last_name', 80)->nullable();
             $table->string('display_name', 160)->nullable()->index();
             $table->string('job_title', 120)->nullable();
-            $table->string('department', 120)->nullable();
 
             $table->string('email', 120)->nullable()->index();
             $table->string('phone', 30)->nullable();
             $table->string('mobile', 30)->nullable();
 
             $table->foreignId('language_id')->nullable()->constrained('static_languages')->nullOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('contact_type', 30)->default('external')->index();
-            $table->boolean('is_active')->default(true)->index();
-            $table->boolean('is_system_user')->default(false)->index();
             $table->text('note')->nullable();
 
             $table->string('external_reference', 100)->nullable()->index();
