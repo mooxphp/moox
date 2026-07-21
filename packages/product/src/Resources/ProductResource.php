@@ -19,6 +19,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\HasCustomFields;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
@@ -32,6 +33,7 @@ use Override;
 
 class ProductResource extends BaseDraftResource
 {
+    use HasCustomFields;
     use HasResourceRelations;
     use HasResourceTabs;
 
@@ -142,6 +144,7 @@ class ProductResource extends BaseDraftResource
                                 RichEditor::make('description')
                                     ->label(__('product::product.description'))
                                     ->columnSpanFull(),
+                                ...static::customFieldComponents(),
                                 KeyValue::make('custom_properties')
                                     ->label(__('product::product.custom_properties'))
                                     ->columnSpanFull(),
@@ -211,6 +214,7 @@ class ProductResource extends BaseDraftResource
                                             ->label(__('product::product.is_sellable'))
                                             ->default(true),
                                     ]),
+                                ...static::customFieldComponents('sidebar'),
 
                                 Section::make(__('product::product.section_seo'))
                                     ->schema([
@@ -303,6 +307,7 @@ class ProductResource extends BaseDraftResource
                     ->label(__('product::product.is_sellable'))
                     ->boolean()
                     ->toggleable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->label(__('product::product.custom_properties'))
                     ->formatStateUsing(function (mixed $state): string {
@@ -338,6 +343,7 @@ class ProductResource extends BaseDraftResource
                 SelectFilter::make('type')
                     ->label(__('product::product.type'))
                     ->options(config('product.types', [])),
+                ...static::customFieldFilters(),
             ])
             ->deferFilters(false)
             ->persistFiltersInSession();

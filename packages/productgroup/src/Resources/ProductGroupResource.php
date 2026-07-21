@@ -17,6 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\HasCustomFields;
 use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
@@ -30,6 +31,7 @@ use Override;
 
 class ProductGroupResource extends BaseDraftResource
 {
+    use HasCustomFields;
     use HasResourceRelations;
     use HasResourceTabs;
 
@@ -140,6 +142,7 @@ class ProductGroupResource extends BaseDraftResource
                                 RichEditor::make('description')
                                     ->label(__('productgroup::productgroup.description'))
                                     ->columnSpanFull(),
+                                ...static::customFieldComponents(),
                                 KeyValue::make('custom_properties')
                                     ->label(__('productgroup::productgroup.custom_properties'))
                                     ->columnSpanFull(),
@@ -177,6 +180,7 @@ class ProductGroupResource extends BaseDraftResource
                                             ->label(__('productgroup::productgroup.sku_prefix'))
                                             ->maxLength(64),
                                     ]),
+                                ...static::customFieldComponents('sidebar'),
 
                                 Section::make(__('productgroup::productgroup.section_seo'))
                                     ->schema([
@@ -236,6 +240,7 @@ class ProductGroupResource extends BaseDraftResource
                 TextColumn::make('sku_prefix')
                     ->label(__('productgroup::productgroup.sku_prefix'))
                     ->toggleable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->label(__('productgroup::productgroup.custom_properties'))
                     ->formatStateUsing(function (mixed $state): string {
@@ -271,6 +276,7 @@ class ProductGroupResource extends BaseDraftResource
                 SelectFilter::make('type')
                     ->label(__('productgroup::productgroup.type'))
                     ->options(config('productgroup.types', [])),
+                ...static::customFieldFilters(),
             ])
             ->deferFilters(false)
             ->persistFiltersInSession();

@@ -6,6 +6,7 @@ namespace Moox\Product\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Product\Database\Factories\ProductFactory;
 
@@ -36,6 +37,7 @@ class Product extends BaseDraftModel
 {
     use HasFactory;
     use HasModelTaxonomy;
+    use InteractsWithCustomFields;
 
     /**
      * {@inheritdoc}
