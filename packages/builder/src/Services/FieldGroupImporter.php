@@ -200,6 +200,11 @@ class FieldGroupImporter
                 $row->label = (string) ($translation['label'] ?? $field->label);
 
                 $config = $translation['config'] ?? null;
+
+                if (is_array($config) && $config !== []) {
+                    $config = $this->definitionTranslator->extractTranslatableConfig($config);
+                }
+
                 $row->config = is_array($config) && $config !== [] ? $config : null;
                 $field->saveTranslations();
             }

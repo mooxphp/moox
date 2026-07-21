@@ -100,7 +100,7 @@ final class DefinitionTranslator
             $translatedConfig = is_object($translation) ? ($translation->config ?? null) : null;
 
             if (is_array($translatedConfig) && $translatedConfig !== []) {
-                return array_merge($structuralConfig, $translatedConfig);
+                return array_merge($structuralConfig, $this->extractTranslatableConfig($translatedConfig));
             }
         }
 
@@ -143,7 +143,7 @@ final class DefinitionTranslator
             return $config;
         }
 
-        return array_merge($config, $translatedConfig);
+        return array_merge($config, $this->extractTranslatableConfig($translatedConfig));
     }
 
     /**

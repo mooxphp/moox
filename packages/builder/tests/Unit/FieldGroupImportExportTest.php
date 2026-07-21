@@ -11,6 +11,7 @@ use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Services\FieldGroupExporter;
 use Moox\Builder\Services\FieldGroupImporter;
 use Moox\Builder\Services\FieldGroupPersistence;
+use Moox\Builder\Support\DefinitionTranslator;
 use Moox\Builder\Support\FieldGroupExportSchema;
 use Moox\Builder\Tests\TestCase;
 
@@ -350,4 +351,110 @@ it('rejects invalid export payloads', function (): void {
         'version' => 1,
         'group' => [],
     ]))->toThrow(ValidationException::class);
+});
+
+it('strips structural keys from imported field translation config', function (): void {
+    config()->set('builder.default_locale', 'en_US');
+
+    $payload = [
+        'schema' => FieldGroupExportSchema::SCHEMA,
+        'version' => FieldGroupExportSchema::VERSION,
+        'exportedAt' => now()->toIso8601String(),
+        'group' => [
+            'name' => 'Text import',
+            'slug' => 'text-import',
+            'placement' => 'main',
+            'locationRules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+            'settings' => [],
+            'translations' => [],
+            'fields' => [
+                [
+                    'name' => 'headline',
+                    'label' => 'Headline',
+                    'type' => 'text',
+                    'sort' => 0,
+                    'config' => ['maxLength' => 120],
+                    'validation' => ['required' => false, 'rules' => []],
+                    'settings' => [],
+                    'options' => [],
+                    'children' => [],
+                    'translations' => [
+                        'de_CH' => [
+                            'label' => 'Überschrift',
+                            'config' => [
+                                'helperText' => 'Maximal 120 Zeichen',
+                                'placeholder' => 'Titel eingeben',
+                                'maxLength' => 9999,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'active' => true,
+            'sort' => 0,
+        ],
+    ];
+
+    $imported = app(FieldGroupImporter::class)->import($payload);
+    $field = $imported->fields()->where('name', 'headline')->firstOrFail();
+    $translation = $field->translate('de_CH');
+
+    expect($translation?->config)->toBe([
+        'helperText' => 'Maximal 120 Zeichen',
+        'placeholder' => 'Titel eingeben',
+    ])->and($field->config)->toMatchArray(['maxLength' => 120]);
+
+    $translatedConfig = app(DefinitionTranslator::class)
+        ->translatedFieldConfig($field, 'de_CH');
+
+    expect($translatedConfig)->toMatchArray([
+        'maxLength' => 120,
+        'helperText' => 'Maximal 120 Zeichen',
+        'placeholder' => 'Titel eingeben',
+    ]);
+});
+
+it('ignores structural keys in persisted translation config at read time', function (): void {
+    config()->set('builder.default_locale', 'en_US');
+
+    $group = FieldGroup::query()->create([
+        'name' => 'Text read',
+        'slug' => 'text-read',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    app(FieldGroupPersistence::class)->sync($group, [
+        'name' => 'Text read',
+        'slug' => 'text-read',
+        'active' => true,
+        'sort' => 0,
+        'target_entities' => ['item'],
+        'fields' => [
+            [
+                'name' => 'headline',
+                'label' => 'Headline',
+                'type' => 'text',
+                'required' => false,
+                'config' => ['maxLength' => 120],
+            ],
+        ],
+    ]);
+
+    $field = $group->fields()->where('name', 'headline')->firstOrFail();
+    $translation = $field->translate('de_CH') ?? $field->translations()->make(['locale' => 'de_CH']);
+    $translation->label = 'Überschrift';
+    $translation->config = [
+        'helperText' => 'Maximal 120 Zeichen',
+        'maxLength' => 9999,
+    ];
+    $translation->save();
+
+    $translatedConfig = app(DefinitionTranslator::class)
+        ->translatedFieldConfig($field->fresh(), 'de_CH');
+
+    expect($translatedConfig)->toMatchArray([
+        'maxLength' => 120,
+        'helperText' => 'Maximal 120 Zeichen',
+    ]);
 });
