@@ -22,6 +22,7 @@ use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
+use Moox\EBilling\Support\ArtifactValidationPersister;
 use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\KositValidator\Actions\RecordKositValidation;
@@ -61,6 +62,7 @@ class ValidateArtifactJob implements ShouldQueue
         RecordKositValidation $recordKositValidation,
         VeraPdfService $veraPdf,
         RecordVeraPdfValidation $recordVeraPdfValidation,
+        ArtifactValidationPersister $validationPersister,
         InboxMessagePipelineFinalizer $pipelineFinalizer,
     ): void {
         $this->setProgress(0);
@@ -190,6 +192,11 @@ class ValidateArtifactJob implements ShouldQueue
                 ($veraPdfResult !== null && ! $veraPdfPassed) ? $veraPdfResult->errors() : [],
             ));
 
+            $supplementalPersisters = $this->supplementalValidationPersisters(
+                $veraPdfResult,
+                $recordVeraPdfValidation,
+            );
+
             if ($passed) {
                 $deliverablePath = $document?->deliverableStoragePath($definition->artifactKind);
                 if ($deliverablePath === null || $deliverablePath === '') {
@@ -204,24 +211,22 @@ class ValidateArtifactJob implements ShouldQueue
                 $hash = hash('sha256', $artifactContent);
 
                 DB::transaction(function () use (
+                    $validationPersister,
                     $recordKositValidation,
-                    $recordVeraPdfValidation,
                     $kositResult,
-                    $veraPdfResult,
+                    $supplementalPersisters,
                     $document,
                     $attachment,
                     $hash,
                 ): void {
-                    $kositValidation = $recordKositValidation($kositResult);
+                    $validationPersister->persist(
+                        $document,
+                        $kositResult,
+                        $recordKositValidation,
+                        $supplementalPersisters,
+                    );
 
                     if ($document !== null) {
-                        $document->kositValidations()->attach($kositValidation->id);
-
-                        if ($veraPdfResult instanceof VeraPdfResult) {
-                            $veraPdfValidation = $recordVeraPdfValidation($veraPdfResult);
-                            $document->veraPdfValidations()->attach($veraPdfValidation->id);
-                        }
-
                         $document->artifact_content_hash = $hash;
                         $document->gateway_status = EBillingAttachmentProcessingStatus::Validated;
                         $document->processed_at = now();
@@ -236,24 +241,22 @@ class ValidateArtifactJob implements ShouldQueue
                 $failureMessage = $errorStrings !== [] ? implode('; ', $errorStrings) : 'Artifact validation failed';
 
                 DB::transaction(function () use (
+                    $validationPersister,
                     $recordKositValidation,
-                    $recordVeraPdfValidation,
                     $kositResult,
-                    $veraPdfResult,
+                    $supplementalPersisters,
                     $attachment,
                     $document,
                     $failureMessage,
                 ): void {
-                    $kositValidation = $recordKositValidation($kositResult);
+                    $validationPersister->persist(
+                        $document,
+                        $kositResult,
+                        $recordKositValidation,
+                        $supplementalPersisters,
+                    );
 
                     if ($document !== null) {
-                        $document->kositValidations()->attach($kositValidation->id);
-
-                        if ($veraPdfResult instanceof VeraPdfResult) {
-                            $veraPdfValidation = $recordVeraPdfValidation($veraPdfResult);
-                            $document->veraPdfValidations()->attach($veraPdfValidation->id);
-                        }
-
                         $document->gateway_status = EBillingAttachmentProcessingStatus::ValidationFailed;
                         $document->save();
                     }
@@ -274,6 +277,25 @@ class ValidateArtifactJob implements ShouldQueue
         $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
 
         $this->setProgress(100);
+    }
+
+    /**
+     * @return list<\Closure(EbillingDocument): void>
+     */
+    private function supplementalValidationPersisters(
+        mixed $veraPdfResult,
+        RecordVeraPdfValidation $recordVeraPdfValidation,
+    ): array {
+        if (! $veraPdfResult instanceof VeraPdfResult) {
+            return [];
+        }
+
+        return [
+            static function (EbillingDocument $document) use ($veraPdfResult, $recordVeraPdfValidation): void {
+                $veraPdfValidation = $recordVeraPdfValidation($veraPdfResult);
+                $document->veraPdfValidations()->attach($veraPdfValidation->id);
+            },
+        ];
     }
 
     public function failed(?Throwable $exception = null): void
