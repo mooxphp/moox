@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\ProductGroup\Database\Factories\ProductGroupFactory;
 
@@ -33,6 +34,7 @@ class ProductGroup extends BaseDraftModel
 {
     use HasFactory;
     use HasModelTaxonomy;
+    use InteractsWithCustomFields;
 
     /**
      * {@inheritdoc}
