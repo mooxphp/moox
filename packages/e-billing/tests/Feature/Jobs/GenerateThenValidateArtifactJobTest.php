@@ -78,8 +78,22 @@ function mockHybridXmlExtraction(): HybridArtifactGeneratorStrategyInterface
     app()->singleton(FormatRegistry::class, function () use ($strategy): FormatRegistry {
         $registry = new FormatRegistry;
         $registry->register(new FormatDefinition(
+            id: 'xrechnung',
+            label: 'XRechnung',
+            artifactKind: ArtifactKind::Xml,
+            profile: 'XRECHNUNG',
+            strategy: $strategy,
+        ));
+        $registry->register(new FormatDefinition(
             id: 'zugferd',
             label: 'ZUGFeRD',
+            artifactKind: ArtifactKind::Pdf,
+            profile: 'EN16931',
+            strategy: $strategy,
+        ));
+        $registry->register(new FormatDefinition(
+            id: 'factur-x',
+            label: 'Factur-X',
             artifactKind: ArtifactKind::Pdf,
             profile: 'EN16931',
             strategy: $strategy,
@@ -357,4 +371,51 @@ test('hybrid validation surfaces validator error on verapdf tooling failure', fu
 
     expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::ValidatorError)
         ->and($document->artifact_content_hash)->toBeNull();
+});
+
+// ─── XRechnung (XML-only) Test Seam ─────────────────────────────────
+
+test('xrechnung document validates with kosit only and reaches validated', function (): void {
+    $this->seedDocumentTypeAndUnitCodelists();
+
+    $billData = InvoiceFixtures::minimal(
+        documentType: 'Rechnung',
+        documentTypeCode: '380',
+    )->toArray();
+
+    $fixture = PipelineFixtures::validatingXmlDocument($billData);
+    $attachment = $fixture['attachment'];
+    $document = $fixture['document'];
+
+    expect($document->format)->toBe('xrechnung')
+        ->and($document->pdf_storage_path)->toBeNull();
+
+    Event::fake([ArtifactValidated::class, ArtifactValidationFailed::class]);
+
+    [$kosit] = mockKositOnlyValidation();
+    $kosit->shouldReceive('validate')
+        ->once()
+        ->andReturn(new KositResult(
+            exitCode: 0,
+            stdout: '',
+            stderr: '',
+            reportXmlPath: null,
+            reportHtmlPath: null,
+            xmlPath: '/tmp/validated.xml',
+        ));
+
+    runValidateArtifactJob($attachment->id);
+
+    $document->refresh();
+
+    $xmlContent = Storage::disk('zugferd')->get((string) $document->xml_storage_path);
+
+    expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::Validated)
+        ->and($document->artifact_content_hash)->toMatch('/^[a-f0-9]{64}$/')
+        ->and($document->artifact_content_hash)->toBe(hash('sha256', (string) $xmlContent))
+        ->and($document->latestKositValidation()?->passed)->toBeTrue()
+        ->and($document->latestVeraPdfValidation())->toBeNull();
+
+    Event::assertDispatched(ArtifactValidated::class);
+    Event::assertNotDispatched(ArtifactValidationFailed::class);
 });

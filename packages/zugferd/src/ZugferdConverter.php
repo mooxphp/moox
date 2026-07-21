@@ -25,9 +25,9 @@ class ZugferdConverter
         'XRECHNUNG' => ZugferdProfiles::PROFILE_XRECHNUNG_3,
     ];
 
-    public function convert(ZugferdInvoice $invoice): string
+    public function convert(ZugferdInvoice $invoice, ?string $profileKey = null): string
     {
-        $document = $this->buildDocument($invoice);
+        $document = $this->buildDocument($invoice, $profileKey);
 
         return $this->getContentSafely($document);
     }
@@ -128,9 +128,9 @@ class ZugferdConverter
         return $xml;
     }
 
-    private function buildDocument(ZugferdInvoice $invoice): ZugferdDocumentBuilder
+    private function buildDocument(ZugferdInvoice $invoice, ?string $profileKey = null): ZugferdDocumentBuilder
     {
-        $profileKey = config('zugferd.profile', 'EN16931');
+        $profileKey ??= (string) config('zugferd.profile', 'EN16931');
         $profile = self::PROFILE_MAP[$profileKey] ?? ZugferdProfiles::PROFILE_EN16931;
 
         $document = ZugferdDocumentBuilder::createNew($profile);

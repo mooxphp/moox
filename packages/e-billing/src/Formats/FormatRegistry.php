@@ -29,4 +29,23 @@ final class FormatRegistry
 
         return $this->formats[$formatId];
     }
+
+    /**
+     * @return array<string, FormatDefinition>
+     */
+    public function all(): array
+    {
+        return $this->formats;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function labels(): array
+    {
+        return array_map(
+            fn (FormatDefinition $d): string => $d->label,
+            $this->formats,
+        );
+    }
 }

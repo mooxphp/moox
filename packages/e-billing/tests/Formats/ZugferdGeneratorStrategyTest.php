@@ -16,8 +16,9 @@ test('zugferd strategy produces identical XML bytes to ZugferdConverter', functi
         documentTypeCode: '380',
     );
 
-    $expected = app(ZugferdConverter::class)->convert($invoice);
-    $actual = app(ZugferdGeneratorStrategy::class)->generateXml($invoice);
+    $definition = app(FormatRegistry::class)->get('zugferd');
+    $expected = app(ZugferdConverter::class)->convert($invoice, $definition->profile);
+    $actual = app(ZugferdGeneratorStrategy::class)->generateXml($invoice, $definition->profile);
 
     expect($actual)->toBe($expected)
         ->and($actual)->not->toBe('');
@@ -29,8 +30,22 @@ test('zugferd registry strategy produces identical XML bytes to ZugferdConverter
         documentTypeCode: '381',
     );
 
-    $expected = app(ZugferdConverter::class)->convert($invoice);
-    $actual = app(FormatRegistry::class)->get('zugferd')->strategy->generateXml($invoice);
+    $definition = app(FormatRegistry::class)->get('zugferd');
+    $expected = app(ZugferdConverter::class)->convert($invoice, $definition->profile);
+    $actual = $definition->strategy->generateXml($invoice, $definition->profile);
 
     expect($actual)->toBe($expected);
+});
+
+test('xrechnung strategy produces XML with XRECHNUNG profile', function (): void {
+    $invoice = InvoiceFixtures::minimal(
+        documentType: 'Rechnung',
+        documentTypeCode: '380',
+    );
+
+    $definition = app(FormatRegistry::class)->get('xrechnung');
+    $xml = $definition->strategy->generateXml($invoice, $definition->profile);
+
+    expect($xml)->not->toBe('')
+        ->and($definition->profile)->toBe('XRECHNUNG');
 });

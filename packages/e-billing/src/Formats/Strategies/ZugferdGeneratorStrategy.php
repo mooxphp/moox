@@ -14,9 +14,9 @@ final class ZugferdGeneratorStrategy implements HybridArtifactGeneratorStrategyI
         private ZugferdConverter $converter,
     ) {}
 
-    public function generateXml(ZugferdInvoice $invoice): string
+    public function generateXml(ZugferdInvoice $invoice, string $profile): string
     {
-        return $this->converter->convert($invoice);
+        return $this->converter->convert($invoice, $profile);
     }
 
     public function mergeXmlIntoPdf(string $xml, string $sourcePdfPath): string

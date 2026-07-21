@@ -70,6 +70,35 @@ final class PipelineFixtures
     }
 
     /**
+     * XRechnung (XML-only) document in `validating` state with xml_storage_path set
+     * and pdf_storage_path null.
+     *
+     * @param  array<string, mixed>  $billData
+     * @return array{message: InboxMessage, attachment: InboxAttachment, document: EbillingDocument}
+     */
+    public static function validatingXmlDocument(array $billData, string $scope = 'test'): array
+    {
+        $fixture = self::hybridPipelineAttachment($billData, $scope);
+
+        $xmlPath = 'test/invoice.xml';
+
+        Storage::disk('zugferd')->put($xmlPath, '<?xml version="1.0"?><invoice/>');
+
+        $document = $fixture['document'];
+        $document->update([
+            'format' => 'xrechnung',
+            'gateway_status' => EBillingAttachmentProcessingStatus::Validating,
+            'storage_disk' => 'zugferd',
+            'xml_storage_path' => $xmlPath,
+            'pdf_storage_path' => null,
+        ]);
+
+        $fixture['document'] = $document->fresh();
+
+        return $fixture;
+    }
+
+    /**
      * Hybrid document already in `validating` with artifact paths on the zugferd disk.
      * Use with a mocked {@see ZugferdConverter} when tests target
      * {@see ValidateArtifactJob} without running generation.
