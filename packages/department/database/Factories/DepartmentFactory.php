@@ -26,7 +26,6 @@ class DepartmentFactory extends Factory
             'name' => $name,
             'code' => strtoupper(fake()->unique()->bothify('DEP-###')),
             'description' => fake()->optional(0.4)->sentence(),
-            'is_active' => true,
             'external_reference' => fake()->optional(0.3)->uuid(),
             'data' => null,
         ];
@@ -42,7 +41,6 @@ class DepartmentFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
-            'is_active' => false,
             'status' => 'inactive',
         ]);
     }

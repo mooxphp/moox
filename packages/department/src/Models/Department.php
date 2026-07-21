@@ -34,7 +34,6 @@ class Department extends BaseRecordModel
         'name',
         'code',
         'description',
-        'is_active',
         'external_reference',
         'data',
     ];
@@ -43,7 +42,6 @@ class Department extends BaseRecordModel
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
             'data' => 'array',
         ];
     }
