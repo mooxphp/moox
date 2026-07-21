@@ -1,8 +1,9 @@
 @php
     $document = $invoice->ebillingDocument;
     $source = $document?->source;
-    $hasZugferdDownload = filled($document?->pdf_storage_path) || filled($source?->zugferd_storage_path);
-    $hasXmlDownload = filled($document?->xml_storage_path) || filled($source?->xml_storage_path);
+    $deliverable = $document?->isDeliverable() ?? false;
+    $hasZugferdDownload = $deliverable && filled($document?->pdf_storage_path);
+    $hasXmlDownload = $deliverable && filled($document?->xml_storage_path);
 @endphp
 <div
     class="flex min-h-64 h-full flex-col rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">

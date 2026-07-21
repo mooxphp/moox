@@ -130,7 +130,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             Log::warning('FilterForeignInvoiceJob: bill_data missing on ebilling document', [
                 'attachment_id' => $attachment->id,
             ]);
-            $this->dispatchGenerateXml($attachment);
+            $this->dispatchGenerateArtifact($attachment);
             $this->setProgress(100);
 
             return;
@@ -140,7 +140,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             Log::warning('[EBilling] FilterForeignInvoiceJob: empty parsed invoice; continuing pipeline', [
                 'inbox_attachment_id' => $attachment->id,
             ]);
-            $this->dispatchGenerateXml($attachment);
+            $this->dispatchGenerateArtifact($attachment);
             $this->setProgress(100);
 
             return;
@@ -150,7 +150,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $classification = $this->classifyInvoiceOrigin($billData);
         if (! $classification['is_foreign']) {
-            $this->dispatchGenerateXml($attachment);
+            $this->dispatchGenerateArtifact($attachment);
             $this->setProgress(100);
 
             return;
@@ -296,7 +296,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         return (float) $value;
     }
 
-    private function dispatchGenerateXml(InboxAttachment $attachment): void
+    private function dispatchGenerateArtifact(InboxAttachment $attachment): void
     {
         $document = EbillingDocument::forSourceAttachment($attachment);
         $billData = $document?->bill_data;
@@ -310,17 +310,17 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         }
 
         if ($document === null) {
-            Log::warning('[EBilling] FilterForeignInvoiceJob: no ebilling document for xml_generating promotion', [
+            Log::warning('[EBilling] FilterForeignInvoiceJob: no ebilling document for generating promotion', [
                 'inbox_attachment_id' => $attachment->id,
             ]);
 
             return;
         }
 
-        $document->gateway_status = EBillingAttachmentProcessingStatus::XmlGenerating;
+        $document->gateway_status = EBillingAttachmentProcessingStatus::Generating;
         $document->save();
 
-        GenerateXmlJob::dispatch($attachment->id);
+        GenerateArtifactJob::dispatch($attachment->id);
     }
 
     /**
@@ -379,9 +379,8 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         $gatewayStatus = EbillingDocument::forSourceAttachment($attachment)?->gateway_status;
 
         return in_array($gatewayStatus, [
-            EBillingAttachmentProcessingStatus::XmlGenerating,
-            EBillingAttachmentProcessingStatus::XmlValidated,
-            EBillingAttachmentProcessingStatus::ZugferdPdfGenerating,
+            EBillingAttachmentProcessingStatus::Generating,
+            EBillingAttachmentProcessingStatus::Validating,
         ], true);
     }
 
@@ -392,10 +391,9 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         }
 
         return in_array(EbillingDocument::forSourceAttachment($attachment)?->gateway_status, [
-            EBillingAttachmentProcessingStatus::XmlGenerationFailed,
-            EBillingAttachmentProcessingStatus::XmlValidationFailed,
-            EBillingAttachmentProcessingStatus::KositError,
-            EBillingAttachmentProcessingStatus::ZugferdPdfFailed,
+            EBillingAttachmentProcessingStatus::GenerationFailed,
+            EBillingAttachmentProcessingStatus::ValidationFailed,
+            EBillingAttachmentProcessingStatus::ValidatorError,
         ], true);
     }
 

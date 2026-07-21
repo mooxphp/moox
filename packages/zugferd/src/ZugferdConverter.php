@@ -6,6 +6,7 @@ namespace Moox\Zugferd;
 
 use horstoeko\zugferd\ZugferdDocumentBuilder;
 use horstoeko\zugferd\ZugferdDocumentPdfMerger;
+use horstoeko\zugferd\ZugferdDocumentPdfReader;
 use horstoeko\zugferd\ZugferdProfiles;
 use Illuminate\Support\Str;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -60,7 +61,6 @@ class ZugferdConverter
         $uid = Str::uuid()->toString();
         $decryptedPath = "{$tempDir}/{$uid}_decrypted.pdf";
         $mergedPath = "{$tempDir}/{$uid}_merged.pdf";
-        $encryptedPath = "{$tempDir}/{$uid}_encrypted.pdf";
         $passwordRaw = config('mail-inbox.zugferd.pdf_password');
         $password = is_string($passwordRaw) && $passwordRaw !== '' ? $passwordRaw : null;
 
@@ -88,41 +88,19 @@ class ZugferdConverter
                 throw new \RuntimeException('Failed to read generated ZUGFeRD PDF from temp file.');
             }
 
-            if ($password !== null && is_file($mergedPath)) {
-                $encryptCmd = [
-                    'qpdf',
-                    '--encrypt',
-                    '',
-                    $password,
-                    '128',
-                    '--print=full',
-                    '--modify=none',
-                    '--',
-                    $mergedPath,
-                    $encryptedPath,
-                ];
-
-                $encryptProcess = new Process($encryptCmd);
-                $encryptProcess->run();
-
-                if ($encryptProcess->isSuccessful() && is_file($encryptedPath)) {
-                    $encryptedContent = file_get_contents($encryptedPath);
-                    if ($encryptedContent === false) {
-                        throw new \RuntimeException('Failed to read re-encrypted ZUGFeRD PDF from temp file.');
-                    }
-
-                    return $encryptedContent;
-                }
-            }
-
             return $mergedContent;
         } finally {
-            foreach ([$decryptedPath, $mergedPath, $encryptedPath] as $tmp) {
+            foreach ([$decryptedPath, $mergedPath] as $tmp) {
                 if (is_file($tmp)) {
                     @unlink($tmp);
                 }
             }
         }
+    }
+
+    public function extractXmlFromPdf(string $absolutePdfPath): string
+    {
+        return ZugferdDocumentPdfReader::getXmlFromFile($absolutePdfPath);
     }
 
     private function getContentSafely(ZugferdDocumentBuilder $document): string

@@ -2,15 +2,15 @@
 
 # Moox EBilling
 
-Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through XML generation, KoSIT validation, and ZUGFeRD PDF merge, with a Filament review UI for operators.
+Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through artifact generation, KoSIT validation of the produced deliverable, with a Filament review UI for operators.
 
 ## Features
 
 <!--features-->
 
-- PDF-to-invoice pipeline orchestration (mail-inbox handoff through ZUGFeRD merge)
-- EN 16931 / ZUGFeRD XML preparation via `moox/zugferd`
-- KoSIT validation integration via `moox/kosit-validator`
+- PDF-to-invoice pipeline orchestration (mail-inbox handoff through validated artifact)
+- EN 16931 / ZUGFeRD artifact generation via `moox/zugferd` (hybrid PDF built before validation)
+- KoSIT validation integration via `moox/kosit-validator` (XML from loose file or embedded in hybrid PDF)
 - Foreign-invoice filtering (non-domestic invoices moved to an ignored mailbox folder)
 - MoSCoW field validation and validation scoring on `EbillingDocument`
 - Filament `InvoiceResource` for list, filter, and manual review workflows
@@ -28,10 +28,9 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are moved to the ignored Graph folder and marked `IgnoredForeign`; domestic invoices advance to XML generation. |
-| 4 | `GenerateXmlJob` | Maps `bill_data` to a persisted `Invoice`, generates EN 16931 XML, runs field validation, and dispatches `ValidateXmlJob`. |
-| 5 | `ValidateXmlJob` | Runs KoSIT validation on the XML; on pass, dispatches `MergeZugferdPdfJob`. |
-| 6 | `MergeZugferdPdfJob` | Embeds validated XML into the source PDF and stores the ZUGFeRD artefact. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are moved to the ignored Graph folder and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
+| 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
+| 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF); on pass, stores a SHA-256 hash of the deliverable and marks the document `Validated`. |
 
 There is no `HandleFailedJob`. Failure handling uses each job's `failed()` method plus `InboxMessagePipelineFinalizer` to update attachment and message status.
 
@@ -98,7 +97,7 @@ EBILLING_IGNORED_FOLDER=Ignored
 
 ### Supplier block
 
-Override `supplier` in your published `config/e-billing.php` with your company details (name, VAT ID, address, bank accounts). Values are snapshotted onto each `Invoice` when `GenerateXmlJob` creates the record.
+Override `supplier` in your published `config/e-billing.php` with your company details (name, VAT ID, address, bank accounts). Values are snapshotted onto each `Invoice` when `GenerateArtifactJob` creates the record.
 
 ### `default_customer_country`
 
@@ -146,13 +145,13 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `storage_disk` | `string` | nullable | Filesystem disk name for e-billing artefacts |
 | `pdf_storage_path` | `string` | nullable | Relative path to merged hybrid PDF (ZUGFeRD/Factur-X) |
 | `format` | `string` | NOT NULL | Frozen format id at generation; default `zugferd` |
-| `artifact_content_hash` | `string` | nullable | SHA-256 of validated artifact (populated later) |
+| `artifact_content_hash` | `string` | nullable | SHA-256 of validated deliverable (set on KOSIT pass) |
 | `ignored_reason` | `json` | nullable | Foreign-invoice classification details |
-| `gateway_status` | `string` | nullable | Pipeline stage (indexed) |
+| `gateway_status` | `string` | nullable | Format-agnostic pipeline stage: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign` (indexed) |
 | `review_status` | `string` | NOT NULL | Review stage; default `parser_created` (indexed) |
 | `validation_score` | `unsignedTinyInteger` | nullable | Aggregated field-validation score |
 | `field_validations` | `json` | nullable | Per-field validation results |
-| `processed_at` | `timestamp` | nullable | Set when ZUGFeRD PDF merge completes |
+| `processed_at` | `timestamp` | nullable | Set when validation passes |
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
@@ -192,7 +191,7 @@ This package owns:
 - **The Filament review UI** — read-only `InvoiceResource`
 - **`Invoice::ebillingDocument()`** — registered via `resolveRelationUsing` in `EBillingServiceProvider`
 
-`GenerateXmlJob` creates and updates `Invoice` records through `moox/invoice`; this package orchestrates that step but does not define the invoice schema.
+`GenerateArtifactJob` creates and updates `Invoice` records through `moox/invoice`; this package orchestrates that step but does not define the invoice schema.
 
 ## Changelog
 

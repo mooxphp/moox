@@ -10,7 +10,8 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 
 - `ZugferdConverter::convert()` — XML string from any `ZugferdInvoice` implementor
 - `convertToFile()` — writes `{output_path}/{invoiceNumber}.xml`
-- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt/re-encrypt
+- `mergePdfWithXml()` — PDF/A-3 binary with embedded XML; optional `qpdf` decrypt (output is unencrypted)
+- `extractXmlFromPdf()` — read embedded XML from a hybrid PDF for validation
 - Contract interfaces for invoices, lines, addresses, bank accounts, and allowance/charges
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
 - Configurable profile: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (default)
@@ -20,7 +21,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 ## Responsibility Boundaries
 
 - `moox/zugferd` owns XML generation and PDF/A-3 embedding from `ZugferdInvoice` contracts.
-- `moox/e-billing` orchestrates the pipeline and adapts `moox/invoice` models via `ZugferdInvoiceAdapter` (`GenerateXmlJob`, `MergeZugferdPdfJob`).
+- `moox/e-billing` orchestrates the pipeline and adapts `moox/invoice` models via `ZugferdInvoiceAdapter` (`GenerateArtifactJob`).
 - `moox/kosit-validator` validates XML produced here; validation does not live in this package.
 - `moox/pdf-parser` extracts PDF text upstream; this package does not parse PDF text.
 - **Composer does not require `moox/e-billing`** — only `moox/core` and `horstoeko/zugferd`. E-billing is an optional peer at runtime.
@@ -31,7 +32,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 |----------------|---------|
 | `moox/core` | Moox service provider |
 | `horstoeko/zugferd` | Document builder and PDF merger |
-| `qpdf` (optional) | Decrypt/re-encrypt PDFs when `mail-inbox.zugferd.pdf_password` is set |
+| `qpdf` (optional) | Decrypt input PDFs when `mail-inbox.zugferd.pdf_password` is set |
 | Invoice DTO implementor | e.g. `Moox\EBilling\Adapters\ZugferdInvoiceAdapter` or test fixtures |
 
 See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
@@ -83,7 +84,7 @@ use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 $xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceModel));
 ```
 
-`GenerateXmlJob` calls the e-billing gateway, which delegates to `ZugferdConverter` with this adapter.
+`GenerateArtifactJob` calls the e-billing gateway, which delegates to `ZugferdConverter` with this adapter.
 
 ### Write XML to disk
 
@@ -98,9 +99,9 @@ $path = app(ZugferdConverter::class)->convertToFile($invoice);
 $pdfBinary = app(ZugferdConverter::class)->mergePdfWithXml('/path/to/invoice.pdf', $xml);
 ```
 
-`MergeZugferdPdfJob` uses this after a passed KoSIT validation.
+`GenerateArtifactJob` uses this during hybrid artifact generation (before KOSIT validation).
 
-**Password-protected PDFs:** reads `config('mail-inbox.zugferd.pdf_password')`. When set, runs `qpdf --decrypt` before merge and `qpdf --encrypt` afterward (falls back to unencrypted merge/decrypt on failure).
+**Password-protected PDFs:** reads `config('mail-inbox.zugferd.pdf_password')`. When set, runs `qpdf --decrypt` before merge. The merged deliverable is **not** re-encrypted (PDF/A-3 requirement).
 
 ## Contract interfaces
 
@@ -146,7 +147,8 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 |--------|---------|-------------|
 | `convert(ZugferdInvoice $invoice): string` | XML string | Builds horstoeko document; `getContentSafely()` mitigates stream-resource warnings |
 | `convertToFile(ZugferdInvoice $invoice, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
-| `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge → optional re-encrypt |
+| `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output) |
+| `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
 ### Profile map
 
@@ -178,7 +180,7 @@ Runtime profile: `config('zugferd.profile')` (default `XRECHNUNG`). This package
 | Class | When |
 |-------|------|
 | `Moox\Zugferd\Exceptions\IncompleteInvoiceException` | Missing supplier/customer address, supplier email, or valid bank accounts |
-| `\RuntimeException` | Failed to read merged or re-encrypted temp PDF |
+| `\RuntimeException` | Failed to read merged temp PDF |
 
 ## Configuration
 
@@ -205,7 +207,7 @@ Feature tests cover allowance/charges, address lines, payment means codes, and `
 
 ## See also
 
-- [Moox EBilling](../e-billing/README.md) — `ZugferdInvoiceAdapter`, `GenerateXmlJob`, `MergeZugferdPdfJob`
+- [Moox EBilling](../e-billing/README.md) — `ZugferdInvoiceAdapter`, `GenerateArtifactJob`
 - [Moox KositValidator](../kosit-validator/README.md) — validates generated XML
 - [Moox PdfParser](../pdf-parser/README.md) — upstream PDF text extraction
 - [Moox documentation](https://moox.org/docs/zugferd)

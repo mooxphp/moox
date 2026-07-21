@@ -11,10 +11,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use LogicException;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Data\Invoice as InvoiceDto;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
-use Moox\EBilling\Events\XmlGenerated;
+use Moox\EBilling\Events\ArtifactGenerated;
+use Moox\EBilling\Formats\ArtifactKind;
+use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
@@ -26,7 +29,7 @@ use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Models\InboxAttachment;
 use Throwable;
 
-class GenerateXmlJob implements ShouldQueue
+class GenerateArtifactJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -57,7 +60,7 @@ class GenerateXmlJob implements ShouldQueue
         $attachment = InboxAttachment::query()->find($this->inboxAttachmentId);
 
         if ($attachment === null) {
-            Log::warning('[EBilling] GenerateXmlJob: attachment not found', [
+            Log::warning('[EBilling] GenerateArtifactJob: attachment not found', [
                 'inbox_attachment_id' => $this->inboxAttachmentId,
             ]);
             $this->setProgress(100);
@@ -67,9 +70,17 @@ class GenerateXmlJob implements ShouldQueue
 
         $document = EbillingDocument::forSourceAttachment($attachment);
 
+        $retryableStatuses = [
+            EBillingAttachmentProcessingStatus::Generating,
+            EBillingAttachmentProcessingStatus::GenerationFailed,
+            EBillingAttachmentProcessingStatus::Validating,
+            EBillingAttachmentProcessingStatus::ValidationFailed,
+            EBillingAttachmentProcessingStatus::ValidatorError,
+        ];
+
         $canRun = $attachment->isPdf() && (
             $attachment->processing_status === InboxAttachmentProcessingStatus::Processing->value
-            || $document?->gateway_status === EBillingAttachmentProcessingStatus::XmlGenerating
+            || in_array($document?->gateway_status, $retryableStatuses, true)
         );
 
         if (! $canRun) {
@@ -78,12 +89,16 @@ class GenerateXmlJob implements ShouldQueue
             return;
         }
 
-        $this->setProgress(15);
+        $this->setProgress(10);
+
+        if ($document !== null) {
+            $document->gateway_status = EBillingAttachmentProcessingStatus::Generating;
+            $document->save();
+        }
+
         $billData = $document?->bill_data;
-        if (is_array($billData) && $billData !== []) {
-            $dto = InvoiceDto::fromArray($billData);
-        } else {
-            Log::error('GenerateXmlJob: bill_data missing, cannot generate XML without parsed data', [
+        if (! is_array($billData) || $billData === []) {
+            Log::error('GenerateArtifactJob: bill_data missing, cannot generate artifact without parsed data', [
                 'attachment_id' => $attachment->id,
             ]);
             $this->setProgress(100);
@@ -91,17 +106,18 @@ class GenerateXmlJob implements ShouldQueue
             return;
         }
 
-        $this->setProgress(30);
+        $this->setProgress(25);
 
+        $dto = InvoiceDto::fromArray($billData);
         $invoice = $parsedInvoiceMapper->createFromDto($dto, $attachment);
 
-        $this->setProgress(45);
+        $this->setProgress(40);
 
-        $formatId = (string) config('e-billing.default_format', 'zugferd');
-        $xml = $formatRegistry
-            ->get($formatId)
-            ->strategy
-            ->generateXml(new ZugferdInvoiceAdapter($invoice));
+        $formatId = is_string($document?->format) && $document->format !== ''
+            ? $document->format
+            : (string) config('e-billing.default_format', 'zugferd');
+        $definition = $formatRegistry->get($formatId);
+        $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice));
 
         $diskName = (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $relativeDir = $attachment->scope.'/'.EBillingArtifactNaming::invoiceDatePathSegment($invoice->invoice_date);
@@ -120,16 +136,41 @@ class GenerateXmlJob implements ShouldQueue
 
         Storage::disk($diskName)->put($relativeXmlPath, $xml);
 
-        $this->setProgress(70);
+        $this->setProgress(60);
+
+        $relativePdfPath = null;
+
+        if ($definition->artifactKind === ArtifactKind::Pdf) {
+            $strategy = $definition->strategy;
+            if (! $strategy instanceof HybridArtifactGeneratorStrategyInterface) {
+                throw new LogicException("Format [{$formatId}] declares a PDF artifact but its strategy does not implement HybridArtifactGeneratorStrategyInterface.");
+            }
+
+            $pdfBinary = $strategy->mergeXmlIntoPdf($xml, $attachment->fullPath());
+            $basename = pathinfo($relativeXmlPath, PATHINFO_FILENAME);
+            $dir = pathinfo($relativeXmlPath, PATHINFO_DIRNAME);
+            $existingPdfPath = $document?->pdf_storage_path;
+            if (is_string($existingPdfPath) && $existingPdfPath !== '') {
+                $relativePdfPath = $existingPdfPath;
+            } else {
+                $relativePdfPath = $dir.'/'.$basename.'.pdf';
+            }
+
+            Storage::disk($diskName)->put($relativePdfPath, $pdfBinary);
+        }
+
+        $this->setProgress(80);
 
         $billDataArray = $dto->toArray();
 
         if ($document !== null) {
             $document->format = $formatId;
-            $document->storage_disk = null;
-            $document->pdf_storage_path = null;
+            $document->storage_disk = $diskName;
             $document->xml_storage_path = $relativeXmlPath;
+            $document->pdf_storage_path = $relativePdfPath;
             $document->bill_data = $billDataArray;
+            $document->artifact_content_hash = null;
+            $document->gateway_status = EBillingAttachmentProcessingStatus::Validating;
             $document->save();
         }
 
@@ -140,9 +181,9 @@ class GenerateXmlJob implements ShouldQueue
 
         $this->setProgress(90);
 
-        event(new XmlGenerated($attachment->id));
+        event(new ArtifactGenerated($attachment->id, $formatId));
 
-        ValidateXmlJob::dispatch($attachment->id);
+        ValidateArtifactJob::dispatch($attachment->id);
 
         $this->setProgress(100);
     }
@@ -158,16 +199,16 @@ class GenerateXmlJob implements ShouldQueue
         $document = EbillingDocument::forSourceAttachment($attachment);
 
         if ($document !== null) {
-            $document->gateway_status = EBillingAttachmentProcessingStatus::XmlGenerationFailed;
+            $document->gateway_status = EBillingAttachmentProcessingStatus::GenerationFailed;
             $document->save();
         }
 
-        $attachment->markAsFailed($exception?->getMessage() ?? 'GenerateXmlJob failed');
+        $attachment->markAsFailed($exception?->getMessage() ?? 'GenerateArtifactJob failed');
 
         try {
             app(InboxMessagePipelineFinalizer::class)->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
         } catch (Throwable $e) {
-            Log::error('[EBilling] GenerateXmlJob failed() finalizer error', [
+            Log::error('[EBilling] GenerateArtifactJob failed() finalizer error', [
                 'exception' => $e,
                 'inbox_attachment_id' => $attachment->id,
             ]);

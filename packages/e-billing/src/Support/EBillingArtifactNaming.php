@@ -53,10 +53,9 @@ final class EBillingArtifactNaming
      * .xml or .pdf exists for a candidate, the candidate is skipped and the
      * next numeric suffix is tried.
      *
-     * Call this exactly once per attachment, in GenerateXmlJob, when no
-     * existing storage path is set on the attachment yet. Subsequent jobs
-     * (MergeZugferdPdfJob, etc.) derive their basename from the attachment's
-     * already-stored xml_storage_path, not by calling this again.
+     * Call this exactly once per attachment, in GenerateArtifactJob, when no
+     * existing storage path is set on the document yet. Subsequent retries
+     * reuse the stored xml_storage_path and pdf_storage_path.
      */
     public static function uniqueBasenameFor(
         InboxAttachment $attachment,

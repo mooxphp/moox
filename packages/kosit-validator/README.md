@@ -22,7 +22,7 @@ KoSIT Validator CLI wrapper for ZUGFeRD / XRechnung XML validation against EN 16
 ## Responsibility Boundaries
 
 - `moox/kosit-validator` owns KoSIT installation, XML validation, report output paths, and validation audit persistence.
-- `moox/e-billing` is the typical orchestrator: `ValidateXmlJob` calls `KositService`, records results via `RecordKositValidation`, and links them to the `EbillingDocument` through `kositValidations()->attach()` on the `kosit_validatables` morph pivot — not via a `kosit_validation_id` column on attachments or documents.
+- `moox/e-billing` is the typical orchestrator: `ValidateArtifactJob` calls `KositService`, records results via `RecordKositValidation`, and links them to the `EbillingDocument` through `kositValidations()->attach()` on the `kosit_validatables` morph pivot — not via a `kosit_validation_id` column on attachments or documents.
 - `moox/zugferd` produces XML that this package validates; validation does not live in `moox/zugferd`.
 - Owner packages (`EbillingDocument`, etc.) are external; register allowed types under `kosit-validator.relations.kosit_validatables.owner_types` to enable Filament pivot management.
 
@@ -137,13 +137,14 @@ Then runs `{java_binary} -jar … -s scenarios.xml -r repository -o {reportDir} 
 
 ### E-billing integration
 
-In `moox/e-billing`, `ValidateXmlJob`:
+In `moox/e-billing`, `ValidateArtifactJob`:
 
 1. Resolves `KositOutputPath::resolve($dateSegment)`
-2. Calls `KositService::validate($xmlPath, $reportDir)`
-3. Persists via `RecordKositValidation`
-4. Links the validation to the `EbillingDocument` via `kositValidations()->attach()` on the `kosit_validatables` morph pivot (no `kosit_validation_id` column on inbox attachments or documents)
-5. Dispatches `MergeZugferdPdfJob` on success
+2. Extracts XML from the hybrid PDF when validating ZUGFeRD (otherwise validates the loose XML file)
+3. Calls `KositService::validate($xmlPath, $reportDir)`
+4. Persists via `RecordKositValidation`
+5. Links the validation to the `EbillingDocument` via `kositValidations()->attach()` on the `kosit_validatables` morph pivot (no `kosit_validation_id` column on inbox attachments or documents)
+6. Stores `artifact_content_hash` (SHA-256 of the deliverable) and marks `gateway_status = validated` on success
 
 `RecordKositValidation` does **not** create `kosit_validatables` rows. For morph history, configure `owner_types` and link from the owner model (`morphPivotRelation('kosit_validatables')`) or e-billing's `morph_relations.kosit_validatables`.
 
@@ -315,7 +316,7 @@ php vendor/bin/pest --configuration=packages/kosit-validator/phpunit.xml package
 
 ## See also
 
-- [Moox EBilling](../e-billing/README.md) — pipeline orchestrator (`ValidateXmlJob`)
+- [Moox EBilling](../e-billing/README.md) — pipeline orchestrator (`ValidateArtifactJob`)
 - [Moox Zugferd](../zugferd/README.md) — XML generation validated here
 - [Moox documentation](https://moox.org/docs/kosit-validator)
 - [Architecture](docs/ARCHITECTURE.md)

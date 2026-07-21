@@ -19,6 +19,7 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
+use Moox\EBilling\Formats\ArtifactKind;
 use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
@@ -144,6 +145,21 @@ class EbillingDocument extends BaseItemModel
         }
 
         return $this->kositValidations()->orderByDesc('validated_at')->orderByDesc('id')->first();
+    }
+
+    public function isDeliverable(): bool
+    {
+        return $this->gateway_status === EBillingAttachmentProcessingStatus::Validated
+            && is_string($this->artifact_content_hash)
+            && $this->artifact_content_hash !== '';
+    }
+
+    public function deliverableStoragePath(ArtifactKind $artifactKind): ?string
+    {
+        return match ($artifactKind) {
+            ArtifactKind::Xml => $this->xml_storage_path,
+            ArtifactKind::Pdf => $this->pdf_storage_path,
+        };
     }
 
     /**

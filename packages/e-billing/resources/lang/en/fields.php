@@ -90,14 +90,13 @@ return [
     'status_validated' => 'Validated',
 
     // Gateway status
-    'gateway_status_xml_generating' => 'XML is being generated',
-    'gateway_status_xml_generation_failed' => 'XML generation failed',
-    'gateway_status_xml_validated' => 'XML validated',
-    'gateway_status_xml_validation_failed' => 'XML validation failed',
-    'gateway_status_kosit_error' => 'KOSIT error',
-    'gateway_status_zugferd_pdf_generating' => 'ZUGFeRD PDF is being generated',
-    'gateway_status_zugferd_pdf_generated' => 'ZUGFeRD PDF generated',
-    'gateway_status_zugferd_pdf_failed' => 'ZUGFeRD PDF failed',
+    'gateway_status' => 'Processing status',
+    'gateway_status_generating' => 'Generating',
+    'gateway_status_generation_failed' => 'Generation failed',
+    'gateway_status_validating' => 'Validating',
+    'gateway_status_validated' => 'Validated',
+    'gateway_status_validation_failed' => 'Validation failed',
+    'gateway_status_validator_error' => 'Validator error',
     'gateway_status_ignored_foreign' => 'Ignored (foreign)',
 
     // Validation badges
@@ -149,6 +148,8 @@ return [
 
     // Tabs
     'tab_all' => 'All',
+    'tab_gateway_failed' => 'Failed',
+    'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',
     'tab_confirmed' => 'Confirmed',
     'tab_deleted' => 'Deleted',

@@ -53,6 +53,15 @@ final class ListInvoices extends ListRecords
                 continue;
             }
 
+            if ($condition['field'] === 'gateway_status' && $condition['operator'] === 'in') {
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->whereIn('gateway_status', (array) $value),
+                );
+
+                continue;
+            }
+
             if ($condition['operator'] === 'in') {
                 $query->whereIn($condition['field'], (array) $value);
             } elseif ($condition['operator'] === 'not_in') {

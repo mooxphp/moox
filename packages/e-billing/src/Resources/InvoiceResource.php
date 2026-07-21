@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
@@ -261,6 +262,13 @@ final class InvoiceResource extends BaseItemResource
                 ->view('e-billing::components.validation-score-ring')
                 ->getStateUsing(fn (Invoice $record): ?int => $record->ebillingDocument?->validation_score)
                 ->toggleable(),
+            TextColumn::make('gateway_status')
+                ->label(__('e-billing::fields.gateway_status'))
+                ->badge()
+                ->getStateUsing(fn (Invoice $record): ?EBillingAttachmentProcessingStatus => self::resolveGatewayStatus($record))
+                ->formatStateUsing(fn (?EBillingAttachmentProcessingStatus $state): string => $state?->label() ?? '—')
+                ->color(fn (?EBillingAttachmentProcessingStatus $state): string => $state?->color() ?? 'gray')
+                ->toggleable(),
             TextColumn::make('review_status')
                 ->label(__('e-billing::fields.status'))
                 ->badge()
@@ -312,6 +320,23 @@ final class InvoiceResource extends BaseItemResource
                     return $query->whereHas(
                         'ebillingDocument',
                         fn (Builder $documentQuery): Builder => $documentQuery->where('review_status', $value),
+                    );
+                }),
+            SelectFilter::make('gateway_status')
+                ->label(__('e-billing::fields.gateway_status'))
+                ->options(collect(EBillingAttachmentProcessingStatus::cases())
+                    ->mapWithKeys(fn (EBillingAttachmentProcessingStatus $case): array => [$case->value => $case->label()])
+                    ->all())
+                ->query(function (Builder $query, array $data): Builder {
+                    $value = $data['value'] ?? null;
+
+                    if (blank($value)) {
+                        return $query;
+                    }
+
+                    return $query->whereHas(
+                        'ebillingDocument',
+                        fn (Builder $documentQuery): Builder => $documentQuery->where('gateway_status', $value),
                     );
                 }),
             TernaryFilter::make('kosit_passed')
@@ -532,6 +557,29 @@ final class InvoiceResource extends BaseItemResource
         }
 
         return InvoiceProcessingStatus::tryFrom($raw);
+    }
+
+    private static function resolveGatewayStatus(Invoice $record): ?EBillingAttachmentProcessingStatus
+    {
+        $document = $record->ebillingDocument;
+
+        if ($document === null) {
+            return null;
+        }
+
+        $status = $document->gateway_status;
+
+        if ($status instanceof EBillingAttachmentProcessingStatus) {
+            return $status;
+        }
+
+        $raw = $document->getAttributes()['gateway_status'] ?? null;
+
+        if (! is_string($raw) || $raw === '') {
+            return null;
+        }
+
+        return EBillingAttachmentProcessingStatus::tryFrom($raw);
     }
 
     private static function validationStatusKey(Invoice $record): string

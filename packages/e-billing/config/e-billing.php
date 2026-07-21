@@ -109,6 +109,38 @@ return [
                     ],
                 ],
             ],
+            'gateway_failed' => [
+                'label' => 'trans//e-billing::fields.tab_gateway_failed',
+                'icon' => 'gmdi-error',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['generation_failed', 'validation_failed', 'validator_error'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
+            'processing' => [
+                'label' => 'trans//e-billing::fields.tab_processing',
+                'icon' => 'gmdi-hourglass-empty',
+                'query' => [
+                    [
+                        'field' => 'gateway_status',
+                        'operator' => 'in',
+                        'value' => ['generating', 'validating'],
+                    ],
+                    [
+                        'field' => 'deleted_at',
+                        'operator' => '=',
+                        'value' => null,
+                    ],
+                ],
+            ],
             'needs_review' => [
                 'label' => 'trans//e-billing::fields.tab_needs_review',
                 'icon' => 'gmdi-warning',
