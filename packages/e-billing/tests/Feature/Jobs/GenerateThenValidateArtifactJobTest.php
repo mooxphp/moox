@@ -14,6 +14,7 @@ use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Jobs\ValidateArtifactJob;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
+use Moox\EBilling\Support\ArtifactValidationPersister;
 use Moox\EBilling\Tests\Support\InvoiceFixtures;
 use Moox\EBilling\Tests\Support\PipelineFixtures;
 use Moox\EBilling\Tests\TestCase;
@@ -113,6 +114,7 @@ function runValidateArtifactJob(int $attachmentId): void
         app(RecordKositValidation::class),
         app(VeraPdfService::class),
         app(RecordVeraPdfValidation::class),
+        app(ArtifactValidationPersister::class),
         app(InboxMessagePipelineFinalizer::class),
     );
 }
