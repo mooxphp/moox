@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
+use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
@@ -152,6 +153,22 @@ final class InvoiceViewModel
                 'text' => __('e-billing::fields.banner_validated'),
             ],
         };
+    }
+
+    /**
+     * @return array{color: string, text: string}|null
+     */
+    public function gatewayStatusBanner(): ?array
+    {
+        $status = $this->document?->gateway_status;
+        if (! $status instanceof EBillingAttachmentProcessingStatus || ! $status->isFailure()) {
+            return null;
+        }
+
+        return [
+            'color' => 'red',
+            'text' => $status->label(),
+        ];
     }
 
     public function validationScore(): ?int

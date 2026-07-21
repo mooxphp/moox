@@ -123,9 +123,8 @@ class InboxMessagePipelineFinalizer
         }
 
         return in_array($this->gatewayStatus($attachment), [
-            EBillingAttachmentProcessingStatus::XmlGenerating,
-            EBillingAttachmentProcessingStatus::XmlValidated,
-            EBillingAttachmentProcessingStatus::ZugferdPdfGenerating,
+            EBillingAttachmentProcessingStatus::Generating,
+            EBillingAttachmentProcessingStatus::Validating,
         ], true);
     }
 
@@ -136,10 +135,9 @@ class InboxMessagePipelineFinalizer
         }
 
         return in_array($this->gatewayStatus($attachment), [
-            EBillingAttachmentProcessingStatus::XmlGenerationFailed,
-            EBillingAttachmentProcessingStatus::XmlValidationFailed,
-            EBillingAttachmentProcessingStatus::KositError,
-            EBillingAttachmentProcessingStatus::ZugferdPdfFailed,
+            EBillingAttachmentProcessingStatus::GenerationFailed,
+            EBillingAttachmentProcessingStatus::ValidationFailed,
+            EBillingAttachmentProcessingStatus::ValidatorError,
         ], true);
     }
 

@@ -39,6 +39,8 @@ final class InvoiceDocumentController
     {
         $document = $this->guardAttachmentWithDocument($attachment);
 
+        $this->guardDeliverableArtifact($document);
+
         $disk = $document->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $path = $document->pdf_storage_path;
@@ -60,6 +62,8 @@ final class InvoiceDocumentController
     public function downloadXml(InboxAttachment $attachment): StreamedResponse
     {
         $document = $this->guardAttachmentWithDocument($attachment);
+
+        $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
             ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
@@ -103,6 +107,11 @@ final class InvoiceDocumentController
     private function guardAttachment(InboxAttachment $attachment): void
     {
         $this->guardAttachmentWithDocument($attachment);
+    }
+
+    private function guardDeliverableArtifact(EbillingDocument $document): void
+    {
+        abort_unless($document->isDeliverable(), 404);
     }
 
     private function guardPath(?string $path): void

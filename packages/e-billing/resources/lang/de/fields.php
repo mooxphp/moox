@@ -90,14 +90,13 @@ return [
     'status_validated' => 'Validiert',
 
     // Gateway status
-    'gateway_status_xml_generating' => 'XML wird erzeugt',
-    'gateway_status_xml_generation_failed' => 'XML-Erzeugung fehlgeschlagen',
-    'gateway_status_xml_validated' => 'XML validiert',
-    'gateway_status_xml_validation_failed' => 'XML-Validierung fehlgeschlagen',
-    'gateway_status_kosit_error' => 'KOSIT-Fehler',
-    'gateway_status_zugferd_pdf_generating' => 'ZUGFeRD-PDF wird erzeugt',
-    'gateway_status_zugferd_pdf_generated' => 'ZUGFeRD-PDF erzeugt',
-    'gateway_status_zugferd_pdf_failed' => 'ZUGFeRD-PDF fehlgeschlagen',
+    'gateway_status' => 'Verarbeitungsstatus',
+    'gateway_status_generating' => 'Wird erzeugt',
+    'gateway_status_generation_failed' => 'Erzeugung fehlgeschlagen',
+    'gateway_status_validating' => 'Wird validiert',
+    'gateway_status_validated' => 'Validiert',
+    'gateway_status_validation_failed' => 'Validierung fehlgeschlagen',
+    'gateway_status_validator_error' => 'Validator-Fehler',
     'gateway_status_ignored_foreign' => 'Ignoriert (Ausland)',
 
     // Validation badges
@@ -149,6 +148,8 @@ return [
 
     // Tabs
     'tab_all' => 'Alle',
+    'tab_gateway_failed' => 'Fehlgeschlagen',
+    'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',
     'tab_confirmed' => 'Bestätigt',
     'tab_deleted' => 'Gelöscht',
