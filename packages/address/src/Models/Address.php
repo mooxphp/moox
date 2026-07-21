@@ -19,12 +19,12 @@ use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
  *
  * @property string|null $label
  * @property string|null $name
- * @property string|null $street
+ * @property string $street
  * @property string|null $street2
- * @property string|null $postal_code
- * @property string|null $city
+ * @property string $postal_code
+ * @property string $city
  * @property string|null $state
- * @property string|null $country_code
+ * @property string $country_code
  * @property bool $is_primary
  * @property array<string, mixed>|null $data
  */
