@@ -59,11 +59,46 @@ final class BuilderAdminLocalizationCatalog
 
     public function isAllowedAdminLocale(string $localeVariant): bool
     {
-        if (! $this->isAvailable()) {
-            return true;
+        if ($localeVariant === '') {
+            return false;
         }
 
-        return $this->find($localeVariant) !== null;
+        if ($this->isAvailable()) {
+            return $this->find($localeVariant) !== null;
+        }
+
+        return in_array($localeVariant, $this->fallbackAllowedLocales(), true);
+    }
+
+    /**
+     * Locales accepted when the localization catalog is unavailable.
+     * Prefer configured Astrotomic locales, always include the builder default.
+     *
+     * @return list<string>
+     */
+    protected function fallbackAllowedLocales(): array
+    {
+        $configured = config('translatable.locales', []);
+
+        if (! is_array($configured)) {
+            $configured = [];
+        }
+
+        $locales = array_values(array_filter(
+            array_map(
+                static fn (mixed $locale): string => is_string($locale) ? $locale : '',
+                $configured,
+            ),
+            static fn (string $locale): bool => $locale !== '',
+        ));
+
+        $default = $this->localeResolver->defaultLocale();
+
+        if ($default !== '' && ! in_array($default, $locales, true)) {
+            $locales[] = $default;
+        }
+
+        return $locales;
     }
 
     public function labelFor(?Localization $localization, ?string $fallbackLocale = null): string

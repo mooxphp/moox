@@ -6,6 +6,7 @@ require_once __DIR__.'/../TestCase.php';
 
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Support\BuilderAdminLocalizationCatalog;
+use Moox\Builder\Support\BuilderLocaleResolver;
 use Moox\Builder\Tests\TestCase;
 
 uses(TestCase::class);
@@ -48,4 +49,40 @@ it('treats unknown locales as not allowed when catalog is available', function (
     }
 
     expect($catalog->isAllowedAdminLocale('does-not-exist-xx'))->toBeFalse();
+});
+
+it('falls back to configured locales when the localization catalog is unavailable', function (): void {
+    $catalog = app(BuilderAdminLocalizationCatalog::class);
+
+    if ($catalog->isAvailable()) {
+        expect(true)->toBeTrue();
+
+        return;
+    }
+
+    config()->set('translatable.locales', ['en_US', 'de_CH']);
+    config()->set('builder.default_locale', 'en_US');
+
+    expect($catalog->isAllowedAdminLocale('en_US'))->toBeTrue()
+        ->and($catalog->isAllowedAdminLocale('de_CH'))->toBeTrue()
+        ->and($catalog->isAllowedAdminLocale('banana_XY'))->toBeFalse()
+        ->and($catalog->isAllowedAdminLocale(''))->toBeFalse();
+});
+
+it('always allows the builder default locale in the catalog fallback', function (): void {
+    $catalog = app(BuilderAdminLocalizationCatalog::class);
+
+    if ($catalog->isAvailable()) {
+        expect(true)->toBeTrue();
+
+        return;
+    }
+
+    config()->set('translatable.locales', []);
+    config()->set('builder.default_locale', 'fr_CH');
+
+    $catalog = new BuilderAdminLocalizationCatalog(new BuilderLocaleResolver);
+
+    expect($catalog->isAllowedAdminLocale('fr_CH'))->toBeTrue()
+        ->and($catalog->isAllowedAdminLocale('en_US'))->toBeFalse();
 });

@@ -38,7 +38,7 @@ trait InteractsWithBuilderLocale
     {
         $catalog = app(BuilderAdminLocalizationCatalog::class);
 
-        if ($this->lang === '' || ! $catalog->isAvailable()) {
+        if ($this->lang === '') {
             return;
         }
 
