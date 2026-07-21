@@ -3,6 +3,8 @@
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\KositValidator\Models\KositValidatable;
 use Moox\KositValidator\Models\KositValidation;
+use Moox\VeraPdf\Models\VeraPdfValidatable;
+use Moox\VeraPdf\Models\VeraPdfValidation;
 
 /*
 |--------------------------------------------------------------------------
@@ -421,6 +423,15 @@ return [
             'morph_name' => 'validatable',
             'pivot_columns' => [],
             'related_key' => 'kosit_validation_id',
+        ],
+        'verapdf_validatables' => [
+            'relationship' => 'veraPdfValidations',
+            'model' => VeraPdfValidation::class,
+            'pivot_model' => VeraPdfValidatable::class,
+            'pivot_table' => 'verapdf_validatables',
+            'morph_name' => 'validatable',
+            'pivot_columns' => [],
+            'related_key' => 'verapdf_validation_id',
         ],
     ],
 
