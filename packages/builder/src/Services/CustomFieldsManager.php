@@ -34,6 +34,7 @@ class CustomFieldsManager
         protected StorableFieldCollector $storableFieldCollector,
         protected BuilderLocaleResolver $localeResolver,
         protected EntityRegistry $entityRegistry,
+        protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
     ) {}
 
     /**
@@ -269,6 +270,8 @@ class CustomFieldsManager
             return;
         }
 
+        $values = $this->preserveAdminHiddenNestedValues($entity, $record, $fields, $values, $locale);
+
         $this->saveValues(
             $this->locationContextForResource($resourceClass)->entity,
             $record,
@@ -276,6 +279,55 @@ class CustomFieldsManager
             $fields,
             $locale,
         );
+    }
+
+    /**
+     * Nested fields with visible_admin:false are not rendered in the form, but
+     * their keys can still appear in a crafted compound payload. Replace those
+     * keys with the already-stored values so the form path cannot overwrite them.
+     *
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    protected function preserveAdminHiddenNestedValues(
+        string $entity,
+        Model $record,
+        Collection $fields,
+        array $values,
+        string $locale,
+    ): array {
+        $existing = $record->exists
+            ? $this->loadCachedValues($entity, $record, $fields, $locale)
+            : [];
+
+        foreach ($fields as $field) {
+            if (! array_key_exists($field->name, $values)) {
+                continue;
+            }
+
+            if (! $this->fieldTypeRegistry->get($field->type)->hasSubFields()) {
+                continue;
+            }
+
+            $children = $field->type === 'clone'
+                ? $this->clonedFieldGroupResolver->compoundChildren($field)
+                : ($field->type === 'flexible_content' ? $field->layouts() : $field->children);
+
+            if ($children->isEmpty()) {
+                continue;
+            }
+
+            $values[$field->name] = FieldVisibility::mergePreservingHidden(
+                $field,
+                $values[$field->name],
+                $existing[$field->name] ?? null,
+                FieldVisibility::ADMIN,
+                $children,
+            );
+        }
+
+        return $values;
     }
 
     /**
