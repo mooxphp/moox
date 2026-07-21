@@ -30,6 +30,14 @@ return new class extends Migration
             $table->index(['entity', 'field_name', 'value_decimal']);
             $table->index(['entity', 'field_name', 'value_date']);
             $table->index(['entity', 'field_name', 'value_datetime']);
+            $table->index(
+                ['entity', 'field_name', 'locale', 'value_string'],
+                'bfv_entity_field_locale_string_index',
+            );
+            $table->index(
+                ['entity', 'field_name', 'locale', 'value_boolean'],
+                'bfv_entity_field_locale_boolean_index',
+            );
             $table->index(['entity', 'record_id']);
         });
     }

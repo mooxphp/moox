@@ -145,6 +145,8 @@ One row per value:
 
 Unique: `(entity, record_id, field_name, locale)`.
 
+Indexes for list filter/sort EXISTS subqueries: `(entity, field_name, value_decimal|date|datetime)` and `(entity, field_name, locale, value_string|value_boolean)`. Text `LIKE '%…%'` filters still cannot use the string index efficiently.
+
 ### Definition translations (Astrotomic)
 
 Field group names, field labels, option labels, and translatable field config (`helperText`, `placeholder`, …) use [astrotomic/laravel-translatable](https://docs.astrotomic.info/laravel-translatable) — the same stack as `moox/media` and Moox draft entities (via `moox/localization`).
