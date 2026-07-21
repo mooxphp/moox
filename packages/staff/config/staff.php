@@ -48,18 +48,13 @@ return [
     | - Bearbeiter             → short_code
     | - Name                   → display_name
     | - eMail_Adresse          → email
-    | - eMail_Account          → email_account
     | - Telefon                → phone
-    | - Telefax                → fax
-    | - Sprache                → language_code
-    | - Änderungsberechtigung  → can_change
-    | - Systembenutzer         → is_system_user
-    | - is_user_for_services   → is_user_for_services
-    | - BCC_bei_Mailversand    → bcc_on_mail_send
     | - ID_Kontakt             → contact_id
-    | - SalesUnitGuid          → sales_unit_guid
-    | - SalesUnitId            → sales_unit_id
     | - angelegt/geändert/gelöscht audit columns → Laravel timestamps / soft deletes
+    |
+    | Legacy-only Bearbeiter fields are stored inside `data` (see legacy_data_fields):
+    | eMail_Account, Telefax, Sprache, Änderungsberechtigung, Systembenutzer,
+    | is_user_for_services, BCC_bei_Mailversand, SalesUnitGuid, SalesUnitId
     |
     | Keys below are stored inside `data` during legacy import:
     */
@@ -69,6 +64,23 @@ return [
         'mantis_password',
         'password',
         'email_password',
+        'email_account',
+        'eMail_Account',
+        'fax',
+        'Telefax',
+        'Fax',
+        'Sprache',
+        'Language',
+        'Änderungsberechtigung',
+        'Aenderungsberechtigung',
+        'Systembenutzer',
+        'IsUserAccount',
+        'is_user_for_services',
+        'IsUserForServices',
+        'BCC_bei_Mailversand',
+        'BccBeiMailversand',
+        'SalesUnitGuid',
+        'SalesUnitId',
         'attachment_signature_original',
         'attachment_signature_web',
         'extended_data',
@@ -99,9 +111,9 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'is_active',
+                            'field' => 'status',
                             'operator' => '=',
-                            'value' => true,
+                            'value' => 'active',
                         ],
                         [
                             'field' => 'deleted_at',
