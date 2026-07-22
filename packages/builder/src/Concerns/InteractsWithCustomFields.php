@@ -16,6 +16,7 @@ use Moox\Builder\Registry\EntityRegistry;
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Builder\Support\FieldVisibility;
 
 /**
  * Expose custom field values as if they belong to the Eloquent model.
@@ -276,9 +277,18 @@ trait InteractsWithCustomFields
         $array = parent::toArray();
 
         if ($this->mergeCustomFieldsIntoArray) {
+            $manager = app(CustomFieldsManager::class);
+            $projected = app(BuilderValuesResolver::class)->project(
+                $manager->visibleFieldsForEntity(
+                    static::resolveCustomFieldsEntity(),
+                    FieldVisibility::API,
+                ),
+                $this->customFields(),
+            );
+
             $customFields = [];
 
-            foreach ($this->customFields() as $name => $value) {
+            foreach ($projected as $name => $value) {
                 $customFields[$name] = $value instanceof StoredPassword ? null : $value;
             }
 

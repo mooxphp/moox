@@ -120,6 +120,46 @@ class BuilderValuesResolver
         return $fieldType->presentValue($value, $field);
     }
 
+    /**
+     * Keep stored values shaped by the given field definitions without API
+     * presentation transforms. Use with context-filtered definitions (e.g.
+     * visible_api) so model toArray() can omit hidden keys while staying raw.
+     *
+     * @param  Collection<int, FieldDefinition>  $fields
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    public function project(Collection $fields, array $values): array
+    {
+        $projected = [];
+
+        foreach ($fields as $field) {
+            if (! array_key_exists($field->name, $values)) {
+                continue;
+            }
+
+            $projected[$field->name] = $this->projectFieldValue($field, $values[$field->name]);
+        }
+
+        return $projected;
+    }
+
+    public function projectFieldValue(FieldDefinition $field, mixed $value): mixed
+    {
+        $fieldType = $this->fieldTypeRegistry->get($field->type);
+
+        if ($fieldType->hasSubFields() && is_array($value)) {
+            return match ($field->type) {
+                'repeater' => $this->projectRepeaterRows($field, $value),
+                'flexible_content' => $this->projectFlexibleContentItems($field, $value),
+                'clone' => $this->projectCompoundRow($this->clonedFieldGroupResolver->compoundChildren($field), $value),
+                default => $this->projectCompoundRow($field->children, $value),
+            };
+        }
+
+        return $value;
+    }
+
     public function persistFieldValue(FieldDefinition $field, mixed $value): mixed
     {
         $fieldType = $this->fieldTypeRegistry->get($field->type);
@@ -245,6 +285,60 @@ class BuilderValuesResolver
                 'type' => $type,
                 'data' => $layout !== null
                     ? $this->presentCompoundRow($layout->children, $data)
+                    : $data,
+            ];
+        }, $items));
+    }
+
+    /**
+     * @param  Collection<int, FieldDefinition>  $children
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    protected function projectCompoundRow(Collection $children, array $row): array
+    {
+        $projected = [];
+
+        foreach ($children as $child) {
+            if (! array_key_exists($child->name, $row)) {
+                continue;
+            }
+
+            $projected[$child->name] = $this->projectFieldValue($child, $row[$child->name]);
+        }
+
+        return $projected;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return list<array<string, mixed>>
+     */
+    protected function projectRepeaterRows(FieldDefinition $field, array $rows): array
+    {
+        return array_values(array_map(
+            fn (array $row): array => $this->projectCompoundRow($field->children, $row),
+            $rows,
+        ));
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     * @return list<array<string, mixed>>
+     */
+    protected function projectFlexibleContentItems(FieldDefinition $field, array $items): array
+    {
+        $layouts = $field->layouts()->keyBy('name');
+
+        return array_values(array_map(function (array $item) use ($layouts): array {
+            $type = (string) ($item['type'] ?? '');
+            $data = is_array($item['data'] ?? null) ? $item['data'] : [];
+            $layout = $layouts->get($type);
+
+            return [
+                'type' => $type,
+                'data' => $layout !== null
+                    ? $this->projectCompoundRow($layout->children, $data)
                     : $data,
             ];
         }, $items));

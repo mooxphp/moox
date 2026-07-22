@@ -701,7 +701,7 @@ Each field and field group can be toggled per context:
 | Context | Key | Wired at runtime |
 |---------|-----|------------------|
 | Admin | `visible_admin` | Yes — `HasCustomFields`, `saveFromFormData` |
-| API | `visible_api` | Yes — `MergesCustomFields` |
+| API | `visible_api` | Yes — `MergesCustomFields`, `$model->toArray()` |
 | Frontend | `visible_frontend` | Configurable in admin; **no packaged frontend renderer yet** |
 
 Use `CustomFieldsManager::visibleFieldsForEntity($entity, FieldVisibility::API)` (or `ADMIN`) when building custom consumers.
@@ -888,7 +888,7 @@ $item->customFields(fresh: true);           // reload from DB, ignore cache
 $item->customField('vehicle-type');        // single field
 $item->hasCustomField('color');            // value present (including default)?
 $item->hasCustomFieldDefinition('color');   // field definition exists?
-$item->toArray();                          // DB columns + raw custom fields (internal)
+$item->toArray();                          // DB columns + custom fields visible in API
 
 // Write 
 $item->color = 'Blue';                     // or setCustomField()
@@ -968,9 +968,11 @@ return ItemApiResource::collection($items);
 
 | Method | Use case | Example: `date` | Example: `password` | Example: `image` |
 |--------|----------|-----------------|---------------------|-------------------|
-| `$item->customFields()` | Internal / PHP | `Carbon` instance | hashed string | snapshot array |
-| `$item->toArray()` | Internal arrays | `Carbon` instance | `null` | snapshot array |
+| `$item->customFields()` | Internal / PHP | `Carbon` instance | hashed string / `StoredPassword` | snapshot array |
+| `$item->toArray()` | Arrays / accidental JSON | `Carbon` instance | `null` | snapshot array |
 | `mergeCustomFields()` | API / JSON | `"2026-06-16"` | `{"has_value": true}` | `MediaItemResource` shape |
+
+`$item->toArray()` and `mergeCustomFields()` both respect `visible_api` (and nested keys). Prefer `MergesCustomFields` for real APIs so dates/media/passwords get the presented shapes. Use `customFields()` when PHP code needs every stored value including API-hidden fields.
 
 ### Output shapes (API)
 
@@ -993,12 +995,13 @@ return ItemApiResource::collection($items);
 ```php
 use Moox\Builder\Services\BuilderValuesResolver;
 use Moox\Builder\Services\CustomFieldsManager;
+use Moox\Builder\Support\FieldVisibility;
 
 $manager = app(CustomFieldsManager::class);
 $entity = $item::resolveCustomFieldsEntity();
 
 $presented = app(BuilderValuesResolver::class)->present(
-    $manager->fieldsForEntity($entity),
+    $manager->visibleFieldsForEntity($entity, FieldVisibility::API),
     $item->customFields(),
 );
 ```
@@ -1142,7 +1145,7 @@ php artisan db:seed --class="Moox\Builder\Database\Seeders\BuilderSeeder" --forc
 - Nested validation (`FieldValueValidator`) plus admin validation UI (curated rules + `validation.raw_rules`)
 - `InteractsWithCustomFields` on consumer models (`customFields()`, attribute access, queries, eager load)
 - `CustomFieldsBuilder` — `where` / `whereIn` on custom field names via typed subqueries on `builder_field_values`
-- `MergesCustomFields` for API resources (respects `visible_api`)
+- `MergesCustomFields` / `$model->toArray()` for API-facing output (respect `visible_api`)
 - `FieldType::presentValue()` for API serialization (ISO dates, password masking, nested fields, media, relations)
 - Repeater min/max (`RepeaterItems` capability)
 - Media fields: `image`, `gallery`, `file` (optional with `moox/media`)

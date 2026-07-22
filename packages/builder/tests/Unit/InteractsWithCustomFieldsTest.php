@@ -13,6 +13,7 @@ use Moox\Builder\Models\Field;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Models\FieldValue;
 use Moox\Builder\Registry\DefinitionRegistry;
+use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Tests\Support\TestItem;
 use Moox\Builder\Tests\TestCase;
 
@@ -113,6 +114,99 @@ it('merges builder values into model arrays for api style serialization', functi
     expect($record->toArray())->toMatchArray([
         'title' => 'Demo',
         'farbe' => 'Rot',
+    ]);
+});
+
+it('omits api-hidden custom fields from model toArray while keeping them in customFields', function (): void {
+    $group = FieldGroup::query()->first();
+
+    Field::query()->create([
+        'field_group_id' => $group->getKey(),
+        'name' => 'internal_note',
+        'label' => 'Internal note',
+        'type' => 'text',
+        'sort' => 10,
+        'settings' => ['visible_api' => false],
+        'validation' => ['required' => false, 'rules' => []],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $record = TestItem::query()->create(['title' => 'Demo']);
+    $record->setCustomFields([
+        'farbe' => 'Blau',
+        'internal_note' => 'staff-only',
+    ]);
+
+    $array = $record->toArray();
+
+    expect($record->customField('internal_note'))->toBe('staff-only')
+        ->and($array)->toHaveKey('farbe')
+        ->and($array['farbe'])->toBe('Blau')
+        ->and($array)->not->toHaveKey('internal_note');
+});
+
+it('omits api-hidden nested group keys from model toArray', function (): void {
+    require_once __DIR__.'/../Support/TestItemResource.php';
+
+    FieldGroup::query()->delete();
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $group = FieldGroup::query()->create([
+        'name' => 'Address group',
+        'slug' => 'address-group',
+        'location_rules' => [[['param' => 'entity', 'operator' => '==', 'value' => 'item']]],
+        'active' => true,
+    ]);
+
+    app(FieldGroupPersistence::class)->sync($group, [
+        'name' => 'Address group',
+        'slug' => 'address-group',
+        'active' => true,
+        'sort' => 0,
+        'target_entities' => ['item'],
+        'fields' => [
+            [
+                'name' => 'address',
+                'label' => 'Address',
+                'type' => 'group',
+                'children' => [
+                    [
+                        'name' => 'city',
+                        'label' => 'City',
+                        'type' => 'text',
+                        'required' => false,
+                    ],
+                    [
+                        'name' => 'internal_note',
+                        'label' => 'Internal note',
+                        'type' => 'text',
+                        'required' => false,
+                        'settings' => ['visible_api' => false],
+                    ],
+                ],
+            ],
+        ],
+    ]);
+
+    Cache::forget(DefinitionRegistry::CACHE_KEY);
+    TestItem::flushCustomFieldDefinitionCache();
+
+    $record = TestItem::query()->create(['title' => 'Demo']);
+    $record->setCustomFields([
+        'address' => [
+            'city' => 'Berlin',
+            'internal_note' => 'staff-only',
+        ],
+    ]);
+
+    expect($record->customField('address'))->toMatchArray([
+        'city' => 'Berlin',
+        'internal_note' => 'staff-only',
+    ])->and($record->toArray()['address'])->toBe([
+        'city' => 'Berlin',
     ]);
 });
 
