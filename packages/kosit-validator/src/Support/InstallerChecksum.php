@@ -11,6 +11,12 @@ use RuntimeException;
  */
 final class InstallerChecksum
 {
+    private const MISSING_CHECKSUM_MESSAGE =
+        'Installer checksum is not configured. '
+        .'Set kosit-validator.validator.sha256 / kosit-validator.xrechnung.sha256 '
+        .'(or KOSIT_VALIDATOR_SHA256 / KOSIT_XRECHNUNG_SHA256) '
+        .'to the SHA-256 of the pinned release asset.';
+
     /**
      * Assert that $filePath's SHA-256 matches the expected lowercase hex digest.
      *
@@ -63,9 +69,7 @@ final class InstallerChecksum
         $expected = strtolower(trim($expectedSha256));
 
         if ($expected === '' || preg_match('/^[a-f0-9]{64}$/', $expected) !== 1) {
-            throw new RuntimeException(
-                'Installer checksum is not configured. Set kosit-validator.validator.sha256 / kosit-validator.xrechnung.sha256 (or KOSIT_VALIDATOR_SHA256 / KOSIT_XRECHNUNG_SHA256) to the SHA-256 of the pinned release asset.'
-            );
+            throw new RuntimeException(self::MISSING_CHECKSUM_MESSAGE);
         }
 
         return $expected;

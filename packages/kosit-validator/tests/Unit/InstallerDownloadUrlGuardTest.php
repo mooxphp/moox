@@ -13,7 +13,7 @@ beforeEach(function (): void {
 
 test('accepts default validator github release url', function (): void {
     InstallerDownloadUrlGuard::assertValid(
-        'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar',
+        KOSIT_TEST_VALIDATOR_DOWNLOAD_URL,
         'Validator v1.6.2',
     );
 
@@ -22,7 +22,7 @@ test('accepts default validator github release url', function (): void {
 
 test('accepts default xrechnung github release url', function (): void {
     InstallerDownloadUrlGuard::assertValid(
-        'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip',
+        KOSIT_TEST_XRECHNUNG_DOWNLOAD_URL,
         'XRechnung Configuration v3.0.2',
     );
 
