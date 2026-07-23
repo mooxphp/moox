@@ -22,6 +22,7 @@
 
 ### Fixed
 
+- Declare `"php": "^8.4"` in `composer.json`. Zugferd adapters (and `moox/zugferd` contracts) use PHP 8.4 property hooks; without an explicit constraint the package inherited `moox/core`'s `^8.2|^8.3|^8.4` and advertised runtimes that fatal-parse on load ([#11](https://github.com/mooxphp/e-billing/issues/11)).
 - SonarQube line-length (120 cols) and brace-placement findings in the
   generate-then-validate pipeline files, `InvoiceResource`,
   `InvoiceFactory`/`ParsedInvoiceMapper`, `EbillingDocument`, and related

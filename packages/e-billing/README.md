@@ -39,6 +39,8 @@ The host application must bind `InvoiceParserInterface` to parse PDF text into t
 
 ## Requirements
 
+**PHP ≥ 8.4** — Zugferd adapters implement `moox/zugferd` contracts that use PHP 8.4 property hooks; the package declares `"php": "^8.4"` so Composer rejects 8.2/8.3 runtimes that would fatal-parse those files.
+
 This package composes the other Moox e-billing packages. Composer requires:
 
 | Package | Role |

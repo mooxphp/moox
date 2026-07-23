@@ -22,6 +22,7 @@
         }
     ],
     "require": {
+        "php": "^8.4",
         "moox/company": "dev-main",
         "moox/core": "dev-main",
         "moox/data": "dev-main",
