@@ -11,6 +11,13 @@ use Moox\KositValidator\Support\KositInstallPaths;
 use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\XrechnungBundlePath;
 
+const KOSIT_TEST_VALIDATOR_DOWNLOAD_URL =
+    'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar';
+
+const KOSIT_TEST_XRECHNUNG_DOWNLOAD_URL =
+    'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/'
+    .'xrechnung-3.0.2-validator-configuration-2026-01-31.zip';
+
 function kositTempPath(string $prefix): string
 {
     return sys_get_temp_dir().'/kosit-'.$prefix.'-'.uniqid('', true);
@@ -145,14 +152,8 @@ function configureKositInstallTestDefaults(): void
     );
     config()->set('kosit-validator.java_binary', 'java');
     config()->set('kosit-validator.validator.version', '1.6.2');
-    config()->set(
-        'kosit-validator.validator.download_url',
-        'https://github.com/itplr-kosit/validator/releases/download/v1.6.2/validator-1.6.2-standalone.jar',
-    );
-    config()->set(
-        'kosit-validator.xrechnung.download_url',
-        'https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-01-31/xrechnung-3.0.2-validator-configuration-2026-01-31.zip',
-    );
+    config()->set('kosit-validator.validator.download_url', KOSIT_TEST_VALIDATOR_DOWNLOAD_URL);
+    config()->set('kosit-validator.xrechnung.download_url', KOSIT_TEST_XRECHNUNG_DOWNLOAD_URL);
     config()->set('kosit-validator.installer.allow_untrusted_base_path', false);
     config()->set('kosit-validator.installer.allow_untrusted_download_hosts', false);
 }

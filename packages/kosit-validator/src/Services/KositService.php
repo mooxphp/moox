@@ -28,7 +28,10 @@ class KositService
             return $path;
         }
 
-        throw new RuntimeException("Expected validator JAR {$expectedName} not found in {$dir}. Run php artisan kosit:install first.");
+        throw new RuntimeException(
+            "Expected validator JAR {$expectedName} not found in {$dir}. "
+            .'Run php artisan kosit:install first.'
+        );
     }
 
     public function scenariosPath(): string

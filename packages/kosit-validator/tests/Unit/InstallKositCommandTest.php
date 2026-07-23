@@ -32,7 +32,8 @@ test('install aborts on validator checksum mismatch without wiping an existing i
     file_put_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar', 'existing-jar');
 
     $xrechnung = buildBenignXrechnungZip();
-    fakeKositDownloads('tampered-jar', hash('sha256', 'different-jar-bytes'), $xrechnung['bytes'], $xrechnung['sha256']);
+    $tamperedJarSha256 = hash('sha256', 'different-jar-bytes');
+    fakeKositDownloads('tampered-jar', $tamperedJarSha256, $xrechnung['bytes'], $xrechnung['sha256']);
 
     fakeKositJavaProcess();
 
@@ -83,8 +84,9 @@ test('install aborts on zip-slip archive', function (bool $force, bool $seedExis
     $command->expectsOutputToContain('unsafe ZIP entry')->assertFailed();
 
     if ($seedExisting) {
-        expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
-            ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe('existing-jar');
+        $existingJarPath = $paths->validatorDir.'/validator-1.6.2-standalone.jar';
+        expect(is_file($existingJarPath))->toBeTrue()
+            ->and((string) file_get_contents($existingJarPath))->toBe('existing-jar');
     } else {
         expect(is_dir($paths->validatorDir))->toBeFalse();
     }
@@ -123,11 +125,12 @@ test('install succeeds with verified downloads', function (): void {
 
     $paths = KositInstallPaths::fromConfig();
 
+    $bundlePath = $paths->xrechnungDir.'/.xrechnung-bundle.zip';
     expect(is_file($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBeTrue()
         ->and((string) file_get_contents($paths->validatorDir.'/validator-1.6.2-standalone.jar'))->toBe($jarBytes)
         ->and(is_file($paths->xrechnungDir.'/scenarios.xml'))->toBeTrue()
-        ->and(is_file($paths->xrechnungDir.'/.xrechnung-bundle.zip'))->toBeTrue()
-        ->and(hash('sha256', (string) file_get_contents($paths->xrechnungDir.'/.xrechnung-bundle.zip')))->toBe($xrechnung['sha256']);
+        ->and(is_file($bundlePath))->toBeTrue()
+        ->and(hash('sha256', (string) file_get_contents($bundlePath)))->toBe($xrechnung['sha256']);
 
     File::delete($xrechnung['path']);
 });
