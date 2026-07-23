@@ -15,7 +15,8 @@ readonly class Address
         public string $postal_code,
         public ?string $subdivision,
         public string $country_code,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

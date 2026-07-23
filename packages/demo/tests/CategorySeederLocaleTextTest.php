@@ -40,7 +40,9 @@ class CategorySeederLocaleTextTest extends TestCase
     {
         $faker = new class extends Generator
         {
-            public function __construct() {}
+            public function __construct()
+            {
+            }
         };
 
         $this->expectException(\RuntimeException::class);

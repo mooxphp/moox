@@ -27,7 +27,8 @@ final class RunEndpointJob implements ShouldQueue
         private int $endpointId,
         private ?string $treeRunId = null,
         private bool $throwOnFailure = false,
-    ) {}
+    ) {
+    }
 
     public function handle(ApiEndpointRunner $runner): void
     {

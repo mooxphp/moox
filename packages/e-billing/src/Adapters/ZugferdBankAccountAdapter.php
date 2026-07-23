@@ -11,7 +11,8 @@ final class ZugferdBankAccountAdapter implements ZugferdBankAccount
 {
     public function __construct(
         private BankAccount $account,
-    ) {}
+    ) {
+    }
 
     public string $iban {
         get => $this->account->iban;

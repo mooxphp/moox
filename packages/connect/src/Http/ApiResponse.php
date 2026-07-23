@@ -16,7 +16,8 @@ final class ApiResponse implements ApiResponseInterface
         private ?int $rateLimit = null,
         private ?int $rateRemaining = null,
         private ?Carbon $rateReset = null
-    ) {}
+    ) {
+    }
 
     public function withRateLimitHeaders(
         int $limit,

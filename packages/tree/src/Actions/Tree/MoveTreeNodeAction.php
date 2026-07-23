@@ -11,7 +11,9 @@ use Moox\Tree\Support\TreeGraphValidator;
 
 final class MoveTreeNodeAction
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function handle(Model $record, ?int $newParentId, int $position): void
     {

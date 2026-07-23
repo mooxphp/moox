@@ -11,7 +11,8 @@ class PdfParser
 {
     public function __construct(
         private ?string $pdftotextPath = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Extract text from a PDF file.

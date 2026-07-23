@@ -10,7 +10,9 @@ use Moox\Tree\Support\NestedSetGuard;
 
 final class MoveNestedSetTreeNodeAction
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function handle(Model $record, ?int $newParentId, int $position): void
     {

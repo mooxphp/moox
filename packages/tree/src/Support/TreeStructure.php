@@ -10,7 +10,9 @@ use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class TreeStructure
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     /**
      * @param  Collection<int, Model>  $records

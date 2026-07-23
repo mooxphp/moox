@@ -34,5 +34,6 @@ readonly class InvoiceDraft
         public ?PaymentMeans $payment_means,
         public array $lines,
         public array $headerCharges,
-    ) {}
+    ) {
+    }
 }

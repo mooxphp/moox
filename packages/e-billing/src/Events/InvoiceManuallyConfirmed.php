@@ -17,5 +17,6 @@ final class InvoiceManuallyConfirmed
         public readonly EbillingDocument $document,
         public readonly ?string $confirmedBy = null,
         public readonly bool $wasAutoValidatedFirst = false,
-    ) {}
+    ) {
+    }
 }

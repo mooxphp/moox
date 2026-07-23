@@ -16,7 +16,8 @@ class Address implements ZugferdAddress
         public ?string $country = null,
         public ?string $addressLine2 = null,
         public ?string $addressLine3 = null,
-    ) {}
+    ) {
+    }
 
     public function equals(?self $other): bool
     {

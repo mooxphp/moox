@@ -40,7 +40,8 @@ class StoreAttachmentsJob implements ShouldQueue
 
     public function __construct(
         public int $inboxMessageId,
-    ) {}
+    ) {
+    }
 
     public function handle(GraphMailService $graph, MailInboxService $inbox): void
     {

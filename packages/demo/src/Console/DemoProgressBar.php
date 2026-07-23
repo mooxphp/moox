@@ -13,7 +13,8 @@ final class DemoProgressBar
         private readonly ProgressBar $bar,
         private readonly Command $command,
         private readonly string $defaultMessage,
-    ) {}
+    ) {
+    }
 
     public function advance(int $step = 1): void
     {

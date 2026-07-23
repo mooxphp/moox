@@ -16,7 +16,8 @@ class PromptFlowStateStore
         protected CacheRepository $cache,
         protected string $prefix = 'moox_prompts_flow:',
         protected int $ttlSeconds = 3600,
-    ) {}
+    ) {
+    }
 
     public function create(string $commandName, array $steps): PromptFlowState
     {

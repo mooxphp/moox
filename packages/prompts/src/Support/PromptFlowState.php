@@ -14,7 +14,8 @@ class PromptFlowState
         public bool $completed = false,
         public ?string $failedAt = null,
         public ?string $errorMessage = null,
-    ) {}
+    ) {
+    }
 
     public function nextPendingStep(): ?string
     {

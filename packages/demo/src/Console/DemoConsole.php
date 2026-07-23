@@ -16,7 +16,8 @@ final class DemoConsole
 
     public function __construct(
         private readonly Command $command,
-    ) {}
+    ) {
+    }
 
     public function phase(string $title): void
     {

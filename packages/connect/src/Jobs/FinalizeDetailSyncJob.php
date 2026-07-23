@@ -32,7 +32,8 @@ final class FinalizeDetailSyncJob implements ShouldQueue
         private int $detailEndpointId,
         private string $batchId,
         private array $seenKeysByScope,
-    ) {}
+    ) {
+    }
 
     public function handle(EndpointListToDetailOrchestrator $orchestrator): void
     {

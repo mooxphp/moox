@@ -17,7 +17,8 @@ class PromptFlowRunner
     public function __construct(
         protected Kernel $artisan,
         protected PromptFlowStateStore $stateStore,
-    ) {}
+    ) {
+    }
 
     public function start(string $commandName, array $commandInput): PromptFlowState
     {

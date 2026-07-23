@@ -37,7 +37,8 @@ final class FetchImportRecordsJob implements ShouldQueue
     public function __construct(
         private int $endpointId,
         private array $parameters = []
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

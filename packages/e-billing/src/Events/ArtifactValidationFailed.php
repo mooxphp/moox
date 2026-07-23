@@ -13,5 +13,6 @@ final class ArtifactValidationFailed
         public int $inboxAttachmentId,
         public array $errors,
         public string $format,
-    ) {}
+    ) {
+    }
 }

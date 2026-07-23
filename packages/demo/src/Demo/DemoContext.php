@@ -18,5 +18,6 @@ final class DemoContext
         public readonly bool $skipSeeders,
         public readonly bool $skipFactories,
         public readonly bool $skipMedia,
-    ) {}
+    ) {
+    }
 }

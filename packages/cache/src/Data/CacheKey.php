@@ -10,7 +10,8 @@ final class CacheKey
         public string $key,
         public string $label,
         public ?string $description = null,
-    ) {}
+    ) {
+    }
 
     public static function make(string $key): self
     {

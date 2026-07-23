@@ -12,7 +12,8 @@ readonly class PaymentMeans
     public function __construct(
         public ?string $payment_means_code,
         public array $bank_accounts,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

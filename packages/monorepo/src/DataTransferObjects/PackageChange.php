@@ -13,7 +13,8 @@ class PackageChange
         public readonly string $changeType = 'compatibility', // 'initial', 'compatibility', 'feature'
         public readonly string $packageType = 'public', // 'public', 'private'
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Create for initial release

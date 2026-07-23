@@ -13,7 +13,8 @@ class BankAccount implements ZugferdBankAccount
         public ?string $bic = null,
         public ?string $bankName = null,
         public ?string $accountHolder = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{bank_name?: string, iban?: string, bic?: string, is_default?: bool, account_holder?: string}  $row

@@ -11,7 +11,8 @@ final class ZugferdAddressAdapter implements ZugferdAddress
 {
     public function __construct(
         private Address $address,
-    ) {}
+    ) {
+    }
 
     public ?string $street {
         get {

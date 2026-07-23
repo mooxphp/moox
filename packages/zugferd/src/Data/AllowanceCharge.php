@@ -15,5 +15,6 @@ readonly class AllowanceCharge implements ZugferdAllowanceCharge
         public ?string $reasonText = null,
         public ?float $basisAmount = null,
         public ?float $percentage = null,
-    ) {}
+    ) {
+    }
 }

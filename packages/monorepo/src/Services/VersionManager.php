@@ -9,7 +9,8 @@ class VersionManager implements VersionManagerInterface
 {
     public function __construct(
         private GitHubClientInterface $githubClient
-    ) {}
+    ) {
+    }
 
     /**
      * Get the current version from a repository

@@ -15,7 +15,8 @@ final class DemoUserStep
     public function __construct(
         private readonly Command $command,
         private readonly DemoConsole $console,
-    ) {}
+    ) {
+    }
 
     public function run(DemoContext $context): void
     {

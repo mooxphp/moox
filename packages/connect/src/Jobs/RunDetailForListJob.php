@@ -29,7 +29,8 @@ final class RunDetailForListJob implements ShouldQueue
         private int $detailEndpointId,
         private ?string $treeRunId = null,
         private bool $throwOnFailure = false,
-    ) {}
+    ) {
+    }
 
     public function handle(EndpointListToDetailOrchestrator $orchestrator): void
     {
