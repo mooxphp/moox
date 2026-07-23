@@ -44,54 +44,98 @@ final class KositInstaller
             $this->stageValidator($stagingDir, $stagingJar, $expectedJarName, $onDownloadStart);
             $this->stageXrechnung($stagingDir, $stagingXrechnungDir, $onDownloadStart);
 
-            /** @var array<string, string> $backups */
-            $backups = [];
-
-            if ($force) {
-                foreach ($paths->directories() as $dir) {
-                    if (File::isDirectory($dir)) {
-                        $backupPath = $dir.'.bak-'.uniqid('', true);
-                        if ($onDirectoryBackup !== null) {
-                            $onDirectoryBackup(basename($dir), basename($backupPath));
-                        }
-                        File::moveDirectory($dir, $backupPath);
-                        $backups[$dir] = $backupPath;
-                    }
-                }
-            }
+            $backups = $this->backupExistingInstall($paths, $force, $onDirectoryBackup);
 
             try {
-                File::ensureDirectoryExists($paths->validatorDir);
-                File::ensureDirectoryExists($paths->xrechnungDir);
-
-                if (! File::move($stagingJar, $paths->validatorDir.'/'.$expectedJarName)) {
-                    throw new RuntimeException('Failed to install verified validator JAR.');
-                }
-
-                File::copyDirectory($stagingXrechnungDir, $paths->xrechnungDir);
+                $this->promoteStagedArtifacts($paths, $stagingJar, $expectedJarName, $stagingXrechnungDir);
             } catch (\Throwable $e) {
-                foreach ($backups as $dir => $backupPath) {
-                    if (File::isDirectory($dir)) {
-                        File::deleteDirectory($dir);
-                    }
-
-                    if (File::isDirectory($backupPath)) {
-                        File::moveDirectory($backupPath, $dir);
-                    }
-                }
+                $this->rollbackBackups($backups);
 
                 throw $e instanceof RuntimeException
                     ? $e
                     : new RuntimeException($e->getMessage(), 0, $e);
             }
 
-            foreach ($backups as $backupPath) {
-                if (File::isDirectory($backupPath)) {
-                    File::deleteDirectory($backupPath);
-                }
-            }
+            $this->discardBackups($backups);
         } finally {
             File::deleteDirectory($stagingDir);
+        }
+    }
+
+    /**
+     * @param  callable(string, string): void|null  $onDirectoryBackup
+     * @return array<string, string>
+     */
+    private function backupExistingInstall(
+        KositInstallPaths $paths,
+        bool $force,
+        ?callable $onDirectoryBackup,
+    ): array {
+        /** @var array<string, string> $backups */
+        $backups = [];
+
+        if (! $force) {
+            return $backups;
+        }
+
+        foreach ($paths->directories() as $dir) {
+            if (File::isDirectory($dir)) {
+                $backupPath = $dir.'.bak-'.uniqid('', true);
+                if ($onDirectoryBackup !== null) {
+                    $onDirectoryBackup(basename($dir), basename($backupPath));
+                }
+                File::moveDirectory($dir, $backupPath);
+                $backups[$dir] = $backupPath;
+            }
+        }
+
+        return $backups;
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    private function promoteStagedArtifacts(
+        KositInstallPaths $paths,
+        string $stagingJar,
+        string $expectedJarName,
+        string $stagingXrechnungDir,
+    ): void {
+        File::ensureDirectoryExists($paths->validatorDir);
+        File::ensureDirectoryExists($paths->xrechnungDir);
+
+        if (! File::move($stagingJar, $paths->validatorDir.'/'.$expectedJarName)) {
+            throw new RuntimeException('Failed to install verified validator JAR.');
+        }
+
+        File::copyDirectory($stagingXrechnungDir, $paths->xrechnungDir);
+    }
+
+    /**
+     * @param  array<string, string>  $backups
+     */
+    private function rollbackBackups(array $backups): void
+    {
+        foreach ($backups as $dir => $backupPath) {
+            if (File::isDirectory($dir)) {
+                File::deleteDirectory($dir);
+            }
+
+            if (File::isDirectory($backupPath)) {
+                File::moveDirectory($backupPath, $dir);
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, string>  $backups
+     */
+    private function discardBackups(array $backups): void
+    {
+        foreach ($backups as $backupPath) {
+            if (File::isDirectory($backupPath)) {
+                File::deleteDirectory($backupPath);
+            }
         }
     }
 

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Changed
+
+- Reduce cyclomatic complexity of `KositInstaller::install` by extracting
+  backup, promote, rollback, and discard phases ([#16](https://github.com/mooxphp/kosit-validator/issues/16)).
+  Checksum verification still runs in staging before any artefact is moved into
+  its final location; behaviour is unchanged.
+
 ### Fixed
 
 - SonarQube line-length (120 cols) findings in installer checksum messages, default
