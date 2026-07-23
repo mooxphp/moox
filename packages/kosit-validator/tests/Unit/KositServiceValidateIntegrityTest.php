@@ -57,8 +57,8 @@ it('rejects validate when the xrechnung bundle is missing', function (): void {
 });
 
 it('uses the verified xrechnung bundle instead of a tampered extracted tree', function (): void {
-    ['paths' => $paths] = seedVerifiedKositInstall();
-    file_put_contents($paths->xrechnungDir.'/scenarios.xml', '<scenarios><tampered/></scenarios>');
+    ['paths' => $paths, 'scenariosPath' => $scenariosPath] = seedVerifiedKositInstall();
+    file_put_contents($scenariosPath, '<scenarios><tampered/></scenarios>');
 
     $capturedScenariosPath = null;
 
