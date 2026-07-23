@@ -13,7 +13,8 @@ class KositResult
         public readonly ?string $reportXmlPath,
         public readonly ?string $reportHtmlPath,
         public readonly ?string $xmlPath = null,
-    ) {}
+    ) {
+    }
 
     public function passed(): bool
     {

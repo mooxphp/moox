@@ -37,7 +37,8 @@ class FetchMailsJob implements ShouldQueue
 
     public function __construct(
         public string $scope = 'default',
-    ) {}
+    ) {
+    }
 
     public function handle(GraphMailService $graph, MailInboxService $inbox): void
     {

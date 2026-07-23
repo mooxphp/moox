@@ -30,7 +30,8 @@ class InvoiceFactory
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
-    ) {}
+    ) {
+    }
 
     private function documentTypeCodeResolver(): DocumentTypeCodeResolver
     {

@@ -18,7 +18,8 @@ final class PackageSeedersStep
         private readonly Command $command,
         private readonly SeederOrderResolver $resolver,
         private readonly DemoConsole $console,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  list<string>|null  $onlySlugs

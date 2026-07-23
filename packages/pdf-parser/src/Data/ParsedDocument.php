@@ -11,7 +11,8 @@ class ParsedDocument
         public readonly string $text,
         public readonly string $parser,
         public readonly bool $layout = false,
-    ) {}
+    ) {
+    }
 
     public function isEmpty(): bool
     {

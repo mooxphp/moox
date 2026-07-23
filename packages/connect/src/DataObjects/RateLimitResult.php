@@ -13,7 +13,8 @@ final class RateLimitResult
         private int $limit,
         private int $remaining,
         private Carbon $reset
-    ) {}
+    ) {
+    }
 
     public function isAllowed(): bool
     {

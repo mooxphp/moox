@@ -56,7 +56,8 @@ class ApiConnection extends Model
         {
             public function __construct(
                 private ApiConnection $connection
-            ) {}
+            ) {
+            }
 
             /**
              * Execute an endpoint with dynamic route params and return decoded JSON.

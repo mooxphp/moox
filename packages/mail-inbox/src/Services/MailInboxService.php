@@ -23,7 +23,8 @@ class MailInboxService
 {
     public function __construct(
         private GraphMailService $graphService,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<int, Message>  $graphMessages

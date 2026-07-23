@@ -24,5 +24,7 @@ class AttributeServiceProvider extends MooxServiceProvider
             ->hasCommands();
     }
 
-    public function packageBooted(): void {}
+    public function packageBooted(): void
+    {
+    }
 }

@@ -12,7 +12,8 @@ final readonly class KositInstallPaths
     public function __construct(
         public string $validatorDir,
         public string $xrechnungDir,
-    ) {}
+    ) {
+    }
 
     public static function fromConfig(): self
     {

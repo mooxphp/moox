@@ -38,7 +38,8 @@ final class StoreBillDataJob implements ShouldQueue
 
     public function __construct(
         public int $inboxAttachmentId,
-    ) {}
+    ) {
+    }
 
     public function handle(EBilling $eBilling): void
     {

@@ -42,7 +42,8 @@ class DispatchRestoreCommand extends Command
         });
 
         Bus::batch($jobs)
-            ->then(function (Batch $batch) {})
+            ->then(function (Batch $batch) {
+            })
             ->catch(function (Batch $batch, Throwable $e) {
                 Log::error('Restore batch failed.', ['error' => $e->getMessage()]);
             })

@@ -50,7 +50,8 @@ class CategorySeeder extends Seeder
 
     public function __construct(
         private readonly ?int $count = null,
-    ) {}
+    ) {
+    }
 
     public function run(): void
     {

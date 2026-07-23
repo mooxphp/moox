@@ -25,7 +25,8 @@ class VerifyAttachmentProgressJob implements ShouldQueue
 
     public function __construct(
         public int $attachmentId,
-    ) {}
+    ) {
+    }
 
     public function handle(GraphMailService $graphMailService): void
     {

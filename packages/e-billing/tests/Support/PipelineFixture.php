@@ -14,7 +14,8 @@ final readonly class PipelineFixture
         public InboxMessage $message,
         public InboxAttachment $attachment,
         public EbillingDocument $document,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{message: InboxMessage, attachment: InboxAttachment, document: EbillingDocument}  $fixture

@@ -10,7 +10,8 @@ readonly class Contact
         public string $name,
         public ?string $phone,
         public ?string $email,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

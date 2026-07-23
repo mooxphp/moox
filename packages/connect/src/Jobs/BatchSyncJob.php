@@ -23,7 +23,8 @@ final class BatchSyncJob implements ShouldQueue
         private ApiConnection $api,
         private array $endpointIds,
         private array $parameters = []
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

@@ -13,7 +13,8 @@ readonly class ChargeDraft
         public ?string $reason_text = null,
         public ?float $base_amount = null,
         public ?float $percentage = null,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, mixed>

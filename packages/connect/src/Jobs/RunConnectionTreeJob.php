@@ -23,7 +23,8 @@ final class RunConnectionTreeJob implements ShouldQueue
         private int $connectionId,
         private int $levelDelaySeconds = 0,
         private ?int $startEndpointId = null,
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

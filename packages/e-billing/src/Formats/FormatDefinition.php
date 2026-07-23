@@ -14,5 +14,6 @@ readonly class FormatDefinition
         public ArtifactKind $artifactKind,
         public string $profile,
         public GeneratorStrategyInterface $strategy,
-    ) {}
+    ) {
+    }
 }

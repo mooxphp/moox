@@ -12,7 +12,8 @@ class DiscoverPackagesAction implements PackageDiscoveryInterface
 {
     public function __construct(
         private GitHubClientInterface $githubClient
-    ) {}
+    ) {
+    }
 
     /**
      * Discover packages by fetching repositories from GitHub and ensuring local folders exist

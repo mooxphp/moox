@@ -74,7 +74,8 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
     public function __construct(
         public int $inboxAttachmentId,
-    ) {}
+    ) {
+    }
 
     public function handle(
         GraphMailService $graph,

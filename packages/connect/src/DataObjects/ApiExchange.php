@@ -25,7 +25,8 @@ final class ApiExchange
         private int $statusCode,
         private Carbon $timestamp,
         private array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function getId(): string
     {

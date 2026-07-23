@@ -15,5 +15,6 @@ final class InvoiceCreated
 
     public function __construct(
         public readonly Invoice $invoice, // Extend Invoice in your host app if needed
-    ) {}
+    ) {
+    }
 }

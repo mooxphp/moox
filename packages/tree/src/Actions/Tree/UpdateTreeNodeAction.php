@@ -11,7 +11,9 @@ use Moox\Tree\Support\TreeGraphValidator;
 
 final class UpdateTreeNodeAction
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     /**
      * @param  array<string, mixed>  $attributes
