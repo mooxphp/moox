@@ -11,6 +11,7 @@
 
 ### Changed
 
+- Reduced cyclomatic/NPath complexity in `ValidateArtifactJob::handle` (named stages: resolve document/inputs, run validations, persist success/failure), `UnitCodeResolver::lookupMaps`, and `DocumentTypeCodeResolver::resolveLabel`. Behaviour unchanged.
 - Deduplicated KOSIT/veraPDF validation persistence in `ValidateArtifactJob` via `ArtifactValidationPersister`; supplemental verdicts (veraPDF) stay as closures so the shared seam does not type-hint optional validator packages. No behaviour change.
 - Replaced `GenerateXmlJob` / `ValidateXmlJob` / `MergeZugferdPdfJob` with `GenerateArtifactJob` → `ValidateArtifactJob` (generate-first pipeline).
 - `gateway_status` enum is now format-agnostic: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign`.

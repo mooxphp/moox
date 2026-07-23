@@ -19,6 +19,7 @@ use Moox\EBilling\Events\ArtifactValidated;
 use Moox\EBilling\Events\ArtifactValidationFailed;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
+use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
@@ -26,6 +27,7 @@ use Moox\EBilling\Support\ArtifactValidationPersister;
 use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\KositValidator\Actions\RecordKositValidation;
+use Moox\KositValidator\DTOs\KositResult;
 use Moox\KositValidator\Services\KositService;
 use Moox\KositValidator\Support\KositOutputPath;
 use Moox\MailInbox\Models\InboxAttachment;
@@ -54,7 +56,8 @@ class ValidateArtifactJob implements ShouldQueue
 
     public function __construct(
         public int $inboxAttachmentId,
-    ) {}
+    ) {
+    }
 
     public function handle(
         FormatRegistry $formatRegistry,
@@ -78,13 +81,112 @@ class ValidateArtifactJob implements ShouldQueue
             return;
         }
 
+        $document = $this->resolveActionableDocument($attachment, $pipelineFinalizer);
+
+        if ($document === null) {
+            return;
+        }
+
+        $formatId = $document->format !== ''
+            ? $document->format
+            : (string) config('e-billing.default_format', 'zugferd');
+        $definition = $formatRegistry->get($formatId);
+
+        $diskName = $document->storage_disk
+            ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
+
+        $xmlRelative = $document->xml_storage_path;
+        if ($xmlRelative === null || $xmlRelative === '') {
+            throw new InvalidArgumentException(
+                'Ebilling document has no xml_storage_path; run GenerateArtifactJob first.'
+            );
+        }
+
+        $this->setProgress(20);
+
+        $inputs = null;
+
+        try {
+            $inputs = $this->resolveValidationInputs($document, $definition, $formatId, $diskName);
+
+            $this->setProgress(40);
+
+            $invoiceData = $document->bill_data;
+            $invoiceDate = '';
+            if (is_array($invoiceData) && is_string($invoiceData['invoice_date'] ?? null)) {
+                $invoiceDate = $invoiceData['invoice_date'];
+            }
+
+            $dateSegment = EBillingArtifactNaming::invoiceDatePathSegment($invoiceDate);
+            $outcome = $this->runValidations(
+                $document,
+                $definition,
+                $inputs,
+                $dateSegment,
+                $kosit,
+                $veraPdf,
+            );
+
+            $this->setProgress(70);
+
+            $supplementalPersisters = $this->supplementalValidationPersisters(
+                $outcome['veraPdfResult'],
+                $recordVeraPdfValidation,
+            );
+
+            if ($outcome['passed']) {
+                $this->persistSuccess(
+                    $document,
+                    $attachment,
+                    $definition,
+                    $formatId,
+                    $diskName,
+                    $outcome['kositResult'],
+                    $supplementalPersisters,
+                    $validationPersister,
+                    $recordKositValidation,
+                );
+            } else {
+                $this->persistFailure(
+                    $document,
+                    $attachment,
+                    $formatId,
+                    $outcome['errorStrings'],
+                    $outcome['kositResult'],
+                    $supplementalPersisters,
+                    $validationPersister,
+                    $recordKositValidation,
+                );
+            }
+        } finally {
+            $tempXmlPath = $inputs?->tempXmlPath;
+            if (is_string($tempXmlPath) && is_file($tempXmlPath)) {
+                @unlink($tempXmlPath);
+            }
+        }
+
+        $this->setProgress(90);
+
+        $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+
+        $this->setProgress(100);
+    }
+
+    /**
+     * Returns the document to validate, or null when handle() must return early.
+     * Already-validated short-circuit finalizes the pipeline; unexpected statuses skip.
+     */
+    private function resolveActionableDocument(
+        InboxAttachment $attachment,
+        InboxMessagePipelineFinalizer $pipelineFinalizer,
+    ): ?EbillingDocument {
         $document = EbillingDocument::forSourceAttachment($attachment);
 
         if ($document?->gateway_status === EBillingAttachmentProcessingStatus::Validated) {
             $this->setProgress(100);
             $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
 
-            return;
+            return null;
         }
 
         $allowedStatuses = [
@@ -101,185 +203,218 @@ class ValidateArtifactJob implements ShouldQueue
             ]);
             $this->setProgress(100);
 
-            return;
+            return null;
         }
 
-        $formatId = is_string($document?->format) && $document->format !== ''
-            ? $document->format
-            : (string) config('e-billing.default_format', 'zugferd');
-        $definition = $formatRegistry->get($formatId);
+        return $document;
+    }
 
-        $diskName = $document?->storage_disk
-            ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
+    /**
+     * Builds absolute XML path (and PDF path / temp file for hybrid PDF formats).
+     */
+    private function resolveValidationInputs(
+        EbillingDocument $document,
+        FormatDefinition $definition,
+        string $formatId,
+        string $diskName,
+    ): ValidationInputs {
+        if ($definition->artifactKind === ArtifactKind::Pdf) {
+            $strategy = $definition->strategy;
+            if (! $strategy instanceof HybridArtifactGeneratorStrategyInterface) {
+                throw new LogicException(
+                    "Format [{$formatId}] declares a PDF artifact but its strategy does not "
+                    .'implement HybridArtifactGeneratorStrategyInterface.'
+                );
+            }
 
-        $xmlRelative = $document?->xml_storage_path;
+            $pdfRelative = $document->pdf_storage_path;
+            if ($pdfRelative === null || $pdfRelative === '') {
+                throw new InvalidArgumentException(
+                    'Ebilling document has no pdf_storage_path; run GenerateArtifactJob first.'
+                );
+            }
+
+            $absolutePdfPath = Storage::disk($diskName)->path($pdfRelative);
+            $xmlString = $strategy->extractXmlForValidation($absolutePdfPath);
+            $tempXmlPath = tempnam(sys_get_temp_dir(), 'ebilling-kosit-');
+            if ($tempXmlPath === false) {
+                throw new \RuntimeException('Failed to allocate temp file for KOSIT validation.');
+            }
+            file_put_contents($tempXmlPath, $xmlString);
+
+            return new ValidationInputs(
+                absoluteXmlPath: $tempXmlPath,
+                absolutePdfPath: $absolutePdfPath,
+                tempXmlPath: $tempXmlPath,
+            );
+        }
+
+        $xmlRelative = $document->xml_storage_path;
         if ($xmlRelative === null || $xmlRelative === '') {
             throw new InvalidArgumentException(
                 'Ebilling document has no xml_storage_path; run GenerateArtifactJob first.'
             );
         }
 
-        $this->setProgress(20);
+        return new ValidationInputs(
+            absoluteXmlPath: Storage::disk($diskName)->path($xmlRelative),
+            absolutePdfPath: null,
+            tempXmlPath: null,
+        );
+    }
 
-        $tempXmlPath = null;
-        $absolutePdfPath = null;
+    /**
+     * Runs KOSIT (+ optional veraPDF) and aggregates the outcome.
+     *
+     * @return array{
+     *     kositResult: KositResult,
+     *     veraPdfResult: ?VeraPdfResult,
+     *     passed: bool,
+     *     errorStrings: list<string>,
+     * }
+     */
+    private function runValidations(
+        EbillingDocument $document,
+        FormatDefinition $definition,
+        ValidationInputs $inputs,
+        string $dateSegment,
+        KositService $kosit,
+        VeraPdfService $veraPdf,
+    ): array {
+        $kositReportDirectory = KositOutputPath::resolve($dateSegment);
+        $kositResult = $kosit->validate($inputs->absoluteXmlPath, $kositReportDirectory);
 
-        try {
-            if ($definition->artifactKind === ArtifactKind::Pdf) {
-                $strategy = $definition->strategy;
-                if (! $strategy instanceof HybridArtifactGeneratorStrategyInterface) {
-                    throw new LogicException(
-                        "Format [{$formatId}] declares a PDF artifact but its strategy does not "
-                        .'implement HybridArtifactGeneratorStrategyInterface.'
-                    );
-                }
+        $this->setProgress(55);
 
-                $pdfRelative = $document?->pdf_storage_path;
-                if ($pdfRelative === null || $pdfRelative === '') {
-                    throw new InvalidArgumentException(
-                        'Ebilling document has no pdf_storage_path; run GenerateArtifactJob first.'
-                    );
-                }
+        $veraPdfResult = null;
+        $veraPdfConfigured = $definition->artifactKind === ArtifactKind::Pdf
+            && $veraPdf->isInstalled()
+            && $veraPdf->javaAvailable();
 
-                $absolutePdfPath = Storage::disk($diskName)->path($pdfRelative);
-                $xmlString = $strategy->extractXmlForValidation($absolutePdfPath);
-                $tempXmlPath = tempnam(sys_get_temp_dir(), 'ebilling-kosit-');
-                if ($tempXmlPath === false) {
-                    throw new \RuntimeException('Failed to allocate temp file for KOSIT validation.');
-                }
-                file_put_contents($tempXmlPath, $xmlString);
-                $absoluteXmlPath = $tempXmlPath;
-            } else {
-                $absoluteXmlPath = Storage::disk($diskName)->path($xmlRelative);
+        if ($veraPdfConfigured) {
+            if ($inputs->absolutePdfPath === null) {
+                throw new LogicException('Hybrid validation requires an absolute PDF path.');
             }
 
-            $this->setProgress(40);
-
-            $invoiceData = $document?->bill_data;
-            $invoiceDate = '';
-            if (is_array($invoiceData) && is_string($invoiceData['invoice_date'] ?? null)) {
-                $invoiceDate = $invoiceData['invoice_date'];
-            }
-
-            $dateSegment = EBillingArtifactNaming::invoiceDatePathSegment($invoiceDate);
-            $kositReportDirectory = KositOutputPath::resolve($dateSegment);
-
-            $kositResult = $kosit->validate($absoluteXmlPath, $kositReportDirectory);
-
-            $this->setProgress(55);
-
-            $veraPdfResult = null;
-            $veraPdfConfigured = $definition->artifactKind === ArtifactKind::Pdf
-                && $veraPdf->isInstalled()
-                && $veraPdf->javaAvailable();
-
-            if ($veraPdfConfigured) {
-                if ($absolutePdfPath === null) {
-                    throw new LogicException('Hybrid validation requires an absolute PDF path.');
-                }
-
-                $veraPdfReportDirectory = VeraPdfOutputPath::resolve(
-                    $dateSegment.'/'.($document?->getKey() ?? 'unknown')
-                );
-                $veraPdfResult = $veraPdf->validate($absolutePdfPath, $veraPdfReportDirectory);
-            }
-
-            $this->setProgress(70);
-
-            $kositPassed = $kositResult->passed();
-            $veraPdfPassed = $veraPdfResult === null || $veraPdfResult->passed();
-            $passed = $kositPassed && $veraPdfPassed;
-
-            $errorStrings = array_values(array_merge(
-                $kositPassed ? [] : $kositResult->errors(),
-                ($veraPdfResult !== null && ! $veraPdfPassed) ? $veraPdfResult->errors() : [],
-            ));
-
-            $supplementalPersisters = $this->supplementalValidationPersisters(
-                $veraPdfResult,
-                $recordVeraPdfValidation,
+            $veraPdfReportDirectory = VeraPdfOutputPath::resolve(
+                $dateSegment.'/'.($document->getKey() ?? 'unknown')
             );
-
-            if ($passed) {
-                $deliverablePath = $document?->deliverableStoragePath($definition->artifactKind);
-                if ($deliverablePath === null || $deliverablePath === '') {
-                    throw new InvalidArgumentException('Validated document has no deliverable storage path.');
-                }
-
-                $artifactContent = Storage::disk($diskName)->get($deliverablePath);
-                if (! is_string($artifactContent)) {
-                    throw new InvalidArgumentException('Deliverable artifact is missing from storage.');
-                }
-
-                $hash = hash('sha256', $artifactContent);
-
-                DB::transaction(function () use (
-                    $validationPersister,
-                    $recordKositValidation,
-                    $kositResult,
-                    $supplementalPersisters,
-                    $document,
-                    $attachment,
-                    $hash,
-                ): void {
-                    $validationPersister->persist(
-                        $document,
-                        $kositResult,
-                        $recordKositValidation,
-                        $supplementalPersisters,
-                    );
-
-                    if ($document !== null) {
-                        $document->artifact_content_hash = $hash;
-                        $document->gateway_status = EBillingAttachmentProcessingStatus::Validated;
-                        $document->processed_at = now();
-                        $document->save();
-                    }
-
-                    $attachment->markAsProcessed();
-                });
-
-                event(new ArtifactValidated($attachment->id, $formatId));
-            } else {
-                $failureMessage = $errorStrings !== [] ? implode('; ', $errorStrings) : 'Artifact validation failed';
-
-                DB::transaction(function () use (
-                    $validationPersister,
-                    $recordKositValidation,
-                    $kositResult,
-                    $supplementalPersisters,
-                    $attachment,
-                    $document,
-                    $failureMessage,
-                ): void {
-                    $validationPersister->persist(
-                        $document,
-                        $kositResult,
-                        $recordKositValidation,
-                        $supplementalPersisters,
-                    );
-
-                    if ($document !== null) {
-                        $document->gateway_status = EBillingAttachmentProcessingStatus::ValidationFailed;
-                        $document->save();
-                    }
-
-                    $attachment->markAsFailed($failureMessage);
-                });
-
-                event(new ArtifactValidationFailed($attachment->id, array_values($errorStrings), $formatId));
-            }
-        } finally {
-            if (is_string($tempXmlPath) && is_file($tempXmlPath)) {
-                @unlink($tempXmlPath);
-            }
+            $veraPdfResult = $veraPdf->validate($inputs->absolutePdfPath, $veraPdfReportDirectory);
         }
 
-        $this->setProgress(90);
+        $kositPassed = $kositResult->passed();
+        $veraPdfPassed = $veraPdfResult === null || $veraPdfResult->passed();
+        $passed = $kositPassed && $veraPdfPassed;
 
-        $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+        $errorStrings = array_values(array_merge(
+            $kositPassed ? [] : $kositResult->errors(),
+            ($veraPdfResult !== null && ! $veraPdfPassed) ? $veraPdfResult->errors() : [],
+        ));
 
-        $this->setProgress(100);
+        return [
+            'kositResult' => $kositResult,
+            'veraPdfResult' => $veraPdfResult,
+            'passed' => $passed,
+            'errorStrings' => $errorStrings,
+        ];
+    }
+
+    /**
+     * Passing branch: read deliverable, hash, transactional persist + status, event.
+     *
+     * @param  list<\Closure(EbillingDocument): void>  $supplementalPersisters
+     */
+    private function persistSuccess(
+        EbillingDocument $document,
+        InboxAttachment $attachment,
+        FormatDefinition $definition,
+        string $formatId,
+        string $diskName,
+        KositResult $kositResult,
+        array $supplementalPersisters,
+        ArtifactValidationPersister $validationPersister,
+        RecordKositValidation $recordKositValidation,
+    ): void {
+        $deliverablePath = $document->deliverableStoragePath($definition->artifactKind);
+        if ($deliverablePath === null || $deliverablePath === '') {
+            throw new InvalidArgumentException('Validated document has no deliverable storage path.');
+        }
+
+        $artifactContent = Storage::disk($diskName)->get($deliverablePath);
+        if (! is_string($artifactContent)) {
+            throw new InvalidArgumentException('Deliverable artifact is missing from storage.');
+        }
+
+        $hash = hash('sha256', $artifactContent);
+
+        DB::transaction(function () use (
+            $validationPersister,
+            $recordKositValidation,
+            $kositResult,
+            $supplementalPersisters,
+            $document,
+            $attachment,
+            $hash,
+        ): void {
+            $validationPersister->persist(
+                $document,
+                $kositResult,
+                $recordKositValidation,
+                $supplementalPersisters,
+            );
+
+            $document->artifact_content_hash = $hash;
+            $document->gateway_status = EBillingAttachmentProcessingStatus::Validated;
+            $document->processed_at = now();
+            $document->save();
+
+            $attachment->markAsProcessed();
+        });
+
+        event(new ArtifactValidated($attachment->id, $formatId));
+    }
+
+    /**
+     * Failing branch: transactional persist + ValidationFailed status, failure event.
+     *
+     * @param  list<string>  $errorStrings
+     * @param  list<\Closure(EbillingDocument): void>  $supplementalPersisters
+     */
+    private function persistFailure(
+        EbillingDocument $document,
+        InboxAttachment $attachment,
+        string $formatId,
+        array $errorStrings,
+        KositResult $kositResult,
+        array $supplementalPersisters,
+        ArtifactValidationPersister $validationPersister,
+        RecordKositValidation $recordKositValidation,
+    ): void {
+        $failureMessage = $errorStrings !== [] ? implode('; ', $errorStrings) : 'Artifact validation failed';
+
+        DB::transaction(function () use (
+            $validationPersister,
+            $recordKositValidation,
+            $kositResult,
+            $supplementalPersisters,
+            $attachment,
+            $document,
+            $failureMessage,
+        ): void {
+            $validationPersister->persist(
+                $document,
+                $kositResult,
+                $recordKositValidation,
+                $supplementalPersisters,
+            );
+
+            $document->gateway_status = EBillingAttachmentProcessingStatus::ValidationFailed;
+            $document->save();
+
+            $attachment->markAsFailed($failureMessage);
+        });
+
+        event(new ArtifactValidationFailed($attachment->id, array_values($errorStrings), $formatId));
     }
 
     /**
