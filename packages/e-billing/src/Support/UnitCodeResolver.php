@@ -76,37 +76,9 @@ final class UnitCodeResolver
 
         foreach ($records as $record) {
             $code = (string) $record->code;
-            $labelCandidates = array_filter([
-                mb_strtolower((string) $record->common_name),
-                mb_strtolower((string) ($record->symbol ?? '')),
-                mb_strtolower(__('data::enums/units.'.$code, [], 'de')),
-                mb_strtolower(__('data::enums/units.'.$code, [], 'en')),
-            ]);
-
-            $labels[$code] = __('data::enums/units.'.$code, [], 'de');
-            if ($labels[$code] === 'data::enums/units.'.$code) {
-                $labels[$code] = (string) $record->common_name;
-            }
-
-            foreach ($labelCandidates as $candidate) {
-                if ($candidate === '') {
-                    continue;
-                }
-
-                $exact[$candidate] = $code;
-
-                $firstToken = explode(' ', $candidate, 2)[0];
-                if ($firstToken !== '') {
-                    $prefix[$firstToken] = $code;
-                }
-
-                if (str_contains($candidate, ' (')) {
-                    $stem = strstr($candidate, ' (', true);
-                    if (is_string($stem) && $stem !== '') {
-                        $exact[$stem] = $code;
-                    }
-                }
-            }
+            $labelCandidates = $this->unitLabelCandidates($record);
+            $labels[$code] = $this->unitDisplayLabel($record, $code);
+            $this->indexUnitRecord($exact, $prefix, $code, $labelCandidates);
         }
 
         if (isset($exact['stück']) || isset($prefix['stück'])) {
@@ -119,5 +91,60 @@ final class UnitCodeResolver
             'prefix' => $prefix,
             'labels' => $labels,
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function unitLabelCandidates(StaticUnit $record): array
+    {
+        $code = (string) $record->code;
+
+        return array_values(array_filter([
+            mb_strtolower((string) $record->common_name),
+            mb_strtolower((string) ($record->symbol ?? '')),
+            mb_strtolower(__('data::enums/units.'.$code, [], 'de')),
+            mb_strtolower(__('data::enums/units.'.$code, [], 'en')),
+        ]));
+    }
+
+    private function unitDisplayLabel(StaticUnit $record, string $code): string
+    {
+        $label = __('data::enums/units.'.$code, [], 'de');
+        if ($label === 'data::enums/units.'.$code) {
+            return (string) $record->common_name;
+        }
+
+        return $label;
+    }
+
+    /**
+     * Indexes one record into the exact + prefix maps (mutates by reference).
+     *
+     * @param  array<string, string>  $exact
+     * @param  array<string, string>  $prefix
+     * @param  list<string>  $labelCandidates
+     */
+    private function indexUnitRecord(array &$exact, array &$prefix, string $code, array $labelCandidates): void
+    {
+        foreach ($labelCandidates as $candidate) {
+            if ($candidate === '') {
+                continue;
+            }
+
+            $exact[$candidate] = $code;
+
+            $firstToken = explode(' ', $candidate, 2)[0];
+            if ($firstToken !== '') {
+                $prefix[$firstToken] = $code;
+            }
+
+            if (str_contains($candidate, ' (')) {
+                $stem = strstr($candidate, ' (', true);
+                if (is_string($stem) && $stem !== '') {
+                    $exact[$stem] = $code;
+                }
+            }
+        }
     }
 }

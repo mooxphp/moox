@@ -61,6 +61,29 @@ final class DocumentTypeCodeResolver
             return $this->assertAllowed($lookup['exact'][$normalized], 'document_type', $documentType);
         }
 
+        $byContains = $this->resolveByContains($lookup, $normalized, $documentType);
+        if ($byContains !== null) {
+            return $byContains;
+        }
+
+        Log::warning('Unresolved UNTDID 1001 document type label.', [
+            'document_type' => $documentType,
+        ]);
+
+        throw new UnresolvedCodelistLabelException('document_type', $documentType);
+    }
+
+    /**
+     * Contains-match with priority ladder (credit note 381 > invoice 380 > first match).
+     *
+     * @param  array{
+     *     exact: array<string, string>,
+     *     contains: array<string, list<string>>,
+     *     labels: array<string, string>,
+     * }  $lookup
+     */
+    private function resolveByContains(array $lookup, string $normalized, string $documentType): ?string
+    {
         $allowed = array_flip($this->allowedCodes());
         $containsMatches = [];
 
@@ -78,23 +101,19 @@ final class DocumentTypeCodeResolver
             }
         }
 
-        if ($containsMatches !== []) {
-            if (isset($containsMatches[self::PRIMARY_CREDIT_NOTE_CODE])) {
-                return self::PRIMARY_CREDIT_NOTE_CODE;
-            }
-
-            if (isset($containsMatches[self::PRIMARY_INVOICE_CODE])) {
-                return self::PRIMARY_INVOICE_CODE;
-            }
-
-            return $this->assertAllowed((string) array_key_first($containsMatches), 'document_type', $documentType);
+        if ($containsMatches === []) {
+            return null;
         }
 
-        Log::warning('Unresolved UNTDID 1001 document type label.', [
-            'document_type' => $documentType,
-        ]);
+        if (isset($containsMatches[self::PRIMARY_CREDIT_NOTE_CODE])) {
+            return self::PRIMARY_CREDIT_NOTE_CODE;
+        }
 
-        throw new UnresolvedCodelistLabelException('document_type', $documentType);
+        if (isset($containsMatches[self::PRIMARY_INVOICE_CODE])) {
+            return self::PRIMARY_INVOICE_CODE;
+        }
+
+        return $this->assertAllowed((string) array_key_first($containsMatches), 'document_type', $documentType);
     }
 
     public function labelFor(string $code): string
