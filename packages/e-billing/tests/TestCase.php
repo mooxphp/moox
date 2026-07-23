@@ -20,7 +20,7 @@ class TestCase extends AppTestCase
         $this->runVeraPdfMigrations();
     }
 
-    protected function seedDocumentTypeAndUnitCodelists(): void
+    public function seedDocumentTypeAndUnitCodelists(): void
     {
         $this->artisan('moox:data:import-codelists', ['scheme' => 'untdid1001'])->assertSuccessful();
         $this->artisan('moox:data:import-codelists', ['scheme' => 'rec20'])->assertSuccessful();
