@@ -192,10 +192,8 @@ function seedKositInstallLayout(?string $base = null, ?array $xrechnungBundle = 
  * Does not fake Java — keep Process fakes and tampering at the call site.
  *
  * @return array{
- *     base: string,
  *     paths: KositInstallPaths,
  *     jarPath: string,
- *     jarBytes: string,
  *     bundlePath: string,
  *     scenariosPath: string
  * }
@@ -213,10 +211,8 @@ function seedVerifiedKositInstall(): array
     config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
 
     return [
-        'base' => $base,
         'paths' => $paths,
         'jarPath' => $jarPath,
-        'jarBytes' => $jarBytes,
         'bundlePath' => $bundlePath,
         'scenariosPath' => $scenariosPath,
     ];
