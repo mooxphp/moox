@@ -14,7 +14,8 @@ class FieldValuePurger
     public function __construct(
         protected BuilderMediaUsageSync $mediaUsageSync,
         protected EntityRegistry $entityRegistry,
-    ) {}
+    ) {
+    }
 
     public function purgeForRecord(string $entity, int|string $recordId, ?Model $record = null): void
     {

@@ -17,7 +17,8 @@ final class CustomFieldTableFilterQuery
 {
     public function __construct(
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  class-string<Model&InteractsWithCustomFields>  $modelClass

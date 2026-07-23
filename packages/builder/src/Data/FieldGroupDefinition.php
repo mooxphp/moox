@@ -27,7 +27,8 @@ readonly class FieldGroupDefinition
         public array $locationRules = [],
         public array $settings = [],
         public array $translations = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Whether the group is visible in the given context (admin, frontend, api).

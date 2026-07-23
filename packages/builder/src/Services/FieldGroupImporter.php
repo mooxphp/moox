@@ -24,7 +24,8 @@ class FieldGroupImporter
         protected FieldGroupDefinitionMapper $definitionMapper,
         protected DefinitionTranslator $definitionTranslator,
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $payload

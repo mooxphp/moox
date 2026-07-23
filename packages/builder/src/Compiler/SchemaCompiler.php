@@ -35,7 +35,8 @@ class SchemaCompiler
         protected CustomFieldsManager $customFieldsManager,
         protected StorableFieldCollector $storableFieldCollector,
         protected LocationMatcher $locationMatcher,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Collection<int, FieldGroupDefinition>  $fieldGroups

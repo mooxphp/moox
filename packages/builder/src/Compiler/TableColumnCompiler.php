@@ -33,7 +33,8 @@ class TableColumnCompiler
         protected BuilderLocaleResolver $localeResolver,
         protected BuilderValuesResolver $valuesResolver,
         protected RelationTableColumnQuery $relationTableColumnQuery,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Collection<int, FieldGroupDefinition>  $fieldGroups

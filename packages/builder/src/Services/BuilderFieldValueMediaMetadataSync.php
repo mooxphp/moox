@@ -15,7 +15,8 @@ final class BuilderFieldValueMediaMetadataSync
     public function __construct(
         protected CustomFieldsManager $customFieldsManager,
         protected EntityRegistry $entityRegistry,
-    ) {}
+    ) {
+    }
 
     public function syncForMedia(Media|int $media): void
     {

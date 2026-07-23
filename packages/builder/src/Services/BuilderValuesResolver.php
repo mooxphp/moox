@@ -23,7 +23,8 @@ class BuilderValuesResolver
         protected DefaultValue $defaultValue,
         protected BuilderLocaleResolver $localeResolver,
         protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Collection<int, FieldDefinition>  $fields

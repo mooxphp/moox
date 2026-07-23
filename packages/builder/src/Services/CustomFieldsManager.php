@@ -35,7 +35,8 @@ class CustomFieldsManager
         protected BuilderLocaleResolver $localeResolver,
         protected EntityRegistry $entityRegistry,
         protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  class-string  $resourceClass

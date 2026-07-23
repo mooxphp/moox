@@ -22,7 +22,8 @@ class FieldGroupValidator
         protected LocationConstraintOptions $locationConstraintOptions,
         protected FieldValidationRules $fieldValidationRules,
         protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

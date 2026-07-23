@@ -9,7 +9,9 @@ namespace Moox\Builder\FieldTypes\Value;
  */
 final class StoredPassword
 {
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function instance(): self
     {

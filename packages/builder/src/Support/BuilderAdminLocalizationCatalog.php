@@ -20,7 +20,8 @@ final class BuilderAdminLocalizationCatalog
 
     public function __construct(
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     public function isAvailable(): bool
     {

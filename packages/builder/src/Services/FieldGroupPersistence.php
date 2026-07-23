@@ -26,7 +26,8 @@ class FieldGroupPersistence
         protected DefinitionTranslator $definitionTranslator,
         protected EntityRegistry $entityRegistry,
         protected FieldValidationRules $fieldValidationRules,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

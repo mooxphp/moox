@@ -16,7 +16,8 @@ final class FieldGroupDefinitionMapper
         protected FieldGroupPersistence $fieldGroupPersistence,
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, mixed>

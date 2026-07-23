@@ -33,7 +33,8 @@ readonly class FieldDefinition
         public array $options = [],
         public Collection $children = new Collection,
         public array $translations = [],
-    ) {}
+    ) {
+    }
 
     public function showInTable(): bool
     {

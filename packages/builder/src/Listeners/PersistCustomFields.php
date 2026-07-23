@@ -13,7 +13,8 @@ class PersistCustomFields
 {
     public function __construct(
         protected CustomFieldsManager $customFieldsManager,
-    ) {}
+    ) {
+    }
 
     /**
      * Filament dispatches resource events with a payload array; Laravel passes

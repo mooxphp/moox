@@ -19,7 +19,8 @@ final class ClonedFieldGroupResolver
 
     public function __construct(
         protected DefinitionRegistry $definitionRegistry,
-    ) {}
+    ) {
+    }
 
     /**
      * @return Collection<int, FieldDefinition>

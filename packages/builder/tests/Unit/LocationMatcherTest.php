@@ -84,7 +84,9 @@ it('matches record type and user role params when present in the context', funct
 
 it('matches record status when present in the context', function (): void {
     $matcher = new LocationMatcher;
-    $record = new class extends Model {};
+    $record = new class extends Model
+    {
+    };
 
     $rules = [[
         ['param' => 'entity', 'operator' => '==', 'value' => 'draft'],
@@ -118,7 +120,9 @@ it('ignores record status when the param is missing on an existing record', func
         ['param' => 'record_status', 'operator' => '==', 'value' => 'published'],
     ]];
 
-    $record = new class extends Model {};
+    $record = new class extends Model
+    {
+    };
 
     expect($matcher->matches($rules, new LocationContext('item', [], $record)))->toBeTrue();
 });
@@ -157,7 +161,9 @@ it('ignores record specific params when the param is missing on an existing reco
         ['param' => 'record_type', 'operator' => '==', 'value' => 'page'],
     ]];
 
-    $record = new class extends Model {};
+    $record = new class extends Model
+    {
+    };
 
     expect($matcher->matches($rules, new LocationContext('item', [], $record)))
         ->toBeTrue();
@@ -171,7 +177,9 @@ it('does not ignore record specific params when the param is present and mismatc
         ['param' => 'record_type', 'operator' => '==', 'value' => 'page'],
     ]];
 
-    $record = new class extends Model {};
+    $record = new class extends Model
+    {
+    };
 
     expect($matcher->matches($rules, new LocationContext('item', ['record_type' => 'post'], $record)))
         ->toBeFalse();

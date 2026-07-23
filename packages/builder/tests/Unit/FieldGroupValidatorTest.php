@@ -431,7 +431,9 @@ it('rejects unknown user role values', function (): void {
     });
 });
 
-class ValidatorNoRolesUser extends Model {}
+class ValidatorNoRolesUser extends Model
+{
+}
 
 class ValidatorRolesUser extends Model
 {

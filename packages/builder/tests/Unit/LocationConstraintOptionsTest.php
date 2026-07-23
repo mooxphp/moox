@@ -131,7 +131,9 @@ it('collects record type options from selected entities', function (): void {
 
     $registry = new class($modelClass::class) extends EntityRegistry
     {
-        public function __construct(protected string $modelClass) {}
+        public function __construct(protected string $modelClass)
+        {
+        }
 
         public function modelFor(string $entity): ?string
         {
@@ -174,7 +176,8 @@ it('falls back to resource type select options when no records exist yet', funct
         public function __construct(
             protected string $modelClass,
             protected string $resourceClass,
-        ) {}
+        ) {
+        }
 
         public function modelFor(string $entity): ?string
         {
@@ -276,7 +279,8 @@ it('returns entity-aware condition params', function (): void {
         public function __construct(
             protected string $modelClass,
             protected string $resourceClass,
-        ) {}
+        ) {
+        }
 
         public function modelFor(string $entity): ?string
         {
@@ -320,7 +324,9 @@ it('memoizes record type options per model', function (): void {
 
     $registry = new class($modelClass::class) extends EntityRegistry
     {
-        public function __construct(protected string $modelClass) {}
+        public function __construct(protected string $modelClass)
+        {
+        }
 
         public function modelFor(string $entity): ?string
         {
@@ -366,7 +372,9 @@ it('memoizes record status options per model', function (): void {
 
     $registry = new class($modelClass::class) extends EntityRegistry
     {
-        public function __construct(protected string $modelClass) {}
+        public function __construct(protected string $modelClass)
+        {
+        }
 
         public function modelFor(string $entity): ?string
         {
@@ -403,7 +411,9 @@ it('exposes draft workflow statuses from resource helpers', function (): void {
 
     $registry = new class($resourceClass::class) extends EntityRegistry
     {
-        public function __construct(protected string $resourceClass) {}
+        public function __construct(protected string $resourceClass)
+        {
+        }
 
         public function resourceFor(string $entity): ?string
         {
@@ -483,7 +493,9 @@ class TaxonomyTermTestModel extends Model
     protected $table = 'taxonomy_terms';
 }
 
-class NoRolesUser extends Model {}
+class NoRolesUser extends Model
+{
+}
 
 class RolesUser extends Model
 {

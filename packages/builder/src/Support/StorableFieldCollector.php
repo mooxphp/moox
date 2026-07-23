@@ -12,7 +12,8 @@ final class StorableFieldCollector
 {
     public function __construct(
         protected FieldTypeRegistry $fieldTypeRegistry,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Collection<int, FieldDefinition>  $fields

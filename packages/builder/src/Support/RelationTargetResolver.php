@@ -27,7 +27,8 @@ final class RelationTargetResolver
 
     public function __construct(
         protected EntityRegistry $entityRegistry,
-    ) {}
+    ) {
+    }
 
     /**
      * @return class-string<Model>|null
