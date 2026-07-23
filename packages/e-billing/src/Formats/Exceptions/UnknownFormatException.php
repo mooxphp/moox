@@ -6,4 +6,6 @@ namespace Moox\EBilling\Formats\Exceptions;
 
 use InvalidArgumentException;
 
-final class UnknownFormatException extends InvalidArgumentException {}
+final class UnknownFormatException extends InvalidArgumentException
+{
+}

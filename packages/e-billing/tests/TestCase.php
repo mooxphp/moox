@@ -45,13 +45,15 @@ class TestCase extends AppTestCase
 
     private function runVeraPdfMigrations(): void
     {
+        $verapdfMigrationsPath = dirname(__DIR__, 2).'/verapdf/database/migrations';
+
         if (! Schema::hasTable('verapdf_validations')) {
-            $validations = include dirname(__DIR__, 2).'/verapdf/database/migrations/create_verapdf_validations_table.php.stub';
+            $validations = include $verapdfMigrationsPath.'/create_verapdf_validations_table.php.stub';
             $validations->up();
         }
 
         if (! Schema::hasTable('verapdf_validatables')) {
-            $validatables = include dirname(__DIR__, 2).'/verapdf/database/migrations/create_verapdf_validatables_table.php.stub';
+            $validatables = include $verapdfMigrationsPath.'/create_verapdf_validatables_table.php.stub';
             $validatables->up();
         }
     }

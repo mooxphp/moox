@@ -18,3 +18,7 @@
 - Pipeline events renamed to `ArtifactGenerated`, `ArtifactValidated`, `ArtifactValidationFailed`.
 - Filament invoice list: `gateway_status` badge column, gateway failure/processing tabs, and gateway status filter.
 - Artifact downloads (ZUGFeRD PDF / XML) are gated on `gateway_status = validated` and a stored `artifact_content_hash`.
+
+### Fixed
+
+- SonarQube line-length (120 cols) and brace-placement findings in the generate-then-validate pipeline files, `InvoiceResource`, `InvoiceFactory`/`ParsedInvoiceMapper`, `EbillingDocument`, and related tests/fixtures. Long lines were wrapped or extracted into named locals; the two empty-body classes (`ContainerTestCase`, `UnknownFormatException`) now put their opening brace on its own line. Pint/PHP-CS-Fixer has no fixer that enforces or auto-wraps a max line length (confirmed upstream: no such rule exists, by design — it can't always be fixed automatically), so this was done manually rather than wiring up a Pint rule.

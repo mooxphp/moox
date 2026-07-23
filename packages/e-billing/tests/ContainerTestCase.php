@@ -9,4 +9,6 @@ use Tests\TestCase as AppTestCase;
 /**
  * Boots the host application without migrating — for pure container / format seams.
  */
-class ContainerTestCase extends AppTestCase {}
+class ContainerTestCase extends AppTestCase
+{
+}

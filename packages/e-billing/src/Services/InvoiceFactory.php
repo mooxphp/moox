@@ -49,7 +49,9 @@ class InvoiceFactory
                     ->first();
 
                 $reviewStatus = $document?->review_status;
-                if ($reviewStatus === InvoiceProcessingStatus::HumanConfirmed || $reviewStatus === InvoiceProcessingStatus::Validated) {
+                $isReviewed = $reviewStatus === InvoiceProcessingStatus::HumanConfirmed
+                    || $reviewStatus === InvoiceProcessingStatus::Validated;
+                if ($isReviewed) {
                     throw new RuntimeException(
                         "Cannot re-create Invoice #{$existingInvoice->id} for attachment #{$attachment->id}: "
                         ."document review status is '{$reviewStatus->value}'. "
@@ -92,10 +94,13 @@ class InvoiceFactory
 
     private function buildDraftFromDto(InvoiceDto $dto): InvoiceDraft
     {
+        $documentType = $this->documentTypeCodeResolver()
+            ->resolveFromCodeOrLabel($dto->documentTypeCode, $dto->documentType);
+
         return new InvoiceDraft(
             invoice_number: $dto->invoiceNumber,
             invoice_date: $dto->invoiceDate,
-            document_type: $this->documentTypeCodeResolver()->resolveFromCodeOrLabel($dto->documentTypeCode, $dto->documentType),
+            document_type: $documentType,
             due_date: $dto->dueDate,
             currency: $dto->currency,
             customer_reference: $dto->customerReference,

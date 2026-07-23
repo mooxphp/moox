@@ -128,7 +128,10 @@ class ValidateArtifactJob implements ShouldQueue
             if ($definition->artifactKind === ArtifactKind::Pdf) {
                 $strategy = $definition->strategy;
                 if (! $strategy instanceof HybridArtifactGeneratorStrategyInterface) {
-                    throw new LogicException("Format [{$formatId}] declares a PDF artifact but its strategy does not implement HybridArtifactGeneratorStrategyInterface.");
+                    throw new LogicException(
+                        "Format [{$formatId}] declares a PDF artifact but its strategy does not "
+                        .'implement HybridArtifactGeneratorStrategyInterface.'
+                    );
                 }
 
                 $pdfRelative = $document?->pdf_storage_path;
@@ -316,7 +319,8 @@ class ValidateArtifactJob implements ShouldQueue
         $attachment->markAsFailed($exception?->getMessage() ?? 'ValidateArtifactJob failed');
 
         try {
-            app(InboxMessagePipelineFinalizer::class)->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+            app(InboxMessagePipelineFinalizer::class)
+                ->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
         } catch (Throwable $e) {
             Log::error('[EBilling] ValidateArtifactJob failed() finalizer error', [
                 'exception' => $e,

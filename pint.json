@@ -4,5 +4,9 @@
         "braces": {
             "position_after_functions_and_oop_constructs": "next"
         }
-    }
+    },
+    "notPath": [
+        "packages/e-billing/tests/ContainerTestCase.php",
+        "packages/e-billing/src/Formats/Exceptions/UnknownFormatException.php"
+    ]
 }
