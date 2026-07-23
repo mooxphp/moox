@@ -65,7 +65,8 @@ final class LocationConstraintOptions
         protected EntityRegistry $entityRegistry,
         protected TaxonomyService $taxonomyService,
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, string>

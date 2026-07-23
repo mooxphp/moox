@@ -21,7 +21,8 @@ final class ResolveBuilderAdminLocale
         protected BuilderAdminLocalizationCatalog $localizationCatalog,
         protected EntityRegistry $entityRegistry,
         protected CustomFieldsTranslatability $translatability,
-    ) {}
+    ) {
+    }
 
     public function handle(Request $request, Closure $next): Response
     {

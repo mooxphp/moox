@@ -22,7 +22,8 @@ class DefinitionRegistry
         protected LocationMatcher $locationMatcher,
         protected DefinitionTranslator $definitionTranslator,
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return Collection<int, FieldGroupDefinition>

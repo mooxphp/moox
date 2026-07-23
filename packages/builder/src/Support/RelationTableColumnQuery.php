@@ -21,7 +21,8 @@ final class RelationTableColumnQuery
 
     public function __construct(
         protected RelationTargetResolver $resolver,
-    ) {}
+    ) {
+    }
 
     public function canQuery(FieldDefinition $field): bool
     {

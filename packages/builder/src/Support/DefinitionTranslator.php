@@ -16,7 +16,8 @@ final class DefinitionTranslator
 {
     public function __construct(
         protected BuilderLocaleResolver $localeResolver,
-    ) {}
+    ) {
+    }
 
     public function localizeGroup(FieldGroupDefinition $group, ?string $locale = null): FieldGroupDefinition
     {

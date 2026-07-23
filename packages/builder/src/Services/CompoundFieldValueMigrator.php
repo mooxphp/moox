@@ -11,7 +11,8 @@ class CompoundFieldValueMigrator
 {
     public function __construct(
         protected FieldValuePurger $fieldValuePurger,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  list<string>  $entities
@@ -308,5 +309,6 @@ readonly class CompoundStorageContext
         public string $compoundFieldName,
         public string $compoundType,
         public ?string $layoutName = null,
-    ) {}
+    ) {
+    }
 }

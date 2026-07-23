@@ -30,7 +30,8 @@ class TableFilterCompiler
         protected StorableFieldCollector $storableFieldCollector,
         protected CustomFieldTableFilterQuery $filterQuery,
         protected RelationTargetResolver $relationTargetResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Collection<int, FieldGroupDefinition>  $fieldGroups

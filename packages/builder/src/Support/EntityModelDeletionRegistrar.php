@@ -16,7 +16,8 @@ class EntityModelDeletionRegistrar
     public function __construct(
         protected EntityRegistry $entityRegistry,
         protected FieldValuePurger $purger,
-    ) {}
+    ) {
+    }
 
     public function register(): void
     {

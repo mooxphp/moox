@@ -35,7 +35,9 @@ it('resolves record status from the current locale translation on draft-like mod
 });
 
 it('falls back to the main-table status when no translation status is available', function (): void {
-    $record = new class extends Model {};
+    $record = new class extends Model
+    {
+    };
 
     $record->setRawAttributes(['status' => 'archived']);
 

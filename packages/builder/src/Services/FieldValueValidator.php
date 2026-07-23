@@ -22,7 +22,8 @@ class FieldValueValidator
         protected FieldTypeRegistry $fieldTypeRegistry,
         protected FieldValidationRules $fieldValidationRules,
         protected ClonedFieldGroupResolver $clonedFieldGroupResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, list<string>>

@@ -16,7 +16,8 @@ class PurgeFieldValuesObserver
         protected FieldValuePurger $purger,
         protected FieldGroupPersistence $fieldGroupPersistence,
         protected CompoundFieldValueMigrator $compoundFieldValueMigrator,
-    ) {}
+    ) {
+    }
 
     public function deleting(FieldGroup|Field $model): void
     {

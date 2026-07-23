@@ -20,7 +20,8 @@ readonly class LocationContext
         public string $entity,
         public array $params = [],
         public ?Model $record = null,
-    ) {}
+    ) {
+    }
 
     public function get(string $param, mixed $default = null): mixed
     {
