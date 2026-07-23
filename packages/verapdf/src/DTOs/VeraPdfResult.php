@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\VeraPdf\DTOs;
 
+use SimpleXMLElement;
+
 class VeraPdfResult
 {
     public function __construct(
@@ -13,7 +15,8 @@ class VeraPdfResult
         public readonly ?string $reportXmlPath,
         public readonly ?string $reportHtmlPath,
         public readonly ?string $pdfPath = null,
-    ) {}
+    ) {
+    }
 
     public function passed(): bool
     {
@@ -41,14 +44,10 @@ class VeraPdfResult
     public function validationMessages(): array
     {
         if (! $this->reportXmlPath || ! file_exists($this->reportXmlPath)) {
-            $text = trim($this->stderr ?: $this->stdout);
-
-            return $this->failed() && $text !== ''
-                ? [['type' => 'error', 'text' => $text, 'location' => null, 'rule' => null]]
-                : [];
+            return $this->fallbackFromProcessOutput();
         }
 
-        $xml = @simplexml_load_file($this->reportXmlPath);
+        $xml = $this->loadReportXml();
 
         if ($xml === false) {
             return $this->failed()
@@ -60,54 +59,14 @@ class VeraPdfResult
         $failedRules = $xml->xpath('//rule[@status="failed"]') ?: [];
 
         foreach ($failedRules as $rule) {
-            $description = trim((string) ($rule->description ?? ''));
-            if ($description === '') {
-                $description = trim((string) $rule);
+            $message = $this->messageFromFailedRule($rule);
+            if ($message !== null) {
+                $messages[] = $message;
             }
-            if ($description === '') {
-                continue;
-            }
-
-            $clause = trim((string) ($rule['clause'] ?? ''));
-            $testNumber = trim((string) ($rule['testNumber'] ?? ''));
-            $specification = trim((string) ($rule['specification'] ?? ''));
-
-            $ruleId = match (true) {
-                $clause !== '' && $testNumber !== '' => $clause.'#'.$testNumber,
-                $clause !== '' => $clause,
-                $specification !== '' => $specification,
-                default => null,
-            };
-
-            $location = null;
-            $checks = $rule->xpath('./check[@status="failed"]') ?: [];
-            if ($checks !== []) {
-                $context = trim((string) ($checks[0]->context ?? ''));
-                $location = $context !== '' ? $context : null;
-            }
-
-            $messages[] = [
-                'type' => 'error',
-                'text' => $description,
-                'location' => $location,
-                'rule' => $ruleId,
-            ];
         }
 
         if ($messages === [] && $this->failed()) {
-            $statement = '';
-            $reports = $xml->xpath('//validationReport') ?: [];
-            if ($reports !== []) {
-                $statement = trim((string) ($reports[0]['statement'] ?? ''));
-            }
-            if ($statement !== '') {
-                $messages[] = [
-                    'type' => 'error',
-                    'text' => $statement,
-                    'location' => null,
-                    'rule' => null,
-                ];
-            }
+            return $this->fallbackStatementMessage($xml);
         }
 
         return $messages;
@@ -127,9 +86,98 @@ class VeraPdfResult
         );
     }
 
+    /**
+     * @return list<array{type: string, text: string, location: string|null, rule: string|null}>
+     */
+    private function fallbackFromProcessOutput(): array
+    {
+        $text = trim($this->stderr ?: $this->stdout);
+
+        return $this->failed() && $text !== ''
+            ? [['type' => 'error', 'text' => $text, 'location' => null, 'rule' => null]]
+            : [];
+    }
+
+    private function loadReportXml(): SimpleXMLElement|false
+    {
+        return @simplexml_load_file($this->reportXmlPath);
+    }
+
+    /**
+     * @return array{type: string, text: string, location: string|null, rule: string|null}|null
+     */
+    private function messageFromFailedRule(SimpleXMLElement $rule): ?array
+    {
+        $description = trim((string) ($rule->description ?? ''));
+        if ($description === '') {
+            $description = trim((string) $rule);
+        }
+        if ($description === '') {
+            return null;
+        }
+
+        $clause = trim((string) ($rule['clause'] ?? ''));
+        $testNumber = trim((string) ($rule['testNumber'] ?? ''));
+        $specification = trim((string) ($rule['specification'] ?? ''));
+
+        return [
+            'type' => 'error',
+            'text' => $description,
+            'location' => $this->locationFromFailedChecks($rule),
+            'rule' => $this->resolveRuleId($clause, $testNumber, $specification),
+        ];
+    }
+
+    private function resolveRuleId(string $clause, string $testNumber, string $specification): ?string
+    {
+        return match (true) {
+            $clause !== '' && $testNumber !== '' => $clause.'#'.$testNumber,
+            $clause !== '' => $clause,
+            $specification !== '' => $specification,
+            default => null,
+        };
+    }
+
+    private function locationFromFailedChecks(SimpleXMLElement $rule): ?string
+    {
+        $checks = $rule->xpath('./check[@status="failed"]') ?: [];
+        if ($checks === []) {
+            return null;
+        }
+
+        $context = trim((string) ($checks[0]->context ?? ''));
+
+        return $context !== '' ? $context : null;
+    }
+
+    /**
+     * @return list<array{type: string, text: string, location: string|null, rule: string|null}>
+     */
+    private function fallbackStatementMessage(SimpleXMLElement $xml): array
+    {
+        $statement = '';
+        $reports = $xml->xpath('//validationReport') ?: [];
+        if ($reports !== []) {
+            $statement = trim((string) ($reports[0]['statement'] ?? ''));
+        }
+
+        if ($statement === '') {
+            return [];
+        }
+
+        return [
+            [
+                'type' => 'error',
+                'text' => $statement,
+                'location' => null,
+                'rule' => null,
+            ],
+        ];
+    }
+
     private function isCompliantFromReport(): ?bool
     {
-        $xml = @simplexml_load_file($this->reportXmlPath);
+        $xml = $this->loadReportXml();
 
         if ($xml === false) {
             return null;
