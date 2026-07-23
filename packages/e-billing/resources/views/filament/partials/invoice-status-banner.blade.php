@@ -19,6 +19,7 @@
 <div
     class="mb-6 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4
         dark:border-gray-700 dark:bg-gray-800/40 sm:flex-row sm:items-center"
+>
     <div class="flex min-w-0 flex-1 flex-col gap-3">
         <div
             class="flex min-w-0 items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium {{ $bannerInnerClasses }}">
@@ -28,6 +29,7 @@
             <div
                 class="flex min-w-0 items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
                     {{ $gatewayBannerInnerClasses }}"
+            >
                 <span class="min-w-0">{{ $gatewayBanner['text'] }}</span>
             </div>
         @endif
