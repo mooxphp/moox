@@ -38,20 +38,44 @@ class InstallVeraPdfCommand extends Command
 
         $basePath = $veraPdf->basePath();
 
-        if ($veraPdf->isInstalled() && ! $this->option('force')) {
-            if ($veraPdf->hasCliBinaries()) {
-                $this->components->info('veraPDF is already installed. Use --force to reinstall.');
-
-                return self::SUCCESS;
-            }
-
-            $this->components->error(
-                'veraPDF launcher found but CLI pack is missing. Run php artisan verapdf:install --force to install the CLI pack only.'
-            );
-
-            return self::FAILURE;
+        if (($status = $this->checkAlreadyInstalled($veraPdf)) !== null) {
+            return $status;
         }
 
+        if (($status = $this->performInstall($veraPdf, $basePath)) !== null) {
+            return $status;
+        }
+
+        return $this->reportSuccess($veraPdf);
+    }
+
+    /**
+     * @return int|null Failure/success exit code, or null to continue
+     */
+    private function checkAlreadyInstalled(VeraPdfService $veraPdf): ?int
+    {
+        if (! $veraPdf->isInstalled() || $this->option('force')) {
+            return null;
+        }
+
+        if ($veraPdf->hasCliBinaries()) {
+            $this->components->info('veraPDF is already installed. Use --force to reinstall.');
+
+            return self::SUCCESS;
+        }
+
+        $this->components->error(
+            'veraPDF launcher found but CLI pack is missing. Run php artisan verapdf:install --force to install the CLI pack only.'
+        );
+
+        return self::FAILURE;
+    }
+
+    /**
+     * @return int|null Failure exit code, or null on success
+     */
+    private function performInstall(VeraPdfService $veraPdf, string $basePath): ?int
+    {
         // Stage download/extract outside base_path so --force wipe happens only after integrity checks.
         $stagingDir = rtrim(sys_get_temp_dir(), '/\\').'/verapdf-install-'.uniqid('', true);
 
@@ -59,55 +83,11 @@ class InstallVeraPdfCommand extends Command
             File::ensureDirectoryExists($stagingDir);
 
             $zipPath = $stagingDir.'/verapdf-installer.zip';
-            $versionLabel = 'veraPDF v'.config('verapdf.installer.version');
-            $this->downloadFile(
-                (string) config('verapdf.installer.download_url'),
-                $zipPath,
-                $versionLabel
-            );
-
-            $this->components->info('Verifying installer checksum ...');
-            InstallerChecksum::assertMatches(
-                $zipPath,
-                (string) config('verapdf.installer.sha256', '')
-            );
+            $this->downloadAndVerify($zipPath);
 
             $extractDir = $stagingDir.'/extracted';
-            File::ensureDirectoryExists($extractDir);
-            $this->components->info('Extracting veraPDF installer ...');
-            SafeZipExtractor::extract($zipPath, $extractDir);
-
-            if ($this->option('force') && File::exists($basePath)) {
-                $this->components->warn("Deleting existing installation at {$basePath}");
-                File::deleteDirectory($basePath);
-            }
-
-            File::ensureDirectoryExists($basePath);
-
-            $installerJar = $this->findInstallerJar($extractDir);
-            $autoInstallXml = $stagingDir.'/auto-install.xml';
-            $this->writeAutoInstallXml($autoInstallXml, $basePath);
-
-            $this->components->info('Running headless veraPDF installer ...');
-
-            $java = (string) config('verapdf.java_binary', 'java');
-            $result = Process::timeout(1200)->run([
-                $java,
-                '-Djava.awt.headless=true',
-                '-jar', $installerJar,
-                $autoInstallXml,
-            ]);
-
-            if (! $result->successful() && ! $veraPdf->isInstalled()) {
-                throw new RuntimeException(
-                    'veraPDF installer failed: '.trim($result->errorOutput() ?: $result->output())
-                );
-            }
-
-            $launcher = $basePath.'/'.config('verapdf.paths.launcher', 'verapdf');
-            if (is_file($launcher) && PHP_OS_FAMILY !== 'Windows') {
-                chmod($launcher, 0755);
-            }
+            $this->extractAndPrepare($zipPath, $extractDir, $basePath);
+            $this->runHeadlessInstaller($veraPdf, $extractDir, $stagingDir, $basePath);
         } catch (RuntimeException $e) {
             $this->components->error($e->getMessage());
 
@@ -118,6 +98,73 @@ class InstallVeraPdfCommand extends Command
             }
         }
 
+        return null;
+    }
+
+    private function downloadAndVerify(string $zipPath): void
+    {
+        $versionLabel = 'veraPDF v'.config('verapdf.installer.version');
+        $this->downloadFile(
+            (string) config('verapdf.installer.download_url'),
+            $zipPath,
+            $versionLabel
+        );
+
+        $this->components->info('Verifying installer checksum ...');
+        InstallerChecksum::assertMatches(
+            $zipPath,
+            (string) config('verapdf.installer.sha256', '')
+        );
+    }
+
+    private function extractAndPrepare(string $zipPath, string $extractDir, string $basePath): void
+    {
+        File::ensureDirectoryExists($extractDir);
+        $this->components->info('Extracting veraPDF installer ...');
+        SafeZipExtractor::extract($zipPath, $extractDir);
+
+        if ($this->option('force') && File::exists($basePath)) {
+            $this->components->warn("Deleting existing installation at {$basePath}");
+            File::deleteDirectory($basePath);
+        }
+
+        File::ensureDirectoryExists($basePath);
+    }
+
+    private function runHeadlessInstaller(
+        VeraPdfService $veraPdf,
+        string $extractDir,
+        string $stagingDir,
+        string $basePath,
+    ): void {
+        $installerJar = $this->findInstallerJar($extractDir);
+        $autoInstallXml = $stagingDir.'/auto-install.xml';
+        $this->writeAutoInstallXml($autoInstallXml, $basePath);
+
+        $this->components->info('Running headless veraPDF installer ...');
+
+        $java = (string) config('verapdf.java_binary', 'java');
+        $result = Process::timeout(1200)->run([
+            $java,
+            '-Djava.awt.headless=true',
+            '-jar', $installerJar,
+            $autoInstallXml,
+        ]);
+
+        if (! $result->successful() && ! $veraPdf->isInstalled()) {
+            throw new RuntimeException(
+                'veraPDF installer failed: '.trim($result->errorOutput() ?: $result->output())
+            );
+        }
+
+        $launcher = $basePath.'/'.config('verapdf.paths.launcher', 'verapdf');
+        if (is_file($launcher) && PHP_OS_FAMILY !== 'Windows') {
+            chmod($launcher, 0755);
+        }
+    }
+
+    private function reportSuccess(VeraPdfService $veraPdf): int
+    {
         try {
             $launcherPath = $veraPdf->launcherPath();
         } catch (RuntimeException $e) {

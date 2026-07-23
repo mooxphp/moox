@@ -7,6 +7,7 @@ namespace Moox\VeraPdf\Commands;
 use Illuminate\Console\Command;
 use Moox\VeraPdf\Actions\RecordVeraPdfValidation;
 use Moox\VeraPdf\Commands\Concerns\InteractsWithVeraPdfEnvironment;
+use Moox\VeraPdf\DTOs\VeraPdfResult;
 use Moox\VeraPdf\Services\VeraPdfService;
 use RuntimeException;
 
@@ -47,6 +48,16 @@ class ValidateCommand extends Command
             return self::FAILURE;
         }
 
+        $this->reportValidationResult($result);
+
+        $validation = $recordVeraPdfValidation($result);
+        $this->line("  Validation ID: <info>{$validation->id}</info>");
+
+        return $result->passed() ? self::SUCCESS : self::FAILURE;
+    }
+
+    private function reportValidationResult(VeraPdfResult $result): void
+    {
         if ($result->passed()) {
             $this->components->info('Validation passed.');
         } else {
@@ -68,10 +79,5 @@ class ValidateCommand extends Command
         if ($result->reportHtmlPath) {
             $this->line("  Report HTML: <info>{$result->reportHtmlPath}</info>");
         }
-
-        $validation = $recordVeraPdfValidation($result);
-        $this->line("  Validation ID: <info>{$validation->id}</info>");
-
-        return $result->passed() ? self::SUCCESS : self::FAILURE;
     }
 }
