@@ -19,7 +19,6 @@ class UserSessionServiceProvider extends MooxServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations([
-                'create_sessions_table',
                 'extend_sessions_table',
             ])
             ->hasCommand(InstallCommand::class);

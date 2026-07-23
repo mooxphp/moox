@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithPagination;
 use Moox\Core\Support\Scopes\ScopeValue;
 use Moox\Localization\Models\Localization;
@@ -275,10 +276,12 @@ class MediaPickerModal extends Component implements HasForms
             ->disabled(fn (): bool => $this->shouldLockCollectionSelection())
             ->live();
 
+        // Same approach as ListMedia: do not use live() + $set('files', null).
+        // Clearing the FileUpload mid-batch cancels sibling uploads when multiple
+        // files are selected at once. Skip already handled files via hash.
         $upload = FileUpload::make('files')
             ->label(__('media::fields.upload'))
-            ->live()
-            ->afterStateUpdated(function ($state, $get, $set) {
+            ->afterStateUpdated(function ($state, $get) {
                 if (! $state) {
                     return;
                 }
@@ -290,17 +293,19 @@ class MediaPickerModal extends Component implements HasForms
                 $files = is_array($state) ? $state : [$state];
 
                 foreach ($files as $tempFile) {
-                    if (! $tempFile || ! file_exists($tempFile->getRealPath())) {
+                    $realPath = $this->temporaryUploadPath($tempFile);
+
+                    if ($realPath === null) {
                         continue;
                     }
 
-                    $fileHash = hash_file('sha256', $tempFile->getRealPath());
+                    $fileHash = hash_file('sha256', $realPath);
 
-                    if (in_array($fileHash, $this->processedHashes)) {
+                    if (in_array($fileHash, $this->processedHashes, true)) {
                         continue;
                     }
 
-                    $fileName = $tempFile->getClientOriginalName();
+                    $fileName = $this->temporaryUploadOriginalName($tempFile);
 
                     $existingMedia = $this->applyMediaScope(Media::query())
                         ->where(function ($query) use ($fileName, $fileHash) {
@@ -313,6 +318,8 @@ class MediaPickerModal extends Component implements HasForms
                         ->first();
 
                     if ($existingMedia) {
+                        $this->processedHashes[] = $fileHash;
+
                         Notification::make()
                             ->warning()
                             ->title(__('media::fields.duplicate_file'))
@@ -411,11 +418,9 @@ class MediaPickerModal extends Component implements HasForms
                     }
                 }
 
-                // Formular zurücksetzen und Media-Liste aktualisieren
-                $set('files', null);
-                $this->refreshMedia();
-
                 if ($uploadedCount > 0) {
+                    $this->refreshMedia();
+
                     Notification::make()
                         ->success()
                         ->title(__('media::fields.file_uploaded_success'))
@@ -787,5 +792,33 @@ class MediaPickerModal extends Component implements HasForms
             'collectionOptions' => $collectionOptions,
             'mimeTypeLabels' => MediaIconHelper::getIconMapWithLabels(),
         ]);
+    }
+
+    protected function temporaryUploadPath(mixed $tempFile): ?string
+    {
+        if ($tempFile instanceof TemporaryUploadedFile) {
+            $path = $tempFile->getRealPath();
+
+            return is_string($path) && $path !== '' && file_exists($path) ? $path : null;
+        }
+
+        if (is_string($tempFile) && $tempFile !== '' && file_exists($tempFile)) {
+            return $tempFile;
+        }
+
+        return null;
+    }
+
+    protected function temporaryUploadOriginalName(mixed $tempFile): string
+    {
+        if ($tempFile instanceof TemporaryUploadedFile) {
+            return $tempFile->getClientOriginalName();
+        }
+
+        if (is_string($tempFile)) {
+            return basename($tempFile);
+        }
+
+        return 'upload';
     }
 }

@@ -60,18 +60,6 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
-                'user' => [
-                    'label' => 'Alf Sessions',
-                    'icon' => 'gmdi-account-circle',
-                    'query' => [
-                        [
-                            'field' => 'user_name',
-                            'relation' => 'user',
-                            'operator' => '!=',
-                            'value' => 'Alf',
-                        ],
-                    ],
-                ],
             ],
         ],
     ],

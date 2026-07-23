@@ -10,6 +10,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\HasCustomFields;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Record\Enums\RecordStatus;
@@ -22,6 +23,7 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class RecordResource extends BaseRecordResource
 {
+    use HasCustomFields;
     use HasResourceTabs;
     use HasResourceTaxonomy;
 
@@ -76,6 +78,7 @@ class RecordResource extends BaseRecordResource
                             ),
                             RichEditor::make('description')
                                 ->label(__('core::core.description')),
+                            ...static::customFieldComponents(),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
@@ -103,6 +106,7 @@ class RecordResource extends BaseRecordResource
                                 ->schema([
                                     static::getAuthorSelect(),
                                 ]),
+                            ...static::customFieldComponents('sidebar'),
                             Section::make('')
                                 ->schema([
                                     ...static::getStandardCopyableFields(),
@@ -140,6 +144,7 @@ class RecordResource extends BaseRecordResource
                     ->label(__('core::core.content'))
                     ->searchable()
                     ->sortable(),
+                ...static::customFieldColumns(),
                 TextColumn::make('custom_properties')
                     ->limit(50),
                 TextColumn::make('created_at')
@@ -153,6 +158,7 @@ class RecordResource extends BaseRecordResource
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 ...static::getTaxonomyFilters(),
+                ...static::customFieldFilters(),
             ])->deferFilters(false)
             ->persistFiltersInSession();
     }

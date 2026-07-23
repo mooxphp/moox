@@ -46,7 +46,6 @@ trait HasTranslatableConfig
 
         $reflection = new \ReflectionClass($translator);
         $property = $reflection->getProperty('loaded');
-        $property->setAccessible(true);
         $property->setValue($translator, []);
     }
 }

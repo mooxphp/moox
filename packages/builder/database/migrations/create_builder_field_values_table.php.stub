@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('builder_field_values', function (Blueprint $table): void {
+            $table->id();
+            $table->string('entity');
+            $table->unsignedBigInteger('record_id');
+            $table->string('field_name');
+            $table->string('locale')->default('en_US');
+            $table->string('value_string')->nullable();
+            $table->text('value_text')->nullable();
+            $table->decimal('value_decimal', 20, 6)->nullable();
+            $table->date('value_date')->nullable();
+            $table->dateTime('value_datetime')->nullable();
+            $table->boolean('value_boolean')->nullable();
+            $table->json('value_json')->nullable();
+            $table->timestamps();
+
+            $table->unique(['entity', 'record_id', 'field_name', 'locale']);
+            $table->index(['entity', 'record_id', 'locale']);
+            $table->index(['entity', 'field_name', 'value_decimal']);
+            $table->index(['entity', 'field_name', 'value_date']);
+            $table->index(['entity', 'field_name', 'value_datetime']);
+            $table->index(
+                ['entity', 'field_name', 'locale', 'value_string'],
+                'bfv_entity_field_locale_string_index',
+            );
+            $table->index(
+                ['entity', 'field_name', 'locale', 'value_boolean'],
+                'bfv_entity_field_locale_boolean_index',
+            );
+            $table->index(['entity', 'record_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('builder_field_values');
+    }
+};

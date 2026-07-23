@@ -9,6 +9,7 @@ use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Moox\Builder\Database\Seeders\BuilderSeeder;
 use Moox\Demo\Seeding\FormatsFakerLocaleText;
 use Moox\Demo\Seeding\ReportsMooxSeederProgress;
 use Moox\Demo\Seeding\RunsMooxDemoAssets;
@@ -31,6 +32,10 @@ class ItemSeeder extends Seeder
     public function run(): void
     {
         $this->seed();
+
+        if (class_exists(BuilderSeeder::class)) {
+            $this->call(BuilderSeeder::class);
+        }
 
         if (class_exists(RunsMooxDemoAssets::class)) {
             RunsMooxDemoAssets::invoke($this);

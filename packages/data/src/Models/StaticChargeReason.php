@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Data\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Entities\Items\Static\BaseStaticModel;
 use Moox\Core\Traits\Base\BaseInModel;
 use Moox\Core\Traits\Simple\SingleSimpleInModel;
 
-class StaticChargeReason extends Model
+class StaticChargeReason extends BaseStaticModel
 {
     use BaseInModel, SingleSimpleInModel;
 
@@ -16,7 +16,5 @@ class StaticChargeReason extends Model
 
     protected $fillable = [
         'code',
-        'common_name',
-        'description',
     ];
 }

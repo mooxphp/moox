@@ -6,11 +6,12 @@ namespace Moox\Item\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Traits\InteractsWithCustomFields;
 use Moox\Item\Database\Factories\ItemFactory;
 
 class Item extends BaseItemModel
 {
-    use HasFactory;
+    use HasFactory, InteractsWithCustomFields;
 
     protected $fillable = [
         'title',

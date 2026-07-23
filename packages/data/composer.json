@@ -17,6 +17,7 @@
         }
     ],
     "require": {
+        "astrotomic/laravel-translatable": "^11.16",
         "moox/core": "dev-main"
     },
     "require-dev": {

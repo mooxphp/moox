@@ -1,0 +1,84 @@
+{
+    "name": "moox/builder",
+    "description": "Runtime custom field groups for Filament resources with typed value storage.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "Custom fields"
+    ],
+    "homepage": "https://moox.org/docs/builder",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Builder\\": "src",
+            "Moox\\Builder\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Builder\\Tests\\": "tests/",
+            "Moox\\Builder\\Tests\\Support\\": "tests/Support/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Builder\\BuilderServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox Builder",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/BuilderSeeder.php",
+                "auto_publish": "builder-config",
+                "plugins": [
+                    "Moox\\Builder\\Plugins\\BuilderPlugin"
+                ]
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "builder-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "builder-config"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-livewire": "^4.0"
+    },
+    "scripts": {
+        "test": [
+            "@php ../../vendor/bin/pest"
+        ],
+        "format": [
+            "@php ../../vendor/bin/pint"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

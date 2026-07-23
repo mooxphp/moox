@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticPaymentMeanResource\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Core\Entities\Items\Static\Pages\BaseListStatic;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticPaymentMeanResource;
 use Moox\Data\Models\StaticPaymentMean;
 
-class ListStaticPaymentMeans extends BaseListRecords
+class ListStaticPaymentMeans extends BaseListStatic
 {
     use HasListPageTabs;
 

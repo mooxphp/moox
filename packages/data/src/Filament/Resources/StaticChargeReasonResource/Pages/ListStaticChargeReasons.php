@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages;
 
-use Moox\Core\Entities\Items\Record\Pages\BaseListRecords;
+use Moox\Core\Entities\Items\Static\Pages\BaseListStatic;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource;
 use Moox\Data\Models\StaticChargeReason;
 
-class ListStaticChargeReasons extends BaseListRecords
+class ListStaticChargeReasons extends BaseListStatic
 {
     use HasListPageTabs;
 

@@ -15,8 +15,7 @@ final readonly class VeraPdfHealth
         public bool $guiArtefactsPresent,
         public string $outputPath,
         public bool $outputPathWritable,
-    ) {
-    }
+    ) {}
 
     public function isHealthy(): bool
     {
