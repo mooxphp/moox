@@ -4,18 +4,83 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Tests\Support;
 
+use Closure;
 use Illuminate\Support\Facades\Storage;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Jobs\ValidateArtifactJob;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Tests\TestCase;
+use Moox\KositValidator\DTOs\KositResult;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
+use Moox\VeraPdf\DTOs\VeraPdfResult;
 use Moox\Zugferd\ZugferdConverter;
 
 final class PipelineFixtures
 {
+    /**
+     * Seed codelists, build default bill data, and create a pipeline fixture.
+     *
+     * @param  (Closure(array<string, mixed>, string=): array{message: InboxMessage, attachment: InboxAttachment, document: EbillingDocument})|null  $documentFactory
+     */
+    public static function arrangeInvoice(
+        TestCase $test,
+        string $documentType = 'Rechnung',
+        string $documentTypeCode = '380',
+        ?Closure $documentFactory = null,
+    ): PipelineFixture {
+        $test->seedDocumentTypeAndUnitCodelists();
+
+        $billData = InvoiceFixtures::minimal(
+            documentType: $documentType,
+            documentTypeCode: $documentTypeCode,
+        )->toArray();
+
+        $factory = $documentFactory ?? self::hybridPipelineAttachment(...);
+
+        return PipelineFixture::fromArray($factory($billData));
+    }
+
+    public static function passingKositResult(string $xmlPath = '/tmp/validated.xml'): KositResult
+    {
+        return new KositResult(
+            exitCode: 0,
+            stdout: '',
+            stderr: '',
+            reportXmlPath: null,
+            reportHtmlPath: null,
+            xmlPath: $xmlPath,
+        );
+    }
+
+    public static function failingKositResult(
+        string $stderr = 'KOSIT validation failed',
+        string $xmlPath = '/tmp/validated.xml',
+    ): KositResult {
+        return new KositResult(
+            exitCode: 1,
+            stdout: '',
+            stderr: $stderr,
+            reportXmlPath: null,
+            reportHtmlPath: null,
+            xmlPath: $xmlPath,
+        );
+    }
+
+    public static function passingVeraPdfResult(string $pdfPath = '/tmp/validated.pdf'): VeraPdfResult
+    {
+        return new VeraPdfResult(
+            exitCode: 0,
+            stdout: '',
+            stderr: '',
+            reportXmlPath: null,
+            reportHtmlPath: null,
+            pdfPath: $pdfPath,
+        );
+    }
+
     /**
      * @param  array<string, mixed>  $billData
      * @return array{message: InboxMessage, attachment: InboxAttachment, document: EbillingDocument}

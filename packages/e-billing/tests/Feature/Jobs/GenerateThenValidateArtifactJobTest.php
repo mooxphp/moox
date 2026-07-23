@@ -15,11 +15,9 @@ use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Jobs\ValidateArtifactJob;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Support\ArtifactValidationPersister;
-use Moox\EBilling\Tests\Support\InvoiceFixtures;
 use Moox\EBilling\Tests\Support\PipelineFixtures;
 use Moox\EBilling\Tests\TestCase;
 use Moox\KositValidator\Actions\RecordKositValidation;
-use Moox\KositValidator\DTOs\KositResult;
 use Moox\KositValidator\Services\KositService;
 use Moox\VeraPdf\Actions\RecordVeraPdfValidation;
 use Moox\VeraPdf\DTOs\VeraPdfResult;
@@ -120,16 +118,12 @@ function runValidateArtifactJob(int $attachmentId): void
 }
 
 test('validate artifact job seam passes for hybrid zugferd in kosit-only degraded mode', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingHybridDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingHybridDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     mockHybridXmlExtraction();
 
@@ -138,14 +132,7 @@ test('validate artifact job seam passes for hybrid zugferd in kosit-only degrade
     [$kosit] = mockKositOnlyValidation();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::passingKositResult());
 
     runValidateArtifactJob($attachment->id);
 
@@ -164,16 +151,12 @@ test('validate artifact job seam passes for hybrid zugferd in kosit-only degrade
 });
 
 test('failed validation retains artifact and is not deliverable', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingHybridDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingHybridDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     mockHybridXmlExtraction();
 
@@ -182,14 +165,7 @@ test('failed validation retains artifact and is not deliverable', function (): v
     [$kosit] = mockKositOnlyValidation();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 1,
-            stdout: '',
-            stderr: 'KOSIT validation failed',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::failingKositResult());
 
     $pdfPath = (string) $document->pdf_storage_path;
 
@@ -207,16 +183,9 @@ test('failed validation retains artifact and is not deliverable', function (): v
 });
 
 test('validate artifact job short-circuits when already validated', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::hybridPipelineAttachment($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice($this);
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     $document->update([
         'gateway_status' => EBillingAttachmentProcessingStatus::Validated,
@@ -233,16 +202,12 @@ test('validate artifact job short-circuits when already validated', function ():
 });
 
 test('hybrid validation passes only when kosit and verapdf both pass', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingHybridDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingHybridDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     mockHybridXmlExtraction();
 
@@ -251,24 +216,10 @@ test('hybrid validation passes only when kosit and verapdf both pass', function 
     [$kosit, $veraPdf] = mockDualValidationServices();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::passingKositResult());
     $veraPdf->shouldReceive('validate')
         ->once()
-        ->andReturn(new VeraPdfResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            pdfPath: '/tmp/validated.pdf',
-        ));
+        ->andReturn(PipelineFixtures::passingVeraPdfResult());
 
     runValidateArtifactJob($attachment->id);
 
@@ -282,16 +233,12 @@ test('hybrid validation passes only when kosit and verapdf both pass', function 
 });
 
 test('hybrid validation fails when verapdf fails though kosit passes', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingHybridDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingHybridDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     mockHybridXmlExtraction();
 
@@ -300,14 +247,7 @@ test('hybrid validation fails when verapdf fails though kosit passes', function 
     [$kosit, $veraPdf] = mockDualValidationServices();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::passingKositResult());
     $veraPdf->shouldReceive('validate')
         ->once()
         ->andReturn(new VeraPdfResult(
@@ -333,30 +273,19 @@ test('hybrid validation fails when verapdf fails though kosit passes', function 
 });
 
 test('hybrid validation surfaces validator error on verapdf tooling failure', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingHybridDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingHybridDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     mockHybridXmlExtraction();
 
     [$kosit, $veraPdf] = mockDualValidationServices();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::passingKositResult());
     $veraPdf->shouldReceive('validate')
         ->once()
         ->andThrow(new RuntimeException('veraPDF launcher crashed'));
@@ -375,19 +304,13 @@ test('hybrid validation surfaces validator error on verapdf tooling failure', fu
         ->and($document->artifact_content_hash)->toBeNull();
 });
 
-// ─── XRechnung (XML-only) Test Seam ─────────────────────────────────
-
 test('xrechnung document validates with kosit only and reaches validated', function (): void {
-    $this->seedDocumentTypeAndUnitCodelists();
-
-    $billData = InvoiceFixtures::minimal(
-        documentType: 'Rechnung',
-        documentTypeCode: '380',
-    )->toArray();
-
-    $fixture = PipelineFixtures::validatingXmlDocument($billData);
-    $attachment = $fixture['attachment'];
-    $document = $fixture['document'];
+    $fixture = PipelineFixtures::arrangeInvoice(
+        $this,
+        documentFactory: PipelineFixtures::validatingXmlDocument(...),
+    );
+    $attachment = $fixture->attachment;
+    $document = $fixture->document;
 
     expect($document->format)->toBe('xrechnung')
         ->and($document->pdf_storage_path)->toBeNull();
@@ -397,14 +320,7 @@ test('xrechnung document validates with kosit only and reaches validated', funct
     [$kosit] = mockKositOnlyValidation();
     $kosit->shouldReceive('validate')
         ->once()
-        ->andReturn(new KositResult(
-            exitCode: 0,
-            stdout: '',
-            stderr: '',
-            reportXmlPath: null,
-            reportHtmlPath: null,
-            xmlPath: '/tmp/validated.xml',
-        ));
+        ->andReturn(PipelineFixtures::passingKositResult());
 
     runValidateArtifactJob($attachment->id);
 
