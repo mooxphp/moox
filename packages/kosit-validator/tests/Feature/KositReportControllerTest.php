@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Moox\KositValidator\Models\KositValidation;
+use Moox\KositValidator\Tests\FilamentTestCase;
 use Moox\KositValidator\Tests\Support\TestEnvironment;
-use Moox\KositValidator\Tests\TestCase;
 
-uses(TestCase::class);
+uses(FilamentTestCase::class);
 
 test('guests are redirected from the KOSIT HTML report route', function (): void {
     $validation = KositValidation::query()->create([

@@ -8,9 +8,9 @@ use Moox\KositValidator\Models\KositValidation;
 use Moox\KositValidator\Resources\KositValidationResource;
 use Moox\KositValidator\Resources\KositValidationResource\Pages\ListKositValidations;
 use Moox\KositValidator\Support\KositValidationMessages;
-use Moox\KositValidator\Tests\TestCase;
+use Moox\KositValidator\Tests\FilamentTestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+uses(FilamentTestCase::class, RefreshDatabase::class);
 
 it('exposes list and view pages on the resource', function (): void {
     expect(KositValidationResource::getPages())
