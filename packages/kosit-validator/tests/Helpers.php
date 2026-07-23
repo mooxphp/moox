@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Process;
 use Moox\KositValidator\Support\KositInstallPaths;
+use Moox\KositValidator\Support\KositValidatorArtifact;
 use Moox\KositValidator\Support\XrechnungBundlePath;
 
 function kositTempPath(string $prefix): string
@@ -183,6 +184,53 @@ function seedKositInstallLayout(?string $base = null, ?array $xrechnungBundle = 
     config(['kosit-validator.xrechnung.sha256' => $xrechnungBundle['sha256']]);
 
     return $base;
+}
+
+/**
+ * Seed a fully verified KOSIT install (layout + known jar bytes + matching validator.sha256).
+ * validate() passes from this state unless the caller tampers afterwards.
+ * Does not fake Java — keep Process fakes and tampering at the call site.
+ *
+ * @return array{
+ *     base: string,
+ *     paths: KositInstallPaths,
+ *     jarPath: string,
+ *     jarBytes: string,
+ *     bundlePath: string,
+ *     scenariosPath: string
+ * }
+ */
+function seedVerifiedKositInstall(): array
+{
+    $base = seedKositInstallLayout();
+    $paths = KositInstallPaths::fromBasePath($base);
+    $jarBytes = 'valid-jar-bytes';
+    $jarPath = $paths->validatorDir.'/'.KositValidatorArtifact::expectedJarFilename();
+    $bundlePath = XrechnungBundlePath::resolve($paths);
+    $scenariosPath = $paths->xrechnungDir.'/scenarios.xml';
+
+    file_put_contents($jarPath, $jarBytes);
+    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
+
+    return [
+        'base' => $base,
+        'paths' => $paths,
+        'jarPath' => $jarPath,
+        'jarBytes' => $jarBytes,
+        'bundlePath' => $bundlePath,
+        'scenariosPath' => $scenariosPath,
+    ];
+}
+
+/**
+ * Write a throwaway invoice XML under the kosit-invoice-* temp pattern cleaned by integrity afterEach.
+ */
+function kositInvoiceXmlPath(string $contents = '<invoice/>'): string
+{
+    $xml = kositTempPath('invoice').'.xml';
+    file_put_contents($xml, $contents);
+
+    return $xml;
 }
 
 function fakeKositJavaProcess(): void

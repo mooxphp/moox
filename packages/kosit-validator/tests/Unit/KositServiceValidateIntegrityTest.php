@@ -27,61 +27,37 @@ afterEach(function (): void {
 });
 
 it('rejects a tampered validator jar before running java', function (): void {
-    seedKositInstallLayout();
-    $jarBytes = 'valid-jar-bytes';
-    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
-
-    file_put_contents(app(KositService::class)->jarPath(), 'tampered');
+    ['jarPath' => $jarPath] = seedVerifiedKositInstall();
+    file_put_contents($jarPath, 'tampered');
 
     fakeKositJavaProcessRejectingJarExecution();
-    $xml = kositTempPath('invoice').'.xml';
-    file_put_contents($xml, '<invoice/>');
 
-    expect(fn () => app(KositService::class)->validate($xml))
+    expect(fn () => app(KositService::class)->validate(kositInvoiceXmlPath()))
         ->toThrow(RuntimeException::class, 'checksum mismatch');
 });
 
 it('rejects a tampered xrechnung bundle before running java', function (): void {
-    seedKositInstallLayout();
-    $jarBytes = 'valid-jar-bytes';
-    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
-    file_put_contents(app(KositService::class)->jarPath(), $jarBytes);
-
-    $paths = KositInstallPaths::fromConfig();
-    file_put_contents($paths->xrechnungDir.'/'.XrechnungBundlePath::BUNDLE_FILENAME, 'tampered-bundle');
+    ['bundlePath' => $bundlePath] = seedVerifiedKositInstall();
+    file_put_contents($bundlePath, 'tampered-bundle');
 
     fakeKositJavaProcessRejectingJarExecution();
-    $xml = kositTempPath('invoice').'.xml';
-    file_put_contents($xml, '<invoice/>');
 
-    expect(fn () => app(KositService::class)->validate($xml))
+    expect(fn () => app(KositService::class)->validate(kositInvoiceXmlPath()))
         ->toThrow(RuntimeException::class, 'checksum mismatch');
 });
 
 it('rejects validate when the xrechnung bundle is missing', function (): void {
-    seedKositInstallLayout();
-    $jarBytes = 'valid-jar-bytes';
-    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
-    file_put_contents(app(KositService::class)->jarPath(), $jarBytes);
-
-    $paths = KositInstallPaths::fromConfig();
-    unlink($paths->xrechnungDir.'/'.XrechnungBundlePath::BUNDLE_FILENAME);
+    ['bundlePath' => $bundlePath] = seedVerifiedKositInstall();
+    unlink($bundlePath);
 
     fakeKositJavaProcessRejectingJarExecution();
-    $xml = kositTempPath('invoice').'.xml';
-    file_put_contents($xml, '<invoice/>');
 
-    expect(fn () => app(KositService::class)->validate($xml))
+    expect(fn () => app(KositService::class)->validate(kositInvoiceXmlPath()))
         ->toThrow(RuntimeException::class, 'kosit:install --force');
 });
 
 it('uses the verified xrechnung bundle instead of a tampered extracted tree', function (): void {
-    seedKositInstallLayout();
-    $jarBytes = 'valid-jar-bytes';
-    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
-    file_put_contents(app(KositService::class)->jarPath(), $jarBytes);
-
-    $paths = KositInstallPaths::fromConfig();
+    ['paths' => $paths] = seedVerifiedKositInstall();
     file_put_contents($paths->xrechnungDir.'/scenarios.xml', '<scenarios><tampered/></scenarios>');
 
     $capturedScenariosPath = null;
@@ -104,10 +80,7 @@ it('uses the verified xrechnung bundle instead of a tampered extracted tree', fu
         );
     });
 
-    $xml = kositTempPath('invoice').'.xml';
-    file_put_contents($xml, '<invoice/>');
-
-    $result = app(KositService::class)->validate($xml);
+    $result = app(KositService::class)->validate(kositInvoiceXmlPath());
 
     expect($result->exitCode)->toBe(0)
         ->and($capturedScenariosPath)->toBeString()
@@ -116,17 +89,10 @@ it('uses the verified xrechnung bundle instead of a tampered extracted tree', fu
 });
 
 it('allows validate when the validator jar matches the pinned checksum', function (): void {
-    $jarBytes = 'valid-jar-bytes';
-    config(['kosit-validator.validator.sha256' => hash('sha256', $jarBytes)]);
-
-    seedKositInstallLayout();
-    file_put_contents(app(KositService::class)->jarPath(), $jarBytes);
-
+    seedVerifiedKositInstall();
     fakeKositJavaProcess();
-    $xml = kositTempPath('invoice').'.xml';
-    file_put_contents($xml, '<invoice/>');
 
-    $result = app(KositService::class)->validate($xml);
+    $result = app(KositService::class)->validate(kositInvoiceXmlPath());
 
     expect($result->exitCode)->toBe(0);
 });
