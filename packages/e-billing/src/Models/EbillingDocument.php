@@ -139,7 +139,11 @@ class EbillingDocument extends BaseItemModel
         if ($this->relationLoaded('kositValidations')) {
             /** @var KositValidation|null $latest */
             $latest = $this->kositValidations
-                ->sortByDesc(fn (KositValidation $validation): string => ($validation->validated_at?->format('Y-m-d H:i:s.u') ?? '').':'.$validation->getKey())
+                ->sortByDesc(function (KositValidation $validation): string {
+                    $validatedAt = $validation->validated_at?->format('Y-m-d H:i:s.u') ?? '';
+
+                    return $validatedAt.':'.$validation->getKey();
+                })
                 ->first();
 
             return $latest;
@@ -161,7 +165,11 @@ class EbillingDocument extends BaseItemModel
         if ($this->relationLoaded('veraPdfValidations')) {
             /** @var VeraPdfValidation|null $latest */
             $latest = $this->veraPdfValidations
-                ->sortByDesc(fn (VeraPdfValidation $validation): string => ($validation->validated_at?->format('Y-m-d H:i:s.u') ?? '').':'.$validation->getKey())
+                ->sortByDesc(function (VeraPdfValidation $validation): string {
+                    $validatedAt = $validation->validated_at?->format('Y-m-d H:i:s.u') ?? '';
+
+                    return $validatedAt.':'.$validation->getKey();
+                })
                 ->first();
 
             return $latest;
@@ -433,8 +441,12 @@ class EbillingDocument extends BaseItemModel
         return $entry;
     }
 
-    public function setFieldValidation(string $fieldName, string $status, ?string $source = null, ?string $matchedId = null): void
-    {
+    public function setFieldValidation(
+        string $fieldName,
+        string $status,
+        ?string $source = null,
+        ?string $matchedId = null,
+    ): void {
         $all = is_array($this->field_validations) ? $this->field_validations : [];
         $entry = ['status' => $status];
         if ($source !== null) {
@@ -498,8 +510,10 @@ class EbillingDocument extends BaseItemModel
         };
 
         if ($driver === 'mysql') {
+            $needsReviewSearch = "JSON_SEARCH({$qualified}, 'one', 'needs_review', NULL, '\$**.status') IS NOT NULL";
+            $missingSearch = "JSON_SEARCH({$qualified}, 'one', 'missing', NULL, '\$**.status') IS NOT NULL";
             $query->whereRaw(
-                "({$qualified} IS NOT NULL AND (JSON_SEARCH({$qualified}, 'one', 'needs_review', NULL, '\$**.status') IS NOT NULL OR JSON_SEARCH({$qualified}, 'one', 'missing', NULL, '\$**.status') IS NOT NULL))"
+                "({$qualified} IS NOT NULL AND ({$needsReviewSearch} OR {$missingSearch}))"
             );
 
             return;

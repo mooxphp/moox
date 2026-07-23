@@ -145,7 +145,10 @@ class GenerateArtifactJob implements ShouldQueue
         if ($definition->artifactKind === ArtifactKind::Pdf) {
             $strategy = $definition->strategy;
             if (! $strategy instanceof HybridArtifactGeneratorStrategyInterface) {
-                throw new LogicException("Format [{$formatId}] declares a PDF artifact but its strategy does not implement HybridArtifactGeneratorStrategyInterface.");
+                throw new LogicException(
+                    "Format [{$formatId}] declares a PDF artifact but its strategy does not "
+                    .'implement HybridArtifactGeneratorStrategyInterface.'
+                );
             }
 
             $pdfBinary = $strategy->mergeXmlIntoPdf($xml, $attachment->fullPath());
@@ -208,7 +211,8 @@ class GenerateArtifactJob implements ShouldQueue
         $attachment->markAsFailed($exception?->getMessage() ?? 'GenerateArtifactJob failed');
 
         try {
-            app(InboxMessagePipelineFinalizer::class)->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+            app(InboxMessagePipelineFinalizer::class)
+                ->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
         } catch (Throwable $e) {
             Log::error('[EBilling] GenerateArtifactJob failed() finalizer error', [
                 'exception' => $e,

@@ -118,7 +118,9 @@ final class InvoiceResource extends BaseItemResource
 
         return $query->with([
             'ebillingDocument',
-            'ebillingDocument.kositValidations' => fn ($query) => $query->orderByDesc('validated_at')->orderByDesc('id'),
+            'ebillingDocument.kositValidations' => fn ($query) => $query
+                ->orderByDesc('validated_at')
+                ->orderByDesc('id'),
         ]);
     }
 
@@ -202,7 +204,9 @@ final class InvoiceResource extends BaseItemResource
                 }),
             IconColumn::make('kosit_status')
                 ->label(__('e-billing::fields.kosit'))
-                ->getStateUsing(fn (Invoice $record): ?bool => $record->ebillingDocument?->latestKositValidation()?->passed)
+                ->getStateUsing(
+                    fn (Invoice $record): ?bool => $record->ebillingDocument?->latestKositValidation()?->passed
+                )
                 ->tooltip(function (Invoice $record): string {
                     $passed = $record->ebillingDocument?->latestKositValidation()?->passed;
 
@@ -265,14 +269,19 @@ final class InvoiceResource extends BaseItemResource
             TextColumn::make('gateway_status')
                 ->label(__('e-billing::fields.gateway_status'))
                 ->badge()
-                ->getStateUsing(fn (Invoice $record): ?EBillingAttachmentProcessingStatus => self::resolveGatewayStatus($record))
+                ->getStateUsing(
+                    fn (Invoice $record): ?EBillingAttachmentProcessingStatus => self::resolveGatewayStatus($record)
+                )
                 ->formatStateUsing(fn (?EBillingAttachmentProcessingStatus $state): string => $state?->label() ?? '—')
                 ->color(fn (?EBillingAttachmentProcessingStatus $state): string => $state?->color() ?? 'gray')
                 ->toggleable(),
             TextColumn::make('review_status')
                 ->label(__('e-billing::fields.status'))
                 ->badge()
-                ->getStateUsing(fn (Invoice $record): InvoiceProcessingStatus => self::resolveReviewStatus($record) ?? InvoiceProcessingStatus::ParserCreated)
+                ->getStateUsing(
+                    fn (Invoice $record): InvoiceProcessingStatus => self::resolveReviewStatus($record)
+                        ?? InvoiceProcessingStatus::ParserCreated
+                )
                 ->formatStateUsing(function ($state): string {
                     $enum = $state instanceof InvoiceProcessingStatus
                         ? $state
@@ -325,7 +334,9 @@ final class InvoiceResource extends BaseItemResource
             SelectFilter::make('gateway_status')
                 ->label(__('e-billing::fields.gateway_status'))
                 ->options(collect(EBillingAttachmentProcessingStatus::cases())
-                    ->mapWithKeys(fn (EBillingAttachmentProcessingStatus $case): array => [$case->value => $case->label()])
+                    ->mapWithKeys(
+                        fn (EBillingAttachmentProcessingStatus $case): array => [$case->value => $case->label()]
+                    )
                     ->all())
                 ->query(function (Builder $query, array $data): Builder {
                     $value = $data['value'] ?? null;
@@ -480,12 +491,16 @@ final class InvoiceResource extends BaseItemResource
 
     public static function getModelLabel(): string
     {
-        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.label', 'trans//e-billing::ebilling.invoice'));
+        $default = 'trans//e-billing::ebilling.invoice';
+
+        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.label', $default));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.plural_label', 'trans//e-billing::ebilling.invoices'));
+        $default = 'trans//e-billing::ebilling.invoices';
+
+        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.plural_label', $default));
     }
 
     public static function getNavigationLabel(): string

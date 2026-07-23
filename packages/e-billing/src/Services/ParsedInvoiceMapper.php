@@ -38,9 +38,11 @@ class ParsedInvoiceMapper
         return $this->documentTypeCodeResolver ??= app(DocumentTypeCodeResolver::class);
     }
 
-    public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice // Extend Invoice in your host app if needed
+    // Extend Invoice in your host app if needed
+    public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice
     {
-        $invoice = DB::transaction(function () use ($dto, $attachment): Invoice { // Extend Invoice in your host app if needed
+        // Extend Invoice in your host app if needed
+        $invoice = DB::transaction(function () use ($dto, $attachment): Invoice {
             $existingInvoice = $this->findExistingInvoiceForAttachment($attachment);
 
             if ($existingInvoice !== null) {
@@ -50,7 +52,9 @@ class ParsedInvoiceMapper
                     ->first();
 
                 $reviewStatus = $document?->review_status;
-                if ($reviewStatus === InvoiceProcessingStatus::HumanConfirmed || $reviewStatus === InvoiceProcessingStatus::Validated) {
+                $isReviewed = $reviewStatus === InvoiceProcessingStatus::HumanConfirmed
+                    || $reviewStatus === InvoiceProcessingStatus::Validated;
+                if ($isReviewed) {
                     throw new RuntimeException(
                         "Cannot re-create Invoice #{$existingInvoice->id} for attachment #{$attachment->id}: "
                         ."document review status is '{$reviewStatus->value}'. "
@@ -58,7 +62,8 @@ class ParsedInvoiceMapper
                     );
                 }
 
-                $existingInvoice->lines()->each(function (InvoiceLine $line): void { // Extend InvoiceLine in your host app if needed
+                // Extend InvoiceLine in your host app if needed
+                $existingInvoice->lines()->each(function (InvoiceLine $line): void {
                     $line->allowanceCharges()->delete();
                     $line->delete();
                 });
@@ -78,7 +83,8 @@ class ParsedInvoiceMapper
         return $invoice;
     }
 
-    private function linkDocumentToInvoice(InboxAttachment $attachment, Invoice $invoice): void // Extend Invoice in your host app if needed
+    // Extend Invoice in your host app if needed
+    private function linkDocumentToInvoice(InboxAttachment $attachment, Invoice $invoice): void
     {
         EbillingDocument::query()
             ->where('source_type', $attachment->getMorphClass())
@@ -86,7 +92,8 @@ class ParsedInvoiceMapper
             ->update(['invoice_id' => $invoice->id]);
     }
 
-    private function findExistingInvoiceForAttachment(InboxAttachment $attachment): ?Invoice // Extend Invoice in your host app if needed
+    // Extend Invoice in your host app if needed
+    private function findExistingInvoiceForAttachment(InboxAttachment $attachment): ?Invoice
     {
         $document = EbillingDocument::query()
             ->where('source_type', $attachment->getMorphClass())
@@ -103,10 +110,13 @@ class ParsedInvoiceMapper
 
     private function buildDraftFromDto(InvoiceDto $dto): InvoiceDraft
     {
+        $documentType = $this->documentTypeCodeResolver()
+            ->resolveFromCodeOrLabel($dto->documentTypeCode, $dto->documentType);
+
         return new InvoiceDraft(
             invoice_number: $dto->invoiceNumber,
             invoice_date: $dto->invoiceDate,
-            document_type: $this->documentTypeCodeResolver()->resolveFromCodeOrLabel($dto->documentTypeCode, $dto->documentType),
+            document_type: $documentType,
             due_date: $dto->dueDate,
             currency: $dto->currency,
             customer_reference: $dto->customerReference,

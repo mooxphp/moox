@@ -23,7 +23,11 @@ final class PipelineFixtures
     /**
      * Seed codelists, build default bill data, and create a pipeline fixture.
      *
-     * @param  (Closure(array<string, mixed>, string=): array{message: InboxMessage, attachment: InboxAttachment, document: EbillingDocument})|null  $documentFactory
+     * @param  (Closure(array<string, mixed>, string=): array{
+     *     message: InboxMessage,
+     *     attachment: InboxAttachment,
+     *     document: EbillingDocument,
+     * })|null  $documentFactory
      */
     public static function arrangeInvoice(
         TestCase $test,
@@ -178,8 +182,10 @@ final class PipelineFixtures
         $xmlPath = 'test/invoice.xml';
         $pdfPath = 'test/invoice.pdf';
 
+        $pdfFixturePath = dirname(__DIR__).'/fixtures/minimal-invoice.pdf';
+
         Storage::disk('zugferd')->put($xmlPath, '<?xml version="1.0"?><invoice/>');
-        Storage::disk('zugferd')->put($pdfPath, (string) file_get_contents(dirname(__DIR__).'/fixtures/minimal-invoice.pdf'));
+        Storage::disk('zugferd')->put($pdfPath, (string) file_get_contents($pdfFixturePath));
 
         $document = $fixture['document'];
         $document->update([

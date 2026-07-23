@@ -15,7 +15,13 @@ final class DocumentTypeCodeResolver
 
     private const PRIMARY_CREDIT_NOTE_CODE = '381';
 
-    /** @var array{exact: array<string, string>, contains: array<string, list<string>>, labels: array<string, string>}|null */
+    /**
+     * @var array{
+     *     exact: array<string, string>,
+     *     contains: array<string, list<string>>,
+     *     labels: array<string, string>,
+     * }|null
+     */
     private ?array $lookup = null;
 
     public static function resolve(string $documentType): string
