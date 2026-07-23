@@ -10,7 +10,9 @@ use Moox\Tree\Exceptions\InvalidTreeParentException;
 
 final class TreeGraphValidator
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function validateParentAssignment(Model $record, int|string|null $newParentId): void
     {

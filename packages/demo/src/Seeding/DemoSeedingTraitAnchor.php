@@ -15,5 +15,7 @@ final class DemoSeedingTraitAnchor extends Seeder
     use LoadsImageMediaPool;
     use ReportsMooxSeederProgress;
 
-    public function run(): void {}
+    public function run(): void
+    {
+    }
 }

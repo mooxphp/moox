@@ -12,7 +12,8 @@ final class ZugferdGeneratorStrategy implements HybridArtifactGeneratorStrategyI
 {
     public function __construct(
         private ZugferdConverter $converter,
-    ) {}
+    ) {
+    }
 
     public function generateXml(ZugferdInvoice $invoice, string $profile): string
     {

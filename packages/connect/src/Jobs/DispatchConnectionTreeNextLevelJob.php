@@ -26,7 +26,8 @@ final class DispatchConnectionTreeNextLevelJob implements ShouldQueue
         private array $levels,
         private string $treeRunId,
         private int $nextLevelIndex,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Batch $batch): void
     {

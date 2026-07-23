@@ -6,4 +6,6 @@ namespace Moox\Invoice\Exceptions;
 
 use InvalidArgumentException;
 
-class IncompleteInvoiceDataException extends InvalidArgumentException {}
+class IncompleteInvoiceDataException extends InvalidArgumentException
+{
+}

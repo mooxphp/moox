@@ -10,7 +10,9 @@ use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class CreateTreeNodeAction
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function handle(?int $parentId = null): Model
     {

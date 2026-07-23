@@ -11,7 +11,8 @@ class RepositoryCreationService
     public function __construct(
         private GitHubClientInterface $githubClient,
         private DevlinkService $devlinkService
-    ) {}
+    ) {
+    }
 
     /**
      * Find missing repositories for packages

@@ -12,7 +12,8 @@ class PackageInfo
         public readonly ?string $description = null,
         public readonly array $composer = [],
         public readonly bool $existsInOrganization = false
-    ) {}
+    ) {
+    }
 
     /**
      * Get type (alias for visibility for backward compatibility)

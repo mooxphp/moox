@@ -24,7 +24,8 @@ class InboxMessagePipelineFinalizer
 {
     public function __construct(
         private GraphMailService $graphService,
-    ) {}
+    ) {
+    }
 
     public function finalizeAfterAttachmentPipelineStep(?int $inboxMessageId): void
     {

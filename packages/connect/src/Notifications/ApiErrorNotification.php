@@ -13,7 +13,8 @@ final class ApiErrorNotification extends Notification
     public function __construct(
         private ApiConnection $api,
         private string $error
-    ) {}
+    ) {
+    }
 
     public function via(): array
     {

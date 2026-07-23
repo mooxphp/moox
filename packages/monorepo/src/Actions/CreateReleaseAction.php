@@ -13,7 +13,8 @@ class CreateReleaseAction
     public function __construct(
         private GitHubClientInterface $githubClient,
         private VersionManagerInterface $versionManager
-    ) {}
+    ) {
+    }
 
     /**
      * Create a release for a repository

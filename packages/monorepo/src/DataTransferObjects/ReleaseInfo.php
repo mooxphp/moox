@@ -14,7 +14,8 @@ class ReleaseInfo
         public readonly ?string $body = null,
         public readonly Collection $packages = new Collection,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Create from version string

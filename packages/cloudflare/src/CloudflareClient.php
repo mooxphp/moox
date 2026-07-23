@@ -12,7 +12,8 @@ class CloudflareClient
 {
     public function __construct(
         protected ?Client $httpClient = null,
-    ) {}
+    ) {
+    }
 
     public function isConfigured(): bool
     {

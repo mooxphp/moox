@@ -14,7 +14,8 @@ final class DemoLocalizationStep
 {
     public function __construct(
         private readonly DemoConsole $console,
-    ) {}
+    ) {
+    }
 
     public function run(DemoContext $context): void
     {

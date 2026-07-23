@@ -54,7 +54,8 @@ class ValidateArtifactJob implements ShouldQueue
 
     public function __construct(
         public int $inboxAttachmentId,
-    ) {}
+    ) {
+    }
 
     public function handle(
         FormatRegistry $formatRegistry,

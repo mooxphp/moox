@@ -11,5 +11,6 @@ final readonly class CacheClearResult
         public string $message,
         public ?string $output = null,
         public float $durationMs = 0,
-    ) {}
+    ) {
+    }
 }

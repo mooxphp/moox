@@ -11,7 +11,8 @@ readonly class BankAccount
         public ?string $bic,
         public ?string $bank_name,
         public ?string $account_holder,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

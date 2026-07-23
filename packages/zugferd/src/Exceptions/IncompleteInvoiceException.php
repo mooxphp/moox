@@ -6,4 +6,6 @@ namespace Moox\Zugferd\Exceptions;
 
 use RuntimeException;
 
-class IncompleteInvoiceException extends RuntimeException {}
+class IncompleteInvoiceException extends RuntimeException
+{
+}

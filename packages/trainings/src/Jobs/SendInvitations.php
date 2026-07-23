@@ -41,7 +41,9 @@ class SendInvitations implements ShouldQueue
      */
     public $backoff = 350;
 
-    public function __construct(public $invitationId) {}
+    public function __construct(public $invitationId)
+    {
+    }
 
     public function handle(): void
     {

@@ -34,7 +34,8 @@ final class RunConnectionTreeLevelJob implements ShouldQueue
         private array $levels,
         private string $treeRunId,
         private int $levelIndex = 0,
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

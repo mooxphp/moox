@@ -16,7 +16,8 @@ abstract class AbstractCacheTarget implements CacheTarget
         protected string $targetCategory = 'laravel',
         protected ?string $targetIcon = null,
         protected ?string $targetColor = null,
-    ) {}
+    ) {
+    }
 
     public function key(): string
     {

@@ -13,7 +13,8 @@ final class PersistTreeResourceCreateAction
 {
     public function __construct(
         private readonly TreeResourcePageExecutor $executor,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

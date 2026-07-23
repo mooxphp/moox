@@ -10,7 +10,9 @@ use Moox\Tree\Support\NestedSetGuard;
 
 final class AssignTreeNodePositionAction
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     private function nextSortOrder(int|string|null $parentId): int
     {

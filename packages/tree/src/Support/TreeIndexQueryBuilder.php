@@ -10,7 +10,9 @@ use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class TreeIndexQueryBuilder
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function applyQuery(Builder $query): Builder
     {

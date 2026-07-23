@@ -302,23 +302,41 @@ class WebPromptRuntime implements PromptRuntime
         ]);
     }
 
-    public function pause(string $message = 'Press ENTER to continue'): void {}
+    public function pause(string $message = 'Press ENTER to continue'): void
+    {
+    }
 
-    public function note(string $message): void {}
+    public function note(string $message): void
+    {
+    }
 
-    public function info(string $message): void {}
+    public function info(string $message): void
+    {
+    }
 
-    public function warning(string $message): void {}
+    public function warning(string $message): void
+    {
+    }
 
-    public function error(string $message): void {}
+    public function error(string $message): void
+    {
+    }
 
-    public function alert(string $message): void {}
+    public function alert(string $message): void
+    {
+    }
 
-    public function intro(string $message): void {}
+    public function intro(string $message): void
+    {
+    }
 
-    public function outro(string $message): void {}
+    public function outro(string $message): void
+    {
+    }
 
-    public function table(array $headers, array $rows): void {}
+    public function table(array $headers, array $rows): void
+    {
+    }
 
     public function spin(Closure $callback, string $message = ''): mixed
     {
@@ -345,7 +363,9 @@ class WebPromptRuntime implements PromptRuntime
         return $results;
     }
 
-    public function clear(): void {}
+    public function clear(): void
+    {
+    }
 
     public function form(): FormBuilder
     {

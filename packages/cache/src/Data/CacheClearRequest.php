@@ -19,5 +19,6 @@ final readonly class CacheClearRequest
         public array $urls = [],
         public array $tags = [],
         public array $hosts = [],
-    ) {}
+    ) {
+    }
 }

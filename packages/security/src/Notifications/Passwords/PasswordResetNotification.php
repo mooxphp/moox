@@ -28,7 +28,8 @@ class PasswordResetNotification extends Notification implements ShouldQueue
     public function __construct(
         public string $token,
         protected string $panelId,
-    ) {}
+    ) {
+    }
 
     public static function forToken(string $token, ?string $panelId = null): self
     {

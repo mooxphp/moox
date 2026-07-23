@@ -14,7 +14,9 @@ use Moox\UserDevice\Notifications\NewDeviceNotification;
 
 class UserDeviceTracker
 {
-    public function __construct(protected LocationService $locationService) {}
+    public function __construct(protected LocationService $locationService)
+    {
+    }
 
     public function addUserDevice(Request $request, Authenticatable $user, Agent $agent): void
     {

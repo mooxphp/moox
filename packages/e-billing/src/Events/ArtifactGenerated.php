@@ -9,5 +9,6 @@ final class ArtifactGenerated
     public function __construct(
         public int $inboxAttachmentId,
         public string $format,
-    ) {}
+    ) {
+    }
 }

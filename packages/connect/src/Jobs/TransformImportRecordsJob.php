@@ -48,7 +48,8 @@ final class TransformImportRecordsJob implements ShouldQueue
         private int $endpointId,
         private int $batchSize = 100,
         private ?string $syncBatchId = null
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<int, object>

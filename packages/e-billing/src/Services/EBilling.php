@@ -17,7 +17,8 @@ class EBilling
         private PdfParser $pdfParser,
         private ZugferdConverter $zugferdConverter,
         private InvoiceParserInterface $parser,
-    ) {}
+    ) {
+    }
 
     /**
      * PDF → Text → Invoice with supplier snapshot from config (no XML).

@@ -36,7 +36,8 @@ final class ResolvedRelation
         public readonly ?string $label,
         public readonly ?string $translationPrefix,
         public readonly array $config,
-    ) {}
+    ) {
+    }
 
     public function label(): string
     {

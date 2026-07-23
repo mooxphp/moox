@@ -26,7 +26,8 @@ final class SingleEndpointSyncJob implements ShouldQueue
         private ApiConnection $api,
         private ApiEndpoint $endpoint,
         private array $parameters = []
-    ) {}
+    ) {
+    }
 
     public function extend(\Closure $callback): self
     {

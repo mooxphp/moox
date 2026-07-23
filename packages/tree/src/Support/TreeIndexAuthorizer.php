@@ -9,7 +9,9 @@ use Moox\Tree\Config\TreeIndexConfiguration;
 
 final class TreeIndexAuthorizer
 {
-    public function __construct(private readonly TreeIndexConfiguration $configuration) {}
+    public function __construct(private readonly TreeIndexConfiguration $configuration)
+    {
+    }
 
     public function authorize(): void
     {

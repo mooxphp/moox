@@ -23,7 +23,8 @@ readonly class ScopeValue implements Wireable
         private string $source,
         private string $context,
         private string $boundary,
-    ) {}
+    ) {
+    }
 
     public static function make(string $origin, string $source, string $context, string $boundary): self
     {

@@ -16,5 +16,6 @@ final class InvoiceValidationCompleted
     public function __construct(
         public readonly EbillingDocument $document,
         public readonly bool $needsHumanReview,
-    ) {}
+    ) {
+    }
 }

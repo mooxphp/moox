@@ -13,7 +13,8 @@ class VeraPdfResult
         public readonly ?string $reportXmlPath,
         public readonly ?string $reportHtmlPath,
         public readonly ?string $pdfPath = null,
-    ) {}
+    ) {
+    }
 
     public function passed(): bool
     {
