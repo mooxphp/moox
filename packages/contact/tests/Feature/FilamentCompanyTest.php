@@ -28,8 +28,7 @@ it('can render table columns for contacts', function (): void {
     livewire(ListContacts::class)
         ->assertTableColumnExists('display_name')
         ->assertTableColumnExists('contact_type')
-        ->assertTableColumnExists('status')
-        ->assertTableColumnExists('is_active');
+        ->assertTableColumnExists('status');
 });
 
 it('create form contains expected contact fields', function (): void {
@@ -49,7 +48,6 @@ it('can create a contact via filament', function (): void {
             'status' => 'draft',
             'contact_type' => 'external',
             'gender' => 'unknown',
-            'is_active' => true,
         ], 'form')
         ->call('create')
         ->assertHasNoFormErrors();
@@ -62,7 +60,6 @@ it('can edit an existing contact via filament', function (): void {
         'display_name' => 'Max Mustermann',
         'status' => 'draft',
         'contact_type' => 'external',
-        'is_active' => true,
     ]);
 
     livewire(EditContact::class, ['record' => $contact->getKey()])

@@ -124,20 +124,9 @@ class StaffResource extends BaseRecordResource
                                 ]),
                             Section::make(__('staff::fields.settings'))
                                 ->schema([
-                                    Toggle::make('is_active')
-                                        ->label(__('staff::fields.is_active'))
-                                        ->default(true),
                                     Toggle::make('is_internal')
                                         ->label(__('staff::fields.is_internal'))
                                         ->default(true),
-                                    Toggle::make('is_system_user')
-                                        ->label(__('staff::fields.is_system_user')),
-                                    Toggle::make('can_change')
-                                        ->label(__('staff::fields.can_change')),
-                                    Toggle::make('is_user_for_services')
-                                        ->label(__('staff::fields.is_user_for_services')),
-                                    Toggle::make('bcc_on_mail_send')
-                                        ->label(__('staff::fields.bcc_on_mail_send')),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -162,24 +151,23 @@ class StaffResource extends BaseRecordResource
                         ->email()
                         ->rules(StaffRules::for('email'))
                         ->maxLength(120),
-                    TextInput::make('email_account')
-                        ->label(__('staff::fields.email_account'))
-                        ->rules(StaffRules::for('email_account'))
-                        ->maxLength(255),
                     TextInput::make('phone')
                         ->label(__('staff::fields.phone'))
                         ->tel()
                         ->rules(StaffRules::for('phone'))
                         ->maxLength(30),
-                    TextInput::make('fax')
-                        ->label(__('staff::fields.fax'))
-                        ->tel()
-                        ->rules(StaffRules::for('fax'))
-                        ->maxLength(30),
-                    TextInput::make('language_code')
-                        ->label(__('staff::fields.language_code'))
-                        ->rules(StaffRules::for('language_code'))
-                        ->maxLength(10),
+                    Select::make('language_id')
+                        ->label(__('staff::fields.language_id'))
+                        ->relationship('language', 'common_name')
+                        ->searchable()
+                        ->preload()
+                        ->rules(StaffRules::for('language_id')),
+                    Select::make('contact_id')
+                        ->label(__('staff::fields.linked_contact'))
+                        ->relationship('contact', 'display_name')
+                        ->searchable()
+                        ->preload()
+                        ->rules(StaffRules::for('contact_id')),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
@@ -189,18 +177,6 @@ class StaffResource extends BaseRecordResource
                         ->label(__('staff::fields.job_title'))
                         ->rules(StaffRules::for('job_title'))
                         ->maxLength(100),
-                    TextInput::make('department')
-                        ->label(__('staff::fields.department'))
-                        ->rules(StaffRules::for('department'))
-                        ->maxLength(100),
-                    TextInput::make('sales_unit_id')
-                        ->label(__('staff::fields.sales_unit_id'))
-                        ->numeric()
-                        ->rules(StaffRules::for('sales_unit_id')),
-                    TextInput::make('sales_unit_guid')
-                        ->label(__('staff::fields.sales_unit_guid'))
-                        ->rules(StaffRules::for('sales_unit_guid'))
-                        ->maxLength(36),
                 ])
                 ->columns(2)
                 ->columnSpanFull(),
@@ -238,20 +214,28 @@ class StaffResource extends BaseRecordResource
                     ->label(__('staff::fields.short_code'))
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('status')
+                    ->label(__('staff::fields.status'))
+                    ->badge()
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'draft' => 'info',
+                            'active' => 'success',
+                            'inactive' => 'warning',
+                            'approved' => 'success',
+                            'archived' => 'danger',
+                            default => 'gray',
+                        }
+                    )
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label(__('staff::fields.email'))
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('department')
-                    ->label(__('staff::fields.department'))
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('legacy_id')
                     ->label(__('staff::fields.legacy_id'))
                     ->sortable()
                     ->searchable(),
-                IconColumn::make('is_active')
-                    ->label(__('staff::fields.is_active'))
-                    ->boolean(),
                 IconColumn::make('is_internal')
                     ->label(__('staff::fields.is_internal'))
                     ->boolean()
@@ -282,8 +266,6 @@ class StaffResource extends BaseRecordResource
             SelectFilter::make('status')
                 ->label(__('staff::fields.status'))
                 ->options(static::configOptions('staff.statuses')),
-            TernaryFilter::make('is_active')
-                ->label(__('staff::fields.is_active')),
             TernaryFilter::make('is_internal')
                 ->label(__('staff::fields.is_internal')),
         ];

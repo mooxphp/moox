@@ -24,14 +24,6 @@ return [
         'archived',
     ],
 
-    'company_types' => [
-        'customer',
-        'supplier',
-        'partner',
-        'prospect',
-        'internal',
-    ],
-
     'default_currency_code' => 'EUR',
 
     'resources' => [
@@ -57,9 +49,9 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'is_active',
+                            'field' => 'status',
                             'operator' => '=',
-                            'value' => true,
+                            'value' => 'active',
                         ],
                         [
                             'field' => 'deleted_at',
@@ -100,8 +92,8 @@ return [
             'model' => Company::class,
             'related_resource' => CompanyResource::class,
             'foreign_key' => 'parent_id',
-            'display_columns' => ['name', 'company_type', 'status'],
-            'badge_columns' => ['company_type', 'status'],
+            'display_columns' => ['name', 'status'],
+            'badge_columns' => ['status'],
             'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
             'actions' => [
                 'header' => ['associate'],
@@ -120,8 +112,8 @@ return [
             'model' => Company::class,
             'related_resource' => CompanyResource::class,
             'foreign_key' => 'parent_id',
-            'display_columns' => ['name', 'company_type', 'status'],
-            'badge_columns' => ['company_type', 'status'],
+            'display_columns' => ['name', 'status'],
+            'badge_columns' => ['status'],
             'create_prefill' => [
                 'parent_id' => 'owner.id',
             ],

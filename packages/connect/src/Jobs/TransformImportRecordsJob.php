@@ -19,9 +19,11 @@ use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
 use Moox\Connect\Support\ApiImportPayloadExtractor;
 use Moox\Connect\Support\TransformerRegistry;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 
 final class TransformImportRecordsJob implements ShouldQueue
 {
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -49,6 +51,7 @@ final class TransformImportRecordsJob implements ShouldQueue
         private int $batchSize = 100,
         private ?string $syncBatchId = null
     ) {
+        $this->configureConnectQueue('transform', $this->endpointId);
     }
 
     /**

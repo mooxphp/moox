@@ -32,6 +32,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Lieferantenstamm.ID_Lieferant → external_reference
+    | Lieferantenstamm.Firma → supplier_name
     | Lieferantenstamm.Kreditorennummer → supplier_number
     | Lieferantenstamm.Rabatt → discount_percent
     | Lieferantenstamm.delivery_period → lead_time_days
@@ -102,10 +103,10 @@ return [
     ],
 
     'related_morph_defaults' => [
-        'display_columns' => ['supplier_number', 'status', 'lead_time_days'],
+        'display_columns' => ['supplier_name', 'supplier_number', 'status', 'lead_time_days'],
         'translation_prefix' => 'supplier::fields',
         'related_resource' => SupplierResource::class,
-        'record_select_search_columns' => ['supplier_number', 'external_reference'],
+        'record_select_search_columns' => ['supplier_name', 'supplier_number', 'external_reference'],
     ],
 
     'relations' => [

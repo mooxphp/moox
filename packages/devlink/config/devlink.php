@@ -590,6 +590,11 @@ return [
             'path' => $public_base_path.'/user-session',
             'type' => 'public',
         ],
+        'verapdf' => [
+            'active' => false,
+            'path' => $public_base_path.'/verapdf',
+            'type' => 'public',
+        ],
         'website' => [
             'active' => false,
             'path' => $public_base_path.'/website',

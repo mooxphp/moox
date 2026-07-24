@@ -4,6 +4,7 @@ return [
     'status' => 'Status',
     'customer_number' => 'Kundennummer',
     'external_reference' => 'Externe Referenz',
+    'customer_name' => 'Kundenname',
     'search_terms' => 'Suchbegriffe',
     'price_type' => 'Preisart',
     'customer_group' => 'Kundengruppe',

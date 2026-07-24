@@ -19,12 +19,37 @@ return [
         ],
         'failed' => [
             'label' => 'trans//core::core.failed',
-            'icon' => 'gmdi-filter-list',
+            'icon' => 'gmdi-error',
             'query' => [
                 [
                     'field' => 'status',
-                    'operator' => '!=',
-                    'value' => 'processed',
+                    'operator' => '=',
+                    'value' => 'failed',
+
+                ],
+            ],
+        ],
+        'updated' => [
+            'label' => 'trans//transform::fields.updated',
+            'icon' => 'gmdi-update',
+            'query' => [
+                [
+                    'field' => 'status',
+                    'operator' => '=',
+                    'value' => 'updated',
+
+                ],
+            ],
+        ],
+        'pending' => [
+            'label' => 'trans//transform::fields.pending',
+            'icon' => 'gmdi-pending',
+            'query' => [
+                [
+                    'field' => 'status',
+                    'operator' => '=',
+                    'value' => 'pending',
+
                 ],
             ],
         ],
@@ -40,5 +65,6 @@ return [
             ],
         ],
     ],
+    'destination_resources' => 'config://transform.destination_resources',
     'navigation_group' => 'trans//transform::transform-record.navigation_group',
 ];

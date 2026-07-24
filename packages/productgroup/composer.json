@@ -1,0 +1,80 @@
+{
+    "name": "moox/productgroup",
+    "description": "Moox product family entity with translatable content.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package",
+        "Product"
+    ],
+    "homepage": "https://moox.org/docs/productgroup",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "codewithdennis/filament-select-tree": "4.x",
+        "kalnoy/nestedset": "^7.0",
+        "moox/core": "dev-main",
+        "moox/localization": "dev-main",
+        "moox/slug": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\ProductGroup\\": "src",
+            "Moox\\ProductGroup\\Database\\Factories\\": "database/factories",
+            "Moox\\ProductGroup\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\ProductGroup\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\ProductGroup\\ProductGroupServiceProvider"
+            ]
+        },
+        "moox": {
+            "name": "Moox ProductGroup",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/ProductGroupSeeder.php",
+                "auto_publish": "moox-productgroup-config",
+                "auto_entities": {
+                    "ProductGroup": true
+                },
+                "auto_class": {
+                    "ProductGroup": "Moox\\ProductGroup\\ProductGroup"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-productgroup-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-productgroup-config"
+            }
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

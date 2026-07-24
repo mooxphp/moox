@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('display_name', 120)->nullable();
             $table->string('legal_name', 120)->nullable();
             $table->text('note')->nullable();
-            $table->text('search_terms')->nullable();
 
             $table->foreignUuid('parent_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->string('external_reference', 100)->nullable()->index();
@@ -30,23 +29,9 @@ return new class extends Migration
 
             $table->string('tax_number', 30)->nullable();
             $table->string('vat_number', 30)->nullable();
-            $table->boolean('has_no_vat_number')->default(false);
 
-            $table->unsignedTinyInteger('partner_type')->nullable()->index();
-            $table->unsignedBigInteger('partner_id')->nullable()->index();
-            $table->string('company_type', 30)->default('customer')->index();
             $table->char('default_currency_code', 3)->default('EUR');
-            $table->boolean('is_fully_owned_subsidiary')->default(false);
-            $table->boolean('no_marketing_action')->default(false);
-            $table->string('no_marketing_action_reason', 255)->nullable();
-
             $table->foreignId('language_id')->nullable()->constrained('static_languages')->nullOnDelete();
-            $table->foreignId('localization_id')->nullable()->constrained('localizations')->nullOnDelete();
-
-            $table->integer('sort')->nullable();
-            $table->boolean('is_active')->default(true)->index();
-            $table->timestamp('approved_at')->nullable();
-            $table->nullableMorphs('approved_by');
 
             $table->json('data')->nullable();
             $table->softDeletes();

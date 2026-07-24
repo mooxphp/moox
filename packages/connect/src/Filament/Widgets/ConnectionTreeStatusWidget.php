@@ -330,9 +330,14 @@ final class ConnectionTreeStatusWidget extends Widget
         $rows = ApiImportRecord::query()
             ->where('api_connection_id', $this->connectionId)
             ->where('status', 'failed')
-            ->selectRaw('api_endpoint_id, coalesce(nullif(error_message, ""), "(ohne Nachricht)") as msg, count(*) as c')
+            ->selectRaw(
+                'api_endpoint_id,
+                 LEFT(COALESCE(NULLIF(error_message, ""), "(ohne Nachricht)"), 120) as msg,
+                 count(*) as c'
+            )
             ->groupBy('api_endpoint_id', 'msg')
             ->orderByDesc('c')
+            ->limit(50)
             ->get();
 
         $result = [];

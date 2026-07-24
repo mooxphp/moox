@@ -17,11 +17,13 @@ use Moox\Connect\Models\ApiConnection;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
 use Moox\Connect\Models\ApiLog;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Throwable;
 
 final class FetchImportRecordsJob implements ShouldQueue
 {
     use Batchable;
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -38,6 +40,7 @@ final class FetchImportRecordsJob implements ShouldQueue
         private int $endpointId,
         private array $parameters = []
     ) {
+        $this->configureConnectQueue('fetch', $this->endpointId);
     }
 
     public function handle(): void

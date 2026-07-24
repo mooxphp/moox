@@ -80,7 +80,6 @@ class AddressResource extends BaseRecordResource
                                 ->maxLength(120),
                             TextInput::make('name')
                                 ->label(__('address::fields.name'))
-                                ->required()
                                 ->rules(AddressRules::for('name'))
                                 ->maxLength(160),
                             TextInput::make('street')
@@ -189,7 +188,7 @@ class AddressResource extends BaseRecordResource
                     ->sortable(),
                 ...static::getTaxonomyColumns(),
             ])
-            ->defaultSort('name')
+            ->defaultSort('id', 'desc')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([

@@ -34,7 +34,8 @@ it('can render the address list page', function (): void {
 
 it('can render table columns for addresses', function (): void {
     livewire(ListAddresses::class)
-        ->assertTableColumnExists('name')
+        ->assertTableColumnExists('label')
+        ->assertTableColumnExists('street')
         ->assertTableColumnExists('city')
         ->assertTableColumnExists('postal_code')
         ->assertTableColumnExists('country_code')

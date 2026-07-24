@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('status', 30)->default('draft')->index();
             $table->string('customer_number', 40)->nullable()->unique();
             $table->string('external_reference', 100)->nullable()->index();
+            $table->string('customer_name', 160)->nullable()->index();
             $table->text('search_terms')->nullable();
             $table->string('price_type', 30)->nullable();
             $table->string('customer_group', 50)->nullable();

@@ -2,97 +2,14 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
-use Moox\Transform\Support\TransformRunner;
-use Moox\Transform\Support\TransformValidator;
-use Moox\Transform\Tests\TestCase;
+use Tests\TestCase;
 
-/**
- * @property string|null $title
- * @property int|null $stock
- * @property string|null $price_label
- */
-final class TransformDummyModel extends Model
-{
-    protected $table = 'transform_dummy_models';
-
-    protected $fillable = [
-        'title',
-        'stock',
-        'price_label',
-    ];
-
-    protected function casts(): array
-    {
-        return [
-            'stock' => 'integer',
-        ];
-    }
-}
-
-/**
- * @property int|null $id
- * @property string|null $status
- */
-final class TransformDraftMainModel extends BaseDraftModel
-{
-    protected $table = 'transform_draft_main_models';
-
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    public string $translationModel = TransformDraftMainTranslationModel::class;
-
-    public string $translationForeignKey = 'transform_draft_main_model_id';
-
-    public string $localeKey = 'locale';
-
-    public bool $useTranslationFallback = true;
-
-    protected $fillable = [
-        'status',
-    ];
-
-    /**
-     * @return array<int, string>
-     */
-    protected function getCustomTranslatedAttributes(): array
-    {
-        return [
-            'title',
-        ];
-    }
-}
-
-/**
- * @property string|null $title
- */
-final class TransformDraftMainTranslationModel extends BaseDraftTranslationModel
-{
-    protected $table = 'transform_draft_main_model_translations';
-
-    /**
-     * @return array<int, string>
-     */
-    protected function getCustomFillable(): array
-    {
-        return [
-            'transform_draft_main_model_id',
-            'title',
-        ];
-    }
-}
-
-require_once dirname(__DIR__, 1).'/Support/TransformTestSupport.php';
+require_once dirname(__DIR__).'/Support/TransformTestSupport.php';
 
 uses(TestCase::class);
 
@@ -155,7 +72,7 @@ test('it transforms from multiple source rows and tables into one destination mo
         'transform_definition_id' => $definition->id,
     ]);
 
-    (new TransformRunner(new TransformValidator))->run($record);
+    (makeRunner())->run($record);
 
     $record->refresh();
     expect($record->status)->toBe('processed');
@@ -201,7 +118,7 @@ test('it fails validation and stores validation errors', function (): void {
     expect($record->status)->toBe('failed_validation');
     expect($record->validation_status)->toBe('invalid');
     expect($record->validation_errors)->toHaveKey('title');
-    expect($record->error_message)->toBe('Validation failed.');
+    expect($record->error_message)->toStartWith('Validation failed.');
 });
 
 test('it rejects definition when destination model does not exist', function (): void {
@@ -351,118 +268,3 @@ test('it writes translated fields for draft-like destination model', function ()
     expect($translation)->not()->toBeNull();
     expect($translation?->title)->toBe('Translated Title');
 });
-
-function createTestTables(): void
-{
-    assertTransformTestsUseSafeDatabase();
-
-    Schema::dropIfExists('transform_dummy_models');
-    Schema::dropIfExists('transform_draft_main_model_translations');
-    Schema::dropIfExists('transform_draft_main_models');
-    Schema::dropIfExists('transform_records');
-    Schema::dropIfExists('transform_definitions');
-
-    Schema::create('transform_definitions', function (Blueprint $table): void {
-        $table->id();
-        $table->timestamps();
-        $table->softDeletes();
-        $table->string('name')->unique();
-        $table->string('destination_model');
-        $table->json('destination_match')->nullable();
-        $table->json('source_references');
-        $table->json('field_map');
-        $table->json('validation_rules')->nullable();
-        $table->boolean('is_active')->default(true);
-    });
-
-    Schema::create('transform_records', function (Blueprint $table): void {
-        $table->id();
-        $table->timestamps();
-        $table->softDeletes();
-        $table->foreignId('transform_definition_id')->constrained('transform_definitions');
-        $table->string('destination_key')->nullable();
-        $table->json('source_projection')->nullable();
-        $table->json('source_references')->nullable();
-        $table->string('input_hash', 64)->nullable();
-        $table->string('status')->default('pending');
-        $table->string('validation_status')->default('pending');
-        $table->json('validation_errors')->nullable();
-        $table->json('warnings')->nullable();
-        $table->unsignedInteger('attempts')->default(0);
-        $table->boolean('degraded')->default(false);
-        $table->timestamp('last_run_at')->nullable();
-        $table->timestamp('last_success_at')->nullable();
-        $table->text('error_message')->nullable();
-    });
-
-    Schema::create('transform_dummy_models', function (Blueprint $table): void {
-        $table->id();
-        $table->string('title')->nullable();
-        $table->integer('stock')->nullable();
-        $table->string('price_label')->nullable();
-        $table->timestamps();
-    });
-
-    Schema::create('transform_draft_main_models', function (Blueprint $table): void {
-        $table->id();
-        $table->uuid('uuid')->nullable();
-        $table->ulid('ulid')->nullable();
-        $table->string('status')->nullable();
-        $table->softDeletes();
-        $table->timestamps();
-    });
-
-    Schema::create('transform_draft_main_model_translations', function (Blueprint $table): void {
-        $table->id();
-        $table->foreignId('transform_draft_main_model_id')->constrained('transform_draft_main_models')->cascadeOnDelete();
-        $table->string('locale');
-        $table->string('title')->nullable();
-        $table->string('translation_status')->nullable();
-        $table->timestamp('to_publish_at')->nullable();
-        $table->timestamp('published_at')->nullable();
-        $table->timestamp('to_unpublish_at')->nullable();
-        $table->timestamp('unpublished_at')->nullable();
-        $table->unsignedBigInteger('published_by_id')->nullable();
-        $table->string('published_by_type')->nullable();
-        $table->unsignedBigInteger('unpublished_by_id')->nullable();
-        $table->string('unpublished_by_type')->nullable();
-        $table->unsignedBigInteger('deleted_by_id')->nullable();
-        $table->string('deleted_by_type')->nullable();
-        $table->timestamp('restored_at')->nullable();
-        $table->unsignedBigInteger('restored_by_id')->nullable();
-        $table->string('restored_by_type')->nullable();
-        $table->unsignedBigInteger('created_by_id')->nullable();
-        $table->string('created_by_type')->nullable();
-        $table->unsignedBigInteger('updated_by_id')->nullable();
-        $table->string('updated_by_type')->nullable();
-        $table->softDeletes();
-        $table->timestamps();
-    });
-}
-
-function makeRunner(): TransformRunner
-{
-    return new TransformRunner(new TransformValidator);
-}
-
-/**
- * @param  array<string, mixed>  $overrides
- */
-function createDefinition(array $overrides = []): TransformDefinition
-{
-    $defaults = [
-        'name' => 'Test Definition',
-        'destination_model' => TransformDummyModel::class,
-        'destination_match' => [
-            'title' => 'legacy.title',
-        ],
-        'source_references' => [],
-        'field_map' => [
-            'title' => 'legacy.title',
-        ],
-        'validation_rules' => [],
-        'is_active' => true,
-    ];
-
-    return TransformDefinition::query()->create([...$defaults, ...$overrides]);
-}

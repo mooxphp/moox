@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Company\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\Company\Pages\CreateCompany;
@@ -70,7 +66,6 @@ class CompanyResource extends BaseRecordResource
     {
         $taxonomyFields = static::getTaxonomyFields();
         $statusOptions = static::configOptions('company.statuses');
-        $typeOptions = static::configOptions('company.company_types');
 
         $identityFields = [
             Select::make('status')
@@ -91,16 +86,6 @@ class CompanyResource extends BaseRecordResource
                 ->label(__('company::fields.legal_name'))
                 ->rules(CompanyRules::for('legal_name'))
                 ->maxLength(120),
-            Select::make('company_type')
-                ->label(__('company::fields.company_type'))
-                ->options($typeOptions)
-                ->required()
-                ->rules(CompanyRules::for('company_type'))
-                ->default('customer'),
-        ];
-
-        $identityFields = [
-            ...$identityFields,
             TextInput::make('external_reference')
                 ->label(__('company::fields.external_reference'))
                 ->rules(CompanyRules::for('external_reference'))
@@ -111,17 +96,12 @@ class CompanyResource extends BaseRecordResource
                 ->columnSpanFull(),
             Textarea::make('data')
                 ->label(__('company::fields.data'))
-                // ->rules(CompanyRules::for('data'))
                 ->columnSpanFull()
                 ->cols(100)
                 ->rows(10)
                 ->formatStateUsing(function ($state) {
                     return json_encode((array) $state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 }),
-            Textarea::make('search_terms')
-                ->label(__('company::fields.search_terms'))
-                ->rules(CompanyRules::for('search_terms'))
-                ->columnSpanFull(),
         ];
 
         $schema = [
@@ -167,11 +147,7 @@ class CompanyResource extends BaseRecordResource
                                     TextInput::make('vat_number')
                                         ->label(__('company::fields.vat_number'))
                                         ->rules(CompanyRules::for('vat_number'))
-                                        ->maxLength(30)
-                                        ->disabled(fn ($get): bool => (bool) $get('has_no_vat_number')),
-                                    Toggle::make('has_no_vat_number')
-                                        ->label(__('company::fields.has_no_vat_number'))
-                                        ->live(),
+                                        ->maxLength(30),
                                 ]),
                             Section::make(__('company::fields.settings'))
                                 ->schema([
@@ -182,26 +158,12 @@ class CompanyResource extends BaseRecordResource
                                         ->maxLength(3)
                                         ->length(3)
                                         ->default(config('company.default_currency_code', 'EUR')),
-                                    Toggle::make('is_fully_owned_subsidiary')
-                                        ->label(__('company::fields.is_fully_owned_subsidiary')),
-                                    Toggle::make('no_marketing_action')
-                                        ->label(__('company::fields.no_marketing_action'))
-                                        ->live(),
-                                    TextInput::make('no_marketing_action_reason')
-                                        ->label(__('company::fields.no_marketing_action_reason'))
-                                        ->rules(CompanyRules::for('no_marketing_action_reason'))
-                                        ->maxLength(255)
-                                        ->visible(fn ($get): bool => (bool) $get('no_marketing_action')),
-                                    TextInput::make('sort')
-                                        ->label(__('company::fields.sort'))
-                                        ->numeric()
-                                        ->rules(CompanyRules::for('sort')),
-                                    Toggle::make('is_active')
-                                        ->label(__('company::fields.is_active'))
-                                        ->default(true),
-                                    DateTimePicker::make('approved_at')
-                                        ->label(__('company::fields.approved_at'))
-                                        ->rules(CompanyRules::for('approved_at')),
+                                    Select::make('language_id')
+                                        ->label(__('company::fields.language_id'))
+                                        ->relationship('language', 'common_name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->rules(CompanyRules::for('language_id')),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -230,49 +192,24 @@ class CompanyResource extends BaseRecordResource
         $hasChildrenRelation = static::hasConfiguredRelation('children');
 
         $columns = [
-            // TextColumn::make('name')
-            //     ->label(__('company::fields.name'))
-            //     ->formatStateUsing(fn (?string $state, Company $record): string => ($hasParentRelation && $record->parent_id ? '↳ ' : '').($state ?? '')
-            //     )
-            //     ->description(
-            //         $hasParentRelation
-            //             ? fn (Company $record): ?string => $record->parent?->displayLabel()
-            //             : null,
-            //     )
-            //     ->searchable()
-            //     ->sortable(),
             TextColumn::make('display_name')
                 ->label(__('company::fields.display_name'))
                 ->searchable()
                 ->toggleable(),
-            TextColumn::make('company_type')
-                ->label(__('company::fields.company_type'))
+            TextColumn::make('status')
+                ->label(__('company::fields.status'))
                 ->badge()
                 ->color(
-                    fn (?string $state): string => match ($state) {
-                        'customer' => 'success',
-                        'supplier' => 'warning',
-                        'partner' => 'primary',
-                        'prospect' => 'warning',
-                        'internal' => 'gray',
+                    fn (string $state): string => match ($state) {
+                        'draft' => 'info',
+                        'active' => 'success',
+                        'inactive' => 'warning',
+                        'approved' => 'success',
+                        'archived' => 'danger',
                         default => 'gray',
                     }
                 )
                 ->sortable(),
-            // TextColumn::make('status')
-            //     ->label(__('company::fields.status'))
-            //     ->badge()
-            //     ->color(
-            //         fn (string $state): string => match ($state) {
-            //             'draft' => 'info',
-            //             'active' => 'success',
-            //             'inactive' => 'warning',
-            //             'approved' => 'success',
-            //             'archived' => 'danger',
-            //             default => 'gray',
-            //         }
-            //     )
-            //     ->sortable(),
         ];
 
         if ($hasParentRelation) {
@@ -292,19 +229,11 @@ class CompanyResource extends BaseRecordResource
                 ->numeric()
                 ->label(__('company::fields.contacts'))
                 ->toggleable(),
-
             TextColumn::make('addresses_count')
                 ->counts('addresses')
                 ->label(__('company::fields.addresses'))
                 ->numeric()
                 ->toggleable(),
-
-            // TextColumn::make('default_currency_code')
-            //     ->label(__('company::fields.default_currency_code'))
-            //     ->toggleable(isToggledHiddenByDefault: true),
-            // IconColumn::make('is_active')
-            //     ->label(__('company::fields.is_active'))
-            //     ->boolean(),
         ];
 
         if ($hasChildrenRelation) {
@@ -334,7 +263,7 @@ class CompanyResource extends BaseRecordResource
     }
 
     /**
-     * @return array<SelectFilter|TernaryFilter>
+     * @return array<SelectFilter>
      */
     protected static function getCompanyTableFilters(): array
     {
@@ -342,11 +271,6 @@ class CompanyResource extends BaseRecordResource
             SelectFilter::make('status')
                 ->label(__('company::fields.status'))
                 ->options(static::configOptions('company.statuses')),
-            SelectFilter::make('company_type')
-                ->label(__('company::fields.company_type'))
-                ->options(static::configOptions('company.company_types')),
-            TernaryFilter::make('is_active')
-                ->label(__('company::fields.is_active')),
         ];
     }
 

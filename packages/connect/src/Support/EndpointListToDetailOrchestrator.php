@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Support;
 
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Moox\Connect\Jobs\FetchImportRecordsJob;
 use Moox\Connect\Jobs\FinalizeDetailSyncJob;
@@ -15,6 +16,34 @@ use Moox\Connect\Models\ApiLog;
 
 class EndpointListToDetailOrchestrator
 {
+    /**
+     * MySQL erlaubt max. 65.535 Platzhalter pro Prepared Statement.
+     * Laravel bulk-insert in `jobs` nutzt mehrere Spalten pro Zeile.
+     */
+    public const QUEUE_BATCH_CHUNK_SIZE = 500;
+
+    /**
+     * @param  array<int, object>  $jobs
+     */
+    public function dispatchDetailJobsBatch(string $name, array $jobs, ?string $queue = null): Batch
+    {
+        $chunks = array_chunk($jobs, self::QUEUE_BATCH_CHUNK_SIZE);
+
+        $pending = Bus::batch($chunks[0])->name($name);
+
+        if (is_string($queue) && $queue !== '') {
+            $pending->onQueue($queue);
+        }
+
+        $batch = $pending->dispatch();
+
+        for ($index = 1, $count = count($chunks); $index < $count; $index++) {
+            $batch = $batch->add($chunks[$index]);
+        }
+
+        return $batch;
+    }
+
     /**
      * Baut die Detail-Jobs (ohne zu dispatchen) und liefert zusätzlich Prune-Metadaten.
      *
@@ -276,11 +305,13 @@ class EndpointListToDetailOrchestrator
         $built = $this->buildDetailJobs($detailEndpoint);
         $jobs = $built['jobs'] ?? [];
         $seenKeysByScope = $built['seen'] ?? [];
+        $meta = $built['meta'] ?? [];
 
         if ($jobs !== []) {
-            $batch = Bus::batch($jobs)
-                ->name(sprintf('connect:detail endpoint=%d', $detailEndpoint->id))
-                ->dispatch();
+            $batch = $this->dispatchDetailJobsBatch(
+                sprintf('connect:detail endpoint=%d', $detailEndpoint->id),
+                $jobs,
+            );
 
             if ($syncMode === 'sync') {
                 FinalizeDetailSyncJob::dispatch(
@@ -291,11 +322,14 @@ class EndpointListToDetailOrchestrator
             }
         }
 
-        $this->log($connectionId, $detailEndpoint->id, 'orchestrator_done', [
+        $this->log($connectionId, $detailEndpoint->id, 'orchestrator_done', array_merge([
             'created_jobs' => count($jobs),
             'sync_mode' => $syncMode,
             'prune_scopes' => count($seenKeysByScope),
-        ], '200');
+            'queue_insert_chunks' => $jobs !== []
+                ? (int) max(1, (int) ceil(count($jobs) / self::QUEUE_BATCH_CHUNK_SIZE))
+                : 0,
+        ], $meta), '200');
 
         return count($jobs);
     }

@@ -14,13 +14,19 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('sku', 64)->unique();
+            $table->string('type')->default('simple');
+            $table->string('status')->default('draft');
             $table->decimal('price', 10, 2)->default(0);
             $table->decimal('sale_price', 10, 2)->nullable();
+            $table->decimal('cost_price', 10, 2)->nullable();
             $table->unsignedInteger('stock')->default(0);
-            $table->string('status')->default('draft');
-            $table->unsignedBigInteger('brand_id')->nullable()->index();
+            $table->unsignedInteger('stock_min')->default(0);
             $table->decimal('weight', 10, 3)->nullable();
-            $table->json('meta')->nullable();
+            $table->string('weight_unit', 16)->nullable();
+            $table->string('unit_of_measure', 32)->nullable();
+            $table->boolean('is_purchasable')->default(true);
+            $table->boolean('is_sellable')->default(true);
+            $table->json('custom_properties')->nullable();
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
             $table->softDeletes();

@@ -421,13 +421,10 @@ class ConfigRelationManager extends RelationManager
     {
         $prefix = (string) ($resolved->translationPrefix ?? '');
 
-        $columns = $this->buildModelDisplayColumns($resolved, $prefix);
-
-        foreach ($resolved->pivotAttributes as $column) {
-            $columns[] = IconColumn::make('pivot.'.$column)
-                ->label($this->fieldLabel($prefix, $column))
-                ->boolean();
-        }
+        $columns = [
+            ...$this->buildModelDisplayColumns($resolved, $prefix),
+            ...$this->buildBelongsToManyPivotColumns($resolved, $prefix),
+        ];
 
         $table = $table
             ->columns($columns)

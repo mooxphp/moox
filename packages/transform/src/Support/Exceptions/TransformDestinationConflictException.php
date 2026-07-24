@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Support\Exceptions;
 
+use Moox\Transform\Support\SourceContextResolver;
 use RuntimeException;
 
 final class TransformDestinationConflictException extends RuntimeException
@@ -24,6 +25,11 @@ final class TransformDestinationConflictException extends RuntimeException
     public function context(): array
     {
         return $this->context;
+    }
+
+    public function isIncompleteDestinationMatch(): bool
+    {
+        return ($this->context['type'] ?? null) === 'incomplete_destination_match';
     }
 
     /**
@@ -47,7 +53,7 @@ final class TransformDestinationConflictException extends RuntimeException
             class_basename($destinationModel),
             self::encodeJson($destinationMatch),
             implode(', ', $existingKeys),
-            self::formatSourceSummary($sourceContext),
+            app(SourceContextResolver::class)->formatSummary($sourceContext),
         );
 
         return new self($message, self::baseContext(
@@ -79,7 +85,7 @@ final class TransformDestinationConflictException extends RuntimeException
             class_basename($destinationModel),
             self::encodeJson($destinationMatch),
             $existingDestinationKey ?? 'unknown',
-            self::formatSourceSummary($sourceContext),
+            app(SourceContextResolver::class)->formatSummary($sourceContext),
             $databaseMessage,
         );
 
@@ -114,7 +120,7 @@ final class TransformDestinationConflictException extends RuntimeException
             class_basename($destinationModel),
             implode(', ', $missingFields),
             self::encodeJson($destinationMatch),
-            self::formatSourceSummary($sourceContext),
+            app(SourceContextResolver::class)->formatSummary($sourceContext),
         );
 
         return new self($message, self::baseContext(
@@ -157,66 +163,6 @@ final class TransformDestinationConflictException extends RuntimeException
             'transform_record_id' => $transformRecordId,
             'transform_definition' => $transformDefinitionName,
         ], $extra);
-    }
-
-    /**
-     * @param  array<string, mixed>  $sourceContext
-     */
-    private static function formatSourceSummary(array $sourceContext): string
-    {
-        $references = $sourceContext['references'] ?? [];
-        if (! is_array($references) || $references === []) {
-            $primarySourceId = $sourceContext['primary_source_id'] ?? null;
-
-            return $primarySourceId !== null
-                ? 'source_id='.(string) $primarySourceId
-                : 'source_id=unknown';
-        }
-
-        $parts = [];
-        foreach ($references as $reference) {
-            if (! is_array($reference)) {
-                continue;
-            }
-
-            $sourceType = (string) ($reference['source_type'] ?? 'unknown');
-            $sourceId = $reference['source_id'] ?? null;
-            $sourceIdString = $sourceId !== null ? (string) $sourceId : 'unknown';
-
-            if ($sourceType === 'db_table') {
-                $connection = (string) ($reference['connection'] ?? 'default');
-                $table = (string) ($reference['table'] ?? 'unknown');
-                $keyColumn = (string) ($reference['key_column'] ?? 'id');
-                $parts[] = "db_table:{$connection}.{$table}.{$keyColumn}={$sourceIdString}";
-
-                continue;
-            }
-
-            if (in_array($sourceType, ['file_json', 'file_csv'], true)) {
-                $path = (string) ($reference['path'] ?? 'unknown');
-                $parts[] = "{$sourceType}:{$path}:{$sourceIdString}";
-
-                continue;
-            }
-
-            if ($sourceType === 'api') {
-                $url = (string) ($reference['url'] ?? 'unknown');
-                $parts[] = "api:{$url}:{$sourceIdString}";
-
-                continue;
-            }
-
-            if ($sourceType === 'projection') {
-                $sourcePath = (string) ($reference['source_path'] ?? 'unknown');
-                $parts[] = "projection:{$sourcePath}={$sourceIdString}";
-
-                continue;
-            }
-
-            $parts[] = "{$sourceType}:{$sourceIdString}";
-        }
-
-        return $parts === [] ? 'source_id=unknown' : implode('; ', $parts);
     }
 
     /**

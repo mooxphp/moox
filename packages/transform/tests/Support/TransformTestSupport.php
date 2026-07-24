@@ -11,7 +11,20 @@ use Illuminate\Support\Facades\Schema;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 use Moox\Transform\Models\TransformDefinition;
+use Moox\Transform\Support\ConfiguredImportRecordPayloadReader;
+use Moox\Transform\Support\ConfiguredLocaleVariantResolver;
+use Moox\Transform\Support\Execution\BatchDestinationWriterRegistry;
+use Moox\Transform\Support\Execution\BulkTransformExecutor;
+use Moox\Transform\Support\Execution\EloquentUpsertBatchDestinationWriter;
+use Moox\Transform\Support\Execution\ResolvedTransformDataFactory;
+use Moox\Transform\Support\Execution\TranslatableBatchDestinationWriter;
+use Moox\Transform\Support\Expansion\ExpandTransformExecutor;
+use Moox\Transform\Support\Expansion\TransformProjectionExpander;
+use Moox\Transform\Support\Operations\InlineLookupCache;
 use Moox\Transform\Support\Operations\InlineOperationRegistry;
+use Moox\Transform\Support\SourceContextResolver;
+use Moox\Transform\Support\SourcePayloadResolver;
+use Moox\Transform\Support\TemplateValueResolver;
 use Moox\Transform\Support\TransformRunner;
 use Moox\Transform\Support\TransformValidator;
 
@@ -35,6 +48,44 @@ final class TransformDummyModel extends Model
         return [
             'stock' => 'integer',
         ];
+    }
+}
+
+/**
+ * @property string|null $title
+ * @property array<string, mixed> $persistedCustomFields
+ */
+final class TransformCustomFieldDummyModel extends Model
+{
+    /** @var array<string, mixed> */
+    public static array $lastPersistedCustomFields = [];
+
+    /** @var array<string, mixed> */
+    public array $persistedCustomFields = [];
+
+    protected $table = 'transform_custom_field_dummy_models';
+
+    protected $fillable = [
+        'title',
+    ];
+
+    /**
+     * @return list<string>
+     */
+    public static function customFieldNames(): array
+    {
+        return ['material', 'dimension', 'is-available'];
+    }
+
+    /**
+     * @param  array<string, mixed>  $values
+     */
+    public function setCustomFields(array $values): static
+    {
+        self::$lastPersistedCustomFields = $values;
+        $this->persistedCustomFields = $values;
+
+        return $this;
     }
 }
 
@@ -129,6 +180,59 @@ final class TransformDraftMainTranslationModel extends BaseDraftTranslationModel
     }
 }
 
+/**
+ * @property string|null $code
+ */
+final class TransformDraftBatchModel extends BaseDraftModel
+{
+    protected $table = 'transform_draft_batch_models';
+
+    public $incrementing = true;
+
+    protected $keyType = 'int';
+
+    public string $translationModel = TransformDraftBatchTranslationModel::class;
+
+    public string $translationForeignKey = 'transform_draft_batch_model_id';
+
+    public string $localeKey = 'locale';
+
+    public bool $useTranslationFallback = true;
+
+    protected $fillable = [
+        'code',
+    ];
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getCustomTranslatedAttributes(): array
+    {
+        return [
+            'title',
+        ];
+    }
+}
+
+/**
+ * @property string|null $title
+ */
+final class TransformDraftBatchTranslationModel extends BaseDraftTranslationModel
+{
+    protected $table = 'transform_draft_batch_model_translations';
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getCustomFillable(): array
+    {
+        return [
+            'transform_draft_batch_model_id',
+            'title',
+        ];
+    }
+}
+
 function assertTransformTestsUseSafeDatabase(): void
 {
     $connection = (string) config('database.default');
@@ -147,10 +251,13 @@ function createTestTables(): void
     assertTransformTestsUseSafeDatabase();
 
     Schema::dropIfExists('transform_soft_delete_dummy_models');
+    Schema::dropIfExists('transform_custom_field_dummy_models');
     Schema::dropIfExists('transform_dummy_models');
     Schema::dropIfExists('transform_json_dummy_models');
     Schema::dropIfExists('transform_draft_main_model_translations');
     Schema::dropIfExists('transform_draft_main_models');
+    Schema::dropIfExists('transform_draft_batch_model_translations');
+    Schema::dropIfExists('transform_draft_batch_models');
     Schema::dropIfExists('transform_records');
     Schema::dropIfExists('transform_definitions');
 
@@ -164,6 +271,9 @@ function createTestTables(): void
         $table->json('source_references');
         $table->json('field_map');
         $table->json('validation_rules')->nullable();
+        $table->string('execution_mode')->default('single');
+        $table->json('expand')->nullable();
+        $table->json('bulk')->nullable();
         $table->boolean('is_active')->default(true);
     });
 
@@ -172,6 +282,7 @@ function createTestTables(): void
         $table->timestamps();
         $table->softDeletes();
         $table->foreignId('transform_definition_id')->constrained('transform_definitions');
+        $table->foreignId('parent_transform_record_id')->nullable()->constrained('transform_records')->nullOnDelete();
         $table->string('destination_key')->nullable();
         $table->json('source_projection')->nullable();
         $table->json('source_references')->nullable();
@@ -180,6 +291,7 @@ function createTestTables(): void
         $table->string('validation_status')->default('pending');
         $table->json('validation_errors')->nullable();
         $table->json('warnings')->nullable();
+        $table->json('bulk_stats')->nullable();
         $table->unsignedInteger('attempts')->default(0);
         $table->boolean('degraded')->default(false);
         $table->timestamp('last_run_at')->nullable();
@@ -191,7 +303,13 @@ function createTestTables(): void
         $table->id();
         $table->string('title')->nullable();
         $table->integer('stock')->nullable();
-        $table->string('price_label')->nullable();
+        $table->string('price_label')->nullable()->unique();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_custom_field_dummy_models', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title')->nullable();
         $table->timestamps();
     });
 
@@ -249,11 +367,84 @@ function createTestTables(): void
         $table->softDeletes();
         $table->timestamps();
     });
+
+    Schema::create('transform_draft_batch_models', function (Blueprint $table): void {
+        $table->id();
+        $table->uuid('uuid')->nullable();
+        $table->ulid('ulid')->nullable();
+        $table->string('code')->unique();
+        $table->softDeletes();
+        $table->timestamps();
+    });
+
+    Schema::create('transform_draft_batch_model_translations', function (Blueprint $table): void {
+        $table->id();
+        $table->unsignedBigInteger('transform_draft_batch_model_id');
+        $table->foreign('transform_draft_batch_model_id', 'tdbmt_main_id_fk')
+            ->references('id')
+            ->on('transform_draft_batch_models')
+            ->cascadeOnDelete();
+        $table->string('locale');
+        $table->string('title')->nullable();
+        $table->string('translation_status')->nullable();
+        $table->timestamp('to_publish_at')->nullable();
+        $table->timestamp('published_at')->nullable();
+        $table->timestamp('to_unpublish_at')->nullable();
+        $table->timestamp('unpublished_at')->nullable();
+        $table->unsignedBigInteger('published_by_id')->nullable();
+        $table->string('published_by_type')->nullable();
+        $table->unsignedBigInteger('unpublished_by_id')->nullable();
+        $table->string('unpublished_by_type')->nullable();
+        $table->unsignedBigInteger('deleted_by_id')->nullable();
+        $table->string('deleted_by_type')->nullable();
+        $table->timestamp('restored_at')->nullable();
+        $table->unsignedBigInteger('restored_by_id')->nullable();
+        $table->string('restored_by_type')->nullable();
+        $table->unsignedBigInteger('created_by_id')->nullable();
+        $table->string('created_by_type')->nullable();
+        $table->unsignedBigInteger('updated_by_id')->nullable();
+        $table->string('updated_by_type')->nullable();
+        $table->softDeletes();
+        $table->timestamps();
+        $table->unique(['transform_draft_batch_model_id', 'locale'], 'tdbmt_main_locale_unique');
+    });
 }
 
 function makeRunner(): TransformRunner
 {
-    return new TransformRunner(new TransformValidator, new InlineOperationRegistry);
+    $lookupCache = new InlineLookupCache;
+    app()->instance(InlineLookupCache::class, $lookupCache);
+
+    $inlineOperationRegistry = new InlineOperationRegistry;
+    $templateValueResolver = new TemplateValueResolver;
+    $importRecordPayloadReader = new ConfiguredImportRecordPayloadReader;
+    $localeVariantResolver = new ConfiguredLocaleVariantResolver;
+    $sourcePayloadResolver = new SourcePayloadResolver($importRecordPayloadReader, $templateValueResolver);
+    $projectionExpander = new TransformProjectionExpander(
+        $sourcePayloadResolver,
+        $importRecordPayloadReader,
+        $localeVariantResolver,
+        $templateValueResolver,
+    );
+    $resolvedTransformDataFactory = new ResolvedTransformDataFactory(
+        $inlineOperationRegistry,
+        new SourceContextResolver,
+    );
+    $batchDestinationWriterRegistry = new BatchDestinationWriterRegistry([
+        new TranslatableBatchDestinationWriter,
+        new EloquentUpsertBatchDestinationWriter,
+    ]);
+
+    return new TransformRunner(
+        new TransformValidator,
+        $sourcePayloadResolver,
+        $projectionExpander,
+        new ExpandTransformExecutor($projectionExpander),
+        new BulkTransformExecutor,
+        $resolvedTransformDataFactory,
+        $batchDestinationWriterRegistry,
+        $lookupCache,
+    );
 }
 
 /**

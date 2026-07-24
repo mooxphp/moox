@@ -19,6 +19,9 @@ test('it applies case integer and truthy inline operations', function (): void {
     createTestTables();
 
     $definition = createDefinition([
+        'destination_match' => [
+            'price_label' => 'legacy.flag|truthy',
+        ],
         'field_map' => [
             'title' => 'legacy.code|upper',
             'stock' => 'legacy.amount|int',
@@ -52,6 +55,9 @@ test('it applies coalesce and any_truthy inline operations', function (): void {
     createTestTables();
 
     $definition = createDefinition([
+        'destination_match' => [
+            'price_label' => 'any_truthy:legacy.deleted,legacy.inactive|status_from_deleted',
+        ],
         'field_map' => [
             'title' => 'coalesce:legacy.primary,legacy.fallback',
             'stock' => 'legacy.amount|int',
@@ -86,7 +92,7 @@ test('it applies coalesce and any_truthy inline operations', function (): void {
         ->and($saved?->price_label)->toBe('inactive');
 });
 
-test('it transforms comwork customer definition fields', function (): void {
+test('it transforms customer definition fields', function (): void {
     createTestTables();
 
     if (! Schema::hasTable('customers')) {
@@ -96,7 +102,7 @@ test('it transforms comwork customer definition fields', function (): void {
     Customer::query()->where('external_reference', 'K-100')->forceDelete();
 
     $definition = createDefinition([
-        'name' => 'test-comwork-customer',
+        'name' => 'test-customer-definition',
         'destination_model' => Customer::class,
         'destination_match' => [
             'external_reference' => 'legacy.ID_Kunde',
@@ -174,7 +180,7 @@ test('it transforms customer assignment with runtime source references', functio
     );
 
     $definition = createDefinition([
-        'name' => 'test-comwork-customer-assignment',
+        'name' => 'test-customer-assignment-definition',
         'destination_model' => CustomerAssignment::class,
         'destination_match' => [
             'assignable_type' => 'meta.assignable_type',

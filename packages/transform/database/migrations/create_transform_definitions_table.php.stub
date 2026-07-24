@@ -19,6 +19,9 @@ return new class extends Migration
             $table->json('source_references');
             $table->json('field_map');
             $table->json('validation_rules')->nullable();
+            $table->string('execution_mode')->default('single');
+            $table->json('expand')->nullable();
+            $table->json('bulk')->nullable();
             $table->boolean('is_active')->default(true)->index();
         });
     }
