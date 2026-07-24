@@ -102,6 +102,7 @@
         "moox/user": "dev-main",
         "moox/user-device": "dev-main",
         "moox/user-session": "dev-main",
+        "moox/verapdf": "dev-main",
         "moox/zugferd": "dev-main",
         "moox/cache": "dev-main"
     },
