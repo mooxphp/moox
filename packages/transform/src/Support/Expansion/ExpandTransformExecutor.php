@@ -14,7 +14,8 @@ final class ExpandTransformExecutor
 {
     public function __construct(
         private readonly TransformProjectionExpander $projectionExpander,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  callable(TransformRecord): void  $processRecord

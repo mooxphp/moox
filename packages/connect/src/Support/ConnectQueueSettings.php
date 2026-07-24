@@ -24,7 +24,8 @@ final class ConnectQueueSettings
         public readonly int $overlapExpireMin,
         public readonly int $deadlockRetryAttempts,
         public readonly array $deadlockRetryDelaysMs,
-    ) {}
+    ) {
+    }
 
     public function applyTo(object $job): void
     {

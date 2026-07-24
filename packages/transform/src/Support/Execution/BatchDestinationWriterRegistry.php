@@ -14,7 +14,8 @@ final class BatchDestinationWriterRegistry
      */
     public function __construct(
         private readonly iterable $writers,
-    ) {}
+    ) {
+    }
 
     public function resolve(string $destinationClass, TransformDefinition $definition): ?BatchDestinationWriter
     {

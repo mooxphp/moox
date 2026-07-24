@@ -18,7 +18,8 @@ final class ImportRecordSelectOptionBuilder
         private readonly string $importRecordModel,
         private readonly ?string $endpointRelation = null,
         private readonly int $limit = 100,
-    ) {}
+    ) {
+    }
 
     public static function fromConfig(): ?self
     {

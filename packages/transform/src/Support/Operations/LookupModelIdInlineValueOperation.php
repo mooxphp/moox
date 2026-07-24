@@ -16,7 +16,8 @@ final class LookupModelIdInlineValueOperation implements PayloadAwareInlineValue
 
     public function __construct(
         private readonly InlineLookupCache $lookupCache = new InlineLookupCache,
-    ) {}
+    ) {
+    }
 
     public function supports(string $operationSegment): bool
     {

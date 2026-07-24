@@ -24,5 +24,6 @@ final class ResolvedTransformRow
         public readonly array $sourceContext,
         public readonly string $inputHash,
         public readonly array $warnings,
-    ) {}
+    ) {
+    }
 }

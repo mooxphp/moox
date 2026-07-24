@@ -20,7 +20,8 @@ final class ResolvedTransformDataFactory
     public function __construct(
         private readonly InlineOperationRegistry $inlineOperationRegistry,
         private readonly SourceContextResolver $sourceContextResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $payload

@@ -20,7 +20,8 @@ final class TransformProjectionExpander
         private readonly ConfiguredImportRecordPayloadReader $importRecordPayloadReader,
         private readonly ConfiguredLocaleVariantResolver $localeVariantResolver,
         private readonly TemplateValueResolver $templateValueResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return list<array<string, mixed>>

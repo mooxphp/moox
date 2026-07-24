@@ -15,7 +15,8 @@ final class SourcePayloadResolver
     public function __construct(
         private readonly ConfiguredImportRecordPayloadReader $importRecordPayloadReader,
         private readonly TemplateValueResolver $templateValueResolver,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{payload: array<string, mixed>, warnings: array<int, string>, input_hash: string}

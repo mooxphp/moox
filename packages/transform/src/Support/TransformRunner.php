@@ -33,7 +33,8 @@ class TransformRunner
         private readonly ResolvedTransformDataFactory $resolvedTransformDataFactory,
         private readonly BatchDestinationWriterRegistry $batchDestinationWriterRegistry,
         private readonly InlineLookupCache $inlineLookupCache,
-    ) {}
+    ) {
+    }
 
     public function run(TransformRecord $record): void
     {
