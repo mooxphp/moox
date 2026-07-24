@@ -44,7 +44,10 @@ final class EloquentUpsertBatchDestinationWriter implements BatchDestinationWrit
                 continue;
             }
 
-            $recordsByKey[$this->recordKey($row->destinationMatch, $uniqueBy)] = $this->withTimestamps($prototype, $record);
+            $recordsByKey[$this->recordKey($row->destinationMatch, $uniqueBy)] = $this->withTimestamps(
+                $prototype,
+                $this->encodeJsonCastAttributes($prototype, $record),
+            );
         }
 
         $records = array_values($recordsByKey);
@@ -113,6 +116,31 @@ final class EloquentUpsertBatchDestinationWriter implements BatchDestinationWrit
         }
 
         return json_encode($key, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: md5(serialize($key));
+    }
+
+    /**
+     * @param  array<string, mixed>  $record
+     * @return array<string, mixed>
+     */
+    private function encodeJsonCastAttributes(Model $prototype, array $record): array
+    {
+        $casts = $prototype->getCasts();
+
+        foreach ($record as $field => $value) {
+            if (! is_array($value)) {
+                continue;
+            }
+
+            $castType = strtolower((string) ($casts[$field] ?? ''));
+            $castType = explode(':', $castType)[0];
+            if (! in_array($castType, ['array', 'json', 'collection', 'object'], true)) {
+                continue;
+            }
+
+            $record[$field] = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        return $record;
     }
 
     /**

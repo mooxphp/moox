@@ -130,7 +130,7 @@ class TransformRunner
                     'validation_errors' => $validation['errors'],
                     'warnings' => $warnings,
                     'degraded' => false,
-                    'error_message' => 'Validation failed.',
+                    'error_message' => $this->formatValidationFailureMessage($validation['errors']),
                 ])->save();
 
                 return;
@@ -786,7 +786,10 @@ class TransformRunner
             $validationRules = $this->resolveValidationRules($definition, $destination, $resolvedRow->resolvedData);
             $validation = $this->validator->validate($resolvedRow->resolvedData, $validationRules);
             if (! $validation['passes']) {
-                return new BulkItemResult('failed_validation', 'Validation failed.');
+                return new BulkItemResult(
+                    'failed_validation',
+                    $this->formatValidationFailureMessage($validation['errors']),
+                );
             }
 
             $isExistingDestination = $destination->exists;
@@ -852,7 +855,7 @@ class TransformRunner
                 if (! $validation['passes']) {
                     $results[$index] = new BulkItemResult(
                         'failed_validation',
-                        'Validation failed.',
+                        $this->formatValidationFailureMessage($validation['errors']),
                         sourceLabel: $sourceLabel,
                     );
 
@@ -976,5 +979,23 @@ class TransformRunner
         }
 
         return $query->exists();
+    }
+
+    /**
+     * @param  array<string, mixed>  $errors
+     */
+    private function formatValidationFailureMessage(array $errors): string
+    {
+        if ($errors === []) {
+            return 'Validation failed.';
+        }
+
+        $parts = [];
+        foreach ($errors as $field => $messages) {
+            $messageList = is_array($messages) ? $messages : [$messages];
+            $parts[] = $field.': '.implode(' ', array_map(static fn (mixed $message): string => (string) $message, $messageList));
+        }
+
+        return 'Validation failed. '.implode(' | ', $parts);
     }
 }

@@ -234,7 +234,7 @@ test('it fails validation and stores errors', function (): void {
     expect($record->status)->toBe('failed_validation');
     expect($record->validation_status)->toBe('invalid');
     expect($record->validation_errors)->toHaveKey('title');
-    expect($record->error_message)->toBe('Validation failed.');
+    expect($record->error_message)->toStartWith('Validation failed.');
 });
 
 test('it validates with model metadata without extra rules', function (): void {
