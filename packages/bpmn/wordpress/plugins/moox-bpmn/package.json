@@ -11,7 +11,7 @@
     "start": "wp-scripts start src/bpmn-block.js --output-path=build --output-filename=bpmn-block.js"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^32.0.0",
+    "@wordpress/scripts": "^33.0.0",
     "rimraf": "^6.0.0"
   },
   "dependencies": {
