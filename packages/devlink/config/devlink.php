@@ -264,6 +264,11 @@ return [
             'path' => $public_base_path.'/draft',
             'type' => 'public',
         ],
+        'e-billing' => [
+            'active' => false,
+            'path' => $public_base_path.'/e-billing',
+            'type' => 'public',
+        ],
         'expiry' => [
             'active' => false,
             'path' => $public_base_path.'/expiry',
@@ -329,6 +334,11 @@ return [
             'path' => $public_base_path.'/impersonate',
             'type' => 'public',
         ],
+        'invoice' => [
+            'active' => false,
+            'path' => $public_base_path.'/invoice',
+            'type' => 'public',
+        ],
         'item' => [
             'active' => false,
             'path' => $public_base_path.'/item',
@@ -344,6 +354,11 @@ return [
             'path' => $public_base_path.'/json',
             'type' => 'public',
         ],
+        'kosit-validator' => [
+            'active' => false,
+            'path' => $public_base_path.'/kosit-validator',
+            'type' => 'public',
+        ],
         'laravel-icons' => [
             'active' => false,
             'path' => $public_base_path.'/laravel-icons',
@@ -357,6 +372,11 @@ return [
         'login-link' => [
             'active' => false,
             'path' => $public_base_path.'/login-link',
+            'type' => 'public',
+        ],
+        'mail-inbox' => [
+            'active' => false,
+            'path' => $public_base_path.'/mail-inbox',
             'type' => 'public',
         ],
         'markdown' => [
@@ -413,6 +433,11 @@ return [
         'passkey' => [
             'active' => false,
             'path' => $public_base_path.'/passkey',
+            'type' => 'public',
+        ],
+        'pdf-parser' => [
+            'active' => false,
+            'path' => $public_base_path.'/pdf-parser',
             'type' => 'public',
         ],
         'permission' => [
@@ -515,6 +540,11 @@ return [
             'path' => $public_base_path.'/staff',
             'type' => 'public',
         ],
+        'static' => [
+            'active' => false,
+            'path' => $public_base_path.'/static',
+            'type' => 'public',
+        ],
         'tag' => [
             'active' => false,
             'path' => $public_base_path.'/tag',
@@ -568,6 +598,11 @@ return [
         'wishlist' => [
             'active' => false,
             'path' => $public_base_path.'/wishlist',
+            'type' => 'public',
+        ],
+        'zugferd' => [
+            'active' => false,
+            'path' => $public_base_path.'/zugferd',
             'type' => 'public',
         ],
 
