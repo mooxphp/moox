@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Data\Models\StaticLanguage;
@@ -26,7 +25,6 @@ class Supplier extends BaseRecordModel
 
     use HasModelTaxonomy;
     use HasUuids;
-    use SoftDeletes;
 
     protected $table = 'suppliers';
 
@@ -34,6 +32,7 @@ class Supplier extends BaseRecordModel
         'status',
         'supplier_number',
         'external_reference',
+        'supplier_name',
         'search_terms',
         'discount_percent',
         'lead_time_days',
@@ -47,6 +46,8 @@ class Supplier extends BaseRecordModel
         'approved_by_type',
         'approved_by_id',
         'data',
+        // Needed so transform field_map can persist soft-deletes via mass assignment.
+        'deleted_at',
     ];
 
     /** @return array<string, string> */
@@ -93,8 +94,12 @@ class Supplier extends BaseRecordModel
 
     public function displayLabel(): string
     {
-        if ($this->supplier_number) {
-            return $this->supplier_number;
+        if (filled($this->supplier_name)) {
+            return (string) $this->supplier_name;
+        }
+
+        if (filled($this->supplier_number)) {
+            return (string) $this->supplier_number;
         }
 
         return (string) $this->getKey();

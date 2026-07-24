@@ -86,6 +86,10 @@ class SupplierResource extends BaseRecordResource
                                 ->label(__('supplier::fields.supplier_number'))
                                 ->rules(SupplierRules::for('supplier_number'))
                                 ->maxLength(40),
+                            TextInput::make('supplier_name')
+                                ->label(__('supplier::fields.supplier_name'))
+                                ->rules(SupplierRules::for('supplier_name'))
+                                ->maxLength(160),
                             TextInput::make('external_reference')
                                 ->label(__('supplier::fields.external_reference'))
                                 ->rules(SupplierRules::for('external_reference'))
@@ -177,6 +181,10 @@ class SupplierResource extends BaseRecordResource
     {
         return $table
             ->columns([
+                TextColumn::make('supplier_name')
+                    ->label(__('supplier::fields.supplier_name'))
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('supplier_number')
                     ->label(__('supplier::fields.supplier_number'))
                     ->searchable()
@@ -205,7 +213,7 @@ class SupplierResource extends BaseRecordResource
                     ->toggleable(isToggledHiddenByDefault: true),
                 ...static::getTaxonomyColumns(),
             ])
-            ->defaultSort('supplier_number')
+            ->defaultSort('supplier_name')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
