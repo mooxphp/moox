@@ -48,6 +48,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Moox\Contact\ContactServiceProvider;
+use Moox\Contact\Models\Contact;
 use Moox\Contact\Plugins\ContactPlugin;
 use Moox\Core\CoreServiceProvider;
 use Moox\DevTools\Models\TestUser;
@@ -101,7 +102,7 @@ class TestCase extends Orchestra
         ]);
         $app['config']->set('auth.providers.contacts', [
             'driver' => 'eloquent',
-            'model' => \Moox\Contact\Models\Contact::class,
+            'model' => Contact::class,
         ]);
 
         $viewErrorBag = new ViewErrorBag;
