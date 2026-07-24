@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Moox\Customer\Database\Factories\CustomerFactory;
@@ -26,7 +25,6 @@ class Customer extends BaseRecordModel
 
     use HasModelTaxonomy;
     use HasUuids;
-    use SoftDeletes;
 
     protected $table = 'customers';
 
@@ -34,6 +32,7 @@ class Customer extends BaseRecordModel
         'status',
         'customer_number',
         'external_reference',
+        'customer_name',
         'search_terms',
         'price_type',
         'customer_group',
@@ -47,6 +46,8 @@ class Customer extends BaseRecordModel
         'approved_by_type',
         'approved_by_id',
         'data',
+        // Needed so transform field_map can persist soft-deletes via mass assignment.
+        'deleted_at',
     ];
 
     /** @return array<string, string> */
@@ -91,8 +92,12 @@ class Customer extends BaseRecordModel
 
     public function displayLabel(): string
     {
-        if ($this->customer_number) {
-            return $this->customer_number;
+        if (filled($this->customer_name)) {
+            return (string) $this->customer_name;
+        }
+
+        if (filled($this->customer_number)) {
+            return (string) $this->customer_number;
         }
 
         return (string) $this->getKey();

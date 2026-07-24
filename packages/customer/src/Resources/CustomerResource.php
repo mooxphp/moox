@@ -87,6 +87,10 @@ class CustomerResource extends BaseRecordResource
                                 ->label(__('customer::fields.customer_number'))
                                 ->rules(CustomerRules::for('customer_number'))
                                 ->maxLength(40),
+                            TextInput::make('customer_name')
+                                ->label(__('customer::fields.customer_name'))
+                                ->rules(CustomerRules::for('customer_name'))
+                                ->maxLength(160),
                             TextInput::make('external_reference')
                                 ->label(__('customer::fields.external_reference'))
                                 ->rules(CustomerRules::for('external_reference'))
@@ -180,6 +184,10 @@ class CustomerResource extends BaseRecordResource
     {
         return $table
             ->columns([
+                TextColumn::make('customer_name')
+                    ->label(__('customer::fields.customer_name'))
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('customer_number')
                     ->label(__('customer::fields.customer_number'))
                     ->searchable()
@@ -207,7 +215,7 @@ class CustomerResource extends BaseRecordResource
                     ->toggleable(isToggledHiddenByDefault: true),
                 ...static::getTaxonomyColumns(),
             ])
-            ->defaultSort('customer_number')
+            ->defaultSort('customer_name')
             ->recordActions([...static::getTableActions()])
             ->toolbarActions([...static::getBulkActions()])
             ->filters([
