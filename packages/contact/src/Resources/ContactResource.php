@@ -153,6 +153,19 @@ class ContactResource extends BaseRecordResource
                                         ->email()
                                         ->rules(ContactRules::for('email'))
                                         ->maxLength(120),
+                                    TextInput::make('username')
+                                        ->label(__('contact::fields.username'))
+                                        ->rules(ContactRules::for('username'))
+                                        ->maxLength(120)
+                                        ->helperText(__('contact::fields.username_helper')),
+                                    TextInput::make('password')
+                                        ->label(__('contact::fields.password'))
+                                        ->password()
+                                        ->revealable()
+                                        ->autocomplete('new-password')
+                                        ->rules(ContactRules::for('password'))
+                                        ->dehydrated(fn (?string $state): bool => filled($state))
+                                        ->helperText(__('contact::fields.password_helper')),
                                     Select::make('language_id')
                                         ->label(__('contact::fields.language_id'))
                                         ->relationship('language', 'common_name')
@@ -219,6 +232,11 @@ class ContactResource extends BaseRecordResource
                     ->label(__('contact::fields.email'))
                     ->searchable()
                     ->toggleable()
+                    ->sortable(),
+                TextColumn::make('username')
+                    ->label(__('contact::fields.username'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('job_title')
                     ->label(__('contact::fields.job_title'))

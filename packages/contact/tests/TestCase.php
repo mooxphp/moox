@@ -95,6 +95,14 @@ class TestCase extends Orchestra
         $app['config']->set('session.lottery', [100, 100]);
         $app['config']->set('company.taxonomies', []);
         $app['config']->set('company.readonly', false);
+        $app['config']->set('auth.guards.contact', [
+            'driver' => 'session',
+            'provider' => 'contacts',
+        ]);
+        $app['config']->set('auth.providers.contacts', [
+            'driver' => 'eloquent',
+            'model' => \Moox\Contact\Models\Contact::class,
+        ]);
 
         $viewErrorBag = new ViewErrorBag;
         $viewErrorBag->put('default', new MessageBag);

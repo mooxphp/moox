@@ -19,6 +19,8 @@ final class ContactRules
             'display_name' => ['nullable', 'string', 'max:160'],
             'job_title' => ['nullable', 'string', 'max:120'],
             'email' => ['nullable', 'string', 'max:120', 'email'],
+            'username' => ['nullable', 'string', 'max:120'],
+            'password' => ['nullable', 'string', 'min:8'],
             'phone' => ['nullable', 'string', 'max:30'],
             'mobile' => ['nullable', 'string', 'max:30'],
             'language_id' => ['nullable', 'integer', 'exists:static_languages,id'],

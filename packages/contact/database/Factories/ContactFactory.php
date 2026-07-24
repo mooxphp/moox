@@ -36,6 +36,9 @@ class ContactFactory extends Factory
             'phone' => fake()->optional(0.7)->phoneNumber(),
             'mobile' => fake()->optional(0.7)->phoneNumber(),
             'email' => fake()->optional(0.8)->safeEmail(),
+            'username' => null,
+            'email_verified_at' => null,
+            'password' => null,
             'contact_type' => fake()->randomElement(config('contact.contact_types', ['external'])),
             'language_id' => null,
             'data' => null,
@@ -53,6 +56,17 @@ class ContactFactory extends Factory
     {
         return $this->state(fn (): array => [
             'status' => 'inactive',
+        ]);
+    }
+
+    public function authenticatable(string $password = 'password'): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'active',
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
+            'email_verified_at' => now(),
+            'password' => $password,
         ]);
     }
 }

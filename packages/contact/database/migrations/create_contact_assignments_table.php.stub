@@ -18,7 +18,10 @@ return new class extends Migration
             $table->boolean('is_primary')->default(false)->index();
             $table->timestamps();
 
-            $table->unique(['assignable_type', 'assignable_id', 'contact_id']);
+            $table->unique(
+                ['assignable_type', 'assignable_id', 'contact_id'],
+                'contact_assignments_owner_contact_unique',
+            );
         });
     }
 
