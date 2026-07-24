@@ -340,7 +340,7 @@ class RelationService
         $presentation = RelationPresentation::tryFrom((string) ($config['presentation'] ?? '')) ?? RelationPresentation::Tab;
 
         $pivotAttributes = self::listOfStrings($config['pivot_attributes'] ?? $config['pivot_columns'] ?? []);
-        $displayColumns = self::listOfStrings($config['display_columns'] ?? ['name']);
+        $displayColumns = self::listOfStrings($config['display_columns'] ?? ['display_name', 'name']);
         $ownerTypes = self::normalizeOwnerTypes($config['owner_types'] ?? []);
 
         $relatedModel = $config['related_model'] ?? $config['model'] ?? null;
