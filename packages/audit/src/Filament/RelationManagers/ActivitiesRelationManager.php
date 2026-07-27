@@ -59,7 +59,7 @@ class ActivitiesRelationManager extends RelationManager
     }
 
     #[Override]
-    protected function getTableQuery(): Builder|null
+    protected function getTableQuery(): ?Builder
     {
         $owner = $this->getOwnerRecord();
         $config = AuditFilamentRegistry::configForOwner($owner);

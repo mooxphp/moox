@@ -19,7 +19,8 @@ final readonly class AuditPolicy
         public bool $audited,
         public bool $appendOnly,
         public ?int $retentionDays,
-    ) {}
+    ) {
+    }
 
     public function neverPrune(): bool
     {

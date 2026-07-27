@@ -120,7 +120,7 @@ final class SubjectUrlResolver
     }
 
     /**
-     * @param  class-string<Resource>  $resourceClass
+     * @param  class-string<resource>  $resourceClass
      */
     private static function resourceUrl(string $resourceClass, Model $record, ?string $locale = null): ?string
     {
