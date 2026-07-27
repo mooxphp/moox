@@ -3,6 +3,7 @@
     $visibleFlags = [];
     $remainingFlags = 0;
     $currentLang = $this->lang ?? request()->get('lang', app()->getLocale());
+    $currentLangCode = explode('_', (string) $currentLang)[0];
 
     try {
         if (is_array($flags)) {
@@ -11,9 +12,11 @@
 
             foreach ($flags as $flagData) {
                 $flag = $flagData['flag'];
-                $locale = $flagData['locale'];
+                $locale = (string) ($flagData['locale'] ?? '');
+                $localeCode = explode('_', $locale)[0];
 
-                if ($locale === $currentLang) {
+                // Draft stores locale_variant (de_DE); Static stores alpha2 (de).
+                if ($locale === $currentLang || $localeCode === $currentLangCode) {
                     $currentLangFlag = $flag;
                 } else {
                     $otherFlags[] = $flag;
@@ -34,27 +37,32 @@
         $visibleFlags = [];
         $remainingFlags = 0;
     }
+
+    $slotCount = count($visibleFlags) + ($remainingFlags > 0 ? 1 : 0);
+    $minWidth = $slotCount > 0 ? (($slotCount - 1) * 18) + 24 : 24;
 @endphp
-<x-filament-forms::field-wrapper>
-    <div style="padding-left: 30%; position: relative; height: 28px; min-width: 66px;">
-        <div style="position: relative; height: 28px; min-width: 66px;">
-            @foreach($visibleFlags as $index => $flag)
-                            @php 
-                                                                                    $isTrashed = str_contains($flag, 'trashed');
-                                $flagComponent = str_replace(' trashed', '', $flag);
-                            @endphp
-                <span style="position: absolute; left: {{ $index * 18 }}px; z-index: {{ 5 + $index }};">
-                                                <x-dynamic-component :component="$flagComponent"
-                                                                    style="width: 24px; height: 24px; border-radius: 50%; background: #fff;" />
-                                                </span>
-            @endforeach
-@if($remainingFlags > 0)
-        <span style="position: absolute; left: {{ (count($visibleFlags) * 18) + 8 }}px; z-index: {{ 5 + $index }};">
-            <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
-                            +{{ $remainingFlags }}
-        </div>
-    </span>
-@endif
-        </div>
+
+{{-- Left-aligned fixed stack: avoid % padding / forms field-wrapper (causes row staircase). --}}
+<div class="fi-ta-text">
+    <div style="position: relative; height: 28px; width: {{ $minWidth }}px; min-width: {{ $minWidth }}px;">
+        @foreach ($visibleFlags as $index => $flag)
+            @php
+                $flagComponent = str_replace(' trashed', '', $flag);
+            @endphp
+            <span style="position: absolute; top: 2px; left: {{ $index * 18 }}px; z-index: {{ 5 + $index }};">
+                <x-dynamic-component
+                    :component="$flagComponent"
+                    style="width: 24px; height: 24px; border-radius: 50%; background: #fff; display: block;"
+                />
+            </span>
+        @endforeach
+
+        @if ($remainingFlags > 0)
+            <span style="position: absolute; top: 2px; left: {{ count($visibleFlags) * 18 }}px; z-index: {{ 5 + count($visibleFlags) }};">
+                <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
+                    +{{ $remainingFlags }}
+                </div>
+            </span>
+        @endif
     </div>
-</x-filament-forms::field-wrapper>
+</div>

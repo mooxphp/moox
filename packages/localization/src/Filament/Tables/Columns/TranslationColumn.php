@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Moox\Localization\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Data\Models\StaticLanguage;
 use Moox\Localization\Models\Localization;
 
@@ -18,23 +20,24 @@ class TranslationColumn extends TextColumn
 
         $this->label(__('localization::fields.language'))
             ->toggleable()
-            ->alignCenter()
+            ->alignLeft()
+            ->extraHeaderAttributes(['class' => 'fi-align-start'])
             ->searchable()
             ->state(function ($record) {
-                $translations = $record->translations()->withTrashed()->get();
+                $translations = $this->translationsQuery($record)->get();
 
                 $flags = $translations->map(function ($translation) {
-                    $localization = Localization::where('locale_variant', $translation->locale)->first();
+                    $localization = Localization::query()->where('locale_variant', $translation->locale)->first();
 
                     if ($localization) {
                         $flagClass = $localization->display_flag;
                     } else {
                         $languageCode = explode('_', $translation->locale)[0];
-                        $locale = StaticLanguage::where('alpha2', $languageCode)->first();
+                        $locale = StaticLanguage::query()->where('alpha2', $languageCode)->first();
                         $flagClass = $locale ? $locale->flag_icon : 'heroicon-o-flag';
                     }
 
-                    if ($translation->trashed()) {
+                    if (method_exists($translation, 'trashed') && $translation->trashed()) {
                         $flagClass .= ' trashed';
                     }
 
@@ -46,5 +49,19 @@ class TranslationColumn extends TextColumn
 
                 return $flags;
             });
+    }
+
+    /**
+     * Draft translations soft-delete; Static translations do not.
+     */
+    protected function translationsQuery($record): Relation
+    {
+        $query = $record->translations();
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($query->getRelated()), true)) {
+            return $query->withTrashed();
+        }
+
+        return $query;
     }
 }
