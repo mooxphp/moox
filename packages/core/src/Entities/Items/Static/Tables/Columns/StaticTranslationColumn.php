@@ -9,7 +9,7 @@ use Moox\Localization\Models\Localization;
 
 class StaticTranslationColumn extends TextColumn
 {
-    protected string $view = 'core::filament.tables.columns.translations';
+    protected string $view = 'localization::filament.tables.columns.translations';
 
     protected function setUp(): void
     {
