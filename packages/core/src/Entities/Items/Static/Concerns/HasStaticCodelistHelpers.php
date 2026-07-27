@@ -65,21 +65,33 @@ trait HasStaticCodelistHelpers
             ->label(__('core::fields.common_name'))
             ->searchable(true, function (Builder $query, string $search, $livewire) use ($commonNameAttribute): void {
                 $translationLocale = static::resolveTranslationLocaleForLivewire($livewire);
-                $query->whereHas('translations', function (Builder $query) use ($search, $translationLocale, $commonNameAttribute): void {
-                    $query->where('locale', $translationLocale)
-                        ->where($commonNameAttribute, 'like', '%'.$search.'%');
-                });
+                $query->whereHas(
+                    'translations',
+                    function (Builder $query) use ($search, $translationLocale, $commonNameAttribute): void {
+                        $query->where('locale', $translationLocale)
+                            ->where($commonNameAttribute, 'like', '%'.$search.'%');
+                    }
+                );
             })
             ->extraAttributes(function ($record, $livewire) use ($commonNameAttribute): array {
                 $translationLocale = static::resolveTranslationLocaleForLivewire($livewire);
 
                 return [
-                    'style' => $record->translations()->where('locale', $translationLocale)->whereNotNull($commonNameAttribute)->exists()
+                    'style' => $record->translations()
+                        ->where('locale', $translationLocale)
+                        ->whereNotNull($commonNameAttribute)
+                        ->exists()
                         ? ''
                         : 'color: var(--gray-500);',
                 ];
             })
-            ->getStateUsing(fn ($record, $livewire): string => static::resolveCommonNameState($record, $livewire, $commonNameAttribute));
+            ->getStateUsing(
+                fn ($record, $livewire): string => static::resolveCommonNameState(
+                    $record,
+                    $livewire,
+                    $commonNameAttribute
+                )
+            );
     }
 
     protected static function resolveCommonNameState($record, $livewire, string $commonNameAttribute): string
@@ -129,10 +141,13 @@ trait HasStaticCodelistHelpers
                 $currentLang = static::resolveCurrentLang($livewire);
                 $translationLocale = BaseStaticModel::resolveTranslationLocale($currentLang);
 
-                return $query->whereHas('translations', function (Builder $query) use ($value, $translationLocale, $commonNameAttribute): void {
-                    $query->where('locale', $translationLocale)
-                        ->where($commonNameAttribute, 'like', '%'.$value.'%');
-                });
+                return $query->whereHas(
+                    'translations',
+                    function (Builder $query) use ($value, $translationLocale, $commonNameAttribute): void {
+                        $query->where('locale', $translationLocale)
+                            ->where($commonNameAttribute, 'like', '%'.$value.'%');
+                    }
+                );
             })
             ->indicateUsing(function (array $data) use ($commonNameAttribute): ?string {
                 if (empty($data[$commonNameAttribute])) {
@@ -149,7 +164,11 @@ trait HasStaticCodelistHelpers
             return (string) $livewire->lang;
         }
 
-        if ($livewire && property_exists($livewire, 'tableFilters') && ! empty($livewire->tableFilters['locale']['value'] ?? null)) {
+        if (
+            $livewire
+            && property_exists($livewire, 'tableFilters')
+            && ! empty($livewire->tableFilters['locale']['value'] ?? null)
+        ) {
             return (string) $livewire->tableFilters['locale']['value'];
         }
 

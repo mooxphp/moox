@@ -49,7 +49,9 @@
             @php
                 $flagComponent = str_replace(' trashed', '', $flag);
             @endphp
-            <span style="position: absolute; top: 2px; left: {{ $index * 18 }}px; z-index: {{ 5 + $index }};">
+            <span
+                style="position: absolute; top: 2px; left: {{ $index * 18 }}px; z-index: {{ 5 + $index }};"
+            >
                 <x-dynamic-component
                     :component="$flagComponent"
                     style="width: 24px; height: 24px; border-radius: 50%; background: #fff; display: block;"
@@ -58,8 +60,17 @@
         @endforeach
 
         @if ($remainingFlags > 0)
-            <span style="position: absolute; top: 2px; left: {{ count($visibleFlags) * 18 }}px; z-index: {{ 5 + count($visibleFlags) }};">
-                <div class="flex items-center justify-center w-6 h-6 text-sm font-bold text-black rounded-full bg-white border border-gray-300">
+            @php
+                $remainingLeft = count($visibleFlags) * 18;
+                $remainingZIndex = 5 + count($visibleFlags);
+            @endphp
+            <span
+                style="position: absolute; top: 2px; left: {{ $remainingLeft }}px; z-index: {{ $remainingZIndex }};"
+            >
+                <div
+                    class="flex h-6 w-6 items-center justify-center rounded-full
+                        border border-gray-300 bg-white text-sm font-bold text-black"
+                >
                     +{{ $remainingFlags }}
                 </div>
             </span>

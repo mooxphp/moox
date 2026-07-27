@@ -60,15 +60,18 @@ trait HasStaticResourceActions
         ];
 
         if (static::enableCreate()) {
-            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
+            $actions[] = static::getSaveAndCreateAnotherAction()
+                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
+            $actions[] = static::getDeleteAction()
+                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         if (static::enableEdit()) {
-            $actions[] = static::getEditAction()->extraAttributes(attributes: ['style' => 'width: 100%;']);
+            $actions[] = static::getEditAction()
+                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
         }
 
         return Actions::make($actions);
@@ -145,7 +148,10 @@ trait HasStaticResourceActions
             ->label(__('core::core.edit'))
             ->color('primary')
             ->keyBindings(['command+e', 'ctrl+e'])
-            ->url(fn ($record, $livewire) => static::getUrl('edit', static::resourceUrlParams($livewire->record, $livewire)))
+            ->url(fn ($record, $livewire) => static::getUrl(
+                'edit',
+                static::resourceUrlParams($livewire->record, $livewire)
+            ))
             ->visible(function ($livewire) {
                 if (! $livewire instanceof ViewRecord || ! $livewire->record) {
                     return false;
