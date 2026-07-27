@@ -19,12 +19,9 @@ use Moox\Data\Filament\Resources\StaticUnitResource\Pages\EditStaticUnit;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\ListStaticUnits;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\ViewStaticUnit;
 use Moox\Data\Models\StaticUnit;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticUnitResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticUnit::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-straighten';

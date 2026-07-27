@@ -18,12 +18,9 @@ use Moox\Data\Filament\Resources\StaticVatExemptionReasonResource\Pages\EditStat
 use Moox\Data\Filament\Resources\StaticVatExemptionReasonResource\Pages\ListStaticVatExemptionReasons;
 use Moox\Data\Filament\Resources\StaticVatExemptionReasonResource\Pages\ViewStaticVatExemptionReason;
 use Moox\Data\Models\StaticVatExemptionReason;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticVatExemptionReasonResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticVatExemptionReason::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-rule';

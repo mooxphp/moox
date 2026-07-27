@@ -18,12 +18,9 @@ use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\EditStaticIncoterm
 use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\ListStaticIncoterms;
 use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\ViewStaticIncoterm;
 use Moox\Data\Models\StaticIncoterm;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticIncotermResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticIncoterm::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-local-shipping';

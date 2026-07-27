@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\EditStaticA
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\ListStaticAllowanceReasons;
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\ViewStaticAllowanceReason;
 use Moox\Data\Models\StaticAllowanceReason;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticAllowanceReasonResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticAllowanceReason::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-discount';

@@ -18,12 +18,9 @@ use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\EditStaticDocu
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ListStaticDocumentTypes;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ViewStaticDocumentType;
 use Moox\Data\Models\StaticDocumentType;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticDocumentTypeResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticDocumentType::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
