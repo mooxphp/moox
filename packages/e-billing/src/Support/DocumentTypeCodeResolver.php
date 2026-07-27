@@ -166,8 +166,9 @@ final class DocumentTypeCodeResolver
         }
 
         $records = StaticDocumentType::query()
+            ->with('translations')
             ->orderBy('code')
-            ->get(['code', 'common_name']);
+            ->get(['id', 'code']);
 
         if ($records->isEmpty()) {
             throw new CodelistNotImportedException('static_document_types');
@@ -179,18 +180,24 @@ final class DocumentTypeCodeResolver
 
         foreach ($records as $record) {
             $code = (string) $record->code;
-            $labelCandidates = array_filter([
-                mb_strtolower((string) $record->common_name),
+            $translatedNames = $record->translations
+                ->pluck('common_name')
+                ->filter(static fn (mixed $name): bool => is_string($name) && $name !== '')
+                ->map(static fn (string $name): string => mb_strtolower($name))
+                ->all();
+
+            $labelCandidates = array_values(array_unique(array_filter([
+                ...$translatedNames,
                 mb_strtolower(__('data::enums/document-types.'.$code, [], 'de')),
                 mb_strtolower(__('data::enums/document-types.'.$code, [], 'en')),
-            ]);
+            ])));
 
             $labels[$code] = __('data::enums/document-types.'.$code, [], 'de');
             if ($labels[$code] === 'data::enums/document-types.'.$code) {
-                $labels[$code] = (string) $record->common_name;
+                $labels[$code] = (string) ($record->translatedLabel('de') ?? $record->translatedLabel('en') ?? $code);
             }
 
-            $contains[$code] = array_values(array_unique($labelCandidates));
+            $contains[$code] = $labelCandidates;
 
             foreach ($labelCandidates as $candidate) {
                 if ($candidate === '') {
