@@ -12,6 +12,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
+use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\CreateStaticVatCategory;
 use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\EditStaticVatCategory;
 use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\ListStaticVatCategories;

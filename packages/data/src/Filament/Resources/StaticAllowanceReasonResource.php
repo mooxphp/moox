@@ -12,6 +12,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
+use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\CreateStaticAllowanceReason;
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\EditStaticAllowanceReason;
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\ListStaticAllowanceReasons;

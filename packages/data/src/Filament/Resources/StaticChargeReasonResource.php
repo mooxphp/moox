@@ -12,6 +12,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
+use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\CreateStaticChargeReason;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\EditStaticChargeReason;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\ListStaticChargeReasons;
