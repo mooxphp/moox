@@ -14,7 +14,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
-use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\CreateStaticUnit;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\EditStaticUnit;
 use Moox\Data\Filament\Resources\StaticUnitResource\Pages\ListStaticUnits;

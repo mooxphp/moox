@@ -12,7 +12,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
-use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Static\Models\StaticEntry;
 use Moox\Static\Resources\StaticEntryResource\Pages\CreateStaticEntry;
