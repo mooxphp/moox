@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Audit\Support;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Moox\Audit\Models\Activity;
 
 final class ActivityEntryPresenter
 {
@@ -83,5 +85,62 @@ final class ActivityEntryPresenter
         }
 
         return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    }
+
+    public static function subjectLabel(?Activity $activity): string
+    {
+        if ($activity === null) {
+            return '—';
+        }
+
+        $type = $activity->subject_type;
+        $id = $activity->subject_id;
+
+        if (! is_string($type) || $type === '') {
+            return '—';
+        }
+
+        $basename = class_basename($type);
+        $idLabel = $id === null || $id === '' ? '—' : (string) $id;
+        $base = sprintf('%s #%s', $basename, $idLabel);
+
+        $subject = $activity->subject;
+
+        if (! $subject instanceof Model) {
+            return $base;
+        }
+
+        foreach (['title', 'name', 'label'] as $attribute) {
+            $value = $subject->getAttribute($attribute);
+
+            if (is_string($value) && $value !== '') {
+                return sprintf('%s (%s)', $base, $value);
+            }
+        }
+
+        return $base;
+    }
+
+    public static function causerLabel(?Activity $activity): string
+    {
+        if ($activity === null) {
+            return '—';
+        }
+
+        $causer = $activity->causer;
+
+        if ($causer instanceof Model) {
+            foreach (['name', 'title', 'email'] as $attribute) {
+                $value = $causer->getAttribute($attribute);
+
+                if (is_string($value) && $value !== '') {
+                    return $value;
+                }
+            }
+
+            return class_basename($causer::class).' #'.$causer->getKey();
+        }
+
+        return '—';
     }
 }

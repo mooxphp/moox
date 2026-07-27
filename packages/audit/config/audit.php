@@ -69,6 +69,16 @@ return [
 
     'filament' => [],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Retention placeholders
+    |--------------------------------------------------------------------------
+    |
+    | Planned windows per entry type (days). Phase-1 product work does not
+    | prune automatically; values are reserved for a future prune command.
+    | Only `.live` is intended as the default prune window when that lands.
+    |
+    */
     'retention' => [
         'log' => [
             'live' => 7,

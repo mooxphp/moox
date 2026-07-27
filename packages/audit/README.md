@@ -2,18 +2,20 @@
 
 # Moox Audit
 
-Moox Audit provides centralized activity logging and a read-only Filament audit UI on top of [Spatie Laravel Activity Log](https://github.com/spatie/laravel-activitylog).
+Moox Audit answers **who changed what, when** on Moox records — and shows it in Filament so admins can read the trail without opening config files.
 
-Consumer packages register their models in config — **no trait** and **no model changes** are required. When `audit.enabled` is `true`, configured models are tracked automatically via a config-driven observer.
+It builds on [Spatie Laravel Activity Log](https://github.com/spatie/laravel-activitylog). Consumer packages register models in config — **no trait** and **no model changes** for standard CRUD tracking. When `audit.enabled` is `true`, configured models are tracked via a config-driven observer.
+
+Today the gold-standard consumer is **Category** (main model + translations, Activity tab, optional delete hooks). More packages follow the same integration pattern.
 
 ## Features
 
 - **Config-driven tracking** — models, attributes, events, and presets are declared in package or app config
 - **Layered configuration** — presets, package defaults, and app overrides merge predictably
-- **Entry types** — distinguish compliance-style **audit** entries from general **log** entries
+- **Entry types** — distinguish **audit** (attribute changes) from **log** (hooks / manual events)
+- **Readable Filament UI** — global `AuditResource` with resolved labels, subject/causer display, and change diffs
+- **Per-record Activity tab** — including aggregated activities from related models (e.g. translations)
 - **Scope support** — stores a `scope` value on activities (from the model or its draft parent)
-- **Filament UI** — global `AuditResource` plus per-record **Activity** relation tabs
-- **Aggregated activity views** — show activities from related models (e.g. translations) on the owner resource
 - **Event hooks** — log custom lifecycle events (e.g. `categorizables_detached` on category delete)
 - **User attribute enrichment** — resolve `author_id`, `created_by_id`, and `updated_by_id` to readable labels
 
@@ -320,7 +322,7 @@ Then register `AuditPlugin::make()` in your Filament panel provider.
 ```bash
 composer test
 # or from the monorepo root:
-php vendor/bin/pest --configuration=packages/audit/phpunit.xml packages/audit/tests/Unit
+php vendor/bin/pest --configuration=packages/audit/phpunit.xml
 ```
 
 ## Changelog

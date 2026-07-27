@@ -12,12 +12,29 @@ return [
     'causer_type' => 'Causer type',
 
     // The causer id is the id of the user who caused the log entry
-    'causer_id' => 'Causer id',
+    'causer_id' => 'Causer ID',
+
+    // Display label for the user or system that caused the entry
+    'causer' => 'Causer',
 
     // Batch uuid is the unique identifier of the batch of logs
-    'batch_uuid' => 'Batch uuid',
+    'batch_uuid' => 'Batch UUID',
 
     // Log name refers to the name of the logfile
     'log_name' => 'Log name',
+
+    'entry_type' => 'Entry type',
+
+    'entry_type_log' => 'Log',
+
+    'entry_type_audit' => 'Audit',
+
+    'attribute_changes' => 'Changes',
+
+    'scope' => 'Scope',
+
+    'subject' => 'Subject',
+
+    'activity' => 'Activity',
 
 ];

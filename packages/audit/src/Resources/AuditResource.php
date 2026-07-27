@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
 use Moox\Audit\Resources\AuditResource\Pages\ViewAudit;
@@ -52,29 +53,30 @@ class AuditResource extends Resource
                         ->label(__('core::audit.scope'))
                         ->placeholder('—'),
                     TextEntry::make('event')
-                        ->label(__('core::common.event'))
+                        ->label(__('core::core.event'))
                         ->placeholder('—'),
                     TextEntry::make('description')
-                        ->label(__('core::common.description'))
+                        ->label(__('core::core.description'))
                         ->columnSpanFull(),
-                    TextEntry::make('subject_type')
-                        ->label(__('core::common.subject_type')),
-                    TextEntry::make('subject_id')
-                        ->label(__('core::common.subject_id')),
-                    TextEntry::make('causer_type')
-                        ->label(__('core::audit.causer_type')),
-                    TextEntry::make('causer_id')
-                        ->label(__('core::audit.causer_id')),
+                    TextEntry::make('subject_label')
+                        ->label(__('core::audit.subject'))
+                        ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
+                        ->columnSpanFull(),
+                    TextEntry::make('causer_label')
+                        ->label(__('core::audit.causer'))
+                        ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record)),
                     TextEntry::make('created_at')
-                        ->label(__('core::common.created_at'))
+                        ->label(__('core::core.created_at'))
                         ->dateTime(),
                     KeyValueEntry::make('attribute_changes')
                         ->label(__('core::audit.attribute_changes'))
                         ->state(fn (Activity $record): array => ActivityEntryPresenter::flattenChanges($record->attribute_changes))
+                        ->visible(fn (Activity $record): bool => ActivityEntryPresenter::flattenChanges($record->attribute_changes) !== [])
                         ->columnSpanFull(),
                     KeyValueEntry::make('properties')
-                        ->label(__('core::common.properties'))
+                        ->label(__('core::core.properties'))
                         ->state(fn (Activity $record): array => ActivityEntryPresenter::flattenProperties($record->properties))
+                        ->visible(fn (Activity $record): bool => ActivityEntryPresenter::flattenProperties($record->properties) !== [])
                         ->columnSpanFull(),
                 ]),
             ]),
@@ -87,9 +89,10 @@ class AuditResource extends Resource
         return $table
             ->poll('60s')
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['causer', 'subject']))
             ->columns([
                 TextColumn::make('created_at')
-                    ->label(__('core::common.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('entry_type')
@@ -105,18 +108,20 @@ class AuditResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->limit(40),
                 TextColumn::make('description')
-                    ->label(__('core::common.description'))
+                    ->label(__('core::core.description'))
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('event')
-                    ->label(__('core::common.event'))
+                    ->label(__('core::core.event'))
                     ->toggleable(),
-                TextColumn::make('subject_type')
-                    ->label(__('core::common.subject_type'))
+                TextColumn::make('subject_label')
+                    ->label(__('core::audit.subject'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->limit(40),
-                TextColumn::make('causer.name')
-                    ->label(__('core::audit.causer_id'))
+                TextColumn::make('causer_label')
+                    ->label(__('core::audit.causer'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))
                     ->placeholder('—')
                     ->toggleable(),
             ])

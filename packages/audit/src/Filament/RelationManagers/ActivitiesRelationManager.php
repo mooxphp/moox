@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource;
+use Moox\Audit\Support\ActivityEntryPresenter;
 use Moox\Audit\Support\AuditFilamentRegistry;
 use Override;
 
@@ -19,29 +20,40 @@ class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'auditActivities';
 
-    protected static ?string $title = 'Activity';
+    #[Override]
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('core::audit.activity');
+    }
 
     #[Override]
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('description')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['causer', 'subject']))
             ->columns([
                 TextColumn::make('created_at')
-                    ->label(__('core::common.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge(),
                 TextColumn::make('event')
-                    ->label(__('core::common.event'))
+                    ->label(__('core::core.event'))
                     ->toggleable(),
                 TextColumn::make('description')
-                    ->label(__('core::common.description'))
+                    ->label(__('core::core.description'))
                     ->limit(60),
-                TextColumn::make('causer.name')
-                    ->label(__('core::audit.causer_id'))
+                TextColumn::make('subject_label')
+                    ->label(__('core::audit.subject'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->limit(40),
+                TextColumn::make('causer_label')
+                    ->label(__('core::audit.causer'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))
                     ->placeholder('—'),
             ])
             ->defaultSort('created_at', 'desc')
@@ -50,13 +62,14 @@ class ActivitiesRelationManager extends RelationManager
     }
 
     #[Override]
-    protected function getTableQuery(): Builder
+    protected function getTableQuery(): Builder|null
     {
         $owner = $this->getOwnerRecord();
         $config = AuditFilamentRegistry::configForOwner($owner);
 
         if ($config !== null && is_array($config['aggregate_subjects'] ?? null)) {
-            return $this->aggregatedActivitiesQuery($owner, $config['aggregate_subjects']);
+            return $this->aggregatedActivitiesQuery($owner, $config['aggregate_subjects'])
+                ->with(['causer', 'subject']);
         }
 
         return parent::getTableQuery();
