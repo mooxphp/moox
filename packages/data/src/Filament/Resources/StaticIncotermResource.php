@@ -13,6 +13,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
+use Moox\Core\Entities\Items\Static\Filament\Concerns\HasStaticCodelistResource;
 use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\CreateStaticIncoterm;
 use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\EditStaticIncoterm;
 use Moox\Data\Filament\Resources\StaticIncotermResource\Pages\ListStaticIncoterms;

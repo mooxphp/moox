@@ -6,6 +6,10 @@ arch()
     ->not->toUse(['die', 'dd', 'dump']);
 
 arch()
+    ->expect('Moox\Data')
+    ->not->toUse('Moox\Static');
+
+arch()
     ->expect('Moox\Data\Models')
     ->toBeClasses()
     ->toExtend('Illuminate\Database\Eloquent\Model')
