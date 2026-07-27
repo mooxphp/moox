@@ -106,8 +106,8 @@ trait HasStaticCodelistHelpers
 
         $defaultLocalization = Localization::query()->where('is_default', true)->first();
         $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
-        $defaultTranslationLocale = BaseStaticModel::resolveTranslationLocale($defaultLang);
-        $fallbackTranslation = $record->translations()->where('locale', $defaultTranslationLocale)->first();
+        $fallbackLocale = BaseStaticModel::resolveTranslationLocale($defaultLang);
+        $fallbackTranslation = $record->translations()->where('locale', $fallbackLocale)->first();
 
         if ($fallbackTranslation && $fallbackTranslation->{$commonNameAttribute}) {
             return $fallbackTranslation->{$commonNameAttribute}.' ('.$defaultLang.')';
@@ -164,12 +164,11 @@ trait HasStaticCodelistHelpers
             return (string) $livewire->lang;
         }
 
-        if (
-            $livewire
-            && property_exists($livewire, 'tableFilters')
-            && ! empty($livewire->tableFilters['locale']['value'] ?? null)
-        ) {
-            return (string) $livewire->tableFilters['locale']['value'];
+        if ($livewire && property_exists($livewire, 'tableFilters')) {
+            $localeFilter = $livewire->tableFilters['locale']['value'] ?? null;
+            if (! empty($localeFilter)) {
+                return (string) $localeFilter;
+            }
         }
 
         $requestLang = request()->query('lang') ?? request()->input('lang');

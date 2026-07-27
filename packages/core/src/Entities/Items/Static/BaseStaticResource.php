@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Core\Entities\Items\Static;
 
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Entities\Items\Static\Concerns\HasStaticCodelistHelpers;
 use Moox\Core\Entities\Items\Static\Concerns\HasStaticResourceActions;
-use Moox\Core\Traits\Tabs\HasResourceTabs;
 
 /**
  * Lean Filament resource base for static reference data with astrotomic translations.
- * No draft/publishing or soft-deleted translation workflow — avoids BaseResource::withTrashed() paths.
+ * Reuses BaseItemResource action lists; overrides only Static locale / hard-delete behaviour.
  */
-abstract class BaseStaticResource extends BaseResource
+abstract class BaseStaticResource extends BaseItemResource
 {
-    use HasResourceTabs;
     use HasStaticCodelistHelpers;
     use HasStaticResourceActions;
 
