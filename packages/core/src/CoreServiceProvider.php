@@ -58,7 +58,6 @@ class CoreServiceProvider extends MooxServiceProvider
             ->name('core')
             ->hasConfigFile(['core', 'moox-installer'])
             ->hasTranslations()
-            ->hasViews()
             ->hasMigration('create_scopes_table')
             ->hasRoutes(['api', 'web'])
             ->hasCommands([MooxInstallCommand::class, PublishScheduledContentCommand::class, ScopesSyncCommand::class]);
