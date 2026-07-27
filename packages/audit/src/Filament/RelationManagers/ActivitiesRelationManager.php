@@ -41,16 +41,13 @@ class ActivitiesRelationManager extends RelationManager
                     ->label(__('core::audit.entry_type'))
                     ->badge(),
                 TextColumn::make('event')
-                    ->label(__('core::core.event'))
+                    ->label(__('core::audit.action'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::eventLabel($record))
                     ->toggleable(),
-                TextColumn::make('description')
-                    ->label(__('core::core.description'))
-                    ->limit(60),
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->limit(40),
+                    ->limit(50),
                 TextColumn::make('causer_label')
                     ->label(__('core::audit.causer'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))
@@ -62,7 +59,7 @@ class ActivitiesRelationManager extends RelationManager
     }
 
     #[Override]
-    protected function getTableQuery(): ?Builder
+    protected function getTableQuery(): Builder|null
     {
         $owner = $this->getOwnerRecord();
         $config = AuditFilamentRegistry::configForOwner($owner);

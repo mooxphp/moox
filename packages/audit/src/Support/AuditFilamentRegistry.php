@@ -36,6 +36,14 @@ final class AuditFilamentRegistry
         return null;
     }
 
+    /**
+     * @return array<class-string, array<string, mixed>>
+     */
+    public static function all(): array
+    {
+        return self::$configs;
+    }
+
     public static function clear(): void
     {
         self::$configs = [];

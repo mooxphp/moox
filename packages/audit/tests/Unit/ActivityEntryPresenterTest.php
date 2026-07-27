@@ -40,7 +40,7 @@ it('returns an empty array for missing or identical changes', function (): void 
         ]))->toBe([]);
 });
 
-it('builds a readable subject label from type, id and title', function (): void {
+it('builds a readable subject label from type and title', function (): void {
     $item = new TestAuditableItem;
     $item->setRawAttributes([
         'id' => 7,
@@ -54,7 +54,8 @@ it('builds a readable subject label from type, id and title', function (): void 
     $activity->setRelation('subject', $item);
 
     expect(ActivityEntryPresenter::subjectLabel($activity))
-        ->toBe('TestAuditableItem #7 (Hello)');
+        ->toBe('Test Auditable Item: Hello')
+        ->and(ActivityEntryPresenter::subjectIdLabel($activity))->toBe('#7');
 });
 
 it('builds a readable causer label from the causer name', function (): void {
@@ -69,4 +70,60 @@ it('builds a readable causer label from the causer name', function (): void {
     $activity->setRelation('causer', $causer);
 
     expect(ActivityEntryPresenter::causerLabel($activity))->toBe('Aziz');
+});
+
+it('builds structured change rows for the detail view', function (): void {
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['title' => 'Hallo', 'status' => 'draft'],
+        'attributes' => ['title' => 'Hallo und ciao', 'color' => 'red'],
+    ]);
+
+    expect($rows)->toBe([
+        [
+            'field' => 'title',
+            'old' => 'Hallo',
+            'new' => 'Hallo und ciao',
+            'kind' => 'changed',
+        ],
+        [
+            'field' => 'status',
+            'old' => 'draft',
+            'new' => null,
+            'kind' => 'removed',
+        ],
+        [
+            'field' => 'color',
+            'old' => null,
+            'new' => 'red',
+            'kind' => 'added',
+        ],
+    ]);
+});
+
+it('builds a headline and hides duplicate descriptions', function (): void {
+    $item = new TestAuditableItem;
+    $item->setRawAttributes([
+        'id' => 1,
+        'title' => 'Hallo',
+        'status' => 'draft',
+    ], true);
+
+    $causer = new TestAuditableItem;
+    $causer->setRawAttributes([
+        'id' => 2,
+        'title' => 'Aziz',
+        'status' => 'draft',
+    ], true);
+
+    $activity = new Activity;
+    $activity->event = 'updated';
+    $activity->description = 'updated';
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 1;
+    $activity->setRelation('subject', $item);
+    $activity->setRelation('causer', $causer);
+
+    expect(ActivityEntryPresenter::headline($activity))
+        ->toBe('Aziz updated Test Auditable Item: Hallo')
+        ->and(ActivityEntryPresenter::hasDistinctDescription($activity))->toBeFalse();
 });
