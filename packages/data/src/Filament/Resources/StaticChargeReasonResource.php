@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\EditStaticChar
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\ListStaticChargeReasons;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\ViewStaticChargeReason;
 use Moox\Data\Models\StaticChargeReason;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticChargeReasonResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticChargeReason::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-payments';

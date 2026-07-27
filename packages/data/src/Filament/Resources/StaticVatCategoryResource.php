@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\EditStaticVatCa
 use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\ListStaticVatCategories;
 use Moox\Data\Filament\Resources\StaticVatCategoryResource\Pages\ViewStaticVatCategory;
 use Moox\Data\Models\StaticVatCategory;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticVatCategoryResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticVatCategory::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-percent';

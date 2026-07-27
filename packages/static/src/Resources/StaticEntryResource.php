@@ -13,7 +13,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 use Moox\Static\Models\StaticEntry;
 use Moox\Static\Resources\StaticEntryResource\Pages\CreateStaticEntry;
 use Moox\Static\Resources\StaticEntryResource\Pages\EditStaticEntry;
@@ -23,7 +22,6 @@ use Moox\Static\Resources\StaticEntryResource\Pages\ViewStaticEntry;
 class StaticEntryResource extends BaseStaticResource
 {
     use HasResourceTabs;
-    use HasStaticCodelistResource;
 
     protected static ?string $model = StaticEntry::class;
 

@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticIcdSchemeResource\Pages\EditStaticIcdSche
 use Moox\Data\Filament\Resources\StaticIcdSchemeResource\Pages\ListStaticIcdSchemes;
 use Moox\Data\Filament\Resources\StaticIcdSchemeResource\Pages\ViewStaticIcdScheme;
 use Moox\Data\Models\StaticIcdScheme;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticIcdSchemeResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticIcdScheme::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-badge';

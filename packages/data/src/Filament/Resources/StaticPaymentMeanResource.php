@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticPaymentMeanResource\Pages\EditStaticPayme
 use Moox\Data\Filament\Resources\StaticPaymentMeanResource\Pages\ListStaticPaymentMeans;
 use Moox\Data\Filament\Resources\StaticPaymentMeanResource\Pages\ViewStaticPaymentMean;
 use Moox\Data\Models\StaticPaymentMean;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticPaymentMeanResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticPaymentMean::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-credit-card';

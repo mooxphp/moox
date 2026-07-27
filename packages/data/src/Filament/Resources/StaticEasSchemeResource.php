@@ -17,12 +17,9 @@ use Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages\EditStaticEasSche
 use Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages\ListStaticEasSchemes;
 use Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages\ViewStaticEasScheme;
 use Moox\Data\Models\StaticEasScheme;
-use Moox\Static\Filament\Resources\Concerns\HasStaticCodelistResource;
 
 class StaticEasSchemeResource extends BaseStaticResource
 {
-    use HasStaticCodelistResource;
-
     protected static ?string $model = StaticEasScheme::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-schema';
