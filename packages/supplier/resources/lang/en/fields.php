@@ -4,6 +4,7 @@ return [
     'status' => 'Status',
     'supplier_number' => 'Supplier number',
     'external_reference' => 'External reference',
+    'supplier_name' => 'Supplier name',
     'search_terms' => 'Search terms',
     'discount_percent' => 'Discount (%)',
     'lead_time_days' => 'Lead time (days)',

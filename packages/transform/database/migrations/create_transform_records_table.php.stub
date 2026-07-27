@@ -16,6 +16,7 @@ return new class extends Migration
             $table->nullableMorphs('deleted_by');
 
             $table->foreignId('transform_definition_id')->constrained('transform_definitions')->cascadeOnDelete();
+            $table->foreignId('parent_transform_record_id')->nullable()->constrained('transform_records')->nullOnDelete();
             $table->string('destination_key')->nullable()->index();
             $table->json('source_projection')->nullable();
             $table->json('source_references')->nullable();
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('validation_status')->default('pending')->index();
             $table->json('validation_errors')->nullable();
             $table->json('warnings')->nullable();
+            $table->json('bulk_stats')->nullable();
 
             $table->unsignedInteger('attempts')->default(0);
             $table->boolean('degraded')->default(false);

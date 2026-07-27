@@ -27,6 +27,9 @@ class TransformDefinition extends BaseItemModel
         'source_references',
         'field_map',
         'validation_rules',
+        'execution_mode',
+        'expand',
+        'bulk',
         'is_active',
     ];
 
@@ -37,6 +40,8 @@ class TransformDefinition extends BaseItemModel
             'destination_match' => 'array',
             'field_map' => 'array',
             'validation_rules' => 'array',
+            'expand' => 'array',
+            'bulk' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -199,6 +204,13 @@ class TransformDefinition extends BaseItemModel
                 $url = $reference['url'] ?? null;
                 if (! is_string($url) || $url === '' || filter_var($url, FILTER_VALIDATE_URL) === false) {
                     $errors["source_references.{$index}.url"][] = 'A valid url is required for api source.';
+                }
+            }
+
+            if ($sourceType === 'api_import_record') {
+                $recordId = $reference['record_id'] ?? null;
+                if (! is_string($recordId) || trim($recordId) === '') {
+                    $errors["source_references.{$index}.record_id"][] = 'record_id is required for api_import_record source.';
                 }
             }
         }
@@ -466,6 +478,22 @@ class TransformDefinition extends BaseItemModel
                     $path = self::prefixPath($alias, $column);
                     $paths[$path] = $path;
                 }
+            }
+
+            if ($sourceType === 'static') {
+                $data = $reference['data'] ?? null;
+                if (! is_array($data)) {
+                    continue;
+                }
+
+                foreach (self::flattenArrayPaths($data) as $path) {
+                    $prefixedPath = self::prefixPath($alias, $path);
+                    $paths[$prefixedPath] = $prefixedPath;
+                }
+            }
+
+            if ($sourceType === 'api_import_record' && $alias !== null) {
+                $paths[$alias] = $alias;
             }
         }
 

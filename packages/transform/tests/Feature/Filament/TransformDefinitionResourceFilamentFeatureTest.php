@@ -45,6 +45,12 @@ test('it creates a transform definition via filament create page', function (): 
                     'source_path' => 'title',
                 ],
             ],
+            'destination_match' => [
+                [
+                    'destination_field' => 'name',
+                    'source_path' => 'title',
+                ],
+            ],
             'validation_rules' => [],
             'is_active' => true,
         ])
@@ -194,6 +200,12 @@ test('it persists validation_rules and field_map from filament create form', fun
                     'destination_field' => 'name',
                     'source_path' => 'title',
                 ],
+                [
+                    'destination_field' => 'email',
+                    'source_path' => 'price_label',
+                ],
+            ],
+            'destination_match' => [
                 [
                     'destination_field' => 'email',
                     'source_path' => 'price_label',

@@ -22,7 +22,7 @@ class ProductServiceProvider extends MooxServiceProvider
             ->hasMigrations(
                 'create_products_table',
                 'create_product_translations_table',
-                'upgrade_products_table',
+                'create_product_assignments_table',
             )
             ->hasCommands();
     }

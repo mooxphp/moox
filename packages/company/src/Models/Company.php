@@ -7,11 +7,12 @@ namespace Moox\Company\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Company\Database\Factories\CompanyFactory;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
+use Moox\Data\Models\StaticLanguage;
 
 /**
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo<Company, $this> parent()
@@ -41,7 +42,6 @@ class Company extends BaseRecordModel
         'display_name',
         'legal_name',
         'note',
-        'search_terms',
         'parent_id',
         'external_reference',
         'phone',
@@ -50,21 +50,8 @@ class Company extends BaseRecordModel
         'email',
         'tax_number',
         'vat_number',
-        'has_no_vat_number',
-        'partner_type',
-        'partner_id',
-        'company_type',
         'default_currency_code',
-        'is_fully_owned_subsidiary',
-        'no_marketing_action',
-        'no_marketing_action_reason',
         'language_id',
-        'localization_id',
-        'sort',
-        'is_active',
-        'approved_at',
-        'approved_by_type',
-        'approved_by_id',
         'data',
     ];
 
@@ -74,15 +61,8 @@ class Company extends BaseRecordModel
     protected function casts(): array
     {
         return [
-            'has_no_vat_number' => 'boolean',
-            'partner_type' => 'integer',
-            'partner_id' => 'integer',
-            'is_fully_owned_subsidiary' => 'boolean',
-            'no_marketing_action' => 'boolean',
-            'is_active' => 'boolean',
-            'approved_at' => 'datetime',
+            'language_id' => 'integer',
             'data' => 'array',
-            'sort' => 'integer',
         ];
     }
 
@@ -97,11 +77,11 @@ class Company extends BaseRecordModel
     }
 
     /**
-     * @return MorphTo<Model, $this>
+     * @return BelongsTo<StaticLanguage, $this>
      */
-    public function approvedBy(): MorphTo
+    public function language(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(StaticLanguage::class, 'language_id');
     }
 
     public function displayLabel(): string

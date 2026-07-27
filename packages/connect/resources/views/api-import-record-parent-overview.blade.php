@@ -87,13 +87,17 @@
                         <details @if ($loop->first) @endif>
                             <summary class="meta" style="cursor: pointer;">
                                 Endpoint: <strong>{{ $endpoint['endpoint_name'] }}</strong>
-                                ({{ count($endpoint['records'] ?? []) }})
+                                ({{ $endpoint['records_total'] ?? count($endpoint['records'] ?? []) }})
                             </summary>
                             <div style="margin-top: 6px;">
                                 <div>{{ $endpoint['endpoint_method'] ?? '-' }} {{ $endpoint['endpoint_path'] ?? '-' }}</div>
                                 <div class="meta">{{ $endpoint['endpoint_name'] ?? 'ohne Endpoint-Name' }}</div>
                                 <div class="meta">
-                                    Einträge für diese Route/Endpoint: <strong>{{ count($endpoint['records'] ?? []) }}</strong>
+                                    Einträge für diese Route/Endpoint:
+                                    <strong>{{ $endpoint['records_total'] ?? count($endpoint['records'] ?? []) }}</strong>
+                                    @if (!empty($endpoint['records_truncated']))
+                                        <span class="meta">(zeigt letzte {{ count($endpoint['records'] ?? []) }})</span>
+                                    @endif
                                 </div>
                                 <div class="meta">
                                     queue=<strong>{{ $endpoint['queue_name'] ?? ($stats['queue_name'] ?? 'default') }}</strong>

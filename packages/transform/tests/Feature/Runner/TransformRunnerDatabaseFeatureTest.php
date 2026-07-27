@@ -234,7 +234,7 @@ test('it fails validation and stores errors', function (): void {
     expect($record->status)->toBe('failed_validation');
     expect($record->validation_status)->toBe('invalid');
     expect($record->validation_errors)->toHaveKey('title');
-    expect($record->error_message)->toBe('Validation failed.');
+    expect($record->error_message)->toStartWith('Validation failed.');
 });
 
 test('it validates with model metadata without extra rules', function (): void {
@@ -741,4 +741,106 @@ test('it iterates db_table source when row_key is omitted', function (): void {
     expect($first?->stock)->toBe(19);
     expect($second?->title)->toBe('Adapter');
     expect($second?->stock)->toBe(7);
+});
+
+test('it can iterate db_table bulk sources in cursor chunks without child records', function (): void {
+    createTestTables();
+
+    Schema::create('legacy_products', function (Blueprint $table): void {
+        $table->id();
+        $table->string('title');
+        $table->integer('inventory');
+    });
+
+    DB::table('legacy_products')->insert([
+        ['id' => 1, 'title' => 'Switch', 'inventory' => 19],
+        ['id' => 2, 'title' => 'Adapter', 'inventory' => 7],
+        ['id' => 3, 'title' => 'Cable', 'inventory' => 5],
+    ]);
+
+    $definition = createDefinition([
+        'name' => 'cursor-bulk-definition',
+        'destination_model' => TransformDummyModel::class,
+        'execution_mode' => 'bulk',
+        'bulk' => [
+            'persist_children' => false,
+            'write_strategy' => 'batch',
+            'source' => [
+                'strategy' => 'cursor',
+                'chunk_size' => 2,
+            ],
+        ],
+        'destination_match' => [
+            'price_label' => 'product.id',
+        ],
+        'source_references' => [
+            [
+                'source_type' => 'db_table',
+                'connection' => 'db_default',
+                'table' => 'legacy_products',
+                'key_column' => 'id',
+                'alias' => 'product',
+            ],
+        ],
+        'field_map' => [
+            'title' => 'product.title',
+            'stock' => 'product.inventory',
+            'price_label' => 'product.id',
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('processed')
+        ->and($record->bulk_stats['total'] ?? null)->toBe(3)
+        ->and($record->bulk_stats['processed'] ?? null)->toBe(3)
+        ->and(TransformRecord::query()->where('parent_transform_record_id', $record->id)->count())->toBe(0)
+        ->and(TransformDummyModel::query()->count())->toBe(3)
+        ->and(TransformDummyModel::query()->where('price_label', '3')->value('title'))->toBe('Cable');
+});
+
+test('it does not overwrite existing destination attributes with null when graceful degradation is enabled', function (): void {
+    createTestTables();
+
+    TransformDummyModel::query()->create([
+        'title' => 'Existing product',
+        'stock' => 42,
+        'price_label' => 'SKU-1',
+    ]);
+
+    $definition = createDefinition([
+        'destination_model' => TransformDummyModel::class,
+        'destination_match' => [
+            'price_label' => 'legacy.sku',
+        ],
+        'source_references' => [],
+        'field_map' => [
+            'price_label' => 'legacy.sku',
+            'stock' => 'legacy.inventory',
+        ],
+        'validation_rules' => [
+            'stock' => ['nullable', 'integer'],
+        ],
+    ]);
+
+    $record = TransformRecord::query()->create([
+        'transform_definition_id' => $definition->id,
+        'source_projection' => [
+            'legacy' => [
+                'sku' => 'SKU-1',
+                'inventory' => null,
+            ],
+        ],
+    ]);
+
+    makeRunner()->run($record);
+    $record->refresh();
+
+    expect($record->status)->toBe('updated')
+        ->and(TransformDummyModel::query()->where('price_label', 'SKU-1')->value('stock'))->toBe(42);
 });

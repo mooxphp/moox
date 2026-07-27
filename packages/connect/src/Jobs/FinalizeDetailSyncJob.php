@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Bus;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiLog;
 use Moox\Connect\Support\EndpointListToDetailOrchestrator;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 
 final class FinalizeDetailSyncJob implements ShouldQueue
 {
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
-
-    public int $tries = 20;
 
     public array $backoff = [15, 30, 60, 120];
 
@@ -33,6 +33,7 @@ final class FinalizeDetailSyncJob implements ShouldQueue
         private string $batchId,
         private array $seenKeysByScope,
     ) {
+        $this->configureConnectQueue('finalize_detail', $this->detailEndpointId);
     }
 
     public function handle(EndpointListToDetailOrchestrator $orchestrator): void

@@ -14,7 +14,6 @@ final class DepartmentRules
             'name' => ['required', 'string', 'max:160'],
             'code' => ['nullable', 'string', 'max:40'],
             'description' => ['nullable', 'string'],
-            'is_active' => ['boolean'],
             'external_reference' => ['nullable', 'string', 'max:100'],
             'data' => ['nullable', 'array'],
         ];

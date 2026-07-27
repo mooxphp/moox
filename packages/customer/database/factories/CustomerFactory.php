@@ -23,6 +23,7 @@ class CustomerFactory extends Factory
             'status' => fake()->randomElement(config('customer.statuses', ['draft', 'active'])),
             'customer_number' => strtoupper(fake()->unique()->bothify('C-#####')),
             'external_reference' => fake()->optional(0.3)->numerify('#####'),
+            'customer_name' => fake()->company(),
             'search_terms' => fake()->optional(0.3)->words(3, true),
             'price_type' => fake()->optional(0.6)->randomElement(config('customer.price_types', ['standard'])),
             'customer_group' => fake()->optional(0.3)->randomElement(['retail', 'wholesale', 'key_account']),

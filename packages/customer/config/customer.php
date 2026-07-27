@@ -22,6 +22,7 @@ return [
         'draft',
         'active',
         'inactive',
+        'needs_review',
         'approved',
         'archived',
     ],
@@ -71,9 +72,25 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'is_active',
+                            'field' => 'status',
                             'operator' => '=',
-                            'value' => true,
+                            'value' => 'active',
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'needs_review' => [
+                    'label' => 'Nachprüfung',
+                    'icon' => 'gmdi-warning-amber-o',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'needs_review',
                         ],
                         [
                             'field' => 'deleted_at',

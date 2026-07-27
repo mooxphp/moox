@@ -26,17 +26,15 @@ it('can render the company list page', function (): void {
 
 it('can render table columns for companies', function (): void {
     livewire(ListCompanies::class)
-        ->assertTableColumnExists('name')
-        ->assertTableColumnExists('company_type')
-        ->assertTableColumnExists('status')
-        ->assertTableColumnExists('is_active');
+        ->assertTableColumnExists('display_name')
+        ->assertTableColumnExists('status');
 });
 
 it('create form contains expected company fields', function (): void {
     livewire(CreateCompany::class)
         ->assertFormExists('form')
         ->assertFormFieldExists('name', 'form')
-        ->assertFormFieldExists('company_type', 'form')
+        ->assertFormFieldExists('status', 'form')
         ->assertFormFieldExists('default_currency_code', 'form');
 });
 
@@ -46,9 +44,7 @@ it('can create a company via filament', function (): void {
             'name' => 'Filament GmbH',
             'display_name' => 'Filament GmbH',
             'status' => 'draft',
-            'company_type' => 'customer',
             'default_currency_code' => 'EUR',
-            'is_active' => true,
         ], 'form')
         ->call('create')
         ->assertHasNoFormErrors();
@@ -61,9 +57,7 @@ it('can edit an existing company via filament', function (): void {
         'name' => 'Filament GmbH',
         'display_name' => 'Filament GmbH',
         'status' => 'draft',
-        'company_type' => 'customer',
         'default_currency_code' => 'EUR',
-        'is_active' => true,
     ]);
 
     livewire(EditCompany::class, ['record' => $company->getKey()])

@@ -18,21 +18,19 @@ use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
 use Moox\Connect\Models\ApiLog;
 use Moox\Connect\Support\ApiEndpointRunner;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Throwable;
 
 final class RunEndpointForItemJob implements ShouldQueue
 {
     use Batchable;
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
 
-    public int $tries = 5;
-
-    public int $maxExceptions = 3;
-
-    public int $timeout = 180;
+    public int $maxExceptions;
 
     /**
      * @var array<int, int>
@@ -46,12 +44,12 @@ final class RunEndpointForItemJob implements ShouldQueue
         private ?string $treeRunId = null,
         private bool $throwOnFailure = false,
     ) {
-        $this->onQueue('connect-detail');
+        $this->configureConnectQueue('detail_item', $this->endpointId);
     }
 
-    public function retryUntil(): DateTimeInterface
+    public function retryUntil(): ?DateTimeInterface
     {
-        return now()->addMinutes(30);
+        return $this->connectQueueSettings->retryUntil();
     }
 
     /**
@@ -63,8 +61,8 @@ final class RunEndpointForItemJob implements ShouldQueue
 
         return [
             (new WithoutOverlapping($lockKey))
-                ->releaseAfter(5)
-                ->expireAfter(600),
+                ->releaseAfter($this->connectQueueSettings->overlapReleaseAfter)
+                ->expireAfter($this->connectQueueSettings->overlapExpireAfter()),
         ];
     }
 
@@ -96,7 +94,7 @@ final class RunEndpointForItemJob implements ShouldQueue
         $endpointForCall->variables = $vars;
 
         // Detail-Items muessen pro requestId eindeutig sein (external_key = Item-ID),
-        // der Parent-Kontext (z.B. Articlegroup) bleibt als Scope-Hash erhalten.
+        // Parent scope context remains available via sync_scope_hash.
         $scopeSourceKey = $this->externalKey ?? $this->requestId;
         $itemExternalKey = $this->requestId;
         $scopeHash = $scopeSourceKey !== null && $scopeSourceKey !== ''
@@ -187,8 +185,11 @@ final class RunEndpointForItemJob implements ShouldQueue
      */
     private function runWithDeadlockRetry(\Closure $callback): array
     {
-        $attempts = 3;
-        $delaysInMicroseconds = [100000, 250000];
+        $attempts = $this->connectQueueSettings->deadlockRetryAttempts;
+        $delaysInMicroseconds = array_map(
+            static fn (int $milliseconds): int => $milliseconds * 1000,
+            $this->connectQueueSettings->deadlockRetryDelaysMs
+        );
 
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {
             try {

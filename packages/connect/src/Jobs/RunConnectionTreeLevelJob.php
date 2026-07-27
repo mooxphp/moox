@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Jobs;
 
-use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,15 +11,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Moox\Connect\Models\ApiEndpoint;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 
-/**
- * Safe tree execution:
- * - Each level is executed as a Batch (all must succeed)
- * - Next level starts only after the Batch finished successfully
- * - On failure, the tree stops (no next job dispatch)
- */
 final class RunConnectionTreeLevelJob implements ShouldQueue
 {
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -35,6 +30,7 @@ final class RunConnectionTreeLevelJob implements ShouldQueue
         private string $treeRunId,
         private int $levelIndex = 0,
     ) {
+        $this->configureConnectQueue('tree_level', connectionId: $this->connectionId);
     }
 
     public function handle(): void
@@ -44,27 +40,54 @@ final class RunConnectionTreeLevelJob implements ShouldQueue
             return;
         }
 
-        $jobs = [];
+        /** @var array<string, array<int, object>> $jobsByQueue */
+        $jobsByQueue = [];
+
         foreach ($endpointIds as $endpointId) {
             $endpoint = ApiEndpoint::query()->find((int) $endpointId);
             $throwOnFailure = (bool) $endpoint?->option('tree.stop_on_http_error', false);
 
-            $jobs[] = $this->levelIndex === 0
+            $job = $this->levelIndex === 0
                 ? new RunEndpointJob((int) $endpointId, $this->treeRunId, $throwOnFailure)
                 : new RunDetailForListJob((int) $endpointId, $this->treeRunId, $throwOnFailure);
+
+            $jobsByQueue[$job->queue][] = $job;
         }
 
-        Bus::batch($jobs)
-            ->name(sprintf('connect:tree connection=%d level=%d', $this->connectionId, $this->levelIndex))
-            ->then([
-                new DispatchConnectionTreeNextLevelJob(
+        $nextLevelJob = new DispatchConnectionTreeNextLevelJob(
+            $this->connectionId,
+            $this->levels,
+            $this->treeRunId,
+            $this->levelIndex + 1,
+        );
+
+        $batchIds = [];
+
+        foreach ($jobsByQueue as $queue => $queueJobs) {
+            $pending = Bus::batch($queueJobs)
+                ->name(sprintf(
+                    'connect:tree connection=%d level=%d queue=%s',
                     $this->connectionId,
-                    $this->levels,
-                    $this->treeRunId,
-                    $this->levelIndex + 1
-                ),
-                '__invoke',
-            ])
-            ->dispatch();
+                    $this->levelIndex,
+                    $queue,
+                ))
+                ->onQueue($queue);
+
+            if (count($jobsByQueue) === 1) {
+                $pending->then([$nextLevelJob, '__invoke']);
+            }
+
+            $batchIds[] = (string) $pending->dispatch()->id;
+        }
+
+        if (count($jobsByQueue) > 1) {
+            WaitForConnectionTreeLevelBatchesJob::dispatch(
+                $batchIds,
+                $this->connectionId,
+                $this->levels,
+                $this->treeRunId,
+                $this->levelIndex + 1,
+            );
+        }
     }
 }

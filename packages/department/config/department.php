@@ -72,9 +72,9 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'is_active',
+                            'field' => 'status',
                             'operator' => '=',
-                            'value' => true,
+                            'value' => 'active',
                         ],
                         [
                             'field' => 'deleted_at',
@@ -107,7 +107,7 @@ return [
     ],
 
     'related_morph_defaults' => [
-        'display_columns' => ['name', 'code', 'status', 'is_active'],
+        'display_columns' => ['name', 'code', 'status'],
         'translation_prefix' => 'department::fields',
         'related_resource' => DepartmentResource::class,
         'record_select_search_columns' => ['name', 'code', 'description'],

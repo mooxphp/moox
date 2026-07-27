@@ -12,6 +12,7 @@ it('creates a product with translatable attributes for the app locale', function
     expect($product->sku)->not->toBeEmpty();
     expect($product->price)->not->toBeNull();
     expect($product->stock)->toBeInt();
+    expect($product->type)->toBe('simple');
     expect($product->translations)->toHaveCount(1);
 
     $translation = $product->translations->first();
@@ -25,7 +26,7 @@ it('can create a product without translation rows', function (): void {
     $product = Product::factory()->withoutTranslations()->create();
 
     expect($product->translations()->count())->toBe(0);
-    expect($product->meta)->toBeArray();
+    expect($product->custom_properties)->toBeArray();
 });
 
 it('creates translations from explicit attributes merged with defaults', function (): void {

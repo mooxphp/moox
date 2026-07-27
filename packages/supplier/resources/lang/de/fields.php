@@ -4,6 +4,7 @@ return [
     'status' => 'Status',
     'supplier_number' => 'Lieferantennummer',
     'external_reference' => 'Externe Referenz',
+    'supplier_name' => 'Lieferantenname',
     'search_terms' => 'Suchbegriffe',
     'discount_percent' => 'Rabatt (%)',
     'lead_time_days' => 'Lieferzeit (Tage)',

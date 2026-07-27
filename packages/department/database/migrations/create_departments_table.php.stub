@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name', 160)->index();
             $table->string('code', 40)->nullable()->index();
             $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true)->index();
             $table->string('external_reference', 100)->nullable()->index();
             $table->json('data')->nullable();
             $table->softDeletes();

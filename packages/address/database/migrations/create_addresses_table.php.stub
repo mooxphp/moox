@@ -14,12 +14,12 @@ return new class extends Migration
             $table->id();
             $table->string('label', 120)->nullable();
             $table->string('name', 160)->nullable();
-            $table->string('street', 160)->nullable();
+            $table->string('street', 160);
             $table->string('street2', 160)->nullable();
-            $table->string('postal_code', 20)->nullable()->index();
-            $table->string('city', 120)->nullable()->index();
+            $table->string('postal_code', 20)->index();
+            $table->string('city', 120)->index();
             $table->string('state', 120)->nullable();
-            $table->string('country_code', 2)->nullable()->index();
+            $table->string('country_code', 2)->index();
             $table->boolean('is_primary')->default(false)->index();
             $table->json('data')->nullable();
             $table->softDeletes();

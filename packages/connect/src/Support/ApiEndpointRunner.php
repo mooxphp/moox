@@ -22,6 +22,10 @@ class ApiEndpointRunner
     // Max. Anzahl Elemente pro Chunk, wenn das Payload ein Listen-Array ist
     private const MAX_ITEMS_PER_CHUNK = 50;
 
+    private const LOG_PREVIEW_ITEMS = 10;
+
+    private const IMPORT_RECORD_PREVIEW_ITEMS = 5;
+
     /**
      * Hard cap to avoid long-running queue jobs on flaky upstream APIs.
      */
@@ -287,6 +291,24 @@ class ApiEndpointRunner
 
         $totalBytes = strlen($normalizedPayloadJson);
 
+        $isListPayload = is_array($normalizedPayload)
+            && (function_exists('array_is_list')
+                ? array_is_list($normalizedPayload)
+                : array_keys($normalizedPayload) === range(0, count($normalizedPayload) - 1));
+        $totalListItems = $isListPayload ? count($normalizedPayload) : null;
+        $chunkStrategy = null;
+        $chunkCount = 0;
+
+        if ($totalBytes > self::MAX_INLINE_BYTES) {
+            if ($isListPayload && $totalListItems > self::MAX_ITEMS_PER_CHUNK) {
+                $chunkStrategy = 'list';
+                $chunkCount = (int) ceil($totalListItems / self::MAX_ITEMS_PER_CHUNK);
+            } else {
+                $chunkStrategy = 'bytes';
+                $chunkCount = (int) ceil($totalBytes / (256 * 1024));
+            }
+        }
+
         DB::transaction(function () use ($importRecord, $normalizedPayload, $normalizedPayloadJson, $totalBytes): void {
             // Bei Updates alte Chunks physisch entfernen (soft delete reicht wegen unique-index nicht).
             ApiImportPayloadChunk::withTrashed()
@@ -341,6 +363,7 @@ class ApiEndpointRunner
                     'strategy' => 'list',
                     'total_items' => $totalItems,
                     'chunks' => $chunkIndex,
+                    'preview' => array_slice($normalizedPayload, 0, self::IMPORT_RECORD_PREVIEW_ITEMS, true),
                 ];
                 $importRecord->save();
 
@@ -375,6 +398,7 @@ class ApiEndpointRunner
                 'strategy' => 'bytes',
                 'total_bytes' => $totalBytes,
                 'chunks' => $chunkIndex,
+                'preview' => array_slice((array) $normalizedPayload, 0, self::IMPORT_RECORD_PREVIEW_ITEMS, true),
             ];
             $importRecord->save();
         });
@@ -399,7 +423,13 @@ class ApiEndpointRunner
             ],
             'response_data' => $totalBytes <= self::MAX_INLINE_BYTES
                 ? $normalizedPayload
-                : ['chunked' => true, 'preview' => array_slice((array) $normalizedPayload, 0, 3, true)],
+                : $this->buildChunkedResponseLogData(
+                    $normalizedPayload,
+                    $totalBytes,
+                    $totalListItems,
+                    $chunkCount,
+                    (string) $chunkStrategy,
+                ),
             'status_code' => (string) $response->status(),
             'error_message' => $response->successful() ? null : $shortError,
         ]);
@@ -413,6 +443,26 @@ class ApiEndpointRunner
             'headers' => $response->headers(),
             'body' => $body,
             'import_record_id' => $importRecord->id,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildChunkedResponseLogData(
+        array $normalizedPayload,
+        int $totalBytes,
+        ?int $totalItems,
+        int $chunkCount,
+        string $strategy,
+    ): array {
+        return [
+            'chunked' => true,
+            'strategy' => $strategy,
+            'total_items' => $totalItems,
+            'total_bytes' => $totalBytes,
+            'chunks' => $chunkCount,
+            'preview' => array_slice($normalizedPayload, 0, self::LOG_PREVIEW_ITEMS, true),
         ];
     }
 

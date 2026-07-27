@@ -23,6 +23,7 @@ class SupplierFactory extends Factory
             'status' => fake()->randomElement(config('supplier.statuses', ['draft', 'active'])),
             'supplier_number' => strtoupper(fake()->unique()->bothify('S-#####')),
             'external_reference' => fake()->optional(0.3)->numerify('#####'),
+            'supplier_name' => fake()->company(),
             'search_terms' => fake()->optional(0.3)->words(3, true),
             'discount_percent' => fake()->optional(0.4)->randomFloat(2, 0, 15),
             'lead_time_days' => fake()->optional(0.7)->numberBetween(1, 60),

@@ -60,9 +60,9 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'is_active',
+                            'field' => 'status',
                             'operator' => '=',
-                            'value' => true,
+                            'value' => 'active',
                         ],
                         [
                             'field' => 'deleted_at',
@@ -136,17 +136,6 @@ return [
     ],
 
     'taxonomies' => [
-    ],
-
-    'user_models' => [
-        App\Models\User::class => [
-            'title_attribute' => 'name',
-            'label' => 'App User',
-        ],
-        User::class => [
-            'title_attribute' => 'name',
-            'label' => 'Moox User',
-        ],
     ],
 
     'navigation_group' => 'Portal',

@@ -13,11 +13,13 @@ use Illuminate\Queue\SerializesModels;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiLog;
 use Moox\Connect\Support\ApiEndpointRunner;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 use Throwable;
 
 final class RunEndpointJob implements ShouldQueue
 {
     use Batchable;
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -28,6 +30,7 @@ final class RunEndpointJob implements ShouldQueue
         private ?string $treeRunId = null,
         private bool $throwOnFailure = false,
     ) {
+        $this->configureConnectQueue('endpoint', $this->endpointId);
     }
 
     public function handle(ApiEndpointRunner $runner): void

@@ -13,6 +13,7 @@ final class CustomerRules
             'status' => ['required', 'string', 'max:30', 'in:'.implode(',', config('customer.statuses', ['draft']))],
             'customer_number' => ['nullable', 'string', 'max:40'],
             'external_reference' => ['nullable', 'string', 'max:100'],
+            'customer_name' => ['nullable', 'string', 'max:160'],
             'search_terms' => ['nullable', 'string'],
             'price_type' => ['nullable', 'string', 'max:30', 'in:'.implode(',', config('customer.price_types', []))],
             'customer_group' => ['nullable', 'string', 'max:50'],

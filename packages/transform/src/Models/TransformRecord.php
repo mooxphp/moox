@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace Moox\Transform\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\ValidationException;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 
-class TransformRecord extends BaseItemModel
+class TransformRecord extends BaseRecordModel
 {
-    use SoftDeletes;
-
     protected $table = 'transform_records';
 
     protected $fillable = [
         'transform_definition_id',
+        'parent_transform_record_id',
         'destination_key',
         'source_projection',
         'source_references',
@@ -27,6 +26,7 @@ class TransformRecord extends BaseItemModel
         'warnings',
         'attempts',
         'degraded',
+        'bulk_stats',
         'last_run_at',
         'last_success_at',
         'error_message',
@@ -39,10 +39,16 @@ class TransformRecord extends BaseItemModel
             'source_references' => 'array',
             'validation_errors' => 'array',
             'warnings' => 'array',
+            'bulk_stats' => 'array',
             'degraded' => 'boolean',
             'last_run_at' => 'datetime',
             'last_success_at' => 'datetime',
         ];
+    }
+
+    public static function getResourceName(): string
+    {
+        return 'transform-record';
     }
 
     protected static function booted(): void
@@ -117,5 +123,21 @@ class TransformRecord extends BaseItemModel
     public function definition(): BelongsTo
     {
         return $this->belongsTo(TransformDefinition::class, 'transform_definition_id');
+    }
+
+    /**
+     * @return BelongsTo<TransformRecord, $this>
+     */
+    public function parentRecord(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_transform_record_id');
+    }
+
+    /**
+     * @return HasMany<TransformRecord, $this>
+     */
+    public function childRecords(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_transform_record_id');
     }
 }

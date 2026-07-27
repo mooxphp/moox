@@ -31,17 +31,16 @@ class ContactFactory extends Factory
             'display_name' => trim($firstName.' '.$lastName),
             'academic_title' => fake()->optional(0.1)->randomElement(['Dr.', 'Prof.']),
             'job_title' => fake()->optional(0.6)->jobTitle(),
-            'department' => fake()->optional(0.4)->randomElement(['Sales', 'Support', 'Finance', 'Management']),
             'note' => fake()->optional(0.2)->sentence(),
             'external_reference' => fake()->optional(0.3)->bothify('EXT-####'),
             'phone' => fake()->optional(0.7)->phoneNumber(),
             'mobile' => fake()->optional(0.7)->phoneNumber(),
             'email' => fake()->optional(0.8)->safeEmail(),
+            'username' => null,
+            'email_verified_at' => null,
+            'password' => null,
             'contact_type' => fake()->randomElement(config('contact.contact_types', ['external'])),
             'language_id' => null,
-            'user_id' => null,
-            'is_active' => true,
-            'is_system_user' => false,
             'data' => null,
         ];
     }
@@ -56,8 +55,18 @@ class ContactFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
-            'is_active' => false,
             'status' => 'inactive',
+        ]);
+    }
+
+    public function authenticatable(string $password = 'password'): static
+    {
+        return $this->state(fn (): array => [
+            'status' => 'active',
+            'email' => fake()->unique()->safeEmail(),
+            'username' => fake()->unique()->userName(),
+            'email_verified_at' => now(),
+            'password' => $password,
         ]);
     }
 }

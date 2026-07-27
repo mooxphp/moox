@@ -9,14 +9,18 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\HasCustomFields;
+use Moox\Core\Traits\Relations\HasResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Product\Models\Product;
@@ -29,6 +33,8 @@ use Override;
 
 class ProductResource extends BaseDraftResource
 {
+    use HasCustomFields;
+    use HasResourceRelations;
     use HasResourceTabs;
 
     protected static ?string $model = Product::class;
@@ -138,6 +144,10 @@ class ProductResource extends BaseDraftResource
                                 RichEditor::make('description')
                                     ->label(__('product::product.description'))
                                     ->columnSpanFull(),
+                                ...static::customFieldComponents(),
+                                KeyValue::make('custom_properties')
+                                    ->label(__('product::product.custom_properties'))
+                                    ->columnSpanFull(),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -153,6 +163,11 @@ class ProductResource extends BaseDraftResource
                                             ->required()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(64),
+                                        Select::make('type')
+                                            ->label(__('product::product.type'))
+                                            ->options(config('product.types', []))
+                                            ->default('simple')
+                                            ->required(),
                                         TextInput::make('price')
                                             ->label(__('product::product.price'))
                                             ->numeric()
@@ -163,8 +178,17 @@ class ProductResource extends BaseDraftResource
                                             ->label(__('product::product.sale_price'))
                                             ->numeric()
                                             ->step(0.01),
+                                        TextInput::make('cost_price')
+                                            ->label(__('product::product.cost_price'))
+                                            ->numeric()
+                                            ->step(0.01),
                                         TextInput::make('stock')
                                             ->label(__('product::product.stock'))
+                                            ->numeric()
+                                            ->integer()
+                                            ->default(0),
+                                        TextInput::make('stock_min')
+                                            ->label(__('product::product.stock_min'))
                                             ->numeric()
                                             ->integer()
                                             ->default(0),
@@ -173,18 +197,25 @@ class ProductResource extends BaseDraftResource
                                             ->options(config('product.statuses', []))
                                             ->default('draft')
                                             ->required(),
-                                        TextInput::make('brand_id')
-                                            ->label(__('product::product.brand_id'))
-                                            ->numeric()
-                                            ->integer(),
                                         TextInput::make('weight')
                                             ->label(__('product::product.weight'))
                                             ->numeric()
                                             ->step(0.001),
-                                        KeyValue::make('meta')
-                                            ->label(__('product::product.meta'))
-                                            ->columnSpanFull(),
+                                        TextInput::make('weight_unit')
+                                            ->label(__('product::product.weight_unit'))
+                                            ->maxLength(16),
+                                        TextInput::make('unit_of_measure')
+                                            ->label(__('product::product.unit_of_measure'))
+                                            ->maxLength(32),
+                                        Toggle::make('is_purchasable')
+                                            ->label(__('product::product.is_purchasable'))
+                                            ->default(true),
+                                        Toggle::make('is_sellable')
+                                            ->label(__('product::product.is_sellable'))
+                                            ->default(true),
                                     ]),
+                                ...static::customFieldComponents('sidebar'),
+
                                 Section::make(__('product::product.section_seo'))
                                     ->schema([
                                         TextInput::make('meta_title')
@@ -229,27 +260,76 @@ class ProductResource extends BaseDraftResource
                     ->label(__('product::product.sku'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('type')
+                    ->label(__('product::product.type'))
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('price')
                     ->label(__('product::product.price'))
-                    ->money('EUR')
+                    ->money((string) config('product.currency', 'EUR'))
                     ->sortable(),
                 TextColumn::make('sale_price')
                     ->label(__('product::product.sale_price'))
-                    ->money('EUR')
+                    ->money((string) config('product.currency', 'EUR'))
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('cost_price')
+                    ->label(__('product::product.cost_price'))
+                    ->money((string) config('product.currency', 'EUR'))
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('stock')
                     ->label(__('product::product.stock'))
                     ->sortable(),
+                TextColumn::make('stock_min')
+                    ->label(__('product::product.stock_min'))
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->label(__('product::product.status'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('brand_id')
-                    ->label(__('product::product.brand_id'))
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('weight')
                     ->label(__('product::product.weight'))
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('weight_unit')
+                    ->label(__('product::product.weight_unit'))
+                    ->toggleable(),
+                TextColumn::make('unit_of_measure')
+                    ->label(__('product::product.unit_of_measure'))
+                    ->toggleable(),
+                IconColumn::make('is_purchasable')
+                    ->label(__('product::product.is_purchasable'))
+                    ->boolean()
+                    ->toggleable(),
+                IconColumn::make('is_sellable')
+                    ->label(__('product::product.is_sellable'))
+                    ->boolean()
+                    ->toggleable(),
+                ...static::customFieldColumns(),
+                TextColumn::make('custom_properties')
+                    ->label(__('product::product.custom_properties'))
+                    ->formatStateUsing(function (mixed $state): string {
+                        if ($state === null || $state === []) {
+                            return '';
+                        }
+
+                        if (is_array($state)) {
+                            return json_encode($state, JSON_UNESCAPED_UNICODE) ?: '';
+                        }
+
+                        return is_scalar($state) ? (string) $state : (json_encode($state, JSON_UNESCAPED_UNICODE) ?: '');
+                    })
+                    ->limit(50)
+                    ->toggleable(),
+                TextColumn::make('uuid')
+                    ->label('UUID')
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('ulid')
+                    ->label('ULID')
+                    ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 static::getStatusColumn(),
             ])
@@ -260,6 +340,10 @@ class ProductResource extends BaseDraftResource
                 SelectFilter::make('status')
                     ->label(__('product::product.status'))
                     ->options(config('product.statuses', [])),
+                SelectFilter::make('type')
+                    ->label(__('product::product.type'))
+                    ->options(config('product.types', [])),
+                ...static::customFieldFilters(),
             ])
             ->deferFilters(false)
             ->persistFiltersInSession();
@@ -273,11 +357,6 @@ class ProductResource extends BaseDraftResource
             'edit' => EditProduct::route('/{record}/edit'),
             'view' => ViewProduct::route('/{record}'),
         ];
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
     }
 
     public static function setCurrentTab(?string $tab): void

@@ -1,151 +1,191 @@
-![Moox Transform](https://github.com/mooxphp/moox/raw/main/art/banner/transform-package.jpg)
-
 # Moox Transform
 
-Moox Transform is a lightweight Laravel package for running structured data transformations into Eloquent models with strong validation and traceability.
+Structured data transformation into Eloquent models with validation, audit records, and optional bulk/expand execution.
 
-The package is built around two clear concepts:
+Two concepts:
 
-- `TransformDefinition`: what should be transformed
-- `TransformRecord`: what happened during one concrete run
+- **`TransformDefinition`** — reusable configuration (what to transform)
+- **`TransformRecord`** — one concrete run (what happened)
 
-## Why This Package
+## Data model
 
-Moox Transform is designed for clean, production-friendly transformation pipelines:
+### `transform_definitions`
 
-- No large raw payload blobs by default
-- Strict source and model validation before processing
-- Reusable definitions for repeatable imports
-- Auditable run records with status, warnings, and errors
+| Field | Notes |
+|-------|-------|
+| `name` | Unique |
+| `destination_model` | Eloquent class |
+| `destination_match` | Required for active definitions — upsert keys |
+| `source_references` | JSON array of sources |
+| `field_map` | Destination field → source path |
+| `validation_rules` | Optional extra rules |
+| `execution_mode` | `single` (default), `expand`, `bulk` |
+| `expand` | JSON — dedupe, locales, nested expansion |
+| `bulk` | JSON — chunk size, persist children, write strategy |
+| `is_active` | bool |
 
-## Core Architecture
+### `transform_records`
 
-### TransformDefinition (configuration blueprint)
+One run: `source_projection`, optional runtime `source_references`, `input_hash`, status, validation errors, warnings, `bulk_stats`, timestamps.
 
-Stores reusable transformation configuration:
+## Source types (`source_references`)
 
-- `name` (unique)
-- `destination_model`
-- `source_references`
-- `field_map`
-- `validation_rules` (optional)
-- `is_active`
+| `source_type` | Single row | Iterable (bulk/expand) | Filament UI |
+|---------------|----------|----------------------|-------------|
+| `db_table` | yes (`row_key`) | yes (no `row_key` + optional `where`) | yes |
+| `file_json` | yes | no | yes |
+| `file_csv` | yes (`row_key` required) | no | yes |
+| `api` | yes | no | yes |
+| `api_import_record` | yes | yes (list payload) | yes |
+| `static` | yes (`data` object) | no | yes |
 
-### TransformRecord (execution log)
+### Common reference fields
 
-Stores one run of a definition:
+- **All types:** `alias`, `selector` (where applicable)
+- **`db_table`:** `connection`, `table`, `key_column`, `columns`, `row_key`, `row_key_from`, `where`
+- **`api`:** `url`, `query`
+- **`api_import_record`:** `record_id`, `item_key`, `selector`
+- **`static`:** `data` (JSON object)
+- **`file_*`:** `path`, `key_column`, `row_key`
 
-- `transform_definition_id`
-- `destination_key` (optional update target)
-- `source_projection` (optional runtime projection)
-- `source_references` (optional runtime override)
-- `input_hash`
-- status and audit fields (`status`, `validation_status`, `validation_errors`, `warnings`, `attempts`, timestamps, `error_message`)
+## Execution modes
 
-## Supported Source Types
+| Mode | Behavior |
+|------|----------|
+| `single` | One source payload → one destination write |
+| `expand` | One payload expanded (dedupe, nested lists, locales) → child records |
+| `bulk` | Iterable source (`db_table` without `row_key`, or `api_import_record` list) → many writes; optional chunking |
 
-`source_references` supports:
+### `expand` options
 
-- `db_table`
-  - required: `table`, `key_column`
-  - optional: `row_key`, `columns`, `alias`
-- `file_json`
-  - required: `path`
-  - optional: `selector`, `alias`
-- `file_csv`
-  - required: `path`
-  - optional: `key_column`, `row_key`, `selector`, `alias`
-- `api`
-  - required: `url`
-  - optional: `query`, `selector`, `alias`
+- `dedupe_by` — dot path for deduplication key
+- `prefer` — rules to pick a winner when deduping
+- `locales` — expand translation rows from a list (`source`, `language_key`, `alias`, `only`)
+- `nested` — expand nested lists (`path`, `alias`, `dedupe_by`)
 
-## Validation and Guardrails
+### `bulk` options
 
-Validation is enforced early (model-level), so invalid definitions/records are blocked before queue/runtime logic.
+- `chunk_size` — batch size (default from config)
+- `persist_children` — store child transform records
+- `write_strategy` — `row` or `batch`
 
-### Definition-level checks
+## Inline field expressions
 
-On saving a `TransformDefinition`, the package validates:
+Registered via `config('transform.inline_value_operations')`:
 
-- `destination_model` exists and is an Eloquent model class
-- `field_map` is a non-empty array
-- `source_references` is an array and each reference is valid
-  - `db_table`: table and columns really exist
-  - `file_json`: file exists, readable, valid JSON
-  - `file_csv`: file exists, readable, has header, optional `key_column` exists in header
-  - `api`: URL format is valid
+- `map`, `case`, `truthy`, `not_truthy`, `int`
+- `coalesce`, `any_truthy`
+- `lookup_id:ModelClass,column,source.path`
 
-### Record-level checks
+Package default does **not** include `status_from_deleted` — register it in the app if needed.
 
-On saving a `TransformRecord`, the package validates:
+## Filament UI
 
-- valid `transform_definition_id`
-- at least one effective source is present:
-  - `source_projection`, or
-  - runtime `source_references`, or
-  - definition `source_references`
-- runtime `source_references` (if provided) are valid
+`TransformDefinitionResource`:
 
-Database constraint:
+- Source type select with conditional fields
+- Field map with destination/source path datalists
+- Execution mode, expand, bulk sections
+- Run action (queues `RunTransformRecordJob`)
 
-- `transform_records` enforces source presence with a check constraint (`source_projection IS NOT NULL OR source_references IS NOT NULL`)
+`TransformRecordResource`:
 
-## Runtime Flow
+- View run status, errors, `source_projection` (KeyValue)
 
-`TransformRunner` processes a `TransformRecord` in this order:
+### Model discovery
 
-1. load and validate active definition
-2. resolve sources (`source_projection` + references)
-3. build `input_hash`
-4. map fields via `field_map`
-5. infer model-based validation rules (from fillable/casts)
-6. merge definition `validation_rules`
-7. validate mapped data
-8. write attributes to destination model (with graceful degradation for unmapped attributes)
-9. persist run result and audit metadata
+Filament scans `app/Models` plus `config('transform.additional_model_scan_paths')`. Add package model directories in the app config.
 
-## Status Semantics
+## App bindings (required for some features)
 
-Common `TransformRecord.status` values:
+| Config key | Purpose |
+|------------|---------|
+| `import_record_payload_reader` | Class implementing `ImportRecordPayloadReader` — required for `api_import_record` |
+| `import_record_model` | Model for Filament run dialog |
+| `locale_variant_resolver` | Class implementing `LocaleVariantResolver` — used by locale expansion |
+| `default_source_projection` | Runtime context defaults (e.g. `context.defaults.status`) |
+| `additional_model_scan_paths` | Extra model directories for Filament |
+| `inline_value_operations` | App-specific operations (e.g. `StatusFromDeletedInlineValueOperation`) |
 
-- `pending`
-- `processing`
-- `processed`
-- `failed_validation`
-- `failed`
-- `skipped`
+Bindings are **null in the package** — the app must configure them.
 
-`validation_status`:
+## Runtime flow
 
-- `pending`
-- `valid`
-- `invalid`
+1. Load active `TransformDefinition`
+2. Resolve sources (`source_projection` + `source_references`)
+3. Expand/bulk if configured
+4. Map fields via `field_map` + inline operations
+5. Validate (model rules + definition rules)
+6. Upsert destination model (match via `destination_match`)
+7. Persist optional Builder custom fields when the destination model supports them
+8. Persist `TransformRecord` status, warnings, errors
 
-## Minimal Example
+Runs via `TransformRunner` (sync) or `RunTransformRecordJob` (queued).
+
+## Optional Builder custom fields
+
+`moox/transform` has **no composer dependency** on `moox/builder`.
+
+When a destination model exposes both `customFieldNames()` and `setCustomFields()` (for example via `InteractsWithCustomFields` on Product), transform treats matching `field_map` keys as Builder custom fields:
+
+| Key in `field_map` | Behaviour |
+|--------------------|-----------|
+| `material`, `is-available`, `sales-unit`, … | Must match a Builder field key on the entity |
+| `_builder_values_locale` | Optional locale for Builder values (e.g. `connect_locale:FileName`) |
+
+Custom fields are written **after** the destination model is saved (so `record_id` exists). Without `moox/builder` installed, models simply do not expose the methods and transform ignores nothing extra — same as before.
+
+When `moox/builder` is installed and `_builder_values_locale` is mapped, transform uses `CustomFieldsManager` at runtime for locale-aware writes.
+
+## What this package does not provide
+
+- **No API fetching** — `api` source does a simple HTTP GET only; no auth, pagination, or retry logic (use `moox/connect` for that)
+- **No import record storage** — `api_import_record` reads via app-bound reader (typically Connect's `ApiImportRecord`)
+- **No ERP/customer-specific field maps** — definitions live in the app (migrations, seeds, Filament)
+- **No locale normalization rules** — app provides `LocaleVariantResolver` (e.g. `cz` → `cs`)
+- **No automatic scheduling** — trigger runs yourself or from Connect/transform jobs in the app
+- **No Filament panel by default** — `enable-panel` is `false`; register `TransformPlugin` in the app panel
+
+## Relation to `moox/connect`
+
+Connect fetches API data and stores it in `api_import_records`. Transform reads those records via `api_import_record` sources and writes to destination models. They are separate packages; wiring is app config.
+
+## Installation
+
+```bash
+composer require moox/transform
+php artisan vendor:publish --tag=transform-config
+php artisan migrate
+```
+
+Register `Moox\Transform\Filament\Plugins\TransformPlugin` in your Filament panel.
+
+## Minimal example
 
 ```php
 use Moox\Transform\Models\TransformDefinition;
 use Moox\Transform\Models\TransformRecord;
-use Moox\Transform\Support\TransformRunner;
-use Moox\Transform\Support\TransformValidator;
+use Moox\Transform\Jobs\RunTransformRecordJob;
 
 $definition = TransformDefinition::query()->create([
     'name' => 'products-sync',
-    'destination_model' => \App\Models\Product::class,
-    'source_references' => [
-        [
-            'source_type' => 'db_table',
-            'table' => 'legacy_products',
-            'key_column' => 'sku',
-            'row_key' => 'P-15',
-            'alias' => 'product',
-        ],
-    ],
+    'destination_model' => \Moox\Product\Models\Product::class,
+    'destination_match' => ['sku' => 'legacy.sku'],
+    'source_references' => [[
+        'source_type' => 'db_table',
+        'connection' => 'mysql',
+        'table' => 'legacy_products',
+        'key_column' => 'sku',
+        'row_key' => 'P-15',
+        'alias' => 'legacy',
+    ]],
     'field_map' => [
-        'name' => 'product.title',
-        'stock' => 'product.inventory',
+        'sku' => 'legacy.sku',
+        'name' => 'legacy.title',
+        'price' => 'legacy.price',
     ],
     'validation_rules' => [
+        'sku' => ['required'],
         'name' => ['required', 'string'],
     ],
     'is_active' => true,
@@ -153,348 +193,18 @@ $definition = TransformDefinition::query()->create([
 
 $record = TransformRecord::query()->create([
     'transform_definition_id' => $definition->id,
+    'source_references' => $definition->source_references,
 ]);
 
-(new TransformRunner(new TransformValidator))->run($record);
+RunTransformRecordJob::dispatch($record->id);
 ```
 
-## Testing
-
-Feature tests cover:
-
-- multi-source transformation
-- validation failure handling
-- definition/model guard failures
-- model-based validation
-- additional custom rules
-- source guardrail checks (invalid file references, missing source)
-
-## Example Tinker snippet 
-```php
-// Tinker example: try in php artisan tinker
-
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Validation\ValidationException;
-use Moox\Core\Entities\Items\Draft\BaseDraftModel;
-use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
-use Moox\Transform\Models\TransformDefinition;
-use Moox\Transform\Models\TransformRecord;
-use Moox\Transform\Support\TransformRunner;
-use Moox\Transform\Support\TransformValidator;
-
-final class TinkerDraftMainModel extends BaseDraftModel
-{
-    protected $table = 'tinker_draft_main_models';
-
-    public $incrementing = true;
-    protected $keyType = 'int';
-
-    public string $translationModel = TinkerDraftMainTranslationModel::class;
-    public string $translationForeignKey = 'tinker_draft_main_model_id';
-    public string $localeKey = 'locale';
-    public bool $useTranslationFallback = true;
-
-    protected $fillable = ['status'];
-
-    protected function getCustomTranslatedAttributes(): array
-    {
-        return ['title'];
-    }
-}
-
-final class TinkerDraftMainTranslationModel extends BaseDraftTranslationModel
-{
-    protected $table = 'tinker_draft_main_model_translations';
-
-    protected function getCustomFillable(): array
-    {
-        return ['tinker_draft_main_model_id', 'title'];
-    }
-}
-
-$results = [];
-
-$runner = new TransformRunner(new TransformValidator);
-
-$runRecord = function (TransformDefinition $definition, array $recordData = []) use ($runner, &$results) {
-    $payload = array_merge([
-        'transform_definition_id' => $definition->id,
-    ], $recordData);
-
-    // DB check constraint requires at least one non-null source field.
-    // If runtime data does not provide one, inherit references from definition.
-    if (! array_key_exists('source_projection', $payload) && ! array_key_exists('source_references', $payload)) {
-        $payload['source_references'] = $definition->source_references;
-    }
-
-    $record = TransformRecord::query()->create($payload);
-
-    $runner->run($record);
-    $record->refresh();
-
-    $results[] = [
-        'record_id' => $record->id,
-        'definition' => $definition->name,
-        'status' => $record->status,
-        'validation_status' => $record->validation_status,
-        'error_message' => $record->error_message,
-        'warnings' => $record->warnings,
-        'validation_errors' => $record->validation_errors,
-    ];
-
-    return $record;
-};
-
-$createDefinition = function (array $data) {
-    return TransformDefinition::query()->create(array_merge([
-        'name' => 'def-' . uniqid(),
-        'destination_model' => TinkerDraftMainModel::class,
-        'source_references' => [],
-        'field_map' => ['title' => 'legacy.title'],
-        'validation_rules' => [],
-        'is_active' => true,
-    ], $data));
-};
-
-// Cleanup
-Schema::dropIfExists('tinker_draft_main_model_translations');
-Schema::dropIfExists('tinker_draft_main_models');
-Schema::dropIfExists('legacy_products');
-Schema::dropIfExists('legacy_prices');
-
-// IMPORTANT:
-// We rely on package migrations for these tables:
-// - transform_definitions
-// - transform_records
-if (! Schema::hasTable('transform_definitions') || ! Schema::hasTable('transform_records')) {
-    throw new RuntimeException('Run package migrations first: php artisan migrate');
-}
-
-// Optional reset for repeatable local runs (schema stays untouched)
-DB::table('transform_records')->delete();
-DB::table('transform_definitions')->delete();
-
-
-
-// Additional demo tables used by this snippet
-Schema::create('tinker_draft_main_models', function (Blueprint $table): void {
-    $table->id();
-    $table->uuid('uuid')->nullable();
-    $table->ulid('ulid')->nullable();
-    $table->string('status')->nullable();
-    $table->softDeletes();
-    $table->timestamps();
-});
-Schema::create('tinker_draft_main_model_translations', function (Blueprint $table): void {
-    $table->id();
-    $table->unsignedBigInteger('tinker_draft_main_model_id');
-    $table->foreign('tinker_draft_main_model_id', 'fk_tdmmt_main_id')
-        ->references('id')->on('tinker_draft_main_models')->onDelete('cascade');
-    $table->string('locale');
-    $table->string('title')->nullable();
-    $table->string('translation_status')->nullable();
-    $table->timestamp('to_publish_at')->nullable();
-    $table->timestamp('published_at')->nullable();
-    $table->timestamp('to_unpublish_at')->nullable();
-    $table->timestamp('unpublished_at')->nullable();
-    $table->unsignedBigInteger('published_by_id')->nullable();
-    $table->string('published_by_type')->nullable();
-    $table->unsignedBigInteger('unpublished_by_id')->nullable();
-    $table->string('unpublished_by_type')->nullable();
-    $table->unsignedBigInteger('deleted_by_id')->nullable();
-    $table->string('deleted_by_type')->nullable();
-    $table->timestamp('restored_at')->nullable();
-    $table->unsignedBigInteger('restored_by_id')->nullable();
-    $table->string('restored_by_type')->nullable();
-    $table->unsignedBigInteger('created_by_id')->nullable();
-    $table->string('created_by_type')->nullable();
-    $table->unsignedBigInteger('updated_by_id')->nullable();
-    $table->string('updated_by_type')->nullable();
-    $table->softDeletes();
-    $table->timestamps();
-});
-Schema::create('legacy_products', function (Blueprint $table): void {
-    $table->id();
-    $table->string('sku')->unique();
-    $table->string('title');
-    $table->integer('inventory')->nullable();
-});
-Schema::create('legacy_prices', function (Blueprint $table): void {
-    $table->id();
-    $table->string('sku')->unique();
-    $table->string('label');
-});
-
-DB::table('legacy_products')->insert([
-    ['sku' => 'P-1', 'title' => 'Switch', 'inventory' => 19],
-    ['sku' => 'P-2', 'title' => 'Router', 'inventory' => 7],
-]);
-DB::table('legacy_prices')->insert([
-    ['sku' => 'P-1', 'label' => '9.99 EUR'],
-    ['sku' => 'P-2', 'label' => '14.99 EUR'],
-]);
-
-File::ensureDirectoryExists(storage_path('app/import'));
-File::put(storage_path('app/import/one.json'), json_encode([
-    'id' => 77,
-    'title' => 'File JSON Title',
-], JSON_PRETTY_PRINT));
-File::put(storage_path('app/import/items.csv'), "id,title\n101,CSV Alpha\n102,CSV Beta\n");
-
-// 1) SUCCESS: DB source
-$defDb = $createDefinition([
-    'name' => 'db-only',
-    'source_references' => [[
-        'source_type' => 'db_table',
-        'table' => 'legacy_products',
-        'key_column' => 'sku',
-        'row_key' => 'P-1',
-        'alias' => 'product',
-    ]],
-    'field_map' => [
-        'title' => 'product.title',
-        'status' => 'product.inventory',
-    ],
-]);
-$runRecord($defDb);
-
-// 2) SUCCESS: JSON source
-$defJson = $createDefinition([
-    'name' => 'json-only',
-    'source_references' => [[
-        'source_type' => 'file_json',
-        'path' => storage_path('app/import/one.json'),
-        'alias' => 'json',
-    ]],
-    'field_map' => [
-        'title' => 'json.title',
-    ],
-]);
-$runRecord($defJson);
-
-// 3) SUCCESS: CSV source
-$defCsv = $createDefinition([
-    'name' => 'csv-only',
-    'source_references' => [[
-        'source_type' => 'file_csv',
-        'path' => storage_path('app/import/items.csv'),
-        'key_column' => 'id',
-        'row_key' => '102',
-        'alias' => 'csv',
-    ]],
-    'field_map' => [
-        'title' => 'csv.title',
-    ],
-]);
-$runRecord($defCsv);
-
-// 4) SUCCESS: multiple sources (DB + CSV + projection)
-$defMulti = $createDefinition([
-    'name' => 'multi-source',
-    'source_references' => [
-        [
-            'source_type' => 'db_table',
-            'table' => 'legacy_products',
-            'key_column' => 'sku',
-            'row_key' => 'P-2',
-            'alias' => 'product',
-        ],
-        [
-            'source_type' => 'file_csv',
-            'path' => storage_path('app/import/items.csv'),
-            'key_column' => 'id',
-            'row_key' => '101',
-            'alias' => 'csv',
-        ],
-    ],
-    'field_map' => [
-        'title' => 'csv.title',
-        'status' => 'product.title',
-    ],
-]);
-$runRecord($defMulti, [
-    'source_projection' => [
-        'legacy' => ['title' => 'Projection Fallback'],
-    ],
-]);
-
-// 5) FAIL_VALIDATION
-$defValidation = $createDefinition([
-    'name' => 'validation-fail',
-    'source_references' => [],
-    'field_map' => [
-        'title' => 'legacy.title',
-    ],
-    'validation_rules' => [
-        'title' => ['required', 'string', 'min:10'],
-    ],
-]);
-$runRecord($defValidation, [
-    'source_projection' => ['legacy' => ['title' => 'short']],
-]);
-
-// 6) FAIL (invalid destination model) -> blocked at definition create
-try {
-    $createDefinition([
-        'name' => 'invalid-model',
-        'destination_model' => 'App\\Models\\DoesNotExist',
-        'source_references' => [],
-        'field_map' => ['title' => 'legacy.title'],
-    ]);
-} catch (ValidationException $e) {
-    $results[] = [
-        'record_id' => null,
-        'definition' => 'invalid-model',
-        'status' => 'definition_rejected',
-        'validation_status' => 'invalid',
-        'error_message' => $e->getMessage(),
-        'warnings' => [],
-        'validation_errors' => $e->errors(),
-    ];
-}
-
-// 7) FAIL (invalid file reference) -> blocked at definition create
-try {
-    $createDefinition([
-        'name' => 'invalid-file',
-        'source_references' => [[
-            'source_type' => 'file_json',
-            'path' => '/no/such/file.json',
-            'alias' => 'bad',
-        ]],
-        'field_map' => ['title' => 'bad.title'],
-    ]);
-} catch (ValidationException $e) {
-    $results[] = [
-        'record_id' => null,
-        'definition' => 'invalid-file',
-        'status' => 'definition_rejected',
-        'validation_status' => 'invalid',
-        'error_message' => $e->getMessage(),
-        'warnings' => [],
-        'validation_errors' => $e->errors(),
-    ];
-}
-
-// Output
-[
-    'results' => $results,
-    'main_table' => DB::table('tinker_draft_main_models')->orderBy('id')->get()->toArray(),
-    'translation_table' => DB::table('tinker_draft_main_model_translations')->orderBy('id')->get()->toArray(),
-    'transform_records' => DB::table('transform_records')->orderBy('id')->get()->toArray(),
-];
-```
-
-
-Run:
+## Tests
 
 ```bash
-php artisan test --compact packages/transform/tests/Feature/TransformRunnerTest.php
+php artisan test --compact packages/transform/tests
 ```
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT — see [LICENSE.md](LICENSE.md).

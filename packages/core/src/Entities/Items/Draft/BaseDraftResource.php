@@ -184,47 +184,57 @@ class BaseDraftResource extends BaseResource
     }
 
     /**
+     * Translated attribute used for list headings and edit page titles.
+     */
+    protected static function getPrimaryTranslationAttribute(): string
+    {
+        return 'title';
+    }
+
+    /**
      * Get a title column with fallback to app locale when translation is missing
      */
     public static function getTitleColumn(): TextColumn
     {
-        return TextColumn::make('title')
+        $titleAttribute = static::getPrimaryTranslationAttribute();
+
+        return TextColumn::make($titleAttribute)
             ->label('Title')
-            ->searchable(true, function ($query, $search, $livewire) {
+            ->searchable(true, function ($query, $search, $livewire) use ($titleAttribute) {
                 $currentLang = static::resolveCurrentLang($livewire);
-                $query->whereHas('translations', function ($query) use ($search, $currentLang) {
+                $query->whereHas('translations', function ($query) use ($search, $currentLang, $titleAttribute) {
                     $query->where('locale', $currentLang)
-                        ->where('title', 'like', '%'.$search.'%');
+                        ->where($titleAttribute, 'like', '%'.$search.'%');
                 });
             })
             // ->sortable()
-            ->extraAttributes(function ($record, $livewire) {
+            ->extraAttributes(function ($record, $livewire) use ($titleAttribute) {
                 $currentLang = static::resolveCurrentLang($livewire);
 
                 return [
-                    'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull('title')->exists()
+                    'style' => $record->translations()->where('locale', $currentLang)->withTrashed()->whereNotNull($titleAttribute)->exists()
                         ? ''
                         : 'color: var(--gray-500);',
                 ];
             })
-            ->getStateUsing(function ($record, $livewire) {
+            ->getStateUsing(function ($record, $livewire) use ($titleAttribute) {
                 $currentLang = static::resolveCurrentLang($livewire);
 
                 $translation = $record->translations()->withTrashed()->where('locale', $currentLang)->first();
-                if ($translation && $translation->title) {
-                    return $translation->title;
+                if ($translation && $translation->{$titleAttribute}) {
+                    return $translation->{$titleAttribute};
                 }
                 $defaultLocalization = Localization::where('is_default', true)->first();
                 $defaultLang = $defaultLocalization->locale_variant ?? app()->getLocale();
                 $fallbackTranslation = $record->translations()->where('locale', $defaultLang)->first();
 
-                if ($fallbackTranslation && $fallbackTranslation->title) {
-                    return $fallbackTranslation->title.' ('.$defaultLang.')';
+                if ($fallbackTranslation && $fallbackTranslation->{$titleAttribute}) {
+                    return $fallbackTranslation->{$titleAttribute}.' ('.$defaultLang.')';
                 }
 
-                $anyTranslation = $record->translations()->whereNotNull('title')->first();
-                if ($anyTranslation && $anyTranslation->title) {
-                    return $anyTranslation->title.' ('.$anyTranslation->locale.')';
+                $anyTranslation = $record->translations()->whereNotNull($titleAttribute)->first();
+                if ($anyTranslation && $anyTranslation->{$titleAttribute}) {
+                    return $anyTranslation->{$titleAttribute}.' ('.$anyTranslation->locale.')';
                 }
 
                 return __('core::core.no_title_available');

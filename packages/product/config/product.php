@@ -5,13 +5,9 @@
 | Moox Configuration
 |--------------------------------------------------------------------------
 |
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
+| Relations are resolved by moox/core (RelationService + ConfigRelationManager).
+| Wire product ↔ productgroup assignments in the application config/product.php
+| when both packages are installed.
 |
 */
 return [
@@ -49,9 +45,12 @@ return [
         ],
     ],
 
-    'relations' => [],
-
-    'taxonomies' => [],
+    'types' => [
+        'simple' => 'trans//product::product.type_simple',
+        'variant' => 'trans//product::product.type_variant',
+        'bundle' => 'trans//product::product.type_bundle',
+        'service' => 'trans//product::product.type_service',
+    ],
 
     'navigation_group' => 'trans//core::core.cms',
 
@@ -61,4 +60,6 @@ return [
         'inactive' => 'trans//product::product.status_inactive',
         'archived' => 'trans//product::product.status_archived',
     ],
+
+    'currency' => 'EUR',
 ];

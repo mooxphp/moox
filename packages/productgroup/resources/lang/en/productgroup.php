@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'productgroup' => 'Product group',
+    'productgroups' => 'Product groups',
+    'products' => 'Products',
+    'name' => 'Name',
+    'short_description' => 'Short description',
+    'description' => 'Description',
+    'meta_title' => 'Meta title',
+    'meta_description' => 'Meta description',
+    'code' => 'Code',
+    'type' => 'Type',
+    'status' => 'Status',
+    'parent' => 'Parent group',
+    'sku_prefix' => 'SKU prefix',
+    'custom_properties' => 'Custom properties',
+    'section_content' => 'Content',
+    'section_family' => 'Family',
+    'section_seo' => 'SEO',
+    'type_family' => 'Family',
+    'type_bundle_template' => 'Bundle template',
+    'type_service_family' => 'Service family',
+    'status_draft' => 'Draft',
+    'status_active' => 'Active',
+    'status_inactive' => 'Inactive',
+    'status_archived' => 'Archived',
+];

@@ -11,9 +11,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Moox\Connect\Models\ApiEndpoint;
+use Moox\Connect\Traits\ConfiguresConnectQueue;
 
 final class RunConnectionTreeJob implements ShouldQueue
 {
+    use ConfiguresConnectQueue;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -24,6 +26,7 @@ final class RunConnectionTreeJob implements ShouldQueue
         private int $levelDelaySeconds = 0,
         private ?int $startEndpointId = null,
     ) {
+        $this->configureConnectQueue('tree', connectionId: $this->connectionId);
     }
 
     public function handle(): void
