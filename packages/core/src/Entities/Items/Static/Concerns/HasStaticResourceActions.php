@@ -11,72 +11,14 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Components\Actions;
 use Moox\Core\Entities\Items\Static\BaseStaticModel;
 
+/**
+ * Static-specific action overrides (alpha2 locale resolution, no soft-delete/withTrashed).
+ * Table/bulk/form action lists come from BaseItemResource.
+ */
 trait HasStaticResourceActions
 {
-    /**
-     * @return mixed[]
-     */
-    public static function getTableActions(): array
-    {
-        $actions = [];
-
-        if (static::enableEdit()) {
-            $actions[] = static::getEditTableAction();
-        }
-
-        if (static::enableView()) {
-            $actions[] = static::getViewTableAction();
-        }
-
-        return $actions;
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public static function getBulkActions(): array
-    {
-        $actions = [];
-
-        if (method_exists(static::class, 'getAssignScopeBulkAction')) {
-            $actions[] = static::getAssignScopeBulkAction();
-        }
-
-        if (static::enableDelete()) {
-            $actions[] = static::getDeleteBulkAction();
-        }
-
-        return $actions;
-    }
-
-    public static function getFormActions(): Actions
-    {
-        $actions = [
-            static::getSaveAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
-            static::getCancelAction()->extraAttributes(attributes: ['style' => 'width: 100%;']),
-        ];
-
-        if (static::enableCreate()) {
-            $actions[] = static::getSaveAndCreateAnotherAction()
-                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
-        }
-
-        if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction()
-                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
-        }
-
-        if (static::enableEdit()) {
-            $actions[] = static::getEditAction()
-                ->extraAttributes(attributes: ['style' => 'width: 100%;']);
-        }
-
-        return Actions::make($actions);
-    }
-
     public static function getEditTableAction(): EditAction
     {
         return EditAction::make('edit')
@@ -111,12 +53,7 @@ trait HasStaticResourceActions
                     $record->delete();
                 }
 
-                Notification::make()
-                    ->title(__('core::core.deleted'))
-                    ->success()
-                    ->send();
-
-                $livewire->redirect(static::getUrl('index'));
+                static::notifyDeletedAndRedirect($livewire);
             });
     }
 
@@ -131,12 +68,7 @@ trait HasStaticResourceActions
                     $livewire->record->delete();
                 }
 
-                Notification::make()
-                    ->title(__('core::core.deleted'))
-                    ->success()
-                    ->send();
-
-                $livewire->redirect(static::getUrl('index'));
+                static::notifyDeletedAndRedirect($livewire);
             })
             ->visible(fn ($livewire): bool => $livewire instanceof EditRecord && $livewire->record !== null)
             ->requiresConfirmation();
@@ -160,6 +92,16 @@ trait HasStaticResourceActions
                 return ! static::recordSupportsTranslations($livewire->record)
                     || static::recordHasTranslationForLivewire($livewire->record, $livewire);
             });
+    }
+
+    protected static function notifyDeletedAndRedirect($livewire): void
+    {
+        Notification::make()
+            ->title(__('core::core.deleted'))
+            ->success()
+            ->send();
+
+        $livewire->redirect(static::getUrl('index'));
     }
 
     protected static function livewireLang($livewire): string
