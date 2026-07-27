@@ -63,8 +63,9 @@ final class UnitCodeResolver
         }
 
         $records = StaticUnit::query()
+            ->with('translations')
             ->orderBy('code')
-            ->get(['code', 'common_name', 'symbol']);
+            ->get(['id', 'code', 'symbol']);
 
         if ($records->isEmpty()) {
             throw new CodelistNotImportedException('static_units');
@@ -100,19 +101,25 @@ final class UnitCodeResolver
     {
         $code = (string) $record->code;
 
-        return array_values(array_filter([
-            mb_strtolower((string) $record->common_name),
+        $translatedNames = $record->translations
+            ->pluck('common_name')
+            ->filter(static fn (mixed $name): bool => is_string($name) && $name !== '')
+            ->map(static fn (string $name): string => mb_strtolower($name))
+            ->all();
+
+        return array_values(array_unique(array_filter([
+            ...$translatedNames,
             mb_strtolower((string) ($record->symbol ?? '')),
             mb_strtolower(__('data::enums/units.'.$code, [], 'de')),
             mb_strtolower(__('data::enums/units.'.$code, [], 'en')),
-        ]));
+        ])));
     }
 
     private function unitDisplayLabel(StaticUnit $record, string $code): string
     {
         $label = __('data::enums/units.'.$code, [], 'de');
         if ($label === 'data::enums/units.'.$code) {
-            return (string) $record->common_name;
+            return (string) ($record->translatedLabel('de') ?? $record->translatedLabel('en') ?? $code);
         }
 
         return $label;

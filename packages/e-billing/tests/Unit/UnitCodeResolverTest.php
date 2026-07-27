@@ -37,7 +37,7 @@ test('resolving many unit labels issues only one codelist query', function (): v
 
     $unitQueries = array_values(array_filter(
         DB::getQueryLog(),
-        fn (array $query): bool => str_contains($query['query'], 'static_units'),
+        fn (array $query): bool => (bool) preg_match('/\bfrom [`"]?static_units[`"]?\b/i', $query['query']),
     ));
 
     expect($unitQueries)->toHaveCount(1);
