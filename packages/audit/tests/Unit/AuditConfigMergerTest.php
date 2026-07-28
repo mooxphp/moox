@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Moox\Audit\Support\AuditConfigMerger;
 use Moox\Audit\Support\AuditConfigResolver;
 use Moox\Audit\Support\AuditPackageRegistry;
+use Moox\Audit\Tests\Support\TestAuditableItem;
+use Moox\Audit\Tests\Support\TestAuditableItemResource;
 use Moox\Audit\Tests\TestCase;
 
 uses(TestCase::class);
@@ -108,11 +110,11 @@ it('disables hooks when app override sets enabled false', function (): void {
 it('applies defaults for an empty model registration', function (): void {
     AuditPackageRegistry::register('test', [
         'models' => [
-            Moox\Audit\Tests\Support\TestAuditableItem::class => [],
+            TestAuditableItem::class => [],
         ],
     ]);
 
-    $resolved = AuditConfigResolver::resolveModel(Moox\Audit\Tests\Support\TestAuditableItem::class);
+    $resolved = AuditConfigResolver::resolveModel(TestAuditableItem::class);
 
     expect($resolved)->not->toBeNull()
         ->and($resolved['entry_type'])->toBe('audit')
@@ -124,13 +126,13 @@ it('applies defaults for an empty model registration', function (): void {
 it('derives filament owner_model from the resource model', function (): void {
     AuditPackageRegistry::register('test', [
         'filament' => [
-            Moox\Audit\Tests\Support\TestAuditableItemResource::class => [],
+            TestAuditableItemResource::class => [],
         ],
     ]);
 
     $resolved = AuditConfigResolver::resolvedFilament();
 
-    expect($resolved)->toHaveKey(Moox\Audit\Tests\Support\TestAuditableItemResource::class)
-        ->and($resolved[Moox\Audit\Tests\Support\TestAuditableItemResource::class]['owner_model'])
-        ->toBe(Moox\Audit\Tests\Support\TestAuditableItem::class);
+    expect($resolved)->toHaveKey(TestAuditableItemResource::class)
+        ->and($resolved[TestAuditableItemResource::class]['owner_model'])
+        ->toBe(TestAuditableItem::class);
 });
