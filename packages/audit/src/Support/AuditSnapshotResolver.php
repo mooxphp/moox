@@ -32,7 +32,7 @@ final class AuditSnapshotResolver
             );
         }
 
-        return $snapshot;
+        return self::filterHiddenAttributes($snapshot, $config);
     }
 
     /**
@@ -80,5 +80,21 @@ final class AuditSnapshotResolver
         }
 
         return $definitions;
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    private static function filterHiddenAttributes(array $snapshot, array $config): array
+    {
+        $hidden = array_values(array_filter($config['hidden_attributes'] ?? [], is_string(...)));
+
+        if ($hidden === []) {
+            return $snapshot;
+        }
+
+        return array_diff_key($snapshot, array_fill_keys($hidden, true));
     }
 }

@@ -52,6 +52,8 @@ final class CustomFieldAuditMerger
         /** @var array<string, mixed> $newValues */
         $newValues = $manager->preparedFormValues($resourceClass, $record, $data);
 
+        $newValues = $this->filterHiddenAttributes($newValues, $config);
+
         if ($newValues === []) {
             return;
         }
@@ -60,6 +62,11 @@ final class CustomFieldAuditMerger
         $oldValues = $event === 'created'
             ? []
             : $record->customFields(true);
+
+        $oldValues = $this->filterHiddenAttributes(
+            is_array($oldValues) ? $oldValues : [],
+            $config,
+        );
 
         $changes = $this->buildChanges($oldValues, $newValues, $event);
 
@@ -156,5 +163,21 @@ final class CustomFieldAuditMerger
             ->where('event', $event)
             ->latest('id')
             ->first();
+    }
+
+    /**
+     * @param  array<string, mixed>  $values
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    private function filterHiddenAttributes(array $values, array $config): array
+    {
+        $hidden = array_values(array_filter($config['hidden_attributes'] ?? [], is_string(...)));
+
+        if ($hidden === []) {
+            return $values;
+        }
+
+        return array_diff_key($values, array_fill_keys($hidden, true));
     }
 }

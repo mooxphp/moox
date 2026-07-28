@@ -163,3 +163,55 @@ it('boots non soft delete models without registering restored listeners', functi
         ->where('event', 'updated')
         ->exists())->toBeTrue();
 });
+
+it('excludes hidden custom fields from audit changes', function (): void {
+    /** @var TestCase $this */
+    $this->registerTestAuditableModel([
+        'hidden_attributes' => ['secret_note'],
+    ]);
+
+    $item = TestAuditableItem::query()->create([
+        'title' => 'Original',
+        'status' => 'draft',
+        'builder_payload' => [
+            'hero_title' => 'Visible',
+            'secret_note' => 'Do not log',
+        ],
+    ]);
+
+    $item->update([
+        'title' => 'Changed title',
+    ]);
+
+    app()->instance('Moox\\Builder\\Services\\CustomFieldsManager', new class
+    {
+        /**
+         * @return array<string, mixed>
+         */
+        public function preparedFormValues(string $resourceClass, object $record, array $data): array
+        {
+            return [
+                'hero_title' => 'Updated visible',
+                'secret_note' => 'Still hidden',
+            ];
+        }
+    });
+
+    app(\Moox\Audit\Support\CustomFieldAuditMerger::class)
+        ->mergeUpdated($item, 'TestResource', []);
+
+    $activity = Activity::query()
+        ->where('event', 'updated')
+        ->where('subject_type', TestAuditableItem::class)
+        ->where('subject_id', $item->getKey())
+        ->latest('id')
+        ->first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->attribute_changes?->get('old'))->not->toHaveKey('secret_note')
+        ->and($activity->attribute_changes?->get('attributes'))->not->toHaveKey('secret_note')
+        ->and($activity->attribute_changes?->get('attributes'))->toMatchArray([
+            'title' => 'Changed title',
+            'hero_title' => 'Updated visible',
+        ]);
+});
