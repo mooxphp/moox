@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Item;
 
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -66,5 +67,12 @@ class ItemServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+            AuditPackageRegistry::register('item', config('item.audit', []));
+        }
     }
 }

@@ -41,13 +41,16 @@ use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\ViewServiceProvider;
 use Livewire\LivewireServiceProvider;
+use Moox\Audit\AuditServiceProvider;
+use Moox\Audit\Models\Activity;
 use Moox\Core\CoreServiceProvider;
 use Moox\Item\ItemServiceProvider;
-use Moox\Item\Moox\Plugins\ItemPlugin;
+use Moox\Item\Plugins\ItemPlugin;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Pest\Livewire\InteractsWithLivewire;
+use Spatie\Activitylog\ActivitylogServiceProvider;
 
 #[WithMigration('laravel', 'cache', 'queue')]
 #[WithMigration('session')]
@@ -63,6 +66,10 @@ class TestCase extends Orchestra
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+        $app['config']->set('audit.enabled', true);
+        $app['config']->set('audit.activity_model', Activity::class);
+        $app['config']->set('activitylog.enabled', true);
+        $app['config']->set('activitylog.activity_model', Activity::class);
 
         // Use in-memory session driver during tests to ensure errors bag works without DB.
         $app['config']->set('session.driver', 'array');
@@ -149,6 +156,8 @@ class TestCase extends Orchestra
             WidgetsServiceProvider::class,
 
             // Moox packages
+            ActivitylogServiceProvider::class,
+            AuditServiceProvider::class,
             CoreServiceProvider::class,
             ItemServiceProvider::class,
         ];

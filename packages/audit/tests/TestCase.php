@@ -12,6 +12,7 @@ use Moox\Audit\Models\Activity;
 use Moox\Audit\Support\AuditBootstrap;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Audit\Tests\Support\TestAuditableItem;
+use Moox\Audit\Tests\Support\TestNonSoftDeleteAuditableItem;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Spatie\Activitylog\ActivitylogServiceProvider;
 
@@ -63,6 +64,13 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('test_non_soft_delete_auditable_items', function (Blueprint $table): void {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->string('status')->default('draft');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -80,6 +88,30 @@ abstract class TestCase extends Orchestra
                     'entry_type' => 'audit',
                     'attributes' => ['title', 'status', 'scope'],
                     'events' => ['created', 'updated', 'deleted', 'restored'],
+                ], $overrides),
+            ],
+        ]);
+
+        AuditBootstrap::boot();
+
+        return $modelClass;
+    }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
+    public function registerNonSoftDeleteAuditableModel(array $overrides = []): string
+    {
+        $modelClass = TestNonSoftDeleteAuditableItem::class;
+
+        AuditPackageRegistry::register('test-non-soft-delete', [
+            'models' => [
+                $modelClass => array_replace_recursive([
+                    'enabled' => true,
+                    'log_name' => 'test-non-soft-delete',
+                    'entry_type' => 'audit',
+                    'attributes' => ['title', 'status'],
+                    'events' => ['created', 'updated', 'deleted'],
                 ], $overrides),
             ],
         ]);

@@ -6,6 +6,7 @@ namespace Moox\Audit\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
@@ -113,7 +114,11 @@ final class AuditBootstrap
      */
     private static function registerModelEventHooks(string $modelClass, ConfigDrivenModelObserver $observer): void
     {
-        $events = ['created', 'updating', 'updated', 'deleted', 'restored'];
+        $events = ['created', 'updating', 'updated', 'deleted'];
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($modelClass), true)) {
+            $events[] = 'restored';
+        }
 
         foreach ($events as $event) {
             if (! method_exists($observer, $event)) {

@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\HasCustomFields;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Item\Models\Item;
 use Moox\Item\Resources\ItemResource\Pages\CreateItem;
 use Moox\Item\Resources\ItemResource\Pages\EditItem;
@@ -22,6 +23,7 @@ use Moox\Item\Resources\ItemResource\Pages\ViewItem;
 class ItemResource extends BaseItemResource
 {
     use HasCustomFields;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Item::class;
 

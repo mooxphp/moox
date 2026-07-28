@@ -6,6 +6,7 @@ use Moox\Audit\Models\Activity;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Audit\Tests\Support\TestAuditableItem;
+use Moox\Audit\Tests\Support\TestNonSoftDeleteAuditableItem;
 use Moox\Audit\Tests\TestCase;
 
 uses(TestCase::class);
@@ -108,7 +109,7 @@ it('merges custom field changes into the normal audit entry', function (): void 
         'title' => 'Changed title',
     ]);
 
-    $this->app->instance('Moox\\Builder\\Services\\CustomFieldsManager', new class
+    app()->instance('Moox\\Builder\\Services\\CustomFieldsManager', new class
     {
         /**
          * @return array<string, mixed>
@@ -143,4 +144,22 @@ it('merges custom field changes into the normal audit entry', function (): void 
             'hero_title' => 'Updated headline',
             'cta_label' => 'Buy now',
         ]);
+});
+
+it('boots non soft delete models without registering restored listeners', function (): void {
+    /** @var TestCase $this */
+    $this->registerNonSoftDeleteAuditableModel();
+
+    $item = TestNonSoftDeleteAuditableItem::query()->create([
+        'title' => 'Simple',
+        'status' => 'draft',
+    ]);
+
+    $item->update(['title' => 'Updated']);
+
+    expect(Activity::query()
+        ->where('subject_type', TestNonSoftDeleteAuditableItem::class)
+        ->where('subject_id', $item->getKey())
+        ->where('event', 'updated')
+        ->exists())->toBeTrue();
 });

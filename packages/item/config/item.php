@@ -1,6 +1,7 @@
 <?php
 
 use Moox\Item\Models\Item;
+use Moox\Item\Resources\ItemResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,26 @@ return [
     ],
 
     'relations' => [],
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Item::class => [
+                'log_name' => 'item',
+                'entry_type' => 'audit',
+                'attributes' => [
+                    'title',
+                    'description',
+                ],
+                'events' => ['created', 'updated', 'deleted'],
+            ],
+        ],
+        'filament' => [
+            ItemResource::class => [
+                'owner_model' => Item::class,
+            ],
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
