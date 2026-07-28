@@ -80,19 +80,19 @@ it('builds structured change rows for the detail view', function (): void {
 
     expect($rows)->toBe([
         [
-            'field' => 'title',
+            'field' => 'Title',
             'old' => 'Hallo',
             'new' => 'Hallo und ciao',
             'kind' => 'changed',
         ],
         [
-            'field' => 'status',
+            'field' => 'Status',
             'old' => 'draft',
             'new' => null,
             'kind' => 'removed',
         ],
         [
-            'field' => 'color',
+            'field' => 'Color',
             'old' => null,
             'new' => 'red',
             'kind' => 'added',

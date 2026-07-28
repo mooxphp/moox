@@ -61,7 +61,6 @@ class AuditResource extends Resource
                             ->icon(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record) ? 'heroicon-m-arrow-top-right-on-square' : null)
                             ->helperText(function (Activity $record): ?string {
                                 $parts = array_filter([
-                                    ActivityEntryPresenter::subjectIdLabel($record),
                                     ActivityEntryPresenter::propertyValue($record, 'locale'),
                                     filled($record->scope) ? $record->scope : null,
                                 ]);

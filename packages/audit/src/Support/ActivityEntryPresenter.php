@@ -84,7 +84,7 @@ final class ActivityEntryPresenter
             }
 
             $rows[] = [
-                'field' => (string) $key,
+                'field' => self::fieldLabel((string) $key),
                 'old' => $oldValue !== null ? self::formatValue($oldValue) : null,
                 'new' => $newValue !== null ? self::formatValue($newValue) : null,
                 'kind' => $kind,
@@ -228,6 +228,14 @@ final class ActivityEntryPresenter
         }
 
         return '#'.$id;
+    }
+
+    public static function fieldLabel(string $field): string
+    {
+        return Str::of($field)
+            ->replace(['_', '-'], ' ')
+            ->headline()
+            ->toString();
     }
 
     public static function subjectTypeLabel(string $type): string
