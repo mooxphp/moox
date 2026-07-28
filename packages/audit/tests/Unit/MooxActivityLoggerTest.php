@@ -197,7 +197,7 @@ it('excludes hidden custom fields from audit changes', function (): void {
         }
     });
 
-    app(\Moox\Audit\Support\CustomFieldAuditMerger::class)
+    app(CustomFieldAuditMerger::class)
         ->mergeUpdated($item, 'TestResource', []);
 
     $activity = Activity::query()
