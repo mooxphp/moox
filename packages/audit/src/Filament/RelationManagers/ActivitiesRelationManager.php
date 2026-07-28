@@ -40,7 +40,7 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('log_name')
                     ->label(__('core::audit.log_name'))
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -52,7 +52,13 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
-                    ->limit(40),
+                    ->limit(40)
+                    ->toggleable(),
+                TextColumn::make('changed_fields')
+                    ->label(__('core::audit.attribute_changes'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->wrap()
+                    ->toggleable(),
                 TextColumn::make('causer_label')
                     ->label(__('core::audit.causer'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))

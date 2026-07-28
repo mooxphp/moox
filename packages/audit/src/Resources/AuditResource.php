@@ -157,7 +157,7 @@ class AuditResource extends Resource
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('log_name')
                     ->label(__('core::audit.log_name'))
                     ->searchable()
@@ -171,6 +171,11 @@ class AuditResource extends Resource
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
                     ->limit(40),
+                TextColumn::make('changed_fields')
+                    ->label(__('core::audit.attribute_changes'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->wrap()
+                    ->toggleable(),
                 TextColumn::make('causer_label')
                     ->label(__('core::audit.causer'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))
@@ -184,6 +189,26 @@ class AuditResource extends Resource
                         'log' => __('core::audit.entry_type_log'),
                         'audit' => __('core::audit.entry_type_audit'),
                     ]),
+                SelectFilter::make('event')
+                    ->label(__('core::audit.action'))
+                    ->options([
+                        'created' => __('core::audit.event_created'),
+                        'updated' => __('core::audit.event_updated'),
+                        'deleted' => __('core::audit.event_deleted'),
+                        'restored' => __('core::audit.event_restored'),
+                    ]),
+                SelectFilter::make('subject_type')
+                    ->label(__('core::audit.subject'))
+                    ->options(fn (): array => Activity::query()
+                        ->whereNotNull('subject_type')
+                        ->distinct()
+                        ->orderBy('subject_type')
+                        ->pluck('subject_type')
+                        ->filter(fn (mixed $type): bool => is_string($type) && $type !== '')
+                        ->mapWithKeys(fn (string $type): array => [
+                            $type => ActivityEntryPresenter::subjectTypeLabel($type),
+                        ])
+                        ->all()),
                 SelectFilter::make('log_name')
                     ->label(__('core::audit.log_name')),
             ])

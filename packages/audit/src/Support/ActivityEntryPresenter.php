@@ -96,6 +96,28 @@ final class ActivityEntryPresenter
         return $rows;
     }
 
+    /**
+     * Compact field list for table columns, e.g. "Deutsch, Description +1".
+     */
+    public static function changedFieldsSummary(mixed $changes, int $limit = 3): string
+    {
+        $labels = array_column(self::changeRows($changes), 'field');
+
+        if ($labels === []) {
+            return '—';
+        }
+
+        $visible = array_slice($labels, 0, max(1, $limit));
+        $remaining = count($labels) - count($visible);
+        $summary = implode(', ', $visible);
+
+        if ($remaining > 0) {
+            $summary .= ' +'.$remaining;
+        }
+
+        return $summary;
+    }
+
     public static function propertyValue(?Activity $activity, string $key): ?string
     {
         if ($activity === null) {
@@ -163,10 +185,79 @@ final class ActivityEntryPresenter
      */
     private static function formatMediaLikeValue(array $value): ?string
     {
-        if (! isset($value['id']) || ! is_numeric($value['id'])) {
+        if (isset($value['id']) && is_numeric($value['id'])) {
+            return self::formatSingleMediaItem($value);
+        }
+
+        $items = self::mediaLikeItems($value);
+
+        if ($items === null || $items === []) {
             return null;
         }
 
+        $labels = array_map(self::formatSingleMediaItem(...), $items);
+
+        if (count($labels) <= 3) {
+            return implode(', ', $labels);
+        }
+
+        return implode(', ', array_slice($labels, 0, 3)).' +'.(count($labels) - 3);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     * @return list<array<mixed>>|null
+     */
+    private static function mediaLikeItems(array $value): ?array
+    {
+        if ($value === []) {
+            return null;
+        }
+
+        if (array_is_list($value)) {
+            $items = [];
+
+            foreach ($value as $item) {
+                if (is_numeric($item)) {
+                    $items[] = ['id' => (int) $item];
+
+                    continue;
+                }
+
+                if (is_array($item) && isset($item['id']) && is_numeric($item['id'])) {
+                    $items[] = $item;
+
+                    continue;
+                }
+
+                return null;
+            }
+
+            return $items;
+        }
+
+        if (isset($value['id']) && is_numeric($value['id'])) {
+            return null;
+        }
+
+        $items = [];
+
+        foreach ($value as $item) {
+            if (! is_array($item) || ! isset($item['id']) || ! is_numeric($item['id'])) {
+                return null;
+            }
+
+            $items[] = $item;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function formatSingleMediaItem(array $value): string
+    {
         $id = (string) $value['id'];
 
         foreach (['title', 'file_name', 'alt', 'name'] as $attribute) {

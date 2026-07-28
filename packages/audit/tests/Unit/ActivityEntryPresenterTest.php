@@ -46,6 +46,29 @@ it('formats media-like snapshots as readable labels', function (): void {
         ->and(ActivityEntryPresenter::formatValue(['id' => 9]))->toBe('#9');
 });
 
+it('formats gallery media snapshots as readable labels', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        '1' => [
+            'id' => 5,
+            'alt' => 'Screenshot',
+            'title' => 'First image',
+            'file_name' => 'a.png',
+        ],
+        '2' => [
+            'id' => 8,
+            'title' => 'Second image',
+            'file_name' => 'b.png',
+        ],
+    ]))->toBe('First image (#5), Second image (#8)')
+        ->and(ActivityEntryPresenter::formatValue([
+            ['id' => 1, 'title' => 'A'],
+            ['id' => 2, 'title' => 'B'],
+            ['id' => 3, 'title' => 'C'],
+            ['id' => 4, 'title' => 'D'],
+        ]))->toBe('A (#1), B (#2), C (#3) +1')
+        ->and(ActivityEntryPresenter::formatValue([5, 8]))->toBe('#5, #8');
+});
+
 it('returns an empty array for missing or identical changes', function (): void {
     expect(ActivityEntryPresenter::flattenChanges(null))->toBe([])
         ->and(ActivityEntryPresenter::flattenChanges([
@@ -107,6 +130,22 @@ it('builds a readable causer label from the causer name', function (): void {
     $activity->setRelation('causer', $causer);
 
     expect(ActivityEntryPresenter::causerLabel($activity))->toBe('Aziz');
+});
+
+it('builds a compact changed-fields summary for list columns', function (): void {
+    $changes = [
+        'old' => ['title' => 'A', 'status' => 'draft'],
+        'attributes' => [
+            'title' => 'B',
+            'status' => 'published',
+            'color' => 'red',
+            'weight' => 10,
+        ],
+    ];
+
+    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Title, Status, Color +1')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($changes, 2))->toBe('Title, Status +2')
+        ->and(ActivityEntryPresenter::changedFieldsSummary(null))->toBe('—');
 });
 
 it('builds structured change rows for the detail view', function (): void {
