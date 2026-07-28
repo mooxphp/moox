@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource;
 use Moox\Audit\Support\ActivityEntryPresenter;
@@ -40,6 +41,11 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'log' => __('core::audit.entry_type_log'),
+                        'audit' => __('core::audit.entry_type_audit'),
+                        default => filled($state) ? Str::headline($state) : '—',
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('log_name')
                     ->label(__('core::audit.log_name'))

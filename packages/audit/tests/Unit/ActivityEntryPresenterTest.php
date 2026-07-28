@@ -28,7 +28,7 @@ it('formats property values as strings', function (): void {
     ]);
 
     expect($result['source'])->toBe('test')
-        ->and($result['flags'])->toBe('["a","b"]')
+        ->and($result['flags'])->toBe('a, b')
         ->and($result['enabled'])->toBe('true');
 });
 
@@ -67,6 +67,25 @@ it('formats gallery media snapshots as readable labels', function (): void {
             ['id' => 4, 'title' => 'D'],
         ]))->toBe('A (#1), B (#2), C (#3) +1')
         ->and(ActivityEntryPresenter::formatValue([5, 8]))->toBe('#5, #8');
+});
+
+it('formats link, list and relation-like values for audit display', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'url' => 'https://moox.org',
+        'label' => 'Moox',
+        'opens_in_new_tab' => true,
+    ]))->toBe('Moox (https://moox.org) ↗')
+        ->and(ActivityEntryPresenter::formatValue([
+            'url' => 'https://example.com',
+            'label' => null,
+            'opens_in_new_tab' => false,
+        ]))->toBe('https://example.com')
+        ->and(ActivityEntryPresenter::formatValue(['red', 'green', 'blue']))->toBe('red, green, blue')
+        ->and(ActivityEntryPresenter::formatValue([
+            ['id' => 1, 'title' => 'Category A'],
+            ['id' => 2, 'name' => 'Category B'],
+        ]))->toBe('Category A (#1), Category B (#2)')
+        ->and(ActivityEntryPresenter::formatValue([]))->toBe('—');
 });
 
 it('returns an empty array for missing or identical changes', function (): void {
@@ -200,6 +219,6 @@ it('builds a headline and hides duplicate descriptions', function (): void {
     $activity->setRelation('causer', $causer);
 
     expect(ActivityEntryPresenter::headline($activity))
-        ->toBe('Aziz updated Test Auditable Item: Hallo')
+        ->toBe('Aziz Updated Test Auditable Item: Hallo')
         ->and(ActivityEntryPresenter::hasDistinctDescription($activity))->toBeFalse();
 });

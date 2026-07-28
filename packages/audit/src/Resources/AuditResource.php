@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
 use Moox\Audit\Resources\AuditResource\Pages\ViewAudit;
@@ -157,6 +158,11 @@ class AuditResource extends Resource
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'log' => __('core::audit.entry_type_log'),
+                        'audit' => __('core::audit.entry_type_audit'),
+                        default => filled($state) ? Str::headline($state) : '—',
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('log_name')
                     ->label(__('core::audit.log_name'))

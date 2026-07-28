@@ -53,13 +53,13 @@ return [
 
     'system' => 'System',
 
-    'event_created' => 'created',
+    'event_created' => 'Created',
 
-    'event_updated' => 'updated',
+    'event_updated' => 'Updated',
 
-    'event_deleted' => 'deleted',
+    'event_deleted' => 'Deleted',
 
-    'event_restored' => 'restored',
+    'event_restored' => 'Restored',
 
     'open_subject' => 'Open record',
 

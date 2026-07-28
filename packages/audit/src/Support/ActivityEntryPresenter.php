@@ -168,16 +168,158 @@ final class ActivityEntryPresenter
         }
 
         if (is_array($value)) {
+            if ($value === []) {
+                return '—';
+            }
+
             $mediaLabel = self::formatMediaLikeValue($value);
 
             if ($mediaLabel !== null) {
                 return $mediaLabel;
             }
 
+            $linkLabel = self::formatLinkLikeValue($value);
+
+            if ($linkLabel !== null) {
+                return $linkLabel;
+            }
+
+            $scalarList = self::formatScalarList($value);
+
+            if ($scalarList !== null) {
+                return $scalarList;
+            }
+
+            $namedList = self::formatNamedItemList($value);
+
+            if ($namedList !== null) {
+                return $namedList;
+            }
+
             return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         }
 
         return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function formatLinkLikeValue(array $value): ?string
+    {
+        if (isset($value['id'])) {
+            return null;
+        }
+
+        $hasUrl = array_key_exists('url', $value);
+        $hasLabel = array_key_exists('label', $value);
+
+        if (! $hasUrl && ! $hasLabel) {
+            return null;
+        }
+
+        foreach (array_keys($value) as $key) {
+            if (! in_array($key, ['url', 'label', 'opens_in_new_tab', 'target'], true)) {
+                return null;
+            }
+        }
+
+        $url = is_string($value['url'] ?? null) ? trim($value['url']) : '';
+        $label = is_string($value['label'] ?? null) ? trim($value['label']) : '';
+
+        if ($url === '' && $label === '') {
+            return null;
+        }
+
+        if ($label !== '' && $url !== '') {
+            $formatted = sprintf('%s (%s)', $label, $url);
+        } else {
+            $formatted = $label !== '' ? $label : $url;
+        }
+
+        $opensInNewTab = (bool) ($value['opens_in_new_tab'] ?? (($value['target'] ?? null) === '_blank'));
+
+        return $opensInNewTab ? $formatted.' ↗' : $formatted;
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function formatScalarList(array $value): ?string
+    {
+        if (! array_is_list($value)) {
+            return null;
+        }
+
+        foreach ($value as $item) {
+            if ($item !== null && ! is_scalar($item)) {
+                return null;
+            }
+        }
+
+        $labels = array_map(
+            static fn (mixed $item): string => $item === null ? '—' : (string) $item,
+            $value,
+        );
+
+        return self::joinLimitedLabels($labels);
+    }
+
+    /**
+     * Relation/option payloads resolved to {id, title|name|label} rows.
+     *
+     * @param  array<mixed>  $value
+     */
+    private static function formatNamedItemList(array $value): ?string
+    {
+        $items = array_is_list($value) ? $value : array_values($value);
+
+        if ($items === []) {
+            return null;
+        }
+
+        $labels = [];
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                return null;
+            }
+
+            $label = null;
+
+            foreach (['title', 'name', 'label'] as $attribute) {
+                $candidate = $item[$attribute] ?? null;
+
+                if (is_string($candidate) && $candidate !== '') {
+                    $label = $candidate;
+                    break;
+                }
+            }
+
+            if ($label === null && isset($item['id']) && is_scalar($item['id'])) {
+                $label = '#'.$item['id'];
+            }
+
+            if ($label === null) {
+                return null;
+            }
+
+            $labels[] = $label;
+        }
+
+        return self::joinLimitedLabels($labels);
+    }
+
+    /**
+     * @param  list<string>  $labels
+     */
+    private static function joinLimitedLabels(array $labels, int $limit = 3): string
+    {
+        if (count($labels) <= $limit) {
+            return implode(', ', $labels);
+        }
+
+        return implode(', ', array_slice($labels, 0, $limit)).' +'.(count($labels) - $limit);
     }
 
     /**
@@ -197,11 +339,7 @@ final class ActivityEntryPresenter
 
         $labels = array_map(self::formatSingleMediaItem(...), $items);
 
-        if (count($labels) <= 3) {
-            return implode(', ', $labels);
-        }
-
-        return implode(', ', array_slice($labels, 0, 3)).' +'.(count($labels) - 3);
+        return self::joinLimitedLabels($labels);
     }
 
     /**
@@ -303,7 +441,7 @@ final class ActivityEntryPresenter
         $key = 'core::audit.event_'.$event;
         $translated = __($key);
 
-        return $translated !== $key ? $translated : Str::of($event)->replace('_', ' ')->lower()->toString();
+        return $translated !== $key ? $translated : Str::of($event)->replace('_', ' ')->headline()->toString();
     }
 
     public static function hasDistinctDescription(?Activity $activity): bool
