@@ -1,5 +1,6 @@
 <?php
 
+use Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager;
 use Moox\Audit\Models\Activity;
 use Moox\Item\Models\Item;
 use Moox\Item\Resources\ItemResource;
@@ -45,5 +46,5 @@ it('logs item create and update events when audit is installed', function () {
 
 it('exposes the audit activity relation on the item resource', function () {
     expect(ItemResource::getRelations())
-        ->toContain(\Moox\Audit\Filament\RelationManagers\ActivitiesRelationManager::class);
+        ->toContain(ActivitiesRelationManager::class);
 });
