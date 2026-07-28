@@ -280,7 +280,9 @@ it('casts raw form custom field values before merging audit changes', function (
         /**
          * @param  array<string, mixed>  $snapshot
          */
-        public function __construct(private array $snapshot) {}
+        public function __construct(private array $snapshot)
+        {
+        }
 
         /**
          * @return array<string, mixed>

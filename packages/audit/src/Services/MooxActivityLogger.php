@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Moox\Audit\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use Moox\Audit\Support\CauserResolver;
 use Moox\Audit\Support\AuditRequestContext;
+use Moox\Audit\Support\CauserResolver;
 use Moox\Audit\Support\ScopeResolver;
 use Moox\Audit\Support\UserAttributePresenter;
 use Spatie\Activitylog\Contracts\Activity as ActivityContract;
