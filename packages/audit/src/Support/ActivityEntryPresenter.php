@@ -196,6 +196,12 @@ final class ActivityEntryPresenter
                 return $namedList;
             }
 
+            $structuredValue = self::formatStructuredValue($value);
+
+            if ($structuredValue !== null) {
+                return $structuredValue;
+            }
+
             return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         }
 
@@ -266,6 +272,158 @@ final class ActivityEntryPresenter
     }
 
     /**
+     * Compact fallback for nested group/repeater/flexible payloads.
+     *
+     * @param  array<mixed>  $value
+     */
+    private static function formatStructuredValue(array $value, int $depth = 0): ?string
+    {
+        if ($depth >= 2 || $value === []) {
+            return null;
+        }
+
+        if (self::isFlexibleContentItems($value)) {
+            $items = [];
+
+            foreach ($value as $item) {
+                if (! is_array($item)) {
+                    return null;
+                }
+
+                $type = isset($item['type']) && is_string($item['type']) && $item['type'] !== ''
+                    ? Str::of((string) $item['type'])->replace(['_', '-'], ' ')->headline()->toString()
+                    : 'Block';
+
+                $data = isset($item['data']) && is_array($item['data'])
+                    ? self::formatAssocSummary($item['data'], $depth + 1)
+                    : null;
+
+                $items[] = $data !== null && $data !== ''
+                    ? sprintf('%s: %s', $type, $data)
+                    : $type;
+            }
+
+            return self::joinStructuredItems($items);
+        }
+
+        if (array_is_list($value)) {
+            $items = [];
+
+            foreach ($value as $item) {
+                $formatted = self::formatStructuredItem($item, $depth + 1);
+
+                if ($formatted === null) {
+                    return null;
+                }
+
+                $items[] = $formatted;
+            }
+
+            return self::joinStructuredItems($items);
+        }
+        return self::formatAssocSummary($value, $depth + 1);
+    }
+
+    private static function formatStructuredItem(mixed $item, int $depth): ?string
+    {
+        if (is_scalar($item) || $item === null || is_bool($item)) {
+            return self::formatValue($item);
+        }
+
+        if (! is_array($item)) {
+            return null;
+        }
+
+        $named = self::formatNamedItemList([$item]);
+
+        if ($named !== null) {
+            return $named;
+        }
+
+        $media = self::formatMediaLikeValue($item);
+
+        if ($media !== null) {
+            return $media;
+        }
+
+        $link = self::formatLinkLikeValue($item);
+
+        if ($link !== null) {
+            return $link;
+        }
+
+        return self::formatStructuredValue($item, $depth);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function formatAssocSummary(array $value, int $depth): ?string
+    {
+        if ($value === [] || $depth >= 3) {
+            return null;
+        }
+
+        $parts = [];
+
+        foreach ($value as $key => $item) {
+            if (! is_string($key) && ! is_int($key)) {
+                continue;
+            }
+
+            $formatted = null;
+
+            if (is_scalar($item) || $item === null || is_bool($item)) {
+                $formatted = self::formatValue($item);
+            } elseif (is_array($item)) {
+                $formatted = self::formatStructuredValue($item, $depth);
+            }
+
+            if ($formatted === null || $formatted === '—') {
+                continue;
+            }
+
+            $parts[] = sprintf('%s: %s', self::fieldLabel((string) $key), $formatted);
+        }
+
+        if ($parts === []) {
+            return null;
+        }
+
+        return self::joinStructuredItems($parts, '; ');
+    }
+
+    /**
+     * @param  list<string>  $items
+     */
+    private static function joinStructuredItems(array $items, string $separator = ' | ', int $limit = 2): string
+    {
+        if (count($items) <= $limit) {
+            return implode($separator, $items);
+        }
+
+        return implode($separator, array_slice($items, 0, $limit)).' +'.(count($items) - $limit);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function isFlexibleContentItems(array $value): bool
+    {
+        if (! array_is_list($value) || $value === []) {
+            return false;
+        }
+
+        foreach ($value as $item) {
+            if (! is_array($item) || ! isset($item['type'], $item['data']) || ! is_array($item['data'])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Relation/option payloads resolved to {id, title|name|label} rows.
      *
      * @param  array<mixed>  $value
@@ -283,6 +441,12 @@ final class ActivityEntryPresenter
         foreach ($items as $item) {
             if (! is_array($item)) {
                 return null;
+            }
+
+            foreach (array_keys($item) as $key) {
+                if (! in_array($key, ['id', 'title', 'name', 'label'], true)) {
+                    return null;
+                }
             }
 
             $label = null;

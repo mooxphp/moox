@@ -88,6 +88,49 @@ it('formats link, list and relation-like values for audit display', function ():
         ->and(ActivityEntryPresenter::formatValue([]))->toBe('—');
 });
 
+it('formats nested group, repeater and flexible content values for audit display', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'headline' => 'Hero',
+        'enabled' => true,
+    ]))->toBe('Headline: Hero; Enabled: true')
+        ->and(ActivityEntryPresenter::formatValue([
+            [
+                'title' => 'First',
+                'active' => true,
+            ],
+            [
+                'title' => 'Second',
+                'active' => false,
+            ],
+            [
+                'title' => 'Third',
+            ],
+        ]))->toBe('Title: First; Active: true | Title: Second; Active: false +1')
+        ->and(ActivityEntryPresenter::formatValue([
+            [
+                'type' => 'hero_block',
+                'data' => [
+                    'headline' => 'Welcome',
+                    'cta_label' => 'Buy now',
+                ],
+            ],
+            [
+                'type' => 'faq',
+                'data' => [
+                    'question' => 'Why?',
+                ],
+            ],
+            [
+                'type' => 'gallery',
+                'data' => [
+                    'images' => [
+                        ['id' => 1, 'title' => 'A'],
+                    ],
+                ],
+            ],
+        ]))->toBe('Hero Block: Headline: Welcome; Cta Label: Buy now | Faq: Question: Why? +1');
+});
+
 it('returns an empty array for missing or identical changes', function (): void {
     expect(ActivityEntryPresenter::flattenChanges(null))->toBe([])
         ->and(ActivityEntryPresenter::flattenChanges([
