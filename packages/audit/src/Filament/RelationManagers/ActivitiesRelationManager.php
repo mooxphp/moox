@@ -34,24 +34,30 @@ class ActivitiesRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['causer', 'subject']))
             ->columns([
                 TextColumn::make('created_at')
-                    ->label(__('core::core.created_at'))
+                    ->label(__('core::audit.occurred_at'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
-                    ->badge(),
+                    ->badge()
+                    ->toggleable(),
+                TextColumn::make('log_name')
+                    ->label(__('core::audit.log_name'))
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('event')
                     ->label(__('core::audit.action'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::eventLabel($record))
+                    ->badge()
                     ->toggleable(),
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
-                    ->limit(50),
+                    ->limit(40),
                 TextColumn::make('causer_label')
                     ->label(__('core::audit.causer'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordUrl(fn (Activity $record): string => AuditResource::getUrl('view', ['record' => $record]))
