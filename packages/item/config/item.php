@@ -52,23 +52,23 @@ return [
 
     'relations' => [],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Empty model/resource entries use moox/audit defaults: fillable attributes
+    | (minus noise like custom_properties), standard CRUD events, log_name from
+    | getResourceName(), and owner_model from the Filament resource.
+    |
+    */
+
     'audit' => [
-        'enabled' => true,
         'models' => [
-            Item::class => [
-                'log_name' => 'item',
-                'entry_type' => 'audit',
-                'attributes' => [
-                    'title',
-                    'description',
-                ],
-                'events' => ['created', 'updated', 'deleted'],
-            ],
+            Item::class => [],
         ],
         'filament' => [
-            ItemResource::class => [
-                'owner_model' => Item::class,
-            ],
+            ItemResource::class => [],
         ],
     ],
 

@@ -172,6 +172,29 @@ Built-in presets in `config/audit.php`:
 
 Override or add presets in published config. Per-model config can set `'preset' => 'draft_main'` (package or app level).
 
+For simple non-draft models, an empty registration is enough — `moox/audit` fills in defaults:
+
+```php
+'audit' => [
+    'models' => [
+        Item::class => [],
+    ],
+    'filament' => [
+        ItemResource::class => [],
+    ],
+],
+```
+
+Defaults when omitted:
+
+| Key | Default |
+| --- | --- |
+| `entry_type` | `audit.default_entry_type` (`audit`) |
+| `events` | `created`, `updated`, `deleted` (+ `restored` when the model uses SoftDeletes) |
+| `log_name` | `getResourceName()` when present, otherwise kebab model basename |
+| `attributes` | model `$fillable` minus noise (`custom_properties`, ids, timestamps, …) |
+| `filament.*.owner_model` | `Resource::getModel()` |
+
 ## Audit sources
 
 Each auditable model always includes the built-in model attribute source. This keeps today's `attributes` / `hidden_attributes` config working unchanged.

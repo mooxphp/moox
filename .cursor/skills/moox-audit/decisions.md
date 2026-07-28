@@ -7,7 +7,7 @@
 | Main draft entity (`BaseDraftModel`) | `draft_main` | `audit` | created, updated, deleted, restored |
 | Translation row (`BaseDraftTranslationModel`) | `draft_translation` | `audit` | same + `locale` in properties |
 
-Non-draft models: omit preset; set `events`, `entry_type`, `log_name`, `attributes` explicitly.
+Non-draft models: omit `preset`. Empty model config (`Model::class => []`) uses package defaults (`entry_type`, CRUD events, `log_name` from `getResourceName()` / basename, attributes from `$fillable` minus noise). Override only what differs.
 
 ## Which attributes to track
 

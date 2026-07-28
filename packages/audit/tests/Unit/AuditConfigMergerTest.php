@@ -104,3 +104,33 @@ it('disables hooks when app override sets enabled false', function (): void {
 
     expect(AuditConfigResolver::resolvedHooks())->toBe([]);
 });
+
+it('applies defaults for an empty model registration', function (): void {
+    AuditPackageRegistry::register('test', [
+        'models' => [
+            Moox\Audit\Tests\Support\TestAuditableItem::class => [],
+        ],
+    ]);
+
+    $resolved = AuditConfigResolver::resolveModel(Moox\Audit\Tests\Support\TestAuditableItem::class);
+
+    expect($resolved)->not->toBeNull()
+        ->and($resolved['entry_type'])->toBe('audit')
+        ->and($resolved['log_name'])->toBe('test-auditable-item')
+        ->and($resolved['events'])->toBe(['created', 'updated', 'deleted', 'restored'])
+        ->and($resolved['attributes'])->toBe(['title', 'status', 'scope', 'builder_payload']);
+});
+
+it('derives filament owner_model from the resource model', function (): void {
+    AuditPackageRegistry::register('test', [
+        'filament' => [
+            Moox\Audit\Tests\Support\TestAuditableItemResource::class => [],
+        ],
+    ]);
+
+    $resolved = AuditConfigResolver::resolvedFilament();
+
+    expect($resolved)->toHaveKey(Moox\Audit\Tests\Support\TestAuditableItemResource::class)
+        ->and($resolved[Moox\Audit\Tests\Support\TestAuditableItemResource::class]['owner_model'])
+        ->toBe(Moox\Audit\Tests\Support\TestAuditableItem::class);
+});
