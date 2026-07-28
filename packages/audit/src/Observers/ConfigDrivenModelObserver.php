@@ -123,6 +123,7 @@ final class ConfigDrivenModelObserver
             'old' => $dirtyOld,
         ];
     }
+
     /**
      * @param  array<string, mixed>  $changes
      */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Services\MooxActivityLogger;
+use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\TestCase;
 
@@ -121,7 +122,7 @@ it('merges custom field changes into the normal audit entry', function (): void 
         }
     });
 
-    app(\Moox\Audit\Support\CustomFieldAuditMerger::class)
+    app(CustomFieldAuditMerger::class)
         ->mergeUpdated($item, 'TestResource', []);
 
     $activity = Activity::query()
