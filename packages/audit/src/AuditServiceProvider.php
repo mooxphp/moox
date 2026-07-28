@@ -12,6 +12,7 @@ use Moox\Audit\Listeners\MergeCreatedCustomFieldAudit;
 use Moox\Audit\Listeners\MergeUpdatedCustomFieldAudit;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
 use Moox\Audit\Support\AuditBootstrap;
+use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -32,6 +33,7 @@ class AuditServiceProvider extends MooxServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(ConfigDrivenModelObserver::class);
+        $this->app->singleton(AuditRequestContext::class);
         $this->app->singleton(CustomFieldAuditMerger::class);
     }
 
@@ -51,5 +53,9 @@ class AuditServiceProvider extends MooxServiceProvider
             Event::listen(RecordCreated::class, MergeCreatedCustomFieldAudit::class);
             Event::listen(RecordUpdated::class, MergeUpdatedCustomFieldAudit::class);
         }
+
+        $this->app->terminating(function (): void {
+            app(AuditRequestContext::class)->clear();
+        });
     }
 }

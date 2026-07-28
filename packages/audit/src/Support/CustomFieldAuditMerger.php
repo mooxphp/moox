@@ -52,6 +52,11 @@ final class CustomFieldAuditMerger
         /** @var array<string, mixed> $newValues */
         $newValues = $manager->preparedFormValues($resourceClass, $record, $data);
 
+        if (method_exists($manager, 'castFormValues')) {
+            /** @var array<string, mixed> $newValues */
+            $newValues = $manager->castFormValues($resourceClass, $newValues);
+        }
+
         $newValues = $this->filterHiddenAttributes($newValues, $config);
 
         if ($newValues === []) {
@@ -74,7 +79,7 @@ final class CustomFieldAuditMerger
             return;
         }
 
-        $activity = $this->latestActivityFor($record, $event);
+        $activity = $this->mergeTargetFor($record, $event);
 
         if ($activity === null) {
             MooxActivityLogger::audit(
@@ -84,6 +89,8 @@ final class CustomFieldAuditMerger
                 $config,
                 (string) ($config['log_name'] ?? 'default'),
             );
+
+            app(AuditRequestContext::class)->forgetMergeTarget($record, $event);
 
             return;
         }
@@ -111,6 +118,8 @@ final class CustomFieldAuditMerger
 
         $activity->attribute_changes = $merged;
         $activity->save();
+
+        app(AuditRequestContext::class)->forgetMergeTarget($record, $event);
     }
 
     /**
@@ -149,20 +158,21 @@ final class CustomFieldAuditMerger
         ];
     }
 
-    private function latestActivityFor(Model $record, string $event): ?Model
+    private function mergeTargetFor(Model $record, string $event): ?Model
     {
+        $activityId = app(AuditRequestContext::class)->mergeTargetId($record, $event);
+
+        if ($activityId === null) {
+            return null;
+        }
+
         $activityModel = config('audit.activity_model');
 
         if (! is_string($activityModel) || ! is_subclass_of($activityModel, Model::class)) {
             return null;
         }
 
-        return $activityModel::query()
-            ->where('subject_type', $record::class)
-            ->where('subject_id', $record->getKey())
-            ->where('event', $event)
-            ->latest('id')
-            ->first();
+        return $activityModel::query()->find($activityId);
     }
 
     /**

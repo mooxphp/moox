@@ -6,6 +6,7 @@ namespace Moox\Audit\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Moox\Audit\Support\CauserResolver;
+use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\ScopeResolver;
 use Moox\Audit\Support\UserAttributePresenter;
 use Spatie\Activitylog\Contracts\Activity as ActivityContract;
@@ -85,7 +86,17 @@ final class MooxActivityLogger
             $builder->causedBy($causer);
         }
 
-        return $builder->log($event);
+        $activity = $builder->log($event);
+
+        if ($activity instanceof Model && $activity->exists) {
+            app(AuditRequestContext::class)->rememberMergeTarget(
+                $subject,
+                $event,
+                (int) $activity->getKey(),
+            );
+        }
+
+        return $activity;
     }
 
     /**
