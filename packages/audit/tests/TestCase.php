@@ -59,24 +59,28 @@ abstract class TestCase extends Orchestra
             $table->string('title')->nullable();
             $table->string('status')->default('draft');
             $table->string('scope')->nullable();
+            $table->json('builder_payload')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    protected function registerTestAuditableModel(): string
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
+    public function registerTestAuditableModel(array $overrides = []): string
     {
         $modelClass = TestAuditableItem::class;
 
         AuditPackageRegistry::register('test', [
             'models' => [
-                $modelClass => [
+                $modelClass => array_replace_recursive([
                     'enabled' => true,
                     'log_name' => 'test',
                     'entry_type' => 'audit',
                     'attributes' => ['title', 'status', 'scope'],
                     'events' => ['created', 'updated', 'deleted', 'restored'],
-                ],
+                ], $overrides),
             ],
         ]);
 

@@ -12,6 +12,7 @@ final class AuditConfigMerger
         'hidden_attributes',
         'events',
         'properties',
+        'sources',
         'aggregate_subjects',
     ];
 

@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Audit;
 
+use Filament\Resources\Events\RecordCreated;
+use Filament\Resources\Events\RecordUpdated;
+use Illuminate\Support\Facades\Event;
 use Moox\Audit\Commands\InstallCommand;
+use Moox\Audit\Listeners\MergeCreatedCustomFieldAudit;
+use Moox\Audit\Listeners\MergeUpdatedCustomFieldAudit;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
 use Moox\Audit\Support\AuditBootstrap;
+use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -26,6 +32,7 @@ class AuditServiceProvider extends MooxServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(ConfigDrivenModelObserver::class);
+        $this->app->singleton(CustomFieldAuditMerger::class);
     }
 
     public function packageBooted(): void
@@ -39,5 +46,10 @@ class AuditServiceProvider extends MooxServiceProvider
         $this->app->booted(function (): void {
             AuditBootstrap::boot();
         });
+
+        if (class_exists('Moox\\Builder\\Services\\CustomFieldsManager')) {
+            Event::listen(RecordCreated::class, MergeCreatedCustomFieldAudit::class);
+            Event::listen(RecordUpdated::class, MergeUpdatedCustomFieldAudit::class);
+        }
     }
 }

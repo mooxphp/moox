@@ -7,12 +7,13 @@ namespace Moox\Audit\Observers;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\Audit\Support\AuditConfigResolver;
+use Moox\Audit\Support\AuditSnapshotResolver;
 use Spatie\Activitylog\Enums\ActivityEvent;
 
 final class ConfigDrivenModelObserver
 {
     /** @var array<int, array<string, mixed>> */
-    private array $oldAttributes = [];
+    private array $oldSnapshots = [];
 
     public function created(Model $model): void
     {
@@ -27,14 +28,7 @@ final class ConfigDrivenModelObserver
             return;
         }
 
-        $attributes = $this->trackedAttributes($config);
-        $old = [];
-
-        foreach ($attributes as $attribute) {
-            $old[$attribute] = $model->getOriginal($attribute);
-        }
-
-        $this->oldAttributes[spl_object_id($model)] = $old;
+        $this->oldSnapshots[spl_object_id($model)] = AuditSnapshotResolver::snapshot($model, $config, true);
     }
 
     public function updated(Model $model): void
@@ -90,12 +84,7 @@ final class ConfigDrivenModelObserver
      */
     private function buildChanges(Model $model, string $event, array $config): array
     {
-        $attributes = $this->trackedAttributes($config);
-        $current = [];
-
-        foreach ($attributes as $attribute) {
-            $current[$attribute] = $model->getAttribute($attribute);
-        }
+        $current = AuditSnapshotResolver::snapshot($model, $config);
 
         if ($event === ActivityEvent::Created->value) {
             return ['attributes' => $current];
@@ -106,13 +95,20 @@ final class ConfigDrivenModelObserver
         }
 
         $objectId = spl_object_id($model);
-        $old = $this->oldAttributes[$objectId] ?? [];
-        unset($this->oldAttributes[$objectId]);
+        $old = $this->oldSnapshots[$objectId] ?? [];
+        unset($this->oldSnapshots[$objectId]);
 
         $dirtyAttributes = [];
         $dirtyOld = [];
 
-        foreach ($attributes as $attribute) {
+        foreach (array_unique([
+            ...array_keys($old),
+            ...array_keys($current),
+        ]) as $attribute) {
+            if (! is_string($attribute)) {
+                continue;
+            }
+
             $oldValue = $old[$attribute] ?? null;
             $newValue = $current[$attribute] ?? null;
 
@@ -127,19 +123,6 @@ final class ConfigDrivenModelObserver
             'old' => $dirtyOld,
         ];
     }
-
-    /**
-     * @param  array<string, mixed>  $config
-     * @return list<string>
-     */
-    private function trackedAttributes(array $config): array
-    {
-        $attributes = $config['attributes'] ?? [];
-        $hidden = $config['hidden_attributes'] ?? [];
-
-        return array_values(array_diff($attributes, $hidden));
-    }
-
     /**
      * @param  array<string, mixed>  $changes
      */

@@ -15,6 +15,7 @@ Today the gold-standard consumer is **Category** (main model + translations, Act
 - **Entry types** — distinguish **audit** (attribute changes) from **log** (hooks / manual events)
 - **Readable Filament UI** — global `AuditResource` with resolved labels, subject/causer display, and change diffs
 - **Per-record Activity tab** — including aggregated activities from related models (e.g. translations)
+- **Automatic custom field auditing** — Builder-backed custom fields are treated like normal audit fields
 - **Scope support** — stores a `scope` value on activities (from the model or its draft parent)
 - **Event hooks** — log custom lifecycle events (e.g. `categorizables_detached` on category delete)
 - **User attribute enrichment** — resolve `author_id`, `created_by_id`, and `updated_by_id` to readable labels
@@ -60,7 +61,7 @@ At boot, `AuditBootstrap` (triggered by `AuditPlugin`) registers:
 
 | Key | App override behavior |
 | --- | --- |
-| `attributes`, `hidden_attributes`, `events`, `properties`, `aggregate_subjects` | **Replaces** the merged list |
+| `attributes`, `hidden_attributes`, `events`, `properties`, `sources`, `aggregate_subjects` | **Replaces** the merged list |
 | `append_attributes`, `append_hidden_attributes`, `append_properties` | **Appends** to the merged list |
 | `enabled` | Set to `false` to disable a model, hook, or Filament resource |
 | Other keys | Shallow override via `array_replace_recursive` |
@@ -170,6 +171,28 @@ Built-in presets in `config/audit.php`:
 | `draft_translation` | Translation rows — same events, adds `locale` to properties, hides internal `*_by_*` morph columns |
 
 Override or add presets in published config. Per-model config can set `'preset' => 'draft_main'` (package or app level).
+
+## Audit sources
+
+Each auditable model always includes the built-in model attribute source. This keeps today's `attributes` / `hidden_attributes` config working unchanged.
+
+Models that expose Builder custom fields via `InteractsWithCustomFields` are picked up automatically. Their custom field values are diffed and shown in the same audit trail as native model attributes, so consumers do not need a separate config block just to make custom fields auditable.
+
+Use `sources` when you need additional audit data that does not exist as first-class model attributes, such as builder fields, derived state, or values stored in structured payloads:
+
+```php
+'models' => [
+    Page::class => [
+        'log_name' => 'page',
+        'attributes' => ['status', 'scope'],
+        'sources' => [
+            ['class' => PageBuilderAuditSource::class, 'prefix' => 'builder'],
+        ],
+    ],
+],
+```
+
+Custom source classes implement `Moox\Audit\Contracts\AuditDataSource` and return a flat snapshot array like `['builder.hero.title' => 'Welcome']`. Audit compares old/new snapshots and stores the diff in the normal `attribute_changes` payload.
 
 ## Entry types
 
@@ -289,6 +312,7 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `user_models` | Map of user model classes to `title_attribute` and `label` for property enrichment |
 | `presets` | Named preset blocks merged into per-model config |
 | `models` | App-level model overrides |
+| `models.*.sources` | Additional audit data sources for virtual or builder-backed fields |
 | `hooks` | App-level hook overrides |
 | `filament` | App-level Filament resource overrides |
 | `retention` | Retention policy placeholders (`live`, `archive`, `backup` per entry type) |

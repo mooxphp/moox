@@ -17,5 +17,29 @@ final class TestAuditableItem extends Model
         'title',
         'status',
         'scope',
+        'builder_payload',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'builder_payload' => 'array',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function customFields(bool $fresh = false): array
+    {
+        return is_array($this->builder_payload) ? $this->builder_payload : [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function customFieldNames(): array
+    {
+        return array_values(array_filter(array_keys($this->customFields()), is_string(...)));
+    }
 }

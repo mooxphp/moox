@@ -205,9 +205,34 @@ class CustomFieldsManager
     public function saveFromFormData(string $resourceClass, Model $record, array $data): void
     {
         $fields = $this->fieldsForResource($resourceClass);
+        $entity = $this->locationContextForResource($resourceClass)->entity;
+        $locale = $this->localeResolver->valuesLocaleForResource($resourceClass);
+        $values = $this->preparedFormValues($resourceClass, $record, $data);
+
+        if ($fields->isEmpty() || $values === []) {
+            return;
+        }
+
+        $this->saveValues(
+            $entity,
+            $record,
+            $values,
+            $fields,
+            $locale,
+        );
+    }
+
+    /**
+     * @param  class-string  $resourceClass
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function preparedFormValues(string $resourceClass, Model $record, array $data): array
+    {
+        $fields = $this->fieldsForResource($resourceClass);
 
         if ($fields->isEmpty()) {
-            return;
+            return [];
         }
 
         $values = [];
@@ -268,18 +293,10 @@ class CustomFieldsManager
         }
 
         if ($values === []) {
-            return;
+            return [];
         }
 
-        $values = $this->preserveAdminHiddenNestedValues($entity, $record, $fields, $values, $locale);
-
-        $this->saveValues(
-            $this->locationContextForResource($resourceClass)->entity,
-            $record,
-            $values,
-            $fields,
-            $locale,
-        );
+        return $this->preserveAdminHiddenNestedValues($entity, $record, $fields, $values, $locale);
     }
 
     /**
