@@ -13,7 +13,6 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
-use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -50,24 +49,33 @@ class AuditResource extends Resource
             ->components([
                 Section::make()
                     ->schema([
-                        TextEntry::make('subject_label')
-                            ->label(__('core::audit.subject'))
-                            ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
-                            ->url(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record))
-                            ->openUrlInNewTab()
-                            ->color(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record) ? 'primary' : null)
-                            ->weight(FontWeight::SemiBold)
-                            ->size(TextSize::Large)
-                            ->icon(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record) ? 'heroicon-m-arrow-top-right-on-square' : null)
-                            ->helperText(function (Activity $record): ?string {
-                                $parts = array_filter([
-                                    ActivityEntryPresenter::propertyValue($record, 'locale'),
-                                    filled($record->scope) ? $record->scope : null,
-                                ]);
+                        Grid::make(['default' => 1, 'md' => 2, 'xl' => 4])->schema([
+                            TextEntry::make('subject_label')
+                                ->label(__('core::audit.subject'))
+                                ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
+                                ->url(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record))
+                                ->openUrlInNewTab()
+                                ->color(function (Activity $record): ?string {
+                                    if (ActivityEntryPresenter::subjectIsUnavailable($record)) {
+                                        return 'gray';
+                                    }
 
-                                return $parts === [] ? null : implode(' · ', $parts);
-                            }),
-                        Grid::make(['default' => 1, 'md' => 3])->schema([
+                                    return SubjectUrlResolver::forActivity($record) ? 'primary' : null;
+                                })
+                                ->helperText(function (Activity $record): ?string {
+                                    $unavailable = ActivityEntryPresenter::subjectUnavailableHint($record);
+
+                                    if ($unavailable !== null) {
+                                        return $unavailable;
+                                    }
+
+                                    $parts = array_filter([
+                                        ActivityEntryPresenter::propertyValue($record, 'locale'),
+                                        filled($record->scope) ? $record->scope : null,
+                                    ]);
+
+                                    return $parts === [] ? null : implode(' · ', $parts);
+                                }),
                             TextEntry::make('causer_label')
                                 ->label(__('core::audit.causer'))
                                 ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record)),
@@ -83,13 +91,21 @@ class AuditResource extends Resource
                             ->label(__('core::core.description'))
                             ->visible(fn (Activity $record): bool => ActivityEntryPresenter::hasDistinctDescription($record))
                             ->columnSpanFull(),
+                    ]),
+                Section::make(__('core::audit.attribute_changes'))
+                    ->schema([
+                        TextEntry::make('no_attribute_changes')
+                            ->hiddenLabel()
+                            ->state(__('core::audit.no_changes'))
+                            ->color('gray')
+                            ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes) === []),
                         RepeatableEntry::make('attribute_changes')
-                            ->label(__('core::audit.attribute_changes'))
+                            ->hiddenLabel()
                             ->state(fn (Activity $record): array => ActivityEntryPresenter::changeRows($record->attribute_changes))
                             ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes) !== [])
                             ->table([
                                 TableColumn::make(__('core::audit.field')),
-                                TableColumn::make(__('core::audit.action')),
+                                TableColumn::make(__('core::audit.change')),
                                 TableColumn::make(__('core::audit.old_value')),
                                 TableColumn::make(__('core::audit.new_value')),
                             ])
@@ -109,10 +125,18 @@ class AuditResource extends Resource
                                     }),
                                 TextEntry::make('old')
                                     ->placeholder('—')
-                                    ->fontFamily('mono'),
+                                    ->fontFamily('mono')
+                                    ->color(fn (?string $state): ?string => filled($state) ? 'danger' : null)
+                                    ->limit(ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT)
+                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state))
+                                    ->copyable(fn (?string $state): bool => filled($state)),
                                 TextEntry::make('new')
                                     ->placeholder('—')
-                                    ->fontFamily('mono'),
+                                    ->fontFamily('mono')
+                                    ->color(fn (?string $state): ?string => filled($state) ? 'success' : null)
+                                    ->limit(ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT)
+                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state))
+                                    ->copyable(fn (?string $state): bool => filled($state)),
                             ]),
                     ]),
             ]);

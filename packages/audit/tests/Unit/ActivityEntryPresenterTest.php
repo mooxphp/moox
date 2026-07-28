@@ -32,6 +32,20 @@ it('formats property values as strings', function (): void {
         ->and($result['enabled'])->toBe('true');
 });
 
+it('formats media-like snapshots as readable labels', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'id' => 7,
+        'alt' => 'Screenshot',
+        'title' => 'Hero image',
+        'file_name' => 'hero.png',
+    ]))->toBe('Hero image (#7)')
+        ->and(ActivityEntryPresenter::formatValue([
+            'id' => 3,
+            'file_name' => 'doc.pdf',
+        ]))->toBe('doc.pdf (#3)')
+        ->and(ActivityEntryPresenter::formatValue(['id' => 9]))->toBe('#9');
+});
+
 it('returns an empty array for missing or identical changes', function (): void {
     expect(ActivityEntryPresenter::flattenChanges(null))->toBe([])
         ->and(ActivityEntryPresenter::flattenChanges([
@@ -55,7 +69,30 @@ it('builds a readable subject label from type and title', function (): void {
 
     expect(ActivityEntryPresenter::subjectLabel($activity))
         ->toBe('Test Auditable Item: Hello')
-        ->and(ActivityEntryPresenter::subjectIdLabel($activity))->toBe('#7');
+        ->and(ActivityEntryPresenter::subjectIdLabel($activity))->toBe('#7')
+        ->and(ActivityEntryPresenter::subjectIsUnavailable($activity))->toBeFalse();
+});
+
+it('marks missing subjects as unavailable and includes the id in the label', function (): void {
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 42;
+    $activity->setRelation('subject', null);
+
+    expect(ActivityEntryPresenter::subjectLabel($activity))
+        ->toBe('Test Auditable Item #42')
+        ->and(ActivityEntryPresenter::subjectIsUnavailable($activity))->toBeTrue()
+        ->and(ActivityEntryPresenter::subjectUnavailableHint($activity))
+        ->toBe(__('core::audit.subject_unavailable'));
+});
+
+it('only shows a tooltip for change values that exceed the display limit', function (): void {
+    $short = str_repeat('a', ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT);
+    $long = $short.'z';
+
+    expect(ActivityEntryPresenter::truncatedChangeTooltip($short))->toBeNull()
+        ->and(ActivityEntryPresenter::truncatedChangeTooltip($long))->toBe($long)
+        ->and(ActivityEntryPresenter::truncatedChangeTooltip(null))->toBeNull();
 });
 
 it('builds a readable causer label from the causer name', function (): void {

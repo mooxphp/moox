@@ -11,6 +11,8 @@ use Moox\Audit\Models\Activity;
 
 final class ActivityEntryPresenter
 {
+    public const CHANGE_VALUE_DISPLAY_LIMIT = 80;
+
     /**
      * @return array<string, string>
      */
@@ -143,7 +145,39 @@ final class ActivityEntryPresenter
             return (string) $value;
         }
 
+        if (is_array($value)) {
+            $mediaLabel = self::formatMediaLikeValue($value);
+
+            if ($mediaLabel !== null) {
+                return $mediaLabel;
+            }
+
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
         return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @param  array<mixed>  $value
+     */
+    private static function formatMediaLikeValue(array $value): ?string
+    {
+        if (! isset($value['id']) || ! is_numeric($value['id'])) {
+            return null;
+        }
+
+        $id = (string) $value['id'];
+
+        foreach (['title', 'file_name', 'alt', 'name'] as $attribute) {
+            $label = $value[$attribute] ?? null;
+
+            if (is_string($label) && $label !== '') {
+                return sprintf('%s (#%s)', $label, $id);
+            }
+        }
+
+        return '#'.$id;
     }
 
     public static function headline(?Activity $activity): string
@@ -212,7 +246,37 @@ final class ActivityEntryPresenter
             return sprintf('%s: %s', $typeLabel, $title);
         }
 
+        $id = $activity->subject_id;
+
+        if ($id !== null && $id !== '') {
+            return sprintf('%s #%s', $typeLabel, $id);
+        }
+
         return $typeLabel;
+    }
+
+    public static function subjectIsUnavailable(?Activity $activity): bool
+    {
+        if ($activity === null) {
+            return false;
+        }
+
+        if (! is_string($activity->subject_type) || $activity->subject_type === '') {
+            return false;
+        }
+
+        if ($activity->subject_id === null || $activity->subject_id === '') {
+            return false;
+        }
+
+        return ! ($activity->subject instanceof Model);
+    }
+
+    public static function subjectUnavailableHint(?Activity $activity): ?string
+    {
+        return self::subjectIsUnavailable($activity)
+            ? __('core::audit.subject_unavailable')
+            : null;
     }
 
     public static function subjectIdLabel(?Activity $activity): ?string
@@ -228,6 +292,15 @@ final class ActivityEntryPresenter
         }
 
         return '#'.$id;
+    }
+
+    public static function truncatedChangeTooltip(?string $state): ?string
+    {
+        if (! is_string($state) || $state === '') {
+            return null;
+        }
+
+        return mb_strlen($state) > self::CHANGE_VALUE_DISPLAY_LIMIT ? $state : null;
     }
 
     public static function fieldLabel(string $field): string

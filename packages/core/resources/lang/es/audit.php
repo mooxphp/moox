@@ -30,6 +30,7 @@ return [
     'open_subject' => 'Open record',
     'attribute_changes_description' => 'Fields that changed in this event.',
     'no_changes' => 'No field changes recorded.',
+    'subject_unavailable' => 'Record no longer available',
     'old_value' => 'Before',
     'new_value' => 'After',
     'change_kind_changed' => 'Changed',

@@ -37,6 +37,7 @@ return [
     'open_subject' => 'Datensatz öffnen',
     'attribute_changes_description' => 'Felder, die sich bei diesem Ereignis geändert haben.',
     'no_changes' => 'Keine Feldänderungen erfasst.',
+    'subject_unavailable' => 'Datensatz nicht mehr verfügbar',
     'old_value' => 'Vorher',
     'new_value' => 'Nachher',
     'change_kind_changed' => 'Geändert',

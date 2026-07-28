@@ -67,6 +67,8 @@ return [
 
     'no_changes' => 'No field changes recorded.',
 
+    'subject_unavailable' => 'Record no longer available',
+
     'old_value' => 'Before',
 
     'new_value' => 'After',
