@@ -321,6 +321,7 @@ final class ActivityEntryPresenter
 
             return self::joinStructuredItems($items);
         }
+
         return self::formatAssocSummary($value, $depth + 1);
     }
 
