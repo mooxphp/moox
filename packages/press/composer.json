@@ -18,8 +18,7 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "adrolli/eloquent-mutators": "*",
-        "moox/press": "dev-main"
+        "adrolli/eloquent-mutators": "*"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
