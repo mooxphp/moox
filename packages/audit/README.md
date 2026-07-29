@@ -338,9 +338,20 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `models.*.sources` | Additional audit data sources for virtual or builder-backed fields |
 | `hooks` | App-level hook overrides |
 | `filament` | App-level Filament resource overrides |
-| `retention` | Retention policy placeholders (`live`, `archive`, `backup` per entry type) |
+| `retention` | Retention in days per entry type (`null` keeps entries indefinitely) |
 | `resources.audit` | `AuditResource` labels and list tabs |
 | `navigation_group` | Filament navigation group for `AuditResource` |
+
+### Pruning old entries
+
+Use the prune command to delete entries older than the configured retention:
+
+```bash
+php artisan mooxaudit:prune --dry-run
+php artisan mooxaudit:prune
+```
+
+Projects can schedule the command themselves, for example daily via Laravel's scheduler.
 
 ## Database
 

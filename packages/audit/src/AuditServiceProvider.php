@@ -8,6 +8,7 @@ use Filament\Resources\Events\RecordCreated;
 use Filament\Resources\Events\RecordUpdated;
 use Illuminate\Support\Facades\Event;
 use Moox\Audit\Commands\InstallCommand;
+use Moox\Audit\Commands\PruneCommand;
 use Moox\Audit\Listeners\MergeCreatedCustomFieldAudit;
 use Moox\Audit\Listeners\MergeUpdatedCustomFieldAudit;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
@@ -27,7 +28,10 @@ class AuditServiceProvider extends MooxServiceProvider
             ->hasMigrations([
                 'create_activity_log_table',
             ])
-            ->hasCommand(InstallCommand::class);
+            ->hasCommands([
+                InstallCommand::class,
+                PruneCommand::class,
+            ]);
     }
 
     public function packageRegistered(): void

@@ -71,25 +71,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Retention placeholders
+    | Retention
     |--------------------------------------------------------------------------
     |
-    | Planned windows per entry type (days). Phase-1 product work does not
-    | prune automatically; values are reserved for a future prune command.
-    | Only `.live` is intended as the default prune window when that lands.
+    | Retention in days per entry type. `null` means keep indefinitely.
+    | Run `php artisan mooxaudit:prune` (optionally `--dry-run`) to delete
+    | records older than the configured age. Schedule it in the app if needed.
     |
     */
     'retention' => [
-        'log' => [
-            'live' => 7,
-            'archive' => 30,
-            'backup' => 365,
-        ],
-        'audit' => [
-            'live' => 30,
-            'archive' => 90,
-            'backup' => 3650,
-        ],
+        'log' => 7,
+        'audit' => 30,
     ],
 
     'resources' => [
