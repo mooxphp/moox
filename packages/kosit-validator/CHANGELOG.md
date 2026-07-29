@@ -11,6 +11,10 @@
 
 ### Fixed
 
+- Correct default SHA-256 pins for KoSIT validator `1.6.2` standalone JAR and
+  XRechnung `3.0.2` / `2026-01-31` configuration zip so they match the live
+  GitHub release assets (stale digests caused runtime `Installer checksum mismatch`
+  during `KositService::validate()`).
 - SonarQube line-length (120 cols) findings in installer checksum messages, default
   download URL test literals, `KositService::jarPath()`, and
   `InstallKositCommandTest` ([#15](https://github.com/mooxphp/kosit-validator/issues/15)).

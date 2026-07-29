@@ -87,9 +87,11 @@ $panel->plugins([
 | `KOSIT_BASE_PATH` | `base_path` | Root for JAR and XRechnung config (default `storage/app/private/kosit`) |
 | `KOSIT_VALIDATOR_VERSION` | `validator.version` | JAR version label for install |
 | `KOSIT_VALIDATOR_URL` | `validator.download_url` | Standalone JAR download URL |
+| `KOSIT_VALIDATOR_SHA256` | `validator.sha256` | Expected SHA-256 of the standalone JAR (must match the pinned release asset) |
 | `KOSIT_XRECHNUNG_VERSION` | `xrechnung.version` | Config bundle version |
 | `KOSIT_XRECHNUNG_RELEASE_DATE` | `xrechnung.release_date` | Config bundle release date |
 | `KOSIT_XRECHNUNG_URL` | `xrechnung.download_url` | XRechnung configuration zip URL |
+| `KOSIT_XRECHNUNG_SHA256` | `xrechnung.sha256` | Expected SHA-256 of the XRechnung configuration zip (must match the pinned release asset) |
 | `KOSIT_JAVA_BINARY` | `java_binary` | Java executable (default `java`) |
 | `KOSIT_OUTPUT_PATH` | `output.path` | Report output directory |
 | `KOSIT_REPORT_PATH` | `output.path` (legacy) | Fallback when `KOSIT_OUTPUT_PATH` is unset |
@@ -100,7 +102,7 @@ $panel->plugins([
 
 ### Install safety
 
-`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 must match config (mismatch aborts install with *no files installed*). ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. The verified XRechnung ZIP is also stored as `{xrechnung_dir}/.xrechnung-bundle.zip` for runtime re-verification. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
+`kosit:install` downloads only from pinned `itplr-kosit` GitHub release paths; SHA-256 pins in config (or `KOSIT_VALIDATOR_SHA256` / `KOSIT_XRECHNUNG_SHA256`) must match the live release assets for the pinned URLs — a mismatch aborts install with *no files installed* and blocks `KositService::validate()` at runtime. After correcting pins, run `php artisan kosit:install --force` (especially when `.xrechnung-bundle.zip` is missing from an older or partial install). ZIP extraction rejects null-byte entry names alongside zip-slip, absolute paths, and symlink entries. The verified XRechnung ZIP is also stored as `{xrechnung_dir}/.xrechnung-bundle.zip` for runtime re-verification. With `--force`, only `{base_path}/validator` and `{base_path}/xrechnung` are replaced — never the entire configured base path. Default `base_path` must live under `storage/app/private`; when that directory already exists, containment is checked via `realpath()` so symlink escapes are rejected. `paths.validator_dir` and `paths.xrechnung_dir` must be single directory names (no `/`, `\`, or `..`); `KositInstallPaths` enforces this at install time and when `KositService` resolves `jarPath()` / `scenariosPath()` at runtime. Do not set `KOSIT_ALLOW_UNTRUSTED_*` in production.
 
 ### CLI validation
 

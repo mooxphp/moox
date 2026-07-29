@@ -71,7 +71,7 @@ return [
         ),
         'sha256' => env(
             'KOSIT_VALIDATOR_SHA256',
-            'c0c1225015d7b0182fc5dd011797ee29278a87f1aa9788fccb9cf185ce6c873b'
+            '244978514ad48f67c7573acfffc8f4fd73d81feda6f276710033f9913579857e'
         ),
     ],
 
@@ -92,7 +92,7 @@ return [
         ),
         'sha256' => env(
             'KOSIT_XRECHNUNG_SHA256',
-            '5195a5400ad72d07abc74f38fa8eba535c6a0273bdfe7c39bfa4bc7d46775a12'
+            '6a5a5911a421b25fbc423f62f93f894df7b236f5d73ca4f84bb222a945082704'
         ),
     ],
 
