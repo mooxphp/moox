@@ -332,6 +332,7 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `activity_model` | Eloquent model class (default `Moox\Audit\Models\Activity`) |
 | `system_causer` | Model class used as causer when no user is authenticated |
 | `default_entry_type` | Default entry type for model audits (default `audit`) |
+| `mask_attributes` | List of keys masked in the UI (e.g. `password`) |
 | `user_models` | Map of user model classes to `title_attribute` and `label` for property enrichment |
 | `presets` | Named preset blocks merged into per-model config |
 | `models` | App-level model overrides |

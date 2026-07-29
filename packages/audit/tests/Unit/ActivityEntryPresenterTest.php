@@ -238,6 +238,24 @@ it('builds structured change rows for the detail view', function (): void {
     ]);
 });
 
+it('masks sensitive values in structured change rows', function (): void {
+    config()->set('audit.mask_attributes', ['password']);
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['password' => 'old-secret'],
+        'attributes' => ['password' => 'new-secret'],
+    ]);
+
+    expect($rows)->toBe([
+        [
+            'field' => 'Password',
+            'old' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
+            'new' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
+            'kind' => 'changed',
+        ],
+    ]);
+});
+
 it('builds a headline and hides duplicate descriptions', function (): void {
     $item = new TestAuditableItem;
     $item->setRawAttributes([

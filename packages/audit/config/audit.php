@@ -16,6 +16,27 @@ return [
 
     'default_entry_type' => 'audit',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sensitive fields masking (display only)
+    |--------------------------------------------------------------------------
+    |
+    | Keys listed here will be masked in the Filament audit UI (old/new
+    | attribute changes). This is not meant to be a compliance-grade
+    | protection mechanism, but it prevents accidental Secret display.
+    |
+    */
+    'mask_attributes' => [
+        'password',
+        'password_confirmation',
+        'current_password',
+        'secret',
+        'api_key',
+        'token',
+        'access_token',
+        'refresh_token',
+    ],
+
     'user_models' => [
         MooxUser::class => [
             'title_attribute' => 'name',
