@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\CauserResolver;
 use Moox\Audit\Support\ScopeResolver;
+use Moox\Audit\Support\SensitiveAttributeGuard;
 use Moox\Audit\Support\UserAttributePresenter;
 use Spatie\Activitylog\Contracts\Activity as ActivityContract;
 
@@ -68,6 +69,7 @@ final class MooxActivityLogger
             return null;
         }
 
+        $changes = SensitiveAttributeGuard::maskChanges($changes);
         $properties = self::buildProperties($subject, $config, $changes);
 
         $builder = activity($logName)

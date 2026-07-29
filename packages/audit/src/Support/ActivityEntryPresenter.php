@@ -13,36 +13,7 @@ final class ActivityEntryPresenter
 {
     public const CHANGE_VALUE_DISPLAY_LIMIT = 80;
 
-    public const SENSITIVE_VALUE_MASK = '******';
-
-    /**
-     * Mask sensitive keys to prevent accidental Secret display in the UI.
-     */
-    private static function shouldMaskKey(string $key): bool
-    {
-        $keyLower = Str::lower($key);
-
-        $patterns = config('audit.mask_attributes', []);
-
-        if (! is_array($patterns) || $patterns === []) {
-            return false;
-        }
-
-        foreach ($patterns as $pattern) {
-            if (! is_string($pattern) || $pattern === '') {
-                continue;
-            }
-
-            $patternLower = Str::lower($pattern);
-
-            // Exact match or substring match (e.g. "new_password", "api_key_label").
-            if ($keyLower === $patternLower || str_contains($keyLower, $patternLower)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public const SENSITIVE_VALUE_MASK = SensitiveAttributeGuard::MASK;
 
     private static function formatPossiblySensitiveValue(string $key, mixed $value): ?string
     {
@@ -50,8 +21,8 @@ final class ActivityEntryPresenter
             return null;
         }
 
-        if (self::shouldMaskKey($key)) {
-            return self::SENSITIVE_VALUE_MASK;
+        if (SensitiveAttributeGuard::shouldMaskKey($key)) {
+            return SensitiveAttributeGuard::MASK;
         }
 
         return self::formatValue($value);

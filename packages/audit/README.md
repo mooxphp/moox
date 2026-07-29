@@ -192,8 +192,17 @@ Defaults when omitted:
 | `entry_type` | `audit.default_entry_type` (`audit`) |
 | `events` | `created`, `updated`, `deleted` (+ `restored` when the model uses SoftDeletes) |
 | `log_name` | `getResourceName()` when present, otherwise kebab model basename |
-| `attributes` | model `$fillable` minus noise (`custom_properties`, ids, timestamps, …) |
+| `attributes` | model `$fillable` minus noise (`custom_properties`, ids, timestamps, `password`, …) |
 | `filament.*.owner_model` | `Resource::getModel()` |
+
+### Sensitive attributes
+
+| Config | Behavior |
+| --- | --- |
+| `hidden_attributes` (per model) | Field is **never** stored in the audit diff |
+| `mask_attributes` (global) | Field is stored, but values are replaced with `******` |
+
+`mask_attributes` matches keys exactly or as a substring (case-insensitive), e.g. `password` also matches `new_password`.
 
 ## Audit sources
 
@@ -332,7 +341,7 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `activity_model` | Eloquent model class (default `Moox\Audit\Models\Activity`) |
 | `system_causer` | Model class used as causer when no user is authenticated |
 | `default_entry_type` | Default entry type for model audits (default `audit`) |
-| `mask_attributes` | List of keys masked in the UI (e.g. `password`) |
+| `mask_attributes` | Keys masked on persist and in the UI (values stored as `******`; field still appears in the diff) |
 | `user_models` | Map of user model classes to `title_attribute` and `label` for property enrichment |
 | `presets` | Named preset blocks merged into per-model config |
 | `models` | App-level model overrides |

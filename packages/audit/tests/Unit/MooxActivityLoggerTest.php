@@ -6,6 +6,7 @@ use Moox\Audit\Models\Activity;
 use Moox\Audit\Services\MooxActivityLogger;
 use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\CustomFieldAuditMerger;
+use Moox\Audit\Support\SensitiveAttributeGuard;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\Support\TestNonSoftDeleteAuditableItem;
 use Moox\Audit\Tests\TestCase;
@@ -389,4 +390,121 @@ it('creates separate audit entries for repeated custom field only saves', functi
         ->and($activities->pluck('attribute_changes')->map(
             fn ($changes) => $changes?->get('attributes')['hero_title'] ?? null,
         )->all())->toBe(['Second', 'Third', 'Fourth']);
+});
+
+it('stores masked values for sensitive attributes instead of plaintext', function (): void {
+    /** @var TestCase $this */
+    $this->registerTestAuditableModel();
+
+    config()->set('audit.mask_attributes', ['password', 'api_key']);
+
+    $item = TestAuditableItem::query()->create([
+        'title' => 'User',
+        'status' => 'draft',
+    ]);
+
+    MooxActivityLogger::audit(
+        $item,
+        'updated',
+        [
+            'old' => [
+                'password' => 'old-secret',
+                'api_key' => 'key-old',
+                'title' => 'User',
+            ],
+            'attributes' => [
+                'password' => 'new-secret',
+                'api_key' => 'key-new',
+                'title' => 'Renamed',
+            ],
+        ],
+        [
+            'entry_type' => 'audit',
+            'log_name' => 'test',
+        ],
+        'test',
+    );
+
+    $activity = Activity::query()
+        ->where('event', 'updated')
+        ->where('subject_type', TestAuditableItem::class)
+        ->where('subject_id', $item->getKey())
+        ->latest('id')
+        ->first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->attribute_changes?->get('old'))->toMatchArray([
+            'password' => SensitiveAttributeGuard::MASK,
+            'api_key' => SensitiveAttributeGuard::MASK,
+            'title' => 'User',
+        ])
+        ->and($activity->attribute_changes?->get('attributes'))->toMatchArray([
+            'password' => SensitiveAttributeGuard::MASK,
+            'api_key' => SensitiveAttributeGuard::MASK,
+            'title' => 'Renamed',
+        ]);
+});
+
+it('masks sensitive custom field values when merging into an activity', function (): void {
+    /** @var TestCase $this */
+    $this->registerTestAuditableModel();
+
+    config()->set('audit.mask_attributes', ['api_key']);
+
+    $item = TestAuditableItem::query()->create([
+        'title' => 'Original',
+        'status' => 'draft',
+        'builder_payload' => [
+            'api_key' => 'old-key',
+            'hero_title' => 'Welcome',
+        ],
+    ]);
+
+    $item->update([
+        'title' => 'Changed title',
+    ]);
+
+    app()->instance('Moox\\Builder\\Services\\CustomFieldsManager', new class
+    {
+        /**
+         * @return array<string, mixed>
+         */
+        public function preparedFormValues(string $resourceClass, object $record, array $data): array
+        {
+            return [
+                'api_key' => 'new-key',
+                'hero_title' => 'Welcome',
+            ];
+        }
+
+        /**
+         * @param  array<string, mixed>  $values
+         * @return array<string, mixed>
+         */
+        public function castFormValues(string $resourceClass, array $values): array
+        {
+            return $values;
+        }
+    });
+
+    app(CustomFieldAuditMerger::class)
+        ->mergeUpdated($item, 'TestResource', []);
+
+    $activity = Activity::query()
+        ->where('event', 'updated')
+        ->where('subject_type', TestAuditableItem::class)
+        ->where('subject_id', $item->getKey())
+        ->latest('id')
+        ->first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->attribute_changes?->get('old'))->toMatchArray([
+            'api_key' => SensitiveAttributeGuard::MASK,
+        ])
+        ->and($activity->attribute_changes?->get('attributes'))->toMatchArray([
+            'api_key' => SensitiveAttributeGuard::MASK,
+            'title' => 'Changed title',
+        ])
+        ->and($activity->attribute_changes?->get('old')['api_key'] ?? null)->not->toBe('old-key')
+        ->and($activity->attribute_changes?->get('attributes')['api_key'] ?? null)->not->toBe('new-key');
 });

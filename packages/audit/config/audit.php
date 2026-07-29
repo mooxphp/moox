@@ -18,12 +18,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sensitive fields masking (display only)
+    | Sensitive fields masking
     |--------------------------------------------------------------------------
     |
-    | Keys listed here will be masked in the Filament audit UI (old/new
-    | attribute changes). This is not meant to be a compliance-grade
-    | protection mechanism, but it prevents accidental Secret display.
+    | Keys matching these patterns (exact or substring, case-insensitive) are
+    | stored and shown as `******`. The field still appears in the diff so a
+    | change remains visible — only the plaintext value is removed.
+    |
+    | To omit a field entirely, use per-model `hidden_attributes` instead.
     |
     */
     'mask_attributes' => [

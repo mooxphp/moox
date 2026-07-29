@@ -73,7 +73,9 @@ final class CustomFieldAuditMerger
             $config,
         );
 
-        $changes = $this->buildChanges($oldValues, $newValues, $event);
+        $changes = SensitiveAttributeGuard::maskChanges(
+            $this->buildChanges($oldValues, $newValues, $event),
+        );
 
         if (($changes['attributes'] ?? []) === [] && ($changes['old'] ?? []) === []) {
             return;
@@ -116,7 +118,7 @@ final class CustomFieldAuditMerger
             $merged['old'] = $mergedOld;
         }
 
-        $activity->attribute_changes = $merged;
+        $activity->attribute_changes = SensitiveAttributeGuard::maskChanges($merged);
         $activity->save();
 
         app(AuditRequestContext::class)->forgetMergeTarget($record, $event);
