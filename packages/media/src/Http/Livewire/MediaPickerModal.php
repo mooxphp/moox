@@ -23,6 +23,7 @@ use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Models\MediaTranslation;
+use Moox\Media\Support\MediaUploadValidator;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property Schema $form */
@@ -298,6 +299,11 @@ class MediaPickerModal extends Component implements HasForms
                     if ($realPath === null) {
                         continue;
                     }
+
+                    app(MediaUploadValidator::class)->ensureAccepted(
+                        $tempFile,
+                        $this->uploadConfig['accepted_file_types'] ?? null,
+                    );
 
                     $fileHash = hash_file('sha256', $realPath);
 

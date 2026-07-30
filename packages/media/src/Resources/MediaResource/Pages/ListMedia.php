@@ -11,6 +11,7 @@ use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource;
+use Moox\Media\Support\MediaUploadValidator;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends BaseListDrafts
@@ -244,6 +245,8 @@ class ListMedia extends BaseListDrafts
                             $uploadLang = $this->lang ?? $defaultLang;
 
                             foreach ($state as $tempFile) {
+                                app(MediaUploadValidator::class)->ensureAccepted($tempFile);
+
                                 $fileHash = hash_file('sha256', $tempFile->getRealPath());
 
                                 if (in_array($fileHash, $this->processedHashes)) {
