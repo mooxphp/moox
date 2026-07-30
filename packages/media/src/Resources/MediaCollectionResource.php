@@ -199,7 +199,7 @@ class MediaCollectionResource extends Resource
                     ->modalSubmitActionLabel(__('media::fields.delete_collection'))
                     ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->disabled(function (MediaCollection $record) {
-                        return $record->name === __('media::fields.uncategorized') ||
+                        return $record->isUncategorized() ||
                             $record->media()->where('write_protected', true)->exists();
                     }),
 

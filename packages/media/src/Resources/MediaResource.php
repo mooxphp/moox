@@ -118,137 +118,118 @@ class MediaResource extends BaseResource
                                 return;
                             }
 
+                            /** @var Media|null $oldMedia */
                             $oldMedia = null;
-                            $oldMediaId = null;
 
-                            if ($record instanceof \Spatie\MediaLibrary\MediaCollections\Models\Media) {
+                            if ($record instanceof Media) {
                                 $oldMedia = $record;
-                                $oldMediaId = $record->getKey();
                             } else {
                                 $oldMedia = $record->getFirstMedia();
-                                $oldMediaId = $oldMedia !== null ? $oldMedia->getKey() : null;
                             }
 
-                            $originalFileName = pathinfo($oldMedia?->file_name, PATHINFO_FILENAME);
                             $newFileName = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
+                            $isEdit = (bool) preg_match('/-v\d+$/', $newFileName);
+                            $oldFileNameForNotification = $oldMedia?->file_name ?? 'unknown';
 
-                            $isEdit = preg_match('/-v\d+$/', $newFileName);
+                            DB::transaction(function () use ($fileHash, $isEdit, $newFileName, $oldMedia, $record, $state): void {
+                                $model = new Media;
+                                $model->exists = true;
 
-                            $usables = [];
-                            if ($oldMediaId && ! $isEdit) {
-                                $usables = DB::table('media_usables')
-                                    ->where('media_id', $oldMediaId)
-                                    ->get()
-                                    ->map(function ($item) {
-                                        return (array) $item;
-                                    })
-                                    ->toArray();
-                            }
+                                $fileAdder = FileAdderFactory::create($model, $state);
+                                $stateSize = method_exists($state, 'getSize') ? $state->getSize() : null;
+                                if (is_int($stateSize) && $stateSize > 0) {
+                                    $fileAdder->setFileSize($stateSize);
+                                }
 
-                            if ($oldMediaId && ! $isEdit) {
-                                DB::table('media')->where('id', $oldMediaId)->delete();
-                            }
+                                $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
+                                /** @var Media $media */
+                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
 
-                            $model = new Media;
-                            $model->exists = true;
+                                $title = $newFileName;
+                                $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
+                                $media->setAttribute('uploader_id', Auth::id());
+                                $media->setCustomProperty('file_hash', $fileHash);
 
-                            $fileAdder = app(FileAdderFactory::class)->create($model, $state);
-                            $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
-                            /** @var Media $media */
-                            $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
+                                if ($isEdit && $oldMedia) {
+                                    $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
+                                    $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
+                                } else {
+                                    $media->setAttribute('original_model_type', Media::class);
+                                    $media->setAttribute('original_model_id', $media->getKey());
+                                }
 
-                            $title = $newFileName;
-                            $media->setAttribute('title', $title);
-                            $media->setAttribute('alt', $title);
-                            $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
-                            $media->setAttribute('uploader_id', Auth::id());
+                                $media->setAttribute('model_id', $media->getKey());
+                                $media->setAttribute('model_type', Media::class);
 
-                            $media->setCustomProperty('file_hash', $fileHash);
+                                if ($oldMedia instanceof Media) {
+                                    $media->media_collection_id = $oldMedia->media_collection_id;
+                                }
 
-                            if ($isEdit && $oldMedia) {
-                                $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
-                                $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
-                            } else {
-                                $media->setAttribute('original_model_type', Media::class);
-                                $media->setAttribute('original_model_id', $media->getKey());
-                            }
-
-                            $media->setAttribute('model_id', $media->getKey());
-                            $media->setAttribute('model_type', Media::class);
-
-                            if (str_starts_with($media->mime_type, 'image/')) {
-                                [$width, $height] = getimagesize($media->getPath());
-                                $media->setCustomProperty('dimensions', [
-                                    'width' => $width,
-                                    'height' => $height,
-                                ]);
-                            }
-
-                            static::applyScopedDefaults($media);
-                            $media->save();
-
-                            if (! $isEdit) {
-                                foreach ($usables as $usable) {
-                                    DB::table('media_usables')->insert([
-                                        'media_id' => $media->getKey(),
-                                        'media_usable_id' => $usable['media_usable_id'],
-                                        'media_usable_type' => $usable['media_usable_type'],
-                                        'created_at' => now(),
-                                        'updated_at' => now(),
-                                    ]);
-
-                                    // Update the model with the new media data
-                                    $model = $usable['media_usable_type']::find($usable['media_usable_id']);
-                                    if ($model) {
-                                        foreach ($model->getAttributes() as $field => $value) {
-                                            $jsonData = json_decode($value, true);
-
-                                            if (! is_array($jsonData)) {
-                                                continue;
-                                            }
-
-                                            if (isset($jsonData['file_name']) && $jsonData['file_name'] === $oldMedia->file_name) {
-                                                $model->{$field} = json_encode([
-                                                    'file_name' => $media->file_name,
-                                                    'title' => $media->getAttribute('title'),
-                                                    'description' => $media->getAttribute('description'),
-                                                    'internal_note' => $media->getAttribute('internal_note'),
-                                                    'alt' => $media->getAttribute('alt'),
-                                                ]);
-
-                                                continue;
-                                            }
-
-                                            $changed = false;
-                                            foreach ($jsonData as $key => $item) {
-                                                if (is_array($item) && isset($item['file_name']) && $item['file_name'] === $oldMedia->file_name) {
-                                                    $jsonData[$key] = [
-                                                        'file_name' => $media->file_name,
-                                                        'title' => $media->getAttribute('title'),
-                                                        'description' => $media->getAttribute('description'),
-                                                        'internal_note' => $media->getAttribute('internal_note'),
-                                                        'alt' => $media->getAttribute('alt'),
-                                                    ];
-                                                    $changed = true;
-                                                }
-                                            }
-
-                                            if ($changed) {
-                                                $model->{$field} = json_encode($jsonData);
-                                            }
-                                        }
-
-                                        $model->save();
+                                if (str_starts_with((string) $media->mime_type, 'image/')) {
+                                    $size = @getimagesize($media->getPath());
+                                    if ($size !== false) {
+                                        $media->setCustomProperty('dimensions', [
+                                            'width' => (int) $size[0],
+                                            'height' => (int) $size[1],
+                                        ]);
                                     }
                                 }
-                            }
+
+                                static::applyScopedDefaults($media);
+                                $media->save();
+
+                                $translation = $media->translateOrNew(app()->getLocale());
+                                $translation->setAttribute('name', $media->file_name);
+                                $translation->setAttribute('title', $title);
+                                $translation->setAttribute('alt', $title);
+
+                                if ($oldMedia instanceof Media) {
+                                    foreach ($oldMedia->translations as $oldTranslation) {
+                                        $clonedTranslation = $media->translateOrNew($oldTranslation->locale);
+                                        $clonedTranslation->setAttribute('name', $media->file_name);
+                                        $clonedTranslation->setAttribute('title', $oldTranslation->title ?: $title);
+                                        $clonedTranslation->setAttribute('alt', $oldTranslation->alt ?: ($oldTranslation->title ?: $title));
+                                        $clonedTranslation->setAttribute('description', $oldTranslation->description);
+                                        $clonedTranslation->setAttribute('internal_note', $oldTranslation->internal_note);
+                                    }
+                                }
+
+                                $media->save();
+
+                                if (! $isEdit && $oldMedia instanceof Media) {
+                                    $oldFileName = $oldMedia->file_name;
+
+                                    $usables = DB::table('media_usables')
+                                        ->where('media_id', $oldMedia->getKey())
+                                        ->get();
+
+                                    foreach ($usables as $usable) {
+                                        DB::table('media_usables')->insert([
+                                            'media_id' => $media->getKey(),
+                                            'media_usable_id' => $usable->media_usable_id,
+                                            'media_usable_type' => $usable->media_usable_type,
+                                            'created_at' => now(),
+                                            'updated_at' => now(),
+                                        ]);
+                                    }
+
+                                    Media::syncMediaMetadata($media->load('translations'), $oldFileName);
+
+                                    DB::table('media_usables')
+                                        ->where('media_id', $oldMedia->getKey())
+                                        ->delete();
+
+                                    $oldMedia->deletePreservingMedia();
+                                    $oldMedia->delete();
+                                }
+                            });
 
                             Notification::make()
                                 ->success()
                                 ->title($isEdit
                                     ? __('media::fields.edit_file_success', ['fileName' => $state->getClientOriginalName()])
                                     : __('media::fields.replace_file_success', [
-                                        'oldFileName' => $oldMedia->file_name ?? 'unknown',
+                                        'oldFileName' => $oldFileNameForNotification,
                                         'newFileName' => $state->getClientOriginalName(),
                                     ]))
                                 ->send();
