@@ -4,7 +4,9 @@ namespace Moox\Media\Forms\Components;
 
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -30,43 +32,37 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 return;
             }
 
-            $scopedMediaScope = $component->resolveScopedMediaScope($record);
-
             $mediaIds = is_array($state) ? $state : [$state];
 
-            $mediaIds = array_filter($mediaIds, function ($id) {
-                return $id !== null && $id !== '';
-            });
+            $mediaIds = array_values(array_filter($mediaIds, static fn ($id): bool => $id !== null && $id !== ''));
+            $authorizedMedia = $component->resolveAuthorizedMedia($record, $mediaIds);
+            $authorizedMediaIds = $authorizedMedia->modelKeys();
 
-            MediaUsable::query()
+            if ($mediaIds !== [] && count($authorizedMediaIds) !== count($mediaIds)) {
+                throw new AuthorizationException('One or more selected media items are not available for this record.');
+            }
+
+            $detachQuery = MediaUsable::query()
                 ->where('media_usable_id', $record->getKey())
-                ->where('media_usable_type', get_class($record))
-                ->whereNotIn('media_id', $mediaIds)
-                ->delete();
+                ->where('media_usable_type', get_class($record));
+
+            if ($authorizedMediaIds !== []) {
+                $detachQuery->whereNotIn('media_id', $authorizedMediaIds);
+            }
+
+            $detachQuery->delete();
 
             $attachments = [];
             $index = 1;
 
-            foreach ($mediaIds as $mediaId) {
-                $media = Media::query()->where('id', $mediaId)->first();
-
-                if (! $media) {
-                    continue;
-                }
-
-                if (filled($scopedMediaScope) && $media->getRawOriginal('scope') !== $scopedMediaScope) {
-                    $media->scope = $scopedMediaScope;
-                    $media->save();
-                }
-
+            foreach ($authorizedMedia as $media) {
                 MediaUsable::firstOrCreate([
                     'media_id' => $media->getKey(),
                     'media_usable_id' => $record->getKey(),
                     'media_usable_type' => get_class($record),
                 ]);
 
-                // Get metadata from media_translations (use current locale from record context)
-                $metadata = $this->getMediaMetadataFromTranslations($media, $record);
+                $metadata = $component->getMediaMetadataFromTranslations($media, $record);
 
                 $attachments[$index] = [
                     'id' => $media->id,
@@ -227,6 +223,49 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             fn (mixed $value): mixed => $this->evaluate($value),
             $this->uploadConfig,
         );
+    }
+
+    /**
+     * @param  array<int, mixed>  $mediaIds
+     * @return EloquentCollection<int, Media>
+     */
+    protected function resolveAuthorizedMedia(Model $record, array $mediaIds): EloquentCollection
+    {
+        if ($mediaIds === []) {
+            return new EloquentCollection;
+        }
+
+        $query = Media::query()->whereIn('id', $mediaIds);
+
+        $scopedMediaCollectionId = $this->resolveScopedMediaCollectionId();
+        if ($scopedMediaCollectionId !== null) {
+            $query->where('media_collection_id', $scopedMediaCollectionId);
+        }
+
+        $scopedMediaScope = $this->resolveScopedMediaScope($record);
+        if (filled($scopedMediaScope)) {
+            $query->where('scope', $scopedMediaScope);
+        }
+
+        return $query
+            ->get()
+            ->sortBy(static function (Media $media) use ($mediaIds): int {
+                $position = array_search($media->getKey(), $mediaIds, false);
+
+                return $position === false ? PHP_INT_MAX : $position;
+            })
+            ->values();
+    }
+
+    protected function resolveScopedMediaCollectionId(): ?int
+    {
+        $scopedMediaCollectionId = $this->getUploadConfig()['scoped_media_collection_id'] ?? null;
+
+        if ($scopedMediaCollectionId === null || $scopedMediaCollectionId === '') {
+            return null;
+        }
+
+        return (int) $scopedMediaCollectionId;
     }
 
     protected function resolveScopedMediaScope(?Model $record = null): ?string
