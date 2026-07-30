@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Str;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Resources\AuditResource;
 use Moox\Audit\Support\ActivityEntryPresenter;
@@ -40,7 +41,12 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('entry_type')
                     ->label(__('core::audit.entry_type'))
                     ->badge()
-                    ->toggleable(),
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'log' => __('core::audit.entry_type_log'),
+                        'audit' => __('core::audit.entry_type_audit'),
+                        default => filled($state) ? Str::headline($state) : '—',
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('log_name')
                     ->label(__('core::audit.log_name'))
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -52,7 +58,13 @@ class ActivitiesRelationManager extends RelationManager
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
-                    ->limit(40),
+                    ->limit(40)
+                    ->toggleable(),
+                TextColumn::make('changed_fields')
+                    ->label(__('core::audit.attribute_changes'))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->wrap()
+                    ->toggleable(),
                 TextColumn::make('causer_label')
                     ->label(__('core::audit.causer'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::causerLabel($record))

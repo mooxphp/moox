@@ -8,10 +8,12 @@ use Filament\Resources\Events\RecordCreated;
 use Filament\Resources\Events\RecordUpdated;
 use Illuminate\Support\Facades\Event;
 use Moox\Audit\Commands\InstallCommand;
+use Moox\Audit\Commands\PruneCommand;
 use Moox\Audit\Listeners\MergeCreatedCustomFieldAudit;
 use Moox\Audit\Listeners\MergeUpdatedCustomFieldAudit;
 use Moox\Audit\Observers\ConfigDrivenModelObserver;
 use Moox\Audit\Support\AuditBootstrap;
+use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -26,12 +28,16 @@ class AuditServiceProvider extends MooxServiceProvider
             ->hasMigrations([
                 'create_activity_log_table',
             ])
-            ->hasCommand(InstallCommand::class);
+            ->hasCommands([
+                InstallCommand::class,
+                PruneCommand::class,
+            ]);
     }
 
     public function packageRegistered(): void
     {
         $this->app->singleton(ConfigDrivenModelObserver::class);
+        $this->app->singleton(AuditRequestContext::class);
         $this->app->singleton(CustomFieldAuditMerger::class);
     }
 
@@ -51,5 +57,9 @@ class AuditServiceProvider extends MooxServiceProvider
             Event::listen(RecordCreated::class, MergeCreatedCustomFieldAudit::class);
             Event::listen(RecordUpdated::class, MergeUpdatedCustomFieldAudit::class);
         }
+
+        $this->app->terminating(function (): void {
+            app(AuditRequestContext::class)->clear();
+        });
     }
 }

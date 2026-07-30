@@ -52,6 +52,13 @@ final class CustomFieldAuditMerger
         /** @var array<string, mixed> $newValues */
         $newValues = $manager->preparedFormValues($resourceClass, $record, $data);
 
+        if (method_exists($manager, 'castFormValues')) {
+            /** @var array<string, mixed> $newValues */
+            $newValues = $manager->castFormValues($resourceClass, $newValues);
+        }
+
+        $newValues = $this->filterHiddenAttributes($newValues, $config);
+
         if ($newValues === []) {
             return;
         }
@@ -61,13 +68,20 @@ final class CustomFieldAuditMerger
             ? []
             : $record->customFields(true);
 
-        $changes = $this->buildChanges($oldValues, $newValues, $event);
+        $oldValues = $this->filterHiddenAttributes(
+            is_array($oldValues) ? $oldValues : [],
+            $config,
+        );
+
+        $changes = SensitiveAttributeGuard::maskChanges(
+            $this->buildChanges($oldValues, $newValues, $event),
+        );
 
         if (($changes['attributes'] ?? []) === [] && ($changes['old'] ?? []) === []) {
             return;
         }
 
-        $activity = $this->latestActivityFor($record, $event);
+        $activity = $this->mergeTargetFor($record, $event);
 
         if ($activity === null) {
             MooxActivityLogger::audit(
@@ -77,6 +91,8 @@ final class CustomFieldAuditMerger
                 $config,
                 (string) ($config['log_name'] ?? 'default'),
             );
+
+            app(AuditRequestContext::class)->forgetMergeTarget($record, $event);
 
             return;
         }
@@ -102,8 +118,10 @@ final class CustomFieldAuditMerger
             $merged['old'] = $mergedOld;
         }
 
-        $activity->attribute_changes = $merged;
+        $activity->attribute_changes = SensitiveAttributeGuard::maskChanges($merged);
         $activity->save();
+
+        app(AuditRequestContext::class)->forgetMergeTarget($record, $event);
     }
 
     /**
@@ -142,19 +160,36 @@ final class CustomFieldAuditMerger
         ];
     }
 
-    private function latestActivityFor(Model $record, string $event): ?Model
+    private function mergeTargetFor(Model $record, string $event): ?Model
     {
+        $activityId = app(AuditRequestContext::class)->mergeTargetId($record, $event);
+
+        if ($activityId === null) {
+            return null;
+        }
+
         $activityModel = config('audit.activity_model');
 
         if (! is_string($activityModel) || ! is_subclass_of($activityModel, Model::class)) {
             return null;
         }
 
-        return $activityModel::query()
-            ->where('subject_type', $record::class)
-            ->where('subject_id', $record->getKey())
-            ->where('event', $event)
-            ->latest('id')
-            ->first();
+        return $activityModel::query()->find($activityId);
+    }
+
+    /**
+     * @param  array<string, mixed>  $values
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    private function filterHiddenAttributes(array $values, array $config): array
+    {
+        $hidden = array_values(array_filter($config['hidden_attributes'] ?? [], is_string(...)));
+
+        if ($hidden === []) {
+            return $values;
+        }
+
+        return array_diff_key($values, array_fill_keys($hidden, true));
     }
 }

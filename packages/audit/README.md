@@ -172,6 +172,38 @@ Built-in presets in `config/audit.php`:
 
 Override or add presets in published config. Per-model config can set `'preset' => 'draft_main'` (package or app level).
 
+For simple non-draft models, an empty registration is enough — `moox/audit` fills in defaults:
+
+```php
+'audit' => [
+    'models' => [
+        Item::class => [],
+    ],
+    'filament' => [
+        ItemResource::class => [],
+    ],
+],
+```
+
+Defaults when omitted:
+
+| Key | Default |
+| --- | --- |
+| `entry_type` | `audit.default_entry_type` (`audit`) |
+| `events` | `created`, `updated`, `deleted` (+ `restored` when the model uses SoftDeletes) |
+| `log_name` | `getResourceName()` when present, otherwise kebab model basename |
+| `attributes` | model `$fillable` minus noise (`custom_properties`, ids, timestamps, `password`, …) |
+| `filament.*.owner_model` | `Resource::getModel()` |
+
+### Sensitive attributes
+
+| Config | Behavior |
+| --- | --- |
+| `hidden_attributes` (per model) | Field is **never** stored in the audit diff |
+| `mask_attributes` (global) | Field is stored, but values are replaced with `******` |
+
+`mask_attributes` matches keys exactly or as a substring (case-insensitive), e.g. `password` also matches `new_password`.
+
 ## Audit sources
 
 Each auditable model always includes the built-in model attribute source. This keeps today's `attributes` / `hidden_attributes` config working unchanged.
@@ -309,15 +341,27 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `activity_model` | Eloquent model class (default `Moox\Audit\Models\Activity`) |
 | `system_causer` | Model class used as causer when no user is authenticated |
 | `default_entry_type` | Default entry type for model audits (default `audit`) |
+| `mask_attributes` | Keys masked on persist and in the UI (values stored as `******`; field still appears in the diff) |
 | `user_models` | Map of user model classes to `title_attribute` and `label` for property enrichment |
 | `presets` | Named preset blocks merged into per-model config |
 | `models` | App-level model overrides |
 | `models.*.sources` | Additional audit data sources for virtual or builder-backed fields |
 | `hooks` | App-level hook overrides |
 | `filament` | App-level Filament resource overrides |
-| `retention` | Retention policy placeholders (`live`, `archive`, `backup` per entry type) |
+| `retention` | Retention in days per entry type (`null` keeps entries indefinitely) |
 | `resources.audit` | `AuditResource` labels and list tabs |
 | `navigation_group` | Filament navigation group for `AuditResource` |
+
+### Pruning old entries
+
+Use the prune command to delete entries older than the configured retention:
+
+```bash
+php artisan mooxaudit:prune --dry-run
+php artisan mooxaudit:prune
+```
+
+Projects can schedule the command themselves, for example daily via Laravel's scheduler.
 
 ## Database
 

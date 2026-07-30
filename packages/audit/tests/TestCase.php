@@ -11,6 +11,7 @@ use Moox\Audit\AuditServiceProvider;
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Support\AuditBootstrap;
 use Moox\Audit\Support\AuditPackageRegistry;
+use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\Support\TestNonSoftDeleteAuditableItem;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -25,6 +26,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         AuditBootstrap::clear();
+        app(AuditRequestContext::class)->clear();
     }
 
     protected function getPackageProviders($app): array

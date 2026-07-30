@@ -28,8 +28,107 @@ it('formats property values as strings', function (): void {
     ]);
 
     expect($result['source'])->toBe('test')
-        ->and($result['flags'])->toBe('["a","b"]')
+        ->and($result['flags'])->toBe('a, b')
         ->and($result['enabled'])->toBe('true');
+});
+
+it('formats media-like snapshots as readable labels', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'id' => 7,
+        'alt' => 'Screenshot',
+        'title' => 'Hero image',
+        'file_name' => 'hero.png',
+    ]))->toBe('Hero image (#7)')
+        ->and(ActivityEntryPresenter::formatValue([
+            'id' => 3,
+            'file_name' => 'doc.pdf',
+        ]))->toBe('doc.pdf (#3)')
+        ->and(ActivityEntryPresenter::formatValue(['id' => 9]))->toBe('#9');
+});
+
+it('formats gallery media snapshots as readable labels', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        '1' => [
+            'id' => 5,
+            'alt' => 'Screenshot',
+            'title' => 'First image',
+            'file_name' => 'a.png',
+        ],
+        '2' => [
+            'id' => 8,
+            'title' => 'Second image',
+            'file_name' => 'b.png',
+        ],
+    ]))->toBe('First image (#5), Second image (#8)')
+        ->and(ActivityEntryPresenter::formatValue([
+            ['id' => 1, 'title' => 'A'],
+            ['id' => 2, 'title' => 'B'],
+            ['id' => 3, 'title' => 'C'],
+            ['id' => 4, 'title' => 'D'],
+        ]))->toBe('A (#1), B (#2), C (#3) +1')
+        ->and(ActivityEntryPresenter::formatValue([5, 8]))->toBe('#5, #8');
+});
+
+it('formats link, list and relation-like values for audit display', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'url' => 'https://moox.org',
+        'label' => 'Moox',
+        'opens_in_new_tab' => true,
+    ]))->toBe('Moox (https://moox.org) ↗')
+        ->and(ActivityEntryPresenter::formatValue([
+            'url' => 'https://example.com',
+            'label' => null,
+            'opens_in_new_tab' => false,
+        ]))->toBe('https://example.com')
+        ->and(ActivityEntryPresenter::formatValue(['red', 'green', 'blue']))->toBe('red, green, blue')
+        ->and(ActivityEntryPresenter::formatValue([
+            ['id' => 1, 'title' => 'Category A'],
+            ['id' => 2, 'name' => 'Category B'],
+        ]))->toBe('Category A (#1), Category B (#2)')
+        ->and(ActivityEntryPresenter::formatValue([]))->toBe('—');
+});
+
+it('formats nested group, repeater and flexible content values for audit display', function (): void {
+    expect(ActivityEntryPresenter::formatValue([
+        'headline' => 'Hero',
+        'enabled' => true,
+    ]))->toBe('Headline: Hero; Enabled: true')
+        ->and(ActivityEntryPresenter::formatValue([
+            [
+                'title' => 'First',
+                'active' => true,
+            ],
+            [
+                'title' => 'Second',
+                'active' => false,
+            ],
+            [
+                'title' => 'Third',
+            ],
+        ]))->toBe('Title: First; Active: true | Title: Second; Active: false +1')
+        ->and(ActivityEntryPresenter::formatValue([
+            [
+                'type' => 'hero_block',
+                'data' => [
+                    'headline' => 'Welcome',
+                    'cta_label' => 'Buy now',
+                ],
+            ],
+            [
+                'type' => 'faq',
+                'data' => [
+                    'question' => 'Why?',
+                ],
+            ],
+            [
+                'type' => 'gallery',
+                'data' => [
+                    'images' => [
+                        ['id' => 1, 'title' => 'A'],
+                    ],
+                ],
+            ],
+        ]))->toBe('Hero Block: Headline: Welcome; Cta Label: Buy now | Faq: Question: Why? +1');
 });
 
 it('returns an empty array for missing or identical changes', function (): void {
@@ -55,7 +154,30 @@ it('builds a readable subject label from type and title', function (): void {
 
     expect(ActivityEntryPresenter::subjectLabel($activity))
         ->toBe('Test Auditable Item: Hello')
-        ->and(ActivityEntryPresenter::subjectIdLabel($activity))->toBe('#7');
+        ->and(ActivityEntryPresenter::subjectIdLabel($activity))->toBe('#7')
+        ->and(ActivityEntryPresenter::subjectIsUnavailable($activity))->toBeFalse();
+});
+
+it('marks missing subjects as unavailable and includes the id in the label', function (): void {
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 42;
+    $activity->setRelation('subject', null);
+
+    expect(ActivityEntryPresenter::subjectLabel($activity))
+        ->toBe('Test Auditable Item #42')
+        ->and(ActivityEntryPresenter::subjectIsUnavailable($activity))->toBeTrue()
+        ->and(ActivityEntryPresenter::subjectUnavailableHint($activity))
+        ->toBe(__('core::audit.subject_unavailable'));
+});
+
+it('only shows a tooltip for change values that exceed the display limit', function (): void {
+    $short = str_repeat('a', ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT);
+    $long = $short.'z';
+
+    expect(ActivityEntryPresenter::truncatedChangeTooltip($short))->toBeNull()
+        ->and(ActivityEntryPresenter::truncatedChangeTooltip($long))->toBe($long)
+        ->and(ActivityEntryPresenter::truncatedChangeTooltip(null))->toBeNull();
 });
 
 it('builds a readable causer label from the causer name', function (): void {
@@ -72,6 +194,22 @@ it('builds a readable causer label from the causer name', function (): void {
     expect(ActivityEntryPresenter::causerLabel($activity))->toBe('Aziz');
 });
 
+it('builds a compact changed-fields summary for list columns', function (): void {
+    $changes = [
+        'old' => ['title' => 'A', 'status' => 'draft'],
+        'attributes' => [
+            'title' => 'B',
+            'status' => 'published',
+            'color' => 'red',
+            'weight' => 10,
+        ],
+    ];
+
+    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Title, Status, Color +1')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($changes, 2))->toBe('Title, Status +2')
+        ->and(ActivityEntryPresenter::changedFieldsSummary(null))->toBe('—');
+});
+
 it('builds structured change rows for the detail view', function (): void {
     $rows = ActivityEntryPresenter::changeRows([
         'old' => ['title' => 'Hallo', 'status' => 'draft'],
@@ -80,22 +218,40 @@ it('builds structured change rows for the detail view', function (): void {
 
     expect($rows)->toBe([
         [
-            'field' => 'title',
+            'field' => 'Title',
             'old' => 'Hallo',
             'new' => 'Hallo und ciao',
             'kind' => 'changed',
         ],
         [
-            'field' => 'status',
+            'field' => 'Status',
             'old' => 'draft',
             'new' => null,
             'kind' => 'removed',
         ],
         [
-            'field' => 'color',
+            'field' => 'Color',
             'old' => null,
             'new' => 'red',
             'kind' => 'added',
+        ],
+    ]);
+});
+
+it('masks sensitive values in structured change rows', function (): void {
+    config()->set('audit.mask_attributes', ['password']);
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['password' => 'old-secret'],
+        'attributes' => ['password' => 'new-secret'],
+    ]);
+
+    expect($rows)->toBe([
+        [
+            'field' => 'Password',
+            'old' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
+            'new' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
+            'kind' => 'changed',
         ],
     ]);
 });
@@ -124,6 +280,6 @@ it('builds a headline and hides duplicate descriptions', function (): void {
     $activity->setRelation('causer', $causer);
 
     expect(ActivityEntryPresenter::headline($activity))
-        ->toBe('Aziz updated Test Auditable Item: Hallo')
+        ->toBe('Aziz Updated Test Auditable Item: Hallo')
         ->and(ActivityEntryPresenter::hasDistinctDescription($activity))->toBeFalse();
 });

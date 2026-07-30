@@ -61,9 +61,9 @@ Three sections under `{package}.audit`:
 
 | Section | Purpose |
 | --- | --- |
-| `models` | Per-model tracking: preset, `log_name`, `attributes` |
+| `models` | Per-model tracking; empty `Model::class => []` uses package defaults |
 | `hooks` | Custom events (e.g. pivot detach on `deleting`) |
-| `filament` | Activity tab on resources + `aggregate_subjects` for translations |
+| `filament` | Activity tab on resources; empty `Resource::class => []` derives `owner_model` |
 
 Presets (`draft_main`, `draft_translation`) live in `config/audit.php`. See [decisions.md](decisions.md) for attribute selection and hooks.
 

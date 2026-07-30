@@ -300,6 +300,40 @@ class CustomFieldsManager
     }
 
     /**
+     * Cast raw form / storage payloads through each field type so audit diffs
+     * compare the same shape as `customFields()` / `loadValues()`.
+     *
+     * @param  class-string  $resourceClass
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    public function castFormValues(string $resourceClass, array $values): array
+    {
+        if ($values === []) {
+            return [];
+        }
+
+        $fields = $this->fieldsForResource($resourceClass);
+
+        if ($fields->isEmpty()) {
+            return $values;
+        }
+
+        $cast = [];
+
+        foreach ($fields as $field) {
+            if (! array_key_exists($field->name, $values)) {
+                continue;
+            }
+
+            $fieldType = $this->fieldTypeRegistry->get($field->type);
+            $cast[$field->name] = $fieldType->castValue($values[$field->name], $field);
+        }
+
+        return $cast;
+    }
+
+    /**
      * Nested fields with visible_admin:false are not rendered in the form, but
      * their keys can still appear in a crafted compound payload. Replace those
      * keys with the already-stored values so the form path cannot overwrite them.
