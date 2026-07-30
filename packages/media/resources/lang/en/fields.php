@@ -66,6 +66,7 @@ return [
     'select_file' => 'Select File',
     'file_uploaded_success' => 'File uploaded successfully',
     'file_upload_error' => 'Error uploading file',
+    'file_type_not_allowed' => 'The file type of :fileName is not allowed.',
     'edit_file_success' => 'The file ":fileName" was successfully updated.',
     'operation_error' => 'Operation Error',
     'file_operation_error' => 'The file ":fileName" could not be operated on.',

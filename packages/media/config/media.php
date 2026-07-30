@@ -123,6 +123,13 @@ return [
             'reorderable' => true,
             'append_files' => true,
         ],
+        'api' => [
+            /*
+            | null = use upload.resource.accepted_file_types
+            | array = API-only allowlist (can differ from the Mediathek)
+            */
+            'accepted_file_types' => null,
+        ],
     ],
 
     'modal' => [

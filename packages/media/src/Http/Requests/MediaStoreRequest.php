@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Media\Http\Requests;
 
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
+use Moox\Media\Support\MediaUploadValidator;
 
 class MediaStoreRequest extends FormRequest
 {
@@ -22,6 +26,22 @@ class MediaStoreRequest extends FormRequest
                 'required',
                 'file',
                 'max:'.(int) config('media.upload.resource.max_file_size', 10240),
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (! $value instanceof UploadedFile) {
+                        return;
+                    }
+
+                    try {
+                        $apiAcceptedFileTypes = config('media.upload.api.accepted_file_types');
+
+                        app(MediaUploadValidator::class)->ensureAccepted(
+                            $value,
+                            is_array($apiAcceptedFileTypes) ? $apiAcceptedFileTypes : null,
+                        );
+                    } catch (ValidationException $exception) {
+                        $fail(collect($exception->errors())->flatten()->first() ?: $exception->getMessage());
+                    }
+                },
             ],
             'name' => ['nullable', 'string', 'max:255'],
             'title' => ['nullable', 'string', 'max:255'],

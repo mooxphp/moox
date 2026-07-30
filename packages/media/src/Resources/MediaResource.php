@@ -31,6 +31,7 @@ use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Support\MediaUploadValidator;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
@@ -89,6 +90,8 @@ class MediaResource extends BaseResource
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
                         try {
+                            app(MediaUploadValidator::class)->ensureAccepted($state);
+
                             $fileHash = hash_file('sha256', $state->getRealPath());
                             $fileName = $state->getClientOriginalName();
 

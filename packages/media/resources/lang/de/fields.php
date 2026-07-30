@@ -66,6 +66,7 @@ return [
     'select_file' => 'Datei auswählen',
     'file_uploaded_success' => 'Datei erfolgreich hochgeladen',
     'file_upload_error' => 'Fehler beim Hochladen der Datei',
+    'file_type_not_allowed' => 'Der Dateityp von :fileName ist nicht erlaubt.',
     'edit_file_success' => 'Die Datei ":fileName" wurde erfolgreich aktualisiert.',
     'operation_error' => 'Fehler beim Vorgang',
     'file_operation_error' => 'Die Datei ":fileName" konnte nicht verarbeitet werden.',
