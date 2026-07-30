@@ -133,6 +133,7 @@ return [
     'modal' => [
         'resource' => [
             'show_download_button' => false,
+            'show_pdf_preview' => true,
         ],
     ],
 
