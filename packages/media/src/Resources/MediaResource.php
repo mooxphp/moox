@@ -267,6 +267,12 @@ class MediaResource extends BaseResource
                     }
                 }),
 
+            View::make('media::components.media-preview')
+                ->columnSpanFull()
+                ->visible(fn ($record): bool => config('media.modal.resource.show_pdf_preview', true)
+                    && $record !== null
+                    && ($record->mime_type ?? '') === 'application/pdf'),
+
             Section::make()
                 ->schema([
                     Grid::make(4)

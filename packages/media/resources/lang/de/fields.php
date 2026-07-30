@@ -31,6 +31,7 @@ return [
     'yes_delete' => 'Ja, löschen',
     'cancel' => 'Abbrechen',
     'download_file' => 'Datei herunterladen',
+    'preview' => 'Vorschau',
 
     // Notifications
     'delete_error' => 'Fehler beim Löschen',
