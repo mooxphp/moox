@@ -534,6 +534,7 @@ class MediaResource extends BaseResource
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
                     ->alignment('center')
+                    ->imageHeight('auto')
                     ->extraImgAttributes(function ($record, $livewire) {
                         $baseStyle = str_starts_with($record->mime_type, 'image/')
                             ? 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;'
