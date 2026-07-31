@@ -28,6 +28,11 @@
             "Moox\\Media\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Media\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [

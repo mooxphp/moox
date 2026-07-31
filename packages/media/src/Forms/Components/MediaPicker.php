@@ -8,12 +8,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Support\Scopes\ScopeValue;
-use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
+use Moox\Media\Support\MediaLocaleResolver;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -297,45 +296,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
      */
     protected function getMediaMetadataFromTranslations(Media $media, ?Model $record = null): array
     {
-        // Get default locale from Localization
-        $defaultLocale = 'en_US';
-        if (class_exists(Localization::class)) {
-            $localization = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->with('language')
-                ->first();
-
-            if ($localization) {
-                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-            }
-        }
-
-        // Get translations from media_translations table
-        $translations = DB::table('media_translations')
-            ->where('media_id', $media->id)
-            ->get()
-            ->keyBy('locale');
-
-        // Try to get default locale translation first
-        $translation = $translations->get($defaultLocale);
-
-        // Fallback to en_US if default locale doesn't exist
-        if (! $translation) {
-            $translation = $translations->get('en_US');
-        }
-
-        // Fallback to first available translation if en_US doesn't exist
-        if (! $translation && $translations->isNotEmpty()) {
-            $translation = $translations->first();
-        }
-
-        return [
-            'title' => $translation->title ?? null,
-            'alt' => $translation->alt ?? null,
-            'description' => $translation->description ?? null,
-            'internal_note' => $translation->internal_note ?? null,
-        ];
+        return app(MediaLocaleResolver::class)->mediaMetadata($media);
     }
 
     /**

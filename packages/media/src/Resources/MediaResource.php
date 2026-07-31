@@ -31,6 +31,7 @@ use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Support\MediaUploadValidator;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
@@ -335,42 +336,16 @@ class MediaResource extends BaseResource
                                 ->label(__('media::fields.collection'))
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
                                 ->options(function ($record, $livewire) {
+                                    $localeResolver = app(MediaLocaleResolver::class);
                                     $currentLang = $livewire->lang ?? app()->getLocale();
 
-                                    $collections = MediaCollection::query()
+                                    return MediaCollection::query()
                                         ->with('translations')
-                                        ->get();
-
-                                    $options = [];
-                                    foreach ($collections as $collection) {
-                                        $name = null;
-
-                                        $translation = $collection->translations()->where('locale', $currentLang)->first();
-
-                                        if ($translation && ! empty($translation->name)) {
-                                            $name = $translation->name;
-                                        } else {
-                                            if (class_exists(Localization::class)) {
-                                                $defaultLocale = optional(Localization::query()
-                                                    ->where('is_default', true)
-                                                    ->first()?->language)->alpha2 ?? config('app.locale');
-
-                                                $translation = $collection->translations()->where('locale', $defaultLocale)->first();
-                                                if ($translation && ! empty($translation->name)) {
-                                                    $name = $translation->name;
-                                                }
-                                            }
-
-                                            if (empty($name)) {
-                                                $anyTranslation = $collection->translations()->whereNotNull('name')->first();
-                                                $name = $anyTranslation->name ?? 'Collection #'.$collection->getKey();
-                                            }
-                                        }
-
-                                        $options[$collection->id] = $name;
-                                    }
-
-                                    return $options;
+                                        ->get()
+                                        ->mapWithKeys(fn (MediaCollection $collection): array => [
+                                            $collection->id => $localeResolver->collectionName($collection, $currentLang),
+                                        ])
+                                        ->all();
                                 })
                                 ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
