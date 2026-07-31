@@ -7,7 +7,7 @@ use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Moox\Localization\Models\Localization;
+use Moox\Media\Support\MediaLocaleResolver;
 
 /**
  * @method static Builder whereTranslation(string $key, mixed $value, ?string $locale = null)
@@ -136,39 +136,6 @@ class MediaCollection extends Model implements TranslatableContract
 
     private static function resolveAdminDefaultLocale(): string
     {
-        if (class_exists(Localization::class)) {
-            $localization = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->with('language')
-                ->first();
-
-            if ($localization) {
-                $localeVariant = $localization->getAttribute('locale_variant');
-                if (filled($localeVariant)) {
-                    return (string) $localeVariant;
-                }
-
-                // Prefer region variants used by Moox admin (en_US) over bare alpha2 (en).
-                $alpha2 = $localization->language?->alpha2;
-                if ($alpha2 === 'en') {
-                    return 'en_US';
-                }
-                if ($alpha2 === 'de') {
-                    return 'de_DE';
-                }
-                if (filled($alpha2)) {
-                    return (string) $alpha2;
-                }
-            }
-        }
-
-        $appLocale = (string) config('app.locale');
-
-        return match ($appLocale) {
-            'en' => 'en_US',
-            'de' => 'de_DE',
-            default => $appLocale !== '' ? $appLocale : 'en_US',
-        };
+        return app(MediaLocaleResolver::class)->adminDefaultLocale();
     }
 }

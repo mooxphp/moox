@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Support\Scopes\ScopeValue;
-use Moox\Localization\Models\Localization;
+use Moox\Media\Support\MediaLocaleResolver;
 use Moox\Media\Traits\HasMediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
@@ -175,35 +175,9 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
                     $collection = MediaCollection::with('translations')->find($media->media_collection_id);
 
                     if ($collection) {
-                        $defaultLocale = config('app.locale');
+                        $newCollectionName = app(MediaLocaleResolver::class)->collectionName($collection);
 
-                        if (class_exists(Localization::class)) {
-                            $localization = Localization::query()
-                                ->where('is_default', true)
-                                ->where('is_active_admin', true)
-                                ->with('language')
-                                ->first();
-
-                            if ($localization) {
-                                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-                            }
-                        }
-
-                        $translation = $collection->translations->firstWhere('locale', $defaultLocale);
-                        $newCollectionName = null;
-
-                        if ($translation && ! empty($translation->getAttribute('name'))) {
-                            $newCollectionName = $translation->getAttribute('name');
-                        } else {
-                            if ($collection->translations->isNotEmpty()) {
-                                $firstTranslation = $collection->translations->first();
-                                $newCollectionName = $firstTranslation->getAttribute('name');
-                            } else {
-                                $newCollectionName = $collection->name ?? null;
-                            }
-                        }
-
-                        if ($collectionChanged || ! empty($newCollectionName)) {
+                        if ($collectionChanged || filled($newCollectionName)) {
                             $media->collection_name = $newCollectionName;
                         }
                     } else {
