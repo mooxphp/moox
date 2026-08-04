@@ -23,7 +23,7 @@ trait InteractsWithLoginLinks
 
     protected function loginLinkIsEnabled(): bool
     {
-        return (bool) config('login-link.passwordless.enabled', false);
+        return (bool) config('login-link.passwordless.enabled', true);
     }
 
     public function sendMagicLink(): void

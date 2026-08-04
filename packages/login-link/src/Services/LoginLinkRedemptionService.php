@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\LoginLink\Services;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\PanelRegistry;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Moox\LoginLink\Models\LoginLink;
 
 class LoginLinkRedemptionService
 {
-    public function redeem(int|string $loginLinkId, string $panelId): mixed
+    public function __construct(
+        protected RedemptionHandlerRegistry $handlers,
+    ) {
+    }
+
+    public function redeem(int|string $loginLinkId, string $panelId): ?RedirectResponse
     {
         return DB::transaction(function () use ($loginLinkId, $panelId) {
             $loginLink = LoginLink::query()
@@ -25,32 +31,37 @@ class LoginLinkRedemptionService
                 return null;
             }
 
-            $user = $loginLink->user()->first();
-            if (! $user) {
+            $process = $this->resolveProcess($loginLink);
+            $handler = $this->handlers->get($process);
+
+            if ($handler === null) {
                 return null;
             }
 
-            if (! $this->userCanAccessPanel($user, $panelId)) {
+            $result = $handler->handle($loginLink, $panelId);
+
+            if ($result === null) {
                 return null;
             }
 
             $loginLink->update(['used_at' => now()]);
 
-            return $user;
+            return $result;
         });
     }
 
-    private function userCanAccessPanel(mixed $user, string $panelId): bool
+    /**
+     * Until the process discriminator column lands (#3), missing process defaults to login (BC).
+     */
+    protected function resolveProcess(LoginLink $loginLink): string
     {
-        if (! $user instanceof FilamentUser) {
-            return false;
+        $process = $loginLink->getAttribute('process')
+            ?? $loginLink->getAttribute('expiry_job');
+
+        if (is_string($process) && $process !== '') {
+            return $process;
         }
 
-        $panel = app(PanelRegistry::class)->get($panelId);
-        if (! $panel) {
-            return false;
-        }
-
-        return $user->canAccessPanel($panel);
+        return RedemptionHandlerRegistry::DEFAULT_PROCESS;
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\User\Models\User;
 
 /*
@@ -138,7 +139,7 @@ return [
     */
 
     'passwordless' => [
-        'enabled' => env('LOGIN_LINK_PASSWORDLESS_ENABLED', false),
+        'enabled' => env('LOGIN_LINK_PASSWORDLESS_ENABLED', true),
     ],
 
     /*
@@ -172,6 +173,21 @@ return [
 
     'login_route_patterns' => [
         'filament.*.auth.login',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redemption handlers
+    |--------------------------------------------------------------------------
+    |
+    | Process key => handler class. Other packages contribute additional
+    | handlers via `{package}.login-link.handlers`; this package aggregates
+    | them (mirror of moox/scopes). Login is the built-in first handler.
+    |
+    */
+
+    'handlers' => [
+        'login' => LoginRedemptionHandler::class,
     ],
 
 ];

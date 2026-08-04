@@ -6,6 +6,7 @@ namespace Moox\LoginLink;
 
 use Moox\Core\MooxServiceProvider;
 use Moox\LoginLink\Commands\InstallCommand;
+use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Spatie\LaravelPackageTools\Package;
 
 class LoginLinkServiceProvider extends MooxServiceProvider
@@ -19,5 +20,10 @@ class LoginLinkServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations(['create_login_links_table'])
             ->hasCommand(InstallCommand::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(RedemptionHandlerRegistry::class);
     }
 }

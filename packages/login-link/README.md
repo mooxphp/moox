@@ -19,9 +19,11 @@ Passwordless login links for Filament panels, integrated into the native Filamen
 - The email contains a **temporary signed URL** to `{panel}/login-link/{id}`.
 - When the link is opened:
   - Laravel validates the URL signature and expiry
-  - the `login_links` record is locked and marked as used (single-use)
-  - the user is logged in and redirected into the panel
+  - the `login_links` record is locked (single-use)
+  - redemption dispatches to a **registered process handler** (`login` by default)
+  - the login handler authenticates via the panel's configured guard/model and redirects into the panel
 - Invalid or expired links redirect to the login page with a danger notification.
+- Other packages can register additional handlers under `{package}.login-link.handlers` (aggregated like `moox/scopes`).
 
 ## Installation
 
@@ -63,6 +65,7 @@ The plugin applies the trait dynamically via `PanelLoginEnhancer` (it generates 
 - `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
+- `login-link.handlers`: process key → redemption handler class (`login` ships built-in).
 - `login-link.mail_logo_url`: optional logo shown in the email template.
 
 ## Security notes

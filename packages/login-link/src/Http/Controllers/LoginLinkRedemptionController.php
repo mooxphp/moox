@@ -15,18 +15,13 @@ class LoginLinkRedemptionController extends Controller
         $panel = Filament::getCurrentPanel();
         $panelId = (string) $panel->getId();
 
-        $user = app(LoginLinkRedemptionService::class)->redeem($loginLink, $panelId);
+        $result = app(LoginLinkRedemptionService::class)->redeem($loginLink, $panelId);
 
-        if (! $user) {
+        if (! $result) {
             return redirect()->to($panel->getLoginUrl())
                 ->with('login_link_error', __('login-link::translations.login_invalid_link_title'));
         }
 
-        $guard = Filament::auth();
-        $guard->login($user);
-        session()->regenerate();
-        session()->save();
-
-        return redirect()->intended($panel->getUrl());
+        return $result;
     }
 }

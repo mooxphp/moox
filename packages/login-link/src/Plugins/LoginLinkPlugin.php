@@ -23,7 +23,7 @@ class LoginLinkPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        if (! (bool) config('login-link.passwordless.enabled', false)) {
+        if (! (bool) config('login-link.passwordless.enabled', true)) {
             return;
         }
 
