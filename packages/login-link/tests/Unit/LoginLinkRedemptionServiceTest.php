@@ -48,8 +48,11 @@ it('redeems a valid login link once via the login handler', function (): void {
 
     $loginLink = LoginLink::query()->create([
         'panel_id' => 'admin',
+        'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
         'user_type' => TestUser::class,
         'user_id' => $user->id,
+        'subject_type' => TestUser::class,
+        'subject_id' => $user->id,
         'email' => $user->email,
         'expires_at' => now()->addHour(),
         'used_at' => null,
@@ -66,6 +69,29 @@ it('redeems a valid login link once via the login handler', function (): void {
     expect($service->redeem($loginLink->getKey(), 'admin'))->toBeNull();
 });
 
+it('redeems legacy links that only have the user morph', function (): void {
+    $user = TestUser::query()->create([
+        'name' => 'Legacy User',
+        'email' => 'legacy@example.com',
+        'password' => bcrypt('secret'),
+    ]);
+
+    $loginLink = LoginLink::query()->create([
+        'panel_id' => 'admin',
+        'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
+        'user_type' => TestUser::class,
+        'user_id' => $user->id,
+        'email' => $user->email,
+        'expires_at' => now()->addHour(),
+        'used_at' => null,
+    ]);
+
+    $result = app(LoginLinkRedemptionService::class)->redeem($loginLink->getKey(), 'admin');
+
+    expect($result)->toBeInstanceOf(RedirectResponse::class)
+        ->and(Auth::guard('web')->id())->toBe($user->id);
+});
+
 it('rejects expired login links', function (): void {
     $user = TestUser::query()->create([
         'name' => 'Test User',
@@ -75,8 +101,11 @@ it('rejects expired login links', function (): void {
 
     $loginLink = LoginLink::query()->create([
         'panel_id' => 'admin',
+        'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
         'user_type' => TestUser::class,
         'user_id' => $user->id,
+        'subject_type' => TestUser::class,
+        'subject_id' => $user->id,
         'email' => $user->email,
         'expires_at' => now()->subMinute(),
         'used_at' => null,
@@ -95,14 +124,15 @@ it('fails closed when the process has no registered handler', function (): void 
 
     $loginLink = LoginLink::query()->create([
         'panel_id' => 'admin',
+        'process' => 'missing-process',
         'user_type' => TestUser::class,
         'user_id' => $user->id,
+        'subject_type' => TestUser::class,
+        'subject_id' => $user->id,
         'email' => $user->email,
         'expires_at' => now()->addHour(),
         'used_at' => null,
     ]);
-
-    config()->set('login-link.handlers', []);
 
     expect(app(LoginLinkRedemptionService::class)->redeem($loginLink->getKey(), 'admin'))->toBeNull()
         ->and($loginLink->fresh()->used_at)->toBeNull()
@@ -141,22 +171,17 @@ it('dispatches a custom registered handler for a process key', function (): void
 
     $loginLink = LoginLink::query()->create([
         'panel_id' => 'admin',
+        'process' => 'custom',
         'user_type' => TestUser::class,
         'user_id' => $user->id,
+        'subject_type' => TestUser::class,
+        'subject_id' => $user->id,
         'email' => $user->email,
         'expires_at' => now()->addHour(),
         'used_at' => null,
     ]);
 
-    $service = new class(app(RedemptionHandlerRegistry::class)) extends LoginLinkRedemptionService
-    {
-        protected function resolveProcess(LoginLink $loginLink): string
-        {
-            return 'custom';
-        }
-    };
-
-    $result = $service->redeem($loginLink->getKey(), 'admin');
+    $result = app(LoginLinkRedemptionService::class)->redeem($loginLink->getKey(), 'admin');
 
     expect($result)->toBeInstanceOf(RedirectResponse::class)
         ->and($result->getTargetUrl())->toEndWith('/custom-ok')

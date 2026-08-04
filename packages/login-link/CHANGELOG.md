@@ -6,6 +6,9 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
+- Nullable polymorphic `subject` on `login_links` beside the legacy `user` morph; login populates both.
+- First-class `process` discriminator on `login_links` (replaces the soft `expiry_job` concept); defaults to `login`.
+- Additive migration stub `add_subject_and_process_to_login_links_table`.
 - `RedemptionHandlerRegistry` aggregates process handlers from package config (`{package}.login-link.handlers`) and `login-link.handlers` (scopes-style).
 - `LoginRedemptionHandler` as the built-in `login` handler; authenticates via the panel's configured guard/model.
 - `Moox\LoginLink\Plugins\LoginLinkPlugin` under `src/Plugins/` (Moox package convention).
