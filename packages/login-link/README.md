@@ -2,65 +2,28 @@
 
 # Moox LoginLink
 
-Signed-link **process engine** for Laravel/Filament. Login (magic link) is the first process; public verify/ack-style flows use the same lifecycle without auth.
-
-> Package rename is deferred until the engine boundaries are stable.
-
-## Architecture
-
-| Layer | Owns |
-|---|---|
-| **Core** | Signed URL, expiry, single-use, issue/resend, subject, process, payload, template key → config view |
-| **Process-specific** | Auth/panel (login only); domain handlers in consumer packages |
-
-- Process `context`: `auth` (panel) or `public` (no auth)
-- Process `invalidate_prior`: whether a new issue marks prior valid links used (default `true`)
-- Link `payload`: optional JSON call context (campaign ids, etc.) — subject stays the identity
-- Templates: process stores `template_key` only; views are mapped in `login-link.templates` config (no domain knowledge in the engine)
-- Bulk: core issues **one** link; callers loop/queue for mass send
+Passwordless login links for Filament panels, integrated into the native Filament login page.
 
 ## What it does
 
-- Generates **temporary signed** links (expires + signature).
-- Enforces **single-use** (and optional invalidate-prior per process).
-- **Auth context**: panel-bound login consume route + guard authentication.
-- **Public context**: panel-free consume route (`signed-link/{loginLink}` by default).
-- Sends email via the queue (`Mail::queue()`).
-- Adds a “Send login link” action on Filament’s login form (auth process).
+- Generates **temporary signed** login links (expires + signature).
+- Enforces **single-use** (marks links as used, and invalidates previous valid links for the same user + panel).
+- **Panel-aware**: login links are only valid for the panel they were created for.
+- Sends email via the queue (uses `Mail::queue()`).
+- Adds a “Send login link” action directly on Filament’s login form (no extra public routes required).
 
 ## How it works (high level)
 
-- Auth login: Filament login → issue `login` process → panel consume URL → `login` handler authenticates.
-- Public process: `LoginLinkService::issue(...)` with `panelId: null` → public consume URL → handler (e.g. `ack`) runs **without** Auth.
-- Redemption looks up the process definition and dispatches to its **handler_key**.
-- Other packages register handlers under `{package}.login-link.handlers`.
-
-### Public / non-login example
-
-```php
-app(\Moox\LoginLink\Services\LoginLinkService::class)->issue(
-    processSlug: 'ack',
-    subject: $address,
-    email: 'ap@example.com',
-    panelId: null, // required null for public-context processes
-    request: request(),
-    payload: ['source' => 'portal'],
-);
-```
-
-Register real verification handlers in consumer packages; `ack` is the built-in proof handler.
-
-### Demo with dump views
-
-```bash
-php artisan db:seed --class="Moox\LoginLink\Database\Seeders\LoginLinkProcessSeeder"
-php artisan login-link:demo
-# or campaign-style (invalidate_prior off):
-php artisan login-link:demo demo-campaign --payload='{"campaign":"spring","variant":"A"}'
-```
-
-1. Open the printed signed URL (or the queued dump mail).
-2. Land on `/login-link/demo/dump` — JSON dump of process, subject, payload, `auth.check=false`.
+- The Filament login page adds a **“Send login link”** action on the email/login field.
+- When requested, it creates a `login_links` record and queues a `LoginLinkEmail`.
+- The email contains a **temporary signed URL** to `{panel}/login-link/{id}`.
+- When the link is opened:
+  - Laravel validates the URL signature and expiry
+  - the `login_links` record is locked (single-use)
+  - redemption dispatches to a **registered process handler** (`login` by default)
+  - the login handler authenticates via the panel's configured guard/model and redirects into the panel
+- Invalid or expired links redirect to the login page with a danger notification.
+- Other packages can register additional handlers under `{package}.login-link.handlers` (aggregated like `moox/scopes`).
 
 ## Installation
 
@@ -69,51 +32,51 @@ composer require moox/login-link
 php artisan login-link:install
 ```
 
-Ensure a **queue worker** is running (`php artisan queue:work`) so emails are sent.
+Ensure a **queue worker** is running (`php artisan queue:work`) so login-link emails are sent.
 
 ## Filament panel setup
+
+Register the plugin on every panel that should support passwordless login:
 
 ```php
 use Moox\LoginLink\Plugins\LoginLinkPlugin;
 
 $panel->plugins([
+    // ...
     LoginLinkPlugin::make(),
 ]);
 ```
 
-## Process definitions
+No other login-link wiring is required in `AdminPanelProvider` (no custom `->login()` class needed).
 
-Admins manage processes under **Link processes**:
+The plugin automatically extends **your panel's configured login class** (Filament default, `Moox\User\Services\Login`, or a custom `->login(YourLogin::class)`) with the login-link hint on the email/login field.
 
-- `title`, `slug`, `context` (`auth` \| `public`)
-- `template_key` (from `login-link.templates`)
-- `handler_key` (registered handler)
-- `mail_from`, optional `content` (passed into the view, not the template selector)
-- `expiry_minutes`, `invalidate_prior`
+If your login page does not use `getLoginFormComponent()` or `getEmailFormComponent()`, add `Moox\LoginLink\Concerns\InteractsWithLoginLinks` yourself and call `configureLoginFormWithMagicLink()` on the identifier field.
 
-Seeded on install:
+## Why we use a trait (and a note about PHPStan)
 
-- `login` — auth, template `login`, invalidate prior on
-- `ack` — public, template `ack`, invalidate prior on
+The passwordless UI/behavior is implemented as a trait (`Moox\LoginLink\Concerns\InteractsWithLoginLinks`) so it can be **mixed into any panel login page** (Filament default or a custom `->login(...)`) without forcing a fixed replacement class.
+
+The plugin applies the trait dynamically via `PanelLoginEnhancer` (it generates an enhanced login class at runtime). Because of that, PHPStan may report `trait.unused` even though the trait **is used at runtime** (PHPStan cannot see the `use ...` inside the runtime-generated class).
 
 ## Key configuration knobs
 
-- `login-link.handlers` — handler key → class
-- `login-link.templates` — template key → Blade view
-- `login-link.public_consume_path` — public signed route path
-- `login-link.public_invalid_redirect` — redirect when public redeem fails
-- `login-link.ack.redirect_url` — ack handler success redirect
-- `login-link.passwordless.enabled`, `rate_limit.send`, `expiration_minutes`, `user_models`, `mail_logo_url`
+- `login-link.passwordless.enabled`: enable/disable the passwordless integration.
+- `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
+- `login-link.expiration_minutes`: link validity window.
+- `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
+- `login-link.handlers`: process key → redemption handler class (`login` ships built-in).
+- `login-link.mail_logo_url`: optional logo shown in the email template.
 
 ## Security notes
 
-- Auth links are panel-scoped; public links redeem only on the public route.
+- The email flow is **non-enumerating** from the UI perspective (same success message when the address is unknown).
 - Links are **signed + expiring** and **single-use** (server-enforced).
-- Panel access for login uses `FilamentUser::canAccessPanel()`.
+- Panel access is enforced via `FilamentUser::canAccessPanel()`.
 
 ## Changelog
 
-Please see [CHANGELOG.md](CHANGELOG.md) for more information on what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Security Vulnerabilities
 

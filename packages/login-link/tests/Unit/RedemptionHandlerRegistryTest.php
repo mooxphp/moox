@@ -28,7 +28,7 @@ it('registers login as the built-in first handler', function (): void {
 it('merges handlers contributed by other packages', function (): void {
     $contributor = new class implements RedemptionHandler
     {
-        public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
+        public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
         {
             return null;
         }
@@ -55,7 +55,7 @@ it('merges handlers contributed by other packages', function (): void {
 it('lets login-link.handlers override package contributions', function (): void {
     $packageHandler = new class implements RedemptionHandler
     {
-        public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
+        public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
         {
             return null;
         }
@@ -63,7 +63,7 @@ it('lets login-link.handlers override package contributions', function (): void 
 
     $overrideHandler = new class implements RedemptionHandler
     {
-        public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
+        public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
         {
             return redirect('/');
         }

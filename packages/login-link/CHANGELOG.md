@@ -6,24 +6,6 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
-- Demo dump flow: `dump` handler/template, processes `demo-dump` / `demo-campaign`, `php artisan login-link:demo`, pages at `/login-link/demo/dump`.
-- Process `context` (`auth` \| `public`): auth keeps panel consume; public uses `login-link.public.consume` without Filament/auth.
-- Nullable `panel_id` on link instances; auth issue requires panel id, public forces null.
-- JSON `payload` on link instances (call context; subject remains identity).
-- Process `template_key` resolved via `login-link.templates` config (domain-agnostic).
-- Process `invalidate_prior` policy (default true; mass/tracking can disable).
-- Built-in non-login `ack` handler + `ProcessLinkAcknowledged` event for proving signed-link redemption without authentication.
-- Seeded `ack` process definition; configurable `login-link.ack.redirect_url`.
-- Redemption resolves the handler via the process definition's `handler_key` (slug may differ).
-- Lifecycle scoped to process + subject: invalidate prior valid links, rate limits, and resend.
-- `ProcessLinkMail` interim mailable uses process `mail_from` / `content` / expiry (falls back to login blade when content empty).
-- Resend action on Login Link instances.
-- `LoginLinkProcess` (`BaseRecordModel`) + Filament `BaseRecordResource` for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`) with List/Create/View/Edit pages.
-- Handler key validated against `RedemptionHandlerRegistry` (unregistered keys rejected).
-- `LoginLinkProcessSeeder` seeds the built-in `login` process; wired via `extra.moox.install.seed`.
-- Nullable polymorphic `subject` on `login_links` beside the legacy `user` morph; login populates both.
-- First-class `process` discriminator on `login_links` (replaces the soft `expiry_job` concept); defaults to `login`.
-- Additive migration stub `add_subject_and_process_to_login_links_table`.
 - `RedemptionHandlerRegistry` aggregates process handlers from package config (`{package}.login-link.handlers`) and `login-link.handlers` (scopes-style).
 - `LoginRedemptionHandler` as the built-in `login` handler; authenticates via the panel's configured guard/model.
 - `Moox\LoginLink\Plugins\LoginLinkPlugin` under `src/Plugins/` (Moox package convention).

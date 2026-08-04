@@ -1,7 +1,5 @@
 <?php
 
-use Moox\LoginLink\Handlers\AckRedemptionHandler;
-use Moox\LoginLink\Handlers\DumpRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\User\Models\User;
 
@@ -68,41 +66,13 @@ return [
                     'icon' => 'gmdi-text-snippet',
                     'query' => [
                         [
-                            'field' => 'process',
+                            'field' => 'expiry_job',
                             'operator' => '=',
-                            'value' => 'documents',
+                            'value' => 'Documents',
                         ],
                     ],
                 ],
                 */
-            ],
-        ],
-        'process' => [
-            'single' => 'Link process',
-            'plural' => 'Link processes',
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
             ],
         ],
     ],
@@ -210,61 +180,14 @@ return [
     | Redemption handlers
     |--------------------------------------------------------------------------
     |
-    | Handler key => handler class. Other packages contribute additional
+    | Process key => handler class. Other packages contribute additional
     | handlers via `{package}.login-link.handlers`; this package aggregates
-    | them (mirror of moox/scopes). Built-in: login + ack (non-login proof).
+    | them (mirror of moox/scopes). Login is the built-in first handler.
     |
     */
 
     'handlers' => [
         'login' => LoginRedemptionHandler::class,
-        'ack' => AckRedemptionHandler::class,
-        'dump' => DumpRedemptionHandler::class,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mail templates (domain-agnostic)
-    |--------------------------------------------------------------------------
-    |
-    | Process definitions store only a template_key. Map keys to Blade views
-    | here (or in consuming apps/packages). No domain copy lives in the engine.
-    |
-    */
-
-    'templates' => [
-        'login' => 'login-link::mail.login-link',
-        'ack' => 'login-link::mail.process-link',
-        'dump' => 'login-link::mail.dump',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Public consume path (non-auth context)
-    |--------------------------------------------------------------------------
-    |
-    | Signed route for public-context processes. Auth-context links keep using
-    | the Filament panel consume route.
-    |
-    */
-
-    'public_consume_path' => env('LOGIN_LINK_PUBLIC_CONSUME_PATH', 'signed-link/{loginLink}'),
-
-    'public_invalid_redirect' => env('LOGIN_LINK_PUBLIC_INVALID_REDIRECT', '/'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Ack handler (non-login)
-    |--------------------------------------------------------------------------
-    |
-    | Built-in second process for proving non-login redemption. Redirects here
-    | after firing ProcessLinkAcknowledged. Real verification handlers belong
-    | in consumer packages.
-    |
-    */
-
-    'ack' => [
-        'redirect_url' => env('LOGIN_LINK_ACK_REDIRECT_URL', '/'),
     ],
 
 ];

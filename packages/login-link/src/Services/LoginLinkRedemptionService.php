@@ -7,8 +7,6 @@ namespace Moox\LoginLink\Services;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Moox\LoginLink\Models\LoginLink;
-use Moox\LoginLink\Models\LoginLinkProcess;
-use Moox\LoginLink\Support\LinkProcessContext;
 
 class LoginLinkRedemptionService
 {
@@ -17,10 +15,7 @@ class LoginLinkRedemptionService
     ) {
     }
 
-    /**
-     * @param  string|null  $panelId  Panel id for auth-context redeem; null for public consume.
-     */
-    public function redeem(int|string $loginLinkId, ?string $panelId = null): ?RedirectResponse
+    public function redeem(int|string $loginLinkId, string $panelId): ?RedirectResponse
     {
         return DB::transaction(function () use ($loginLinkId, $panelId) {
             $loginLink = LoginLink::query()
@@ -32,18 +27,12 @@ class LoginLinkRedemptionService
                 return null;
             }
 
-            $context = $this->resolveContext($loginLink);
-
-            if ($context === LinkProcessContext::PUBLIC) {
-                if ($panelId !== null) {
-                    return null;
-                }
-            } elseif ($panelId === null || (string) $loginLink->panel_id !== (string) $panelId) {
+            if ((string) $loginLink->panel_id !== (string) $panelId) {
                 return null;
             }
 
-            $handlerKey = $this->resolveHandlerKey($loginLink);
-            $handler = $this->handlers->get($handlerKey);
+            $process = $this->resolveProcess($loginLink);
+            $handler = $this->handlers->get($process);
 
             if ($handler === null) {
                 return null;
@@ -61,42 +50,13 @@ class LoginLinkRedemptionService
         });
     }
 
-    protected function resolveContext(LoginLink $loginLink): string
-    {
-        $definition = LoginLinkProcess::query()
-            ->where('slug', $this->resolveProcess($loginLink))
-            ->first();
-
-        if ($definition !== null && LinkProcessContext::isValid((string) $definition->context)) {
-            return (string) $definition->context;
-        }
-
-        return LinkProcessContext::AUTH;
-    }
-
     /**
-     * Prefer the process definition's handler_key; fall back to the link's process
-     * slug (BC when slug and handler key match, or no definition exists yet).
-     */
-    protected function resolveHandlerKey(LoginLink $loginLink): string
-    {
-        $processSlug = $this->resolveProcess($loginLink);
-
-        $definition = LoginLinkProcess::query()->where('slug', $processSlug)->first();
-
-        if ($definition !== null && filled($definition->handler_key)) {
-            return (string) $definition->handler_key;
-        }
-
-        return $processSlug;
-    }
-
-    /**
-     * Process discriminator on the link; empty/missing defaults to login (BC).
+     * Until the process discriminator column lands (#3), missing process defaults to login (BC).
      */
     protected function resolveProcess(LoginLink $loginLink): string
     {
-        $process = $loginLink->process;
+        $process = $loginLink->getAttribute('process')
+            ?? $loginLink->getAttribute('expiry_job');
 
         if (is_string($process) && $process !== '') {
             return $process;
