@@ -41,24 +41,24 @@ class LoginRedemptionHandler implements RedemptionHandler
 
     /**
      * Resolve the authenticatable subject via the panel's configured guard/model.
-     * Existing morph `user` rows remain the source of identity (BC); the guard
-     * model must match so a non-User authenticatable works by configuration alone.
+     * Prefers the polymorphic subject; falls back to the legacy user morph (BC).
+     * The guard model must match so a non-User authenticatable works by configuration alone.
      */
     private function resolveSubject(LoginLink $loginLink, string $guardName): ?Authenticatable
     {
-        $user = $loginLink->user()->first();
+        $subject = $loginLink->subject()->first() ?? $loginLink->user()->first();
 
-        if (! $user instanceof Authenticatable) {
+        if (! $subject instanceof Authenticatable) {
             return null;
         }
 
         $expectedModel = $this->resolveGuardUserModel($guardName);
 
-        if ($expectedModel !== null && ! $user instanceof $expectedModel) {
+        if ($expectedModel !== null && ! $subject instanceof $expectedModel) {
             return null;
         }
 
-        return $user;
+        return $subject;
     }
 
     /**

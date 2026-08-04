@@ -45,7 +45,7 @@ class LoginLinkEmail extends Mailable implements ShouldQueue
 
         return $this->subject(__('login-link::translations.mail_subject'))
             ->view('login-link::mail.login-link', [
-                'user' => $this->loginLink->user()->first(),
+                'user' => $this->loginLink->subject()->first() ?? $this->loginLink->user()->first(),
                 'url' => $url,
                 'expiresMinutes' => $expiresMinutes,
                 'logoUrl' => $this->resolveLogoUrl(),

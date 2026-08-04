@@ -18,7 +18,10 @@ class LoginLinkServiceProvider extends MooxServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_login_links_table'])
+            ->hasMigrations([
+                'create_login_links_table',
+                'add_subject_and_process_to_login_links_table',
+            ])
             ->hasCommand(InstallCommand::class);
     }
 

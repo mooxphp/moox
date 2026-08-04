@@ -51,12 +51,11 @@ class LoginLinkRedemptionService
     }
 
     /**
-     * Until the process discriminator column lands (#3), missing process defaults to login (BC).
+     * Process discriminator on the link; empty/missing defaults to login (BC).
      */
     protected function resolveProcess(LoginLink $loginLink): string
     {
-        $process = $loginLink->getAttribute('process')
-            ?? $loginLink->getAttribute('expiry_job');
+        $process = $loginLink->process;
 
         if (is_string($process) && $process !== '') {
             return $process;

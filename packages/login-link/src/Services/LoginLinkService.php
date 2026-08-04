@@ -39,16 +39,31 @@ class LoginLinkService
 
         LoginLink::query()
             ->where('panel_id', $panelId)
-            ->where('user_type', $user::class)
-            ->where('user_id', $user->id)
+            ->where('process', RedemptionHandlerRegistry::DEFAULT_PROCESS)
+            ->where(function ($query) use ($user): void {
+                $query
+                    ->where(function ($inner) use ($user): void {
+                        $inner
+                            ->where('subject_type', $user::class)
+                            ->where('subject_id', $user->id);
+                    })
+                    ->orWhere(function ($inner) use ($user): void {
+                        $inner
+                            ->where('user_type', $user::class)
+                            ->where('user_id', $user->id);
+                    });
+            })
             ->whereNull('used_at')
             ->where('expires_at', '>', now())
             ->update(['used_at' => now()]);
 
         $loginLink = LoginLink::create([
             'panel_id' => $panelId,
+            'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
             'user_id' => $user->id,
             'user_type' => $user::class,
+            'subject_id' => $user->id,
+            'subject_type' => $user::class,
             'email' => $user->email,
             'expires_at' => now()->addMinutes($expiresMinutes),
             'used_at' => null,

@@ -66,9 +66,9 @@ return [
                     'icon' => 'gmdi-text-snippet',
                     'query' => [
                         [
-                            'field' => 'expiry_job',
+                            'field' => 'process',
                             'operator' => '=',
-                            'value' => 'Documents',
+                            'value' => 'documents',
                         ],
                     ],
                 ],
