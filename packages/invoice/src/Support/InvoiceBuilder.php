@@ -35,6 +35,7 @@ class InvoiceBuilder
         $invoice->document_type = $draft->document_type;
         $invoice->due_date = $draft->due_date;
         $invoice->currency = $draft->currency;
+        $invoice->customer_number = $draft->customer_number;
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;

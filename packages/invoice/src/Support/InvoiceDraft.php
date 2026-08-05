@@ -20,6 +20,7 @@ readonly class InvoiceDraft
         public string $document_type,
         public ?string $due_date,
         public string $currency,
+        public ?string $customer_number,
         public ?string $customer_reference,
         public ?string $order_number,
         public ?string $order_date,

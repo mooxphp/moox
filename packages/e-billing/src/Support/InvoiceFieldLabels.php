@@ -134,6 +134,7 @@ final class InvoiceFieldLabels
             'currency' => 'BT-5',
             'due_date' => 'BT-9',
             'customer_reference' => 'BT-10',
+            'customer_number' => 'BT-46',
             'order_number' => 'BT-13',
             'payment_terms' => 'BT-20',
             'supplier_name' => 'BT-27',

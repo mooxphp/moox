@@ -120,6 +120,7 @@ class ParsedInvoiceMapper
             document_type: $documentType,
             due_date: $dto->dueDate,
             currency: $dto->currency,
+            customer_number: $dto->customerNumber !== '' ? $dto->customerNumber : null,
             customer_reference: $dto->customerReference,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,

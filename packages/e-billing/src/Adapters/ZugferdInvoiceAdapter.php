@@ -48,7 +48,9 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     }
 
     public string $customerNumber {
-        get => '';
+        get => $this->model->customer_number !== null
+            ? (string) $this->model->customer_number
+            : '';
     }
 
     public ?string $customerReference {
