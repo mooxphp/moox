@@ -6,7 +6,7 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
-- `LoginLinkProcess` model + Filament resource for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`).
+- `LoginLinkProcess` (`BaseRecordModel`) + Filament `BaseRecordResource` for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`) with List/Create/View/Edit pages.
 - Handler key validated against `RedemptionHandlerRegistry` (unregistered keys rejected).
 - `LoginLinkProcessSeeder` seeds the built-in `login` process; wired via `extra.moox.install.seed`.
 - Nullable polymorphic `subject` on `login_links` beside the legacy `user` morph; login populates both.
