@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\LoginLink\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 
-class LoginLinkProcess extends Model
+class LoginLinkProcess extends BaseRecordModel
 {
     protected $table = 'login_link_processes';
 

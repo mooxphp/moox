@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\LoginLink\Resources\LoginLinkProcessResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
+use Moox\Core\Entities\Items\Record\Pages\BaseCreateRecord;
 use Moox\LoginLink\Resources\LoginLinkProcessResource;
 
-class CreatePage extends CreateRecord
+class CreateLoginLinkProcess extends BaseCreateRecord
 {
     protected static string $resource = LoginLinkProcessResource::class;
 }

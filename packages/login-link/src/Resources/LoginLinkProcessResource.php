@@ -4,75 +4,127 @@ declare(strict_types=1);
 
 namespace Moox\LoginLink\Resources;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\LoginLink\Models\LoginLinkProcess;
-use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\CreatePage;
-use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\EditPage;
-use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ListPage;
+use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\CreateLoginLinkProcess;
+use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\EditLoginLinkProcess;
+use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ListLoginLinkProcesses;
+use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ViewLoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
-use Override;
 
-class LoginLinkProcessResource extends Resource
+class LoginLinkProcessResource extends BaseRecordResource
 {
-    use BaseInResource;
-
     protected static ?string $model = LoginLinkProcess::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-settings-suggest-o';
 
-    #[Override]
+    protected static function getEntityType(): string
+    {
+        return 'login-link';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('login-link.resources.process.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('login-link.resources.process.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('login-link.resources.process.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('login-link.resources.process.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('login-link.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 10;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TitleWithSlugInput::make(
-                    fieldTitle: 'title',
-                    fieldSlug: 'slug',
-                    urlHostVisible: false,
-                    urlVisitLinkVisible: false,
-                    slugRuleUniqueParameters: [
-                        'table' => 'login_link_processes',
-                        'column' => 'slug',
-                        'ignoreRecord' => true,
-                    ],
-                ),
-                TextInput::make('mail_from')
-                    ->label(__('login-link::translations.mail_from'))
-                    ->email()
-                    ->maxLength(255),
-                Textarea::make('content')
-                    ->label(__('login-link::translations.content'))
-                    ->rows(10)
+                Grid::make()
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                TitleWithSlugInput::make(
+                                    fieldTitle: 'title',
+                                    fieldSlug: 'slug',
+                                    urlHostVisible: false,
+                                    urlVisitLinkVisible: false,
+                                    slugRuleUniqueParameters: [
+                                        'table' => 'login_link_processes',
+                                        'column' => 'slug',
+                                        'ignoreRecord' => true,
+                                    ],
+                                ),
+                                TextInput::make('mail_from')
+                                    ->label(__('login-link::translations.mail_from'))
+                                    ->email()
+                                    ->maxLength(255),
+                                Textarea::make('content')
+                                    ->label(__('login-link::translations.content'))
+                                    ->rows(10)
+                                    ->columnSpanFull(),
+                                Select::make('handler_key')
+                                    ->label(__('login-link::translations.handler_key'))
+                                    ->options(fn (): array => collect(app(RedemptionHandlerRegistry::class)->all())
+                                        ->mapWithKeys(fn (string $class, string $key): array => [$key => $key])
+                                        ->all())
+                                    ->required()
+                                    ->native(false),
+                                TextInput::make('expiry_minutes')
+                                    ->label(__('login-link::translations.expiry_minutes'))
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->helperText(__('login-link::translations.expiry_minutes_help', [
+                                        'default' => (int) config('login-link.expiration_minutes', 60),
+                                    ])),
+                            ])
+                            ->columnSpan(2),
+                        Grid::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        static::getFormActions(),
+                                    ]),
+                                Section::make('')
+                                    ->schema([
+                                        ...static::getStandardTimestampFields(),
+                                    ])
+                                    ->hidden(fn (?LoginLinkProcess $record): bool => $record === null),
+                            ])
+                            ->columns(1)
+                            ->columnSpan(1),
+                    ])
+                    ->columns(3)
                     ->columnSpanFull(),
-                Select::make('handler_key')
-                    ->label(__('login-link::translations.handler_key'))
-                    ->options(fn (): array => collect(app(RedemptionHandlerRegistry::class)->all())
-                        ->mapWithKeys(fn (string $class, string $key): array => [$key => $key])
-                        ->all())
-                    ->required()
-                    ->native(false),
-                TextInput::make('expiry_minutes')
-                    ->label(__('login-link::translations.expiry_minutes'))
-                    ->numeric()
-                    ->minValue(1)
-                    ->helperText(__('login-link::translations.expiry_minutes_help', [
-                        'default' => (int) config('login-link.expiration_minutes', 60),
-                    ])),
             ]);
     }
 
-    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -99,65 +151,24 @@ class LoginLinkProcessResource extends Resource
                         ])
                         : (string) $state)
                     ->sortable(),
+                TextColumn::make('updated_at')
+                    ->label(__('core::core.updated_at'))
+                    ->since()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                DeleteBulkAction::make(),
-            ]);
+            ->defaultSort('id', 'desc')
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()]);
     }
 
-    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => ListPage::route('/'),
-            'create' => CreatePage::route('/create'),
-            'edit' => EditPage::route('/{record}/edit'),
+            'index' => ListLoginLinkProcesses::route('/'),
+            'create' => CreateLoginLinkProcess::route('/create'),
+            'view' => ViewLoginLinkProcess::route('/{record}'),
+            'edit' => EditLoginLinkProcess::route('/{record}/edit'),
         ];
-    }
-
-    #[Override]
-    public static function getModelLabel(): string
-    {
-        return config('login-link.resources.process.single');
-    }
-
-    #[Override]
-    public static function getPluralModelLabel(): string
-    {
-        return config('login-link.resources.process.plural');
-    }
-
-    #[Override]
-    public static function getNavigationLabel(): string
-    {
-        return config('login-link.resources.process.plural');
-    }
-
-    #[Override]
-    public static function getBreadcrumb(): string
-    {
-        return config('login-link.resources.process.single');
-    }
-
-    #[Override]
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    #[Override]
-    public static function getNavigationGroup(): ?string
-    {
-        return config('login-link.navigation_group');
-    }
-
-    #[Override]
-    public static function getNavigationSort(): ?int
-    {
-        return 10;
     }
 }

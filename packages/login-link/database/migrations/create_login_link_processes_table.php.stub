@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('handler_key')->index();
             $table->unsignedInteger('expiry_minutes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
