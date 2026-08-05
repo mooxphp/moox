@@ -4,6 +4,7 @@
 
 ### Added
 
+- Buyer identifier (`customer_number`, EN 16931 BT-46) now flows from the parser DTO onto the persisted invoice via `ParsedInvoiceMapper` / `InvoiceFactory`. Empty DTO values become `null`; non-empty values are stored unchanged. The field is validated from the invoice like any other field (present ⇒ `parsed`, absent ⇒ configured MoSCoW priority) and is no longer listed under `INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE` ([#23](https://github.com/mooxphp/e-billing/issues/23)).
 - Three-format registry: XRechnung (pure CII XML), ZUGFeRD (hybrid PDF), Factur-X (hybrid PDF). All share one CII generator; XRechnung uses `XRECHNUNG` profile, hybrids use `EN16931`.
 - Per-customer format resolution via `EbillingFormatResolver`: reads `companies.data.preferred_ebilling_format`, falls back to `default_format` config (default `zugferd`). Format is frozen on the document at generation time; preference changes affect only future documents.
 - XRechnung documents are validated by KOSIT only (no PDF, veraPDF not invoked) and reach `Validated` on pass.
@@ -11,6 +12,7 @@
 
 ### Changed
 
+- Company name matching for field validation and format resolution is unified in `CompanyNameMatcher`; both consumers match against the persisted invoice buyer name (whitespace-collapsed, case-insensitive exact match, unique hit only). No longer filters on removed `company_type` / `is_active` columns. `EBillingFormatResolver` no longer reads `bill_data['customer_name']` ([#22](https://github.com/mooxphp/e-billing/issues/22)).
 - Reduced cyclomatic/NPath complexity in `ValidateArtifactJob::handle` (named stages: resolve document/inputs, run validations, persist success/failure), `UnitCodeResolver::lookupMaps`, and `DocumentTypeCodeResolver::resolveLabel`. Behaviour unchanged.
 - Deduplicated KOSIT/veraPDF validation persistence in `ValidateArtifactJob` via `ArtifactValidationPersister`; supplemental verdicts (veraPDF) stay as closures so the shared seam does not type-hint optional validator packages. No behaviour change.
 - Replaced `GenerateXmlJob` / `ValidateXmlJob` / `MergeZugferdPdfJob` with `GenerateArtifactJob` → `ValidateArtifactJob` (generate-first pipeline).
