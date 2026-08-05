@@ -57,6 +57,7 @@ $draft = new InvoiceDraft(
     document_type: '380',
     due_date: '2026-06-15',
     currency: 'EUR',
+    customer_number: null,
     customer_reference: null,
     order_number: null,
     order_date: null,
@@ -179,7 +180,8 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `document_type` (string) - EN 16931 document type code (e.g. `380` for invoice)
 -   `due_date` (string, nullable) - Payment due date
 -   `currency` (string, default: `EUR`) - ISO 4217 currency code
--   `customer_reference` (string, nullable) - Buyer reference
+-   `customer_number` (string, nullable, indexed) - Buyer identifier assigned by the seller (EN 16931 **BT-46**); stored verbatim from the document
+-   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
 -   `pricing_basis` (string, nullable) - Incoterms / pricing basis (serialized as note in e-billing / ZUGFeRD layer)

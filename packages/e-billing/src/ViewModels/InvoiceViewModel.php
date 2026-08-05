@@ -20,7 +20,6 @@ final class InvoiceViewModel
      * @var list<string>
      */
     private const FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'customer_number',
         'payment_terms',
         'shipping_method',
     ];

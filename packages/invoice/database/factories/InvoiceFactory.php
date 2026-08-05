@@ -28,6 +28,7 @@ class InvoiceFactory extends Factory
             'document_type' => '380',
             'due_date' => fake()->optional()->date('Y-m-d'),
             'currency' => 'EUR',
+            'customer_number' => fake()->optional()->bothify('000####'),
             'customer_reference' => fake()->optional()->bothify('REF-####'),
             'order_number' => fake()->optional()->bothify('PO-####'),
             'order_date' => fake()->optional()->date('Y-m-d'),

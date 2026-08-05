@@ -23,7 +23,6 @@ class InvoiceFieldValidator
      * @var list<string>
      */
     private const INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'customer_number', // matchable when company identifier field lands later
         'payment_terms',
         'shipping_method',
     ];
@@ -223,7 +222,7 @@ class InvoiceFieldValidator
         ?Company $matchedCompany,
     ): array {
         return match ($field) {
-            'customer_number' => $this->validateCustomerNumberField($priority),
+            'customer_number' => $this->validateCustomerNumberField($invoice, $priority),
             'customer_name' => $this->validateCustomerNameField($invoice, $priority, $matchedCompany),
             'customer_vat_id' => $this->validateCustomerVatField($invoice, $priority, $matchedCompany),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
@@ -233,13 +232,16 @@ class InvoiceFieldValidator
     }
 
     /**
-     * customer_number has no persisted source until a company identifier field exists on the invoice.
-     *
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateCustomerNumberField(string $priority): array
+    private function validateCustomerNumberField(Invoice $invoice, string $priority): array
     {
-        return $this->entryForEmptyField('customer_number', $priority, false);
+        $raw = $invoice->customer_number;
+        if ($this->isScalarEmpty($raw)) {
+            return $this->entryForEmptyField('customer_number', $priority, false);
+        }
+
+        return ['status' => 'parsed'];
     }
 
     /**

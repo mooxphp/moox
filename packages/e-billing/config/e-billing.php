@@ -316,14 +316,14 @@ return [
             'currency' => 'must',    // BT-5
 
             // Buyer — MUST (core identification)
-            'customer_number' => 'must',
+            'customer_number' => 'must',    // BT-46
             'customer_name' => 'must',    // BT-44
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
 
             // Buyer reference
-            'customer_reference' => 'should', // BT-10
+            'customer_reference' => 'could', // BT-10
             'order_number' => 'should',  // BT-13
             'order_date' => 'could',   // BT-13 date
 

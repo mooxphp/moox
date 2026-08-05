@@ -43,6 +43,7 @@ class Invoice extends BaseItemModel
         'document_type',
         'due_date',
         'currency',
+        'customer_number',
         'customer_reference',
         'order_number',
         'order_date',
