@@ -48,4 +48,13 @@ class LoginLink extends Model
     {
         return $this->morphTo();
     }
+
+    public function processDefinition(): ?LoginLinkProcess
+    {
+        $slug = is_string($this->process) && $this->process !== ''
+            ? $this->process
+            : RedemptionHandlerRegistry::DEFAULT_PROCESS;
+
+        return LoginLinkProcess::query()->where('slug', $slug)->first();
+    }
 }

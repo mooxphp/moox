@@ -52,4 +52,8 @@ return [
     'expiry_minutes' => 'Link expiry (minutes)',
     'expiry_minutes_help' => 'Leave empty to use the default (:default minutes).',
     'expiry_minutes_default' => 'Default (:default)',
+
+    'resend' => 'Resend',
+    'resend_sent' => 'A new link has been sent.',
+    'resend_failed' => 'Could not resend the link.',
 ];

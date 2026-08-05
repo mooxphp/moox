@@ -6,6 +6,9 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
+- Lifecycle scoped to process + subject: invalidate prior valid links, rate limits, and resend.
+- `ProcessLinkMail` interim mailable uses process `mail_from` / `content` / expiry (falls back to login blade when content empty).
+- Resend action on Login Link instances.
 - `LoginLinkProcess` (`BaseRecordModel`) + Filament `BaseRecordResource` for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`) with List/Create/View/Edit pages.
 - Handler key validated against `RedemptionHandlerRegistry` (unregistered keys rejected).
 - `LoginLinkProcessSeeder` seeds the built-in `login` process; wired via `extra.moox.install.seed`.

@@ -2,11 +2,13 @@
 
 namespace Moox\LoginLink\Resources;
 
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -18,6 +20,7 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
+use Moox\LoginLink\Services\LoginLinkService;
 use Override;
 
 class LoginLinkResource extends Resource
@@ -93,6 +96,10 @@ class LoginLinkResource extends Resource
                 TextColumn::make('email')
                     ->label(__('core::user.email'))
                     ->sortable(),
+                TextColumn::make('process')
+                    ->label(__('login-link::translations.slug'))
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('core::core.created_at'))
                     ->since()
@@ -114,6 +121,29 @@ class LoginLinkResource extends Resource
                     ->sortable(),
             ])
             ->recordActions([
+                Action::make('resend')
+                    ->label(__('login-link::translations.resend'))
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (LoginLink $record): bool => $record->used_at === null && $record->expires_at?->isFuture())
+                    ->action(function (LoginLink $record): void {
+                        $newLink = app(LoginLinkService::class)->resendLink($record, request());
+
+                        if (! $newLink) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('login-link::translations.resend_failed'))
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('login-link::translations.resend_sent'))
+                            ->send();
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

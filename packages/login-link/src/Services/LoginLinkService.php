@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\LoginLink\Services;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\PanelRegistry;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Moox\LoginLink\Mail\LoginLinkEmail;
+use Moox\LoginLink\Mail\ProcessLinkMail;
 use Moox\LoginLink\Models\LoginLink;
+use Moox\LoginLink\Models\LoginLinkProcess;
 
 class LoginLinkService
 {
@@ -35,45 +39,129 @@ class LoginLinkService
             return 'denied';
         }
 
-        $expiresMinutes = (int) config('login-link.expiration_minutes', 60);
+        $this->issue(
+            processSlug: RedemptionHandlerRegistry::DEFAULT_PROCESS,
+            subject: $user,
+            email: $user->email,
+            panelId: $panelId,
+            request: $request,
+            setUserMorph: true,
+        );
 
+        return 'sent';
+    }
+
+    /**
+     * Issue a new signed link for a process + subject. Invalidates prior valid links
+     * for the same process + subject. Expiry/from/content come from the process definition.
+     */
+    public function issue(
+        string $processSlug,
+        Model $subject,
+        string $email,
+        string $panelId,
+        Request $request,
+        bool $setUserMorph = false,
+    ): LoginLink {
+        $process = $this->resolveProcessDefinition($processSlug);
+        $expiresMinutes = $process?->resolveExpiryMinutes()
+            ?? (int) config('login-link.expiration_minutes', 60);
+
+        $this->invalidatePriorValidLinks($processSlug, $subject);
+
+        $attributes = [
+            'panel_id' => $panelId,
+            'process' => $processSlug,
+            'subject_id' => $subject->getKey(),
+            'subject_type' => $subject::class,
+            'email' => $email,
+            'expires_at' => now()->addMinutes($expiresMinutes),
+            'used_at' => null,
+            'user_agent' => $request->userAgent(),
+            'ip_address' => $request->ip(),
+        ];
+
+        if ($setUserMorph) {
+            $attributes['user_id'] = $subject->getKey();
+            $attributes['user_type'] = $subject::class;
+        }
+
+        $loginLink = LoginLink::query()->create($attributes);
+
+        Mail::to($email)->queue(new ProcessLinkMail($loginLink, $process));
+
+        return $loginLink;
+    }
+
+    /**
+     * Re-issue the current link for a process + subject (invalidates prior, creates + mails a new one).
+     */
+    public function resend(
+        string $processSlug,
+        Model $subject,
+        string $email,
+        string $panelId,
+        Request $request,
+        bool $setUserMorph = false,
+    ): LoginLink {
+        return $this->issue(
+            processSlug: $processSlug,
+            subject: $subject,
+            email: $email,
+            panelId: $panelId,
+            request: $request,
+            setUserMorph: $setUserMorph,
+        );
+    }
+
+    /**
+     * Resend from an existing link instance (uses its process + subject).
+     */
+    public function resendLink(LoginLink $loginLink, Request $request): ?LoginLink
+    {
+        $subject = $loginLink->subject()->first() ?? $loginLink->user()->first();
+
+        if (! $subject instanceof Model) {
+            return null;
+        }
+
+        $setUserMorph = $loginLink->user_type !== null && $loginLink->user_id !== null;
+
+        return $this->resend(
+            processSlug: $loginLink->process ?: RedemptionHandlerRegistry::DEFAULT_PROCESS,
+            subject: $subject,
+            email: (string) $loginLink->email,
+            panelId: (string) $loginLink->panel_id,
+            request: $request,
+            setUserMorph: $setUserMorph,
+        );
+    }
+
+    public function invalidatePriorValidLinks(string $processSlug, Model $subject): void
+    {
         LoginLink::query()
-            ->where('panel_id', $panelId)
-            ->where('process', RedemptionHandlerRegistry::DEFAULT_PROCESS)
-            ->where(function ($query) use ($user): void {
+            ->where('process', $processSlug)
+            ->where(function ($query) use ($subject): void {
                 $query
-                    ->where(function ($inner) use ($user): void {
+                    ->where(function ($inner) use ($subject): void {
                         $inner
-                            ->where('subject_type', $user::class)
-                            ->where('subject_id', $user->id);
+                            ->where('subject_type', $subject::class)
+                            ->where('subject_id', $subject->getKey());
                     })
-                    ->orWhere(function ($inner) use ($user): void {
+                    ->orWhere(function ($inner) use ($subject): void {
                         $inner
-                            ->where('user_type', $user::class)
-                            ->where('user_id', $user->id);
+                            ->where('user_type', $subject::class)
+                            ->where('user_id', $subject->getKey());
                     });
             })
             ->whereNull('used_at')
             ->where('expires_at', '>', now())
             ->update(['used_at' => now()]);
+    }
 
-        $loginLink = LoginLink::create([
-            'panel_id' => $panelId,
-            'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
-            'user_id' => $user->id,
-            'user_type' => $user::class,
-            'subject_id' => $user->id,
-            'subject_type' => $user::class,
-            'email' => $user->email,
-            'expires_at' => now()->addMinutes($expiresMinutes),
-            'used_at' => null,
-            'user_agent' => $request->userAgent(),
-            'ip_address' => $request->ip(),
-        ]);
-
-        Mail::to($user->email)->queue(new LoginLinkEmail($loginLink));
-
-        return 'sent';
+    public function resolveProcessDefinition(string $processSlug): ?LoginLinkProcess
+    {
+        return LoginLinkProcess::query()->where('slug', $processSlug)->first();
     }
 
     private function userCanAccessPanel(mixed $user, string $panelId): bool

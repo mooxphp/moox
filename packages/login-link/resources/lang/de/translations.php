@@ -51,4 +51,8 @@ return [
     'expiry_minutes' => 'Link-Gültigkeit (Minuten)',
     'expiry_minutes_help' => 'Leer lassen für den Default (:default Minuten).',
     'expiry_minutes_default' => 'Default (:default)',
+
+    'resend' => 'Erneut senden',
+    'resend_sent' => 'Ein neuer Link wurde gesendet.',
+    'resend_failed' => 'Link konnte nicht erneut gesendet werden.',
 ];

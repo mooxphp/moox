@@ -69,6 +69,8 @@ Admins can manage link processes under the Users navigation group (**Link proces
 
 The built-in `login` process is seeded on install. Existing **Login links** remain the instance list (pending/used/expired).
 
+Issuing a link invalidates any prior valid link for the same **process + subject**. Expiry, from, and content come from the process definition (package defaults when unset). Pending links can be **Resent** from the Login links list.
+
 ## Key configuration knobs
 
 - `login-link.passwordless.enabled`: enable/disable the passwordless integration.

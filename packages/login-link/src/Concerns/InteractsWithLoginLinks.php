@@ -8,6 +8,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
 use Moox\LoginLink\Services\LoginLinkRateLimiter;
 use Moox\LoginLink\Services\LoginLinkService;
+use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 
 trait InteractsWithLoginLinks
 {
@@ -44,8 +45,9 @@ trait InteractsWithLoginLinks
         }
 
         $rateLimiter = app(LoginLinkRateLimiter::class);
+        $process = RedemptionHandlerRegistry::DEFAULT_PROCESS;
 
-        if ($rateLimiter->tooManySendAttempts($email)) {
+        if ($rateLimiter->tooManySendAttempts($email, $process)) {
             Notification::make()
                 ->danger()
                 ->title(__('login-link::translations.login_throttled_title'))
@@ -54,7 +56,7 @@ trait InteractsWithLoginLinks
             return;
         }
 
-        $rateLimiter->hitSendAttempt($email);
+        $rateLimiter->hitSendAttempt($email, $process);
 
         $result = app(LoginLinkService::class)->sendForEmail(
             filament()->getCurrentPanel()->getId(),
