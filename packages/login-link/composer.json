@@ -17,14 +17,16 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "moox/slug": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "Moox\\LoginLink\\": "src"
+            "Moox\\LoginLink\\": "src",
+            "Moox\\LoginLink\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
@@ -44,7 +46,10 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "stable",
+            "install": {
+                "seed": "database/seeders/LoginLinkProcessSeeder.php"
+            }
         }
     },
     "prefer-stable": true

@@ -40,4 +40,16 @@ return [
     'mail_cta' => 'Sign in',
     'mail_expires' => 'This link expires in :minutes minutes.',
     'mail_security_hint' => "If you didn't request this email, you can ignore it.",
+
+    'process_single' => 'Link process',
+    'process_plural' => 'Link processes',
+    'process_title' => 'Title',
+    'slug' => 'Slug',
+    'mail_from' => 'Mail from',
+    'content' => 'Content',
+    'handler_key' => 'Handler',
+    'handler_key_unregistered' => 'The selected handler is not registered.',
+    'expiry_minutes' => 'Link expiry (minutes)',
+    'expiry_minutes_help' => 'Leave empty to use the default (:default minutes).',
+    'expiry_minutes_default' => 'Default (:default)',
 ];

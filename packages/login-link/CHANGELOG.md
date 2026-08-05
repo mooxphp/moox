@@ -6,6 +6,9 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
+- `LoginLinkProcess` model + Filament resource for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`).
+- Handler key validated against `RedemptionHandlerRegistry` (unregistered keys rejected).
+- `LoginLinkProcessSeeder` seeds the built-in `login` process; wired via `extra.moox.install.seed`.
 - Nullable polymorphic `subject` on `login_links` beside the legacy `user` morph; login populates both.
 - First-class `process` discriminator on `login_links` (replaces the soft `expiry_job` concept); defaults to `login`.
 - Additive migration stub `add_subject_and_process_to_login_links_table`.

@@ -178,4 +178,10 @@ class LoginLinkResource extends Resource
     {
         return config('login-link.navigation_group');
     }
+
+    #[Override]
+    public static function getNavigationSort(): ?int
+    {
+        return 20;
+    }
 }

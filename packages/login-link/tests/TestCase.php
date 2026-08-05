@@ -40,8 +40,10 @@ abstract class TestCase extends Orchestra
 
     protected function defineDatabaseMigrations(): void
     {
-        $migration = include __DIR__.'/../database/migrations/create_login_links_table.php.stub';
+        $loginLinks = include __DIR__.'/../database/migrations/create_login_links_table.php.stub';
+        $loginLinks->up();
 
-        $migration->up();
+        $processes = include __DIR__.'/../database/migrations/create_login_link_processes_table.php.stub';
+        $processes->up();
     }
 }

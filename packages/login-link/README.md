@@ -59,6 +59,16 @@ The passwordless UI/behavior is implemented as a trait (`Moox\LoginLink\Concerns
 
 The plugin applies the trait dynamically via `PanelLoginEnhancer` (it generates an enhanced login class at runtime). Because of that, PHPStan may report `trait.unused` even though the trait **is used at runtime** (PHPStan cannot see the `use ...` inside the runtime-generated class).
 
+## Process definitions
+
+Admins can manage link processes under the Users navigation group (**Link processes**):
+
+- `title`, `slug`, `mail_from`, `content`
+- `handler_key` (must be a registered redemption handler)
+- `expiry_minutes` (optional; falls back to `login-link.expiration_minutes`)
+
+The built-in `login` process is seeded on install. Existing **Login links** remain the instance list (pending/used/expired).
+
 ## Key configuration knobs
 
 - `login-link.passwordless.enabled`: enable/disable the passwordless integration.

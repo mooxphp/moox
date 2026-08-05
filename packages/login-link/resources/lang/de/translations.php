@@ -39,4 +39,16 @@ return [
     'mail_cta' => 'Anmelden',
     'mail_expires' => 'Dieser Link ist :minutes Minuten gültig.',
     'mail_security_hint' => 'Wenn du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.',
+
+    'process_single' => 'Link-Prozess',
+    'process_plural' => 'Link-Prozesse',
+    'process_title' => 'Titel',
+    'slug' => 'Slug',
+    'mail_from' => 'Absender (From)',
+    'content' => 'Inhalt',
+    'handler_key' => 'Handler',
+    'handler_key_unregistered' => 'Der gewählte Handler ist nicht registriert.',
+    'expiry_minutes' => 'Link-Gültigkeit (Minuten)',
+    'expiry_minutes_help' => 'Leer lassen für den Default (:default Minuten).',
+    'expiry_minutes_default' => 'Default (:default)',
 ];

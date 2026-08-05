@@ -75,6 +75,10 @@ return [
                 */
             ],
         ],
+        'process' => [
+            'single' => 'Link process',
+            'plural' => 'Link processes',
+        ],
     ],
 
     /*
