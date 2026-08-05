@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 use Moox\Company\Models\Company;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Services\InvoiceFieldValidator;
 
 final class EBillingFormatResolver
 {
@@ -53,7 +52,7 @@ final class EBillingFormatResolver
 
     private function preferredFormatFromCompany(EbillingDocument $document): ?string
     {
-        $company = $document->company ?? $this->matchCompanyFromBillData($document);
+        $company = $document->company ?? $this->matchCompanyFromInvoice($document);
 
         if ($company === null) {
             return null;
@@ -65,31 +64,10 @@ final class EBillingFormatResolver
         return is_string($preferred) && $preferred !== '' ? $preferred : null;
     }
 
-    /**
-     * Same loose name-match as {@see InvoiceFieldValidator::resolveCompanyMatch()}.
-     */
-    private function matchCompanyFromBillData(EbillingDocument $document): ?Company
+    private function matchCompanyFromInvoice(EbillingDocument $document): ?Company
     {
-        $billData = $document->bill_data;
+        $document->loadMissing('invoice');
 
-        if (! is_array($billData)) {
-            return null;
-        }
-
-        $name = trim((string) ($billData['customer_name'] ?? ''));
-
-        if ($name === '') {
-            return null;
-        }
-
-        $normalised = mb_strtolower(trim($name));
-
-        $matches = Company::query()
-            ->where('company_type', 'customer')
-            ->where('is_active', true)
-            ->whereRaw('LOWER(TRIM(name)) = ?', [$normalised])
-            ->get();
-
-        return $matches->count() === 1 ? $matches->first() : null;
+        return (new CompanyNameMatcher)->match($document->invoice?->buyer?->name);
     }
 }

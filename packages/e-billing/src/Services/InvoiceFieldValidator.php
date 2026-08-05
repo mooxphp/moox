@@ -8,6 +8,7 @@ use Moox\Company\Models\Company;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\Invoice\Models\Invoice;
@@ -145,19 +146,7 @@ class InvoiceFieldValidator
 
     private function resolveCompanyMatch(Invoice $invoice): ?Company
     {
-        $name = $this->normalizeNameForCompanyMatch((string) ($invoice->buyer?->name ?? ''));
-
-        if ($name === '') {
-            return null;
-        }
-
-        $matches = Company::query()
-            ->where('company_type', 'customer')
-            ->where('is_active', true)
-            ->whereRaw('LOWER(TRIM(name)) = ?', [$name])
-            ->get();
-
-        return $matches->count() === 1 ? $matches->first() : null;
+        return (new CompanyNameMatcher)->match($invoice->buyer?->name);
     }
 
     /**
@@ -522,11 +511,6 @@ class InvoiceFieldValidator
         }
 
         return strcasecmp($left, $right) === 0;
-    }
-
-    private function normalizeNameForCompanyMatch(string $value): string
-    {
-        return mb_strtolower($this->normalizeString($value));
     }
 
     private function normalizeString(?string $value): string
