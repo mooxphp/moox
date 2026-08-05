@@ -9,6 +9,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Support\Facades\Route;
 use Moox\LoginLink\Http\Controllers\LoginLinkRedemptionController;
 use Moox\LoginLink\Http\Middleware\AttemptLoginLinkRedemption;
+use Moox\LoginLink\Resources\LoginLinkProcessResource;
 use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\LoginLink\Support\PanelLoginEnhancer;
 
@@ -23,6 +24,10 @@ class LoginLinkPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        $panel->resources([
+            LoginLinkProcessResource::class,
+        ]);
+
         if (! (bool) config('login-link.passwordless.enabled', true)) {
             return;
         }
