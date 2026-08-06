@@ -34,6 +34,8 @@ class CustomerFactory extends Factory
             'sort' => fake()->optional(0.2)->numberBetween(1, 100),
             'is_active' => true,
             'approved_at' => null,
+            'preferred_ebilling_format' => null,
+            'send_visual_copy' => null,
             'data' => null,
         ];
     }

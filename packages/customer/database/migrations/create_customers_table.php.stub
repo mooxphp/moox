@@ -27,6 +27,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true)->index();
             $table->timestamp('approved_at')->nullable();
             $table->nullableMorphs('approved_by');
+            $table->string('preferred_ebilling_format', 50)->nullable();
+            $table->boolean('send_visual_copy')->nullable();
             $table->json('data')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling;
 
+use Heco\Portal\Support\SettingsSectionRegistry;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
@@ -17,6 +18,7 @@ use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Formats\Strategies\ZugferdGeneratorStrategy;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Portal\InvoiceSettingsSection;
 use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
@@ -111,6 +113,24 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->registerZugferdFilesystemDisk();
 
         Event::listen(InboxAttachmentProcessed::class, ProcessInboxAttachmentListener::class);
+
+        $this->registerPortalSettingsSection();
+    }
+
+    private function registerPortalSettingsSection(): void
+    {
+        $this->app->booted(function (): void {
+            if (! class_exists(SettingsSectionRegistry::class)) {
+                return;
+            }
+
+            if (! $this->app->bound(SettingsSectionRegistry::class)) {
+                return;
+            }
+
+            $this->app->make(SettingsSectionRegistry::class)
+                ->register($this->app->make(InvoiceSettingsSection::class));
+        });
     }
 
     /**

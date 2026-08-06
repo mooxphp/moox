@@ -45,6 +45,8 @@ class Customer extends BaseRecordModel
         'approved_at',
         'approved_by_type',
         'approved_by_id',
+        'preferred_ebilling_format',
+        'send_visual_copy',
         'data',
         // Needed so transform field_map can persist soft-deletes via mass assignment.
         'deleted_at',
@@ -60,6 +62,7 @@ class Customer extends BaseRecordModel
             'sort' => 'integer',
             'is_active' => 'boolean',
             'approved_at' => 'datetime',
+            // send_visual_copy stays uncast: null means inherit company/config.
             'data' => 'array',
         ];
     }

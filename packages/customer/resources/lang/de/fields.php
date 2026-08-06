@@ -15,6 +15,8 @@ return [
     'sort' => 'Sortierung',
     'is_active' => 'Aktiv',
     'approved_at' => 'Freigegeben am',
+    'preferred_ebilling_format' => 'Bevorzugtes E-Rechnungsformat',
+    'send_visual_copy' => 'Lesbare Kopie mit XRechnung versenden',
     'active' => 'Aktiv',
     'company' => 'Firma',
     'companies' => 'Firmen',

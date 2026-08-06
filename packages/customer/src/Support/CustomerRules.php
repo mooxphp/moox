@@ -24,6 +24,8 @@ final class CustomerRules
             'sort' => ['nullable', 'integer'],
             'is_active' => ['boolean'],
             'approved_at' => ['nullable', 'date'],
+            'preferred_ebilling_format' => ['nullable', 'string', 'max:50'],
+            'send_visual_copy' => ['nullable', 'boolean'],
             'data' => ['nullable', 'array'],
         ];
     }
