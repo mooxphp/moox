@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
+use Moox\EBilling\Actions\RematchAttributionAction;
+use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Formats\ArtifactKind;
@@ -58,6 +60,8 @@ class EBillingServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
+        $this->app->singleton(SetInvoiceAttributionAction::class);
+        $this->app->singleton(RematchAttributionAction::class);
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);
         $this->app->singleton(ZugferdGeneratorStrategy::class);
