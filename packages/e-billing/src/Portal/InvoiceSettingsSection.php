@@ -18,7 +18,8 @@ final class InvoiceSettingsSection implements PortalSettingsSection
 {
     public function __construct(
         private FormatRegistry $formats,
-    ) {}
+    ) {
+    }
 
     public function id(): string
     {
