@@ -29,6 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreignUuid('company_id')->nullable()->constrained('companies')->nullOnDelete();
+            $table->foreignUuid('customer_id')->nullable()->index()->constrained('customers')->nullOnDelete();
             $table->foreignUuid('invoice_id')->nullable()->constrained('invoices')->nullOnDelete();
 
             $table->string('scope')->nullable()->index();

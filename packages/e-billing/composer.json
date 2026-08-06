@@ -25,6 +25,7 @@
         "php": "^8.4",
         "moox/company": "dev-main",
         "moox/core": "dev-main",
+        "moox/customer": "dev-main",
         "moox/data": "dev-main",
         "moox/invoice": "dev-main",
         "moox/jobs": "dev-main",
