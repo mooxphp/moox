@@ -48,9 +48,17 @@ final class CustomerMatcher
         return $companyIds->count() === 1 ? (string) $companyIds->first() : null;
     }
 
-    public function isReviewableMatch(Customer $customer): bool
+    /**
+     * Soft-deleted, inactive, or missing/ambiguous company derivation ⇒ needs review.
+     * Attribution is still kept; corroboration never clears it.
+     */
+    public function isReviewableMatch(Customer $customer, ?string $derivedCompanyId = null): bool
     {
-        return $customer->trashed() || $customer->is_active === false;
+        if ($customer->trashed() || $customer->is_active === false) {
+            return true;
+        }
+
+        return $derivedCompanyId === null;
     }
 
     private function normalizeIdentifier(string $value): string

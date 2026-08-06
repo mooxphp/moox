@@ -9,10 +9,12 @@ use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\AttributionCorroborator;
 use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
@@ -84,6 +86,7 @@ class InvoiceFieldValidator
                 $priority,
                 $matchedCompany,
                 $matchedCustomer,
+                $derivedCompanyId,
             );
         }
 
@@ -186,7 +189,10 @@ class InvoiceFieldValidator
         array $invoiceFields,
         array $lineFields,
     ): bool {
-        $cleanStatuses = ['validated', 'db_validated', 'not_applicable'];
+        // `parsed` is clean: present on the document without a master-data check.
+        // Without it, must/should fields that only ever become `parsed` block
+        // automatic progression to Validated forever (#21 / #25).
+        $cleanStatuses = ['validated', 'db_validated', 'not_applicable', 'parsed'];
 
         $validations = is_array($document->field_validations) ? $document->field_validations : [];
 
@@ -238,15 +244,39 @@ class InvoiceFieldValidator
         string $priority,
         ?Company $matchedCompany,
         ?Customer $matchedCustomer = null,
+        ?string $derivedCompanyId = null,
     ): array {
         return match ($field) {
             'customer_number' => $this->validateCustomerNumberField(
                 $invoice,
                 $priority,
                 $matchedCustomer,
+                $derivedCompanyId,
             ),
-            'customer_name' => $this->validateCustomerNameField($invoice, $priority, $matchedCompany),
-            'customer_vat_id' => $this->validateCustomerVatField($invoice, $priority, $matchedCompany),
+            'customer_name' => $this->validateCustomerNameField(
+                $invoice,
+                $priority,
+                $matchedCompany,
+                $matchedCustomer,
+            ),
+            'customer_vat_id' => $this->validateCustomerVatField(
+                $invoice,
+                $priority,
+                $matchedCompany,
+                $matchedCustomer,
+            ),
+            'country' => $this->validateCountryField(
+                $invoice,
+                $priority,
+                $matchedCompany,
+                $matchedCustomer,
+            ),
+            'customer_address' => $this->validateCustomerAddressField(
+                $invoice,
+                $priority,
+                $matchedCompany,
+                $matchedCustomer,
+            ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
@@ -260,6 +290,7 @@ class InvoiceFieldValidator
         Invoice $invoice,
         string $priority,
         ?Customer $matchedCustomer,
+        ?string $derivedCompanyId = null,
     ): array {
         $raw = $invoice->customer_number;
         if ($this->isScalarEmpty($raw)) {
@@ -271,7 +302,7 @@ class InvoiceFieldValidator
         }
 
         return [
-            'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer)
+            'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer, $derivedCompanyId)
                 ? 'needs_review'
                 : 'db_validated',
             'source' => 'auto',
@@ -282,13 +313,32 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateCustomerNameField(Invoice $invoice, string $priority, ?Company $matchedCompany): array
-    {
+    private function validateCustomerNameField(
+        Invoice $invoice,
+        string $priority,
+        ?Company $matchedCompany,
+        ?Customer $matchedCustomer = null,
+    ): array {
         $raw = $invoice->buyer?->name;
         if ($this->isScalarEmpty($raw)) {
             return $this->entryForEmptyField('customer_name', $priority, false);
         }
 
+        if ($matchedCustomer !== null) {
+            $result = (new AttributionCorroborator)->corroborateName(
+                is_string($raw) ? $raw : null,
+                $matchedCustomer,
+                $matchedCompany,
+            );
+
+            return [
+                'status' => $result['corroborates'] ? 'db_validated' : 'needs_review',
+                'source' => 'auto',
+                'matched_id' => $result['matched_id'],
+            ];
+        }
+
+        // Name-fallback path (no customer attribution): exact/loose company name match.
         if ($matchedCompany !== null) {
             if ($this->stringsLooselyMatch($raw, $matchedCompany->name)) {
                 return [
@@ -307,11 +357,33 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateCustomerVatField(Invoice $invoice, string $priority, ?Company $matchedCompany): array
-    {
+    private function validateCustomerVatField(
+        Invoice $invoice,
+        string $priority,
+        ?Company $matchedCompany,
+        ?Customer $matchedCustomer = null,
+    ): array {
         $raw = $invoice->buyer?->vat_id;
         if ($this->isScalarEmpty($raw)) {
             return $this->entryForEmptyField('customer_vat_id', $priority, false);
+        }
+
+        if ($matchedCustomer !== null) {
+            $comparison = (new AttributionCorroborator)->compareVat(
+                is_string($raw) ? $raw : null,
+                $matchedCompany?->vat_number,
+            );
+
+            if ($comparison === null) {
+                // Absent on master-data side is not a divergence (#25).
+                return ['status' => 'parsed'];
+            }
+
+            return [
+                'status' => $comparison ? 'validated' : 'needs_review',
+                'source' => 'auto',
+                'matched_id' => (string) ($matchedCompany?->id ?? $matchedCustomer->id),
+            ];
         }
 
         if ($matchedCompany !== null) {
@@ -332,6 +404,83 @@ class InvoiceFieldValidator
         }
 
         return ['status' => 'parsed'];
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateCountryField(
+        Invoice $invoice,
+        string $priority,
+        ?Company $matchedCompany,
+        ?Customer $matchedCustomer,
+    ): array {
+        $raw = $invoice->buyer?->address?->country_code;
+        if ($this->isScalarEmpty($raw)) {
+            return $this->entryForEmptyField('country', $priority, false);
+        }
+
+        // Address/country corroboration runs only after a successful customer match.
+        if ($matchedCustomer === null) {
+            return ['status' => 'parsed'];
+        }
+
+        $comparison = (new AttributionCorroborator)->compareCountry(
+            is_string($raw) ? $raw : null,
+            $matchedCompany,
+        );
+
+        if ($comparison === null) {
+            return ['status' => 'parsed'];
+        }
+
+        return [
+            'status' => $comparison ? 'db_validated' : 'needs_review',
+            'source' => 'auto',
+            'matched_id' => (string) ($matchedCompany?->id ?? $matchedCustomer->id),
+        ];
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateCustomerAddressField(
+        Invoice $invoice,
+        string $priority,
+        ?Company $matchedCompany,
+        ?Customer $matchedCustomer,
+    ): array {
+        $address = $invoice->buyer?->address;
+        if ($this->isEn16931AddressEmpty($address)) {
+            return $this->entryForEmptyField('customer_address', $priority, false);
+        }
+
+        // Address check runs only after a successful customer match (#25).
+        if ($matchedCustomer === null) {
+            return ['status' => 'parsed'];
+        }
+
+        $result = (new AttributionCorroborator)->findMatchingAddress($address, $matchedCompany);
+
+        if ($result === null) {
+            return $this->entryForEmptyField('customer_address', $priority, false);
+        }
+
+        if ($result['exists']) {
+            return [
+                'status' => 'db_validated',
+                'source' => 'auto',
+                'matched_id' => $result['matched_id'],
+            ];
+        }
+
+        return [
+            'status' => 'needs_review',
+            'source' => 'auto',
+            'matched_id' => $result['matched_id'] !== ''
+                ? $result['matched_id']
+                : (string) $matchedCustomer->id,
+        ];
     }
 
     /**
@@ -359,8 +508,9 @@ class InvoiceFieldValidator
      */
     private function validateGenericInvoiceField(Invoice $invoice, string $field, string $priority): array
     {
+        // No persisted source ⇒ nothing to corroborate; never block auto-Validated.
         if (in_array($field, self::INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE, true)) {
-            return $this->entryForEmptyField($field, $priority, false);
+            return ['status' => 'not_applicable'];
         }
 
         $value = $this->getInvoiceFieldValue($invoice, $field);
@@ -572,7 +722,7 @@ class InvoiceFieldValidator
 
     private function normalizeVat(?string $value): string
     {
-        return strtoupper(preg_replace('/\s+/', '', (string) $value) ?? '');
+        return strtoupper(VatIdNormalizer::normalize($value) ?? '');
     }
 
     private function isScalarEmpty(mixed $value): bool
