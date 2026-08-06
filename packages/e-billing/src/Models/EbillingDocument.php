@@ -18,6 +18,7 @@ use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
@@ -46,6 +47,7 @@ use Moox\VeraPdf\Models\VeraPdfValidation;
  * @property string|null $invoice_id
  * @property string|null $customer_id Identity of the document (matched customer). Gate visibility on this, resolved live.
  * @property string|null $company_id Reporting only — derived from the matched customer; never an access boundary.
+ * @property AttributionSource|null $attribution_source How customer_id was set (`auto` matcher vs `manual` operator). Manual survives rematch.
  * @property int|null $validation_score
  * @property string|null $scope
  */
@@ -89,6 +91,7 @@ class EbillingDocument extends BaseItemModel
         'invoice_id',
         'company_id',
         'customer_id',
+        'attribution_source',
         'scope',
     ];
 
@@ -102,6 +105,7 @@ class EbillingDocument extends BaseItemModel
             'ignored_reason' => 'array',
             'gateway_status' => EBillingAttachmentProcessingStatus::class,
             'review_status' => InvoiceProcessingStatus::class,
+            'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',

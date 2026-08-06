@@ -7,6 +7,7 @@ namespace Moox\EBilling\Resources;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
@@ -23,13 +24,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
+use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ListInvoices;
 use Moox\EBilling\Resources\InvoiceResource\Pages\ViewInvoice;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
+use Throwable;
 
 final class InvoiceResource extends BaseItemResource
 {
@@ -412,6 +416,39 @@ final class InvoiceResource extends BaseItemResource
                 ->label(__('e-billing::fields.action_details'))
                 ->icon(Heroicon::OutlinedEye)
                 ->url(fn (Invoice $record): string => self::getUrl('view', ['record' => $record])),
+            Action::make('rematch')
+                ->label(__('e-billing::fields.action_rematch'))
+                ->icon(Heroicon::OutlinedArrowPath)
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading(__('e-billing::fields.action_rematch_modal_heading'))
+                ->modalDescription(__('e-billing::fields.action_rematch_modal_description'))
+                ->modalSubmitActionLabel(__('e-billing::fields.action_rematch_submit'))
+                ->visible(fn (Invoice $record): bool => $record->ebillingDocument instanceof EbillingDocument)
+                ->action(function (Invoice $record): void {
+                    $document = $record->ebillingDocument;
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    try {
+                        app(RematchAttributionAction::class)->execute($document);
+                    } catch (Throwable) {
+                        Notification::make()
+                            ->title(__('e-billing::fields.notification_rematch_failed_title'))
+                            ->body(__('e-billing::fields.notification_rematch_failed_body'))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title(__('e-billing::fields.notification_rematch_success_title'))
+                        ->body(__('e-billing::fields.notification_rematch_success_body'))
+                        ->success()
+                        ->send();
+                }),
             Action::make('kosit_report')
                 ->label(__('e-billing::fields.action_kosit_report'))
                 ->icon(Heroicon::OutlinedDocumentMagnifyingGlass)

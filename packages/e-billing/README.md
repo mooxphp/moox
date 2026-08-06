@@ -15,6 +15,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Foreign-invoice filtering (non-domestic invoices moved to an ignored mailbox folder)
 - MoSCoW field validation and validation scoring on `EbillingDocument`
 - Filament `InvoiceResource` for list, filter, and manual review workflows
+- Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 
 <!--/features-->
@@ -164,6 +165,7 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `updated_at` | `timestamp` | NOT NULL | |
 | `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`). Reporting only — derived from the matched customer; never an access boundary |
 | `customer_id` | `uuid` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this |
+| `attribution_source` | `string` | nullable | `auto` (matcher) or `manual` (operator). Indexed. Manual attributions survive rematch |
 | `invoice_id` | `uuid` FK | nullable | References `invoices.id` (`nullOnDelete`) |
 | `scope` | `string` | nullable | Tenant / mailbox scope (indexed) |
 

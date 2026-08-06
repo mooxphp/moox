@@ -6,6 +6,7 @@ namespace Moox\EBilling\Services;
 
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
@@ -57,22 +58,34 @@ class InvoiceFieldValidator
 
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
-        $hasIdentifier = ! $this->isScalarEmpty($invoice->customer_number);
-        $matchedCustomer = $hasIdentifier
-            ? $this->resolveCustomerMatch($invoice)
-            : null;
+        $isManualAttribution = $document->attribution_source === AttributionSource::Manual;
 
-        $derivedCompanyId = null;
-        $matchedCompany = null;
-        if ($matchedCustomer !== null) {
-            $derivedCompanyId = (new CustomerMatcher)->resolveCompanyId($matchedCustomer);
-            if ($derivedCompanyId !== null) {
-                $matchedCompany = Company::query()->find($derivedCompanyId);
-            }
+        if ($isManualAttribution) {
+            $matchedCustomer = $document->customer_id !== null
+                ? Customer::query()->withTrashed()->find($document->customer_id)
+                : null;
+            $derivedCompanyId = $document->company_id;
+            $matchedCompany = $derivedCompanyId !== null
+                ? Company::query()->find($derivedCompanyId)
+                : null;
         } else {
-            // Name fallback when no identifier, or identifier present but unmatched (#21).
-            $matchedCompany = $this->resolveCompanyMatch($invoice);
-            $derivedCompanyId = $matchedCompany?->id;
+            $hasIdentifier = ! $this->isScalarEmpty($invoice->customer_number);
+            $matchedCustomer = $hasIdentifier
+                ? $this->resolveCustomerMatch($invoice)
+                : null;
+
+            $derivedCompanyId = null;
+            $matchedCompany = null;
+            if ($matchedCustomer !== null) {
+                $derivedCompanyId = (new CustomerMatcher)->resolveCompanyId($matchedCustomer);
+                if ($derivedCompanyId !== null) {
+                    $matchedCompany = Company::query()->find($derivedCompanyId);
+                }
+            } else {
+                // Name fallback when no identifier, or identifier present but unmatched (#21).
+                $matchedCompany = $this->resolveCompanyMatch($invoice);
+                $derivedCompanyId = $matchedCompany?->id;
+            }
         }
 
         $invoiceValidations = [];
@@ -87,6 +100,7 @@ class InvoiceFieldValidator
                 $matchedCompany,
                 $matchedCustomer,
                 $derivedCompanyId,
+                $isManualAttribution,
             );
         }
 
@@ -98,8 +112,15 @@ class InvoiceFieldValidator
         $invoiceValidations['lines'] = $lineValidations;
 
         $document->field_validations = $invoiceValidations;
-        $document->customer_id = $matchedCustomer?->id;
-        $document->company_id = $derivedCompanyId;
+
+        if (! $isManualAttribution) {
+            $document->customer_id = $matchedCustomer?->id;
+            $document->company_id = $derivedCompanyId;
+            $document->attribution_source = $matchedCustomer !== null
+                ? AttributionSource::Auto
+                : null;
+        }
+
         $document->validation_score = $document->calculateValidationScore();
         $document->save();
     }
@@ -245,6 +266,7 @@ class InvoiceFieldValidator
         ?Company $matchedCompany,
         ?Customer $matchedCustomer = null,
         ?string $derivedCompanyId = null,
+        bool $isManualAttribution = false,
     ): array {
         return match ($field) {
             'customer_number' => $this->validateCustomerNumberField(
@@ -252,6 +274,7 @@ class InvoiceFieldValidator
                 $priority,
                 $matchedCustomer,
                 $derivedCompanyId,
+                $isManualAttribution,
             ),
             'customer_name' => $this->validateCustomerNameField(
                 $invoice,
@@ -291,7 +314,18 @@ class InvoiceFieldValidator
         string $priority,
         ?Customer $matchedCustomer,
         ?string $derivedCompanyId = null,
+        bool $isManualAttribution = false,
     ): array {
+        if ($isManualAttribution && $matchedCustomer !== null) {
+            return [
+                'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer, $derivedCompanyId)
+                    ? 'needs_review'
+                    : 'db_validated',
+                'source' => AttributionSource::Manual->value,
+                'matched_id' => (string) $matchedCustomer->id,
+            ];
+        }
+
         $raw = $invoice->customer_number;
         if ($this->isScalarEmpty($raw)) {
             return $this->entryForEmptyField('customer_number', $priority, false);
@@ -305,7 +339,7 @@ class InvoiceFieldValidator
             'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer, $derivedCompanyId)
                 ? 'needs_review'
                 : 'db_validated',
-            'source' => 'auto',
+            'source' => AttributionSource::Auto->value,
             'matched_id' => (string) $matchedCustomer->id,
         ];
     }
