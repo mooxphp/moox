@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Moox\EBilling\Services;
 
 use Moox\Company\Models\Company;
+use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceValidationCompleted;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\CompanyNameMatcher;
+use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\Invoice\Models\Invoice;
@@ -30,7 +32,8 @@ class InvoiceFieldValidator
 
     /**
      * Populate field_validations on the document (invoice-level + lines sub-structure),
-     * match buyer name to {@see Company}, and set company_id when unambiguous.
+     * attribute the document to a {@see Customer} via buyer identifier when present,
+     * and set company_id by derivation (or name fallback when no identifier match).
      *
      * Does NOT change review_status or fire events.
      */
@@ -52,7 +55,23 @@ class InvoiceFieldValidator
 
         $invoice->loadMissing(['allowanceCharges', 'lines.allowanceCharges']);
 
-        $matchedCompany = $this->resolveCompanyMatch($invoice);
+        $hasIdentifier = ! $this->isScalarEmpty($invoice->customer_number);
+        $matchedCustomer = $hasIdentifier
+            ? $this->resolveCustomerMatch($invoice)
+            : null;
+
+        $derivedCompanyId = null;
+        $matchedCompany = null;
+        if ($matchedCustomer !== null) {
+            $derivedCompanyId = (new CustomerMatcher)->resolveCompanyId($matchedCustomer);
+            if ($derivedCompanyId !== null) {
+                $matchedCompany = Company::query()->find($derivedCompanyId);
+            }
+        } else {
+            // Name fallback when no identifier, or identifier present but unmatched (#21).
+            $matchedCompany = $this->resolveCompanyMatch($invoice);
+            $derivedCompanyId = $matchedCompany?->id;
+        }
 
         $invoiceValidations = [];
         foreach ($invoiceFields as $field => $priority) {
@@ -64,6 +83,7 @@ class InvoiceFieldValidator
                 $field,
                 $priority,
                 $matchedCompany,
+                $matchedCustomer,
             );
         }
 
@@ -75,7 +95,8 @@ class InvoiceFieldValidator
         $invoiceValidations['lines'] = $lineValidations;
 
         $document->field_validations = $invoiceValidations;
-        $document->company_id = $matchedCompany?->id;
+        $document->customer_id = $matchedCustomer?->id;
+        $document->company_id = $derivedCompanyId;
         $document->validation_score = $document->calculateValidationScore();
         $document->save();
     }
@@ -149,6 +170,13 @@ class InvoiceFieldValidator
         return (new CompanyNameMatcher)->match($invoice->buyer?->name);
     }
 
+    private function resolveCustomerMatch(Invoice $invoice): ?Customer
+    {
+        return (new CustomerMatcher)->match(
+            is_string($invoice->customer_number) ? $invoice->customer_number : null,
+        );
+    }
+
     /**
      * @param  array<string, string>  $invoiceFields
      * @param  array<string, string>  $lineFields
@@ -209,9 +237,14 @@ class InvoiceFieldValidator
         string $field,
         string $priority,
         ?Company $matchedCompany,
+        ?Customer $matchedCustomer = null,
     ): array {
         return match ($field) {
-            'customer_number' => $this->validateCustomerNumberField($invoice, $priority),
+            'customer_number' => $this->validateCustomerNumberField(
+                $invoice,
+                $priority,
+                $matchedCustomer,
+            ),
             'customer_name' => $this->validateCustomerNameField($invoice, $priority, $matchedCompany),
             'customer_vat_id' => $this->validateCustomerVatField($invoice, $priority, $matchedCompany),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
@@ -223,14 +256,27 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateCustomerNumberField(Invoice $invoice, string $priority): array
-    {
+    private function validateCustomerNumberField(
+        Invoice $invoice,
+        string $priority,
+        ?Customer $matchedCustomer,
+    ): array {
         $raw = $invoice->customer_number;
         if ($this->isScalarEmpty($raw)) {
             return $this->entryForEmptyField('customer_number', $priority, false);
         }
 
-        return ['status' => 'parsed'];
+        if ($matchedCustomer === null) {
+            return ['status' => 'needs_review'];
+        }
+
+        return [
+            'status' => (new CustomerMatcher)->isReviewableMatch($matchedCustomer)
+                ? 'needs_review'
+                : 'db_validated',
+            'source' => 'auto',
+            'matched_id' => (string) $matchedCustomer->id,
+        ];
     }
 
     /**

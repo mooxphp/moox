@@ -45,8 +45,9 @@ This package composes the other Moox e-billing packages. Composer requires:
 
 | Package | Role |
 | --- | --- |
-| `moox/company` | Company FK on `EbillingDocument` |
+| `moox/company` | Company FK on `EbillingDocument` (reporting-only; derived from customer) |
 | `moox/core` | Base model, Filament resource, Moox installer |
+| `moox/customer` | Customer FK on `EbillingDocument` (document identity / visibility gate) |
 | `moox/invoice` | Invoice domain models (`Invoice`, lines, parties) |
 | `moox/jobs` | Job progress traits |
 | `moox/kosit-validator` | KoSIT XML validation and audit persistence |
@@ -159,7 +160,8 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
-| `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`) |
+| `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`). Reporting only — derived from the matched customer; never an access boundary |
+| `customer_id` | `uuid` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this |
 | `invoice_id` | `uuid` FK | nullable | References `invoices.id` (`nullOnDelete`) |
 | `scope` | `string` | nullable | Tenant / mailbox scope (indexed) |
 
@@ -167,7 +169,8 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 
 - `source()` — `MorphTo` (typically `InboxAttachment`)
 - `invoice()` — `BelongsTo` `Moox\Invoice\Models\Invoice`
-- `company()` — `BelongsTo` `Moox\Company\Models\Company`
+- `customer()` — `BelongsTo` `Moox\Customer\Models\Customer`
+- `company()` — `BelongsTo` `Moox\Company\Models\Company` (reporting only)
 - `kositValidations()` — `MorphToMany` via `kosit_validatables`
 - `veraPdfValidations()` — `MorphToMany` via `verapdf_validatables` (hybrid formats when veraPDF is configured)
 

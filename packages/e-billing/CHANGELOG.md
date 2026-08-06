@@ -4,6 +4,7 @@
 
 ### Added
 
+- Customer attribution on `EbillingDocument`: nullable `customer_id` FK → `customers` (`nullOnDelete`), `customer()` BelongsTo, and internal `Support\CustomerMatcher` (normalises buyer identifier; looks up `Customer::withTrashed()` by `customer_number`; derives `company_id` from exactly one Company morph assignment). Package now requires `moox/customer` ([#24](https://github.com/mooxphp/e-billing/issues/24)).
 - Buyer identifier (`customer_number`, EN 16931 BT-46) now flows from the parser DTO onto the persisted invoice via `ParsedInvoiceMapper` / `InvoiceFactory`. Empty DTO values become `null`; non-empty values are stored unchanged. The field is validated from the invoice like any other field (present ⇒ `parsed`, absent ⇒ configured MoSCoW priority) and is no longer listed under `INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE` ([#23](https://github.com/mooxphp/e-billing/issues/23)).
 - Three-format registry: XRechnung (pure CII XML), ZUGFeRD (hybrid PDF), Factur-X (hybrid PDF). All share one CII generator; XRechnung uses `XRECHNUNG` profile, hybrids use `EN16931`.
 - Per-customer format resolution via `EbillingFormatResolver`: reads `companies.data.preferred_ebilling_format`, falls back to `default_format` config (default `zugferd`). Format is frozen on the document at generation time; preference changes affect only future documents.
@@ -12,6 +13,7 @@
 
 ### Changed
 
+- `InvoiceFieldValidator` attributes documents by buyer identifier first: unique `CustomerMatcher` hit sets `customer_id` and derived `company_id` (`db_validated` when active; soft-deleted/inactive still attributed with `customer_number` = `needs_review`). No match or missing identifier leaves `customer_id` null; name fallback via `CompanyNameMatcher` may set `company_id` only. `customer_id` is the identity / visibility gate; `company_id` is reporting-only. Name/VAT/address corroboration is not included ([#24](https://github.com/mooxphp/e-billing/issues/24)).
 - Company name matching for field validation and format resolution is unified in `CompanyNameMatcher`; both consumers match against the persisted invoice buyer name (whitespace-collapsed, case-insensitive exact match, unique hit only). No longer filters on removed `company_type` / `is_active` columns. `EBillingFormatResolver` no longer reads `bill_data['customer_name']` ([#22](https://github.com/mooxphp/e-billing/issues/22)).
 - Reduced cyclomatic/NPath complexity in `ValidateArtifactJob::handle` (named stages: resolve document/inputs, run validations, persist success/failure), `UnitCodeResolver::lookupMaps`, and `DocumentTypeCodeResolver::resolveLabel`. Behaviour unchanged.
 - Deduplicated KOSIT/veraPDF validation persistence in `ValidateArtifactJob` via `ArtifactValidationPersister`; supplemental verdicts (veraPDF) stay as closures so the shared seam does not type-hint optional validator packages. No behaviour change.
