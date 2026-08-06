@@ -287,6 +287,68 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Attribution corroboration
+    |--------------------------------------------------------------------------
+    |
+    | After a customer is attributed via buyer identifier, name / VAT / country /
+    | address are checked against master data. Divergences only flag needs_review;
+    | they never clear or rewrite the customer attribution.
+    |
+    */
+
+    'corroboration' => [
+
+        /*
+        | Minimum length for a name token to count as significant (after
+        | lowercase + diacritic fold + punctuation strip).
+        */
+        'name_min_token_length' => 4,
+
+        /*
+        | Legal-form words ignored during name token corroboration.
+        */
+        'name_legal_form_stop_words' => [
+            'gmbh',
+            'ag',
+            'kg',
+            'ohg',
+            'ug',
+            'se',
+            'eg',
+            'ev',
+            'ltd',
+            'limited',
+            'inc',
+            'incorporated',
+            'corp',
+            'corporation',
+            'co',
+            'plc',
+            'llc',
+            'llp',
+            'sarl',
+            'sa',
+            'bv',
+            'nv',
+            'ab',
+            'oy',
+            'as',
+            'spa',
+            'srl',
+            'sas',
+        ],
+
+        /*
+        | Address-assignment pivot flags used when checking that the parsed
+        | buyer address exists among the matched company's known addresses.
+        */
+        'address_roles' => [
+            'billing_address',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Field validation (MoSCoW)
     |--------------------------------------------------------------------------
     */

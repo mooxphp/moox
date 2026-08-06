@@ -45,6 +45,7 @@ This package composes the other Moox e-billing packages. Composer requires:
 
 | Package | Role |
 | --- | --- |
+| `moox/address` | Address fingerprints / company billing addresses for attribution corroboration |
 | `moox/company` | Company FK on `EbillingDocument` (reporting-only; derived from customer) |
 | `moox/core` | Base model, Filament resource, Moox installer |
 | `moox/customer` | Customer FK on `EbillingDocument` (document identity / visibility gate) |
@@ -84,6 +85,7 @@ Published as `config/e-billing.php`.
 | `foreign_invoice` | Foreign-invoice handling (`ignored_folder_name`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
+| `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `address_roles` |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
 
