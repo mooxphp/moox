@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "microsoft/microsoft-graph": "^2.26",
+        "microsoft/microsoft-graph": "^3.0",
         "moox/core": "dev-main",
         "moox/jobs": "dev-main"
     },
