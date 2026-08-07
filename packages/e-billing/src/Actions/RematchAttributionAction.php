@@ -16,7 +16,8 @@ final class RematchAttributionAction
 {
     public function __construct(
         private InvoiceFieldValidator $validator,
-    ) {}
+    ) {
+    }
 
     public function execute(EbillingDocument $document): void
     {

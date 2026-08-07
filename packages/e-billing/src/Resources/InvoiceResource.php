@@ -187,7 +187,7 @@ final class InvoiceResource extends BaseItemResource
                     }
                     try {
                         return Carbon::parse($state)->format('d.m.Y');
-                    } catch (\Throwable) {
+                    } catch (Throwable) {
                         return $state;
                     }
                 }),
