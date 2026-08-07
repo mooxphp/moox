@@ -14,6 +14,58 @@ final class BulkTransformSummaryFormatter
     /**
      * @param  array<string, mixed>  $stats
      */
+    public static function doneCount(array $stats): int
+    {
+        return (int) ($stats['processed'] ?? 0)
+            + (int) ($stats['updated'] ?? 0)
+            + (int) ($stats['skipped'] ?? 0)
+            + (int) ($stats['failed'] ?? 0);
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    public static function progressPercent(array $stats, bool $completed = false): int
+    {
+        if ($completed) {
+            return 100;
+        }
+
+        $expected = $stats['expected_total'] ?? null;
+        if (! is_numeric($expected) || (int) $expected <= 0) {
+            return self::doneCount($stats) > 0 ? 1 : 0;
+        }
+
+        $percent = (int) floor((100 * self::doneCount($stats)) / (int) $expected);
+
+        return min(99, max(0, $percent));
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    public static function progressLabel(array $stats, ?string $status = null): string
+    {
+        $done = self::doneCount($stats);
+        $expected = $stats['expected_total'] ?? null;
+        $progress = isset($stats['progress']) && is_numeric($stats['progress'])
+            ? (int) $stats['progress']
+            : self::progressPercent($stats, in_array($status, ['processed', 'updated', 'skipped', 'failed', 'failed_validation'], true));
+
+        if (is_numeric($expected) && (int) $expected > 0) {
+            return "{$progress}% ({$done}/".(int) $expected.')';
+        }
+
+        if ($done > 0) {
+            return "{$done} done";
+        }
+
+        return "{$progress}%";
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
     public static function formatMessage(array $stats): string
     {
         $total = (int) ($stats['total'] ?? 0);

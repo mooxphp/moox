@@ -23,19 +23,26 @@ final class BulkTransformExecutor
         callable $processRecord,
         ?callable $processInlineProjection = null,
         ?callable $processBatchChunk = null,
+        ?int $expectedTotal = null,
     ): void {
-        $bulk = $this->bulkConfig($definition);
         $persistChildren = $this->persistChildren($definition);
         $writeStrategy = $this->writeStrategy($definition);
+        $persistEvery = max(1, (int) Config::get('transform.bulk.progress_persist_every', 1));
 
         $stats = [
             'total' => 0,
+            'expected_total' => $expectedTotal,
             'processed' => 0,
             'updated' => 0,
             'skipped' => 0,
             'failed' => 0,
             'failures' => [],
+            'progress' => 0,
         ];
+
+        $this->persistIntermediateStats($parent, $stats);
+
+        $chunksSincePersist = 0;
 
         foreach ($projectionChunks as $chunk) {
             if ($chunk === []) {
@@ -48,54 +55,60 @@ final class BulkTransformExecutor
                 foreach ($processBatchChunk($chunk) as $result) {
                     $this->accumulateResult($stats, $result);
                 }
+            } else {
+                foreach ($chunk as $projection) {
+                    if ($persistChildren) {
+                        $child = TransformRecord::query()->create([
+                            'transform_definition_id' => $definition->id,
+                            'parent_transform_record_id' => $parent->id,
+                            'source_projection' => $projection,
+                            'source_references' => [],
+                        ]);
 
-                continue;
+                        $processRecord($child);
+                        $child->refresh();
+
+                        $failureContext = BulkTransformSummaryFormatter::failureContext(
+                            $definition,
+                            is_array($child->source_projection) ? $child->source_projection : [],
+                        );
+
+                        $this->accumulateResult(
+                            $stats,
+                            new BulkItemResult(
+                                status: (string) $child->status,
+                                errorMessage: $child->error_message,
+                                destinationKey: $child->destination_key !== null ? (string) $child->destination_key : null,
+                                sourceLabel: $failureContext['source_label'],
+                                sourceReference: $failureContext['source_reference'],
+                            ),
+                            (int) $child->id,
+                        );
+
+                        continue;
+                    }
+
+                    if ($processInlineProjection === null) {
+                        throw new \RuntimeException('Inline bulk processing requires an inline projection processor.');
+                    }
+
+                    $result = $processInlineProjection($projection);
+                    if ($result instanceof BulkItemResult) {
+                        $this->accumulateResult($stats, $result);
+                    }
+                }
             }
 
-            foreach ($chunk as $projection) {
-                if ($persistChildren) {
-                    $child = TransformRecord::query()->create([
-                        'transform_definition_id' => $definition->id,
-                        'parent_transform_record_id' => $parent->id,
-                        'source_projection' => $projection,
-                        'source_references' => [],
-                    ]);
-
-                    $processRecord($child);
-                    $child->refresh();
-
-                    $failureContext = BulkTransformSummaryFormatter::failureContext(
-                        $definition,
-                        is_array($child->source_projection) ? $child->source_projection : [],
-                    );
-
-                    $this->accumulateResult(
-                        $stats,
-                        new BulkItemResult(
-                            status: (string) $child->status,
-                            errorMessage: $child->error_message,
-                            destinationKey: $child->destination_key !== null ? (string) $child->destination_key : null,
-                            sourceLabel: $failureContext['source_label'],
-                            sourceReference: $failureContext['source_reference'],
-                        ),
-                        (int) $child->id,
-                    );
-
-                    continue;
-                }
-
-                if ($processInlineProjection === null) {
-                    throw new \RuntimeException('Inline bulk processing requires an inline projection processor.');
-                }
-
-                $result = $processInlineProjection($projection);
-                if ($result instanceof BulkItemResult) {
-                    $this->accumulateResult($stats, $result);
-                }
+            $chunksSincePersist++;
+            if ($chunksSincePersist >= $persistEvery) {
+                $this->persistIntermediateStats($parent, $stats);
+                $chunksSincePersist = 0;
             }
         }
 
         $failed = $stats['failed'];
+        $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: true);
+
         $parent->forceFill([
             'status' => $failed === 0 ? 'processed' : 'failed',
             'validation_status' => $failed === 0 ? 'valid' : 'invalid',
@@ -128,6 +141,18 @@ final class BulkTransformExecutor
         $bulk = $this->bulkConfig($definition);
 
         return (string) ($bulk['write_strategy'] ?? Config::get('transform.bulk.write_strategy', 'row'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    private function persistIntermediateStats(TransformRecord $parent, array &$stats): void
+    {
+        $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: false);
+
+        $parent->forceFill([
+            'bulk_stats' => $stats,
+        ])->save();
     }
 
     /**
