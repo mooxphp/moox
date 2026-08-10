@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Support\Facades\File;
+use Illuminate\Testing\TestResponse;
 use Moox\FrontendAuth\Http\Middleware\FrontendAuthMiddleware;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
@@ -33,7 +34,7 @@ function clickDummyUser(): User
     return $user;
 }
 
-function assertBinaryFileContains(\Illuminate\Testing\TestResponse $response, string $needle): void
+function assertBinaryFileContains(TestResponse $response, string $needle): void
 {
     $response->assertOk();
 
