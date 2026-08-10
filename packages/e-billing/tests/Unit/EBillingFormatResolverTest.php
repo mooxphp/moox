@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Support\EBillingFormatResolver;
 use Moox\EBilling\Tests\Support\PipelineFixtures;
@@ -10,71 +9,22 @@ use Moox\EBilling\Tests\TestCase;
 
 uses(TestCase::class);
 
-test('resolves consumer preferred_ebilling_format when company matches', function (): void {
+test('resolves customer preferred_ebilling_format when customer is attributed', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['preferred_ebilling_format' => 'xrechnung'],
-    ]);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
-});
-
-test('customer preferred_ebilling_format overrides company preference', function (): void {
-    $document = PipelineFixtures::arrangeInvoice($this)->document;
-    $document->forceFill([
-        'bill_data' => array_merge($document->bill_data ?? [], [
-            'customer_number' => 'C-10001',
-        ]),
-    ])->save();
-
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['preferred_ebilling_format' => 'zugferd'],
-    ]);
-
-    Customer::factory()->create([
-        'customer_number' => 'C-10001',
-        'is_active' => true,
+    $customer = Customer::factory()->create([
         'preferred_ebilling_format' => 'xrechnung',
+        'is_active' => true,
     ]);
+
+    $document->setRelation('customer', $customer);
 
     $resolver = app(EBillingFormatResolver::class);
 
     expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
 });
 
-test('falls back to company preference when customer format is null', function (): void {
-    $document = PipelineFixtures::arrangeInvoice($this)->document;
-    $document->forceFill([
-        'bill_data' => array_merge($document->bill_data ?? [], [
-            'customer_number' => 'C-10002',
-        ]),
-    ])->save();
-
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['preferred_ebilling_format' => 'factur-x'],
-    ]);
-
-    Customer::factory()->create([
-        'customer_number' => 'C-10002',
-        'is_active' => true,
-        'preferred_ebilling_format' => null,
-    ]);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('factur-x');
-});
-
-test('falls back to default_format when no company preference is set', function (): void {
+test('falls back to default_format when no customer preference is set', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
     config(['e-billing.default_format' => 'zugferd']);
@@ -93,11 +43,12 @@ test('frozen format is unaffected by later preference change', function (): void
     // Document already has xml_storage_path set → frozen
     expect($document->xml_storage_path)->not->toBeNull();
 
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['preferred_ebilling_format' => 'zugferd'],
+    $customer = Customer::factory()->create([
+        'preferred_ebilling_format' => 'zugferd',
+        'is_active' => true,
     ]);
+
+    $document->setRelation('customer', $customer);
 
     $resolver = app(EBillingFormatResolver::class);
 
@@ -108,11 +59,12 @@ test('frozen format is unaffected by later preference change', function (): void
 test('falls back to default when preferred format is unknown', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['preferred_ebilling_format' => 'ubl-peppol'],
+    $customer = Customer::factory()->create([
+        'preferred_ebilling_format' => 'ubl-peppol',
+        'is_active' => true,
     ]);
+
+    $document->setRelation('customer', $customer);
 
     config(['e-billing.default_format' => 'zugferd']);
 
@@ -129,25 +81,15 @@ test('resolveSendVisualCopy defaults to true', function (): void {
     expect($resolver->resolveSendVisualCopy($document))->toBeTrue();
 });
 
-test('resolveSendVisualCopy uses customer column over company and config', function (): void {
+test('resolveSendVisualCopy uses customer column over config', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
-    $document->forceFill([
-        'bill_data' => array_merge($document->bill_data ?? [], [
-            'customer_number' => 'C-10003',
-        ]),
-    ])->save();
 
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['send_visual_copy' => true],
-    ]);
-
-    Customer::factory()->create([
-        'customer_number' => 'C-10003',
+    $customer = Customer::factory()->create([
         'is_active' => true,
         'send_visual_copy' => false,
     ]);
+
+    $document->setRelation('customer', $customer);
 
     config(['e-billing.send_visual_copy' => true]);
 
@@ -156,27 +98,17 @@ test('resolveSendVisualCopy uses customer column over company and config', funct
     expect($resolver->resolveSendVisualCopy($document))->toBeFalse();
 });
 
-test('resolveSendVisualCopy falls back to company.data when customer is null', function (): void {
+test('resolveSendVisualCopy falls back to config when customer value is null', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
-    $document->forceFill([
-        'bill_data' => array_merge($document->bill_data ?? [], [
-            'customer_number' => 'C-10004',
-        ]),
-    ])->save();
 
-    Company::factory()->create([
-        'name' => 'Buyer GmbH',
-        'status' => 'active',
-        'data' => ['send_visual_copy' => false],
-    ]);
-
-    Customer::factory()->create([
-        'customer_number' => 'C-10004',
+    $customer = Customer::factory()->create([
         'is_active' => true,
         'send_visual_copy' => null,
     ]);
 
-    config(['e-billing.send_visual_copy' => true]);
+    $document->setRelation('customer', $customer);
+
+    config(['e-billing.send_visual_copy' => false]);
 
     $resolver = app(EBillingFormatResolver::class);
 

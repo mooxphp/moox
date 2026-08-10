@@ -34,6 +34,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Preferred e-billing formats
+    |--------------------------------------------------------------------------
+    |
+    | Allowed values for customers.preferred_ebilling_format. Kept as a plain
+    | string list so moox/customer does not depend on moox/e-billing. Portal /
+    | e-billing UI may enrich labels from FormatRegistry at runtime.
+    |
+    */
+    'preferred_ebilling_formats' => [
+        'xrechnung',
+        'zugferd',
+        'factur-x',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Legacy Comwork mapping
     |--------------------------------------------------------------------------
     |

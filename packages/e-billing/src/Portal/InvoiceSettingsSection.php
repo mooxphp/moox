@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace Moox\EBilling\Portal;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Heco\Portal\Contracts\PortalSettingsSection;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Formats\FormatRegistry;
-use RuntimeException;
 
-final class InvoiceSettingsSection implements PortalSettingsSection
+/**
+ * Domain logic for portal invoice settings (format + visual-copy preference).
+ *
+ * Does not implement portal contracts or self-register — heco/portal owns registration.
+ */
+final class InvoiceSettingsSection
 {
     public function __construct(
         private FormatRegistry $formats,
-    ) {
-    }
+    ) {}
 
     public function id(): string
     {
@@ -31,113 +33,100 @@ final class InvoiceSettingsSection implements PortalSettingsSection
         return 10;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function schema(): array
     {
         return [
-            Section::make(__('e-billing::portal.section_format'))
-                ->description(__('e-billing::portal.section_format_description'))
+            Section::make(__('e-billing::ebilling.invoice_settings'))
+                ->description(__('e-billing::ebilling.invoice_settings_description'))
                 ->icon(Heroicon::OutlinedDocumentText)
                 ->schema([
                     Select::make('preferred_ebilling_format')
-                        ->label(__('e-billing::portal.preferred_ebilling_format'))
-                        ->options(fn (): array => $this->formats->labels())
-                        ->placeholder(fn (Get $get): string => $get('preference_level') === 'customer'
-                            ? __('e-billing::portal.format_placeholder_inherit')
-                            : __('e-billing::portal.format_placeholder'))
-                        ->nullable()
+                        ->label(__('e-billing::ebilling.preferred_ebilling_format'))
+                        ->options(fn (): array => $this->formatOptions())
+                        ->required()
                         ->live(),
-                    Toggle::make('send_visual_copy')
-                        ->label(__('e-billing::portal.send_visual_copy'))
-                        ->helperText(__('e-billing::portal.send_visual_copy_help'))
-                        ->default(true)
-                        ->visible(fn (Get $get): bool => $this->isXRechnungEffective($get)),
+                    ToggleButtons::make('send_visual_copy')
+                        ->label(__('e-billing::ebilling.send_visual_copy'))
+                        ->options([
+                            'with_pdf' => __('e-billing::ebilling.send_visual_copy_with_pdf'),
+                            'xml_only' => __('e-billing::ebilling.send_visual_copy_xml_only'),
+                        ])
+                        ->inline()
+                        ->required()
+                        ->visible(fn (Get $get): bool => $get('preferred_ebilling_format') === 'xrechnung'),
                 ]),
         ];
     }
 
-    public function fill(array $context): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function fill(Customer $customer): array
     {
-        $company = $context['company'];
-        $level = $context['preference_level'];
-        $customer = $context['customer'];
+        $defaultFormat = (string) config('e-billing.default_format', 'zugferd');
+        $format = is_string($customer->preferred_ebilling_format) && $customer->preferred_ebilling_format !== ''
+            ? $customer->preferred_ebilling_format
+            : $defaultFormat;
 
-        if ($level === 'customer') {
-            if ($customer === null) {
-                return [
-                    'preferred_ebilling_format' => null,
-                    'send_visual_copy' => true,
-                ];
-            }
-
-            return [
-                'preferred_ebilling_format' => $customer->preferred_ebilling_format,
-                'send_visual_copy' => $customer->send_visual_copy ?? true,
-            ];
+        $sendVisualCopy = $customer->send_visual_copy;
+        if ($sendVisualCopy === null) {
+            $sendVisualCopy = (bool) config('e-billing.send_visual_copy', true);
         }
 
-        $companyData = is_array($company->data) ? $company->data : [];
-
         return [
-            'preferred_ebilling_format' => is_string($companyData['preferred_ebilling_format'] ?? null)
-                ? $companyData['preferred_ebilling_format']
-                : null,
-            'send_visual_copy' => array_key_exists('send_visual_copy', $companyData)
-                ? (bool) $companyData['send_visual_copy']
-                : true,
+            'preferred_ebilling_format' => $format,
+            'send_visual_copy' => $sendVisualCopy ? 'with_pdf' : 'xml_only',
         ];
     }
 
-    public function persist(array $state, array $context): void
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    public function persist(array $state, Customer $customer): void
     {
-        $company = $context['company'];
-        $level = $context['preference_level'];
-        $customer = $context['customer'];
-
-        $format = is_string($state['preferred_ebilling_format'] ?? null) && $state['preferred_ebilling_format'] !== ''
+        $format = is_string($state['preferred_ebilling_format'] ?? null)
             ? $state['preferred_ebilling_format']
             : null;
 
-        $sendVisualCopy = $format === 'xrechnung'
-            ? (bool) ($state['send_visual_copy'] ?? true)
-            : null;
-
-        if ($level === 'customer') {
-            if (! $customer instanceof Customer) {
-                throw new RuntimeException('Customer override requires a billing unit.');
-            }
-
-            $customer->preferred_ebilling_format = $format;
-            $customer->send_visual_copy = $sendVisualCopy;
-            $customer->save();
-
-            return;
+        $allowed = array_keys($this->formatOptions());
+        if ($format === null || ! in_array($format, $allowed, true)) {
+            $format = (string) config('e-billing.default_format', 'zugferd');
         }
 
-        $companyData = is_array($company->data) ? $company->data : [];
-
-        if ($format === null) {
-            unset($companyData['preferred_ebilling_format'], $companyData['send_visual_copy']);
-        } else {
-            $companyData['preferred_ebilling_format'] = $format;
-
-            if ($format === 'xrechnung') {
-                $companyData['send_visual_copy'] = $sendVisualCopy ?? true;
-            } else {
-                unset($companyData['send_visual_copy']);
-            }
+        $sendVisualCopy = null;
+        if ($format === 'xrechnung') {
+            $copyChoice = $state['send_visual_copy'] ?? null;
+            $sendVisualCopy = $copyChoice !== 'xml_only';
         }
 
-        $company->forceFill(['data' => $companyData === [] ? null : $companyData])->save();
+        $customer->forceFill([
+            'preferred_ebilling_format' => $format,
+            'send_visual_copy' => $sendVisualCopy,
+        ])->save();
     }
 
-    private function isXRechnungEffective(Get $get): bool
+    /**
+     * Registry labels are the UI source of truth; customer config is the generic fallback.
+     *
+     * @return array<string, string>
+     */
+    private function formatOptions(): array
     {
-        $format = $get('preferred_ebilling_format');
+        $labels = $this->formats->labels();
 
-        if (is_string($format) && $format !== '') {
-            return $format === 'xrechnung';
+        if ($labels !== []) {
+            return $labels;
         }
 
-        return false;
+        /** @var list<string> $configured */
+        $configured = config('customer.preferred_ebilling_formats', []);
+
+        return collect($configured)
+            ->filter(fn (mixed $id): bool => is_string($id) && $id !== '')
+            ->mapWithKeys(fn (string $id): array => [$id => $id])
+            ->all();
     }
 }
