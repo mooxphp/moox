@@ -21,7 +21,8 @@ final class InvoiceSettingsSection
 {
     public function __construct(
         private FormatRegistry $formats,
-    ) {}
+    ) {
+    }
 
     public function id(): string
     {

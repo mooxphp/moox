@@ -13,7 +13,8 @@ final class EBillingFormatResolver
 {
     public function __construct(
         private FormatRegistry $registry,
-    ) {}
+    ) {
+    }
 
     /**
      * Resolve the format for generation. Once an artifact has been generated
