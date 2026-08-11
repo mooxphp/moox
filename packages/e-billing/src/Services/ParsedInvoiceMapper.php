@@ -187,6 +187,7 @@ class ParsedInvoiceMapper
         return new InvoiceLineDraft(
             position: $dto->position,
             unit: $dto->unit,
+            unit_code: $dto->unitCode !== '' ? $dto->unitCode : null,
             quantity: $dto->quantity,
             description: $dto->description,
             description_detail: $dto->descriptionDetail,

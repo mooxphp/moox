@@ -214,7 +214,8 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `id` (uuid) - Primary key
 -   `invoice_id` (foreignUuid) - Parent invoice (`cascadeOnDelete`)
 -   `position` (integer, default: `0`) - Line position / sequence
--   `unit` (string) - Unit of measure
+-   `unit` (string) - Unit of measure label (BT-130)
+-   `unit_code` (string, nullable) - UN/ECE Rec 20 unit code (BT-130)
 -   `quantity` (decimal 12,3, default: `0`) - Quantity
 -   `description` (text, nullable) - Short line description
 -   `description_detail` (text, nullable) - Extended line description

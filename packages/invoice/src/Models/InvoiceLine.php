@@ -17,6 +17,7 @@ use Moox\Invoice\Support\InvoiceModels;
 
 /**
  * @property Address|null $delivery
+ * @property string|null $unit_code
  */
 class InvoiceLine extends BaseItemModel
 {
@@ -34,6 +35,7 @@ class InvoiceLine extends BaseItemModel
         'invoice_id',
         'position',
         'unit',
+        'unit_code',
         'quantity',
         'description',
         'description_detail',
