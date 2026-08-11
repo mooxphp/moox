@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
+use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\Invoice\Models\InvoiceLine;
@@ -94,8 +95,12 @@ final class InvoiceLineViewModel
             return number_format((float) $value, 2, ',', '.');
         }
 
-        if (in_array($field, ['quantity', 'weight_kg_total', 'weight_kg_net'], true) && is_numeric($value)) {
-            return number_format((float) $value, 3, ',', '.');
+        if ($field === 'quantity' && is_numeric($value)) {
+            return InvoiceDisplayNumberFormatter::formatQuantity($value);
+        }
+
+        if (in_array($field, ['weight_kg_total', 'weight_kg_net'], true) && is_numeric($value)) {
+            return InvoiceDisplayNumberFormatter::formatWeight($value);
         }
 
         if (in_array($field, ['delivery_date', 'order_date'], true) && is_string($value) && $value !== '') {
