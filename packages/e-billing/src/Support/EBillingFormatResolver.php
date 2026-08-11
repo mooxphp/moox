@@ -71,7 +71,7 @@ final class EBillingFormatResolver
 
     private function preferredFormatFromCustomer(EbillingDocument $document): ?string
     {
-        $customer = $document->customer ?? $this->loadCustomer($document);
+        $customer = $this->resolveCustomer($document);
 
         if ($customer === null) {
             return null;
@@ -82,14 +82,16 @@ final class EBillingFormatResolver
         return is_string($preferred) && $preferred !== '' ? $preferred : null;
     }
 
-    private function loadCustomer(EbillingDocument $document): ?Customer
+    private function resolveCustomer(EbillingDocument $document): ?Customer
     {
-        if ($document->customer_id === null) {
-            return null;
+        if ($document->customer_id !== null) {
+            return Customer::query()
+                ->withTrashed()
+                ->find($document->customer_id);
         }
 
-        $document->loadMissing('customer');
+        $document->loadMissing('invoice');
 
-        return $document->customer;
+        return (new CustomerMatcher)->match($document->invoice?->customer_number);
     }
 }
