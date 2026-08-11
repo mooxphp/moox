@@ -21,6 +21,13 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     ) {
         $this->unitCodeResolver ??= app(UnitCodeResolver::class);
 
+        $persistedCode = trim((string) ($this->line->unit_code ?? ''));
+        if ($persistedCode !== '') {
+            $this->resolvedUnitCode = $this->unitCodeResolver->normalizePieceCode($persistedCode);
+
+            return;
+        }
+
         $unit = trim((string) ($this->line->unit ?? ''));
         $this->resolvedUnitCode = $unit !== ''
             ? $this->unitCodeResolver->resolveLabel($unit)

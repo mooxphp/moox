@@ -29,6 +29,7 @@ readonly class InvoiceLineDraft
         public ?Address $delivery,
         public array $charges = [],
         public array $extra = [],
+        public ?string $unit_code = null,
     ) {
     }
 }

@@ -77,6 +77,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Preferred piece unit code (UN/ECE Rec 20)
+    |--------------------------------------------------------------------------
+    |
+    | When a label resolves to any code listed in piece_unit_codes, the resolver
+    | and artifact adapter emit this code instead (default H87 for piece counts).
+    |
+    */
+
+    'preferred_piece_unit_code' => env('EBILLING_PREFERRED_PIECE_UNIT_CODE', 'H87'),
+
+    'piece_unit_codes' => ['C62', 'H87'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Filament: Invoices (InvoiceResource)
     |--------------------------------------------------------------------------
     */

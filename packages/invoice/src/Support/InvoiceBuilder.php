@@ -73,6 +73,9 @@ class InvoiceBuilder
         $line->invoice_id = $invoice->id;
         $line->position = $lineDraft->position;
         $line->unit = $lineDraft->unit;
+        $line->unit_code = $lineDraft->unit_code !== null && $lineDraft->unit_code !== ''
+            ? $lineDraft->unit_code
+            : null;
         $line->quantity = (string) $lineDraft->quantity;
         $line->description = $lineDraft->description !== '' && $lineDraft->description !== null
             ? $lineDraft->description
