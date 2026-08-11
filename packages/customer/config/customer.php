@@ -123,10 +123,10 @@ return [
     ],
 
     'related_morph_defaults' => [
-        'display_columns' => ['customer_number', 'status', 'price_type'],
+        'display_columns' => ['customer_name', 'customer_number', 'status', 'price_type'],
         'translation_prefix' => 'customer::fields',
         'related_resource' => CustomerResource::class,
-        'record_select_search_columns' => ['customer_number', 'external_reference'],
+        'record_select_search_columns' => ['customer_name', 'customer_number', 'external_reference'],
     ],
 
     'relations' => [
@@ -136,7 +136,7 @@ return [
             'presentation' => 'tab',
             'label' => 'trans//customer::fields.companies',
             'inverse_label' => 'trans//customer::fields.customers',
-            'translation_prefix' => 'customer::fields',
+            'translation_prefix' => 'company::fields',
             'relationship' => 'companies',
             'inverse_relationship' => 'customers',
             'model' => Company::class,
@@ -145,6 +145,9 @@ return [
             'pivot_table' => 'customer_assignments',
             'morph_name' => 'assignable',
             'related_key' => 'customer_id',
+            'display_columns' => ['name', 'display_name', 'status'],
+            'badge_columns' => ['status'],
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
             'pivot_columns' => [
                 'is_primary',
                 'role',

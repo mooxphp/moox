@@ -159,8 +159,8 @@ return [
         'write_strategy' => 'row',
         'max_failure_samples' => 50,
         'source' => [
-            'strategy' => 'eager',
-            'chunk_size' => 1000,
+            'strategy' => 'cursor',
+            'chunk_size' => 500,
         ],
     ],
 
