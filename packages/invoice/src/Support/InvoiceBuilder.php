@@ -40,6 +40,7 @@ class InvoiceBuilder
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
+        $invoice->delivery_date = $draft->delivery_date;
         $invoice->pricing_basis = $draft->pricing_basis;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;

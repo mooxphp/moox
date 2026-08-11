@@ -405,6 +405,7 @@ return [
 
             // Delivery
             'delivery_address' => 'could',   // BG-15
+            'delivery_date' => 'should',  // BT-72
 
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
@@ -476,6 +477,7 @@ return [
             'payment_terms',
             'supplier_tax_number',
             'supplier_bank_accounts',
+            'delivery_date',
         ],
 
         'invoice_line_contextual_should' => [
