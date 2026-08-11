@@ -18,6 +18,7 @@ class CustomerServiceProvider extends MooxServiceProvider
             ->hasMigrations([
                 'create_customers_table',
                 'create_customer_assignments_table',
+                'add_ebilling_preferences_to_customers_table',
             ])
             ->hasCommands();
 
@@ -57,6 +58,7 @@ class CustomerServiceProvider extends MooxServiceProvider
                 'database/factories/CustomerFactory.php',
                 'database/migrations/create_customers_table.php.stub',
                 'database/migrations/create_customer_assignments_table.php.stub',
+                'database/migrations/add_ebilling_preferences_to_customers_table.php.stub',
                 'resources/lang/en/customer.php',
                 'resources/lang/en/fields.php',
                 'src/Models/Customer.php',

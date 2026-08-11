@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Customer\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,6 +46,8 @@ class Customer extends BaseRecordModel
         'approved_at',
         'approved_by_type',
         'approved_by_id',
+        'preferred_ebilling_format',
+        'send_visual_copy',
         'data',
         // Needed so transform field_map can persist soft-deletes via mass assignment.
         'deleted_at',
@@ -62,6 +65,17 @@ class Customer extends BaseRecordModel
             'approved_at' => 'datetime',
             'data' => 'array',
         ];
+    }
+
+    /**
+     * Nullable bool: null means inherit config default (not “false”).
+     */
+    protected function sendVisualCopy(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value): ?bool => $value === null ? null : (bool) $value,
+            set: fn (mixed $value): ?int => $value === null ? null : (int) (bool) $value,
+        );
     }
 
     public static function getResourceName(): string

@@ -46,7 +46,7 @@ Generate the customer-chosen artifact first (XRechnung XML / ZUGFeRD PDF / Factu
 
 ## Scope of the reorder change
 
-**In:** `moox/verapdf` package; generator-strategy seam + three CII formats; `company.data.preferred_ebilling_format` → frozen `ebilling_documents.format` (default ZUGFeRD); `GenerateArtifactJob → ValidateArtifactJob` (KOSIT always, +veraPDF for hybrids, `MergeZugferdPdfJob` removed as a stage); format-agnostic status enum + storage columns on fresh schema; events renamed to match.
+**In:** `moox/verapdf` package; generator-strategy seam + three CII formats; `customers.preferred_ebilling_format` → frozen `ebilling_documents.format` (default ZUGFeRD); `GenerateArtifactJob → ValidateArtifactJob` (KOSIT always, +veraPDF for hybrids, `MergeZugferdPdfJob` removed as a stage); format-agnostic status enum + storage columns on fresh schema; events renamed to match.
 
 **Out (deferred):** customer-portal UI that writes the format preference; actual delivery/sending of the validated artifact; UBL generator + Peppol; manual "reprocess in a new format" action; PAdES signing + revisionssichere Archivierung; source-PDF PDF/A normalization.
 

@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('customers', function (Blueprint $table): void {
+            $table->string('preferred_ebilling_format', 50)->nullable()->after('approved_by_id');
+            $table->boolean('send_visual_copy')->nullable()->after('preferred_ebilling_format');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('customers', function (Blueprint $table): void {
+            $table->dropColumn(['preferred_ebilling_format', 'send_visual_copy']);
+        });
+    }
+};

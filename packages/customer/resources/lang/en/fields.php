@@ -15,6 +15,8 @@ return [
     'sort' => 'Sort order',
     'is_active' => 'Active',
     'approved_at' => 'Approved at',
+    'preferred_ebilling_format' => 'Preferred e-invoice format',
+    'send_visual_copy' => 'Send visual copy with XRechnung',
     'active' => 'Active',
     'company' => 'Company',
     'companies' => 'Companies',

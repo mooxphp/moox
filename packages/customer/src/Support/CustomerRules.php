@@ -23,6 +23,8 @@ final class CustomerRules
             'note' => ['nullable', 'string'],
             'sort' => ['nullable', 'integer'],
             'is_active' => ['boolean'],
+            'preferred_ebilling_format' => ['nullable', 'string', 'max:50', 'in:'.implode(',', config('customer.preferred_ebilling_formats', []))],
+            'send_visual_copy' => ['nullable', 'boolean'],
             'approved_at' => ['nullable', 'date'],
             'data' => ['nullable', 'array'],
         ];
