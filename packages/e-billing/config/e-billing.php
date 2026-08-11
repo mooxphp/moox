@@ -55,8 +55,8 @@ return [
     |
     | When true (default), the human-readable copy PDF is attached alongside the
     | XRechnung XML. The copy is always produced and downloadable in the portal;
-    | this flag only gates the mail attachment. Overridable per customer column,
-    | then company.data.send_visual_copy.
+    | this flag only gates the mail attachment. Overridable per customer column
+    | `send_visual_copy`, then this config default.
     |
     */
 

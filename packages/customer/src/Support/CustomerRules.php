@@ -26,8 +26,6 @@ final class CustomerRules
             'preferred_ebilling_format' => ['nullable', 'string', 'max:50', 'in:'.implode(',', config('customer.preferred_ebilling_formats', []))],
             'send_visual_copy' => ['nullable', 'boolean'],
             'approved_at' => ['nullable', 'date'],
-            'preferred_ebilling_format' => ['nullable', 'string', 'max:50'],
-            'send_visual_copy' => ['nullable', 'boolean'],
             'data' => ['nullable', 'array'],
         ];
     }
