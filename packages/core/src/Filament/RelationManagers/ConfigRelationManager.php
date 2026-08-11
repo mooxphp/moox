@@ -19,13 +19,18 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Illuminate\Support\Str;
@@ -38,6 +43,8 @@ use Moox\Core\Relations\ResolvedRelation;
 use Moox\Core\Services\RelationService;
 use Override;
 use RuntimeException;
+
+use function Livewire\invade;
 
 class ConfigRelationManager extends RelationManager
 {
@@ -297,6 +304,10 @@ class ConfigRelationManager extends RelationManager
     /**
      * Filament selects pivot.* plus pivot casts (incl. id => int). That collides with
      * UUID related keys and breaks table record actions (detach, editPivot).
+     *
+     * When allowDuplicates is true, Filament also skips aliased pivot columns — so
+     * role / is_primary / billing_address etc. never reach the table. Always keep
+     * the aliased withPivot columns while dropping pivot.*.
      */
     protected function configureBelongsToManyTableQuery(Table $table): Table
     {
@@ -309,6 +320,9 @@ class ConfigRelationManager extends RelationManager
 
             $pivotTable = $relationship->getTable();
             $baseQuery = $query->getQuery();
+            $relatedTable = $query->getModel()->getTable();
+            /** @var list<string> $aliasedPivotColumns */
+            $aliasedPivotColumns = invade($relationship)->aliasedPivotColumns();
 
             if (is_array($baseQuery->columns)) {
                 $baseQuery->columns = array_values(array_filter(
@@ -317,12 +331,47 @@ class ConfigRelationManager extends RelationManager
                 ));
             }
 
+            $requiredColumns = [
+                ...$aliasedPivotColumns,
+                "{$relatedTable}.*",
+            ];
+
+            if ($baseQuery->columns === null || $baseQuery->columns === []) {
+                $query->select($requiredColumns);
+            } else {
+                foreach ($requiredColumns as $column) {
+                    if (! in_array($column, $baseQuery->columns, true)) {
+                        $query->addSelect($column);
+                    }
+                }
+            }
+
             $query->withCasts([
                 $query->getModel()->getKeyName() => 'string',
             ]);
 
             return $query;
         });
+    }
+
+    /**
+     * Filament only hydrates pivot attributes when allowDuplicates is false.
+     * Morph address/contact tabs often use allowDuplicates (no inverse relation),
+     * which leaves pivot.billing_address / pivot.role / pivot.is_primary empty.
+     *
+     * @param  EloquentCollection<int, Model>|Paginator|CursorPaginator  $records
+     * @return EloquentCollection<int, Model>|Paginator|CursorPaginator
+     */
+    #[Override]
+    protected function hydratePivotRelationForTableRecords(EloquentCollection|Paginator|CursorPaginator $records): EloquentCollection|Paginator|CursorPaginator
+    {
+        $relationship = $this->getTable()->getRelationship();
+
+        if ($relationship instanceof BelongsToMany) {
+            invade($relationship)->hydratePivotRelation($records->all());
+        }
+
+        return $records;
     }
 
     #[Override]
@@ -399,32 +448,172 @@ class ConfigRelationManager extends RelationManager
     protected function buildBelongsToManyPivotColumns(ResolvedRelation $resolved, string $prefix): array
     {
         $columns = [];
+        $sortableColumns = $this->configuredSortableColumns($resolved);
 
         foreach ($resolved->pivotAttributes as $column) {
-            if ($column === 'is_primary') {
-                $columns[] = IconColumn::make('pivot.'.$column)
+            if ($this->isBooleanPivotColumn($resolved, $column)) {
+                // Return null when false so the cell stays empty (no X). Only truthy
+                // flags render a check icon — avoids boolean falseIcon quirks.
+                $iconColumn = IconColumn::make('pivot_'.$column)
                     ->label($this->fieldLabel($prefix, $column))
-                    ->boolean();
+                    ->getStateUsing(function (Model $record) use ($column): ?bool {
+                        $value = $this->pivotAttributeState($record, $column);
+
+                        return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? true : null;
+                    })
+                    ->icon(Heroicon::OutlinedCheckCircle)
+                    ->color('success');
+
+                if (in_array($column, $sortableColumns, true)) {
+                    $iconColumn->sortable(
+                        query: function (Builder $query, string $direction) use ($column, $resolved): Builder {
+                            $pivotTable = $this->resolvePivotTableName($resolved);
+
+                            if ($pivotTable === null) {
+                                return $query;
+                            }
+
+                            return $query->orderBy("{$pivotTable}.{$column}", $direction);
+                        },
+                    );
+                }
+
+                $columns[] = $iconColumn;
 
                 continue;
             }
 
-            $columns[] = TextColumn::make('pivot.'.$column)
+            $textColumn = TextColumn::make('pivot_'.$column)
                 ->label($this->fieldLabel($prefix, $column))
-                ->badge();
+                ->badge()
+                ->getStateUsing(fn (Model $record): mixed => $this->pivotAttributeState($record, $column));
+
+            if (in_array($column, $sortableColumns, true)) {
+                $textColumn->sortable(
+                    query: function (Builder $query, string $direction) use ($column, $resolved): Builder {
+                        $pivotTable = $this->resolvePivotTableName($resolved);
+
+                        if ($pivotTable === null) {
+                            return $query;
+                        }
+
+                        return $query->orderBy("{$pivotTable}.{$column}", $direction);
+                    },
+                );
+            }
+
+            $columns[] = $textColumn;
         }
 
         return $columns;
     }
 
+    /**
+     * @return list<string>
+     */
+    protected function configuredSearchableColumns(ResolvedRelation $resolved): array
+    {
+        $configured = $resolved->config['searchable_columns'] ?? null;
+
+        if ($configured === false) {
+            return [];
+        }
+
+        if (is_array($configured)) {
+            return array_values(array_filter(
+                $configured,
+                fn (mixed $column): bool => is_string($column) && $column !== '',
+            ));
+        }
+
+        return array_values(array_filter(
+            $resolved->displayColumns,
+            fn (string $column): bool => $column !== 'is_primary',
+        ));
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function configuredSortableColumns(ResolvedRelation $resolved): array
+    {
+        $configured = $resolved->config['sortable_columns'] ?? null;
+
+        if ($configured === false) {
+            return [];
+        }
+
+        if (is_array($configured)) {
+            return array_values(array_filter(
+                $configured,
+                fn (mixed $column): bool => is_string($column) && $column !== '',
+            ));
+        }
+
+        return array_values(array_unique([
+            ...array_filter(
+                $resolved->displayColumns,
+                fn (string $column): bool => $column !== 'is_primary',
+            ),
+            ...$resolved->pivotAttributes,
+        ]));
+    }
+
+    protected function resolvePivotTableName(ResolvedRelation $resolved): ?string
+    {
+        if (is_string($resolved->pivotTable) && $resolved->pivotTable !== '') {
+            return $resolved->pivotTable;
+        }
+
+        $relationship = $this->getRelationship();
+
+        if ($relationship instanceof BelongsToMany) {
+            return $relationship->getTable();
+        }
+
+        return null;
+    }
+
+    protected function pivotAttributeState(Model $record, string $column): mixed
+    {
+        if ($record->relationLoaded('pivot')) {
+            $pivot = $record->getRelation('pivot');
+
+            if ($pivot instanceof Model) {
+                return $pivot->getAttribute($column);
+            }
+        }
+
+        return $record->getAttribute('pivot_'.$column);
+    }
+
+    protected function isBooleanPivotColumn(ResolvedRelation $resolved, string $column): bool
+    {
+        if ($column === 'is_primary' || str_ends_with($column, '_address')) {
+            return true;
+        }
+
+        $pivotModel = $resolved->pivotModel;
+
+        if (! is_string($pivotModel) || $pivotModel === '' || ! class_exists($pivotModel)) {
+            return false;
+        }
+
+        /** @var Model $instance */
+        $instance = new $pivotModel;
+
+        return ($instance->getCasts()[$column] ?? null) === 'boolean';
+    }
+
     protected function morphPivotTable(Table $table, ResolvedRelation $resolved): Table
     {
         $prefix = (string) ($resolved->translationPrefix ?? '');
+        $displayColumns = $this->buildModelDisplayColumns($resolved, $prefix);
+        $pivotColumns = $this->buildBelongsToManyPivotColumns($resolved, $prefix);
 
-        $columns = [
-            ...$this->buildModelDisplayColumns($resolved, $prefix),
-            ...$this->buildBelongsToManyPivotColumns($resolved, $prefix),
-        ];
+        $columns = ($resolved->config['pivot_columns_first'] ?? false) === true
+            ? [...$pivotColumns, ...$displayColumns]
+            : [...$displayColumns, ...$pivotColumns];
 
         $table = $table
             ->columns($columns)
@@ -433,6 +622,7 @@ class ConfigRelationManager extends RelationManager
             ->toolbarActions($this->buildConfiguredToolbarActions($resolved));
 
         $table = $this->configureBelongsToManyTableQuery($table);
+        $table = $this->applyConfiguredDefaultOrder($table, $resolved);
         $table = $this->configureRelatedRecordUrl($table, $resolved);
 
         if (is_string($resolved->inverseRelationship) && $resolved->inverseRelationship !== '') {
@@ -442,6 +632,90 @@ class ConfigRelationManager extends RelationManager
         }
 
         return $table;
+    }
+
+    /**
+     * Apply config `default_order` via Filament defaultSort so column header
+     * sorting stays primary when the user clicks a sortable column.
+     *
+     * Rules:
+     * - `['column' => 'billing_address', 'direction' => 'desc']` (pivot attrs are qualified)
+     * - `['expression' => '(billing_address + postal_address)', 'direction' => 'desc']`
+     * - shorthand: `['billing_address', 'desc']` or `'billing_address'`
+     */
+    protected function applyConfiguredDefaultOrder(Table $table, ResolvedRelation $resolved): Table
+    {
+        $order = $resolved->config['default_order'] ?? null;
+
+        if (! is_array($order) || $order === []) {
+            return $table;
+        }
+
+        return $table->defaultSort(function (Builder $query) use ($order, $resolved): Builder {
+            $pivotTable = $this->resolvePivotTableName($resolved);
+
+            foreach ($order as $rule) {
+                $direction = 'asc';
+                $column = null;
+                $expression = null;
+
+                if (is_string($rule)) {
+                    $column = $rule;
+                } elseif (is_array($rule)) {
+                    $column = is_string($rule['column'] ?? null) ? $rule['column'] : (is_string($rule[0] ?? null) ? $rule[0] : null);
+                    $expression = is_string($rule['expression'] ?? null) ? $rule['expression'] : null;
+                    $rawDirection = $rule['direction'] ?? $rule[1] ?? 'asc';
+                    $direction = strtolower((string) $rawDirection) === 'desc' ? 'desc' : 'asc';
+                } else {
+                    continue;
+                }
+
+                if (is_string($expression) && $expression !== '') {
+                    $qualifiedExpression = $this->qualifyPivotOrderExpression($expression, $pivotTable, $resolved->pivotAttributes);
+                    $direction === 'desc'
+                        ? $query->orderByDesc(DB::raw($qualifiedExpression))
+                        : $query->orderBy(DB::raw($qualifiedExpression));
+
+                    continue;
+                }
+
+                if (! is_string($column) || $column === '') {
+                    continue;
+                }
+
+                $qualified = $column;
+                if (! str_contains($column, '.') && is_string($pivotTable) && $pivotTable !== ''
+                    && in_array($column, $resolved->pivotAttributes, true)) {
+                    $qualified = "{$pivotTable}.{$column}";
+                }
+
+                $query->orderBy($qualified, $direction);
+            }
+
+            return $query;
+        });
+    }
+
+    /**
+     * @param  list<string>  $pivotAttributes
+     */
+    protected function qualifyPivotOrderExpression(string $expression, ?string $pivotTable, array $pivotAttributes): string
+    {
+        if (! is_string($pivotTable) || $pivotTable === '' || $pivotAttributes === []) {
+            return $expression;
+        }
+
+        $qualified = $expression;
+
+        foreach ($pivotAttributes as $attribute) {
+            $qualified = preg_replace(
+                '/(?<![`\w.])'.preg_quote($attribute, '/').'(?![`\w])/',
+                "`{$pivotTable}`.`{$attribute}`",
+                $qualified,
+            ) ?? $qualified;
+        }
+
+        return $qualified;
     }
 
     /**
@@ -631,10 +905,14 @@ class ConfigRelationManager extends RelationManager
     protected function fieldLabel(string $translationPrefix, string $column): string
     {
         if ($translationPrefix !== '') {
-            return __($translationPrefix.'.'.$column);
+            $key = $translationPrefix.'.'.$column;
+
+            if (Lang::has($key)) {
+                return __($key);
+            }
         }
 
-        return $column;
+        return Str::headline($column);
     }
 
     protected static function translateMorphPivotLabel(string $label): string
@@ -907,6 +1185,8 @@ class ConfigRelationManager extends RelationManager
             (array) ($resolved->config['badge_columns'] ?? []),
             fn (mixed $column): bool => is_string($column) && $column !== '',
         ));
+        $searchableColumns = $this->configuredSearchableColumns($resolved);
+        $sortableColumns = $this->configuredSortableColumns($resolved);
 
         foreach ($displayColumns as $column) {
             if (! is_string($column) || $column === '') {
@@ -914,9 +1194,16 @@ class ConfigRelationManager extends RelationManager
             }
 
             if ($column === 'is_primary') {
-                $columns[] = IconColumn::make($column)
+                $primaryColumn = IconColumn::make($column)
                     ->label($this->fieldLabel($prefix, $column))
-                    ->boolean();
+                    ->boolean()
+                    ->falseIcon(false);
+
+                if (in_array($column, $sortableColumns, true)) {
+                    $primaryColumn->sortable();
+                }
+
+                $columns[] = $primaryColumn;
 
                 continue;
             }
@@ -931,6 +1218,14 @@ class ConfigRelationManager extends RelationManager
                 $columnDefinition->badge();
             }
 
+            if (in_array($column, $searchableColumns, true)) {
+                $columnDefinition->searchable();
+            }
+
+            if (in_array($column, $sortableColumns, true)) {
+                $columnDefinition->sortable();
+            }
+
             $columns[] = $columnDefinition;
         }
 
@@ -941,16 +1236,28 @@ class ConfigRelationManager extends RelationManager
 
             $attribute = $column;
 
-            $columns[] = TextColumn::make($column)
+            $badgeColumn = TextColumn::make($column)
                 ->label($this->fieldLabel($prefix, $column))
                 ->formatStateUsing(fn (mixed $state, Model $record): mixed => $record->getAttribute($attribute))
                 ->badge();
+
+            if (in_array($column, $searchableColumns, true)) {
+                $badgeColumn->searchable();
+            }
+
+            if (in_array($column, $sortableColumns, true)) {
+                $badgeColumn->sortable();
+            }
+
+            $columns[] = $badgeColumn;
         }
 
         if ($columns === []) {
             $columns[] = TextColumn::make('display_name')
                 ->label($this->fieldLabel($prefix, 'display_name'))
-                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record));
+                ->formatStateUsing(fn (mixed $state, Model $record): string => $this->formatOwnerOptionLabel($record))
+                ->searchable()
+                ->sortable();
         }
 
         return $columns;

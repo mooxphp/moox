@@ -183,12 +183,27 @@ return [
     'action_confirm_modal_heading' => 'Rechnung bestätigen',
     'action_confirm_modal_description' => 'Hiermit bestätigen Sie, dass alle Felder dieser Rechnung korrekt sind. Dieser Schritt kann nicht rückgängig gemacht werden.',
     'action_confirm_submit' => 'Ja, bestätigen',
+    'action_set_attribution' => 'Zuordnung setzen',
+    'action_set_attribution_modal_heading' => 'Kunden-Zuordnung setzen',
+    'action_set_attribution_modal_description' => 'Wählen Sie den Kunden, dem dieses Dokument zugeordnet ist. War die Rechnung bereits bestätigt oder validiert, wird diese Bestätigung aufgehoben und muss erneut erfolgen.',
+    'action_set_attribution_submit' => 'Zuordnung speichern',
+    'action_rematch' => 'Erneut zuordnen',
+    'action_rematch_modal_heading' => 'Zuordnung erneut ausführen',
+    'action_rematch_modal_description' => 'Setzt dieses Dokument in den Zustand vor der Bestätigung zurück und bewertet die Zuordnung neu. Eine manuell gesetzte Zuordnung wird nicht überschrieben.',
+    'action_rematch_submit' => 'Ja, erneut zuordnen',
+    'field_customer' => 'Kunde',
 
     // Notifications
     'notification_confirmed_title' => 'Rechnung bestätigt',
     'notification_confirmed_body' => 'Die Rechnung wurde als manuell geprüft markiert.',
     'notification_confirm_failed_title' => 'Bestätigung nicht möglich',
     'notification_confirm_failed_body' => 'Die Rechnung befindet sich nicht im Status „Automatisch vorgeprüft“.',
+    'notification_attribution_updated_title' => 'Zuordnung aktualisiert',
+    'notification_attribution_updated_body' => 'Die Dokument-Zuordnung wurde als manuell gespeichert.',
+    'notification_rematch_success_title' => 'Zuordnung erneut ausgeführt',
+    'notification_rematch_success_body' => 'Das Dokument wurde zurückgesetzt und neu bewertet.',
+    'notification_rematch_failed_title' => 'Erneute Zuordnung fehlgeschlagen',
+    'notification_rematch_failed_body' => 'Die Zuordnung konnte für dieses Dokument nicht erneut ausgeführt werden.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',

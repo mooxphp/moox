@@ -565,6 +565,23 @@ class TransformDefinitionResource extends BaseItemResource
                                                 ->visible(fn (Get $get): bool => in_array((string) $get('execution_mode'), [TransformExecutionMode::Expand->value, TransformExecutionMode::Bulk->value], true)),
                                             Section::make(__('transform::fields.bulk'))
                                                 ->schema([
+                                                    Select::make('bulk.source.strategy')
+                                                        ->label(__('transform::fields.bulk_source_strategy'))
+                                                        ->helperText(__('transform::fields.bulk_source_strategy_help'))
+                                                        ->options([
+                                                            'cursor' => __('transform::fields.bulk_source_strategy_cursor'),
+                                                            'eager' => __('transform::fields.bulk_source_strategy_eager'),
+                                                        ])
+                                                        ->default((string) config('transform.bulk.source.strategy', 'cursor'))
+                                                        ->required(),
+                                                    TextInput::make('bulk.source.chunk_size')
+                                                        ->label(__('transform::fields.bulk_source_chunk_size'))
+                                                        ->helperText(__('transform::fields.bulk_source_chunk_size_help'))
+                                                        ->numeric()
+                                                        ->integer()
+                                                        ->default((int) config('transform.bulk.source.chunk_size', 500))
+                                                        ->minValue(1)
+                                                        ->required(),
                                                     TextInput::make('bulk.chunk_size')
                                                         ->label(__('transform::fields.bulk_chunk_size'))
                                                         ->numeric()

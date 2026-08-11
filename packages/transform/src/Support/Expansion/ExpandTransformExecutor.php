@@ -43,11 +43,23 @@ final class ExpandTransformExecutor
             return false;
         }
 
-        $failed = 0;
-        $processed = 0;
-        $updated = 0;
-        $skipped = 0;
-        $failures = [];
+        $expectedTotal = count($projections);
+        $persistEvery = max(1, (int) config('transform.bulk.progress_persist_every', 1));
+        $stats = [
+            'total' => $expectedTotal,
+            'expected_total' => $expectedTotal,
+            'processed' => 0,
+            'updated' => 0,
+            'skipped' => 0,
+            'failed' => 0,
+            'failures' => [],
+            'progress' => 0,
+            'mode' => TransformExecutionMode::Expand->value,
+        ];
+
+        $this->persistIntermediateStats($parent, $stats);
+
+        $sincePersist = 0;
 
         foreach ($projections as $projection) {
             $child = TransformRecord::query()->create([
@@ -62,16 +74,16 @@ final class ExpandTransformExecutor
             $status = (string) ($child?->status ?? 'failed');
 
             if ($status === 'processed') {
-                $processed++;
+                $stats['processed']++;
             } elseif ($status === 'updated') {
-                $updated++;
+                $stats['updated']++;
             } elseif ($status === 'skipped') {
-                $skipped++;
+                $stats['skipped']++;
             } else {
-                $failed++;
+                $stats['failed']++;
                 $maxFailures = (int) config('transform.bulk.max_failure_samples', 50);
-                if ($maxFailures === 0 || count($failures) < $maxFailures) {
-                    $failures[] = [
+                if ($maxFailures === 0 || count($stats['failures']) < $maxFailures) {
+                    $stats['failures'][] = [
                         'transform_record_id' => $child?->id,
                         'status' => $status,
                         'error_message' => $child?->error_message,
@@ -82,17 +94,16 @@ final class ExpandTransformExecutor
                     ];
                 }
             }
+
+            $sincePersist++;
+            if ($sincePersist >= $persistEvery) {
+                $this->persistIntermediateStats($parent, $stats);
+                $sincePersist = 0;
+            }
         }
 
-        $stats = [
-            'total' => count($projections),
-            'processed' => $processed,
-            'updated' => $updated,
-            'skipped' => $skipped,
-            'failed' => $failed,
-            'failures' => $failures,
-            'mode' => TransformExecutionMode::Expand->value,
-        ];
+        $failed = (int) $stats['failed'];
+        $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: true);
 
         $parent->forceFill([
             'status' => $failed === 0 ? 'processed' : 'failed',
@@ -104,6 +115,18 @@ final class ExpandTransformExecutor
         ])->save();
 
         return true;
+    }
+
+    /**
+     * @param  array<string, mixed>  $stats
+     */
+    private function persistIntermediateStats(TransformRecord $parent, array &$stats): void
+    {
+        $stats['progress'] = BulkTransformSummaryFormatter::progressPercent($stats, completed: false);
+
+        $parent->forceFill([
+            'bulk_stats' => $stats,
+        ])->save();
     }
 
     private function hasIterableSourceReference(TransformRecord $record, TransformDefinition $definition): bool

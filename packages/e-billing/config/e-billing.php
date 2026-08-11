@@ -301,6 +301,68 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Attribution corroboration
+    |--------------------------------------------------------------------------
+    |
+    | After a customer is attributed via buyer identifier, name / VAT / country /
+    | address are checked against master data. Divergences only flag needs_review;
+    | they never clear or rewrite the customer attribution.
+    |
+    */
+
+    'corroboration' => [
+
+        /*
+        | Minimum length for a name token to count as significant (after
+        | lowercase + diacritic fold + punctuation strip).
+        */
+        'name_min_token_length' => 4,
+
+        /*
+        | Legal-form words ignored during name token corroboration.
+        */
+        'name_legal_form_stop_words' => [
+            'gmbh',
+            'ag',
+            'kg',
+            'ohg',
+            'ug',
+            'se',
+            'eg',
+            'ev',
+            'ltd',
+            'limited',
+            'inc',
+            'incorporated',
+            'corp',
+            'corporation',
+            'co',
+            'plc',
+            'llc',
+            'llp',
+            'sarl',
+            'sa',
+            'bv',
+            'nv',
+            'ab',
+            'oy',
+            'as',
+            'spa',
+            'srl',
+            'sas',
+        ],
+
+        /*
+        | Address-assignment pivot flags used when checking that the parsed
+        | buyer address exists among the matched company's known addresses.
+        */
+        'address_roles' => [
+            'billing_address',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Field validation (MoSCoW)
     |--------------------------------------------------------------------------
     */
@@ -330,14 +392,14 @@ return [
             'currency' => 'must',    // BT-5
 
             // Buyer — MUST (core identification)
-            'customer_number' => 'must',
+            'customer_number' => 'must',    // BT-46
             'customer_name' => 'must',    // BT-44
             'customer_address' => 'must',    // BG-8
             'country' => 'could',    // BT-55
             'customer_vat_id' => 'should',  // BT-48
 
             // Buyer reference
-            'customer_reference' => 'should', // BT-10
+            'customer_reference' => 'could', // BT-10
             'order_number' => 'should',  // BT-13
             'order_date' => 'could',   // BT-13 date
 

@@ -15,6 +15,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Foreign-invoice filtering (non-domestic invoices moved to an ignored mailbox folder)
 - MoSCoW field validation and validation scoring on `EbillingDocument`
 - Filament `InvoiceResource` for list, filter, and manual review workflows
+- Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 
 <!--/features-->
@@ -45,8 +46,10 @@ This package composes the other Moox e-billing packages. Composer requires:
 
 | Package | Role |
 | --- | --- |
-| `moox/company` | Company FK on `EbillingDocument` |
+| `moox/address` | Address fingerprints / company billing addresses for attribution corroboration |
+| `moox/company` | Company FK on `EbillingDocument` (reporting-only; derived from customer) |
 | `moox/core` | Base model, Filament resource, Moox installer |
+| `moox/customer` | Customer FK on `EbillingDocument` (document identity / visibility gate) |
 | `moox/invoice` | Invoice domain models (`Invoice`, lines, parties) |
 | `moox/jobs` | Job progress traits |
 | `moox/kosit-validator` | KoSIT XML validation and audit persistence |
@@ -83,6 +86,7 @@ Published as `config/e-billing.php`.
 | `foreign_invoice` | Foreign-invoice handling (`ignored_folder_name`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
+| `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `address_roles` |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
 
@@ -159,7 +163,9 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |
 | `updated_at` | `timestamp` | NOT NULL | |
-| `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`) |
+| `company_id` | `uuid` FK | nullable | References `companies.id` (`nullOnDelete`). Reporting only — derived from the matched customer; never an access boundary |
+| `customer_id` | `uuid` FK | nullable | References `customers.id` (`nullOnDelete`). Document identity (matched customer); gate visibility on this |
+| `attribution_source` | `string` | nullable | `auto` (matcher) or `manual` (operator). Indexed. Manual attributions survive rematch |
 | `invoice_id` | `uuid` FK | nullable | References `invoices.id` (`nullOnDelete`) |
 | `scope` | `string` | nullable | Tenant / mailbox scope (indexed) |
 
@@ -167,7 +173,8 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 
 - `source()` — `MorphTo` (typically `InboxAttachment`)
 - `invoice()` — `BelongsTo` `Moox\Invoice\Models\Invoice`
-- `company()` — `BelongsTo` `Moox\Company\Models\Company`
+- `customer()` — `BelongsTo` `Moox\Customer\Models\Customer`
+- `company()` — `BelongsTo` `Moox\Company\Models\Company` (reporting only)
 - `kositValidations()` — `MorphToMany` via `kosit_validatables`
 - `veraPdfValidations()` — `MorphToMany` via `verapdf_validatables` (hybrid formats when veraPDF is configured)
 

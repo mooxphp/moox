@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('document_type');
             $table->string('due_date')->nullable();
             $table->string('currency')->default('EUR');
+            $table->string('customer_number')->nullable()->index();
             $table->string('customer_reference')->nullable();
             $table->string('order_number')->nullable();
             $table->string('order_date')->nullable();

@@ -611,19 +611,45 @@ final class TransformProjectionExpander
     {
         $bulk = $definition->getAttribute('bulk');
         $strategy = is_array($bulk) && is_array($bulk['source'] ?? null)
-            ? (string) ($bulk['source']['strategy'] ?? config('transform.bulk.source.strategy', 'eager'))
-            : (string) config('transform.bulk.source.strategy', 'eager');
+            ? (string) ($bulk['source']['strategy'] ?? config('transform.bulk.source.strategy', 'cursor'))
+            : (string) config('transform.bulk.source.strategy', 'cursor');
 
         if ($strategy !== 'cursor') {
             return false;
         }
 
-        if ($this->expandConfig($definition) !== []) {
+        if ($this->hasMeaningfulExpandConfig($definition)) {
             return false;
         }
 
         $iterableReference = $this->resolveIterableSourceReference($record, $definition);
 
         return is_array($iterableReference) && ($iterableReference['source_type'] ?? null) === 'db_table';
+    }
+
+    private function hasMeaningfulExpandConfig(TransformDefinition $definition): bool
+    {
+        $expand = $this->expandConfig($definition);
+        if ($expand === []) {
+            return false;
+        }
+
+        if (is_string($expand['dedupe_by'] ?? null) && trim($expand['dedupe_by']) !== '') {
+            return true;
+        }
+
+        $prefer = $expand['prefer'] ?? null;
+        if (is_array($prefer) && $prefer !== []) {
+            return true;
+        }
+
+        $nestedPath = data_get($expand, 'nested.path');
+        if (is_string($nestedPath) && trim($nestedPath) !== '') {
+            return true;
+        }
+
+        $localesSource = data_get($expand, 'locales.source');
+
+        return is_string($localesSource) && trim($localesSource) !== '';
     }
 }

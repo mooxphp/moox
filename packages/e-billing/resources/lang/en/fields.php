@@ -183,12 +183,27 @@ return [
     'action_confirm_modal_heading' => 'Confirm invoice',
     'action_confirm_modal_description' => 'By confirming, you attest that all fields on this invoice are correct. This step cannot be undone.',
     'action_confirm_submit' => 'Yes, confirm',
+    'action_set_attribution' => 'Set attribution',
+    'action_set_attribution_modal_heading' => 'Set customer attribution',
+    'action_set_attribution_modal_description' => 'Choose the customer this document belongs to. If the invoice was already confirmed or validated, that attestation is cleared and must be repeated.',
+    'action_set_attribution_submit' => 'Save attribution',
+    'action_rematch' => 'Re-match',
+    'action_rematch_modal_heading' => 'Re-run matching',
+    'action_rematch_modal_description' => 'Reset this document to the pre-confirmation state and re-evaluate attribution. A manually set attribution will not be overwritten.',
+    'action_rematch_submit' => 'Yes, re-match',
+    'field_customer' => 'Customer',
 
     // Notifications
     'notification_confirmed_title' => 'Invoice confirmed',
     'notification_confirmed_body' => 'The invoice was marked as manually reviewed.',
     'notification_confirm_failed_title' => 'Confirmation not possible',
     'notification_confirm_failed_body' => 'The invoice is not in status "Automatically pre-reviewed".',
+    'notification_attribution_updated_title' => 'Attribution updated',
+    'notification_attribution_updated_body' => 'The document attribution was saved as a manual match.',
+    'notification_rematch_success_title' => 'Matching re-run',
+    'notification_rematch_success_body' => 'The document was reset and re-evaluated.',
+    'notification_rematch_failed_title' => 'Re-match failed',
+    'notification_rematch_failed_body' => 'Matching could not be re-run for this document.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',
