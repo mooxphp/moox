@@ -24,6 +24,7 @@ readonly class InvoiceDraft
         public ?string $customer_reference,
         public ?string $order_number,
         public ?string $order_date,
+        public ?string $delivery_date,
         public ?string $pricing_basis,
         public float $net_total,
         public float $vat_rate,

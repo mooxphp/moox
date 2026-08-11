@@ -124,6 +124,7 @@ class ParsedInvoiceMapper
             customer_reference: $dto->customerReference,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
+            delivery_date: $dto->deliveryDate,
             pricing_basis: $dto->pricingBasis,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,

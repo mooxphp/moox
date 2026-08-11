@@ -28,6 +28,7 @@ class Invoice implements ZugferdInvoice
 
         public ?string $orderNumber = null,
         public ?string $orderDate = null,
+        public ?string $deliveryDate = null,
         public ?Address $deliveryAddress = null,
 
         // Supplier
@@ -233,6 +234,7 @@ class Invoice implements ZugferdInvoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
+            deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date']) ? $data['delivery_date'] : null,
             deliveryAddress: Address::fromMixed($data['delivery_address'] ?? null),
             supplierName: $supplierName,
             supplierVatId: isset($data['supplier_vat_id']) && is_string($data['supplier_vat_id']) ? $data['supplier_vat_id'] : null,
@@ -328,6 +330,7 @@ class Invoice implements ZugferdInvoice
 
             'order_number' => $this->orderNumber,
             'order_date' => $this->orderDate,
+            'delivery_date' => $this->deliveryDate,
             'delivery_address' => $this->deliveryAddress?->toArray(),
 
             'supplier_name' => $this->supplierName,

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('customer_reference')->nullable();
             $table->string('order_number')->nullable();
             $table->string('order_date')->nullable();
+            $table->string('delivery_date')->nullable();
             // Incoterms — no native EN element; serialized as note in e-billing / ZUGFeRD layer.
             $table->string('pricing_basis')->nullable();
             $table->json('seller')->nullable();

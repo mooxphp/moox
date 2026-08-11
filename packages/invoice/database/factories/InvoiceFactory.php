@@ -32,6 +32,7 @@ class InvoiceFactory extends Factory
             'customer_reference' => fake()->optional()->bothify('REF-####'),
             'order_number' => fake()->optional()->bothify('PO-####'),
             'order_date' => fake()->optional()->date('Y-m-d'),
+            'delivery_date' => fake()->optional()->date('Y-m-d'),
             'pricing_basis' => null,
             'seller' => $this->sampleParty('Seller'),
             'buyer' => $this->sampleParty('Buyer'),

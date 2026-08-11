@@ -123,6 +123,10 @@ final class InvoiceFieldLabels
     public static function btNumber(string $field, ?string $context = null): ?string
     {
         // NOTE: $context === 'invoice_line' is used by Filament ViewModels for line-level BT hints
+        if ($context === 'invoice_line' && $field === 'delivery_date') {
+            return 'BT-134';
+        }
+
         if ($context === 'invoice_line' && $field === 'order_number') {
             return 'BT-132';
         }
@@ -148,6 +152,7 @@ final class InvoiceFieldLabels
             // Parsed from supplier address block
             'country' => 'BT-55',
             'delivery_address' => 'BG-15',
+            'delivery_date' => 'BT-72',
             'net_total' => 'BT-109',
             'vat_amount' => 'BT-110',
             'gross_total' => 'BT-112',
@@ -157,7 +162,6 @@ final class InvoiceFieldLabels
             'quantity' => 'BT-129',
             'unit' => 'BT-130',
             'line_total' => 'BT-131',
-            'delivery_date' => 'BT-134',
             'unit_price' => 'BT-146',
             'description' => 'BT-153',
             'article_number' => 'BT-155',
