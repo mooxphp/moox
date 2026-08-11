@@ -12,7 +12,7 @@ use Moox\EBilling\Services\InvoiceFieldValidator;
 /**
  * Resolves a {@see Customer} from a buyer identifier (invoice customer_number).
  *
- * No public seam — only {@see InvoiceFieldValidator} calls this.
+ * Used by {@see InvoiceFieldValidator} and {@see EBillingFormatResolver}.
  */
 final class CustomerMatcher
 {
