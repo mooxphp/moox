@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Invoice\Support;
 
 use Illuminate\Support\Facades\DB;
+use Moox\Invoice\Exceptions\RejectedDraftFieldException;
 use Moox\Invoice\Models\Invoice;
 
 class InvoiceBuilder
@@ -89,9 +90,11 @@ class InvoiceBuilder
         $fillable = $line->getFillable();
 
         foreach ($lineDraft->extra as $key => $value) {
-            if (in_array($key, $fillable, true)) {
-                $line->{$key} = $value;
+            if (! in_array($key, $fillable, true)) {
+                throw RejectedDraftFieldException::forField($key, $lineClass);
             }
+
+            $line->{$key} = $value;
         }
 
         $line->save();
