@@ -127,6 +127,9 @@ class StaffResource extends BaseRecordResource
                                     Toggle::make('is_internal')
                                         ->label(__('staff::fields.is_internal'))
                                         ->default(true),
+                                    Toggle::make('is_active')
+                                        ->label(__('staff::fields.is_active'))
+                                        ->default(true),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -240,6 +243,9 @@ class StaffResource extends BaseRecordResource
                     ->label(__('staff::fields.is_internal'))
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active')
+                    ->label(__('staff::fields.is_active'))
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -268,6 +274,8 @@ class StaffResource extends BaseRecordResource
                 ->options(static::configOptions('staff.statuses')),
             TernaryFilter::make('is_internal')
                 ->label(__('staff::fields.is_internal')),
+            TernaryFilter::make('is_active')
+                ->label(__('staff::fields.is_active')),
         ];
     }
 

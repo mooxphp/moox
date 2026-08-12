@@ -51,6 +51,7 @@ class Staff extends BaseRecordModel implements HasMedia
         'language_id',
         'contact_id',
         'is_internal',
+        'is_active',
         'data',
     ];
 
@@ -61,6 +62,7 @@ class Staff extends BaseRecordModel implements HasMedia
             'legacy_id' => 'integer',
             'language_id' => 'integer',
             'is_internal' => 'boolean',
+            'is_active' => 'boolean',
             'data' => 'array',
         ];
     }

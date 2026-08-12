@@ -21,6 +21,7 @@ return [
     'is_primary' => 'Primary',
     'role' => 'Role',
     'is_internal' => 'Internal',
+    'is_active' => 'Active',
     'active' => 'Active',
     'internal' => 'Internal',
     'identity' => 'Identity',

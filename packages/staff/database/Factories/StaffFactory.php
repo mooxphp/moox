@@ -36,6 +36,7 @@ class StaffFactory extends Factory
             'language_id' => null,
             'contact_id' => null,
             'is_internal' => true,
+            'is_active' => true,
             'data' => null,
         ];
     }
@@ -43,6 +44,7 @@ class StaffFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
+            'is_active' => false,
             'status' => 'inactive',
         ]);
     }

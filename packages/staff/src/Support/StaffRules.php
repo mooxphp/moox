@@ -23,6 +23,7 @@ final class StaffRules
             'language_id' => ['nullable', 'integer', 'exists:static_languages,id'],
             'contact_id' => ['nullable', 'uuid'],
             'is_internal' => ['boolean'],
+            'is_active' => ['boolean'],
             'data' => ['nullable', 'array'],
         ];
     }
