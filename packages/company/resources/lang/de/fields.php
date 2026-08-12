@@ -29,4 +29,6 @@ return [
     'active' => 'Aktiv',
     'customers' => 'Kunden',
     'suppliers' => 'Lieferanten',
+    'role' => 'Rolle',
+    'is_primary' => 'Primär',
 ];

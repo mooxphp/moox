@@ -20,13 +20,6 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            'label' => fake()->optional(0.25)->randomElement([
-                'Headquarter',
-                'Warehouse',
-                'Office',
-                'Branch',
-            ]),
-            'name' => fake()->company(),
             'street' => fake()->streetName().' '.fake()->buildingNumber(),
             'street2' => fake()->optional(0.15)->streetAddress(),
             'postal_code' => fake()->postcode(),
@@ -42,13 +35,6 @@ class AddressFactory extends Factory
     {
         return $this->state(fn (): array => [
             'is_primary' => true,
-        ]);
-    }
-
-    public function withoutLabel(): static
-    {
-        return $this->state(fn (): array => [
-            'label' => null,
         ]);
     }
 }

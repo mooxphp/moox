@@ -102,11 +102,11 @@ return [
     |
     */
     'related_morph_defaults' => [
-        'display_columns' => ['name', 'city', 'postal_code', 'country_code', 'is_primary'],
+        'display_columns' => ['street', 'city', 'postal_code', 'country_code', 'is_primary'],
         'translation_prefix' => 'address::fields',
         'related_resource' => AddressResource::class,
         'record_select_label' => 'formattedLine',
-        'record_select_search_columns' => ['name', 'city', 'postal_code', 'street', 'street2', 'label'],
+        'record_select_search_columns' => ['city', 'postal_code', 'street', 'street2'],
     ],
 
     'relations' => [
@@ -121,6 +121,8 @@ return [
             'pivot_table' => 'address_assignments',
             'morph_name' => 'assignable',
             'pivot_columns' => [
+                'name',
+                'label',
                 'billing_address',
                 'postal_address',
                 'delivery_address',

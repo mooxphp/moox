@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
+ * @property string|null $name
+ * @property string|null $label
  * @property bool $billing_address
  * @property bool $postal_address
  * @property bool $delivery_address
@@ -24,6 +26,8 @@ class AddressAssignment extends MorphPivot
         'assignable_type',
         'assignable_id',
         'address_id',
+        'name',
+        'label',
         'billing_address',
         'postal_address',
         'delivery_address',

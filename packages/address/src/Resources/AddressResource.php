@@ -74,14 +74,6 @@ class AddressResource extends BaseRecordResource
                 ->schema([
                     Section::make()
                         ->schema([
-                            TextInput::make('label')
-                                ->label(__('address::fields.label'))
-                                ->rules(AddressRules::for('label'))
-                                ->maxLength(120),
-                            TextInput::make('name')
-                                ->label(__('address::fields.name'))
-                                ->rules(AddressRules::for('name'))
-                                ->maxLength(160),
                             TextInput::make('street')
                                 ->label(__('address::fields.street'))
                                 ->required()
@@ -160,10 +152,6 @@ class AddressResource extends BaseRecordResource
     {
         return $table
             ->columns([
-                TextColumn::make('label')
-                    ->label(__('address::fields.label'))
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('street')
                     ->label(__('address::fields.street'))
                     ->searchable()

@@ -17,8 +17,6 @@ use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 /**
  * @method HasMany<AddressAssignment, $this> addressAssignments()
  *
- * @property string|null $label
- * @property string|null $name
  * @property string $street
  * @property string|null $street2
  * @property string $postal_code
@@ -37,8 +35,6 @@ class Address extends BaseItemModel
     use SoftDeletes;
 
     protected $fillable = [
-        'label',
-        'name',
         'street',
         'street2',
         'postal_code',
@@ -120,7 +116,6 @@ class Address extends BaseItemModel
     public function formattedLine(): string
     {
         return collect([
-            $this->name,
             trim(implode(' ', array_filter([$this->street, $this->street2]))),
             trim(implode(' ', array_filter([$this->postal_code, $this->city]))),
             $this->country_code,

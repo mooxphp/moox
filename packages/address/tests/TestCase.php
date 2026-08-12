@@ -191,7 +191,6 @@ class TestCase extends Orchestra
     protected function sampleAddressAttributes(): array
     {
         return [
-            'name' => 'Muster GmbH',
             'street' => 'Musterstraße',
             'street2' => null,
             'postal_code' => '10115',

@@ -12,8 +12,6 @@ final class AddressRules
     public static function rules(): array
     {
         return [
-            'label' => ['nullable', 'string', 'max:120'],
-            'name' => ['nullable', 'string', 'max:160'],
             'street' => ['required', 'string', 'max:160'],
             'street2' => ['nullable', 'string', 'max:160'],
             'postal_code' => ['required', 'string', 'max:20'],

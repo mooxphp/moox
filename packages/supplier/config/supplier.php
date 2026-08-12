@@ -116,7 +116,7 @@ return [
             'presentation' => 'tab',
             'label' => 'trans//supplier::fields.companies',
             'inverse_label' => 'trans//supplier::fields.suppliers',
-            'translation_prefix' => 'supplier::fields',
+            'translation_prefix' => 'company::fields',
             'relationship' => 'companies',
             'inverse_relationship' => 'suppliers',
             'model' => Company::class,
@@ -125,6 +125,9 @@ return [
             'pivot_table' => 'supplier_assignments',
             'morph_name' => 'assignable',
             'related_key' => 'supplier_id',
+            'display_columns' => ['name', 'display_name', 'status'],
+            'badge_columns' => ['status'],
+            'record_select_search_columns' => ['name', 'display_name', 'legal_name'],
             'pivot_columns' => [
                 'is_primary',
                 'role',

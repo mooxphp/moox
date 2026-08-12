@@ -34,7 +34,6 @@ it('can render the address list page', function (): void {
 
 it('can render table columns for addresses', function (): void {
     livewire(ListAddresses::class)
-        ->assertTableColumnExists('label')
         ->assertTableColumnExists('street')
         ->assertTableColumnExists('city')
         ->assertTableColumnExists('postal_code')
@@ -45,7 +44,6 @@ it('can render table columns for addresses', function (): void {
 it('create form contains expected address fields', function (): void {
     livewire(CreateAddress::class)
         ->assertFormExists('form')
-        ->assertFormFieldExists('name', 'form')
         ->assertFormFieldExists('street', 'form')
         ->assertFormFieldExists('postal_code', 'form')
         ->assertFormFieldExists('city', 'form')
@@ -55,7 +53,6 @@ it('create form contains expected address fields', function (): void {
 it('can create an address via filament', function (): void {
     livewire(CreateAddress::class)
         ->fillForm([
-            'name' => 'Filament GmbH',
             'street' => 'Testweg 9',
             'postal_code' => '80331',
             'city' => 'München',
@@ -65,13 +62,12 @@ it('can create an address via filament', function (): void {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Address::query()->where('name', 'Filament GmbH')->exists())->toBeTrue();
+    expect(Address::query()->where('street', 'Testweg 9')->exists())->toBeTrue();
 });
 
 it('requires postal fields in the create form', function (): void {
     livewire(CreateAddress::class)
         ->fillForm([
-            'name' => 'Incomplete GmbH',
             'street' => null,
             'postal_code' => null,
             'city' => null,
@@ -80,12 +76,11 @@ it('requires postal fields in the create form', function (): void {
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Address::query()->where('name', 'Incomplete GmbH')->exists())->toBeFalse();
+    expect(Address::query()->count())->toBe(0);
 });
 
 it('cannot create a duplicate address via filament', function (): void {
     $attributes = [
-        'name' => 'Duplicate Co',
         'street' => 'Ring 1',
         'street2' => null,
         'state' => null,
@@ -105,10 +100,6 @@ it('cannot create a duplicate address via filament', function (): void {
     $differentCitySameLocation = [
         ...$attributes,
         'city' => 'Kölne',
-    ];
-    $sameLocationDifferentName = [
-        ...$attributes,
-        'name' => 'Another Recipient',
     ];
 
     Address::factory()->create($attributes);
@@ -131,16 +122,11 @@ it('cannot create a duplicate address via filament', function (): void {
         ->fillForm($differentCitySameLocation, 'form')
         ->call('create');
 
-    livewire(CreateAddress::class)
-        ->fillForm($sameLocationDifferentName, 'form')
-        ->call('create');
-
     expect(Address::query()->count())->toBe(3);
 });
 
 it('cannot save a duplicate address when editing via filament', function (): void {
     $existing = Address::factory()->create([
-        'name' => 'Original GmbH',
         'street' => 'Hauptstraße 1',
         'street2' => null,
         'state' => null,
@@ -150,7 +136,6 @@ it('cannot save a duplicate address when editing via filament', function (): voi
     ]);
 
     $address = Address::factory()->create([
-        'name' => 'Original GmbH',
         'street' => 'Hauptstraße 2',
         'street2' => null,
         'state' => null,
@@ -160,7 +145,6 @@ it('cannot save a duplicate address when editing via filament', function (): voi
     ]);
 
     $address->fill([
-        'name' => $existing->name,
         'street' => $existing->street,
         'street2' => null,
         'state' => null,
@@ -173,9 +157,9 @@ it('cannot save a duplicate address when editing via filament', function (): voi
 
     expect($address->fresh()->street)->toBe('Hauptstraße 2');
 });
-it('can save different address with same name but different street', function (): void {
+
+it('can save different address with different street', function (): void {
     $existing = Address::factory()->create([
-        'name' => 'Original GmbH',
         'street' => 'Hauptstraße 1',
         'street2' => null,
         'state' => null,
@@ -184,8 +168,7 @@ it('can save different address with same name but different street', function ()
         'country_code' => 'DE',
     ]);
 
-    $address = Address::factory()->create([
-        'name' => 'Original GmbH',
+    Address::factory()->create([
         'street' => 'Hauptstraße 2',
         'street2' => null,
         'state' => null,
@@ -196,7 +179,6 @@ it('can save different address with same name but different street', function ()
 
     livewire(CreateAddress::class)
         ->fillForm([
-            'name' => $existing->name,
             'street' => 'Hauptstraße 3',
             'street2' => null,
             'state' => null,
@@ -212,16 +194,15 @@ it('can save different address with same name but different street', function ()
 
 it('can edit an existing address via filament', function (): void {
     $address = Address::factory()->create([
-        'name' => 'Old Name',
         'city' => 'Berlin',
         'country_code' => 'DE',
     ]);
 
     $address->update([
-        'name' => 'New Name',
+        'city' => 'Hamburg',
     ]);
 
-    expect($address->fresh()->name)->toBe('New Name');
+    expect($address->fresh()->city)->toBe('Hamburg');
 });
 
 it('can generate address resource index url', function (): void {

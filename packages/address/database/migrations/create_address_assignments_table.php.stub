@@ -14,6 +14,8 @@ return new class extends Migration
             $table->id();
             $table->uuidMorphs('assignable');
             $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete();
+            $table->string('name', 160)->nullable();
+            $table->string('label', 120)->nullable();
             $table->boolean('billing_address')->default(false);
             $table->boolean('postal_address')->default(false);
             $table->boolean('delivery_address')->default(false);
