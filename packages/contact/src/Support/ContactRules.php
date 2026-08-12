@@ -27,6 +27,7 @@ final class ContactRules
             'contact_type' => ['required', 'string', 'max:30', 'in:'.implode(',', config('contact.contact_types', ['external']))],
             'note' => ['nullable', 'string'],
             'external_reference' => ['nullable', 'string', 'max:100'],
+            'is_active' => ['boolean'],
             'data' => ['nullable', 'array'],
         ];
     }

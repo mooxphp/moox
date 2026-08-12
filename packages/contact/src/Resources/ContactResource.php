@@ -7,11 +7,14 @@ namespace Moox\Contact\Resources;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Resources\Contact\Pages\CreateContact;
@@ -172,6 +175,9 @@ class ContactResource extends BaseRecordResource
                                         ->searchable()
                                         ->preload()
                                         ->rules(ContactRules::for('language_id')),
+                                    Toggle::make('is_active')
+                                        ->label(__('contact::fields.is_active'))
+                                        ->default(true),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -241,6 +247,9 @@ class ContactResource extends BaseRecordResource
                 TextColumn::make('job_title')
                     ->label(__('contact::fields.job_title'))
                     ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active')
+                    ->label(__('contact::fields.is_active'))
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -259,7 +268,7 @@ class ContactResource extends BaseRecordResource
     }
 
     /**
-     * @return array<SelectFilter>
+     * @return array<SelectFilter|TernaryFilter>
      */
     protected static function getContactTableFilters(): array
     {
@@ -267,6 +276,8 @@ class ContactResource extends BaseRecordResource
             SelectFilter::make('status')
                 ->label(__('contact::fields.status'))
                 ->options(static::configOptions('contact.statuses')),
+            TernaryFilter::make('is_active')
+                ->label(__('contact::fields.is_active')),
             SelectFilter::make('contact_type')
                 ->label(__('contact::fields.contact_type'))
                 ->options(static::configOptions('contact.contact_types')),

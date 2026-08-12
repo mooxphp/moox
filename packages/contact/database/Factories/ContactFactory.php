@@ -41,6 +41,7 @@ class ContactFactory extends Factory
             'password' => null,
             'contact_type' => fake()->randomElement(config('contact.contact_types', ['external'])),
             'language_id' => null,
+            'is_active' => true,
             'data' => null,
         ];
     }
@@ -55,6 +56,7 @@ class ContactFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
+            'is_active' => false,
             'status' => 'inactive',
         ]);
     }
@@ -63,6 +65,7 @@ class ContactFactory extends Factory
     {
         return $this->state(fn (): array => [
             'status' => 'active',
+            'is_active' => true,
             'email' => fake()->unique()->safeEmail(),
             'username' => fake()->unique()->userName(),
             'email_verified_at' => now(),

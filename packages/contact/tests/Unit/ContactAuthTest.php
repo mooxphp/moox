@@ -31,7 +31,7 @@ it('is a filament user for non-admin panels when active and authenticatable', fu
 
 it('cannot access filament panels without credentials or when inactive', function (): void {
     $withoutPassword = Contact::factory()->create([
-        'status' => 'active',
+        'is_active' => true,
         'username' => 'active.user',
         'email' => 'active@example.com',
         'password' => null,
