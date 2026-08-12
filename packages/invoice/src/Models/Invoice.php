@@ -48,6 +48,8 @@ class Invoice extends BaseItemModel
         'order_number',
         'order_date',
         'delivery_date',
+        'payment_terms',
+        'shipping_method',
         'pricing_basis',
         'seller',
         'buyer',

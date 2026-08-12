@@ -62,6 +62,8 @@ $draft = new InvoiceDraft(
     order_number: null,
     order_date: null,
     delivery_date: null,
+    payment_terms: null,
+    shipping_method: null,
     pricing_basis: null,
     net_total: 100.0,
     vat_rate: 19.0,
@@ -186,6 +188,8 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
 -   `delivery_date` (string, nullable) - Actual delivery date for the document (EN 16931 **BT-72**)
+-   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
+-   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
 -   `pricing_basis` (string, nullable) - Incoterms / pricing basis (serialized as note in e-billing / ZUGFeRD layer)
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`

@@ -110,7 +110,9 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
     }
 
     public ?string $paymentTerms {
-        get => null;
+        get => $this->model->payment_terms !== null && $this->model->payment_terms !== ''
+            ? (string) $this->model->payment_terms
+            : null;
     }
 
     public ?string $paymentMeansCode {

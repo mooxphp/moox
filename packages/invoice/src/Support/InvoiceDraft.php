@@ -25,6 +25,8 @@ readonly class InvoiceDraft
         public ?string $order_number,
         public ?string $order_date,
         public ?string $delivery_date,
+        public ?string $payment_terms,
+        public ?string $shipping_method,
         public ?string $pricing_basis,
         public float $net_total,
         public float $vat_rate,
@@ -36,6 +38,6 @@ readonly class InvoiceDraft
         public ?PaymentMeans $payment_means,
         public array $lines,
         public array $headerCharges,
-    ) {
+    ) { 
     }
 }
