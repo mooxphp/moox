@@ -23,6 +23,7 @@ class DepartmentFactory extends Factory
 
         return [
             'status' => fake()->randomElement(config('department.statuses', ['draft', 'active'])),
+            'is_active' => true,
             'name' => $name,
             'code' => strtoupper(fake()->unique()->bothify('DEP-###')),
             'description' => fake()->optional(0.4)->sentence(),
@@ -41,6 +42,7 @@ class DepartmentFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
+            'is_active' => false,
             'status' => 'inactive',
         ]);
     }

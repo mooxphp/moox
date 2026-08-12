@@ -31,6 +31,7 @@ class Department extends BaseRecordModel
 
     protected $fillable = [
         'status',
+        'is_active',
         'name',
         'code',
         'description',
@@ -42,6 +43,7 @@ class Department extends BaseRecordModel
     protected function casts(): array
     {
         return [
+            'is_active' => 'boolean',
             'data' => 'array',
         ];
     }
