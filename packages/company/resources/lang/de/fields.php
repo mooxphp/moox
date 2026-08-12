@@ -26,6 +26,7 @@ return [
     'contact' => 'Kontakt',
     'tax' => 'Steuer & Register',
     'settings' => 'Einstellungen',
+    'is_active' => 'Aktiv',
     'active' => 'Aktiv',
     'customers' => 'Kunden',
     'suppliers' => 'Lieferanten',

@@ -26,6 +26,7 @@ return [
     'contact' => 'Contact',
     'tax' => 'Tax & registration',
     'settings' => 'Settings',
+    'is_active' => 'Active',
     'active' => 'Active',
     'customers' => 'Customers',
     'suppliers' => 'Suppliers',

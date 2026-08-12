@@ -38,6 +38,7 @@ class Company extends BaseRecordModel
 
     protected $fillable = [
         'status',
+        'is_active',
         'name',
         'display_name',
         'legal_name',
@@ -61,6 +62,7 @@ class Company extends BaseRecordModel
     protected function casts(): array
     {
         return [
+            'is_active' => 'boolean',
             'language_id' => 'integer',
             'data' => 'array',
         ];
