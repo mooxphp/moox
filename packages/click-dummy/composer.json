@@ -1,0 +1,49 @@
+{
+    "name": "moox/click-dummy",
+    "description": "Serve auth-protected HTML clickdummies and sibling assets from a configurable storage root.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Moox package",
+        "Laravel package",
+        "clickdummy"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/frontend-auth": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\ClickDummy\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\ClickDummy\\ClickDummyServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
