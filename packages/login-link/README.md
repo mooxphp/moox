@@ -20,10 +20,27 @@ Passwordless login links for Filament panels, integrated into the native Filamen
 - When the link is opened:
   - Laravel validates the URL signature and expiry
   - the `login_links` record is locked (single-use)
-  - redemption dispatches to a **registered process handler** (`login` by default)
-  - the login handler authenticates via the panel's configured guard/model and redirects into the panel
+  - redemption looks up the process definition and dispatches to its **handler_key**
+  - the `login` handler authenticates via the panel's configured guard/model and redirects into the panel
+  - the built-in `ack` handler proves non-login outcomes (fires `ProcessLinkAcknowledged`, no Auth)
 - Invalid or expired links redirect to the login page with a danger notification.
 - Other packages can register additional handlers under `{package}.login-link.handlers` (aggregated like `moox/scopes`).
+
+### Non-login processes
+
+Issue a link for any Eloquent subject (not only panel users):
+
+```php
+app(\Moox\LoginLink\Services\LoginLinkService::class)->issue(
+    processSlug: 'ack', // or your own process slug bound to a registered handler
+    subject: $address,
+    email: 'ap@example.com',
+    panelId: 'admin',
+    request: request(),
+);
+```
+
+Redeeming runs the process handler without logging anyone in. Register real verification handlers in consumer packages; `ack` is the built-in proof handler.
 
 ## Installation
 
@@ -67,7 +84,7 @@ Admins can manage link processes under the Users navigation group (**Link proces
 - `handler_key` (must be a registered redemption handler)
 - `expiry_minutes` (optional; falls back to `login-link.expiration_minutes`)
 
-The built-in `login` process is seeded on install. Existing **Login links** remain the instance list (pending/used/expired).
+The built-in `login` and `ack` processes are seeded on install. Existing **Login links** remain the instance list (pending/used/expired).
 
 Issuing a link invalidates any prior valid link for the same **process + subject**. Expiry, from, and content come from the process definition (package defaults when unset). Pending links can be **Resent** from the Login links list.
 
@@ -77,7 +94,8 @@ Issuing a link invalidates any prior valid link for the same **process + subject
 - `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
-- `login-link.handlers`: process key → redemption handler class (`login` ships built-in).
+- `login-link.handlers`: handler key → redemption handler class (`login` + `ack` ship built-in).
+- `login-link.ack.redirect_url`: where the non-login `ack` handler redirects after redemption.
 - `login-link.mail_logo_url`: optional logo shown in the email template.
 
 ## Security notes

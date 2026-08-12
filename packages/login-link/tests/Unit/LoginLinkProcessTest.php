@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Validation\ValidationException;
 use Moox\LoginLink\Database\Seeders\LoginLinkProcessSeeder;
+use Moox\LoginLink\Handlers\AckRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
@@ -15,19 +16,25 @@ beforeEach(function (): void {
     config()->set('core.packages', []);
     config()->set('login-link.handlers', [
         'login' => LoginRedemptionHandler::class,
+        'ack' => AckRedemptionHandler::class,
     ]);
 });
 
-it('seeds the login process definition', function (): void {
+it('seeds the login and ack process definitions', function (): void {
     (new LoginLinkProcessSeeder)->run();
 
-    $process = LoginLinkProcess::query()->where('slug', 'login')->first();
+    $login = LoginLinkProcess::query()->where('slug', 'login')->first();
+    $ack = LoginLinkProcess::query()->where('slug', 'ack')->first();
 
-    expect($process)->not->toBeNull()
-        ->and($process->title)->toBe('Login')
-        ->and($process->handler_key)->toBe(RedemptionHandlerRegistry::DEFAULT_PROCESS)
-        ->and($process->mail_from)->toBeNull()
-        ->and($process->content)->toBeNull();
+    expect($login)->not->toBeNull()
+        ->and($login->title)->toBe('Login')
+        ->and($login->handler_key)->toBe(RedemptionHandlerRegistry::DEFAULT_PROCESS)
+        ->and($login->mail_from)->toBeNull()
+        ->and($login->content)->toBeNull()
+        ->and($ack)->not->toBeNull()
+        ->and($ack->title)->toBe('Acknowledge')
+        ->and($ack->handler_key)->toBe('ack')
+        ->and($ack->content)->toBe('Click the button below to confirm.');
 });
 
 it('persists title slug mail_from and content', function (): void {

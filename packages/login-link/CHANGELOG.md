@@ -6,6 +6,9 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
+- Built-in non-login `ack` handler + `ProcessLinkAcknowledged` event for proving signed-link redemption without authentication.
+- Seeded `ack` process definition; configurable `login-link.ack.redirect_url`.
+- Redemption resolves the handler via the process definition's `handler_key` (slug may differ).
 - Lifecycle scoped to process + subject: invalidate prior valid links, rate limits, and resend.
 - `ProcessLinkMail` interim mailable uses process `mail_from` / `content` / expiry (falls back to login blade when content empty).
 - Resend action on Login Link instances.

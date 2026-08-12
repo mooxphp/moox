@@ -22,5 +22,16 @@ class LoginLinkProcessSeeder extends Seeder
                 'expiry_minutes' => null,
             ],
         );
+
+        LoginLinkProcess::query()->updateOrCreate(
+            ['slug' => 'ack'],
+            [
+                'title' => 'Acknowledge',
+                'mail_from' => null,
+                'content' => 'Click the button below to confirm.',
+                'handler_key' => 'ack',
+                'expiry_minutes' => null,
+            ],
+        );
     }
 }

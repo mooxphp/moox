@@ -1,5 +1,6 @@
 <?php
 
+use Moox\LoginLink\Handlers\AckRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\User\Models\User;
 
@@ -208,14 +209,30 @@ return [
     | Redemption handlers
     |--------------------------------------------------------------------------
     |
-    | Process key => handler class. Other packages contribute additional
+    | Handler key => handler class. Other packages contribute additional
     | handlers via `{package}.login-link.handlers`; this package aggregates
-    | them (mirror of moox/scopes). Login is the built-in first handler.
+    | them (mirror of moox/scopes). Built-in: login + ack (non-login proof).
     |
     */
 
     'handlers' => [
         'login' => LoginRedemptionHandler::class,
+        'ack' => AckRedemptionHandler::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ack handler (non-login)
+    |--------------------------------------------------------------------------
+    |
+    | Built-in second process for proving non-login redemption. Redirects here
+    | after firing ProcessLinkAcknowledged. Real verification handlers belong
+    | in consumer packages.
+    |
+    */
+
+    'ack' => [
+        'redirect_url' => env('LOGIN_LINK_ACK_REDIRECT_URL', '/'),
     ],
 
 ];

@@ -7,6 +7,7 @@ namespace Moox\LoginLink\Services;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Moox\LoginLink\Models\LoginLink;
+use Moox\LoginLink\Models\LoginLinkProcess;
 
 class LoginLinkRedemptionService
 {
@@ -31,8 +32,8 @@ class LoginLinkRedemptionService
                 return null;
             }
 
-            $process = $this->resolveProcess($loginLink);
-            $handler = $this->handlers->get($process);
+            $handlerKey = $this->resolveHandlerKey($loginLink);
+            $handler = $this->handlers->get($handlerKey);
 
             if ($handler === null) {
                 return null;
@@ -48,6 +49,23 @@ class LoginLinkRedemptionService
 
             return $result;
         });
+    }
+
+    /**
+     * Prefer the process definition's handler_key; fall back to the link's process
+     * slug (BC when slug and handler key match, or no definition exists yet).
+     */
+    protected function resolveHandlerKey(LoginLink $loginLink): string
+    {
+        $processSlug = $this->resolveProcess($loginLink);
+
+        $definition = LoginLinkProcess::query()->where('slug', $processSlug)->first();
+
+        if ($definition !== null && filled($definition->handler_key)) {
+            return (string) $definition->handler_key;
+        }
+
+        return $processSlug;
     }
 
     /**
