@@ -7,11 +7,14 @@ namespace Moox\Department\Resources;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -78,6 +81,9 @@ class DepartmentResource extends BaseRecordResource
                                 ->required()
                                 ->rules(DepartmentRules::for('status'))
                                 ->default('draft'),
+                            Toggle::make('is_active')
+                                ->label(__('department::fields.is_active'))
+                                ->default(true),
                             TextInput::make('name')
                                 ->label(__('department::fields.name'))
                                 ->required()
@@ -158,6 +164,9 @@ class DepartmentResource extends BaseRecordResource
                         }
                     )
                     ->sortable(),
+                IconColumn::make('is_active')
+                    ->label(__('department::fields.is_active'))
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -176,7 +185,7 @@ class DepartmentResource extends BaseRecordResource
     }
 
     /**
-     * @return array<SelectFilter>
+     * @return array<SelectFilter|TernaryFilter>
      */
     protected static function getDepartmentTableFilters(): array
     {
@@ -184,6 +193,8 @@ class DepartmentResource extends BaseRecordResource
             SelectFilter::make('status')
                 ->label(__('department::fields.status'))
                 ->options(static::configOptions('department.statuses')),
+            TernaryFilter::make('is_active')
+                ->label(__('department::fields.is_active')),
         ];
     }
 

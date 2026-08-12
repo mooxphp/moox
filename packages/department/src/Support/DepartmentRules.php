@@ -11,6 +11,7 @@ final class DepartmentRules
     {
         return [
             'status' => ['required', 'string', 'max:30', 'in:'.implode(',', config('department.statuses', ['draft']))],
+            'is_active' => ['boolean'],
             'name' => ['required', 'string', 'max:160'],
             'code' => ['nullable', 'string', 'max:40'],
             'description' => ['nullable', 'string'],
