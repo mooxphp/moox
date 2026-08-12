@@ -13,6 +13,7 @@ final class CompanyRules
     {
         return [
             'status' => ['required', 'string', 'max:30', 'in:'.implode(',', config('company.statuses', ['draft']))],
+            'is_active' => ['boolean'],
             'name' => ['nullable', 'string', 'max:120'],
             'display_name' => ['nullable', 'string', 'max:120'],
             'legal_name' => ['nullable', 'string', 'max:120'],

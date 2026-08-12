@@ -7,11 +7,14 @@ namespace Moox\Company\Resources;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\Company\Pages\CreateCompany;
@@ -164,6 +167,9 @@ class CompanyResource extends BaseRecordResource
                                         ->searchable()
                                         ->preload()
                                         ->rules(CompanyRules::for('language_id')),
+                                    Toggle::make('is_active')
+                                        ->label(__('company::fields.is_active'))
+                                        ->default(true),
                                 ]),
                             Section::make('')
                                 ->schema($taxonomyFields),
@@ -210,6 +216,9 @@ class CompanyResource extends BaseRecordResource
                     }
                 )
                 ->sortable(),
+            IconColumn::make('is_active')
+                ->label(__('company::fields.is_active'))
+                ->boolean(),
         ];
 
         if ($hasParentRelation) {
@@ -263,7 +272,7 @@ class CompanyResource extends BaseRecordResource
     }
 
     /**
-     * @return array<SelectFilter>
+     * @return array<SelectFilter|TernaryFilter>
      */
     protected static function getCompanyTableFilters(): array
     {
@@ -271,6 +280,8 @@ class CompanyResource extends BaseRecordResource
             SelectFilter::make('status')
                 ->label(__('company::fields.status'))
                 ->options(static::configOptions('company.statuses')),
+            TernaryFilter::make('is_active')
+                ->label(__('company::fields.is_active')),
         ];
     }
 

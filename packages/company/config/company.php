@@ -49,9 +49,9 @@ return [
                     'icon' => 'gmdi-check-circle-o',
                     'query' => [
                         [
-                            'field' => 'status',
+                            'field' => 'is_active',
                             'operator' => '=',
-                            'value' => 'active',
+                            'value' => true,
                         ],
                         [
                             'field' => 'deleted_at',

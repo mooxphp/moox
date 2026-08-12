@@ -23,6 +23,7 @@ class CompanyFactory extends Factory
 
         return [
             'status' => fake()->randomElement(config('company.statuses', ['draft', 'active'])),
+            'is_active' => true,
             'name' => $name,
             'display_name' => $name,
             'legal_name' => fake()->optional(0.6)->company().' '.fake()->randomElement(['GmbH', 'AG', 'KG', 'OHG', 'Ltd.']),
@@ -51,6 +52,7 @@ class CompanyFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (): array => [
+            'is_active' => false,
             'status' => 'inactive',
         ]);
     }
