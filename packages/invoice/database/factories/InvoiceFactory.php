@@ -33,6 +33,8 @@ class InvoiceFactory extends Factory
             'order_number' => fake()->optional()->bothify('PO-####'),
             'order_date' => fake()->optional()->date('Y-m-d'),
             'delivery_date' => fake()->optional()->date('Y-m-d'),
+            'payment_terms' => fake()->optional()->sentence(),
+            'shipping_method' => fake()->optional()->randomElement(['DHL', 'UPS', 'Spedition']),
             'pricing_basis' => null,
             'seller' => $this->sampleParty('Seller'),
             'buyer' => $this->sampleParty('Buyer'),

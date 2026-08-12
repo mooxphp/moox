@@ -109,6 +109,12 @@ class InvoiceFactory
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
             delivery_date: $dto->deliveryDate,
+            payment_terms: $dto->paymentTerms !== null && $dto->paymentTerms !== ''
+                ? $dto->paymentTerms
+                : null,
+            shipping_method: $dto->shippingMethod !== null && $dto->shippingMethod !== ''
+                ? $dto->shippingMethod
+                : null,
             pricing_basis: $dto->pricingBasis,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,

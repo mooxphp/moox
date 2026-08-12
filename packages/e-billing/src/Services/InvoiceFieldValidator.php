@@ -24,16 +24,6 @@ use RuntimeException;
 class InvoiceFieldValidator
 {
     /**
-     * Fields with no persisted invoice/line source (bill_data is not read).
-     *
-     * @var list<string>
-     */
-    private const INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'payment_terms',
-        'shipping_method',
-    ];
-
-    /**
      * Populate field_validations on the document (invoice-level + lines sub-structure),
      * attribute the document to a {@see Customer} via buyer identifier when present,
      * and set company_id by derivation (or name fallback when no identifier match).
@@ -542,11 +532,6 @@ class InvoiceFieldValidator
      */
     private function validateGenericInvoiceField(Invoice $invoice, string $field, string $priority): array
     {
-        // No persisted source ⇒ nothing to corroborate; never block auto-Validated.
-        if (in_array($field, self::INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE, true)) {
-            return ['status' => 'not_applicable'];
-        }
-
         $value = $this->getInvoiceFieldValue($invoice, $field);
 
         if ($this->isInvoiceFieldValueEmpty($field, $value)) {

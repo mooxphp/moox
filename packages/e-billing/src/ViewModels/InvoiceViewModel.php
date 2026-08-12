@@ -16,14 +16,6 @@ use Moox\Invoice\Support\En16931\BankAccount;
 
 final class InvoiceViewModel
 {
-    /**
-     * @var list<string>
-     */
-    private const FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'payment_terms',
-        'shipping_method',
-    ];
-
     public function __construct(
         private Invoice $invoice, // Extend Invoice in your host app if needed
         private ?EbillingDocument $document = null,
@@ -264,10 +256,6 @@ final class InvoiceViewModel
 
     private function resolveFieldValue(string $field): mixed
     {
-        if (in_array($field, self::FIELDS_WITHOUT_PERSISTED_SOURCE, true)) {
-            return null;
-        }
-
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
             return HeaderChargeResolver::resolveAmount($this->invoice->allowanceCharges, $field);
         }
@@ -376,6 +364,8 @@ final class InvoiceViewModel
         return array_map(function (string $name) use ($validations): FieldViewData {
             $entry = $validations[$name] ?? null;
             $validation = is_array($entry) ? $entry : null;
+            $rawValue = $this->resolveFieldValue($name);
+            $validation = $this->resolveDisplayValidation($name, $rawValue, $validation);
             $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
                 ? $validation['status']
                 : '';
@@ -389,5 +379,48 @@ final class InvoiceViewModel
                 hint: InvoiceFieldLabels::hint($name, $status),
             );
         }, $fieldNames);
+    }
+
+    /**
+     * Avoid showing "parsed" for empty fields when stored validations pre-date the field
+     * or were never recomputed after a schema change.
+     *
+     * @return array{status: string}|null
+     */
+    private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
+    {
+        $hasValue = ! ($rawValue === null || $rawValue === '' || (is_array($rawValue) && $rawValue === []));
+
+        if ($storedValidation !== null) {
+            $storedStatus = $storedValidation['status'] ?? null;
+            if ($hasValue || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
+                return $storedValidation;
+            }
+        }
+
+        if ($hasValue) {
+            return ['status' => 'parsed'];
+        }
+
+        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
+        $priority = is_array($invoiceFields) && is_string($invoiceFields[$field] ?? null)
+            ? $invoiceFields[$field]
+            : 'could';
+
+        if ($priority === 'could') {
+            return ['status' => 'not_applicable'];
+        }
+
+        if ($priority === 'must') {
+            return ['status' => 'missing'];
+        }
+
+        $contextual = config('e-billing.field_validation.invoice_contextual_should', []);
+
+        return [
+            'status' => is_array($contextual) && in_array($field, $contextual, true)
+                ? 'missing'
+                : 'not_applicable',
+        ];
     }
 }
