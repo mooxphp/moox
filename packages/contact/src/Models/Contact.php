@@ -65,6 +65,7 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
         'contact_type',
         'note',
         'external_reference',
+        'is_active',
         'data',
         // Needed so transform field_map can persist soft-deletes via mass assignment.
         'deleted_at',
@@ -83,6 +84,7 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
             'language_id' => 'integer',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -122,7 +124,7 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (! $this->canAuthenticate() || $this->status !== 'active') {
+        if (! $this->canAuthenticate() || ! $this->is_active) {
             return false;
         }
 

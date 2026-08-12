@@ -30,5 +30,6 @@ return [
     'data' => 'Additional data',
     'identity' => 'Identity',
     'contact' => 'Contact',
+    'is_active' => 'Active',
     'active' => 'Active',
 ];

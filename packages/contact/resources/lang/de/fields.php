@@ -30,5 +30,6 @@ return [
     'data' => 'Zusätzliche Daten',
     'identity' => 'Stammdaten',
     'contact' => 'Kontakt',
+    'is_active' => 'Aktiv',
     'active' => 'Aktiv',
 ];
