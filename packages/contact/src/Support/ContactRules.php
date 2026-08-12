@@ -11,7 +11,7 @@ final class ContactRules
     {
         return [
             'status' => ['required', 'string', 'max:30', 'in:'.implode(',', config('contact.statuses', ['draft']))],
-            'gender' => ['nullable', 'string', 'max:20', 'in:'.implode(',', config('contact.genders', ['unknown']))],
+            'gender' => ['required', 'string', 'max:20', 'in:'.implode(',', config('contact.genders', ['unknown']))],
             'salutation_code' => ['nullable', 'string', 'max:30'],
             'academic_title' => ['nullable', 'string', 'max:80'],
             'first_name' => ['nullable', 'string', 'max:80'],

@@ -115,7 +115,9 @@ class ContactResource extends BaseRecordResource
                             Select::make('gender')
                                 ->label(__('contact::fields.gender'))
                                 ->options(static::configOptions('contact.genders'))
-                                ->rules(ContactRules::for('gender')),
+                                ->required()
+                                ->rules(ContactRules::for('gender'))
+                                ->default('unknown'),
                             TextInput::make('external_reference')
                                 ->label(__('contact::fields.external_reference'))
                                 ->rules(ContactRules::for('external_reference'))
