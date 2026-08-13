@@ -27,7 +27,7 @@ return [
     'bank_accounts' => 'Bankverbindungen',
     'agent' => 'Vertreter',
     'payment_terms' => 'Zahlungsbedingungen',
-    'pricing_basis' => 'Preisgrundlage',
+    'delivery_terms' => 'Lieferbedingungen',
     'shipping_method' => 'Versandart',
     'net_total' => 'Nettobetrag',
     'vat_rate' => 'Steuersatz',

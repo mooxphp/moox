@@ -35,7 +35,7 @@ class InvoiceFactory extends Factory
             'delivery_date' => fake()->optional()->date('Y-m-d'),
             'payment_terms' => fake()->optional()->sentence(),
             'shipping_method' => fake()->optional()->randomElement(['DHL', 'UPS', 'Spedition']),
-            'pricing_basis' => null,
+            'delivery_terms' => null,
             'seller' => $this->sampleParty('Seller'),
             'buyer' => $this->sampleParty('Buyer'),
             'delivery' => $this->sampleAddress(),

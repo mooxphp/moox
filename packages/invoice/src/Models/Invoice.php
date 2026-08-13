@@ -50,7 +50,7 @@ class Invoice extends BaseItemModel
         'delivery_date',
         'payment_terms',
         'shipping_method',
-        'pricing_basis',
+        'delivery_terms',
         'seller',
         'buyer',
         'delivery',

@@ -47,6 +47,7 @@ class Invoice implements ZugferdInvoice
         public ?string $agent = null,
         public ?string $paymentTerms = null,
         public ?string $pricingBasis = null,
+        public ?string $deliveryTerms = null,
         public ?string $paymentMeansCode = null,
 
         // Amounts
@@ -247,6 +248,7 @@ class Invoice implements ZugferdInvoice
             agent: isset($data['agent']) && is_string($data['agent']) ? $data['agent'] : null,
             paymentTerms: isset($data['payment_terms']) && is_string($data['payment_terms']) ? $data['payment_terms'] : null,
             pricingBasis: isset($data['pricing_basis']) && is_string($data['pricing_basis']) ? $data['pricing_basis'] : null,
+            deliveryTerms: isset($data['delivery_terms']) && is_string($data['delivery_terms']) ? $data['delivery_terms'] : null,
             netTotal: (float) ($data['net_total'] ?? 0),
             vatRate: (float) ($data['vat_rate'] ?? 19.0),
             vatAmount: (float) ($data['vat_amount'] ?? 0),
@@ -345,6 +347,7 @@ class Invoice implements ZugferdInvoice
             'agent' => $this->agent,
             'payment_terms' => $this->paymentTerms,
             'pricing_basis' => $this->pricingBasis,
+            'delivery_terms' => $this->deliveryTerms,
 
             'net_total' => $this->netTotal,
             'vat_rate' => $this->vatRate,

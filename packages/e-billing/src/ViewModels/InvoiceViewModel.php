@@ -61,7 +61,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_delivery'),
                 'subtitle' => 'BG-13',
                 'fields' => $this->buildFields([
-                    'delivery_address', 'delivery_date', 'shipping_method', 'agent', 'pricing_basis',
+                    'delivery_address', 'delivery_date', 'shipping_method', 'agent', 'delivery_terms',
                 ]),
             ],
             'totals' => [

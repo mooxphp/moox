@@ -43,7 +43,7 @@ class InvoiceBuilder
         $invoice->delivery_date = $draft->delivery_date;
         $invoice->payment_terms = $draft->payment_terms;
         $invoice->shipping_method = $draft->shipping_method;
-        $invoice->pricing_basis = $draft->pricing_basis;
+        $invoice->delivery_terms = $draft->delivery_terms;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;

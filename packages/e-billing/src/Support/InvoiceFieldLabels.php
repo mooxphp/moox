@@ -35,7 +35,7 @@ final class InvoiceFieldLabels
             'supplier_bank_accounts' => __('e-billing::fields.bank_accounts'),
             'agent' => __('e-billing::fields.agent'),
             'payment_terms' => __('e-billing::fields.payment_terms'),
-            'pricing_basis' => __('e-billing::fields.pricing_basis'),
+            'delivery_terms' => __('e-billing::fields.delivery_terms'),
             'shipping_method' => __('e-billing::fields.shipping_method'),
             'net_total' => __('e-billing::fields.net_total'),
             'vat_rate' => __('e-billing::fields.vat_rate'),
