@@ -242,5 +242,6 @@ return [
     'hint_review_unit_price' => 'Einzelpreis weicht von den Stammdaten ab.',
     'hint_review_minimum_quantity_surcharge' => 'Mindermengenzuschlag sollte manuell überprüft werden.',
     'hint_review_freight_flat_rate' => 'Frachtkostenpauschale sollte manuell überprüft werden.',
+    'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];

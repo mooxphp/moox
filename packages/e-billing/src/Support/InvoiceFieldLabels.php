@@ -203,6 +203,7 @@ final class InvoiceFieldLabels
                 'unit_price' => __('e-billing::fields.hint_review_unit_price'),
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
+                'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
                 default => __('e-billing::fields.hint_review_default'),
             };
         }

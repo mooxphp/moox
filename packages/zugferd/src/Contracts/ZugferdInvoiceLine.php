@@ -24,6 +24,8 @@ interface ZugferdInvoiceLine
 
     public float $lineTotal { get; }
 
+    public ?string $deliveryDate { get; }
+
     /** @var list<ZugferdAllowanceCharge> */
     public array $allowanceCharges { get; }
 }

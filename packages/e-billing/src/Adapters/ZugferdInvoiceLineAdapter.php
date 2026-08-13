@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Adapters;
 
+use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Invoice\Models\InvoiceLine;
@@ -18,6 +19,7 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     public function __construct(
         private InvoiceLine $line,
         private ?UnitCodeResolver $unitCodeResolver = null,
+        private bool $emitLineDeliveryDate = false,
     ) {
         $this->unitCodeResolver ??= app(UnitCodeResolver::class);
 
@@ -68,6 +70,18 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 
     public float $lineTotal {
         get => (float) $this->line->line_total;
+    }
+
+    public ?string $deliveryDate {
+        get {
+            if (! $this->emitLineDeliveryDate) {
+                return null;
+            }
+
+            return DeliveryDateTransmission::normalize(
+                $this->line->delivery_date !== null ? (string) $this->line->delivery_date : null,
+            );
+        }
     }
 
     /** @var list<ZugferdAllowanceCharge> */
