@@ -205,9 +205,12 @@ return [
     'notification_rematch_failed_title' => 'Erneute Zuordnung fehlgeschlagen',
     'notification_rematch_failed_body' => 'Die Zuordnung konnte für dieses Dokument nicht erneut ausgeführt werden.',
     'action_manual_upload' => 'PDF hochladen',
-    'manual_upload_pdf' => 'PDF-Datei',
-    'notification_manual_upload_success_title' => 'Upload gestartet',
-    'notification_manual_upload_success_body' => 'Das Dokument wurde zur Konvertierung eingereiht.',
+    'action_manual_upload_modal_description' => 'Das PDF wird übernommen, ausgewertet und als E-Rechnung aufbereitet.',
+    'action_manual_upload_submit' => 'Hochladen',
+    'manual_upload_pdf' => 'PDF',
+    'manual_upload_pdf_helper' => 'Nur PDF. Nach dem Hochladen startet die Aufbereitung.',
+    'notification_manual_upload_success_title' => 'PDF übernommen',
+    'notification_manual_upload_success_body' => 'Die Aufbereitung läuft im Hintergrund.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',

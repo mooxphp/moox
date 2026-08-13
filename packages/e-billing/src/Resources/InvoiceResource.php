@@ -610,9 +610,13 @@ class InvoiceResource extends BaseItemResource
         return Action::make('manualUpload')
             ->label($label)
             ->icon(Heroicon::OutlinedArrowUpTray)
+            ->modalHeading($label)
+            ->modalDescription(__('e-billing::fields.action_manual_upload_modal_description'))
+            ->modalSubmitActionLabel(__('e-billing::fields.action_manual_upload_submit'))
             ->form([
                 FileUpload::make('pdf')
                     ->label(__('e-billing::fields.manual_upload_pdf'))
+                    ->helperText(__('e-billing::fields.manual_upload_pdf_helper'))
                     ->acceptedFileTypes(['application/pdf'])
                     ->disk($disk)
                     ->directory($directory)

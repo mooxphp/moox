@@ -205,9 +205,12 @@ return [
     'notification_rematch_failed_title' => 'Re-match failed',
     'notification_rematch_failed_body' => 'Matching could not be re-run for this document.',
     'action_manual_upload' => 'Upload PDF',
-    'manual_upload_pdf' => 'PDF file',
-    'notification_manual_upload_success_title' => 'Upload started',
-    'notification_manual_upload_success_body' => 'The document was queued for conversion.',
+    'action_manual_upload_modal_description' => 'The PDF will be taken in, parsed, and prepared as an e-invoice.',
+    'action_manual_upload_submit' => 'Upload',
+    'manual_upload_pdf' => 'PDF',
+    'manual_upload_pdf_helper' => 'PDF only. Processing starts after upload.',
+    'notification_manual_upload_success_title' => 'PDF received',
+    'notification_manual_upload_success_body' => 'Processing continues in the background.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',
