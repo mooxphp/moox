@@ -15,6 +15,18 @@ class PdfParser
     }
 
     /**
+     * Use the configured binary when it exists; otherwise Spatie auto-discovers pdftotext.
+     */
+    public static function usableBinaryPath(mixed $configured): ?string
+    {
+        if (! is_string($configured) || $configured === '') {
+            return null;
+        }
+
+        return is_executable($configured) ? $configured : null;
+    }
+
+    /**
      * Extract text from a PDF file.
      */
     public function parse(string $pdfPath): ParsedDocument

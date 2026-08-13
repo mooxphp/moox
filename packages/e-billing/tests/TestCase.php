@@ -16,6 +16,12 @@ class TestCase extends AppTestCase
     {
         parent::setUp();
 
+        config([
+            'mail-inbox.graph.tenant_id' => 'test-tenant',
+            'mail-inbox.graph.client_id' => 'test-client',
+            'mail-inbox.graph.client_secret' => 'test-secret',
+        ]);
+
         $this->ensureEbillingMorphRelationsConfig();
         $this->runVeraPdfMigrations();
     }
@@ -55,6 +61,11 @@ class TestCase extends AppTestCase
         if (! Schema::hasTable('verapdf_validatables')) {
             $validatables = include $verapdfMigrationsPath.'/create_verapdf_validatables_table.php.stub';
             $validatables->up();
+        }
+
+        if (! Schema::hasTable('ebilling_uploaded_pdf_sources')) {
+            $uploadedSources = include dirname(__DIR__).'/database/migrations/create_ebilling_uploaded_pdf_sources_table.php.stub';
+            $uploadedSources->up();
         }
     }
 }

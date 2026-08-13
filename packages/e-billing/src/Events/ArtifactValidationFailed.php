@@ -10,7 +10,7 @@ final class ArtifactValidationFailed
      * @param  list<string>  $errors
      */
     public function __construct(
-        public int $inboxAttachmentId,
+        public string $ebillingDocumentId,
         public array $errors,
         public string $format,
     ) {

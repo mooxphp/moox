@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Moox\EBilling\Resources\InvoiceResource\Pages;
+namespace Moox\EBilling\Resources\CreditNoteResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
 use Moox\EBilling\Resources\Concerns\HasEBillingDocumentListTabs;
-use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Resources\CreditNoteResource;
 
-final class ListInvoices extends ListRecords
+final class ListCreditNotes extends ListRecords
 {
     use BaseInListPage;
     use HasEBillingDocumentListTabs;
     use SingleSoftDeleteInListPage;
 
-    protected static string $resource = InvoiceResource::class;
+    protected static string $resource = CreditNoteResource::class;
 
     /**
      * @return array<Action>
@@ -25,7 +25,7 @@ final class ListInvoices extends ListRecords
     protected function getHeaderActions(): array
     {
         return array_values(array_filter([
-            InvoiceResource::getManualUploadAction(),
+            CreditNoteResource::getManualUploadAction(),
         ]));
     }
 }

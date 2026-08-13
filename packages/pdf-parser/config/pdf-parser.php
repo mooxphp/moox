@@ -23,7 +23,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Path to the pdftotext binary. Defaults to storage/app/private/pdf-parser
-    | where you can place a vendored or copied binary.
+    | where you can place a vendored or copied binary. If that file is missing,
+    | Spatie auto-discovers pdftotext (Homebrew, /usr/bin, …).
     |
     */
 

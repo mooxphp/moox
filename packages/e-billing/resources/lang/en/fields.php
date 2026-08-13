@@ -204,6 +204,10 @@ return [
     'notification_rematch_success_body' => 'The document was reset and re-evaluated.',
     'notification_rematch_failed_title' => 'Re-match failed',
     'notification_rematch_failed_body' => 'Matching could not be re-run for this document.',
+    'action_manual_upload' => 'Upload PDF',
+    'manual_upload_pdf' => 'PDF file',
+    'notification_manual_upload_success_title' => 'Upload started',
+    'notification_manual_upload_success_body' => 'The document was queued for conversion.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',

@@ -204,6 +204,10 @@ return [
     'notification_rematch_success_body' => 'Das Dokument wurde zurückgesetzt und neu bewertet.',
     'notification_rematch_failed_title' => 'Erneute Zuordnung fehlgeschlagen',
     'notification_rematch_failed_body' => 'Die Zuordnung konnte für dieses Dokument nicht erneut ausgeführt werden.',
+    'action_manual_upload' => 'PDF hochladen',
+    'manual_upload_pdf' => 'PDF-Datei',
+    'notification_manual_upload_success_title' => 'Upload gestartet',
+    'notification_manual_upload_success_body' => 'Das Dokument wurde zur Konvertierung eingereiht.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',

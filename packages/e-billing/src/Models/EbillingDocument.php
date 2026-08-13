@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
@@ -26,6 +27,7 @@ use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use RuntimeException;
 
 /**
  * Temporary duplication: review/score methods below mirror legacy {@see Invoice}
@@ -131,6 +133,91 @@ class EbillingDocument extends BaseItemModel
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function inboxAttachment(): ?InboxAttachment
+    {
+        $source = $this->source;
+
+        return $source instanceof InboxAttachment ? $source : null;
+    }
+
+    public function sourceFullPath(): string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->fullPath();
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->sourceFullPath();
+        }
+
+        throw new RuntimeException('Ebilling document has no resolvable source PDF path.');
+    }
+
+    public function sourceOriginalFilename(): string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return (string) ($source->filename ?? 'document.pdf');
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return (string) ($source->original_filename ?: basename($source->source_pdf_path));
+        }
+
+        return 'document.pdf';
+    }
+
+    public function sourceStorageDisk(): ?string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->storage_disk ?? (string) config('mail-inbox.attachments.disk', 'local');
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->source_pdf_disk;
+        }
+
+        return null;
+    }
+
+    public function sourceStoragePath(): ?string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->storage_path;
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->source_pdf_path;
+        }
+
+        return null;
+    }
+
+    public function sourcePreviewContents(): ?string
+    {
+        $disk = $this->sourceStorageDisk();
+        $path = $this->sourceStoragePath();
+
+        if (! is_string($disk) || $disk === '' || ! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (! Storage::disk($disk)->exists($path)) {
+            return null;
+        }
+
+        $contents = Storage::disk($disk)->get($path);
+
+        return is_string($contents) ? $contents : null;
     }
 
     /**
@@ -366,6 +453,10 @@ class EbillingDocument extends BaseItemModel
     public function transitionTo(InvoiceProcessingStatus $newStatus): void
     {
         $current = $this->resolveReviewStatusEnum();
+
+        if ($current === $newStatus) {
+            return;
+        }
 
         if (! $current->canTransitionTo($newStatus)) {
             throw new InvalidArgumentException(

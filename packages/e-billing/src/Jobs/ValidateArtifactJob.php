@@ -55,7 +55,7 @@ class ValidateArtifactJob implements ShouldQueue
     public array $backoff = [60, 300];
 
     public function __construct(
-        public int $inboxAttachmentId,
+        public string $ebillingDocumentId,
     ) {
     }
 
@@ -70,18 +70,20 @@ class ValidateArtifactJob implements ShouldQueue
     ): void {
         $this->setProgress(0);
 
-        $attachment = InboxAttachment::query()->find($this->inboxAttachmentId);
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
 
-        if ($attachment === null) {
-            Log::warning('[EBilling] ValidateArtifactJob: attachment not found', [
-                'inbox_attachment_id' => $this->inboxAttachmentId,
+        if (! $document instanceof EbillingDocument) {
+            Log::warning('[EBilling] ValidateArtifactJob: document not found', [
+                'ebilling_document_id' => $this->ebillingDocumentId,
             ]);
             $this->setProgress(100);
 
             return;
         }
 
-        $document = $this->resolveActionableDocument($attachment, $pipelineFinalizer);
+        $attachment = $document->inboxAttachment();
+
+        $document = $this->resolveActionableDocument($document, $attachment, $pipelineFinalizer);
 
         if ($document === null) {
             return;
@@ -167,7 +169,9 @@ class ValidateArtifactJob implements ShouldQueue
 
         $this->setProgress(90);
 
-        $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+        if ($attachment !== null) {
+            $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+        }
 
         $this->setProgress(100);
     }
@@ -177,14 +181,15 @@ class ValidateArtifactJob implements ShouldQueue
      * Already-validated short-circuit finalizes the pipeline; unexpected statuses skip.
      */
     private function resolveActionableDocument(
-        InboxAttachment $attachment,
+        EbillingDocument $document,
+        ?InboxAttachment $attachment,
         InboxMessagePipelineFinalizer $pipelineFinalizer,
     ): ?EbillingDocument {
-        $document = EbillingDocument::forSourceAttachment($attachment);
-
-        if ($document?->gateway_status === EBillingAttachmentProcessingStatus::Validated) {
+        if ($document->gateway_status === EBillingAttachmentProcessingStatus::Validated) {
             $this->setProgress(100);
-            $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+            if ($attachment !== null) {
+                $pipelineFinalizer->finalizeAfterAttachmentPipelineStep($attachment->inbox_message_id);
+            }
 
             return null;
         }
@@ -195,11 +200,11 @@ class ValidateArtifactJob implements ShouldQueue
             EBillingAttachmentProcessingStatus::ValidatorError,
         ];
 
-        if (! in_array($document?->gateway_status, $allowedStatuses, true)) {
+        if (! in_array($document->gateway_status, $allowedStatuses, true)) {
             Log::notice('[EBilling] ValidateArtifactJob: unexpected gateway_status, skipping', [
-                'inbox_attachment_id' => $attachment->id,
-                'gateway_status' => $document?->gateway_status?->value,
-                'processing_status' => $attachment->processing_status,
+                'ebilling_document_id' => $document->getKey(),
+                'gateway_status' => $document->gateway_status?->value,
+                'processing_status' => $attachment?->processing_status,
             ]);
             $this->setProgress(100);
 
@@ -326,7 +331,7 @@ class ValidateArtifactJob implements ShouldQueue
      */
     private function persistSuccess(
         EbillingDocument $document,
-        InboxAttachment $attachment,
+        ?InboxAttachment $attachment,
         FormatDefinition $definition,
         string $formatId,
         string $diskName,
@@ -368,10 +373,10 @@ class ValidateArtifactJob implements ShouldQueue
             $document->processed_at = now();
             $document->save();
 
-            $attachment->markAsProcessed();
+            $attachment?->markAsProcessed();
         });
 
-        event(new ArtifactValidated($attachment->id, $formatId));
+        event(new ArtifactValidated($document->getKey(), $formatId));
     }
 
     /**
@@ -382,7 +387,7 @@ class ValidateArtifactJob implements ShouldQueue
      */
     private function persistFailure(
         EbillingDocument $document,
-        InboxAttachment $attachment,
+        ?InboxAttachment $attachment,
         string $formatId,
         array $errorStrings,
         KositResult $kositResult,
@@ -411,10 +416,10 @@ class ValidateArtifactJob implements ShouldQueue
             $document->gateway_status = EBillingAttachmentProcessingStatus::ValidationFailed;
             $document->save();
 
-            $attachment->markAsFailed($failureMessage);
+            $attachment?->markAsFailed($failureMessage);
         });
 
-        event(new ArtifactValidationFailed($attachment->id, array_values($errorStrings), $formatId));
+        event(new ArtifactValidationFailed($document->getKey(), array_values($errorStrings), $formatId));
     }
 
     /**
@@ -438,20 +443,21 @@ class ValidateArtifactJob implements ShouldQueue
 
     public function failed(?Throwable $exception = null): void
     {
-        $attachment = InboxAttachment::query()->find($this->inboxAttachmentId);
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
+
+        if (! $document instanceof EbillingDocument) {
+            return;
+        }
+
+        $document->gateway_status = EBillingAttachmentProcessingStatus::ValidatorError;
+        $document->save();
+
+        $attachment = $document->inboxAttachment();
+        $attachment?->markAsFailed($exception?->getMessage() ?? 'ValidateArtifactJob failed');
 
         if ($attachment === null) {
             return;
         }
-
-        $document = EbillingDocument::forSourceAttachment($attachment);
-
-        if ($document !== null) {
-            $document->gateway_status = EBillingAttachmentProcessingStatus::ValidatorError;
-            $document->save();
-        }
-
-        $attachment->markAsFailed($exception?->getMessage() ?? 'ValidateArtifactJob failed');
 
         try {
             app(InboxMessagePipelineFinalizer::class)
@@ -459,7 +465,7 @@ class ValidateArtifactJob implements ShouldQueue
         } catch (Throwable $e) {
             Log::error('[EBilling] ValidateArtifactJob failed() finalizer error', [
                 'exception' => $e,
-                'inbox_attachment_id' => $attachment->id,
+                'ebilling_document_id' => $document->getKey(),
             ]);
         }
     }

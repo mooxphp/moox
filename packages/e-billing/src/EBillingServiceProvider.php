@@ -9,10 +9,13 @@ use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
+use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
+use Moox\EBilling\Contracts\PdfaNormalizerInterface;
+use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
@@ -22,6 +25,8 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\PassthroughPdfaNormalizer;
+use Moox\EBilling\Support\PassthroughSourcePdfPreparer;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
@@ -42,6 +47,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ])
             ->hasMigrations([
                 'create_ebilling_documents_table',
+                'create_ebilling_uploaded_pdf_sources_table',
             ]);
 
         $this->getMooxPackage()
@@ -60,11 +66,20 @@ class EBillingServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(InvoiceFieldValidator::class);
         $this->app->singleton(ConfirmInvoiceAction::class);
+        $this->app->singleton(CreateManualUploadDocumentAction::class);
         $this->app->singleton(SetInvoiceAttributionAction::class);
         $this->app->singleton(RematchAttributionAction::class);
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);
         $this->app->singleton(ZugferdGeneratorStrategy::class);
+
+        if (! $this->app->bound(SourcePdfPreparerInterface::class)) {
+            $this->app->bind(SourcePdfPreparerInterface::class, PassthroughSourcePdfPreparer::class);
+        }
+
+        if (! $this->app->bound(PdfaNormalizerInterface::class)) {
+            $this->app->bind(PdfaNormalizerInterface::class, PassthroughPdfaNormalizer::class);
+        }
         $this->registerFormatRegistry();
 
         $this->registerInvoiceParser();

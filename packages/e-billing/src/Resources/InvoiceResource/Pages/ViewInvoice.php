@@ -22,7 +22,7 @@ use Moox\EBilling\ViewModels\InvoiceViewModel;
 use Moox\Invoice\Models\Invoice;
 use Throwable;
 
-final class ViewInvoice extends ViewRecord
+class ViewInvoice extends ViewRecord
 {
     protected static string $resource = InvoiceResource::class;
 

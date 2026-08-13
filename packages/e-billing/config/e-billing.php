@@ -1,5 +1,6 @@
 <?php
 
+use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\KositValidator\Models\KositValidatable;
 use Moox\KositValidator\Models\KositValidation;
@@ -50,6 +51,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Manual uploads
+    |--------------------------------------------------------------------------
+    |
+    | Internal admin uploads for documents that never enter the mailbox flow.
+    | Enabled per resource via resources.*.manual_upload.enabled.
+    |
+    */
+
+    'manual_upload' => [
+        'source_disk' => env('EBILLING_MANUAL_SOURCE_DISK', 'local'),
+        'source_path' => env('EBILLING_MANUAL_SOURCE_PATH', 'ebilling/manual-uploads/source'),
+    ],
+
+    'letterhead' => [
+        'default' => [
+            'label' => 'Default letterhead',
+            'pdf_path' => env('EBILLING_MANUAL_DEFAULT_LETTERHEAD_PDF', ''),
+            'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_X_MM', 0),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Send visual copy with XRechnung mail
     |--------------------------------------------------------------------------
     |
@@ -90,6 +114,7 @@ return [
             'navigation_icon' => 'heroicon-o-document-text',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
+            'document_types' => ['380'],
             /*
             |--------------------------------------------------------------------------
             | Soft Delete Tab Key
@@ -109,6 +134,30 @@ return [
             */
             'soft_delete_tab_key' => 'deleted',
             'resource' => InvoiceResource::class,
+            'manual_upload' => [
+                'enabled' => false,
+                'label' => 'Manual upload',
+                'scope' => 'invoices',
+                'requires_letterhead_overlay' => false,
+            ],
+        ],
+        'credit_notes' => [
+            'enabled' => true,
+            'label' => 'trans//e-billing::ebilling.credit_note',
+            'plural_label' => 'trans//e-billing::ebilling.credit_notes',
+            'navigation_group' => 'trans//e-billing::ebilling.navigation_group',
+            'navigation_icon' => 'heroicon-o-receipt-refund',
+            'navigation_sort' => 2,
+            'navigation_count_badge' => true,
+            'document_types' => ['381'],
+            'soft_delete_tab_key' => 'deleted',
+            'resource' => CreditNoteResource::class,
+            'manual_upload' => [
+                'enabled' => true,
+                'label' => 'Upload credit note',
+                'scope' => 'credit-notes',
+                'requires_letterhead_overlay' => true,
+            ],
         ],
     ],
 
