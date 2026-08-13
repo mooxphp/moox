@@ -44,6 +44,8 @@ interface ZugferdInvoice
 
     public ?string $paymentTerms { get; }
 
+    public ?string $deliveryDate { get; }
+
     public ?string $paymentMeansCode { get; }
 
     public float $vatRate { get; }

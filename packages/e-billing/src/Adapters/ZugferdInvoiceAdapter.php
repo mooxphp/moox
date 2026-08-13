@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Adapters;
 
+use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
@@ -115,6 +116,17 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
             : null;
     }
 
+    public ?string $deliveryDate {
+        get {
+            $this->model->loadMissing('lines');
+
+            return DeliveryDateTransmission::documentActualDeliveryDate(
+                $this->model->delivery_date !== null ? (string) $this->model->delivery_date : null,
+                $this->model->lines,
+            );
+        }
+    }
+
     public ?string $paymentMeansCode {
         get => $this->model->payment_means?->payment_means_code;
     }
@@ -152,8 +164,16 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         get {
             $this->model->loadMissing(['lines.allowanceCharges']);
 
+            $emitLineDeliveryDate = DeliveryDateTransmission::shouldEmitLineDeliveryDate(
+                $this->model->delivery_date !== null ? (string) $this->model->delivery_date : null,
+                $this->model->lines,
+            );
+
             return $this->model->lines
-                ->map(fn ($line): ZugferdInvoiceLineAdapter => new ZugferdInvoiceLineAdapter($line))
+                ->map(fn ($line): ZugferdInvoiceLineAdapter => new ZugferdInvoiceLineAdapter(
+                    $line,
+                    emitLineDeliveryDate: $emitLineDeliveryDate,
+                ))
                 ->values()
                 ->all();
         }

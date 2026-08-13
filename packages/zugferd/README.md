@@ -15,6 +15,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - Contract interfaces for invoices, lines, addresses, bank accounts, and allowance/charges
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
 - Configurable profile: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (default)
+- Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
 
 <!--/features-->
 
@@ -145,7 +146,7 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `convert(ZugferdInvoice $invoice): string` | XML string | Builds horstoeko document; `getContentSafely()` mitigates stream-resource warnings |
+| `convert(ZugferdInvoice $invoice, ?string $profileKey = null): string` | XML string | Builds horstoeko document; optional `$profileKey` overrides `config('zugferd.profile')` and selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
 | `convertToFile(ZugferdInvoice $invoice, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
 | `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output) |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
@@ -203,7 +204,7 @@ From the monorepo root:
 php vendor/bin/pest packages/zugferd/tests
 ```
 
-Feature tests cover allowance/charges, address lines, payment means codes, and `IncompleteInvoiceException` for missing supplier address. `mergePdfWithXml()` and `convertToFile()` are not covered in this package (e-billing tests exercise the adapter path).
+Feature tests cover allowance/charges, address lines, payment means codes, and `IncompleteInvoiceException` for missing supplier address. Delivery-date XML coverage lives in `moox/e-billing` adapter tests. `mergePdfWithXml()` and `convertToFile()` are not covered in this package (e-billing tests exercise the adapter path).
 
 ## See also
 

@@ -138,8 +138,9 @@ class ZugferdConverter
         $this->setDocumentInfo($document, $invoice);
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
+        $this->setDelivery($document, $invoice);
         $this->setPaymentInfo($document, $invoice);
-        $this->addLineItems($document, $invoice);
+        $this->addLineItems($document, $invoice, $profileKey);
         $this->addAllowanceCharges($document, $invoice);
         $this->setTotals($document, $invoice);
 
@@ -231,6 +232,16 @@ class ZugferdConverter
         $doc->setDocumentBuyerCommunication('EM', $invoice->customerNumber ?: 'N/A');
     }
 
+    private function setDelivery(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        $deliveryDate = $this->parseDate($invoice->deliveryDate);
+        if ($deliveryDate === null) {
+            return;
+        }
+
+        $doc->setDocumentSupplyChainEvent($deliveryDate);
+    }
+
     // ─── Payment (BG-16) ────────────────────────────────────────
 
     private function setPaymentInfo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
@@ -276,8 +287,10 @@ class ZugferdConverter
 
     // ─── Line Items ──────────────────────────────────────────────
 
-    private function addLineItems(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    private function addLineItems(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice, string $profileKey): void
     {
+        $emitLineActualDelivery = $profileKey === 'EXTENDED';
+
         foreach ($invoice->lines as $line) {
             $doc->addNewPosition((string) $line->position);
             $doc->setDocumentPositionProductDetails(
@@ -295,7 +308,49 @@ class ZugferdConverter
             $doc->setDocumentPositionLineSummation($line->lineTotal);
 
             $doc->addDocumentPositionTax('S', 'VAT', $invoice->vatRate);
+
+            $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
         }
+    }
+
+    private function setLineDeliveryDate(
+        ZugferdDocumentBuilder $doc,
+        ?string $deliveryDate,
+        bool $emitLineActualDelivery,
+    ): void {
+        $parsed = $this->parseDate($deliveryDate);
+        if ($parsed === null) {
+            return;
+        }
+
+        if ($emitLineActualDelivery) {
+            $doc->setDocumentPositionSupplyChainEvent($parsed);
+
+            return;
+        }
+
+        $doc->setDocumentPositionBillingPeriod($parsed, $parsed);
+    }
+
+    private function parseDate(?string $value): ?\DateTimeInterface
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd.m.Y', 'd.m.y'] as $format) {
+            $parsed = \DateTimeImmutable::createFromFormat('!'.$format, $trimmed);
+            if ($parsed instanceof \DateTimeImmutable) {
+                return $parsed;
+            }
+        }
+
+        return null;
     }
 
     // ─── Allowances & Charges (BG-20/BG-21) ─────────────────────
