@@ -431,7 +431,7 @@ return [
             // Agent & terms
             'agent' => 'could',
             'payment_terms' => 'should',  // BT-20
-            'pricing_basis' => 'could',
+            'delivery_terms' => 'could',
             'shipping_method' => 'could',
 
             // Amounts — MUST

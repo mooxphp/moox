@@ -27,7 +27,7 @@ return [
     'bank_accounts' => 'Bank accounts',
     'agent' => 'Agent',
     'payment_terms' => 'Payment terms',
-    'pricing_basis' => 'Pricing basis',
+    'delivery_terms' => 'Delivery terms',
     'shipping_method' => 'Shipping method',
     'net_total' => 'Net amount',
     'vat_rate' => 'Tax rate',

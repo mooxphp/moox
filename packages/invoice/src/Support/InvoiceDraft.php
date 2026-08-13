@@ -27,7 +27,7 @@ readonly class InvoiceDraft
         public ?string $delivery_date,
         public ?string $payment_terms,
         public ?string $shipping_method,
-        public ?string $pricing_basis,
+        public ?string $delivery_terms,
         public float $net_total,
         public float $vat_rate,
         public float $vat_amount,

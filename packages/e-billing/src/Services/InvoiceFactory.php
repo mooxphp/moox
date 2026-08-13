@@ -116,6 +116,7 @@ class InvoiceFactory
                 ? $dto->shippingMethod
                 : null,
             pricing_basis: $dto->pricingBasis,
+            delivery_terms: $dto->deliveryTerms,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,
             vat_amount: $dto->vatAmount,
