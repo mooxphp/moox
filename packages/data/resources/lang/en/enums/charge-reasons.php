@@ -4,7 +4,6 @@
  * UNCL 7161 charge reason codes — canonical EN labels (parity with DB common_name).
  *
  * Source: Peppol BIS Billing 3.0 UNCL7161 D.16B / uncl7161.json.
- * FC keeps the shipped name "Freight charge" (Peppol: "Freight service").
  */
 return [
     'AA' => 'Advertising',
@@ -129,7 +128,7 @@ return [
     'FAA' => 'Fabrication',
     'FAB' => 'Freight equalization',
     'FAC' => 'Freight extraordinary handling',
-    'FC' => 'Freight charge',
+    'FC' => 'Freight service',
     'FH' => 'Filling/handling',
     'FI' => 'Financing',
     'GAA' => 'Grinding',
