@@ -4,7 +4,8 @@
  * UNCL 7161 charge reason codes — CS labels.
  *
  * Precedence:
- * 1. Existing nine shipped translations (mooxphp/data#3) — unchanged.
+ * 1. Existing eight shipped translations (mooxphp/data#3) — unchanged
+ *    (`AA`, `AAA`, `HD`, `WH`, `PC`, `DL`, `SH`, `ZZZ`). `FC` follows Peppol.
  * 2. Best-effort Czech of the Peppol/UNCL D.16B English short name. UN/CEFACT,
  *    Peppol, and GS1 Czech Republic do not publish a CS edition of this list;
  *    these rows are not official.
@@ -132,7 +133,7 @@ return [
     'FAA' => 'Výroba',
     'FAB' => 'Vyrovnání přepravného',
     'FAC' => 'Mimořádná manipulace s nákladem',
-    'FC' => 'Náklady na dopravu',
+    'FC' => 'Přepravní služba',
     'FH' => 'Plnění/manipulace',
     'FI' => 'Financování',
     'GAA' => 'Broušení',

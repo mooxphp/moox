@@ -4,7 +4,8 @@
  * UNCL 7161 charge reason codes — DE labels.
  *
  * Precedence:
- * 1. Existing nine shipped translations (mooxphp/data#3) — unchanged.
+ * 1. Existing eight shipped translations (mooxphp/data#3) — unchanged
+ *    (`AA`, `AAA`, `HD`, `WH`, `PC`, `DL`, `SH`, `ZZZ`). `FC` follows Peppol/GS1.
  * 2. Official GS1 Germany EANCOM® 2002 Codes, Edition 2016 Upd. 2021, list 7161:
  *    https://www.publikationen.gs1-germany.de/Complete/eancom_v9.3/profiles/codes/de/html/im156.htm
  * 3. Best-effort German of the Peppol/UNCL D.16B English short name. UN/CEFACT and
@@ -133,7 +134,7 @@ return [
     'FAA' => 'Fertigung',
     'FAB' => 'Frachtausgleich',
     'FAC' => 'Außergewöhnliche Frachtbehandlung',
-    'FC' => 'Frachtkosten',
+    'FC' => 'Frachtgebühren',
     'FH' => 'Abfüllen/Handhabung',
     'FI' => 'Finanzierungsgebühr',
     'GAA' => 'Schleifen',
