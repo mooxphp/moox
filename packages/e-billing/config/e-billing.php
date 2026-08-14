@@ -69,7 +69,22 @@ return [
             'label' => 'Default letterhead',
             'pdf_path' => env('EBILLING_MANUAL_DEFAULT_LETTERHEAD_PDF', ''),
             'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_X_MM', 0),
+            'offset_y_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_Y_MM', 0),
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | qpdf binary (letterhead overlay preprocessing)
+    |--------------------------------------------------------------------------
+    |
+    | Used to rewrite encrypted or FPDI-unreadable PDFs before underlay merge.
+    | Leave empty to rely on qpdf on PATH (Homebrew: /opt/homebrew/bin/qpdf).
+    |
+    */
+
+    'qpdf' => [
+        'binary_path' => env('EBILLING_QPDF_PATH', env('QPDF_PATH', '')),
     ],
 
     /*

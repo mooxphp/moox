@@ -11,6 +11,9 @@ test('create_ebilling_documents stub declares format, hash, and renamed storage 
     $stub = file_get_contents(dirname(__DIR__, 2).'/database/migrations/create_ebilling_documents_table.php.stub');
 
     expect($stub)->toContain("\$table->string('format')->default('zugferd')")
+        ->and($stub)->toContain("\$table->string('source_type')->nullable()")
+        ->and($stub)->toContain("\$table->string('source_id')->nullable()")
+        ->and($stub)->not->toContain('nullableMorphs(')
         ->and($stub)->toContain("\$table->string('artifact_content_hash')->nullable()")
         ->and($stub)->toContain("\$table->string('storage_disk')->nullable()")
         ->and($stub)->toContain("\$table->string('pdf_storage_path')->nullable()")

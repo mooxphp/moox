@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('ebilling_documents') || ! Schema::hasColumn('ebilling_documents', 'source_id')) {
+            return;
+        }
+
+        $type = strtolower((string) Schema::getColumnType('ebilling_documents', 'source_id'));
+
+        if (in_array($type, ['varchar', 'string', 'text', 'char', 'uuid'], true)) {
+            return;
+        }
+
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->string('source_id')->nullable()->change();
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('ebilling_documents') || ! Schema::hasColumn('ebilling_documents', 'source_id')) {
+            return;
+        }
+
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->unsignedBigInteger('source_id')->nullable()->change();
+        });
+    }
+};

@@ -25,8 +25,8 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
-use Moox\EBilling\Support\PassthroughSourcePdfPreparer;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
@@ -47,6 +47,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ])
             ->hasMigrations([
                 'create_ebilling_documents_table',
+                'alter_ebilling_documents_source_id_to_string',
                 'create_ebilling_uploaded_pdf_sources_table',
             ]);
 
@@ -74,7 +75,7 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(ZugferdGeneratorStrategy::class);
 
         if (! $this->app->bound(SourcePdfPreparerInterface::class)) {
-            $this->app->bind(SourcePdfPreparerInterface::class, PassthroughSourcePdfPreparer::class);
+            $this->app->bind(SourcePdfPreparerInterface::class, LetterheadSourcePdfPreparer::class);
         }
 
         if (! $this->app->bound(PdfaNormalizerInterface::class)) {
