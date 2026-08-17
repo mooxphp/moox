@@ -1,6 +1,7 @@
 <?php
 
 use Moox\LoginLink\Handlers\AckRedemptionHandler;
+use Moox\LoginLink\Handlers\DumpRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\User\Models\User;
 
@@ -218,7 +219,38 @@ return [
     'handlers' => [
         'login' => LoginRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
+        'dump' => DumpRedemptionHandler::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mail templates (domain-agnostic)
+    |--------------------------------------------------------------------------
+    |
+    | Process definitions store only a template_key. Map keys to Blade views
+    | here (or in consuming apps/packages). No domain copy lives in the engine.
+    |
+    */
+
+    'templates' => [
+        'login' => 'login-link::mail.login-link',
+        'ack' => 'login-link::mail.process-link',
+        'dump' => 'login-link::mail.dump',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Public consume path (non-auth context)
+    |--------------------------------------------------------------------------
+    |
+    | Signed route for public-context processes. Auth-context links keep using
+    | the Filament panel consume route.
+    |
+    */
+
+    'public_consume_path' => env('LOGIN_LINK_PUBLIC_CONSUME_PATH', 'signed-link/{loginLink}'),
+
+    'public_invalid_redirect' => env('LOGIN_LINK_PUBLIC_INVALID_REDIRECT', '/'),
 
     /*
     |--------------------------------------------------------------------------
