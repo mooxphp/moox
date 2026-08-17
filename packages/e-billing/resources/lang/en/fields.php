@@ -234,6 +234,7 @@ return [
 
     // Field hints — needs review
     'hint_review_customer_number' => 'Customer number not found in master data.',
+    'hint_review_customer_number_matched' => 'Customer number matched, but the attribution still needs review (inactive, deleted, or no unique company).',
     'hint_review_customer_name' => 'Customer name does not match master data.',
     'hint_review_article_number' => 'Article number not found in master data.',
     'hint_review_material' => 'Material not found in master data.',

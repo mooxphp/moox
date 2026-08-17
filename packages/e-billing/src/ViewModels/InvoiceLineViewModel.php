@@ -76,6 +76,7 @@ final class InvoiceLineViewModel
             value: $this->formatValue($name),
             validation: $validation,
             hint: InvoiceFieldLabels::hint($name, $status),
+            hint: InvoiceFieldLabels::hint($name, $status, $validation),
         );
     }
 

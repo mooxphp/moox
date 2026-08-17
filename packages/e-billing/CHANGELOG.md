@@ -19,6 +19,7 @@
 
 ### Changed
 
+- The `customer_number` review hint no longer says the number was missing when `field_validations` already carries a `matched_id`. Unmatched numbers still use "not found in master data"; a match that still needs review (inactive, deleted, or no unique company) says so.
 - Renamed parser/DTO/display field `pricing_basis` to `delivery_terms` (labels: Delivery terms / Lieferbedingungen) so it matches the invoice model rename ([mooxphp/invoice#9](https://github.com/mooxphp/invoice/issues/9)).
 - `InvoiceFieldValidator` wires attribution corroboration when a customer was matched: name/VAT/country/address field statuses reflect master-data agreement or `needs_review` on divergence; VAT and country compare only when both sides are present; address/country corroboration runs only after a customer match. Name-fallback (no customer match) keeps exact company name/VAT behaviour. Fields without a persisted source (`payment_terms`, `shipping_method`) return `not_applicable`. `parsed` is included in clean validation statuses so auto-Validated remains reachable ([#25](https://github.com/mooxphp/e-billing/issues/25)).
 - `CustomerMatcher::isReviewableMatch` also returns true (⇒ `needs_review` on `customer_number`) when the derived `company_id` is null (no company or multi-company assignment). Soft-deleted/inactive customers remain reviewable; attribution is still kept ([#25](https://github.com/mooxphp/e-billing/issues/25)).
@@ -36,6 +37,7 @@
 
 ### Fixed
 
+- `CustomerMatcher` / `InvoiceFieldValidator` no longer persist a `company_id` that is not in `companies` (FK 1452). Customer attribution is kept and `customer_number` is `needs_review` ([#24](https://github.com/mooxphp/e-billing/issues/24), [#25](https://github.com/mooxphp/e-billing/issues/25)).
 - `UnitCodeResolver` and `DocumentTypeCodeResolver` no longer select translated `common_name` from the parent static tables (column lives on `*_translations` after the Astrotomic move). They eager-load translations and index all locale labels instead.
 - Declare `"php": "^8.4"` in `composer.json`. Zugferd adapters (and `moox/zugferd` contracts) use PHP 8.4 property hooks; without an explicit constraint the package inherited `moox/core`'s `^8.2|^8.3|^8.4` and advertised runtimes that fatal-parse on load ([#11](https://github.com/mooxphp/e-billing/issues/11)).
 - SonarQube line-length (120 cols) and brace-placement findings in the
