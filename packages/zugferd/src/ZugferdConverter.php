@@ -235,11 +235,42 @@ class ZugferdConverter
     private function setDelivery(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
         $deliveryDate = $this->parseDate($invoice->deliveryDate);
-        if ($deliveryDate === null) {
+        if ($deliveryDate !== null) {
+            $doc->setDocumentSupplyChainEvent($deliveryDate);
+        }
+
+        $this->setShipTo($doc, $invoice);
+    }
+
+    private function setShipTo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        $name = $invoice->shipToName;
+        $trimmedName = $name !== null ? trim($name) : '';
+        $address = $invoice->shipToAddress;
+        $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
+
+        $hasName = $trimmedName !== '';
+        $hasAddressWithCountry = $address !== null && $country !== '';
+
+        if (! $hasName && ! $hasAddressWithCountry) {
             return;
         }
 
-        $doc->setDocumentSupplyChainEvent($deliveryDate);
+        $doc->setDocumentShipTo($hasName ? $trimmedName : null);
+
+        if (! $hasAddressWithCountry) {
+            return;
+        }
+
+        [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
+        $doc->setDocumentShipToAddress(
+            $lineOne,
+            $lineTwo,
+            $lineThree,
+            $address->zip ?? '',
+            $address->city ?? '',
+            $address->country ?? '',
+        );
     }
 
     // ─── Payment (BG-16) ────────────────────────────────────────

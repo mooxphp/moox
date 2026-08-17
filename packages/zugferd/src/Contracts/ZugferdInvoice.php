@@ -46,6 +46,10 @@ interface ZugferdInvoice
 
     public ?string $deliveryDate { get; }
 
+    public ?string $shipToName { get; }
+
+    public ?ZugferdAddress $shipToAddress { get; }
+
     public ?string $paymentMeansCode { get; }
 
     public float $vatRate { get; }
