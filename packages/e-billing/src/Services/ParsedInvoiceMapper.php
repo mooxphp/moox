@@ -11,6 +11,7 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\DeliveryPartyMapper;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -31,8 +32,7 @@ class ParsedInvoiceMapper
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
-    ) {
-    }
+    ) {}
 
     private function documentTypeCodeResolver(): DocumentTypeCodeResolver
     {
@@ -131,7 +131,6 @@ class ParsedInvoiceMapper
             shipping_method: $dto->shippingMethod !== null && $dto->shippingMethod !== ''
                 ? $dto->shippingMethod
                 : null,
-            pricing_basis: $dto->pricingBasis,
             delivery_terms: $dto->deliveryTerms,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,
@@ -139,7 +138,7 @@ class ParsedInvoiceMapper
             gross_total: $dto->grossTotal,
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
-            delivery: $this->mapEn16931Address($dto->deliveryAddress),
+            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
             payment_means: $this->mapPaymentMeans($dto),
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
@@ -206,7 +205,7 @@ class ParsedInvoiceMapper
             delivery_note_number: $dto->deliveryNoteNumber,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            delivery: $this->mapEn16931Address($dto->deliveryAddress),
+            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
             charges: $charges,
             extra: [
                 'material' => $dto->material,

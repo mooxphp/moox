@@ -20,7 +20,7 @@ return [
     'customer_reference' => 'Customer reference',
     'order_number' => 'Order number',
     'order_date' => 'Order date',
-    'delivery_address' => 'Delivery address',
+    'delivery_address' => 'Consignee',
     'supplier_number' => 'Supplier number',
     'supplier_phone' => 'Supplier phone',
     'supplier_email' => 'Supplier email',

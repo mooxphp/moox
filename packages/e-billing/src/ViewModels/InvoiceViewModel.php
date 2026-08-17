@@ -10,8 +10,8 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\Invoice;
-use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\BankAccount;
 
 final class InvoiceViewModel
@@ -263,67 +263,17 @@ final class InvoiceViewModel
         return match ($field) {
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
-            'customer_address' => $this->formatEn16931Address(
-                $this->invoice->buyer?->address,
-                $this->invoice->buyer?->name,
-            ),
+            'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
             'country' => $this->invoice->buyer?->address?->country_code,
             'supplier_name' => $this->invoice->seller?->name,
             'supplier_vat_id' => $this->invoice->seller?->vat_id,
             'supplier_tax_number' => $this->invoice->seller?->tax_number,
-            'supplier_address' => $this->formatEn16931Address(
-                $this->invoice->seller?->address,
-                $this->invoice->seller?->name,
-            ),
+            'supplier_address' => PartyAddressFormatter::format($this->invoice->seller),
             'agent' => $this->invoice->seller?->contact?->name,
             'supplier_bank_accounts' => $this->invoice->payment_means?->bank_accounts ?? [],
-            'delivery_address' => $this->formatEn16931Address($this->invoice->delivery, null),
+            'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
             default => $this->invoice->getAttribute($field),
         };
-    }
-
-    /**
-     * Display order: party name (when provided), line2 segments (newline-split), line1, postal_code + city, country_code.
-     */
-    private function formatEn16931Address(?Address $address, ?string $partyName): ?string
-    {
-        if ($address === null) {
-            return null;
-        }
-
-        $lines = [];
-
-        if ($partyName !== null && trim($partyName) !== '') {
-            $lines[] = trim($partyName);
-        }
-
-        if ($address->line2 !== null && trim($address->line2) !== '') {
-            foreach (preg_split("/\r\n|\r|\n/", $address->line2) ?: [] as $segment) {
-                $segment = trim((string) $segment);
-                if ($segment !== '') {
-                    $lines[] = $segment;
-                }
-            }
-        }
-
-        if (trim($address->line1) !== '') {
-            $lines[] = trim($address->line1);
-        }
-
-        $postalCity = trim($address->postal_code.' '.$address->city);
-        if ($postalCity !== '') {
-            $lines[] = $postalCity;
-        }
-
-        if (trim($address->country_code) !== '') {
-            $lines[] = trim($address->country_code);
-        }
-
-        if ($lines === []) {
-            return null;
-        }
-
-        return implode("\n", $lines);
     }
 
     /**
@@ -376,7 +326,6 @@ final class InvoiceViewModel
                 btNumber: InvoiceFieldLabels::btNumber($name),
                 value: $this->formatValue($name),
                 validation: $validation,
-                hint: InvoiceFieldLabels::hint($name, $status),
                 hint: InvoiceFieldLabels::hint($name, $status, $validation),
             );
         }, $fieldNames);

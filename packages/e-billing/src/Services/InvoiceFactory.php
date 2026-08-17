@@ -11,6 +11,7 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\DeliveryPartyMapper;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -30,8 +31,7 @@ class InvoiceFactory
     public function __construct(
         private readonly InvoiceBuilder $invoiceBuilder = new InvoiceBuilder,
         private readonly ?DocumentTypeCodeResolver $documentTypeCodeResolver = null,
-    ) {
-    }
+    ) {}
 
     private function documentTypeCodeResolver(): DocumentTypeCodeResolver
     {
@@ -115,7 +115,6 @@ class InvoiceFactory
             shipping_method: $dto->shippingMethod !== null && $dto->shippingMethod !== ''
                 ? $dto->shippingMethod
                 : null,
-            pricing_basis: $dto->pricingBasis,
             delivery_terms: $dto->deliveryTerms,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,
@@ -123,7 +122,7 @@ class InvoiceFactory
             gross_total: $dto->grossTotal,
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
-            delivery: $this->mapInvoiceAddress($dto->deliveryAddress),
+            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
             payment_means: null,
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
@@ -229,7 +228,7 @@ class InvoiceFactory
             delivery_note_number: $dto->deliveryNoteNumber,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            delivery: $this->mapInvoiceAddress($dto->deliveryAddress),
+            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
             charges: $charges,
             extra: [
                 'material' => $dto->material,

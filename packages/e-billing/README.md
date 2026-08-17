@@ -17,6 +17,8 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Filament `InvoiceResource` for list, filter, and manual review workflows
 - Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
+- Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
+- Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee / Warenempfänger (hint BG-13); generated artifacts emit ShipTo (BG-13) from `shipToName` / `shipToAddress` without tax registration or contact — address group (BG-15) only when a country is present
 
 <!--/features-->
 
@@ -204,6 +206,22 @@ This package owns:
 - **`Invoice::ebillingDocument()`** — registered via `resolveRelationUsing` in `EBillingServiceProvider`
 
 `GenerateArtifactJob` creates and updates `Invoice` records through `moox/invoice`; this package orchestrates that step but does not define the invoice schema.
+
+## Delivery dates in the artifact
+
+Persisted `delivery_date` on the invoice and on line items (from the parser through `GenerateArtifactJob`) is mapped by `ZugferdInvoiceAdapter` via `DeliveryDateTransmission` before `moox/zugferd` builds the XML.
+
+The invoice `delivery` party (name + address) is mapped onto `shipToName` / `shipToAddress`. `moox/zugferd` emits ShipTo (BG-13) when a name or an address with a country is present. A consignee without a country is still stored and shown; the converter then emits the name only (no postal address group). Ship-to tax registration and contact are never written.
+
+| Situation | What reaches the artifact |
+|-----------|---------------------------|
+| One unique date across the invoice header and all lines | Document actual delivery only (BT-72) |
+| Several differing dates | Per-line dates only; no document BT-72 |
+| Any case | No header invoicing period (BG-14) is synthesized from delivery dates |
+
+When several dates differ, each line with a `delivery_date` is emitted on that line. EN 16931 / XRechnung (and other non-EXTENDED profiles) carry the date as a line billing period with start and end equal to that day; EXTENDED uses the line-level actual delivery date. The active ZUGFeRD profile selects which line carrier `ZugferdConverter` uses.
+
+`InvoiceFieldValidator` flags `delivery_date` as `needs_review` when the invoice is an intra-community supply (seller and buyer EU VAT country prefixes differ) and several differing dates would require aggregating them into a single actual delivery date for BR-IC-11. Operators see a review hint in the Filament UI; the adapter does not merge dates silently.
 
 ## Changelog
 

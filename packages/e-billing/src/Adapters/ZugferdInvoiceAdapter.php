@@ -127,6 +127,26 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
         }
     }
 
+    public ?string $shipToName {
+        get {
+            $name = $this->model->delivery?->name;
+
+            if ($name === null) {
+                return null;
+            }
+
+            $trimmed = trim($name);
+
+            return $trimmed !== '' ? $trimmed : null;
+        }
+    }
+
+    public ?ZugferdAddress $shipToAddress {
+        get => $this->model->delivery !== null
+            ? new ZugferdAddressAdapter($this->model->delivery->address)
+            : null;
+    }
+
     public ?string $paymentMeansCode {
         get => $this->model->payment_means?->payment_means_code;
     }

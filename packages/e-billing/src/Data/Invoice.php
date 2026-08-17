@@ -6,6 +6,7 @@ namespace Moox\EBilling\Data;
 
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\VatIdNormalizer;
+use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
@@ -102,6 +103,24 @@ class Invoice implements ZugferdInvoice
                 $this->discountPercent,
             );
         }
+    }
+
+    public ?string $shipToName {
+        get {
+            $name = $this->deliveryAddress?->company;
+
+            if ($name === null) {
+                return null;
+            }
+
+            $trimmed = trim($name);
+
+            return $trimmed !== '' ? $trimmed : null;
+        }
+    }
+
+    public ?ZugferdAddress $shipToAddress {
+        get => $this->deliveryAddress;
     }
 
     /**
