@@ -148,7 +148,7 @@ it('dispatches a custom registered handler for a process key', function (): void
         {
         }
 
-        public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
+        public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
         {
             $this->state->handled = true;
 

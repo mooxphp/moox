@@ -7,9 +7,11 @@ namespace Moox\LoginLink\Resources;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
@@ -19,6 +21,7 @@ use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\EditLoginLinkProcess
 use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ListLoginLinkProcesses;
 use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ViewLoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
+use Moox\LoginLink\Support\LinkProcessContext;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class LoginLinkProcessResource extends BaseRecordResource
@@ -81,14 +84,33 @@ class LoginLinkProcessResource extends BaseRecordResource
                                         'ignoreRecord' => true,
                                     ],
                                 ),
+                                Select::make('context')
+                                    ->label(__('login-link::translations.context'))
+                                    ->options([
+                                        LinkProcessContext::AUTH => __('login-link::translations.context_auth'),
+                                        LinkProcessContext::PUBLIC => __('login-link::translations.context_public'),
+                                    ])
+                                    ->default(LinkProcessContext::AUTH)
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText(__('login-link::translations.context_help')),
                                 TextInput::make('mail_from')
                                     ->label(__('login-link::translations.mail_from'))
                                     ->email()
                                     ->maxLength(255),
+                                Select::make('template_key')
+                                    ->label(__('login-link::translations.template_key'))
+                                    ->options(fn (): array => collect(config('login-link.templates', []))
+                                        ->mapWithKeys(fn (string $view, string $key): array => [$key => $key])
+                                        ->all())
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText(__('login-link::translations.template_key_help')),
                                 Textarea::make('content')
                                     ->label(__('login-link::translations.content'))
-                                    ->rows(10)
-                                    ->columnSpanFull(),
+                                    ->rows(6)
+                                    ->columnSpanFull()
+                                    ->helperText(__('login-link::translations.content_help')),
                                 Select::make('handler_key')
                                     ->label(__('login-link::translations.handler_key'))
                                     ->options(fn (): array => collect(app(RedemptionHandlerRegistry::class)->all())
@@ -103,6 +125,10 @@ class LoginLinkProcessResource extends BaseRecordResource
                                     ->helperText(__('login-link::translations.expiry_minutes_help', [
                                         'default' => (int) config('login-link.expiration_minutes', 60),
                                     ])),
+                                Toggle::make('invalidate_prior')
+                                    ->label(__('login-link::translations.invalidate_prior'))
+                                    ->default(true)
+                                    ->helperText(__('login-link::translations.invalidate_prior_help')),
                             ])
                             ->columnSpan(2),
                         Grid::make()
@@ -137,12 +163,23 @@ class LoginLinkProcessResource extends BaseRecordResource
                     ->label(__('login-link::translations.slug'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('context')
+                    ->label(__('login-link::translations.context'))
+                    ->badge()
+                    ->sortable(),
+                TextColumn::make('template_key')
+                    ->label(__('login-link::translations.template_key'))
+                    ->sortable(),
                 TextColumn::make('mail_from')
                     ->label(__('login-link::translations.mail_from'))
                     ->toggleable(),
                 TextColumn::make('handler_key')
                     ->label(__('login-link::translations.handler_key'))
                     ->sortable(),
+                IconColumn::make('invalidate_prior')
+                    ->label(__('login-link::translations.invalidate_prior'))
+                    ->boolean()
+                    ->toggleable(),
                 TextColumn::make('expiry_minutes')
                     ->label(__('login-link::translations.expiry_minutes'))
                     ->formatStateUsing(fn (?int $state): string => $state === null

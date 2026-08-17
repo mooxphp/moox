@@ -12,10 +12,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
+            $table->string('context')->default('auth')->index();
             $table->string('mail_from')->nullable();
             $table->longText('content')->nullable();
+            $table->string('template_key')->index();
             $table->string('handler_key')->index();
             $table->unsignedInteger('expiry_minutes')->nullable();
+            $table->boolean('invalidate_prior')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

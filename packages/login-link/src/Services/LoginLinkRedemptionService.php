@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
+use Moox\LoginLink\Support\LinkProcessContext;
 
 class LoginLinkRedemptionService
 {
@@ -16,7 +17,10 @@ class LoginLinkRedemptionService
     ) {
     }
 
-    public function redeem(int|string $loginLinkId, string $panelId): ?RedirectResponse
+    /**
+     * @param  string|null  $panelId  Panel id for auth-context redeem; null for public consume.
+     */
+    public function redeem(int|string $loginLinkId, ?string $panelId = null): ?RedirectResponse
     {
         return DB::transaction(function () use ($loginLinkId, $panelId) {
             $loginLink = LoginLink::query()
@@ -28,7 +32,13 @@ class LoginLinkRedemptionService
                 return null;
             }
 
-            if ((string) $loginLink->panel_id !== (string) $panelId) {
+            $context = $this->resolveContext($loginLink);
+
+            if ($context === LinkProcessContext::PUBLIC) {
+                if ($panelId !== null) {
+                    return null;
+                }
+            } elseif ($panelId === null || (string) $loginLink->panel_id !== (string) $panelId) {
                 return null;
             }
 
@@ -49,6 +59,19 @@ class LoginLinkRedemptionService
 
             return $result;
         });
+    }
+
+    protected function resolveContext(LoginLink $loginLink): string
+    {
+        $definition = LoginLinkProcess::query()
+            ->where('slug', $this->resolveProcess($loginLink))
+            ->first();
+
+        if ($definition !== null && LinkProcessContext::isValid((string) $definition->context)) {
+            return (string) $definition->context;
+        }
+
+        return LinkProcessContext::AUTH;
     }
 
     /**

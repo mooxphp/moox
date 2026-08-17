@@ -40,7 +40,7 @@
                             </p>
                         @endif
 
-                        <div style="margin:0 0 16px; font-size:14px; line-height:22px; color:#374151; white-space:pre-wrap;">{{ $content }}</div>
+                        <div style="margin:0 0 16px; font-size:14px; line-height:22px; color:#374151; white-space:pre-wrap;">{{ filled($content ?? null) ? $content : __('login-link::translations.mail_intro') }}</div>
 
                         <div style="margin:0 0 14px;">
                             <a href="{{ $url }}" style="display:inline-block; background:#111827; color:#ffffff; text-decoration:none; padding:10px 16px; border-radius:10px; font-size:14px; font-weight:600;">

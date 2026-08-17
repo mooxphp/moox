@@ -17,7 +17,7 @@ use Moox\LoginLink\Models\LoginLink;
  */
 class AckRedemptionHandler implements RedemptionHandler
 {
-    public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
+    public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
     {
         $subject = $loginLink->subject()->first();
 

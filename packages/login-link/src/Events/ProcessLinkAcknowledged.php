@@ -21,7 +21,7 @@ class ProcessLinkAcknowledged
     public function __construct(
         public LoginLink $loginLink,
         public Model $subject,
-        public string $panelId,
+        public ?string $panelId,
     ) {
     }
 }

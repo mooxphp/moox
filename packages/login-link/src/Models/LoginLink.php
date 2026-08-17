@@ -21,6 +21,7 @@ class LoginLink extends Model
         'user_id',
         'subject_type',
         'subject_id',
+        'payload',
         'email',
         'expires_at',
         'used_at',
@@ -31,6 +32,7 @@ class LoginLink extends Model
     protected $casts = [
         'expires_at' => 'datetime',
         'used_at' => 'datetime',
+        'payload' => 'array',
     ];
 
     /**

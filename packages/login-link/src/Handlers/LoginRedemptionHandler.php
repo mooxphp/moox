@@ -14,8 +14,12 @@ use Moox\LoginLink\Models\LoginLink;
 
 class LoginRedemptionHandler implements RedemptionHandler
 {
-    public function handle(LoginLink $loginLink, string $panelId): ?RedirectResponse
+    public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
     {
+        if ($panelId === null || $panelId === '') {
+            return null;
+        }
+
         $panel = app(PanelRegistry::class)->get($panelId);
 
         if (! $panel) {

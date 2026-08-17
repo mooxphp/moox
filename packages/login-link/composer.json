@@ -25,8 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\LoginLink\\": "src",
-            "Moox\\LoginLink\\Database\\Seeders\\": "database/seeders"
+            "Moox\\LoginLink\\": "src"
         }
     },
     "autoload-dev": {
@@ -48,7 +47,7 @@
         "moox": {
             "stability": "stable",
             "install": {
-                "seed": "database/seeders/LoginLinkProcessSeeder.php"
+                "seed": "src/Database/Seeders/LoginLinkProcessSeeder.php"
             }
         }
     },

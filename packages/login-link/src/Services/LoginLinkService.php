@@ -9,9 +9,11 @@ use Filament\PanelRegistry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use InvalidArgumentException;
 use Moox\LoginLink\Mail\ProcessLinkMail;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
+use Moox\LoginLink\Support\LinkProcessContext;
 
 class LoginLinkService
 {
@@ -52,28 +54,47 @@ class LoginLinkService
     }
 
     /**
-     * Issue a new signed link for a process + subject. Invalidates prior valid links
-     * for the same process + subject. Expiry/from/content come from the process definition.
+     * Issue a new signed link for a process + subject.
+     * Auth-context processes require panelId; public-context processes ignore it.
+     * Invalidation of prior links follows the process invalidate_prior policy.
+     *
+     * @param  array<string, mixed>|null  $payload
      */
     public function issue(
         string $processSlug,
         Model $subject,
         string $email,
-        string $panelId,
+        ?string $panelId,
         Request $request,
         bool $setUserMorph = false,
+        ?array $payload = null,
     ): LoginLink {
         $process = $this->resolveProcessDefinition($processSlug);
         $expiresMinutes = $process?->resolveExpiryMinutes()
             ?? (int) config('login-link.expiration_minutes', 60);
 
-        $this->invalidatePriorValidLinks($processSlug, $subject);
+        $context = $process !== null && LinkProcessContext::isValid((string) $process->context)
+            ? (string) $process->context
+            : LinkProcessContext::AUTH;
+
+        if ($context === LinkProcessContext::AUTH) {
+            if (! filled($panelId)) {
+                throw new InvalidArgumentException('Auth-context link processes require a panel id.');
+            }
+        } else {
+            $panelId = null;
+        }
+
+        if ($process?->shouldInvalidatePrior() ?? true) {
+            $this->invalidatePriorValidLinks($processSlug, $subject);
+        }
 
         $attributes = [
             'panel_id' => $panelId,
             'process' => $processSlug,
             'subject_id' => $subject->getKey(),
             'subject_type' => $subject::class,
+            'payload' => $payload,
             'email' => $email,
             'expires_at' => now()->addMinutes($expiresMinutes),
             'used_at' => null,
@@ -94,15 +115,16 @@ class LoginLinkService
     }
 
     /**
-     * Re-issue the current link for a process + subject (invalidates prior, creates + mails a new one).
+     * @param  array<string, mixed>|null  $payload
      */
     public function resend(
         string $processSlug,
         Model $subject,
         string $email,
-        string $panelId,
+        ?string $panelId,
         Request $request,
         bool $setUserMorph = false,
+        ?array $payload = null,
     ): LoginLink {
         return $this->issue(
             processSlug: $processSlug,
@@ -111,11 +133,12 @@ class LoginLinkService
             panelId: $panelId,
             request: $request,
             setUserMorph: $setUserMorph,
+            payload: $payload,
         );
     }
 
     /**
-     * Resend from an existing link instance (uses its process + subject).
+     * Resend from an existing link instance (uses its process + subject + payload).
      */
     public function resendLink(LoginLink $loginLink, Request $request): ?LoginLink
     {
@@ -131,9 +154,10 @@ class LoginLinkService
             processSlug: $loginLink->process ?: RedemptionHandlerRegistry::DEFAULT_PROCESS,
             subject: $subject,
             email: (string) $loginLink->email,
-            panelId: (string) $loginLink->panel_id,
+            panelId: $loginLink->panel_id !== null ? (string) $loginLink->panel_id : null,
             request: $request,
             setUserMorph: $setUserMorph,
+            payload: is_array($loginLink->payload) ? $loginLink->payload : null,
         );
     }
 

@@ -11,10 +11,11 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
+use Moox\LoginLink\Support\LinkProcessContext;
 
 /**
- * Interim mailable until moox/mail-outbox owns templates/transport.
- * Uses the process definition's content/from when set; otherwise the login blade fallback.
+ * Renders the process template_key via config('login-link.templates').
+ * Domain packages contribute views in config; this package stays domain-agnostic.
  */
 class ProcessLinkMail extends Mailable implements ShouldQueue
 {
@@ -38,33 +39,49 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
             ? (string) $this->process->title
             : __('login-link::translations.mail_subject');
 
-        $mailable = $this->subject($mailSubject);
+        $view = $this->process?->resolveTemplateView()
+            ?? (string) config('login-link.templates.login', 'login-link::mail.login-link');
+
+        $mailable = $this->subject($mailSubject)->view($view, [
+            'title' => $this->process?->title ?? __('login-link::translations.mail_title'),
+            'content' => $this->process?->content,
+            'url' => $url,
+            'expiresMinutes' => $expiresMinutes,
+            'user' => $subjectModel,
+            'subject' => $subjectModel,
+            'payload' => $this->loginLink->payload ?? [],
+            'logoUrl' => $this->resolveLogoUrl(),
+            'process' => $this->process,
+            'loginLink' => $this->loginLink,
+        ]);
 
         if (filled($this->process?->mail_from)) {
             $mailable->from((string) $this->process->mail_from);
         }
 
-        if (filled($this->process?->content)) {
-            return $mailable->view('login-link::mail.process-link', [
-                'title' => $this->process->title,
-                'content' => $this->process->content,
-                'url' => $url,
-                'expiresMinutes' => $expiresMinutes,
-                'user' => $subjectModel,
-                'logoUrl' => $this->resolveLogoUrl(),
-            ]);
-        }
-
-        return $mailable->view('login-link::mail.login-link', [
-            'user' => $subjectModel,
-            'url' => $url,
-            'expiresMinutes' => $expiresMinutes,
-            'logoUrl' => $this->resolveLogoUrl(),
-        ]);
+        return $mailable;
     }
 
     private function signedUrl(int $expiresMinutes): string
     {
+        $context = $this->process !== null && LinkProcessContext::isValid((string) $this->process->context)
+            ? (string) $this->process->context
+            : LinkProcessContext::AUTH;
+
+        if ($context === LinkProcessContext::PUBLIC) {
+            try {
+                return URL::temporarySignedRoute(
+                    'login-link.public.consume',
+                    now()->addMinutes($expiresMinutes),
+                    [
+                        'loginLink' => $this->loginLink->getKey(),
+                    ],
+                );
+            } catch (\Throwable) {
+                return url('/');
+            }
+        }
+
         $panelId = (string) $this->loginLink->panel_id;
         $routeName = 'filament.'.$panelId.'.auth.login-link.consume';
 
