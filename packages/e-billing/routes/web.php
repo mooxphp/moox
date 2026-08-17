@@ -14,4 +14,7 @@ Route::middleware(['web', 'auth'])->prefix('ebilling')->group(function (): void 
 
     Route::get('xml-download/{document}', [InvoiceDocumentController::class, 'downloadXml'])
         ->name('ebilling.xml.download');
+
+    Route::get('copy-download/{document}', [InvoiceDocumentController::class, 'downloadCopy'])
+        ->name('ebilling.copy.download');
 });

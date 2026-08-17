@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('xml_storage_path')->nullable();
             $table->string('storage_disk')->nullable();
             $table->string('pdf_storage_path')->nullable();
+            $table->string('copy_pdf_storage_path')->nullable();
             $table->string('format')->default('zugferd');
             $table->string('artifact_content_hash')->nullable();
             $table->json('ignored_reason')->nullable();

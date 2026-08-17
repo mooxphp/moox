@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Storage;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
@@ -12,6 +13,7 @@ use Moox\EBilling\Formats\FormatDefinition;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Jobs\GenerateArtifactJob;
 use Moox\EBilling\Jobs\ValidateArtifactJob;
+use Moox\EBilling\Services\CopyPdfComposer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Services\ParsedInvoiceMapper;
 use Moox\EBilling\Support\EBillingFormatResolver;
@@ -76,10 +78,18 @@ test('generate artifact job freezes the attributed customer format not the defau
         app(InvoiceFieldValidator::class),
         app(SourcePdfPreparerInterface::class),
         app(PdfaNormalizerInterface::class),
+        app(CopyPdfComposer::class),
     );
 
     $document->refresh();
 
     expect($document->customer_id)->not->toBeNull()
-        ->and($document->format)->toBe('xrechnung');
+        ->and($document->format)->toBe('xrechnung')
+        ->and($document->pdf_storage_path)->toBeNull()
+        ->and($document->copy_pdf_storage_path)->toEndWith('_copy.pdf');
+
+    $copy = Storage::disk((string) $document->storage_disk)->get((string) $document->copy_pdf_storage_path);
+
+    expect($copy)->toStartWith('%PDF')
+        ->and($copy)->toContain('/Helvetica-Bold');
 });

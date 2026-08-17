@@ -48,6 +48,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasMigrations([
                 'create_ebilling_documents_table',
                 'alter_ebilling_documents_source_id_to_string',
+                'add_copy_pdf_storage_path_to_ebilling_documents_table',
                 'create_ebilling_uploaded_pdf_sources_table',
             ]);
 

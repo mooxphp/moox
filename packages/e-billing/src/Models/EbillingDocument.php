@@ -40,6 +40,7 @@ use RuntimeException;
  * @property string|null $xml_storage_path
  * @property string|null $storage_disk
  * @property string|null $pdf_storage_path
+ * @property string|null $copy_pdf_storage_path
  * @property string $format
  * @property string|null $artifact_content_hash
  * @property array<string, mixed>|null $ignored_reason
@@ -81,6 +82,7 @@ class EbillingDocument extends BaseItemModel
         'xml_storage_path',
         'storage_disk',
         'pdf_storage_path',
+        'copy_pdf_storage_path',
         'format',
         'artifact_content_hash',
         'ignored_reason',
@@ -285,6 +287,23 @@ class EbillingDocument extends BaseItemModel
             ArtifactKind::Xml => $this->xml_storage_path,
             ArtifactKind::Pdf => $this->pdf_storage_path,
         };
+    }
+
+    /**
+     * Visible PDF for humans: the hybrid invoice PDF, or the XRechnung copy PDF.
+     * Never treats the copy as the hybrid deliverable of record.
+     */
+    public function humanReadablePdfStoragePath(): ?string
+    {
+        if (is_string($this->pdf_storage_path) && $this->pdf_storage_path !== '') {
+            return $this->pdf_storage_path;
+        }
+
+        if (is_string($this->copy_pdf_storage_path) && $this->copy_pdf_storage_path !== '') {
+            return $this->copy_pdf_storage_path;
+        }
+
+        return null;
     }
 
     /**

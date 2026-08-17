@@ -103,6 +103,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | XRechnung copy PDF marking (§14c)
+    |--------------------------------------------------------------------------
+    |
+    | Always produced for XRechnung. send_visual_copy only gates outbound mail.
+    |
+    */
+
+    'copy_pdf' => [
+        'term' => env('EBILLING_COPY_PDF_TERM', 'Kopie'),
+        'notice' => env(
+            'EBILLING_COPY_PDF_NOTICE',
+            'Die elektronische XRechnung (XML) ist das maßgebliche Original. Dieses PDF ist nur eine bildliche Kopie und keine weitere Rechnung.',
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Allowed BT-3 document type codes (UNTDID 1001)
     |--------------------------------------------------------------------------
     |

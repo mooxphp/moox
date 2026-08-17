@@ -214,6 +214,7 @@ return [
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',
+    'download_copy_pdf' => 'PDF-Kopie',
     'download_xml' => 'XML',
     'preview_pdf_title' => 'PDF-Vorschau',
     'preview_no_original_pdf' => 'Kein Original-PDF verfügbar',

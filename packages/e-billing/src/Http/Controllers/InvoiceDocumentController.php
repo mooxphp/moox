@@ -72,11 +72,29 @@ final class InvoiceDocumentController
     }
 
     /**
+     * Download the human-readable XRechnung copy PDF (never the hybrid invoice).
+     */
+    public function downloadCopy(EbillingDocument $document): StreamedResponse
+    {
+        $this->guardDeliverableArtifact($document);
+
+        $disk = $document->storage_disk
+            ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
+        $path = $document->copy_pdf_storage_path;
+
+        abort_unless(is_string($path) && $path !== '', 404);
+        $this->guardPath($path);
+        abort_unless(Storage::disk($disk)->exists($path), 404);
+
+        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+    }
+
+    /**
      * @return array{contents: string, filename: string}|null
      */
     private function generatedPdfPreview(EbillingDocument $document): ?array
     {
-        $path = $document->pdf_storage_path;
+        $path = $document->humanReadablePdfStoragePath();
         if (! is_string($path) || $path === '') {
             return null;
         }

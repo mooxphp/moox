@@ -22,6 +22,7 @@ use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\Contracts\HybridArtifactGeneratorStrategyInterface;
 use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Services\CopyPdfComposer;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Services\ParsedInvoiceMapper;
@@ -60,6 +61,7 @@ class GenerateArtifactJob implements ShouldQueue
         InvoiceFieldValidator $invoiceFieldValidator,
         SourcePdfPreparerInterface $sourcePdfPreparer,
         PdfaNormalizerInterface $pdfaNormalizer,
+        CopyPdfComposer $copyPdfComposer,
     ): void {
         $this->setProgress(0);
 
@@ -149,6 +151,7 @@ class GenerateArtifactJob implements ShouldQueue
         $this->setProgress(60);
 
         $relativePdfPath = null;
+        $relativeCopyPdfPath = null;
         $preparedPdfPath = null;
         $normalizedPdfPath = null;
 
@@ -175,6 +178,19 @@ class GenerateArtifactJob implements ShouldQueue
                 }
 
                 Storage::disk($diskName)->put($relativePdfPath, $pdfBinary);
+            } elseif ($definition->artifactKind === ArtifactKind::Xml) {
+                $preparedPdfPath = $sourcePdfPreparer->prepare($document);
+                $copyBinary = $copyPdfComposer->stamp($preparedPdfPath);
+                $basename = pathinfo($relativeXmlPath, PATHINFO_FILENAME);
+                $dir = pathinfo($relativeXmlPath, PATHINFO_DIRNAME);
+                $existingCopyPath = $document->copy_pdf_storage_path;
+                if (is_string($existingCopyPath) && $existingCopyPath !== '') {
+                    $relativeCopyPdfPath = $existingCopyPath;
+                } else {
+                    $relativeCopyPdfPath = $dir.'/'.$basename.'_copy.pdf';
+                }
+
+                Storage::disk($diskName)->put($relativeCopyPdfPath, $copyBinary);
             }
         } finally {
             $this->cleanupTemporaryPdf($preparedPdfPath, $document);
@@ -189,6 +205,7 @@ class GenerateArtifactJob implements ShouldQueue
         $document->storage_disk = $diskName;
         $document->xml_storage_path = $relativeXmlPath;
         $document->pdf_storage_path = $relativePdfPath;
+        $document->copy_pdf_storage_path = $relativeCopyPdfPath;
         $document->bill_data = $billDataArray;
         $document->artifact_content_hash = null;
         $document->gateway_status = EBillingAttachmentProcessingStatus::Validating;
