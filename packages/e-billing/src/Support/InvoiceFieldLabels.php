@@ -171,7 +171,10 @@ final class InvoiceFieldLabels
         };
     }
 
-    public static function hint(string $field, string $status): ?string
+    /**
+     * @param  array{status?: string, matched_id?: string}|null  $validation
+     */
+    public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
         if ($status === 'missing') {
             return match ($field) {
@@ -194,7 +197,9 @@ final class InvoiceFieldLabels
 
         if ($status === 'needs_review') {
             return match ($field) {
-                'customer_number' => __('e-billing::fields.hint_review_customer_number'),
+                'customer_number' => self::hasMatchedId($validation)
+                    ? __('e-billing::fields.hint_review_customer_number_matched')
+                    : __('e-billing::fields.hint_review_customer_number'),
                 'customer_name' => __('e-billing::fields.hint_review_customer_name'),
                 'article_number' => __('e-billing::fields.hint_review_article_number'),
                 'material' => __('e-billing::fields.hint_review_material'),
@@ -209,5 +214,15 @@ final class InvoiceFieldLabels
         }
 
         return null;
+    }
+
+    /**
+     * @param  array{matched_id?: mixed}|null  $validation
+     */
+    private static function hasMatchedId(?array $validation): bool
+    {
+        $matchedId = $validation['matched_id'] ?? null;
+
+        return is_string($matchedId) && $matchedId !== '';
     }
 }

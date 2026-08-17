@@ -234,6 +234,7 @@ return [
 
     // Field hints — needs review
     'hint_review_customer_number' => 'Kundennummer konnte nicht in den Stammdaten gefunden werden.',
+    'hint_review_customer_number_matched' => 'Kundennummer wurde gefunden, die Zuordnung muss aber geprüft werden (inaktiv, gelöscht oder keine eindeutige Firma).',
     'hint_review_customer_name' => 'Kundenname stimmt nicht mit den Stammdaten überein.',
     'hint_review_article_number' => 'Artikelnummer nicht in den Stammdaten gefunden.',
     'hint_review_material' => 'Werkstoff nicht in den Stammdaten gefunden.',
