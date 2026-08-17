@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Invoice\Support;
 
-use Moox\Invoice\Support\En16931\Address;
+use Moox\Invoice\Support\En16931\Party;
 
 readonly class InvoiceLineDraft
 {
@@ -26,7 +26,7 @@ readonly class InvoiceLineDraft
         public ?string $delivery_note_number,
         public ?string $order_number,
         public ?string $order_date,
-        public ?Address $delivery,
+        public ?Party $delivery,
         public array $charges = [],
         public array $extra = [],
         public ?string $unit_code = null,

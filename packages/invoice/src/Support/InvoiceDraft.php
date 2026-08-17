@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Invoice\Support;
 
-use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\Party;
 use Moox\Invoice\Support\En16931\PaymentMeans;
 
@@ -34,10 +33,10 @@ readonly class InvoiceDraft
         public float $gross_total,
         public ?Party $seller,
         public ?Party $buyer,
-        public ?Address $delivery,
+        public ?Party $delivery,
         public ?PaymentMeans $payment_means,
         public array $lines,
         public array $headerCharges,
-    ) { 
+    ) {
     }
 }

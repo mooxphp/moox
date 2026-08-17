@@ -38,7 +38,7 @@ class InvoiceFactory extends Factory
             'delivery_terms' => null,
             'seller' => $this->sampleParty('Seller'),
             'buyer' => $this->sampleParty('Buyer'),
-            'delivery' => $this->sampleAddress(),
+            'delivery' => $this->sampleDeliveryParty(),
             'net_total' => $net,
             'vat_rate' => $vatRate,
             'vat_amount' => $vatAmount,
@@ -61,6 +61,17 @@ class InvoiceFactory extends Factory
                 'phone' => fake()->optional()->phoneNumber(),
                 'email' => fake()->optional()->companyEmail(),
             ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sampleDeliveryParty(): array
+    {
+        return [
+            'name' => fake()->company(),
+            'address' => $this->sampleAddress(),
         ];
     }
 
