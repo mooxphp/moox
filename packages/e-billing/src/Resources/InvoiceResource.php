@@ -531,6 +531,13 @@ class InvoiceResource extends BaseItemResource
         return array_values(array_filter($types, is_string(...)));
     }
 
+    public static function tabsConfigPath(): string
+    {
+        $resourcePath = 'e-billing.tabs.'.static::resourceConfigKey();
+
+        return is_array(config($resourcePath)) ? $resourcePath : 'e-billing.tabs.invoices';
+    }
+
     public static function constrainToDocumentTypes(Builder $query): Builder
     {
         $documentTypes = static::documentTypes();

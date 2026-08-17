@@ -37,5 +37,7 @@ test('credit note tab queries count only document type 381', function (): void {
         ->and(CreditNoteResource::applyListTabConditions($invoiceClass::query(), $deletedTabConditions)->count())->toBe(1)
         ->and(InvoiceResource::applyListTabConditions($invoiceClass::query(), $allTabConditions)->count())->toBe(3)
         ->and(InvoiceResource::getNavigationBadge())->toBe('3')
-        ->and(CreditNoteResource::getNavigationBadge())->toBe('1');
+        ->and(CreditNoteResource::getNavigationBadge())->toBe('1')
+        ->and(InvoiceResource::tabsConfigPath())->toBe('e-billing.tabs.invoices')
+        ->and(CreditNoteResource::tabsConfigPath())->toBe('e-billing.tabs.invoices');
 });

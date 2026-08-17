@@ -19,7 +19,10 @@ trait HasEBillingDocumentListTabs
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('e-billing.tabs.invoices', InvoiceModels::invoice());
+        return $this->getDynamicTabs(
+            static::getResource()::tabsConfigPath(),
+            InvoiceModels::invoice(),
+        );
     }
 
     protected function applyConditions($query, $conditions)
