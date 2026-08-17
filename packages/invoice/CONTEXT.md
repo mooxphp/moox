@@ -32,7 +32,10 @@ document wording, no host model names. Keep lean.
 - **Consignee** — BG-13 / BT-70, **where the goods went**: a party with a name, not a bare address,
   because it may be a different legal entity than the buyer. In the CII binding the standard models it
   as a party with a postal address beneath it, which is why the model holds a `Party` here. BG-13 is
-  optional; where BG-15 is present, BR-57 makes the country code (BT-80) mandatory. *Avoid:* the term
+  optional. BR-57 (country code BT-80 when BG-15 is present) is an **emission** rule, not a storage
+  rule: the stored consignee may lack `country_code`, and the country may be completed later from
+  master data on an unambiguous match. `Address::fromArray()` still requires a country (ready to emit);
+  `Address::fromDocumentArray()` keeps the address as read. *Avoid:* the term
   "delivery address" — it is also used for the address an e-invoice is *dispatched to*, which is a
   different concept with a different master-data source.
 - **Derived consignee** — the buyer address standing in when the document names no consignee. Derived

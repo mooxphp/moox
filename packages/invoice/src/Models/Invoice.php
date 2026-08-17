@@ -11,8 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Invoice\Database\Factories\InvoiceFactory;
-use Moox\Invoice\Support\En16931\Address;
-use Moox\Invoice\Support\En16931\Casts\AddressCast;
+use Moox\Invoice\Support\En16931\Casts\DeliveryPartyCast;
 use Moox\Invoice\Support\En16931\Casts\PartyCast;
 use Moox\Invoice\Support\En16931\Casts\PaymentMeansCast;
 use Moox\Invoice\Support\En16931\Party;
@@ -22,7 +21,7 @@ use Moox\Invoice\Support\InvoiceModels;
 /**
  * @property Party|null $seller
  * @property Party|null $buyer
- * @property Address|null $delivery
+ * @property Party|null $delivery
  * @property PaymentMeans|null $payment_means
  */
 class Invoice extends BaseItemModel
@@ -69,7 +68,7 @@ class Invoice extends BaseItemModel
         return [
             'seller' => PartyCast::class,
             'buyer' => PartyCast::class,
-            'delivery' => AddressCast::class,
+            'delivery' => DeliveryPartyCast::class,
             'payment_means' => PaymentMeansCast::class,
             'net_total' => 'decimal:2',
             'vat_rate' => 'decimal:2',
