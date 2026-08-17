@@ -121,6 +121,9 @@ class GenerateArtifactJob implements ShouldQueue
 
         $this->setProgress(40);
 
+        $invoiceFieldValidator->fillFieldValidations($document);
+        $document->refresh();
+
         $formatId = $formatResolver->resolveForGeneration($document);
         $definition = $formatRegistry->get($formatId);
         $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice), $definition->profile);
