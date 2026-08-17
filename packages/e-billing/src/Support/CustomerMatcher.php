@@ -45,7 +45,13 @@ final class CustomerMatcher
             ->limit(2)
             ->pluck('assignable_id');
 
-        return $companyIds->count() === 1 ? (string) $companyIds->first() : null;
+        if ($companyIds->count() !== 1) {
+            return null;
+        }
+
+        $companyId = (string) $companyIds->first();
+
+        return Company::query()->find($companyId) !== null ? $companyId : null;
     }
 
     /**
