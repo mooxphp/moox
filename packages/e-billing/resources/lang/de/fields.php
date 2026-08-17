@@ -20,7 +20,7 @@ return [
     'customer_reference' => 'Kundenreferenz',
     'order_number' => 'Bestellnummer',
     'order_date' => 'Bestelldatum',
-    'delivery_address' => 'Lieferadresse',
+    'delivery_address' => 'Warenempfänger',
     'supplier_number' => 'Lieferantennummer',
     'supplier_phone' => 'Telefon Lieferant',
     'supplier_email' => 'E-Mail Lieferant',

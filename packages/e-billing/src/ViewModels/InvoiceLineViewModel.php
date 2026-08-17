@@ -8,8 +8,8 @@ use Carbon\Carbon;
 use Moox\EBilling\Support\InvoiceDisplayNumberFormatter;
 use Moox\EBilling\Support\InvoiceFieldLabels;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
+use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\InvoiceLine;
-use Moox\Invoice\Support\En16931\Address;
 
 final class InvoiceLineViewModel
 {
@@ -75,7 +75,6 @@ final class InvoiceLineViewModel
             btNumber: InvoiceFieldLabels::btNumber($name, 'invoice_line'),
             value: $this->formatValue($name),
             validation: $validation,
-            hint: InvoiceFieldLabels::hint($name, $status),
             hint: InvoiceFieldLabels::hint($name, $status, $validation),
         );
     }
@@ -124,45 +123,8 @@ final class InvoiceLineViewModel
                 $this->line->allowanceCharges,
                 $this->line,
             ),
-            'delivery_address' => $this->formatEn16931Address($this->line->delivery),
+            'delivery_address' => PartyAddressFormatter::format($this->line->delivery),
             default => $this->line->getAttribute($field),
         };
-    }
-
-    private function formatEn16931Address(?Address $address): ?string
-    {
-        if ($address === null) {
-            return null;
-        }
-
-        $lines = [];
-
-        if ($address->line2 !== null && trim($address->line2) !== '') {
-            foreach (preg_split("/\r\n|\r|\n/", $address->line2) ?: [] as $segment) {
-                $segment = trim((string) $segment);
-                if ($segment !== '') {
-                    $lines[] = $segment;
-                }
-            }
-        }
-
-        if (trim($address->line1) !== '') {
-            $lines[] = trim($address->line1);
-        }
-
-        $postalCity = trim($address->postal_code.' '.$address->city);
-        if ($postalCity !== '') {
-            $lines[] = $postalCity;
-        }
-
-        if (trim($address->country_code) !== '') {
-            $lines[] = trim($address->country_code);
-        }
-
-        if ($lines === []) {
-            return null;
-        }
-
-        return implode("\n", $lines);
     }
 }
