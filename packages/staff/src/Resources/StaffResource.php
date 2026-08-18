@@ -18,9 +18,11 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Moox\Contact\Models\Contact;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Moox\Data\Models\StaticLanguage;
 use Moox\Staff\Models\Staff;
 use Moox\Staff\Resources\Staff\Pages\CreateStaff;
 use Moox\Staff\Resources\Staff\Pages\EditStaff;
@@ -162,12 +164,14 @@ class StaffResource extends BaseRecordResource
                     Select::make('language_id')
                         ->label(__('staff::fields.language_id'))
                         ->relationship('language', 'common_name')
+                        ->getOptionLabelFromRecordUsing(fn (StaticLanguage $record): string => $record->common_name ?: (string) ($record->alpha2 ?: $record->getKey()))
                         ->searchable()
                         ->preload()
                         ->rules(StaffRules::for('language_id')),
                     Select::make('contact_id')
                         ->label(__('staff::fields.linked_contact'))
                         ->relationship('contact', 'display_name')
+                        ->getOptionLabelFromRecordUsing(fn (Contact $record): string => $record->displayLabel())
                         ->searchable()
                         ->preload()
                         ->rules(StaffRules::for('contact_id')),
