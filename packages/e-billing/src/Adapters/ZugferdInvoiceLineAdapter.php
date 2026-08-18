@@ -16,6 +16,8 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
 {
     private readonly string $resolvedUnitCode;
 
+    public readonly ?string $deliveryDate;
+
     public function __construct(
         private InvoiceLine $line,
         private ?UnitCodeResolver $unitCodeResolver = null,
@@ -26,14 +28,14 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         $persistedCode = trim((string) ($this->line->unit_code ?? ''));
         if ($persistedCode !== '') {
             $this->resolvedUnitCode = $this->unitCodeResolver->normalizePieceCode($persistedCode);
-
-            return;
+        } else {
+            $unit = trim((string) ($this->line->unit ?? ''));
+            $this->resolvedUnitCode = $unit !== ''
+                ? $this->unitCodeResolver->resolveLabel($unit)
+                : '';
         }
 
-        $unit = trim((string) ($this->line->unit ?? ''));
-        $this->resolvedUnitCode = $unit !== ''
-            ? $this->unitCodeResolver->resolveLabel($unit)
-            : '';
+        $this->deliveryDate = self::resolveDeliveryDate($this->line, $this->emitLineDeliveryDate);
     }
 
     public int $position {
@@ -72,10 +74,6 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         get => (float) $this->line->line_total;
     }
 
-    public ?string $deliveryDate {
-        get => $this->resolveDeliveryDate();
-    }
-
     /** @var list<ZugferdAllowanceCharge> */
     public array $allowanceCharges {
         get {
@@ -88,13 +86,13 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
         }
     }
 
-    private function resolveDeliveryDate(): ?string
+    private static function resolveDeliveryDate(InvoiceLine $line, bool $emitLineDeliveryDate): ?string
     {
-        if (! $this->emitLineDeliveryDate) {
+        if (! $emitLineDeliveryDate) {
             return null;
         }
 
-        $rawDate = $this->line->delivery_date !== null ? (string) $this->line->delivery_date : null;
+        $rawDate = $line->delivery_date !== null ? (string) $line->delivery_date : null;
 
         return DeliveryDateTransmission::normalize($rawDate);
     }

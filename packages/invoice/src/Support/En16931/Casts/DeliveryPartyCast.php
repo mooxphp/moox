@@ -72,6 +72,15 @@ class DeliveryPartyCast implements CastsAttributes
      */
     public static function migrateStoredArray(?array $decoded): ?array
     {
+        return self::migrateStoredPartyArray($decoded);
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $decoded
+     * @return array<string, mixed>|null
+     */
+    private static function migrateStoredPartyArray(?array $decoded): ?array
+    {
         if ($decoded === null) {
             return null;
         }

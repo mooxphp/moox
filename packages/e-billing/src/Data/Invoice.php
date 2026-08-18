@@ -106,11 +106,15 @@ class Invoice implements ZugferdInvoice
     }
 
     public ?string $shipToName {
-        get => self::trimmedDeliveryCompanyName($this->deliveryAddress);
+        get {
+            return self::trimmedDeliveryCompanyName($this->deliveryAddress);
+        }
     }
 
     public ?ZugferdAddress $shipToAddress {
-        get => $this->deliveryAddress;
+        get {
+            return $this->deliveryAddress;
+        }
     }
 
     private static function trimmedDeliveryCompanyName(?Address $deliveryAddress): ?string
