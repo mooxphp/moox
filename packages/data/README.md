@@ -68,6 +68,18 @@ After configuring your key, import static data (if not already done via `moox:in
 php artisan moox:data:import-static --sync
 ```
 
+## Static codelists
+
+Committed JSON under `database/data/codelists/` is loaded into `static_*` tables by:
+
+```bash
+php artisan moox:data:import-codelists
+```
+
+Pass a scheme key to import one list (for example `en10204`, `uncl7161`, `untdid1001`).
+
+Certificate kinds (EN 10204 inspection document types) are scheme `en10204`, JSON file `database/data/codelists/certificate-kinds.json`, model `StaticCertificateKind`. Codes are hyphenated (`2-1`, `2-2`, `3-1`, `3-2`) because Laravel lang keys cannot contain dots; they correspond to EN 10204 types 2.1, 2.2, 3.1, and 3.2. A fifth code, `undetermined`, is for an inspection document whose kind could not be determined; it is **not** an EN 10204 type and is marked **non-normative** (`is_normative` is `false` in JSON and in the database) so evaluation can tell it apart from the four standard kinds. Labels ship in `resources/lang/{en,de,cs}/enums/certificate-kinds.php`. This package ships kinds only; resolving printed wording on an invoice to a kind is the **consumer's** concern. The Filament resource is registered with `StaticCertificateKindPlugin`. Hosts may attach extra Filament relation managers via `config('static-certificate-kind.relation_managers')` without adding printed spellings to this package. Further kinds are additional JSON rows plus matching lang keys.
+
 ## What it does
 
 Static Data for country, language, Timzones, and Currencies. 

@@ -49,6 +49,7 @@ return [
 
     // EN 16931 codelists
     'description' => 'Beschreibung',
+    'is_normative' => 'Normativ',
     'en16931_interpretation' => 'EN-16931-Interpretation',
     'vat_category_code' => 'Umsatzsteuerkategorie-Code',
     'version' => 'Version',
@@ -73,3 +74,4 @@ return [
     'grid_view' => 'Grid Ansicht',
     'table_view' => 'List Ansicht',
 ];
+
