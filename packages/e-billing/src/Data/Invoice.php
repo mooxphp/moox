@@ -106,21 +106,24 @@ class Invoice implements ZugferdInvoice
     }
 
     public ?string $shipToName {
-        get {
-            $name = $this->deliveryAddress?->company;
-
-            if ($name === null) {
-                return null;
-            }
-
-            $trimmed = trim($name);
-
-            return $trimmed !== '' ? $trimmed : null;
-        }
+        get => self::trimmedDeliveryCompanyName($this->deliveryAddress);
     }
 
     public ?ZugferdAddress $shipToAddress {
         get => $this->deliveryAddress;
+    }
+
+    private static function trimmedDeliveryCompanyName(?Address $deliveryAddress): ?string
+    {
+        $name = $deliveryAddress?->company;
+
+        if ($name === null) {
+            return null;
+        }
+
+        $trimmed = trim($name);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 
     /**

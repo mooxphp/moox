@@ -73,15 +73,7 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
     }
 
     public ?string $deliveryDate {
-        get {
-            if (! $this->emitLineDeliveryDate) {
-                return null;
-            }
-
-            return DeliveryDateTransmission::normalize(
-                $this->line->delivery_date !== null ? (string) $this->line->delivery_date : null,
-            );
-        }
+        get => $this->resolveDeliveryDate();
     }
 
     /** @var list<ZugferdAllowanceCharge> */
@@ -94,6 +86,17 @@ final class ZugferdInvoiceLineAdapter implements ZugferdInvoiceLine
                 ->values()
                 ->all();
         }
+    }
+
+    private function resolveDeliveryDate(): ?string
+    {
+        if (! $this->emitLineDeliveryDate) {
+            return null;
+        }
+
+        $rawDate = $this->line->delivery_date !== null ? (string) $this->line->delivery_date : null;
+
+        return DeliveryDateTransmission::normalize($rawDate);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

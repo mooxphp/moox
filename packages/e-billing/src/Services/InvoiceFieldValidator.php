@@ -538,10 +538,7 @@ class InvoiceFieldValidator
      */
     private function validateDeliveryDateField(Invoice $invoice, string $priority): array
     {
-        if (
-            DeliveryDateTransmission::hasSeveralDifferingDates($invoice)
-            && DeliveryDateTransmission::isIntraCommunitySupply($invoice)
-        ) {
+        if (DeliveryDateTransmission::hasSeveralDifferingDates($invoice) && DeliveryDateTransmission::isIntraCommunitySupply($invoice)) {
             return ['status' => 'needs_review'];
         }
 
