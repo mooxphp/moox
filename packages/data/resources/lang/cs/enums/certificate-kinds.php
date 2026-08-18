@@ -10,4 +10,3 @@ return [
     '3-2' => 'Inspekční certifikát 3.2',
     'undetermined' => 'Neurčený inspekční dokument',
 ];
-

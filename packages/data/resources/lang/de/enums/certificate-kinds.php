@@ -10,4 +10,3 @@ return [
     '3-2' => 'Abnahmeprüfzeugnis 3.2',
     'undetermined' => 'Zeugnisart unbestimmt',
 ];
-

@@ -10,4 +10,3 @@ return [
     '3-2' => 'Inspection certificate 3.2',
     'undetermined' => 'Undetermined inspection document',
 ];
-
