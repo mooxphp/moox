@@ -18,10 +18,10 @@ final class ZugferdShipToWriter
         ZugferdInvoice $invoice,
         callable $buildAddressLines,
     ): void {
-        $trimmedName = self::trimmedName($invoice->shipToName);
+        $name = $invoice->shipToName;
+        $trimmedName = $name !== null ? trim($name) : '';
         $address = $invoice->shipToAddress;
         $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
-
         $hasName = $trimmedName !== '';
         $hasCountry = $address !== null && $country !== '';
 
@@ -31,23 +31,16 @@ final class ZugferdShipToWriter
 
         $doc->setDocumentShipTo($hasName ? $trimmedName : null);
 
-        if (! $hasCountry) {
-            return;
+        if ($hasCountry) {
+            [$lineOne, $lineTwo, $lineThree] = $buildAddressLines($address);
+            $doc->setDocumentShipToAddress(
+                $lineOne,
+                $lineTwo,
+                $lineThree,
+                $address->zip ?? '',
+                $address->city ?? '',
+                $address->country ?? '',
+            );
         }
-
-        [$lineOne, $lineTwo, $lineThree] = $buildAddressLines($address);
-        $doc->setDocumentShipToAddress(
-            $lineOne,
-            $lineTwo,
-            $lineThree,
-            $address->zip ?? '',
-            $address->city ?? '',
-            $address->country ?? '',
-        );
-    }
-
-    private static function trimmedName(?string $name): string
-    {
-        return $name !== null ? trim($name) : '';
     }
 }

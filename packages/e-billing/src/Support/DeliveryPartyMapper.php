@@ -35,16 +35,42 @@ final class DeliveryPartyMapper
     private static function mapAddress(Address $address): En16931Address
     {
         $countryCode = $address->country !== null ? strtoupper(trim($address->country)) : '';
-        $line1 = trim((string) ($address->street ?? ''));
-        $line2 = AddressLineMerger::join($address->addressLine2, $address->addressLine3);
+        $line2 = self::joinedLines($address->addressLine2, $address->addressLine3);
 
         return En16931Address::fromDocumentArray([
-            'line1' => $line1,
+            'line1' => trim((string) ($address->street ?? '')),
             'line2' => $line2,
             'city' => trim((string) ($address->city ?? '')),
             'postal_code' => trim((string) ($address->zip ?? '')),
             'subdivision' => null,
             'country_code' => $countryCode,
         ]);
+    }
+
+    private static function joinedLines(?string $line2, ?string $line3): ?string
+    {
+        $trimmedLine2 = self::trimmedNonEmpty($line2);
+        $trimmedLine3 = self::trimmedNonEmpty($line3);
+
+        if ($trimmedLine3 === null) {
+            return $trimmedLine2;
+        }
+
+        if ($trimmedLine2 === null) {
+            return $trimmedLine3;
+        }
+
+        return $trimmedLine2."\n".$trimmedLine3;
+    }
+
+    private static function trimmedNonEmpty(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 }

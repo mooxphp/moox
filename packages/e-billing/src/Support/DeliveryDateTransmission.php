@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Support;
 
+use DateTimeInterface;
 use Moox\Invoice\Models\Invoice;
+use Moox\Zugferd\Support\FlexibleDateParser;
 
 final class DeliveryDateTransmission
 {
@@ -16,13 +18,13 @@ final class DeliveryDateTransmission
     {
         $dates = [];
 
-        $normalizedDocument = DeliveryDateNormalizer::normalize($documentDate);
+        $normalizedDocument = self::normalize($documentDate);
         if ($normalizedDocument !== null) {
             $dates[$normalizedDocument] = $normalizedDocument;
         }
 
         foreach ($lines as $line) {
-            $normalized = DeliveryDateNormalizer::normalize(DeliveryDateNormalizer::fromLine($line));
+            $normalized = self::normalize(self::lineDate($line));
             if ($normalized !== null) {
                 $dates[$normalized] = $normalized;
             }
@@ -54,7 +56,7 @@ final class DeliveryDateTransmission
         $invoice->loadMissing('lines');
 
         return self::shouldEmitLineDeliveryDate(
-            DeliveryDateNormalizer::fromScalar($invoice->delivery_date),
+            self::scalarDate($invoice->delivery_date),
             $invoice->lines,
         );
     }
@@ -75,6 +77,30 @@ final class DeliveryDateTransmission
 
     public static function normalize(?string $value): ?string
     {
-        return DeliveryDateNormalizer::normalize($value);
+        $parsed = FlexibleDateParser::parse($value);
+
+        return $parsed?->format('Y-m-d');
+    }
+
+    private static function lineDate(mixed $line): ?string
+    {
+        if (! is_object($line) || ! isset($line->delivery_date)) {
+            return null;
+        }
+
+        return self::scalarDate($line->delivery_date);
+    }
+
+    private static function scalarDate(mixed $value): ?string
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        if (is_string($value) || $value instanceof \Stringable) {
+            return (string) $value;
+        }
+
+        return null;
     }
 }
