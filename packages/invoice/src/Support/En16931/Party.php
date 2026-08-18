@@ -17,7 +17,8 @@ readonly class Party
         public ?string $tax_number,
         public Address $address,
         public ?Contact $contact,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data
