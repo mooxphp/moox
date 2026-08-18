@@ -13,6 +13,8 @@ use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
+use Moox\Zugferd\Support\FlexibleDateParser;
+use Moox\Zugferd\Support\ZugferdShipToWriter;
 use Symfony\Component\Process\Process;
 
 class ZugferdConverter
@@ -234,43 +236,12 @@ class ZugferdConverter
 
     private function setDelivery(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
     {
-        $deliveryDate = $this->parseDate($invoice->deliveryDate);
+        $deliveryDate = FlexibleDateParser::parse($invoice->deliveryDate);
         if ($deliveryDate !== null) {
             $doc->setDocumentSupplyChainEvent($deliveryDate);
         }
 
-        $this->setShipTo($doc, $invoice);
-    }
-
-    private function setShipTo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
-    {
-        $name = $invoice->shipToName;
-        $trimmedName = $name !== null ? trim($name) : '';
-        $address = $invoice->shipToAddress;
-        $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
-
-        $hasName = $trimmedName !== '';
-        $hasAddressWithCountry = $address !== null && $country !== '';
-
-        if (! $hasName && ! $hasAddressWithCountry) {
-            return;
-        }
-
-        $doc->setDocumentShipTo($hasName ? $trimmedName : null);
-
-        if (! $hasAddressWithCountry) {
-            return;
-        }
-
-        [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
-        $doc->setDocumentShipToAddress(
-            $lineOne,
-            $lineTwo,
-            $lineThree,
-            $address->zip ?? '',
-            $address->city ?? '',
-            $address->country ?? '',
-        );
+        ZugferdShipToWriter::write($doc, $invoice, $this->buildAddressLines(...));
     }
 
     // ─── Payment (BG-16) ────────────────────────────────────────
@@ -349,7 +320,7 @@ class ZugferdConverter
         ?string $deliveryDate,
         bool $emitLineActualDelivery,
     ): void {
-        $parsed = $this->parseDate($deliveryDate);
+        $parsed = FlexibleDateParser::parse($deliveryDate);
         if ($parsed === null) {
             return;
         }
@@ -361,27 +332,6 @@ class ZugferdConverter
         }
 
         $doc->setDocumentPositionBillingPeriod($parsed, $parsed);
-    }
-
-    private function parseDate(?string $value): ?\DateTimeInterface
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $trimmed = trim($value);
-        if ($trimmed === '') {
-            return null;
-        }
-
-        foreach (['Y-m-d', 'd.m.Y', 'd.m.y'] as $format) {
-            $parsed = \DateTimeImmutable::createFromFormat('!'.$format, $trimmed);
-            if ($parsed instanceof \DateTimeImmutable) {
-                return $parsed;
-            }
-        }
-
-        return null;
     }
 
     // ─── Allowances & Charges (BG-20/BG-21) ─────────────────────
