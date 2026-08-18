@@ -18,13 +18,8 @@ final class DeliveryDateTransmission
     {
         $dates = [];
 
-        $normalizedDocument = self::normalize($documentDate);
-        if ($normalizedDocument !== null) {
-            $dates[$normalizedDocument] = $normalizedDocument;
-        }
-
-        foreach ($lines as $line) {
-            $normalized = self::normalize(self::lineDate($line));
+        foreach ([$documentDate, ...self::lineDates($lines)] as $date) {
+            $normalized = self::normalize($date);
             if ($normalized !== null) {
                 $dates[$normalized] = $normalized;
             }
@@ -63,32 +58,31 @@ final class DeliveryDateTransmission
 
     public static function isIntraCommunitySupply(Invoice $invoice): bool
     {
-        $sellerPrefix = VatIdNormalizer::euCountryPrefix($invoice->seller?->vat_id);
-        $buyerPrefix = VatIdNormalizer::euCountryPrefix($invoice->buyer?->vat_id);
-
-        if ($sellerPrefix === null || $buyerPrefix === null) {
-            return false;
-        }
-
-        return $sellerPrefix !== $buyerPrefix
-            && VatIdNormalizer::isEuCountryPrefix($sellerPrefix)
-            && VatIdNormalizer::isEuCountryPrefix($buyerPrefix);
+        return VatIdNormalizer::isIntraCommunitySupply(
+            $invoice->seller?->vat_id,
+            $invoice->buyer?->vat_id,
+        );
     }
 
     public static function normalize(?string $value): ?string
     {
-        $parsed = FlexibleDateParser::parse($value);
-
-        return $parsed?->format('Y-m-d');
+        return FlexibleDateParser::parse($value)?->format('Y-m-d');
     }
 
-    private static function lineDate(mixed $line): ?string
+    /**
+     * @param  iterable<mixed>  $lines
+     * @return list<?string>
+     */
+    private static function lineDates(iterable $lines): array
     {
-        if (! is_object($line) || ! isset($line->delivery_date)) {
-            return null;
+        $dates = [];
+        foreach ($lines as $line) {
+            $dates[] = is_object($line) && isset($line->delivery_date)
+                ? self::scalarDate($line->delivery_date)
+                : null;
         }
 
-        return self::scalarDate($line->delivery_date);
+        return $dates;
     }
 
     private static function scalarDate(mixed $value): ?string

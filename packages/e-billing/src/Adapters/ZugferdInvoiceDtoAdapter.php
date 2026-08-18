@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Data\Invoice;
-use Moox\EBilling\Support\DeliveryShipTo;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -15,7 +14,7 @@ use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 /**
  * Flat {@see ZugferdInvoice} view of parsed bill_data; public field count mirrors the contract.
  */
-final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice // NOSONAR
+final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 {
     public string $invoiceNumber;
 
@@ -102,8 +101,10 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice // NOSONAR
         $this->supplierTaxNumber = $invoice->supplierTaxNumber;
         $this->paymentTerms = $invoice->paymentTerms;
         $this->deliveryDate = $invoice->deliveryDate;
-        $this->shipToName = DeliveryShipTo::name($invoice->deliveryAddress);
-        $this->shipToAddress = DeliveryShipTo::address($invoice->deliveryAddress);
+        $deliveryAddress = $invoice->deliveryAddress;
+        $shipToName = $deliveryAddress?->company;
+        $this->shipToName = $shipToName !== null && trim($shipToName) !== '' ? trim($shipToName) : null;
+        $this->shipToAddress = $deliveryAddress;
         $this->paymentMeansCode = $invoice->paymentMeansCode;
         $this->vatRate = $invoice->vatRate;
         $this->netTotal = $invoice->netTotal;
