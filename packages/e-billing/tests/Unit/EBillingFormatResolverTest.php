@@ -21,46 +21,42 @@ function attachCustomerToDocumentInvoice(
     $document->setRelation('invoice', $invoice->fresh());
 }
 
-test('resolves customer preferred_ebilling_format when customer matches via customer_number', function (): void {
-    $document = PipelineFixtures::arrangeInvoice($this)->document;
-
-    $customer = Customer::factory()->create([
-        'customer_number' => 'FMT-001',
-        'preferred_ebilling_format' => 'xrechnung',
+function customerWithPreferredFormat(string $customerNumber, string $format): Customer
+{
+    return Customer::factory()->create([
+        'customer_number' => $customerNumber,
+        'preferred_ebilling_format' => $format,
         'is_active' => true,
     ]);
+}
 
-    attachCustomerToDocumentInvoice($document, $customer);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
-});
-
-test('resolves customer preferred_ebilling_format from attributed customer_id', function (): void {
+test('resolves customer preferred_ebilling_format', function (
+    string $customerNumber,
+    bool $viaCustomerId,
+): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
+    $customer = customerWithPreferredFormat($customerNumber, 'xrechnung');
 
-    $customer = Customer::factory()->create([
-        'customer_number' => 'FMT-002',
-        'preferred_ebilling_format' => 'xrechnung',
-        'is_active' => true,
-    ]);
+    if ($viaCustomerId) {
+        $document->update(['customer_id' => $customer->id]);
+        $document = $document->fresh();
+    } else {
+        attachCustomerToDocumentInvoice($document, $customer);
+    }
 
-    $document->update(['customer_id' => $customer->id]);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document->fresh()))->toBe('xrechnung');
-});
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('xrechnung');
+})->with([
+    'when customer matches via customer_number' => ['FMT-001', false],
+    'from attributed customer_id' => ['FMT-002', true],
+    'when customer has no company assignment' => ['ORPHAN-FMT', false],
+]);
 
 test('falls back to default_format when no customer preference is set', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
     config(['e-billing.default_format' => 'zugferd']);
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('zugferd');
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('zugferd');
 });
 
 test('frozen format is unaffected by later preference change', function (): void {
@@ -71,51 +67,25 @@ test('frozen format is unaffected by later preference change', function (): void
 
     expect($document->xml_storage_path)->not->toBeNull();
 
-    $customer = Customer::factory()->create([
-        'customer_number' => 'FMT-FROZEN',
-        'preferred_ebilling_format' => 'zugferd',
-        'is_active' => true,
-    ]);
+    attachCustomerToDocumentInvoice(
+        $document,
+        customerWithPreferredFormat('FMT-FROZEN', 'zugferd'),
+    );
 
-    attachCustomerToDocumentInvoice($document, $customer);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('xrechnung');
 });
 
 test('falls back to default when preferred format is unknown', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
-    $customer = Customer::factory()->create([
-        'customer_number' => 'FMT-003',
-        'preferred_ebilling_format' => 'ubl-peppol',
-        'is_active' => true,
-    ]);
-
-    attachCustomerToDocumentInvoice($document, $customer);
+    attachCustomerToDocumentInvoice(
+        $document,
+        customerWithPreferredFormat('FMT-003', 'ubl-peppol'),
+    );
 
     config(['e-billing.default_format' => 'zugferd']);
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('zugferd');
-});
-
-test('customer without company assignment still gets preferred format', function (): void {
-    $document = PipelineFixtures::arrangeInvoice($this)->document;
-
-    $customer = Customer::factory()->create([
-        'customer_number' => 'ORPHAN-FMT',
-        'preferred_ebilling_format' => 'xrechnung',
-        'is_active' => true,
-    ]);
-
-    attachCustomerToDocumentInvoice($document, $customer);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('zugferd');
 });
 
 test('customer preference beats company preference', function (): void {
@@ -126,11 +96,7 @@ test('customer preference beats company preference', function (): void {
         'data' => ['preferred_ebilling_format' => 'zugferd'],
     ]);
 
-    $customer = Customer::factory()->create([
-        'customer_number' => 'FMT-BEATS-CO',
-        'preferred_ebilling_format' => 'xrechnung',
-        'is_active' => true,
-    ]);
+    $customer = customerWithPreferredFormat('FMT-BEATS-CO', 'xrechnung');
 
     CustomerAssignment::query()->create([
         'customer_id' => $customer->id,
@@ -141,9 +107,7 @@ test('customer preference beats company preference', function (): void {
 
     attachCustomerToDocumentInvoice($document, $customer);
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('xrechnung');
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('xrechnung');
 });
 
 test('falls back to default when only company has preference and no customer match', function (): void {
@@ -156,49 +120,29 @@ test('falls back to default when only company has preference and no customer mat
 
     config(['e-billing.default_format' => 'zugferd']);
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveForGeneration($document))->toBe('zugferd');
+    expect(app(EBillingFormatResolver::class)->resolveForGeneration($document))->toBe('zugferd');
 });
 
 test('resolveSendVisualCopy defaults to true', function (): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveSendVisualCopy($document))->toBeTrue();
+    expect(app(EBillingFormatResolver::class)->resolveSendVisualCopy($document))->toBeTrue();
 });
 
-test('resolveSendVisualCopy uses customer column over config', function (): void {
+test('resolveSendVisualCopy', function (?bool $column, bool $config, bool $expected): void {
     $document = PipelineFixtures::arrangeInvoice($this)->document;
 
     $customer = Customer::factory()->create([
         'is_active' => true,
-        'send_visual_copy' => false,
+        'send_visual_copy' => $column,
     ]);
 
     $document->setRelation('customer', $customer);
 
-    config(['e-billing.send_visual_copy' => true]);
+    config(['e-billing.send_visual_copy' => $config]);
 
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveSendVisualCopy($document))->toBeFalse();
-});
-
-test('resolveSendVisualCopy falls back to config when customer value is null', function (): void {
-    $document = PipelineFixtures::arrangeInvoice($this)->document;
-
-    $customer = Customer::factory()->create([
-        'is_active' => true,
-        'send_visual_copy' => null,
-    ]);
-
-    $document->setRelation('customer', $customer);
-
-    config(['e-billing.send_visual_copy' => false]);
-
-    $resolver = app(EBillingFormatResolver::class);
-
-    expect($resolver->resolveSendVisualCopy($document))->toBeFalse();
-});
+    expect(app(EBillingFormatResolver::class)->resolveSendVisualCopy($document))->toBe($expected);
+})->with([
+    'uses customer column over config' => [false, true, false],
+    'falls back to config when customer value is null' => [null, false, false],
+]);
