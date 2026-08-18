@@ -156,7 +156,7 @@ class ParsedInvoiceMapper
     {
         $charges = [];
 
-        foreach ($dto->allowanceCharges as $item) {
+        foreach ($dto->allowanceCharges() as $item) {
             if (! $this->isNonZeroAmount($item->amount)) {
                 continue;
             }
@@ -241,13 +241,13 @@ class ParsedInvoiceMapper
 
     private function mapPaymentMeans(InvoiceDto $dto): ?PaymentMeans
     {
-        if ($dto->bankAccounts === []) {
+        if ($dto->bankAccounts() === []) {
             return null;
         }
 
         $bankAccounts = [];
 
-        foreach ($dto->bankAccounts as $account) {
+        foreach ($dto->bankAccounts() as $account) {
             $bankAccounts[] = new En16931BankAccount(
                 iban: $account->iban,
                 bic: $account->bic,
