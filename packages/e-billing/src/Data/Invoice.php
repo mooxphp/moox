@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Data;
 
+use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\VatIdNormalizer;
-use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 
-class Invoice implements ZugferdInvoice
+class Invoice
 {
     public function __construct(
         public string $invoiceNumber,
@@ -77,57 +77,39 @@ class Invoice implements ZugferdInvoice
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
     }
 
-    /** @var list<ZugferdBankAccount> */
-    public array $bankAccounts {
-        get {
-            $accounts = [];
-            foreach ($this->supplierBankAccounts as $row) {
-                if (is_array($row)) {
-                    $accounts[] = BankAccount::fromArray($row);
-                }
-            }
-
-            return $accounts;
-        }
-    }
-
-    /** @var list<ZugferdAllowanceCharge> */
-    public array $allowanceCharges {
-        get {
-            return BillDataAllowanceChargeMapper::fromHeaderScalars(
-                $this->shippingCost,
-                $this->packagingCost,
-                $this->minimumQuantitySurcharge,
-                $this->freightFlatRate,
-                $this->discountAmount,
-                $this->discountPercent,
-            );
-        }
-    }
-
-    public ?string $shipToName {
-        get {
-            return self::trimmedDeliveryCompanyName($this->deliveryAddress);
-        }
-    }
-
-    public ?ZugferdAddress $shipToAddress {
-        get {
-            return $this->deliveryAddress;
-        }
-    }
-
-    private static function trimmedDeliveryCompanyName(?Address $deliveryAddress): ?string
+    public function forZugferd(): ZugferdInvoice
     {
-        $name = $deliveryAddress?->company;
+        return new ZugferdInvoiceDtoAdapter($this);
+    }
 
-        if ($name === null) {
-            return null;
+    /**
+     * @return list<ZugferdBankAccount>
+     */
+    public function bankAccounts(): array
+    {
+        $accounts = [];
+        foreach ($this->supplierBankAccounts as $row) {
+            if (is_array($row)) {
+                $accounts[] = BankAccount::fromArray($row);
+            }
         }
 
-        $trimmed = trim($name);
+        return $accounts;
+    }
 
-        return $trimmed !== '' ? $trimmed : null;
+    /**
+     * @return list<ZugferdAllowanceCharge>
+     */
+    public function allowanceCharges(): array
+    {
+        return BillDataAllowanceChargeMapper::fromHeaderScalars(
+            $this->shippingCost,
+            $this->packagingCost,
+            $this->minimumQuantitySurcharge,
+            $this->freightFlatRate,
+            $this->discountAmount,
+            $this->discountPercent,
+        );
     }
 
     /**
