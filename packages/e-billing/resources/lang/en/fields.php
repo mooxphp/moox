@@ -234,7 +234,8 @@ return [
 
     // Field hints — needs review
     'hint_review_customer_number' => 'Customer number not found in master data.',
-    'hint_review_customer_number_matched' => 'Customer number matched, but the attribution still needs review (inactive, deleted, or no unique company).',
+    'hint_review_customer_number_matched' => 'Customer number matched, but the attribution still needs review '
+        .'(inactive, deleted, or no unique company).',
     'hint_review_customer_name' => 'Customer name does not match master data.',
     'hint_review_article_number' => 'Article number not found in master data.',
     'hint_review_material' => 'Material not found in master data.',
@@ -243,6 +244,7 @@ return [
     'hint_review_unit_price' => 'Unit price differs from master data.',
     'hint_review_minimum_quantity_surcharge' => 'Minimum quantity surcharge should be reviewed manually.',
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
-    'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community actual delivery date rule without aggregating them into a period.',
+    'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
+        .'actual delivery date rule without aggregating them into a period.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];

@@ -10,7 +10,8 @@ readonly class InvoiceLineDraft
 {
     /**
      * @param  list<ChargeDraft>  $charges
-     * @param  array<string, mixed>  $extra  Host extension attributes; each key must be fillable on the configured line model or persistence fails.
+     * @param  array<string, mixed>  $extra  Host extension attributes; each key must be fillable
+     *                                       on the configured line model or persistence fails.
      */
     public function __construct(
         public int $position,
