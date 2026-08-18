@@ -15,7 +15,8 @@ readonly class Address
         public string $postal_code,
         public ?string $subdivision,
         public string $country_code,
-    ) {}
+    ) {
+    }
 
     /**
      * Ready-to-emit address. Requires a country code (EN 16931 BR-57 / BT-80 when BG-15 is emitted).
