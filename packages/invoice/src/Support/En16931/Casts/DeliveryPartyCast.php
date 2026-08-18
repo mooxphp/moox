@@ -77,38 +77,67 @@ class DeliveryPartyCast implements CastsAttributes
         }
 
         if (self::isLegacyAddressShape($decoded)) {
-            $name = (string) ($decoded['name'] ?? '');
-            $address = $decoded;
-            unset($address['name'], $address['vat_id'], $address['tax_number'], $address['contact']);
-
-            return [
-                'name' => $name,
-                'address' => $address,
-            ];
+            return self::wrapLegacyAddressShape($decoded);
         }
 
-        $cleaned = $decoded;
+        return self::stripForbiddenPartyKeys($decoded);
+    }
+
+    /**
+     * @param  array<string, mixed>  $decoded
+     * @return array{name: string, address: array<string, mixed>}
+     */
+    private static function wrapLegacyAddressShape(array $decoded): array
+    {
+        $name = (string) ($decoded['name'] ?? '');
+        $address = $decoded;
+        unset($address['name'], $address['vat_id'], $address['tax_number'], $address['contact']);
+
+        return [
+            'name' => $name,
+            'address' => $address,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $decoded
+     * @return array<string, mixed>
+     */
+    private static function stripForbiddenPartyKeys(array $decoded): array
+    {
+        $forbiddenKeys = ['vat_id', 'tax_number', 'contact'];
+        [$cleaned, $dirty] = self::unsetKeysIfPresent($decoded, $forbiddenKeys);
+
+        if (! isset($cleaned['address']) || ! is_array($cleaned['address'])) {
+            return $dirty ? $cleaned : $decoded;
+        }
+
+        [$address, $addressDirty] = self::unsetKeysIfPresent($cleaned['address'], $forbiddenKeys);
+        if ($addressDirty) {
+            $cleaned['address'] = $address;
+            $dirty = true;
+        }
+
+        return $dirty ? $cleaned : $decoded;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $keys
+     * @return array{0: array<string, mixed>, 1: bool}
+     */
+    private static function unsetKeysIfPresent(array $data, array $keys): array
+    {
         $dirty = false;
 
-        foreach (['vat_id', 'tax_number', 'contact'] as $key) {
-            if (array_key_exists($key, $cleaned)) {
-                unset($cleaned[$key]);
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data)) {
+                unset($data[$key]);
                 $dirty = true;
             }
         }
 
-        if (isset($cleaned['address']) && is_array($cleaned['address'])) {
-            $address = $cleaned['address'];
-            foreach (['vat_id', 'tax_number', 'contact'] as $key) {
-                if (array_key_exists($key, $address)) {
-                    unset($address[$key]);
-                    $dirty = true;
-                }
-            }
-            $cleaned['address'] = $address;
-        }
-
-        return $dirty ? $cleaned : $decoded;
+        return [$data, $dirty];
     }
 
     /**
