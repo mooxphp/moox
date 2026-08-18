@@ -16,7 +16,8 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 {
     public function __construct(
         private Invoice $invoice,
-    ) {}
+    ) {
+    }
 
     public string $invoiceNumber {
         get => $this->invoice->invoiceNumber;
