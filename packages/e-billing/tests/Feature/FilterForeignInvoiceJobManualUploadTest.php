@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Storage;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
@@ -117,6 +118,21 @@ test('manual upload rejects path traversal and foreign disks', function (): void
     expect(fn () => $action->execute([
         'source_pdf_path' => 'ebilling/manual-uploads/source/ok.pdf',
         'source_pdf_disk' => 's3',
+    ]))->toThrow(InvalidArgumentException::class);
+
+    Bus::assertNothingDispatched();
+});
+
+test('manual upload rejects files over the configured size', function (): void {
+    Bus::fake();
+    config(['e-billing.manual_upload.max_size_kb' => 1]);
+
+    $path = 'ebilling/manual-uploads/source/huge.pdf';
+    Storage::disk('local')->put($path, str_repeat('a', 2048));
+
+    expect(fn () => app(CreateManualUploadDocumentAction::class)->execute([
+        'source_pdf_path' => $path,
+        'source_pdf_disk' => 'local',
     ]))->toThrow(InvalidArgumentException::class);
 
     Bus::assertNothingDispatched();

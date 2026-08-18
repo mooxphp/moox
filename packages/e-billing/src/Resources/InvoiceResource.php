@@ -610,6 +610,7 @@ class InvoiceResource extends BaseItemResource
 
         $disk = (string) config('e-billing.manual_upload.source_disk', 'local');
         $directory = (string) config('e-billing.manual_upload.source_path', 'ebilling/manual-uploads/source');
+        $maxSizeKb = max(1, (int) config('e-billing.manual_upload.max_size_kb', 20480));
         $label = is_string($config['label'] ?? null) ? $config['label'] : __('e-billing::fields.action_manual_upload');
         $scope = is_string($config['scope'] ?? null) ? $config['scope'] : static::resourceConfigKey();
         $requiresLetterhead = (bool) ($config['requires_letterhead_overlay'] ?? false);
@@ -623,8 +624,11 @@ class InvoiceResource extends BaseItemResource
             ->form([
                 FileUpload::make('pdf')
                     ->label(__('e-billing::fields.manual_upload_pdf'))
-                    ->helperText(__('e-billing::fields.manual_upload_pdf_helper'))
+                    ->helperText(__('e-billing::fields.manual_upload_pdf_helper', [
+                        'max_mb' => (string) max(1, (int) round($maxSizeKb / 1024)),
+                    ]))
                     ->acceptedFileTypes(['application/pdf'])
+                    ->maxSize($maxSizeKb)
                     ->disk($disk)
                     ->directory($directory)
                     ->required(),

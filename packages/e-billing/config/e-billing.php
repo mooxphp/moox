@@ -62,6 +62,7 @@ return [
     'manual_upload' => [
         'source_disk' => env('EBILLING_MANUAL_SOURCE_DISK', 'local'),
         'source_path' => env('EBILLING_MANUAL_SOURCE_PATH', 'ebilling/manual-uploads/source'),
+        'max_size_kb' => (int) env('EBILLING_MANUAL_MAX_SIZE_KB', 20480),
     ],
 
     'letterhead' => [

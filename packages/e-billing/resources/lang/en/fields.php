@@ -208,7 +208,7 @@ return [
     'action_manual_upload_modal_description' => 'The PDF will be taken in, parsed, and prepared as an e-invoice.',
     'action_manual_upload_submit' => 'Upload',
     'manual_upload_pdf' => 'PDF',
-    'manual_upload_pdf_helper' => 'PDF only. Processing starts after upload.',
+    'manual_upload_pdf_helper' => 'PDF only, max. :max_mb MB. Processing starts after upload.',
     'notification_manual_upload_success_title' => 'PDF received',
     'notification_manual_upload_success_body' => 'Processing continues in the background.',
 

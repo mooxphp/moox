@@ -208,7 +208,7 @@ return [
     'action_manual_upload_modal_description' => 'Das PDF wird übernommen, ausgewertet und als E-Rechnung aufbereitet.',
     'action_manual_upload_submit' => 'Hochladen',
     'manual_upload_pdf' => 'PDF',
-    'manual_upload_pdf_helper' => 'Nur PDF. Nach dem Hochladen startet die Aufbereitung.',
+    'manual_upload_pdf_helper' => 'Nur PDF, maximal :max_mb MB. Nach dem Hochladen startet die Aufbereitung.',
     'notification_manual_upload_success_title' => 'PDF übernommen',
     'notification_manual_upload_success_body' => 'Die Aufbereitung läuft im Hintergrund.',
 

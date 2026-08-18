@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Actions;
 
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Jobs\StoreBillDataJob;
@@ -33,6 +34,7 @@ final class CreateManualUploadDocumentAction
         }
 
         $path = StoredRelativePath::assertUnderDirectory($data['source_pdf_path'], $directory);
+        $this->assertWithinMaxSize($configuredDisk, $path);
         $scope = $data['scope'] ?? 'credit-notes';
 
         $source = UploadedPdfSource::query()->create([
@@ -54,5 +56,18 @@ final class CreateManualUploadDocumentAction
         StoreBillDataJob::dispatch($document->getKey());
 
         return $document;
+    }
+
+    private function assertWithinMaxSize(string $disk, string $path): void
+    {
+        $maxSizeKb = max(1, (int) config('e-billing.manual_upload.max_size_kb', 20480));
+
+        if (! Storage::disk($disk)->exists($path)) {
+            return;
+        }
+
+        if (Storage::disk($disk)->size($path) > $maxSizeKb * 1024) {
+            throw new InvalidArgumentException('Manual upload exceeds the maximum file size.');
+        }
     }
 }
