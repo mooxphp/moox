@@ -22,6 +22,7 @@ final class CodelistEnumTranslations
         'vatex' => 'enums/vat-exemption-reasons',
         'icd' => 'enums/icd-schemes',
         'eas' => 'enums/eas-schemes',
+        'en10204' => 'enums/certificate-kinds',
     ];
 
     /** @var list<string> */
