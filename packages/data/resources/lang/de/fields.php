@@ -74,4 +74,3 @@ return [
     'grid_view' => 'Grid Ansicht',
     'table_view' => 'List Ansicht',
 ];
-
