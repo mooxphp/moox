@@ -23,15 +23,15 @@ final class ZugferdShipToWriter
         $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
 
         $hasName = $trimmedName !== '';
-        $hasAddressWithCountry = $address !== null && $country !== '';
+        $hasCountry = $address !== null && $country !== '';
 
-        if (! $hasName && ! $hasAddressWithCountry) {
+        if (! $hasName && ! $hasCountry) {
             return;
         }
 
         $doc->setDocumentShipTo($hasName ? $trimmedName : null);
 
-        if (! $hasAddressWithCountry) {
+        if (! $hasCountry) {
             return;
         }
 

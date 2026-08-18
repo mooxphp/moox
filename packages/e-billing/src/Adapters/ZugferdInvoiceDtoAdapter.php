@@ -14,100 +14,130 @@ use Moox\Zugferd\Contracts\ZugferdInvoiceLine;
 
 final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
 {
-    public string $invoiceNumber;
+    public function __construct(
+        private Invoice $invoice,
+    ) {}
 
-    public string $invoiceDate;
+    public string $invoiceNumber {
+        get => $this->invoice->invoiceNumber;
+    }
 
-    public string $documentType;
+    public string $invoiceDate {
+        get => $this->invoice->invoiceDate;
+    }
 
-    public string $documentTypeCode;
+    public string $documentType {
+        get => $this->invoice->documentType;
+    }
 
-    public ?string $dueDate;
+    public string $documentTypeCode {
+        get => $this->invoice->documentTypeCode;
+    }
 
-    public string $currency;
+    public ?string $dueDate {
+        get => $this->invoice->dueDate;
+    }
 
-    public string $customerNumber;
+    public string $currency {
+        get => $this->invoice->currency;
+    }
 
-    public ?string $customerReference;
+    public string $customerNumber {
+        get => $this->invoice->customerNumber;
+    }
 
-    public string $customerName;
+    public ?string $customerReference {
+        get => $this->invoice->customerReference;
+    }
 
-    public ?ZugferdAddress $customerAddress;
+    public string $customerName {
+        get => $this->invoice->customerName;
+    }
 
-    public ?string $customerVatId;
+    public ?ZugferdAddress $customerAddress {
+        get => $this->invoice->customerAddress;
+    }
 
-    public string $supplierName;
+    public ?string $customerVatId {
+        get => $this->invoice->customerVatId;
+    }
 
-    public ?ZugferdAddress $supplierAddress;
+    public string $supplierName {
+        get => $this->invoice->supplierName;
+    }
 
-    public ?string $supplierPhone;
+    public ?ZugferdAddress $supplierAddress {
+        get => $this->invoice->supplierAddress;
+    }
 
-    public ?string $supplierEmail;
+    public ?string $supplierPhone {
+        get => $this->invoice->supplierPhone;
+    }
 
-    public ?string $agent;
+    public ?string $supplierEmail {
+        get => $this->invoice->supplierEmail;
+    }
 
-    public ?string $supplierVatId;
+    public ?string $agent {
+        get => $this->invoice->agent;
+    }
 
-    public ?string $supplierTaxNumber;
+    public ?string $supplierVatId {
+        get => $this->invoice->supplierVatId;
+    }
 
-    public ?string $paymentTerms;
+    public ?string $supplierTaxNumber {
+        get => $this->invoice->supplierTaxNumber;
+    }
 
-    public ?string $deliveryDate;
+    public ?string $paymentTerms {
+        get => $this->invoice->paymentTerms;
+    }
 
-    public ?string $shipToName;
+    public ?string $deliveryDate {
+        get => $this->invoice->deliveryDate;
+    }
 
-    public ?ZugferdAddress $shipToAddress;
+    public ?string $shipToName {
+        get => DeliveryShipTo::name($this->invoice->deliveryAddress);
+    }
 
-    public ?string $paymentMeansCode;
+    public ?ZugferdAddress $shipToAddress {
+        get => DeliveryShipTo::address($this->invoice->deliveryAddress);
+    }
 
-    public float $vatRate;
+    public ?string $paymentMeansCode {
+        get => $this->invoice->paymentMeansCode;
+    }
 
-    public float $netTotal;
+    public float $vatRate {
+        get => $this->invoice->vatRate;
+    }
 
-    public float $vatAmount;
+    public float $netTotal {
+        get => $this->invoice->netTotal;
+    }
 
-    public float $grossTotal;
+    public float $vatAmount {
+        get => $this->invoice->vatAmount;
+    }
+
+    public float $grossTotal {
+        get => $this->invoice->grossTotal;
+    }
 
     /** @var list<ZugferdAllowanceCharge> */
-    public array $allowanceCharges;
+    public array $allowanceCharges {
+        get => $this->invoice->allowanceCharges();
+    }
 
     /** @var list<ZugferdInvoiceLine> */
-    public array $lines;
+    public array $lines {
+        get => $this->invoice->lines;
+    }
 
     /** @var list<ZugferdBankAccount> */
-    public array $bankAccounts;
-
-    public function __construct(Invoice $invoice)
-    {
-        $this->invoiceNumber = $invoice->invoiceNumber;
-        $this->invoiceDate = $invoice->invoiceDate;
-        $this->documentType = $invoice->documentType;
-        $this->documentTypeCode = $invoice->documentTypeCode;
-        $this->dueDate = $invoice->dueDate;
-        $this->currency = $invoice->currency;
-        $this->customerNumber = $invoice->customerNumber;
-        $this->customerReference = $invoice->customerReference;
-        $this->customerName = $invoice->customerName;
-        $this->customerAddress = $invoice->customerAddress;
-        $this->customerVatId = $invoice->customerVatId;
-        $this->supplierName = $invoice->supplierName;
-        $this->supplierAddress = $invoice->supplierAddress;
-        $this->supplierPhone = $invoice->supplierPhone;
-        $this->supplierEmail = $invoice->supplierEmail;
-        $this->agent = $invoice->agent;
-        $this->supplierVatId = $invoice->supplierVatId;
-        $this->supplierTaxNumber = $invoice->supplierTaxNumber;
-        $this->paymentTerms = $invoice->paymentTerms;
-        $this->deliveryDate = $invoice->deliveryDate;
-        $this->shipToName = DeliveryShipTo::name($invoice->deliveryAddress);
-        $this->shipToAddress = DeliveryShipTo::address($invoice->deliveryAddress);
-        $this->paymentMeansCode = $invoice->paymentMeansCode;
-        $this->vatRate = $invoice->vatRate;
-        $this->netTotal = $invoice->netTotal;
-        $this->vatAmount = $invoice->vatAmount;
-        $this->grossTotal = $invoice->grossTotal;
-        $this->allowanceCharges = $invoice->allowanceCharges();
-        $this->lines = $invoice->lines;
-        $this->bankAccounts = $invoice->bankAccounts();
+    public array $bankAccounts {
+        get => $this->invoice->bankAccounts();
     }
 }
