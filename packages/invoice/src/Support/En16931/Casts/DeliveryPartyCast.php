@@ -152,7 +152,12 @@ class DeliveryPartyCast implements CastsAttributes
         if (self::isLegacyAddressShape($decoded)) {
             $name = (string) ($decoded['name'] ?? '');
             $addressPayload = $decoded;
-            unset($addressPayload['name'], $addressPayload['vat_id'], $addressPayload['tax_number'], $addressPayload['contact']);
+            unset(
+                $addressPayload['name'],
+                $addressPayload['vat_id'],
+                $addressPayload['tax_number'],
+                $addressPayload['contact'],
+            );
         } else {
             $name = (string) ($decoded['name'] ?? '');
             $addressPayload = $decoded['address'] ?? null;

@@ -254,7 +254,9 @@ class Invoice implements ZugferdInvoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
-            deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date']) ? $data['delivery_date'] : null,
+            deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date'])
+                ? $data['delivery_date']
+                : null,
             deliveryAddress: Address::fromMixed($data['delivery_address'] ?? null),
             supplierName: $supplierName,
             supplierVatId: isset($data['supplier_vat_id']) && is_string($data['supplier_vat_id']) ? $data['supplier_vat_id'] : null,
@@ -267,7 +269,9 @@ class Invoice implements ZugferdInvoice
             agent: isset($data['agent']) && is_string($data['agent']) ? $data['agent'] : null,
             paymentTerms: isset($data['payment_terms']) && is_string($data['payment_terms']) ? $data['payment_terms'] : null,
             pricingBasis: isset($data['pricing_basis']) && is_string($data['pricing_basis']) ? $data['pricing_basis'] : null,
-            deliveryTerms: isset($data['delivery_terms']) && is_string($data['delivery_terms']) ? $data['delivery_terms'] : null,
+            deliveryTerms: isset($data['delivery_terms']) && is_string($data['delivery_terms'])
+                ? $data['delivery_terms']
+                : null,
             netTotal: (float) ($data['net_total'] ?? 0),
             vatRate: (float) ($data['vat_rate'] ?? 19.0),
             vatAmount: (float) ($data['vat_amount'] ?? 0),

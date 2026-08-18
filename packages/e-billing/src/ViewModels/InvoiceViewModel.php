@@ -243,7 +243,8 @@ final class InvoiceViewModel
             return number_format((float) $value, 2, ',', '.').' %';
         }
 
-        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date'], true) && is_string($value) && $value !== '') {
+        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date'], true)
+            && is_string($value) && $value !== '') {
             try {
                 return Carbon::parse($value)->format('d.m.Y');
             } catch (\Throwable) {

@@ -81,7 +81,28 @@ class DataServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('data')
-            ->hasConfigFile(['rest-countries', 'data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone', 'static-charge-reason', 'static-certificate-kind', 'static-allowance-reason', 'static-document-type', 'static-vat-category', 'static-payment-mean', 'static-unit', 'static-incoterm', 'static-vat-exemption-reason', 'static-icd-scheme', 'static-eas-scheme'])
+            ->hasConfigFile([
+                'rest-countries',
+                'data',
+                'static-countries-static-currencies',
+                'static-countries-static-timezones',
+                'static-country',
+                'static-currency',
+                'static-language',
+                'static-locale',
+                'static-timezone',
+                'static-charge-reason',
+                'static-certificate-kind',
+                'static-allowance-reason',
+                'static-document-type',
+                'static-vat-category',
+                'static-payment-mean',
+                'static-unit',
+                'static-incoterm',
+                'static-vat-exemption-reason',
+                'static-icd-scheme',
+                'static-eas-scheme',
+            ])
             ->hasViews()
             ->hasTranslations()
             ->hasCommands([
