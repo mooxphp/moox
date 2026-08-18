@@ -11,7 +11,6 @@ use Moox\EBilling\Data\InvoiceLine as InvoiceLineDto;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Events\InvoiceCreated;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Support\DeliveryPartyMapper;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
@@ -123,7 +122,7 @@ class InvoiceFactory
             gross_total: $dto->grossTotal,
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
-            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             payment_means: null,
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
@@ -229,7 +228,7 @@ class InvoiceFactory
             delivery_note_number: $dto->deliveryNoteNumber,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            delivery: DeliveryPartyMapper::fromDto($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             charges: $charges,
             extra: [
                 'material' => $dto->material,

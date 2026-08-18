@@ -14,7 +14,6 @@ use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
 use Moox\Zugferd\Support\FlexibleDateParser;
-use Moox\Zugferd\Support\ZugferdShipToWriter;
 use Symfony\Component\Process\Process;
 
 class ZugferdConverter
@@ -241,7 +240,28 @@ class ZugferdConverter
             $doc->setDocumentSupplyChainEvent($deliveryDate);
         }
 
-        ZugferdShipToWriter::write($doc, $invoice, $this->buildAddressLines(...));
+        $name = $invoice->shipToName;
+        $trimmedName = $name !== null ? trim($name) : '';
+        $address = $invoice->shipToAddress;
+        $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
+        $hasName = $trimmedName !== '';
+        $hasCountry = $address !== null && $country !== '';
+
+        if ($hasName || $hasCountry) {
+            $doc->setDocumentShipTo($hasName ? $trimmedName : null);
+
+            if ($hasCountry) {
+                [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
+                $doc->setDocumentShipToAddress(
+                    $lineOne,
+                    $lineTwo,
+                    $lineThree,
+                    $address->zip ?? '',
+                    $address->city ?? '',
+                    $address->country ?? '',
+                );
+            }
+        }
     }
 
     // ─── Payment (BG-16) ────────────────────────────────────────

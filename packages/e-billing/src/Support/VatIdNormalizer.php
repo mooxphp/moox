@@ -44,4 +44,18 @@ final class VatIdNormalizer
     {
         return in_array(strtoupper($prefix), self::EU_COUNTRY_PREFIXES, true);
     }
+
+    public static function isIntraCommunitySupply(?string $sellerVatId, ?string $buyerVatId): bool
+    {
+        $sellerPrefix = self::euCountryPrefix($sellerVatId);
+        $buyerPrefix = self::euCountryPrefix($buyerVatId);
+
+        if ($sellerPrefix === null || $buyerPrefix === null) {
+            return false;
+        }
+
+        return $sellerPrefix !== $buyerPrefix
+            && self::isEuCountryPrefix($sellerPrefix)
+            && self::isEuCountryPrefix($buyerPrefix);
+    }
 }
