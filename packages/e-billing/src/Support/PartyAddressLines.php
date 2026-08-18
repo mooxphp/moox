@@ -14,8 +14,10 @@ final class PartyAddressLines
      */
     public static function fromParty(Party $party): array
     {
+        $name = trim($party->name);
+
         return array_merge(
-            self::nameLines($party),
+            $name !== '' ? [$name] : [],
             self::addressLines($party->address),
         );
     }
@@ -23,36 +25,14 @@ final class PartyAddressLines
     /**
      * @return list<string>
      */
-    private static function nameLines(Party $party): array
-    {
-        $name = trim($party->name);
-
-        return $name !== '' ? [$name] : [];
-    }
-
-    /**
-     * @return list<string>
-     */
     private static function addressLines(Address $address): array
     {
-        $lines = self::line2Segments($address->line2);
-
-        $line1 = self::trimmedNonEmpty($address->line1);
-        if ($line1 !== null) {
-            $lines[] = $line1;
-        }
-
-        $postalCity = self::trimmedNonEmpty(trim($address->postal_code.' '.$address->city));
-        if ($postalCity !== null) {
-            $lines[] = $postalCity;
-        }
-
-        $countryCode = self::trimmedNonEmpty($address->country_code);
-        if ($countryCode !== null) {
-            $lines[] = $countryCode;
-        }
-
-        return $lines;
+        return array_values(array_filter([
+            ...self::line2Segments($address->line2),
+            self::trimmedNonEmpty($address->line1),
+            self::trimmedNonEmpty(trim($address->postal_code.' '.$address->city)),
+            self::trimmedNonEmpty($address->country_code),
+        ]));
     }
 
     /**
