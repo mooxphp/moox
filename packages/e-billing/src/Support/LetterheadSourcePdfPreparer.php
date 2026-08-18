@@ -25,7 +25,7 @@ final class LetterheadSourcePdfPreparer implements SourcePdfPreparerInterface
             return $document->sourceFullPath();
         }
 
-        $profile = config('e-billing.letterhead.default');
+        $profile = $this->resolveLetterheadProfile($document);
         $pdfPath = is_array($profile) ? ($profile['pdf_path'] ?? '') : '';
 
         if (! is_string($pdfPath) || $pdfPath === '') {
@@ -60,5 +60,40 @@ final class LetterheadSourcePdfPreparer implements SourcePdfPreparerInterface
         file_put_contents($tempPath, $binary);
 
         return $tempPath;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function resolveLetterheadProfile(EbillingDocument $document): array
+    {
+        $default = config('e-billing.letterhead.default');
+        $fallback = is_array($default) ? $default : [];
+
+        $sellerKey = $this->resolveSellerKey($document);
+        if ($sellerKey === null) {
+            return $fallback;
+        }
+
+        $profiles = config('e-billing.letterhead.by_seller', []);
+        if (! is_array($profiles)) {
+            return $fallback;
+        }
+
+        $profile = $profiles[$sellerKey] ?? null;
+
+        return is_array($profile) ? array_replace($fallback, $profile) : $fallback;
+    }
+
+    private function resolveSellerKey(EbillingDocument $document): ?string
+    {
+        $billData = $document->bill_data;
+        if (! is_array($billData)) {
+            return null;
+        }
+
+        $sellerKey = $billData['supplier_number'] ?? null;
+
+        return is_string($sellerKey) && $sellerKey !== '' ? $sellerKey : null;
     }
 }

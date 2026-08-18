@@ -71,6 +71,14 @@ return [
             'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_X_MM', 0),
             'offset_y_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_Y_MM', 0),
         ],
+        'by_seller' => [
+            // '655371' => [
+            //     'label' => 'HECO seller-specific letterhead',
+            //     'pdf_path' => env('EBILLING_MANUAL_LETTERHEAD_655371_PDF', ''),
+            //     'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_655371_OFFSET_X_MM', 0),
+            //     'offset_y_mm' => (float) env('EBILLING_LETTERHEAD_655371_OFFSET_Y_MM', 0),
+            // ],
+        ],
     ],
 
     /*
