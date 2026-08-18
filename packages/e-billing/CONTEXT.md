@@ -21,7 +21,7 @@ Reports over these — the parser-feedback report and the master-data divergence
 
 ## Current pipeline (generate-first, dual validation for hybrids)
 
-`GenerateArtifactJob` (build chosen artifact — for ZUGFeRD: decrypt input PDF, merge unencrypted PDF/A-3 with embedded XML) → `ValidateArtifactJob` (KOSIT on the XML that will be delivered; + veraPDF on the PDF for hybrids when installed; SHA-256 hash on pass). When veraPDF is not installed, hybrid validation runs KOSIT-only (degraded mode). See ADR `docs/adr/0001-generate-then-validate-per-format-artifacts.md`.
+`GenerateArtifactJob` (build chosen artifact — for ZUGFeRD: decrypt input PDF, merge unencrypted PDF/A-3 with embedded XML) → `ValidateArtifactJob` (KOSIT on the XML that will be delivered; + veraPDF on the PDF for hybrids; SHA-256 hash on pass). A hybrid passes iff KOSIT and veraPDF both pass; missing veraPDF is fail-closed. See ADR `docs/adr/0001-generate-then-validate-per-format-artifacts.md`.
 
 ## Proposed change
 

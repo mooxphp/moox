@@ -11,7 +11,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - PDF-to-invoice pipeline orchestration (mail-inbox handoff through validated artifact)
 - EN 16931 / ZUGFeRD artifact generation via `moox/zugferd` (hybrid PDF built before validation)
 - KoSIT validation integration via `moox/kosit-validator` (XML from loose file or embedded in hybrid PDF)
-- PDF/A-3 validation for hybrid formats via `moox/verapdf` when installed (skipped gracefully when not configured)
+- PDF/A-3 validation for hybrid formats via `moox/verapdf` (required; hybrids never become deliverable without it)
 - Foreign-invoice filtering (non-domestic invoices moved to an ignored mailbox folder)
 - MoSCoW field validation and validation scoring on `EbillingDocument`
 - Filament `InvoiceResource` for list, filter, and manual review workflows
@@ -32,7 +32,7 @@ The pipeline then runs in order:
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
 | 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are moved to the ignored Graph folder and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
-| 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation when `moox/verapdf` is installed; on pass, stores a SHA-256 hash of the deliverable and marks the document `Validated`. When veraPDF is not configured, hybrid validation falls back to KOSIT-only (degraded mode). |
+| 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
 There is no `HandleFailedJob`. Failure handling uses each job's `failed()` method plus `InboxMessagePipelineFinalizer` to update attachment and message status.
 
@@ -53,7 +53,7 @@ This package composes the other Moox e-billing packages. Composer requires:
 | `moox/invoice` | Invoice domain models (`Invoice`, lines, parties) |
 | `moox/jobs` | Job progress traits |
 | `moox/kosit-validator` | KoSIT XML validation and audit persistence |
-| `moox/verapdf` | PDF/A-3 validation for hybrid artifacts (optional; KOSIT-only degraded mode when not installed) |
+| `moox/verapdf` | PDF/A-3 validation for hybrid artifacts (required for ZUGFeRD/Factur-X; fail-closed when missing) |
 | `moox/mail-inbox` | Graph inbox, attachment storage, `ParsePdfJob` |
 | `moox/pdf-parser` | PDF text extraction (used by the host parser) |
 | `moox/zugferd` | EN 16931 / ZUGFeRD XML generation and PDF merge |

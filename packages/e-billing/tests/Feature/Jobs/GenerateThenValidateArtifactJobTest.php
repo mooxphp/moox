@@ -117,12 +117,11 @@ function runValidateArtifactJob(string $documentId): void
     );
 }
 
-test('validate artifact job seam passes for hybrid zugferd in kosit-only degraded mode', function (): void {
+test('hybrid validation fails closed when verapdf is unavailable', function (): void {
     $fixture = PipelineFixtures::arrangeInvoice(
         $this,
         documentFactory: PipelineFixtures::validatingHybridDocument(...),
     );
-    $attachment = $fixture->attachment;
     $document = $fixture->document;
 
     mockHybridXmlExtraction();
@@ -134,20 +133,21 @@ test('validate artifact job seam passes for hybrid zugferd in kosit-only degrade
         ->once()
         ->andReturn(PipelineFixtures::passingKositResult());
 
+    $pdfPath = (string) $document->pdf_storage_path;
+
     runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 
-    $pdfContent = Storage::disk('zugferd')->get((string) $document->pdf_storage_path);
-
-    expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::Validated)
-        ->and($document->artifact_content_hash)->toMatch('/^[a-f0-9]{64}$/')
-        ->and($document->artifact_content_hash)->toBe(hash('sha256', (string) $pdfContent))
+    expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::ValidationFailed)
+        ->and($document->artifact_content_hash)->toBeNull()
+        ->and(Storage::disk('zugferd')->exists($pdfPath))->toBeTrue()
         ->and($document->latestKositValidation()?->passed)->toBeTrue()
-        ->and($document->latestVeraPdfValidation())->toBeNull();
+        ->and($document->latestVeraPdfValidation())->toBeNull()
+        ->and($document->isDeliverable())->toBeFalse();
 
-    Event::assertDispatched(ArtifactValidated::class);
-    Event::assertNotDispatched(ArtifactValidationFailed::class);
+    Event::assertDispatched(ArtifactValidationFailed::class);
+    Event::assertNotDispatched(ArtifactValidated::class);
 });
 
 test('failed validation retains artifact and is not deliverable', function (): void {

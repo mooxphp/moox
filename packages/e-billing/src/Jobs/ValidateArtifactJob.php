@@ -269,7 +269,7 @@ class ValidateArtifactJob implements ShouldQueue
     }
 
     /**
-     * Runs KOSIT (+ optional veraPDF) and aggregates the outcome.
+     * Runs KOSIT, plus veraPDF for hybrids. Hybrids fail closed if veraPDF is missing.
      *
      * @return array{
      *     kositResult: KositResult,
@@ -288,39 +288,53 @@ class ValidateArtifactJob implements ShouldQueue
     ): array {
         $kositReportDirectory = KositOutputPath::resolve($dateSegment);
         $kositResult = $kosit->validate($inputs->absoluteXmlPath, $kositReportDirectory);
+        $kositPassed = $kositResult->passed();
 
         $this->setProgress(55);
 
-        $veraPdfResult = null;
-        $veraPdfConfigured = $definition->artifactKind === ArtifactKind::Pdf
-            && $veraPdf->isInstalled()
-            && $veraPdf->javaAvailable();
-
-        if ($veraPdfConfigured) {
-            if ($inputs->absolutePdfPath === null) {
-                throw new LogicException('Hybrid validation requires an absolute PDF path.');
-            }
-
-            $veraPdfReportDirectory = VeraPdfOutputPath::resolve(
-                $dateSegment.'/'.($document->getKey() ?? 'unknown')
-            );
-            $veraPdfResult = $veraPdf->validate($inputs->absolutePdfPath, $veraPdfReportDirectory);
+        if ($definition->artifactKind !== ArtifactKind::Pdf) {
+            return [
+                'kositResult' => $kositResult,
+                'veraPdfResult' => null,
+                'passed' => $kositPassed,
+                'errorStrings' => $kositPassed ? [] : array_values($kositResult->errors()),
+            ];
         }
 
-        $kositPassed = $kositResult->passed();
-        $veraPdfPassed = $veraPdfResult === null || $veraPdfResult->passed();
-        $passed = $kositPassed && $veraPdfPassed;
+        if ($inputs->absolutePdfPath === null) {
+            throw new LogicException('Hybrid validation requires an absolute PDF path.');
+        }
 
-        $errorStrings = array_values(array_merge(
-            $kositPassed ? [] : $kositResult->errors(),
-            ($veraPdfResult !== null && ! $veraPdfPassed) ? $veraPdfResult->errors() : [],
-        ));
+        if (! $veraPdf->isInstalled() || ! $veraPdf->javaAvailable()) {
+            $unavailable = ! $veraPdf->isInstalled()
+                ? $veraPdf->notInstalledMessage()
+                : $veraPdf->javaMissingMessage();
+
+            return [
+                'kositResult' => $kositResult,
+                'veraPdfResult' => null,
+                'passed' => false,
+                'errorStrings' => array_values(array_filter([
+                    ...($kositPassed ? [] : $kositResult->errors()),
+                    'Hybrid PDF/A-3 validation requires veraPDF. '.$unavailable,
+                ])),
+            ];
+        }
+
+        $veraPdfReportDirectory = VeraPdfOutputPath::resolve(
+            $dateSegment.'/'.($document->getKey() ?? 'unknown')
+        );
+        $veraPdfResult = $veraPdf->validate($inputs->absolutePdfPath, $veraPdfReportDirectory);
+        $veraPdfPassed = $veraPdfResult->passed();
 
         return [
             'kositResult' => $kositResult,
             'veraPdfResult' => $veraPdfResult,
-            'passed' => $passed,
-            'errorStrings' => $errorStrings,
+            'passed' => $kositPassed && $veraPdfPassed,
+            'errorStrings' => array_values(array_merge(
+                $kositPassed ? [] : $kositResult->errors(),
+                $veraPdfPassed ? [] : $veraPdfResult->errors(),
+            )),
         ];
     }
 
