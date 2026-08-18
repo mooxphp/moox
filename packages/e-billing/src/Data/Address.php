@@ -213,4 +213,3 @@ class Address implements ZugferdAddress
         return self::fromMultilineString($value);
     }
 }
-
