@@ -35,7 +35,7 @@ final class InvoiceFieldLabels
             'supplier_bank_accounts' => __('e-billing::fields.bank_accounts'),
             'agent' => __('e-billing::fields.agent'),
             'payment_terms' => __('e-billing::fields.payment_terms'),
-            'pricing_basis' => __('e-billing::fields.pricing_basis'),
+            'delivery_terms' => __('e-billing::fields.delivery_terms'),
             'shipping_method' => __('e-billing::fields.shipping_method'),
             'net_total' => __('e-billing::fields.net_total'),
             'vat_rate' => __('e-billing::fields.vat_rate'),
@@ -123,6 +123,10 @@ final class InvoiceFieldLabels
     public static function btNumber(string $field, ?string $context = null): ?string
     {
         // NOTE: $context === 'invoice_line' is used by Filament ViewModels for line-level BT hints
+        if ($context === 'invoice_line' && $field === 'delivery_date') {
+            return 'BT-134';
+        }
+
         if ($context === 'invoice_line' && $field === 'order_number') {
             return 'BT-132';
         }
@@ -148,6 +152,7 @@ final class InvoiceFieldLabels
             // Parsed from supplier address block
             'country' => 'BT-55',
             'delivery_address' => 'BG-15',
+            'delivery_date' => 'BT-72',
             'net_total' => 'BT-109',
             'vat_amount' => 'BT-110',
             'gross_total' => 'BT-112',
@@ -157,7 +162,6 @@ final class InvoiceFieldLabels
             'quantity' => 'BT-129',
             'unit' => 'BT-130',
             'line_total' => 'BT-131',
-            'delivery_date' => 'BT-134',
             'unit_price' => 'BT-146',
             'description' => 'BT-153',
             'article_number' => 'BT-155',
@@ -167,7 +171,10 @@ final class InvoiceFieldLabels
         };
     }
 
-    public static function hint(string $field, string $status): ?string
+    /**
+     * @param  array{status?: string, matched_id?: string}|null  $validation
+     */
+    public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
         if ($status === 'missing') {
             return match ($field) {
@@ -190,7 +197,9 @@ final class InvoiceFieldLabels
 
         if ($status === 'needs_review') {
             return match ($field) {
-                'customer_number' => __('e-billing::fields.hint_review_customer_number'),
+                'customer_number' => self::hasMatchedId($validation)
+                    ? __('e-billing::fields.hint_review_customer_number_matched')
+                    : __('e-billing::fields.hint_review_customer_number'),
                 'customer_name' => __('e-billing::fields.hint_review_customer_name'),
                 'article_number' => __('e-billing::fields.hint_review_article_number'),
                 'material' => __('e-billing::fields.hint_review_material'),
@@ -199,10 +208,21 @@ final class InvoiceFieldLabels
                 'unit_price' => __('e-billing::fields.hint_review_unit_price'),
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
+                'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
                 default => __('e-billing::fields.hint_review_default'),
             };
         }
 
         return null;
+    }
+
+    /**
+     * @param  array{matched_id?: mixed}|null  $validation
+     */
+    private static function hasMatchedId(?array $validation): bool
+    {
+        $matchedId = $validation['matched_id'] ?? null;
+
+        return is_string($matchedId) && $matchedId !== '';
     }
 }

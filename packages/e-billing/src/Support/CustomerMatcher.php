@@ -12,7 +12,7 @@ use Moox\EBilling\Services\InvoiceFieldValidator;
 /**
  * Resolves a {@see Customer} from a buyer identifier (invoice customer_number).
  *
- * No public seam — only {@see InvoiceFieldValidator} calls this.
+ * Used by {@see InvoiceFieldValidator} and {@see EBillingFormatResolver}.
  */
 final class CustomerMatcher
 {
@@ -45,7 +45,13 @@ final class CustomerMatcher
             ->limit(2)
             ->pluck('assignable_id');
 
-        return $companyIds->count() === 1 ? (string) $companyIds->first() : null;
+        if ($companyIds->count() !== 1) {
+            return null;
+        }
+
+        $companyId = (string) $companyIds->first();
+
+        return Company::query()->find($companyId) !== null ? $companyId : null;
     }
 
     /**

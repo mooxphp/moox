@@ -142,6 +142,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Preferred piece unit code (UN/ECE Rec 20)
+    |--------------------------------------------------------------------------
+    |
+    | When a label resolves to any code listed in piece_unit_codes, the resolver
+    | and artifact adapter emit this code instead (default H87 for piece counts).
+    |
+    */
+
+    'preferred_piece_unit_code' => env('EBILLING_PREFERRED_PIECE_UNIT_CODE', 'H87'),
+
+    'piece_unit_codes' => ['C62', 'H87'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Filament: Invoices (InvoiceResource)
     |--------------------------------------------------------------------------
     */
@@ -495,6 +509,7 @@ return [
 
             // Delivery
             'delivery_address' => 'could',   // BG-15
+            'delivery_date' => 'should',  // BT-72
 
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
@@ -506,7 +521,7 @@ return [
             // Agent & terms
             'agent' => 'could',
             'payment_terms' => 'should',  // BT-20
-            'pricing_basis' => 'could',
+            'delivery_terms' => 'could',
             'shipping_method' => 'could',
 
             // Amounts — MUST
@@ -566,6 +581,7 @@ return [
             'payment_terms',
             'supplier_tax_number',
             'supplier_bank_accounts',
+            'delivery_date',
         ],
 
         'invoice_line_contextual_should' => [

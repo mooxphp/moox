@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "moox/core": "dev-main",
+        "moox/slug": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"
@@ -44,7 +45,10 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "stable",
+            "install": {
+                "seed": "src/Database/Seeders/LoginLinkProcessSeeder.php"
+            }
         }
     },
     "prefer-stable": true

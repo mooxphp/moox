@@ -49,6 +49,7 @@ return [
 
     // EN 16931 codelists
     'description' => 'Description',
+    'is_normative' => 'Is normative',
     'en16931_interpretation' => 'EN 16931 interpretation',
     'vat_category_code' => 'VAT category code',
     'version' => 'Version',

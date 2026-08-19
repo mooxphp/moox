@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\LoginLink\Services;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -13,9 +16,16 @@ class LoginLinkRateLimiter
         $this->request ??= request();
     }
 
-    public function tooManySendAttempts(?string $email): bool
-    {
-        if ($this->tooManyIpSendAttempts()) {
+    public function tooManySendAttempts(
+        ?string $email,
+        string $process = RedemptionHandlerRegistry::DEFAULT_PROCESS,
+        ?Model $subject = null,
+    ): bool {
+        if ($this->tooManyIpSendAttempts($process)) {
+            return true;
+        }
+
+        if ($subject !== null && $this->tooManySubjectSendAttempts($process, $subject)) {
             return true;
         }
 
@@ -24,36 +34,56 @@ class LoginLinkRateLimiter
         }
 
         return RateLimiter::tooManyAttempts(
-            $this->emailKey($email),
+            $this->emailKey($email, $process),
             $this->sendMaxAttempts(),
         );
     }
 
-    public function hitSendAttempt(?string $email): void
-    {
-        RateLimiter::hit($this->ipKey(), $this->ipDecaySeconds());
+    public function hitSendAttempt(
+        ?string $email,
+        string $process = RedemptionHandlerRegistry::DEFAULT_PROCESS,
+        ?Model $subject = null,
+    ): void {
+        RateLimiter::hit($this->ipKey($process), $this->ipDecaySeconds());
+
+        if ($subject !== null) {
+            RateLimiter::hit($this->subjectKey($process, $subject), $this->sendDecaySeconds());
+        }
 
         if ($email !== null && $email !== '') {
-            RateLimiter::hit($this->emailKey($email), $this->sendDecaySeconds());
+            RateLimiter::hit($this->emailKey($email, $process), $this->sendDecaySeconds());
         }
     }
 
-    protected function tooManyIpSendAttempts(): bool
+    protected function tooManyIpSendAttempts(string $process): bool
     {
         return RateLimiter::tooManyAttempts(
-            $this->ipKey(),
+            $this->ipKey($process),
             $this->ipMaxAttempts(),
         );
     }
 
-    protected function ipKey(): string
+    protected function tooManySubjectSendAttempts(string $process, Model $subject): bool
     {
-        return 'login-link:send:ip:'.($this->request->ip() ?? 'unknown');
+        return RateLimiter::tooManyAttempts(
+            $this->subjectKey($process, $subject),
+            $this->sendMaxAttempts(),
+        );
     }
 
-    protected function emailKey(string $email): string
+    protected function ipKey(string $process): string
     {
-        return 'login-link:send:'.($this->request->ip() ?? 'unknown').'|'.mb_strtolower($email);
+        return 'login-link:send:'.$process.':ip:'.($this->request->ip() ?? 'unknown');
+    }
+
+    protected function emailKey(string $email, string $process): string
+    {
+        return 'login-link:send:'.$process.':'.($this->request->ip() ?? 'unknown').'|'.mb_strtolower($email);
+    }
+
+    protected function subjectKey(string $process, Model $subject): string
+    {
+        return 'login-link:send:'.$process.':subject:'.$subject::class.':'.$subject->getKey().':'.($this->request->ip() ?? 'unknown');
     }
 
     protected function sendMaxAttempts(): int

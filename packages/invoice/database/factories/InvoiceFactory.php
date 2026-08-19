@@ -32,10 +32,13 @@ class InvoiceFactory extends Factory
             'customer_reference' => fake()->optional()->bothify('REF-####'),
             'order_number' => fake()->optional()->bothify('PO-####'),
             'order_date' => fake()->optional()->date('Y-m-d'),
-            'pricing_basis' => null,
+            'delivery_date' => fake()->optional()->date('Y-m-d'),
+            'payment_terms' => fake()->optional()->sentence(),
+            'shipping_method' => fake()->optional()->randomElement(['DHL', 'UPS', 'Spedition']),
+            'delivery_terms' => null,
             'seller' => $this->sampleParty('Seller'),
             'buyer' => $this->sampleParty('Buyer'),
-            'delivery' => $this->sampleAddress(),
+            'delivery' => $this->sampleDeliveryParty(),
             'net_total' => $net,
             'vat_rate' => $vatRate,
             'vat_amount' => $vatAmount,
@@ -58,6 +61,17 @@ class InvoiceFactory extends Factory
                 'phone' => fake()->optional()->phoneNumber(),
                 'email' => fake()->optional()->companyEmail(),
             ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sampleDeliveryParty(): array
+    {
+        return [
+            'name' => fake()->company(),
+            'address' => $this->sampleAddress(),
         ];
     }
 

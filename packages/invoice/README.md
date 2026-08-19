@@ -8,7 +8,7 @@ Structured e-invoice entity for Laravel (ZUGFeRD/XRechnung-ready), with header/l
 
 -   EN 16931-ready structured invoice entity (header, lines, allowances/charges)
 -   JSON party snapshots on the invoice (`seller`, `buyer`, `delivery`, `payment_means`) cast to typed value objects
--   Line-level delivery address snapshot (`delivery` JSON on `InvoiceLine`)
+-   Line-level delivery party snapshot (`delivery` JSON on `InvoiceLine`: name + address)
 -   `InvoiceBuilder` with readonly draft objects for transactional persistence
 -   Morph-linked `InvoiceAllowanceCharge` rows on invoice header and individual lines
 -   UUID primary keys and soft deletes on `Invoice` and `InvoiceLine`
@@ -61,7 +61,10 @@ $draft = new InvoiceDraft(
     customer_reference: null,
     order_number: null,
     order_date: null,
-    pricing_basis: null,
+    delivery_date: null,
+    payment_terms: null,
+    shipping_method: null,
+    delivery_terms: null,
     net_total: 100.0,
     vat_rate: 19.0,
     vat_amount: 19.0,
@@ -107,7 +110,7 @@ $invoice = (new InvoiceBuilder)->build($draft);
 
 Structured party, address, contact, and payment-means data for EN 16931 (ZUGFeRD/XRechnung) lives under `Moox\Invoice\Support\En16931\*` (e.g. `Party`, `Address`, `PaymentMeans`). The sub-namespace keeps short class names while preserving the standard as context; other standards can be added alongside later (e.g. a future `Peppol\` namespace).
 
-All value objects are `readonly` and expose `fromArray(array $data): self` and `toArray(): array` for serialization.
+All value objects are `readonly` and expose `fromArray(array $data): self` and `toArray(): array` for serialization. `Address::fromArray()` requires a country code (ready to emit / BR-57). `Address::fromDocumentArray()` keeps an address as read, including an empty country; `hasCountry()` and `isEmpty()` describe that stored shape.
 
 ### `Address`
 
@@ -166,7 +169,7 @@ public function __construct(
 
 Also exposes `bankAccounts(): array` returning the bank-account list.
 
-JSON columns on the models are cast via `PartyCast`, `AddressCast`, and `PaymentMeansCast` in `Support\En16931\Casts\`.
+JSON columns on the models are cast via `PartyCast`, `DeliveryPartyCast`, `AddressCast`, and `PaymentMeansCast` in `Support\En16931\Casts\`.
 
 ## The Invoice Model
 
@@ -184,10 +187,13 @@ The `Invoice` model (`Moox\Invoice\Models\Invoice`) stores the invoice header. I
 -   `customer_reference` (string, nullable) - Reference the buyer asked to see on the document (EN 16931 **BT-10**); distinct from `customer_number`
 -   `order_number` (string, nullable) - Associated order number
 -   `order_date` (string, nullable) - Associated order date
--   `pricing_basis` (string, nullable) - Incoterms / pricing basis (serialized as note in e-billing / ZUGFeRD layer)
+-   `delivery_date` (string, nullable) - Actual delivery date for the document (EN 16931 **BT-72**)
+-   `payment_terms` (text, nullable) - Payment terms free text (EN 16931 **BT-20**)
+-   `shipping_method` (string, nullable) - Shipping / delivery method as shown on the document
+-   `delivery_terms` (string, nullable) - Delivery terms / freight bearer (e.g. ex works; free text; serialized as note in e-billing / ZUGFeRD layer; not payment terms)
 -   `seller` (json, nullable) - Seller party snapshot; cast to `Party` via `PartyCast`
 -   `buyer` (json, nullable) - Buyer party snapshot; cast to `Party` via `PartyCast`
--   `delivery` (json, nullable) - Delivery location; cast to `Address` via `AddressCast`
+-   `delivery` (json, nullable) - Consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `payment_means` (json, nullable) - Payment instructions; cast to `PaymentMeans` via `PaymentMeansCast`
 -   `net_total` (decimal 12,2, default: `0`) - Sum of line net amounts
 -   `vat_rate` (decimal 5,2, default: `19.00`) - VAT rate percentage
@@ -212,7 +218,8 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `id` (uuid) - Primary key
 -   `invoice_id` (foreignUuid) - Parent invoice (`cascadeOnDelete`)
 -   `position` (integer, default: `0`) - Line position / sequence
--   `unit` (string) - Unit of measure
+-   `unit` (string) - Unit of measure label (BT-130)
+-   `unit_code` (string, nullable) - UN/ECE Rec 20 unit code (BT-130)
 -   `quantity` (decimal 12,3, default: `0`) - Quantity
 -   `description` (text, nullable) - Short line description
 -   `description_detail` (text, nullable) - Extended line description
@@ -220,7 +227,7 @@ The `InvoiceLine` model (`Moox\Invoice\Models\InvoiceLine`) stores a single invo
 -   `customs_tariff_number` (string, nullable) - Customs tariff number
 -   `unit_price` (decimal 12,2, default: `0`) - Net unit price
 -   `line_total` (decimal 12,2, default: `0`) - Net line total
--   `delivery` (json, nullable) - Line delivery address; cast to `Address` via `AddressCast`
+-   `delivery` (json, nullable) - Line consignee party (name + address); cast to `Party` via `DeliveryPartyCast`. VAT identifier, tax number, and contact are not stored. A stored consignee may lack `country_code`; BR-57 is enforced at emission.
 -   `delivery_date` (string, nullable) - Delivery date
 -   `delivery_note_number` (string, nullable) - Delivery note reference
 -   `order_number` (string, nullable) - Line order number

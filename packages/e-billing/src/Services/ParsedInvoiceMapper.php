@@ -109,14 +109,21 @@ class ParsedInvoiceMapper
             customer_reference: $dto->customerReference,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            pricing_basis: $dto->pricingBasis,
+            delivery_date: $dto->deliveryDate,
+            payment_terms: $dto->paymentTerms !== null && $dto->paymentTerms !== ''
+                ? $dto->paymentTerms
+                : null,
+            shipping_method: $dto->shippingMethod !== null && $dto->shippingMethod !== ''
+                ? $dto->shippingMethod
+                : null,
+            delivery_terms: $dto->deliveryTerms,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,
             vat_amount: $dto->vatAmount,
             gross_total: $dto->grossTotal,
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
-            delivery: $this->mapEn16931Address($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             payment_means: $this->mapPaymentMeans($dto),
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
@@ -133,7 +140,7 @@ class ParsedInvoiceMapper
     {
         $charges = [];
 
-        foreach ($dto->allowanceCharges as $item) {
+        foreach ($dto->allowanceCharges() as $item) {
             if (! $this->isNonZeroAmount($item->amount)) {
                 continue;
             }
@@ -171,6 +178,7 @@ class ParsedInvoiceMapper
         return new InvoiceLineDraft(
             position: $dto->position,
             unit: $dto->unit,
+            unit_code: $dto->unitCode !== '' ? $dto->unitCode : null,
             quantity: $dto->quantity,
             description: $dto->description,
             description_detail: $dto->descriptionDetail,
@@ -182,7 +190,7 @@ class ParsedInvoiceMapper
             delivery_note_number: $dto->deliveryNoteNumber,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            delivery: $this->mapEn16931Address($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             charges: $charges,
             extra: [
                 'material' => $dto->material,
@@ -217,13 +225,13 @@ class ParsedInvoiceMapper
 
     private function mapPaymentMeans(InvoiceDto $dto): ?PaymentMeans
     {
-        if ($dto->bankAccounts === []) {
+        if ($dto->bankAccounts() === []) {
             return null;
         }
 
         $bankAccounts = [];
 
-        foreach ($dto->bankAccounts as $account) {
+        foreach ($dto->bankAccounts() as $account) {
             $bankAccounts[] = new En16931BankAccount(
                 iban: $account->iban,
                 bic: $account->bic,

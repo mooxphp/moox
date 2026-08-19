@@ -13,7 +13,7 @@ final class InvoiceFixtures
     public static function minimal(
         string $documentType,
         string $documentTypeCode,
-        string $unitCode = 'C62',
+        string $unitCode = 'H87',
     ): Invoice {
         return new Invoice(
             invoiceNumber: '2026001',

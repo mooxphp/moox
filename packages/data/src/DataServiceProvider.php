@@ -13,6 +13,7 @@ use Moox\Data\Console\Commands\ImportCodelistsCommand;
 use Moox\Data\Console\Commands\ImportStaticDataCommand;
 use Moox\Data\Filament\Providers\DataPanelProvider;
 use Moox\Data\Filament\Resources\StaticAllowanceReasonResource\Pages\ListStaticAllowanceReasons;
+use Moox\Data\Filament\Resources\StaticCertificateKindResource\Pages\ListStaticCertificateKinds;
 use Moox\Data\Filament\Resources\StaticChargeReasonResource\Pages\ListStaticChargeReasons;
 use Moox\Data\Filament\Resources\StaticDocumentTypeResource\Pages\ListStaticDocumentTypes;
 use Moox\Data\Filament\Resources\StaticEasSchemeResource\Pages\ListStaticEasSchemes;
@@ -59,6 +60,7 @@ class DataServiceProvider extends MooxServiceProvider
             'static-locale' => 'data/static-locale',
             'static-timezone' => 'data/static-timezones',
             'static-charge-reason' => 'data/static-charge-reason',
+            'static-certificate-kind' => 'data/static-certificate-kind',
             'static-allowance-reason' => 'data/static-allowance-reason',
             'static-document-type' => 'data/static-document-type',
             'static-vat-category' => 'data/static-vat-category',
@@ -79,7 +81,28 @@ class DataServiceProvider extends MooxServiceProvider
     {
         $package
             ->name('data')
-            ->hasConfigFile(['rest-countries', 'data', 'static-countries-static-currencies', 'static-countries-static-timezones', 'static-country', 'static-currency', 'static-language', 'static-locale', 'static-timezone', 'static-charge-reason', 'static-allowance-reason', 'static-document-type', 'static-vat-category', 'static-payment-mean', 'static-unit', 'static-incoterm', 'static-vat-exemption-reason', 'static-icd-scheme', 'static-eas-scheme'])
+            ->hasConfigFile([
+                'rest-countries',
+                'data',
+                'static-countries-static-currencies',
+                'static-countries-static-timezones',
+                'static-country',
+                'static-currency',
+                'static-language',
+                'static-locale',
+                'static-timezone',
+                'static-charge-reason',
+                'static-certificate-kind',
+                'static-allowance-reason',
+                'static-document-type',
+                'static-vat-category',
+                'static-payment-mean',
+                'static-unit',
+                'static-incoterm',
+                'static-vat-exemption-reason',
+                'static-icd-scheme',
+                'static-eas-scheme',
+            ])
             ->hasViews()
             ->hasTranslations()
             ->hasCommands([
@@ -96,6 +119,8 @@ class DataServiceProvider extends MooxServiceProvider
                 'create_static_country_static_timezones_table',
                 'create_static_charge_reasons_table',
                 'create_static_charge_reason_translations_table',
+                'create_static_certificate_kinds_table',
+                'create_static_certificate_kind_translations_table',
                 'create_static_allowance_reasons_table',
                 'create_static_allowance_reason_translations_table',
                 'create_static_document_types_table',
@@ -124,6 +149,7 @@ class DataServiceProvider extends MooxServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: [
                 ListStaticAllowanceReasons::class,
+                ListStaticCertificateKinds::class,
                 ListStaticChargeReasons::class,
                 ListStaticDocumentTypes::class,
                 ListStaticEasSchemes::class,

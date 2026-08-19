@@ -24,6 +24,7 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\VeraPdf\Models\VeraPdfValidation;
@@ -342,7 +343,7 @@ class EbillingDocument extends BaseItemModel
      */
     public function invoice(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class, 'invoice_id'); // Extend Invoice in your host app if needed
+        return $this->belongsTo(InvoiceModels::invoice(), 'invoice_id');
     }
 
     /**

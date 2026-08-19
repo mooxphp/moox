@@ -13,6 +13,7 @@ use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 use Moox\Zugferd\Exceptions\IncompleteInvoiceException;
+use Moox\Zugferd\Support\FlexibleDateParser;
 use Symfony\Component\Process\Process;
 
 class ZugferdConverter
@@ -171,8 +172,9 @@ class ZugferdConverter
         $this->setDocumentInfo($document, $invoice);
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
+        $this->setDelivery($document, $invoice);
         $this->setPaymentInfo($document, $invoice);
-        $this->addLineItems($document, $invoice);
+        $this->addLineItems($document, $invoice, $profileKey);
         $this->addAllowanceCharges($document, $invoice);
         $this->setTotals($document, $invoice);
 
@@ -264,6 +266,37 @@ class ZugferdConverter
         $doc->setDocumentBuyerCommunication('EM', $invoice->customerNumber ?: 'N/A');
     }
 
+    private function setDelivery(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        $deliveryDate = FlexibleDateParser::parse($invoice->deliveryDate);
+        if ($deliveryDate !== null) {
+            $doc->setDocumentSupplyChainEvent($deliveryDate);
+        }
+
+        $name = $invoice->shipToName;
+        $trimmedName = $name !== null ? trim($name) : '';
+        $address = $invoice->shipToAddress;
+        $country = $address !== null ? trim((string) ($address->country ?? '')) : '';
+        $hasName = $trimmedName !== '';
+        $hasCountry = $address !== null && $country !== '';
+
+        if ($hasName || $hasCountry) {
+            $doc->setDocumentShipTo($hasName ? $trimmedName : null);
+
+            if ($hasCountry) {
+                [$lineOne, $lineTwo, $lineThree] = $this->buildAddressLines($address);
+                $doc->setDocumentShipToAddress(
+                    $lineOne,
+                    $lineTwo,
+                    $lineThree,
+                    $address->zip ?? '',
+                    $address->city ?? '',
+                    $address->country ?? '',
+                );
+            }
+        }
+    }
+
     // ─── Payment (BG-16) ────────────────────────────────────────
 
     private function setPaymentInfo(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
@@ -309,8 +342,10 @@ class ZugferdConverter
 
     // ─── Line Items ──────────────────────────────────────────────
 
-    private function addLineItems(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    private function addLineItems(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice, string $profileKey): void
     {
+        $emitLineActualDelivery = $profileKey === 'EXTENDED';
+
         foreach ($invoice->lines as $line) {
             $doc->addNewPosition((string) $line->position);
             $doc->setDocumentPositionProductDetails(
@@ -328,7 +363,28 @@ class ZugferdConverter
             $doc->setDocumentPositionLineSummation($line->lineTotal);
 
             $doc->addDocumentPositionTax('S', 'VAT', $invoice->vatRate);
+
+            $this->setLineDeliveryDate($doc, $line->deliveryDate, $emitLineActualDelivery);
         }
+    }
+
+    private function setLineDeliveryDate(
+        ZugferdDocumentBuilder $doc,
+        ?string $deliveryDate,
+        bool $emitLineActualDelivery,
+    ): void {
+        $parsed = FlexibleDateParser::parse($deliveryDate);
+        if ($parsed === null) {
+            return;
+        }
+
+        if ($emitLineActualDelivery) {
+            $doc->setDocumentPositionSupplyChainEvent($parsed);
+
+            return;
+        }
+
+        $doc->setDocumentPositionBillingPeriod($parsed, $parsed);
     }
 
     // ─── Allowances & Charges (BG-20/BG-21) ─────────────────────

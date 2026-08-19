@@ -21,8 +21,11 @@ return new class extends Migration
             $table->string('customer_reference')->nullable();
             $table->string('order_number')->nullable();
             $table->string('order_date')->nullable();
-            // Incoterms — no native EN element; serialized as note in e-billing / ZUGFeRD layer.
-            $table->string('pricing_basis')->nullable();
+            $table->string('delivery_date')->nullable();
+            $table->text('payment_terms')->nullable();
+            $table->string('shipping_method')->nullable();
+            // Delivery terms (freight bearer; e.g. ex works) — NOT payment terms; no native EN element; serialized as note in e-billing / ZUGFeRD layer.
+            $table->string('delivery_terms')->nullable();
             $table->json('seller')->nullable();
             $table->json('buyer')->nullable();
             $table->json('delivery')->nullable();
@@ -42,3 +45,4 @@ return new class extends Migration
         Schema::dropIfExists('invoices');
     }
 };
+

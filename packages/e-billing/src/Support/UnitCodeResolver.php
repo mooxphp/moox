@@ -11,8 +11,6 @@ use Moox\EBilling\Exceptions\UnresolvedCodelistLabelException;
 
 final class UnitCodeResolver
 {
-    private const PRIMARY_PIECE_CODE = 'C62';
-
     /** @var array{exact: array<string, string>, prefix: array<string, string>, labels: array<string, string>}|null */
     private ?array $lookup = null;
 
@@ -33,16 +31,16 @@ final class UnitCodeResolver
         $upper = strtoupper($normalized);
 
         if (isset($lookup['labels'][$upper])) {
-            return $upper;
+            return $this->normalizePieceCode($upper);
         }
 
         if (isset($lookup['exact'][$normalized])) {
-            return $lookup['exact'][$normalized];
+            return $this->normalizePieceCode($lookup['exact'][$normalized]);
         }
 
         foreach ($lookup['prefix'] as $prefix => $code) {
             if ($normalized === $prefix || str_starts_with($normalized, $prefix.' ')) {
-                return $code;
+                return $this->normalizePieceCode($code);
             }
         }
 
@@ -51,6 +49,40 @@ final class UnitCodeResolver
         ]);
 
         throw new UnresolvedCodelistLabelException('unit', $unit);
+    }
+
+    public function normalizePieceCode(string $code): string
+    {
+        $upper = strtoupper(trim($code));
+
+        if ($upper === '') {
+            return $upper;
+        }
+
+        if (in_array($upper, $this->pieceUnitCodes(), true)) {
+            return $this->preferredPieceUnitCode();
+        }
+
+        return $upper;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function pieceUnitCodes(): array
+    {
+        /** @var list<string> $codes */
+        $codes = config('e-billing.piece_unit_codes', ['C62', 'H87']);
+
+        return array_values(array_map(
+            static fn (string $code): string => strtoupper(trim($code)),
+            $codes,
+        ));
+    }
+
+    private function preferredPieceUnitCode(): string
+    {
+        return strtoupper(trim((string) config('e-billing.preferred_piece_unit_code', 'H87')));
     }
 
     /**
@@ -80,11 +112,6 @@ final class UnitCodeResolver
             $labelCandidates = $this->unitLabelCandidates($record);
             $labels[$code] = $this->unitDisplayLabel($record, $code);
             $this->indexUnitRecord($exact, $prefix, $code, $labelCandidates);
-        }
-
-        if (isset($exact['stück']) || isset($prefix['stück'])) {
-            $exact['stück'] = self::PRIMARY_PIECE_CODE;
-            $prefix['stück'] = self::PRIMARY_PIECE_CODE;
         }
 
         return $this->lookup = [
