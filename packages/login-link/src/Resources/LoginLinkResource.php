@@ -82,6 +82,7 @@ class LoginLinkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 IconColumn::make('used')
                     ->label(__('login-link::translations.used'))

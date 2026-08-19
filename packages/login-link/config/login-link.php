@@ -1,8 +1,9 @@
 <?php
 
 use Moox\LoginLink\Handlers\AckRedemptionHandler;
-use Moox\LoginLink\Handlers\DumpRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
+use Moox\LoginLink\Handlers\MassMailRedemptionHandler;
+use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
 use Moox\User\Models\User;
 
 /*
@@ -212,14 +213,16 @@ return [
     |
     | Handler key => handler class. Other packages contribute additional
     | handlers via `{package}.login-link.handlers`; this package aggregates
-    | them (mirror of moox/scopes). Built-in: login + ack (non-login proof).
+    | them (mirror of moox/scopes). Packaged examples: login, verify-email,
+    | mass-mail. `ack` remains a generic non-login proof handler.
     |
     */
 
     'handlers' => [
         'login' => LoginRedemptionHandler::class,
+        'verify-email' => VerifyEmailRedemptionHandler::class,
+        'mass-mail' => MassMailRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
-        'dump' => DumpRedemptionHandler::class,
     ],
 
     /*
@@ -234,8 +237,9 @@ return [
 
     'templates' => [
         'login' => 'login-link::mail.login-link',
+        'verify-email' => 'login-link::mail.verify-email',
+        'mass-mail' => 'login-link::mail.mass-mail',
         'ack' => 'login-link::mail.process-link',
-        'dump' => 'login-link::mail.dump',
     ],
 
     /*
