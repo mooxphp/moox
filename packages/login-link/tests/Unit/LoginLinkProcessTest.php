@@ -5,8 +5,9 @@ declare(strict_types=1);
 use Illuminate\Validation\ValidationException;
 use Moox\LoginLink\Database\Seeders\LoginLinkProcessSeeder;
 use Moox\LoginLink\Handlers\AckRedemptionHandler;
-use Moox\LoginLink\Handlers\DumpRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
+use Moox\LoginLink\Handlers\MassMailRedemptionHandler;
+use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
@@ -18,40 +19,42 @@ beforeEach(function (): void {
     config()->set('core.packages', []);
     config()->set('login-link.handlers', [
         'login' => LoginRedemptionHandler::class,
+        'verify-email' => VerifyEmailRedemptionHandler::class,
+        'mass-mail' => MassMailRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
-        'dump' => DumpRedemptionHandler::class,
     ]);
     config()->set('login-link.templates', [
         'login' => 'login-link::mail.login-link',
+        'verify-email' => 'login-link::mail.verify-email',
+        'mass-mail' => 'login-link::mail.mass-mail',
         'ack' => 'login-link::mail.process-link',
-        'dump' => 'login-link::mail.dump',
     ]);
 });
 
-it('seeds the login and ack process definitions', function (): void {
+it('seeds the login, email verification, and mass-mail process definitions', function (): void {
     (new LoginLinkProcessSeeder)->run();
 
     $login = LoginLinkProcess::query()->where('slug', 'login')->first();
-    $ack = LoginLinkProcess::query()->where('slug', 'ack')->first();
-    $demoDump = LoginLinkProcess::query()->where('slug', 'demo-dump')->first();
-    $demoCampaign = LoginLinkProcess::query()->where('slug', 'demo-campaign')->first();
+    $verifyEmail = LoginLinkProcess::query()->where('slug', 'verify-email')->first();
+    $massMail = LoginLinkProcess::query()->where('slug', 'mass-mail')->first();
 
     expect($login)->not->toBeNull()
-        ->and($login->title)->toBe('Login')
+        ->and($login->title)->toBe('Passwordless login')
         ->and($login->handler_key)->toBe(RedemptionHandlerRegistry::DEFAULT_PROCESS)
         ->and($login->context)->toBe(LinkProcessContext::AUTH)
         ->and($login->template_key)->toBe('login')
         ->and($login->invalidate_prior)->toBeTrue()
-        ->and($ack)->not->toBeNull()
-        ->and($ack->title)->toBe('Acknowledge')
-        ->and($ack->handler_key)->toBe('ack')
-        ->and($ack->context)->toBe(LinkProcessContext::PUBLIC)
-        ->and($ack->template_key)->toBe('ack')
-        ->and($demoDump)->not->toBeNull()
-        ->and($demoDump->handler_key)->toBe('dump')
-        ->and($demoDump->invalidate_prior)->toBeTrue()
-        ->and($demoCampaign)->not->toBeNull()
-        ->and($demoCampaign->invalidate_prior)->toBeFalse();
+        ->and($verifyEmail)->not->toBeNull()
+        ->and($verifyEmail->title)->toBe('Email verification')
+        ->and($verifyEmail->handler_key)->toBe('verify-email')
+        ->and($verifyEmail->context)->toBe(LinkProcessContext::PUBLIC)
+        ->and($verifyEmail->template_key)->toBe('verify-email')
+        ->and($verifyEmail->invalidate_prior)->toBeTrue()
+        ->and($massMail)->not->toBeNull()
+        ->and($massMail->title)->toBe('Mass mail verification')
+        ->and($massMail->handler_key)->toBe('mass-mail')
+        ->and($massMail->invalidate_prior)->toBeFalse()
+        ->and(LoginLinkProcess::query()->whereIn('slug', ['ack', 'demo-dump', 'demo-campaign'])->exists())->toBeFalse();
 });
 
 it('persists title slug mail_from template and context', function (): void {

@@ -6,14 +6,13 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Added
 
-- Demo dump flow: `dump` handler/template, processes `demo-dump` / `demo-campaign`, `php artisan login-link:demo`, pages at `/login-link/demo/dump`.
+- Packaged English examples: `login` (passwordless panel sign-in), `verify-email` (mailbox confirmation), `mass-mail` (campaign confirmation, invalidate prior off). Each has its own mail template. Issue public examples with `php artisan login-link:example`.
 - Process `context` (`auth` \| `public`): auth keeps panel consume; public uses `login-link.public.consume` without Filament/auth.
 - Nullable `panel_id` on link instances; auth issue requires panel id, public forces null.
 - JSON `payload` on link instances (call context; subject remains identity).
 - Process `template_key` resolved via `login-link.templates` config (domain-agnostic).
 - Process `invalidate_prior` policy (default true; mass/tracking can disable).
 - Built-in non-login `ack` handler + `ProcessLinkAcknowledged` event for proving signed-link redemption without authentication.
-- Seeded `ack` process definition; configurable `login-link.ack.redirect_url`.
 - Redemption resolves the handler via the process definition's `handler_key` (slug may differ).
 - Lifecycle scoped to process + subject: invalidate prior valid links, rate limits, and resend.
 - `ProcessLinkMail` interim mailable uses process `mail_from` / `content` / expiry (falls back to login blade when content empty).
@@ -40,4 +39,6 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Removed
 
+- Demo dump flow (`dump` handler/template, `demo-dump` / `demo-campaign` processes, `php artisan login-link:demo`, `/login-link/demo/dump`).
+- Seeded `ack` process definition (handler remains for tests and custom processes).
 - Legacy optional login page classes `Filament/Pages/Auth/Login` and `LoginWithMooxUser` (superseded by `PanelLoginEnhancer`).

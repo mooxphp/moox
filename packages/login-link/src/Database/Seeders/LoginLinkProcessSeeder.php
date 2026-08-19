@@ -16,10 +16,10 @@ class LoginLinkProcessSeeder extends Seeder
         LoginLinkProcess::query()->updateOrCreate(
             ['slug' => RedemptionHandlerRegistry::DEFAULT_PROCESS],
             [
-                'title' => 'Login',
+                'title' => 'Passwordless login',
                 'context' => LinkProcessContext::AUTH,
                 'mail_from' => null,
-                'content' => null,
+                'content' => 'Click the button below to sign in. This link signs you into the panel.',
                 'template_key' => 'login',
                 'handler_key' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
                 'expiry_minutes' => null,
@@ -28,45 +28,35 @@ class LoginLinkProcessSeeder extends Seeder
         );
 
         LoginLinkProcess::query()->updateOrCreate(
-            ['slug' => 'ack'],
+            ['slug' => 'verify-email'],
             [
-                'title' => 'Acknowledge',
+                'title' => 'Email verification',
                 'context' => LinkProcessContext::PUBLIC,
                 'mail_from' => null,
-                'content' => null,
-                'template_key' => 'ack',
-                'handler_key' => 'ack',
-                'expiry_minutes' => null,
-                'invalidate_prior' => true,
-            ],
-        );
-
-        LoginLinkProcess::query()->updateOrCreate(
-            ['slug' => 'demo-dump'],
-            [
-                'title' => 'Demo dump (verify-style)',
-                'context' => LinkProcessContext::PUBLIC,
-                'mail_from' => null,
-                'content' => null,
-                'template_key' => 'dump',
-                'handler_key' => 'dump',
+                'content' => 'Confirm that you own this mailbox. This does not sign you in.',
+                'template_key' => 'verify-email',
+                'handler_key' => 'verify-email',
                 'expiry_minutes' => 60,
                 'invalidate_prior' => true,
             ],
         );
 
         LoginLinkProcess::query()->updateOrCreate(
-            ['slug' => 'demo-campaign'],
+            ['slug' => 'mass-mail'],
             [
-                'title' => 'Demo dump (campaign / mass)',
+                'title' => 'Mass mail verification',
                 'context' => LinkProcessContext::PUBLIC,
                 'mail_from' => null,
-                'content' => null,
-                'template_key' => 'dump',
-                'handler_key' => 'dump',
+                'content' => 'Confirm that you received this mailing. Other recipients keep their own links.',
+                'template_key' => 'mass-mail',
+                'handler_key' => 'mass-mail',
                 'expiry_minutes' => 60,
                 'invalidate_prior' => false,
             ],
         );
+
+        LoginLinkProcess::query()
+            ->whereIn('slug', ['ack', 'demo-dump', 'demo-campaign'])
+            ->delete();
     }
 }
