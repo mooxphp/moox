@@ -1,0 +1,47 @@
+{
+    "name": "moox/msgraph",
+    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/msgraph",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Msgraph\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Msgraph\\MsgraphServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "stable"
+        }
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
