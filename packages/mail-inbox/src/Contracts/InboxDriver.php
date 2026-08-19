@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\MailInbox\Contracts;
+
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\MessagePage;
+
+/**
+ * Transport-neutral contract for fetching and settling inbox messages.
+ *
+ * Outcomes, not destinations: no method takes a folder name and no driver
+ * is required to have a concept of folders.
+ */
+interface InboxDriver
+{
+    /**
+     * Fetch a resumable page of messages.
+     *
+     * @param  string|null  $cursor  Opaque resumption token from a previous page, or null for the first page.
+     */
+    public function fetch(?string $cursor = null): MessagePage;
+
+    /**
+     * Claim a message for exclusive processing.
+     *
+     * Returns true if this caller won the claim, false if another process already holds it.
+     */
+    public function claim(string $externalId): bool;
+
+    /**
+     * Settle a previously claimed message with an outcome.
+     *
+     * What "settling" means is the driver's business — the Graph driver moves
+     * messages between folders, an IMAP driver might flag or delete, a
+     * webhook-based driver might do nothing.
+     */
+    public function settle(string $externalId, SettlementOutcome $outcome): void;
+
+    /**
+     * Read an attachment's raw content by external message id and attachment index or id.
+     */
+    public function readAttachment(string $externalId, string|int $attachmentId): string;
+}

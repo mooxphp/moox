@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\MailInbox;
+
+use DateTimeImmutable;
+
+/**
+ * Provider-agnostic representation of a single inbox message returned by a driver.
+ *
+ * @phpstan-type AttachmentDto array{id: string|int, name: string, content_type: string, size: int}
+ */
+readonly class InboxMessageDto
+{
+    /**
+     * @param  string  $externalId  Stable identifier the driver guarantees across fetches.
+     * @param  array<int, AttachmentDto>  $attachments
+     */
+    public function __construct(
+        public string $externalId,
+        public string $subject,
+        public string $from,
+        public DateTimeImmutable $receivedAt,
+        public ?string $bodyHtml,
+        public ?string $bodyText,
+        public array $attachments = [],
+    ) {}
+}

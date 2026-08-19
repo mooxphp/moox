@@ -4,7 +4,42 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Microsoft Graph API Credentials
+    | Connections
+    |--------------------------------------------------------------------------
+    |
+    | Each connection holds provider-specific credentials. A connection name is
+    | a plain string referenced by mailboxes below — never a class.
+    |
+    */
+    'connections' => [
+        'default' => [
+            'tenant_id' => env('MAIL_INBOX_TENANT_ID'),
+            'client_id' => env('MAIL_INBOX_CLIENT_ID'),
+            'client_secret' => env('MAIL_INBOX_CLIENT_SECRET'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mailboxes
+    |--------------------------------------------------------------------------
+    |
+    | Each mailbox names a driver and references a connection by name.
+    | A mailbox's role follows from which config file it appears in —
+    | there is no direction field.
+    |
+    */
+    'mailboxes' => [
+        'default' => [
+            'driver' => env('MAIL_INBOX_DRIVER', 'msgraph'),
+            'connection' => env('MAIL_INBOX_CONNECTION', 'default'),
+            'address' => env('MAIL_INBOX_MAILBOX'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Legacy flat keys (deprecated — migrate to connections + mailboxes)
     |--------------------------------------------------------------------------
     */
     'graph' => [
@@ -13,30 +48,16 @@ return [
         'client_secret' => env('MAIL_INBOX_CLIENT_SECRET'),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Mailbox Configuration
-    |--------------------------------------------------------------------------
-    */
-    'mailbox' => env('MAIL_INBOX_MAILBOX'),  // e.g. rechnungen@firma.de
+    'mailbox' => env('MAIL_INBOX_MAILBOX'),
 
     'processed_folder' => env('MAIL_INBOX_PROCESSED_FOLDER', 'Processed'),
 
     'failed_folder' => env('MAIL_INBOX_FAILED_FOLDER', 'Failed'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Processing folder (optional UX)
-    |--------------------------------------------------------------------------
-    |
-    | When set, FetchMailsJob moves each newly delta-persisted message into this
-    | folder on the Graph side. Null or empty skips the move (backwards compatible).
-    */
     'processing_folder' => env('MAIL_INBOX_PROCESSING_FOLDER', 'Processing'),
 
-    'poll_interval' => env('MAIL_INBOX_POLL_INTERVAL', 5),  // minutes
+    'poll_interval' => env('MAIL_INBOX_POLL_INTERVAL', 5),
 
-    // Max Graph delta pages fetched per single FetchMailsJob run (initial catch-up spans multiple polls).
     'delta_max_pages_per_poll' => (int) env('MAIL_INBOX_DELTA_MAX_PAGES_PER_POLL', 50),
 
     'memory_limit' => env('MAIL_INBOX_MEMORY_LIMIT', '512M'),
@@ -45,11 +66,6 @@ return [
 
     'listener_timeout_minutes' => env('MAIL_INBOX_LISTENER_TIMEOUT_MINUTES', 5),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Attachment Storage
-    |--------------------------------------------------------------------------
-    */
     'attachments' => [
         'disk' => env('MAIL_INBOX_ATTACHMENT_DISK', 'local'),
         'path' => env('MAIL_INBOX_ATTACHMENT_PATH', 'mail-inbox/attachments'),
