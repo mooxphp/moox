@@ -34,14 +34,23 @@ abstract class TestCase extends Orchestra
         config()->set('login-link.user_models', [
             'Test User' => TestUser::class,
         ]);
+        config()->set('login-link.templates', [
+            'login' => 'login-link::mail.login-link',
+            'ack' => 'login-link::mail.process-link',
+            'dump' => 'login-link::mail.dump',
+        ]);
+        config()->set('login-link.public_consume_path', 'signed-link/{loginLink}');
+        config()->set('login-link.ack.redirect_url', '/ack-ok');
         config()->set('auth.providers.users.model', TestUser::class);
         config()->set('auth.guards.web.provider', 'users');
     }
 
     protected function defineDatabaseMigrations(): void
     {
-        $migration = include __DIR__.'/../database/migrations/create_login_links_table.php.stub';
+        $loginLinks = include __DIR__.'/../database/migrations/create_login_links_table.php.stub';
+        $loginLinks->up();
 
-        $migration->up();
+        $processes = include __DIR__.'/../database/migrations/create_login_link_processes_table.php.stub';
+        $processes->up();
     }
 }

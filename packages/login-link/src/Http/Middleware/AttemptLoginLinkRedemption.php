@@ -16,7 +16,7 @@ class AttemptLoginLinkRedemption
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! (bool) config('login-link.passwordless.enabled', false)) {
+        if (! (bool) config('login-link.passwordless.enabled', true)) {
             return $next($request);
         }
 
@@ -31,19 +31,15 @@ class AttemptLoginLinkRedemption
         }
 
         $panel = Filament::getCurrentPanel();
-        $user = app(LoginLinkRedemptionService::class)->redeem(
+        $result = app(LoginLinkRedemptionService::class)->redeem(
             $request->query('loginLink'),
             (string) $panel->getId(),
         );
 
-        if (! $user) {
+        if (! $result) {
             return $next($request);
         }
 
-        Filament::auth()->login($user);
-        session()->regenerate();
-        session()->save();
-
-        return redirect()->intended($panel->getUrl());
+        return $result;
     }
 }

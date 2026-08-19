@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('login_links', function (Blueprint $table) {
             $table->id();
-            $table->string('panel_id')->index();
+            $table->string('panel_id')->nullable()->index();
+            $table->string('process')->default('login')->index();
             $table->nullableMorphs('user');
+            $table->nullableMorphs('subject');
+            $table->json('payload')->nullable();
             $table->string('email')->index();
             $table->dateTime('expires_at')->index();
             $table->dateTime('used_at')->nullable()->index();
