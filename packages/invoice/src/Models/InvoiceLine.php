@@ -11,12 +11,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Invoice\Database\Factories\InvoiceLineFactory;
-use Moox\Invoice\Support\En16931\Address;
-use Moox\Invoice\Support\En16931\Casts\AddressCast;
+use Moox\Invoice\Support\En16931\Casts\DeliveryPartyCast;
+use Moox\Invoice\Support\En16931\Party;
 use Moox\Invoice\Support\InvoiceModels;
 
 /**
- * @property Address|null $delivery
+ * @property Party|null $delivery
+ * @property string|null $unit_code
  */
 class InvoiceLine extends BaseItemModel
 {
@@ -34,6 +35,7 @@ class InvoiceLine extends BaseItemModel
         'invoice_id',
         'position',
         'unit',
+        'unit_code',
         'quantity',
         'description',
         'description_detail',
@@ -54,7 +56,7 @@ class InvoiceLine extends BaseItemModel
     protected function casts(): array
     {
         return [
-            'delivery' => AddressCast::class,
+            'delivery' => DeliveryPartyCast::class,
             'quantity' => 'decimal:3',
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',

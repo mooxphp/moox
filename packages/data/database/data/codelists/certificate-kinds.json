@@ -1,0 +1,31 @@
+{
+    "_source": "EN 10204 — inspection document kinds",
+    "codes": [
+        {
+            "code": "2-1",
+            "common_name": "Statement of compliance with the order",
+            "description": "EN 10204 type 2.1 declaration of compliance with the order."
+        },
+        {
+            "code": "2-2",
+            "common_name": "Test report",
+            "description": "EN 10204 type 2.2 test report."
+        },
+        {
+            "code": "3-1",
+            "common_name": "Inspection certificate 3.1",
+            "description": "EN 10204 type 3.1 inspection certificate issued by the manufacturer."
+        },
+        {
+            "code": "3-2",
+            "common_name": "Inspection certificate 3.2",
+            "description": "EN 10204 type 3.2 inspection certificate with independent inspector."
+        },
+        {
+            "code": "undetermined",
+            "common_name": "Undetermined inspection document",
+            "description": "Not an EN 10204 type. Used when the printed inspection document could not be classified as one of the four EN 10204 kinds.",
+            "is_normative": false
+        }
+    ]
+}

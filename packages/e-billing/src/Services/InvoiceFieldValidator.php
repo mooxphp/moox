@@ -13,26 +13,18 @@ use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\AttributionCorroborator;
 use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
+use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceLine;
 use Moox\Invoice\Support\En16931\Address;
+use Moox\Invoice\Support\En16931\Party;
 use RuntimeException;
 
 class InvoiceFieldValidator
 {
-    /**
-     * Fields with no persisted invoice/line source (bill_data is not read).
-     *
-     * @var list<string>
-     */
-    private const INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'payment_terms',
-        'shipping_method',
-    ];
-
     /**
      * Populate field_validations on the document (invoice-level + lines sub-structure),
      * attribute the document to a {@see Customer} via buyer identifier when present,
@@ -302,6 +294,7 @@ class InvoiceFieldValidator
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
+            'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
     }
@@ -540,13 +533,26 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateGenericInvoiceField(Invoice $invoice, string $field, string $priority): array
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
+    private function validateDeliveryDateField(Invoice $invoice, string $priority): array
     {
-        // No persisted source ⇒ nothing to corroborate; never block auto-Validated.
-        if (in_array($field, self::INVOICE_FIELDS_WITHOUT_PERSISTED_SOURCE, true)) {
-            return ['status' => 'not_applicable'];
+        if ($this->deliveryDateNeedsReview($invoice)) {
+            return ['status' => 'needs_review'];
         }
 
+        return $this->validateGenericInvoiceField($invoice, 'delivery_date', $priority);
+    }
+
+    private function deliveryDateNeedsReview(Invoice $invoice): bool
+    {
+        return DeliveryDateTransmission::hasSeveralDifferingDates($invoice)
+            && DeliveryDateTransmission::isIntraCommunitySupply($invoice);
+    }
+
+    private function validateGenericInvoiceField(Invoice $invoice, string $field, string $priority): array
+    {
         $value = $this->getInvoiceFieldValue($invoice, $field);
 
         if ($this->isInvoiceFieldValueEmpty($field, $value)) {
@@ -642,7 +648,7 @@ class InvoiceFieldValidator
         };
 
         if ($field === 'delivery_address') {
-            if ($this->isEn16931AddressEmpty($value instanceof Address ? $value : null)) {
+            if ($this->isDeliveryPartyEmpty($value)) {
                 return $this->entryForEmptyField($field, $priority, true);
             }
 
@@ -659,9 +665,10 @@ class InvoiceFieldValidator
     private function isInvoiceFieldValueEmpty(string $field, mixed $value): bool
     {
         return match ($field) {
-            'customer_address', 'delivery_address', 'supplier_address' => $this->isEn16931AddressEmpty(
+            'customer_address', 'supplier_address' => $this->isEn16931AddressEmpty(
                 $value instanceof Address ? $value : null
             ),
+            'delivery_address' => $this->isDeliveryPartyEmpty($value),
             'supplier_bank_accounts' => ! is_array($value) || $value === [],
             default => $this->isScalarEmpty($value),
         };
@@ -694,27 +701,18 @@ class InvoiceFieldValidator
         return ['status' => 'not_applicable'];
     }
 
-    private function isEn16931AddressEmpty(?Address $address): bool
+    private function isDeliveryPartyEmpty(mixed $value): bool
     {
-        if ($address === null) {
+        if (! $value instanceof Party) {
             return true;
         }
 
-        foreach (['line1', 'city', 'postal_code', 'country_code'] as $key) {
-            $value = match ($key) {
-                'line1' => $address->line1,
-                'city' => $address->city,
-                'postal_code' => $address->postal_code,
-                'country_code' => $address->country_code,
-                default => '',
-            };
+        return $this->isScalarEmpty($value->name) && $this->isEn16931AddressEmpty($value->address);
+    }
 
-            if (! $this->isScalarEmpty($value)) {
-                return false;
-            }
-        }
-
-        return true;
+    private function isEn16931AddressEmpty(?Address $address): bool
+    {
+        return $address === null || $address->isEmpty();
     }
 
     /**

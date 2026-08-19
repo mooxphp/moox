@@ -18,6 +18,7 @@ class InvoiceServiceProvider extends MooxServiceProvider
                 'create_invoices_table',
                 'create_invoice_lines_table',
                 'create_invoice_allowance_charges_table',
+                'convert_delivery_json_to_party_shape',
             ])
             ->hasCommands();
 

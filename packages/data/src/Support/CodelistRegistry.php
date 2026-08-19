@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Data\Support;
 
 use Moox\Data\Models\StaticAllowanceReason;
+use Moox\Data\Models\StaticCertificateKind;
 use Moox\Data\Models\StaticChargeReason;
 use Moox\Data\Models\StaticDocumentType;
 use Moox\Data\Models\StaticEasScheme;
@@ -63,6 +64,10 @@ class CodelistRegistry
         'eas' => [
             'file' => 'eas-schemes.json',
             'model' => StaticEasScheme::class,
+        ],
+        'en10204' => [
+            'file' => 'certificate-kinds.json',
+            'model' => StaticCertificateKind::class,
         ],
     ];
 

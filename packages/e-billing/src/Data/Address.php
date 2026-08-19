@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Data;
 
+use Moox\Invoice\Support\En16931\Address as En16931Address;
+use Moox\Invoice\Support\En16931\Party;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 
 class Address implements ZugferdAddress
@@ -32,6 +34,45 @@ class Address implements ZugferdAddress
             && ($this->country ?? '') === ($other->country ?? '')
             && ($this->addressLine2 ?? '') === ($other->addressLine2 ?? '')
             && ($this->addressLine3 ?? '') === ($other->addressLine3 ?? '');
+    }
+
+    public function toEn16931DeliveryParty(): ?Party
+    {
+        $name = $this->company !== null ? trim($this->company) : '';
+        $line2 = self::joinedAddressLines($this->addressLine2, $this->addressLine3);
+        $address = En16931Address::fromDocumentArray([
+            'line1' => trim((string) ($this->street ?? '')),
+            'line2' => $line2,
+            'city' => trim((string) ($this->city ?? '')),
+            'postal_code' => trim((string) ($this->zip ?? '')),
+            'subdivision' => null,
+            'country_code' => $this->country !== null ? strtoupper(trim($this->country)) : '',
+        ]);
+
+        return Party::deliveryConsignee($name, $address);
+    }
+
+    private static function joinedAddressLines(?string $line2, ?string $line3): ?string
+    {
+        $trimmedLine2 = self::trimmedNonEmpty($line2);
+        $trimmedLine3 = self::trimmedNonEmpty($line3);
+
+        return match (true) {
+            $trimmedLine3 === null => $trimmedLine2,
+            $trimmedLine2 === null => $trimmedLine3,
+            default => $trimmedLine2."\n".$trimmedLine3,
+        };
+    }
+
+    private static function trimmedNonEmpty(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 
     /**

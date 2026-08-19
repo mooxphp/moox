@@ -1,6 +1,5 @@
 {
     "_source": "UNCL 7161 (UN/CEFACT) — charge reason codes",
-    "_todo": "incomplete — fill full list from official CEF/Peppol UNCL 7161 publication",
     "codes": [
         {
             "code": "AA",
@@ -11,28 +10,704 @@
             "common_name": "Telecommunication"
         },
         {
-            "code": "FC",
-            "common_name": "Freight charge"
+            "code": "AAC",
+            "common_name": "Technical modification"
         },
         {
-            "code": "HD",
-            "common_name": "Handling"
+            "code": "AAD",
+            "common_name": "Job-order production"
         },
         {
-            "code": "WH",
-            "common_name": "Warehousing"
+            "code": "AAE",
+            "common_name": "Outlays"
         },
         {
-            "code": "PC",
-            "common_name": "Packing"
+            "code": "AAF",
+            "common_name": "Off-premises"
+        },
+        {
+            "code": "AAH",
+            "common_name": "Additional processing"
+        },
+        {
+            "code": "AAI",
+            "common_name": "Attesting"
+        },
+        {
+            "code": "AAS",
+            "common_name": "Acceptance"
+        },
+        {
+            "code": "AAT",
+            "common_name": "Rush delivery"
+        },
+        {
+            "code": "AAV",
+            "common_name": "Special construction"
+        },
+        {
+            "code": "AAY",
+            "common_name": "Airport facilities"
+        },
+        {
+            "code": "AAZ",
+            "common_name": "Concession"
+        },
+        {
+            "code": "ABA",
+            "common_name": "Compulsory storage"
+        },
+        {
+            "code": "ABB",
+            "common_name": "Fuel removal"
+        },
+        {
+            "code": "ABC",
+            "common_name": "Into plane"
+        },
+        {
+            "code": "ABD",
+            "common_name": "Overtime"
+        },
+        {
+            "code": "ABF",
+            "common_name": "Tooling"
+        },
+        {
+            "code": "ABK",
+            "common_name": "Miscellaneous"
+        },
+        {
+            "code": "ABL",
+            "common_name": "Additional packaging"
+        },
+        {
+            "code": "ABN",
+            "common_name": "Dunnage"
+        },
+        {
+            "code": "ABR",
+            "common_name": "Containerisation"
+        },
+        {
+            "code": "ABS",
+            "common_name": "Carton packing"
+        },
+        {
+            "code": "ABT",
+            "common_name": "Hessian wrapped"
+        },
+        {
+            "code": "ABU",
+            "common_name": "Polyethylene wrap packing"
+        },
+        {
+            "code": "ACF",
+            "common_name": "Miscellaneous treatment"
+        },
+        {
+            "code": "ACG",
+            "common_name": "Enamelling treatment"
+        },
+        {
+            "code": "ACH",
+            "common_name": "Heat treatment"
+        },
+        {
+            "code": "ACI",
+            "common_name": "Plating treatment"
+        },
+        {
+            "code": "ACJ",
+            "common_name": "Painting"
+        },
+        {
+            "code": "ACK",
+            "common_name": "Polishing"
+        },
+        {
+            "code": "ACL",
+            "common_name": "Priming"
+        },
+        {
+            "code": "ACM",
+            "common_name": "Preservation treatment"
+        },
+        {
+            "code": "ACS",
+            "common_name": "Fitting"
+        },
+        {
+            "code": "ADC",
+            "common_name": "Consolidation"
+        },
+        {
+            "code": "ADE",
+            "common_name": "Bill of lading"
+        },
+        {
+            "code": "ADJ",
+            "common_name": "Airbag"
+        },
+        {
+            "code": "ADK",
+            "common_name": "Transfer"
+        },
+        {
+            "code": "ADL",
+            "common_name": "Slipsheet"
+        },
+        {
+            "code": "ADM",
+            "common_name": "Binding"
+        },
+        {
+            "code": "ADN",
+            "common_name": "Repair or replacement of broken returnable package"
+        },
+        {
+            "code": "ADO",
+            "common_name": "Efficient logistics"
+        },
+        {
+            "code": "ADP",
+            "common_name": "Merchandising"
+        },
+        {
+            "code": "ADQ",
+            "common_name": "Product mix"
+        },
+        {
+            "code": "ADR",
+            "common_name": "Other services"
+        },
+        {
+            "code": "ADT",
+            "common_name": "Pick-up"
+        },
+        {
+            "code": "ADW",
+            "common_name": "Chronic illness"
+        },
+        {
+            "code": "ADY",
+            "common_name": "New product introduction"
+        },
+        {
+            "code": "ADZ",
+            "common_name": "Direct delivery"
+        },
+        {
+            "code": "AEA",
+            "common_name": "Diversion"
+        },
+        {
+            "code": "AEB",
+            "common_name": "Disconnect"
+        },
+        {
+            "code": "AEC",
+            "common_name": "Distribution"
+        },
+        {
+            "code": "AED",
+            "common_name": "Handling of hazardous cargo"
+        },
+        {
+            "code": "AEF",
+            "common_name": "Rents and leases"
+        },
+        {
+            "code": "AEH",
+            "common_name": "Location differential"
+        },
+        {
+            "code": "AEI",
+            "common_name": "Aircraft refueling"
+        },
+        {
+            "code": "AEJ",
+            "common_name": "Fuel shipped into storage"
+        },
+        {
+            "code": "AEK",
+            "common_name": "Cash on delivery"
+        },
+        {
+            "code": "AEL",
+            "common_name": "Small order processing service"
+        },
+        {
+            "code": "AEM",
+            "common_name": "Clerical or administrative services"
+        },
+        {
+            "code": "AEN",
+            "common_name": "Guarantee"
+        },
+        {
+            "code": "AEO",
+            "common_name": "Collection and recycling"
+        },
+        {
+            "code": "AEP",
+            "common_name": "Copyright fee collection"
+        },
+        {
+            "code": "AES",
+            "common_name": "Veterinary inspection service"
+        },
+        {
+            "code": "AET",
+            "common_name": "Pensioner service"
+        },
+        {
+            "code": "AEU",
+            "common_name": "Medicine free pass holder"
+        },
+        {
+            "code": "AEV",
+            "common_name": "Environmental protection service"
+        },
+        {
+            "code": "AEW",
+            "common_name": "Environmental clean-up service"
+        },
+        {
+            "code": "AEX",
+            "common_name": "National cheque processing service outside account area"
+        },
+        {
+            "code": "AEY",
+            "common_name": "National payment service outside account area"
+        },
+        {
+            "code": "AEZ",
+            "common_name": "National payment service within account area"
+        },
+        {
+            "code": "AJ",
+            "common_name": "Adjustments"
+        },
+        {
+            "code": "AU",
+            "common_name": "Authentication"
+        },
+        {
+            "code": "CA",
+            "common_name": "Cataloguing"
+        },
+        {
+            "code": "CAB",
+            "common_name": "Cartage"
+        },
+        {
+            "code": "CAD",
+            "common_name": "Certification"
+        },
+        {
+            "code": "CAE",
+            "common_name": "Certificate of conformance"
+        },
+        {
+            "code": "CAF",
+            "common_name": "Certificate of origin"
+        },
+        {
+            "code": "CAI",
+            "common_name": "Cutting"
+        },
+        {
+            "code": "CAJ",
+            "common_name": "Consular service"
+        },
+        {
+            "code": "CAK",
+            "common_name": "Customer collection"
+        },
+        {
+            "code": "CAL",
+            "common_name": "Payroll payment service"
+        },
+        {
+            "code": "CAM",
+            "common_name": "Cash transportation"
+        },
+        {
+            "code": "CAN",
+            "common_name": "Home banking service"
+        },
+        {
+            "code": "CAO",
+            "common_name": "Bilateral agreement service"
+        },
+        {
+            "code": "CAP",
+            "common_name": "Insurance brokerage service"
+        },
+        {
+            "code": "CAQ",
+            "common_name": "Cheque generation"
+        },
+        {
+            "code": "CAR",
+            "common_name": "Preferential merchandising location"
+        },
+        {
+            "code": "CAS",
+            "common_name": "Crane"
+        },
+        {
+            "code": "CAT",
+            "common_name": "Special colour service"
+        },
+        {
+            "code": "CAU",
+            "common_name": "Sorting"
+        },
+        {
+            "code": "CAV",
+            "common_name": "Battery collection and recycling"
+        },
+        {
+            "code": "CAW",
+            "common_name": "Product take back fee"
+        },
+        {
+            "code": "CAX",
+            "common_name": "Quality control released"
+        },
+        {
+            "code": "CAY",
+            "common_name": "Quality control held"
+        },
+        {
+            "code": "CAZ",
+            "common_name": "Quality control embargo"
+        },
+        {
+            "code": "CD",
+            "common_name": "Car loading"
+        },
+        {
+            "code": "CG",
+            "common_name": "Cleaning"
+        },
+        {
+            "code": "CS",
+            "common_name": "Cigarette stamping"
+        },
+        {
+            "code": "CT",
+            "common_name": "Count and recount"
+        },
+        {
+            "code": "DAB",
+            "common_name": "Layout/design"
+        },
+        {
+            "code": "DAC",
+            "common_name": "Assortment allowance"
+        },
+        {
+            "code": "DAD",
+            "common_name": "Driver assigned unloading"
+        },
+        {
+            "code": "DAF",
+            "common_name": "Debtor bound"
+        },
+        {
+            "code": "DAG",
+            "common_name": "Dealer allowance"
+        },
+        {
+            "code": "DAH",
+            "common_name": "Allowance transferable to the consumer"
+        },
+        {
+            "code": "DAI",
+            "common_name": "Growth of business"
+        },
+        {
+            "code": "DAJ",
+            "common_name": "Introduction allowance"
+        },
+        {
+            "code": "DAK",
+            "common_name": "Multi-buy promotion"
+        },
+        {
+            "code": "DAL",
+            "common_name": "Partnership"
+        },
+        {
+            "code": "DAM",
+            "common_name": "Return handling"
+        },
+        {
+            "code": "DAN",
+            "common_name": "Minimum order not fulfilled charge"
+        },
+        {
+            "code": "DAO",
+            "common_name": "Point of sales threshold allowance"
+        },
+        {
+            "code": "DAP",
+            "common_name": "Wholesaling discount"
+        },
+        {
+            "code": "DAQ",
+            "common_name": "Documentary credits transfer commission"
         },
         {
             "code": "DL",
             "common_name": "Delivery"
         },
         {
+            "code": "EG",
+            "common_name": "Engraving"
+        },
+        {
+            "code": "EP",
+            "common_name": "Expediting"
+        },
+        {
+            "code": "ER",
+            "common_name": "Exchange rate guarantee"
+        },
+        {
+            "code": "FAA",
+            "common_name": "Fabrication"
+        },
+        {
+            "code": "FAB",
+            "common_name": "Freight equalization"
+        },
+        {
+            "code": "FAC",
+            "common_name": "Freight extraordinary handling"
+        },
+        {
+            "code": "FC",
+            "common_name": "Freight service"
+        },
+        {
+            "code": "FH",
+            "common_name": "Filling/handling"
+        },
+        {
+            "code": "FI",
+            "common_name": "Financing"
+        },
+        {
+            "code": "GAA",
+            "common_name": "Grinding"
+        },
+        {
+            "code": "HAA",
+            "common_name": "Hose"
+        },
+        {
+            "code": "HD",
+            "common_name": "Handling"
+        },
+        {
+            "code": "HH",
+            "common_name": "Hoisting and hauling"
+        },
+        {
+            "code": "IAA",
+            "common_name": "Installation"
+        },
+        {
+            "code": "IAB",
+            "common_name": "Installation and warranty"
+        },
+        {
+            "code": "ID",
+            "common_name": "Inside delivery"
+        },
+        {
+            "code": "IF",
+            "common_name": "Inspection"
+        },
+        {
+            "code": "IR",
+            "common_name": "Installation and training"
+        },
+        {
+            "code": "IS",
+            "common_name": "Invoicing"
+        },
+        {
+            "code": "KO",
+            "common_name": "Koshering"
+        },
+        {
+            "code": "L1",
+            "common_name": "Carrier count"
+        },
+        {
+            "code": "LA",
+            "common_name": "Labelling"
+        },
+        {
+            "code": "LAA",
+            "common_name": "Labour"
+        },
+        {
+            "code": "LAB",
+            "common_name": "Repair and return"
+        },
+        {
+            "code": "LF",
+            "common_name": "Legalisation"
+        },
+        {
+            "code": "MAE",
+            "common_name": "Mounting"
+        },
+        {
+            "code": "MI",
+            "common_name": "Mail invoice"
+        },
+        {
+            "code": "ML",
+            "common_name": "Mail invoice to each location"
+        },
+        {
+            "code": "NAA",
+            "common_name": "Non-returnable containers"
+        },
+        {
+            "code": "OA",
+            "common_name": "Outside cable connectors"
+        },
+        {
+            "code": "PA",
+            "common_name": "Invoice with shipment"
+        },
+        {
+            "code": "PAA",
+            "common_name": "Phosphatizing (steel treatment)"
+        },
+        {
+            "code": "PC",
+            "common_name": "Packing"
+        },
+        {
+            "code": "PL",
+            "common_name": "Palletizing"
+        },
+        {
+            "code": "PRV",
+            "common_name": "Price variation"
+        },
+        {
+            "code": "RAB",
+            "common_name": "Repacking"
+        },
+        {
+            "code": "RAC",
+            "common_name": "Repair"
+        },
+        {
+            "code": "RAD",
+            "common_name": "Returnable container"
+        },
+        {
+            "code": "RAF",
+            "common_name": "Restocking"
+        },
+        {
+            "code": "RE",
+            "common_name": "Re-delivery"
+        },
+        {
+            "code": "RF",
+            "common_name": "Refurbishing"
+        },
+        {
+            "code": "RH",
+            "common_name": "Rail wagon hire"
+        },
+        {
+            "code": "RV",
+            "common_name": "Loading"
+        },
+        {
+            "code": "SA",
+            "common_name": "Salvaging"
+        },
+        {
+            "code": "SAA",
+            "common_name": "Shipping and handling"
+        },
+        {
+            "code": "SAD",
+            "common_name": "Special packaging"
+        },
+        {
+            "code": "SAE",
+            "common_name": "Stamping"
+        },
+        {
+            "code": "SAI",
+            "common_name": "Consignee unload"
+        },
+        {
+            "code": "SG",
+            "common_name": "Shrink-wrap"
+        },
+        {
             "code": "SH",
             "common_name": "Special handling"
+        },
+        {
+            "code": "SM",
+            "common_name": "Special finish"
+        },
+        {
+            "code": "SU",
+            "common_name": "Set-up"
+        },
+        {
+            "code": "TAB",
+            "common_name": "Tank renting"
+        },
+        {
+            "code": "TAC",
+            "common_name": "Testing"
+        },
+        {
+            "code": "TT",
+            "common_name": "Transportation - third party billing"
+        },
+        {
+            "code": "TV",
+            "common_name": "Transportation by vendor"
+        },
+        {
+            "code": "V1",
+            "common_name": "Drop yard"
+        },
+        {
+            "code": "V2",
+            "common_name": "Drop dock"
+        },
+        {
+            "code": "WH",
+            "common_name": "Warehousing"
+        },
+        {
+            "code": "XAA",
+            "common_name": "Combine all same day shipment"
+        },
+        {
+            "code": "YY",
+            "common_name": "Split pick-up"
         },
         {
             "code": "ZZZ",

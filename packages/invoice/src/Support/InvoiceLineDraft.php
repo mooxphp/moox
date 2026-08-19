@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Invoice\Support;
 
-use Moox\Invoice\Support\En16931\Address;
+use Moox\Invoice\Support\En16931\Party;
 
 readonly class InvoiceLineDraft
 {
     /**
      * @param  list<ChargeDraft>  $charges
-     * @param  array<string, mixed>  $extra  Additional attributes applied when present on the line model fillable (e.g. supplier-specific extension columns).
+     * @param  array<string, mixed>  $extra  Host extension attributes; each key must be fillable
+     *                                       on the configured line model or persistence fails.
      */
     public function __construct(
         public int $position,
@@ -26,9 +27,10 @@ readonly class InvoiceLineDraft
         public ?string $delivery_note_number,
         public ?string $order_number,
         public ?string $order_date,
-        public ?Address $delivery,
+        public ?Party $delivery,
         public array $charges = [],
         public array $extra = [],
+        public ?string $unit_code = null,
     ) {
     }
 }

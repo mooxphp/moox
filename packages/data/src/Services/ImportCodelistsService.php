@@ -22,6 +22,11 @@ class ImportCodelistsService
         'vat_category_code',
     ];
 
+    /** @var list<string> */
+    private const BOOLEAN_ROW_ATTRIBUTES = [
+        'is_normative',
+    ];
+
     public function import(?string $scheme = null): int
     {
         $entries = $scheme !== null
@@ -90,6 +95,12 @@ class ImportCodelistsService
                     $attributes[$attribute] = $row[$attribute] !== null
                         ? (string) $row[$attribute]
                         : null;
+                }
+            }
+
+            foreach (self::BOOLEAN_ROW_ATTRIBUTES as $attribute) {
+                if (array_key_exists($attribute, $row) && is_bool($row[$attribute])) {
+                    $attributes[$attribute] = $row[$attribute];
                 }
             }
 

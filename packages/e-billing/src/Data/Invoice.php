@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Data;
 
+use Moox\EBilling\Adapters\ZugferdInvoiceDtoAdapter;
 use Moox\EBilling\Support\BillDataAllowanceChargeMapper;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
 
-class Invoice implements ZugferdInvoice
+class Invoice
 {
     public function __construct(
         public string $invoiceNumber,
@@ -28,6 +29,7 @@ class Invoice implements ZugferdInvoice
 
         public ?string $orderNumber = null,
         public ?string $orderDate = null,
+        public ?string $deliveryDate = null,
         public ?Address $deliveryAddress = null,
 
         // Supplier
@@ -46,6 +48,7 @@ class Invoice implements ZugferdInvoice
         public ?string $agent = null,
         public ?string $paymentTerms = null,
         public ?string $pricingBasis = null,
+        public ?string $deliveryTerms = null,
         public ?string $paymentMeansCode = null,
 
         // Amounts
@@ -74,32 +77,39 @@ class Invoice implements ZugferdInvoice
         $this->supplierVatId = VatIdNormalizer::normalize($this->supplierVatId);
     }
 
-    /** @var list<ZugferdBankAccount> */
-    public array $bankAccounts {
-        get {
-            $accounts = [];
-            foreach ($this->supplierBankAccounts as $row) {
-                if (is_array($row)) {
-                    $accounts[] = BankAccount::fromArray($row);
-                }
-            }
-
-            return $accounts;
-        }
+    public function forZugferd(): ZugferdInvoice
+    {
+        return new ZugferdInvoiceDtoAdapter($this);
     }
 
-    /** @var list<ZugferdAllowanceCharge> */
-    public array $allowanceCharges {
-        get {
-            return BillDataAllowanceChargeMapper::fromHeaderScalars(
-                $this->shippingCost,
-                $this->packagingCost,
-                $this->minimumQuantitySurcharge,
-                $this->freightFlatRate,
-                $this->discountAmount,
-                $this->discountPercent,
-            );
+    /**
+     * @return list<ZugferdBankAccount>
+     */
+    public function bankAccounts(): array
+    {
+        $accounts = [];
+        foreach ($this->supplierBankAccounts as $row) {
+            if (is_array($row)) {
+                $accounts[] = BankAccount::fromArray($row);
+            }
         }
+
+        return $accounts;
+    }
+
+    /**
+     * @return list<ZugferdAllowanceCharge>
+     */
+    public function allowanceCharges(): array
+    {
+        return BillDataAllowanceChargeMapper::fromHeaderScalars(
+            $this->shippingCost,
+            $this->packagingCost,
+            $this->minimumQuantitySurcharge,
+            $this->freightFlatRate,
+            $this->discountAmount,
+            $this->discountPercent,
+        );
     }
 
     /**
@@ -233,6 +243,9 @@ class Invoice implements ZugferdInvoice
             customerReference: isset($data['customer_reference']) && is_string($data['customer_reference']) ? $data['customer_reference'] : null,
             orderNumber: isset($data['order_number']) && is_string($data['order_number']) ? $data['order_number'] : null,
             orderDate: isset($data['order_date']) && is_string($data['order_date']) ? $data['order_date'] : null,
+            deliveryDate: isset($data['delivery_date']) && is_string($data['delivery_date'])
+                ? $data['delivery_date']
+                : null,
             deliveryAddress: Address::fromMixed($data['delivery_address'] ?? null),
             supplierName: $supplierName,
             supplierVatId: isset($data['supplier_vat_id']) && is_string($data['supplier_vat_id']) ? $data['supplier_vat_id'] : null,
@@ -245,6 +258,9 @@ class Invoice implements ZugferdInvoice
             agent: isset($data['agent']) && is_string($data['agent']) ? $data['agent'] : null,
             paymentTerms: isset($data['payment_terms']) && is_string($data['payment_terms']) ? $data['payment_terms'] : null,
             pricingBasis: isset($data['pricing_basis']) && is_string($data['pricing_basis']) ? $data['pricing_basis'] : null,
+            deliveryTerms: isset($data['delivery_terms']) && is_string($data['delivery_terms'])
+                ? $data['delivery_terms']
+                : null,
             netTotal: (float) ($data['net_total'] ?? 0),
             vatRate: (float) ($data['vat_rate'] ?? 19.0),
             vatAmount: (float) ($data['vat_amount'] ?? 0),
@@ -328,6 +344,7 @@ class Invoice implements ZugferdInvoice
 
             'order_number' => $this->orderNumber,
             'order_date' => $this->orderDate,
+            'delivery_date' => $this->deliveryDate,
             'delivery_address' => $this->deliveryAddress?->toArray(),
 
             'supplier_name' => $this->supplierName,
@@ -342,6 +359,7 @@ class Invoice implements ZugferdInvoice
             'agent' => $this->agent,
             'payment_terms' => $this->paymentTerms,
             'pricing_basis' => $this->pricingBasis,
+            'delivery_terms' => $this->deliveryTerms,
 
             'net_total' => $this->netTotal,
             'vat_rate' => $this->vatRate,

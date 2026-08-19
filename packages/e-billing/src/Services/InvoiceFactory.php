@@ -108,14 +108,21 @@ class InvoiceFactory
             customer_reference: $dto->customerReference,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            pricing_basis: $dto->pricingBasis,
+            delivery_date: $dto->deliveryDate,
+            payment_terms: $dto->paymentTerms !== null && $dto->paymentTerms !== ''
+                ? $dto->paymentTerms
+                : null,
+            shipping_method: $dto->shippingMethod !== null && $dto->shippingMethod !== ''
+                ? $dto->shippingMethod
+                : null,
+            delivery_terms: $dto->deliveryTerms,
             net_total: $dto->netTotal,
             vat_rate: $dto->vatRate,
             vat_amount: $dto->vatAmount,
             gross_total: $dto->grossTotal,
             seller: $this->mapSeller($dto),
             buyer: $this->mapBuyer($dto),
-            delivery: $this->mapInvoiceAddress($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             payment_means: null,
             lines: array_map(
                 fn (InvoiceLineDto $lineDto): InvoiceLineDraft => $this->buildLineDraftFromDto($lineDto),
@@ -221,7 +228,7 @@ class InvoiceFactory
             delivery_note_number: $dto->deliveryNoteNumber,
             order_number: $dto->orderNumber,
             order_date: $dto->orderDate,
-            delivery: $this->mapInvoiceAddress($dto->deliveryAddress),
+            delivery: $dto->deliveryAddress?->toEn16931DeliveryParty(),
             charges: $charges,
             extra: [
                 'material' => $dto->material,

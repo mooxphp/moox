@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Invoice\Support;
 
 use Illuminate\Support\Facades\DB;
+use Moox\Invoice\Exceptions\RejectedDraftFieldException;
 use Moox\Invoice\Models\Invoice;
 
 class InvoiceBuilder
@@ -39,7 +40,10 @@ class InvoiceBuilder
         $invoice->customer_reference = $draft->customer_reference;
         $invoice->order_number = $draft->order_number;
         $invoice->order_date = $draft->order_date;
-        $invoice->pricing_basis = $draft->pricing_basis;
+        $invoice->delivery_date = $draft->delivery_date;
+        $invoice->payment_terms = $draft->payment_terms;
+        $invoice->shipping_method = $draft->shipping_method;
+        $invoice->delivery_terms = $draft->delivery_terms;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;
@@ -71,6 +75,9 @@ class InvoiceBuilder
         $line->invoice_id = $invoice->id;
         $line->position = $lineDraft->position;
         $line->unit = $lineDraft->unit;
+        $line->unit_code = $lineDraft->unit_code !== null && $lineDraft->unit_code !== ''
+            ? $lineDraft->unit_code
+            : null;
         $line->quantity = (string) $lineDraft->quantity;
         $line->description = $lineDraft->description !== '' && $lineDraft->description !== null
             ? $lineDraft->description
@@ -89,9 +96,11 @@ class InvoiceBuilder
         $fillable = $line->getFillable();
 
         foreach ($lineDraft->extra as $key => $value) {
-            if (in_array($key, $fillable, true)) {
-                $line->{$key} = $value;
+            if (! in_array($key, $fillable, true)) {
+                throw RejectedDraftFieldException::forField($key, $lineClass);
             }
+
+            $line->{$key} = $value;
         }
 
         $line->save();

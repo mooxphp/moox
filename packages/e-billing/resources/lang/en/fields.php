@@ -20,14 +20,14 @@ return [
     'customer_reference' => 'Customer reference',
     'order_number' => 'Order number',
     'order_date' => 'Order date',
-    'delivery_address' => 'Delivery address',
+    'delivery_address' => 'Consignee',
     'supplier_number' => 'Supplier number',
     'supplier_phone' => 'Supplier phone',
     'supplier_email' => 'Supplier email',
     'bank_accounts' => 'Bank accounts',
     'agent' => 'Agent',
     'payment_terms' => 'Payment terms',
-    'pricing_basis' => 'Pricing basis',
+    'delivery_terms' => 'Delivery terms',
     'shipping_method' => 'Shipping method',
     'net_total' => 'Net amount',
     'vat_rate' => 'Tax rate',
@@ -234,6 +234,8 @@ return [
 
     // Field hints — needs review
     'hint_review_customer_number' => 'Customer number not found in master data.',
+    'hint_review_customer_number_matched' => 'Customer number matched, but the attribution still needs review '
+        .'(inactive, deleted, or no unique company).',
     'hint_review_customer_name' => 'Customer name does not match master data.',
     'hint_review_article_number' => 'Article number not found in master data.',
     'hint_review_material' => 'Material not found in master data.',
@@ -242,5 +244,7 @@ return [
     'hint_review_unit_price' => 'Unit price differs from master data.',
     'hint_review_minimum_quantity_surcharge' => 'Minimum quantity surcharge should be reviewed manually.',
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
+    'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
+        .'actual delivery date rule without aggregating them into a period.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];

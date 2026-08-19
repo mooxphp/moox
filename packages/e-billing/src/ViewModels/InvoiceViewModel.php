@@ -10,20 +10,12 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
 use Moox\EBilling\Support\InvoiceFieldLabels;
+use Moox\EBilling\Support\PartyAddressFormatter;
 use Moox\Invoice\Models\Invoice;
-use Moox\Invoice\Support\En16931\Address;
 use Moox\Invoice\Support\En16931\BankAccount;
 
 final class InvoiceViewModel
 {
-    /**
-     * @var list<string>
-     */
-    private const FIELDS_WITHOUT_PERSISTED_SOURCE = [
-        'payment_terms',
-        'shipping_method',
-    ];
-
     public function __construct(
         private Invoice $invoice, // Extend Invoice in your host app if needed
         private ?EbillingDocument $document = null,
@@ -69,7 +61,7 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_delivery'),
                 'subtitle' => 'BG-13',
                 'fields' => $this->buildFields([
-                    'delivery_address', 'shipping_method', 'agent', 'pricing_basis',
+                    'delivery_address', 'delivery_date', 'shipping_method', 'agent', 'delivery_terms',
                 ]),
             ],
             'totals' => [
@@ -251,7 +243,8 @@ final class InvoiceViewModel
             return number_format((float) $value, 2, ',', '.').' %';
         }
 
-        if (in_array($field, ['invoice_date', 'due_date', 'order_date'], true) && is_string($value) && $value !== '') {
+        if (in_array($field, ['invoice_date', 'due_date', 'order_date', 'delivery_date'], true)
+            && is_string($value) && $value !== '') {
             try {
                 return Carbon::parse($value)->format('d.m.Y');
             } catch (\Throwable) {
@@ -264,10 +257,6 @@ final class InvoiceViewModel
 
     private function resolveFieldValue(string $field): mixed
     {
-        if (in_array($field, self::FIELDS_WITHOUT_PERSISTED_SOURCE, true)) {
-            return null;
-        }
-
         if (array_key_exists($field, HeaderChargeResolver::FIELD_SPECS)) {
             return HeaderChargeResolver::resolveAmount($this->invoice->allowanceCharges, $field);
         }
@@ -275,67 +264,17 @@ final class InvoiceViewModel
         return match ($field) {
             'customer_name' => $this->invoice->buyer?->name,
             'customer_vat_id' => $this->invoice->buyer?->vat_id,
-            'customer_address' => $this->formatEn16931Address(
-                $this->invoice->buyer?->address,
-                $this->invoice->buyer?->name,
-            ),
+            'customer_address' => PartyAddressFormatter::format($this->invoice->buyer),
             'country' => $this->invoice->buyer?->address?->country_code,
             'supplier_name' => $this->invoice->seller?->name,
             'supplier_vat_id' => $this->invoice->seller?->vat_id,
             'supplier_tax_number' => $this->invoice->seller?->tax_number,
-            'supplier_address' => $this->formatEn16931Address(
-                $this->invoice->seller?->address,
-                $this->invoice->seller?->name,
-            ),
+            'supplier_address' => PartyAddressFormatter::format($this->invoice->seller),
             'agent' => $this->invoice->seller?->contact?->name,
             'supplier_bank_accounts' => $this->invoice->payment_means?->bank_accounts ?? [],
-            'delivery_address' => $this->formatEn16931Address($this->invoice->delivery, null),
+            'delivery_address' => PartyAddressFormatter::format($this->invoice->delivery),
             default => $this->invoice->getAttribute($field),
         };
-    }
-
-    /**
-     * Display order: party name (when provided), line2 segments (newline-split), line1, postal_code + city, country_code.
-     */
-    private function formatEn16931Address(?Address $address, ?string $partyName): ?string
-    {
-        if ($address === null) {
-            return null;
-        }
-
-        $lines = [];
-
-        if ($partyName !== null && trim($partyName) !== '') {
-            $lines[] = trim($partyName);
-        }
-
-        if ($address->line2 !== null && trim($address->line2) !== '') {
-            foreach (preg_split("/\r\n|\r|\n/", $address->line2) ?: [] as $segment) {
-                $segment = trim((string) $segment);
-                if ($segment !== '') {
-                    $lines[] = $segment;
-                }
-            }
-        }
-
-        if (trim($address->line1) !== '') {
-            $lines[] = trim($address->line1);
-        }
-
-        $postalCity = trim($address->postal_code.' '.$address->city);
-        if ($postalCity !== '') {
-            $lines[] = $postalCity;
-        }
-
-        if (trim($address->country_code) !== '') {
-            $lines[] = trim($address->country_code);
-        }
-
-        if ($lines === []) {
-            return null;
-        }
-
-        return implode("\n", $lines);
     }
 
     /**
@@ -376,6 +315,8 @@ final class InvoiceViewModel
         return array_map(function (string $name) use ($validations): FieldViewData {
             $entry = $validations[$name] ?? null;
             $validation = is_array($entry) ? $entry : null;
+            $rawValue = $this->resolveFieldValue($name);
+            $validation = $this->resolveDisplayValidation($name, $rawValue, $validation);
             $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
                 ? $validation['status']
                 : '';
@@ -386,8 +327,51 @@ final class InvoiceViewModel
                 btNumber: InvoiceFieldLabels::btNumber($name),
                 value: $this->formatValue($name),
                 validation: $validation,
-                hint: InvoiceFieldLabels::hint($name, $status),
+                hint: InvoiceFieldLabels::hint($name, $status, $validation),
             );
         }, $fieldNames);
+    }
+
+    /**
+     * Avoid showing "parsed" for empty fields when stored validations pre-date the field
+     * or were never recomputed after a schema change.
+     *
+     * @return array{status: string}|null
+     */
+    private function resolveDisplayValidation(string $field, mixed $rawValue, ?array $storedValidation): ?array
+    {
+        $hasValue = ! ($rawValue === null || $rawValue === '' || (is_array($rawValue) && $rawValue === []));
+
+        if ($storedValidation !== null) {
+            $storedStatus = $storedValidation['status'] ?? null;
+            if ($hasValue || ! in_array($storedStatus, ['parsed', 'validated', 'db_validated'], true)) {
+                return $storedValidation;
+            }
+        }
+
+        if ($hasValue) {
+            return ['status' => 'parsed'];
+        }
+
+        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
+        $priority = is_array($invoiceFields) && is_string($invoiceFields[$field] ?? null)
+            ? $invoiceFields[$field]
+            : 'could';
+
+        if ($priority === 'could') {
+            return ['status' => 'not_applicable'];
+        }
+
+        if ($priority === 'must') {
+            return ['status' => 'missing'];
+        }
+
+        $contextual = config('e-billing.field_validation.invoice_contextual_should', []);
+
+        return [
+            'status' => is_array($contextual) && in_array($field, $contextual, true)
+                ? 'missing'
+                : 'not_applicable',
+        ];
     }
 }

@@ -47,7 +47,7 @@ class EBilling
     public function generateInvoiceAndXmlFromPdf(string $pdfPath): array
     {
         $invoice = $this->parseInvoiceFromPdf($pdfPath);
-        $xml = $this->zugferdConverter->convert($invoice);
+        $xml = $this->zugferdConverter->convert($invoice->forZugferd());
 
         return [
             'invoice' => $invoice,
@@ -87,6 +87,6 @@ class EBilling
      */
     public function convertToXml(Invoice $invoice): string
     {
-        return $this->zugferdConverter->convert($invoice);
+        return $this->zugferdConverter->convert($invoice->forZugferd());
     }
 }
