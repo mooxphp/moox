@@ -36,10 +36,10 @@ it('uses cursor strategy when expand is only an empty filament scaffold', functi
         ],
         'source_references' => [
             [
-                'alias' => 'kunde',
-                'table' => 'Kundenstamm',
-                'connection' => 'comwork',
-                'key_column' => 'ID_Kunde',
+                'alias' => 'legacy',
+                'table' => 'source_rows',
+                'connection' => 'legacy_db',
+                'key_column' => 'id',
                 'source_type' => 'db_table',
                 'row_key' => null,
                 'row_key_from' => null,
@@ -73,10 +73,10 @@ it('does not use cursor strategy when expand nested path is set', function (): v
         ],
         'source_references' => [
             [
-                'alias' => 'kunde',
-                'table' => 'Kundenstamm',
-                'connection' => 'comwork',
-                'key_column' => 'ID_Kunde',
+                'alias' => 'legacy',
+                'table' => 'source_rows',
+                'connection' => 'legacy_db',
+                'key_column' => 'id',
                 'source_type' => 'db_table',
                 'row_key' => null,
             ],
