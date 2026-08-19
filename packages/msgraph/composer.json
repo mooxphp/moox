@@ -1,12 +1,12 @@
 {
     "name": "moox/msgraph",
-    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "description": "Microsoft Graph SDK integration for Laravel — connection registry, authenticated client factory, and immutable-ID middleware.",
     "keywords": [
         "Moox",
         "Laravel",
-        "Filament",
-        "Moox package",
-        "Laravel package"
+        "Microsoft Graph",
+        "OAuth2",
+        "API client"
     ],
     "homepage": "https://moox.org/docs/msgraph",
     "license": "MIT",
@@ -18,11 +18,19 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main"
+        "php": "^8.2",
+        "moox/core": "dev-main",
+        "microsoft/microsoft-graph": "^2.0",
+        "guzzlehttp/guzzle": "^7.5"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Msgraph\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Msgraph\\Tests\\": "tests"
         }
     },
     "extra": {
@@ -32,12 +40,15 @@
             ]
         },
         "moox": {
-            "stability": "stable"
+            "stability": "dev"
         }
     },
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "dev-main"
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.0",
+        "orchestra/testbench": "^10.0"
     },
     "config": {
         "allow-plugins": {

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Msgraph;
 
+use Illuminate\Contracts\Foundation\Application;
 use Moox\Core\MooxServiceProvider;
+use Moox\Msgraph\Auth\ConnectionRegistry;
+use Moox\Msgraph\Auth\GraphClientFactory;
 use Spatie\LaravelPackageTools\Package;
 
 class MsgraphServiceProvider extends MooxServiceProvider
@@ -17,38 +20,25 @@ class MsgraphServiceProvider extends MooxServiceProvider
 
         $this->getMooxPackage()
             ->title('Moox Msgraph')
-            ->released(true)
-            ->stability('stable')
-            ->category('development')
+            ->released(false)
+            ->stability('dev')
+            ->category('integration')
             ->usedFor([
-                'building new Moox packages, not used as installed package',
-            ])
-            ->alternatePackages([
-                'moox/builder', // optional alternative package (e.g. moox/post)
-            ])
-            ->templateFor([
-                'creating simple Laravel packages',
-            ])
-            ->templateReplace([
-                'Msgraph' => '%%PackageName%%',
-                'msgraph' => '%%PackageSlug%%',
-                'This template is used for generating Laravel packages, all Moox packages are built with this template.' => '%%Description%%',
-                'building new Moox packages, not used as installed package' => '%%UsedFor%%',
-                'released(true)' => 'released(false)',
-                'stability(stable)' => 'stability(dev)',
-                'category(development)' => 'category(unknown)',
-                'moox/builder' => '',
-            ])
-            ->templateRename([
-                'Msgraph' => '%%PackageName%%',
-                'msgraph' => '%%PackageSlug%%',
-            ])
-            ->templateSectionReplace([
-                "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',
-            ])
-            ->templateRemove([
-                'build.php',
+                'Microsoft Graph API integration with connection registry and client factory',
             ]);
     }
-}
 
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(ConnectionRegistry::class, function (Application $app): ConnectionRegistry {
+            return new ConnectionRegistry(
+                $app['config']->get('msgraph.connections', []),
+                $app['config']->get('msgraph.default', 'default'),
+            );
+        });
+
+        $this->app->singleton(GraphClientFactory::class, function (Application $app): GraphClientFactory {
+            return new GraphClientFactory($app->make(ConnectionRegistry::class));
+        });
+    }
+}

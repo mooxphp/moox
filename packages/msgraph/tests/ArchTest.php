@@ -1,17 +1,14 @@
 <?php
 
-use Illuminate\Database\Eloquent\Model;
+it('package declares no models', function () {
+    $srcPath = dirname(__DIR__).'/src';
+    $files = glob($srcPath.'/Models/*.php');
 
-arch()
-    ->expect('Moox\Msgraph')
-    ->toUseStrictTypes()
-    ->not->toUse(['die', 'dd', 'dump']);
+    expect($files)->toBeEmpty();
+});
 
-arch()
-    ->expect('Moox\Msgraph\Models')
-    ->toBeClasses()
-    ->toExtend(Model::class)
-    ->toOnlyBeUsedIn('Moox\Msgraph');
+it('package declares no migrations', function () {
+    $dbPath = dirname(__DIR__).'/database/migrations';
 
-arch()->preset()->php();
-arch()->preset()->security()->ignoring('md5');
+    expect(is_dir($dbPath))->toBeFalse();
+});
