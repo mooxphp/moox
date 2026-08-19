@@ -23,7 +23,6 @@ use Moox\Invoice\Support\En16931\PaymentMeans;
 use Moox\Invoice\Support\InvoiceBuilder;
 use Moox\Invoice\Support\InvoiceDraft;
 use Moox\Invoice\Support\InvoiceLineDraft;
-use Moox\MailInbox\Models\InboxAttachment;
 use RuntimeException;
 
 class ParsedInvoiceMapper
@@ -40,24 +39,19 @@ class ParsedInvoiceMapper
     }
 
     // Extend Invoice in your host app if needed
-    public function createFromDto(InvoiceDto $dto, InboxAttachment $attachment): Invoice
+    public function createFromDto(InvoiceDto $dto, EbillingDocument $document): Invoice
     {
         // Extend Invoice in your host app if needed
-        $invoice = DB::transaction(function () use ($dto, $attachment): Invoice {
-            $existingInvoice = $this->findExistingInvoiceForAttachment($attachment);
+        $invoice = DB::transaction(function () use ($dto, $document): Invoice {
+            $existingInvoice = $this->findExistingInvoiceForDocument($document);
 
             if ($existingInvoice !== null) {
-                $document = EbillingDocument::query()
-                    ->where('source_type', $attachment->getMorphClass())
-                    ->where('source_id', (string) $attachment->getKey())
-                    ->first();
-
-                $reviewStatus = $document?->review_status;
+                $reviewStatus = $document->review_status;
                 $isReviewed = $reviewStatus === InvoiceProcessingStatus::HumanConfirmed
                     || $reviewStatus === InvoiceProcessingStatus::Validated;
                 if ($isReviewed) {
                     throw new RuntimeException(
-                        "Cannot re-create Invoice #{$existingInvoice->id} for attachment #{$attachment->id}: "
+                        "Cannot re-create Invoice #{$existingInvoice->id} for document #{$document->getKey()}: "
                         ."document review status is '{$reviewStatus->value}'. "
                         .'Manual intervention required.'
                     );
@@ -77,7 +71,7 @@ class ParsedInvoiceMapper
             return $this->invoiceBuilder->build($draft);
         });
 
-        $this->linkDocumentToInvoice($attachment, $invoice);
+        $this->linkDocumentToInvoice($document, $invoice);
 
         event(new InvoiceCreated($invoice));
 
@@ -85,24 +79,15 @@ class ParsedInvoiceMapper
     }
 
     // Extend Invoice in your host app if needed
-    private function linkDocumentToInvoice(InboxAttachment $attachment, Invoice $invoice): void
+    private function linkDocumentToInvoice(EbillingDocument $document, Invoice $invoice): void
     {
-        EbillingDocument::query()
-            ->where('source_type', $attachment->getMorphClass())
-            ->where('source_id', (string) $attachment->getKey())
-            ->update(['invoice_id' => $invoice->id]);
+        $document->invoice_id = $invoice->id;
+        $document->save();
     }
 
-    // Extend Invoice in your host app if needed
-    private function findExistingInvoiceForAttachment(InboxAttachment $attachment): ?Invoice
+    private function findExistingInvoiceForDocument(EbillingDocument $document): ?Invoice
     {
-        $document = EbillingDocument::query()
-            ->where('source_type', $attachment->getMorphClass())
-            ->where('source_id', (string) $attachment->getKey())
-            ->whereNotNull('invoice_id')
-            ->first();
-
-        if ($document === null || $document->invoice_id === null) {
+        if ($document->invoice_id === null) {
             return null;
         }
 

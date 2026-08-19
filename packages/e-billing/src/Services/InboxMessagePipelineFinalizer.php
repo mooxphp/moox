@@ -22,11 +22,6 @@ use Throwable;
  */
 class InboxMessagePipelineFinalizer
 {
-    public function __construct(
-        private GraphMailService $graphService,
-    ) {
-    }
-
     public function finalizeAfterAttachmentPipelineStep(?int $inboxMessageId): void
     {
         if ($inboxMessageId === null) {
@@ -169,13 +164,15 @@ class InboxMessagePipelineFinalizer
             : (string) config('mail-inbox.failed_folder');
 
         try {
+            $graphService = app(GraphMailService::class);
+
             if ($success) {
-                $folderId = $this->graphService->getOrCreateFolder((string) config('mail-inbox.processed_folder'));
-                $this->graphService->markMessageAsRead($externalId);
-                $this->graphService->moveMessageToFolder($externalId, $folderId);
+                $folderId = $graphService->getOrCreateFolder((string) config('mail-inbox.processed_folder'));
+                $graphService->markMessageAsRead($externalId);
+                $graphService->moveMessageToFolder($externalId, $folderId);
             } else {
-                $folderId = $this->graphService->getOrCreateFolder((string) config('mail-inbox.failed_folder'));
-                $this->graphService->moveMessageToFolder($externalId, $folderId);
+                $folderId = $graphService->getOrCreateFolder((string) config('mail-inbox.failed_folder'));
+                $graphService->moveMessageToFolder($externalId, $folderId);
             }
         } catch (GraphItemNotFoundException $e) {
             Log::channel('mail-inbox')->warning('Finalizer move target message not found in Graph (likely already moved or listing phantom)', [

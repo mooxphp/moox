@@ -19,7 +19,7 @@
 - Three-format registry: XRechnung (pure CII XML), ZUGFeRD (hybrid PDF), Factur-X (hybrid PDF). All share one CII generator; XRechnung uses `XRECHNUNG` profile, hybrids use `EN16931`.
 - Per-customer format resolution via `EbillingFormatResolver`: reads `customers.data.preferred_ebilling_format` from the attributed customer, falls back to `default_format` config (default `zugferd`). Format is frozen on the document at generation time; preference changes affect only future documents ([#53](https://github.com/mooxphp/e-billing/issues/53)).
 - XRechnung documents are validated by KOSIT only (no PDF, veraPDF not invoked) and reach `Validated` on pass.
-- Hybrid artifact validation runs veraPDF PDF/A-3 checks in `ValidateArtifactJob` when `moox/verapdf` is installed; verdicts persist via `veraPdfValidations()` alongside KoSIT results. When veraPDF is not configured, hybrid validation falls back to KOSIT-only (degraded mode).
+- Hybrid artifact validation runs veraPDF PDF/A-3 checks in `ValidateArtifactJob`; verdicts persist via `veraPdfValidations()` alongside KoSIT results. A hybrid passes only when KOSIT and veraPDF both pass. Missing veraPDF is fail-closed: the artifact is retained and flagged, never `Validated`.
 
 ### Changed
 

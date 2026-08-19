@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Moox\EBilling\Resources;
 
 use Carbon\Carbon;
+use Closure;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
@@ -24,6 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
@@ -35,7 +39,7 @@ use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Throwable;
 
-final class InvoiceResource extends BaseItemResource
+class InvoiceResource extends BaseItemResource
 {
     use SingleSoftDeleteInResource;
 
@@ -69,7 +73,7 @@ final class InvoiceResource extends BaseItemResource
 
         // TODO: Moox Core vendor trait hardcodes 'deleted'/'trash' for bulk action visibility.
         // When Core makes this configurable, remove the dual-check here and use the trait's mechanism.
-        $deletedTabKey = (string) config('e-billing.resources.invoices.soft_delete_tab_key', 'deleted');
+        $deletedTabKey = (string) config('e-billing.resources.'.static::resourceConfigKey().'.soft_delete_tab_key', 'deleted');
         $tab = request()->query('tab');
         $activeTabQuery = request()->query('activeTab');
 
@@ -119,6 +123,7 @@ final class InvoiceResource extends BaseItemResource
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
         $query = parent::modifyEloquentQuery($query);
+        $query = static::constrainToDocumentTypes($query);
 
         return $query->with([
             'ebillingDocument',
@@ -478,6 +483,13 @@ final class InvoiceResource extends BaseItemResource
         ];
     }
 
+    public static function getDeleteBulkAction(): BulkAction
+    {
+        return parent::getDeleteBulkAction()
+            ->hidden(fn ($livewire): bool => isset($livewire->activeTab)
+                && in_array($livewire->activeTab, ['trash', 'deleted'], true));
+    }
+
     public static function getBulkActions(): array
     {
         return [
@@ -500,25 +512,169 @@ final class InvoiceResource extends BaseItemResource
         ];
     }
 
+    public static function resourceConfigKey(): string
+    {
+        return 'invoices';
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function documentTypes(): array
+    {
+        $types = config('e-billing.resources.'.static::resourceConfigKey().'.document_types', []);
+
+        if (! is_array($types)) {
+            return [];
+        }
+
+        return array_values(array_filter($types, is_string(...)));
+    }
+
+    public static function tabsConfigPath(): string
+    {
+        $resourcePath = 'e-billing.tabs.'.static::resourceConfigKey();
+
+        return is_array(config($resourcePath)) ? $resourcePath : 'e-billing.tabs.invoices';
+    }
+
+    public static function constrainToDocumentTypes(Builder $query): Builder
+    {
+        $documentTypes = static::documentTypes();
+
+        if ($documentTypes !== []) {
+            $query->whereIn('document_type', $documentTypes);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Tab badge/filter queries do not go through {@see modifyEloquentQuery()};
+     * they must apply the same document-type scope as the table.
+     *
+     * @param  list<array{field: string, operator: string, value: mixed}>  $conditions
+     */
+    public static function applyListTabConditions(Builder $query, array $conditions): Builder
+    {
+        $query = static::constrainToDocumentTypes($query);
+
+        foreach ($conditions as $condition) {
+            $value = $condition['value'];
+
+            if ($value instanceof Closure) {
+                $value = $value();
+            }
+
+            if ($condition['field'] === 'deleted_at' && in_array(SoftDeletes::class, class_uses_recursive($query->getModel()))) {
+                $query = $query->withTrashed();
+            }
+
+            if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->whereIn('review_status', (array) $value),
+                );
+
+                continue;
+            }
+
+            if ($condition['field'] === 'gateway_status' && $condition['operator'] === 'in') {
+                $query->whereHas(
+                    'ebillingDocument',
+                    fn ($documentQuery) => $documentQuery->whereIn('gateway_status', (array) $value),
+                );
+
+                continue;
+            }
+
+            if ($condition['operator'] === 'in') {
+                $query->whereIn($condition['field'], (array) $value);
+            } elseif ($condition['operator'] === 'not_in') {
+                $query->whereNotIn($condition['field'], (array) $value);
+            } else {
+                $query->where($condition['field'], $condition['operator'], $value);
+            }
+        }
+
+        return $query;
+    }
+
+    public static function getManualUploadAction(): ?Action
+    {
+        $config = config('e-billing.resources.'.static::resourceConfigKey().'.manual_upload');
+
+        if (! is_array($config) || ! ($config['enabled'] ?? false)) {
+            return null;
+        }
+
+        $disk = (string) config('e-billing.manual_upload.source_disk', 'local');
+        $directory = (string) config('e-billing.manual_upload.source_path', 'ebilling/manual-uploads/source');
+        $maxSizeKb = max(1, (int) config('e-billing.manual_upload.max_size_kb', 20480));
+        $label = is_string($config['label'] ?? null) ? $config['label'] : __('e-billing::fields.action_manual_upload');
+        $scope = is_string($config['scope'] ?? null) ? $config['scope'] : static::resourceConfigKey();
+        $requiresLetterhead = (bool) ($config['requires_letterhead_overlay'] ?? false);
+
+        return Action::make('manualUpload')
+            ->label($label)
+            ->icon(Heroicon::OutlinedArrowUpTray)
+            ->modalHeading($label)
+            ->modalDescription(__('e-billing::fields.action_manual_upload_modal_description'))
+            ->modalSubmitActionLabel(__('e-billing::fields.action_manual_upload_submit'))
+            ->form([
+                FileUpload::make('pdf')
+                    ->label(__('e-billing::fields.manual_upload_pdf'))
+                    ->helperText(__('e-billing::fields.manual_upload_pdf_helper', [
+                        'max_mb' => (string) max(1, (int) round($maxSizeKb / 1024)),
+                    ]))
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->maxSize($maxSizeKb)
+                    ->disk($disk)
+                    ->directory($directory)
+                    ->required(),
+            ])
+            ->action(function (array $data) use ($disk, $scope, $requiresLetterhead): void {
+                $path = $data['pdf'] ?? null;
+
+                if (! is_string($path) || $path === '') {
+                    return;
+                }
+
+                app(CreateManualUploadDocumentAction::class)->execute([
+                    'source_pdf_path' => $path,
+                    'source_pdf_disk' => $disk,
+                    'original_filename' => basename($path),
+                    'scope' => $scope,
+                    'requires_letterhead_overlay' => $requiresLetterhead,
+                ]);
+
+                Notification::make()
+                    ->title(__('e-billing::fields.notification_manual_upload_success_title'))
+                    ->body(__('e-billing::fields.notification_manual_upload_success_body'))
+                    ->success()
+                    ->send();
+            });
+    }
+
     public static function shouldRegisterNavigation(): bool
     {
-        return (bool) config('e-billing.resources.invoices.enabled', true);
+        return (bool) config('e-billing.resources.'.static::resourceConfigKey().'.enabled', true);
     }
 
     public static function getNavigationSort(): ?int
     {
-        $sort = config('e-billing.resources.invoices.navigation_sort');
+        $sort = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_sort');
 
         return is_int($sort) ? $sort : (is_numeric($sort) ? (int) $sort : null);
     }
 
     public static function getNavigationBadge(): ?string
     {
-        if (! config('e-billing.resources.invoices.navigation_count_badge', false)) {
+        if (! config('e-billing.resources.'.static::resourceConfigKey().'.navigation_count_badge', false)) {
             return null;
         }
 
-        return (string) self::getModel()::query()->count();
+        return (string) static::constrainToDocumentTypes(self::getModel()::query())->count();
     }
 
     public static function getNavigationBadgeColor(): ?string
@@ -530,14 +686,14 @@ final class InvoiceResource extends BaseItemResource
     {
         $default = 'trans//e-billing::ebilling.invoice';
 
-        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.label', $default));
+        return self::resolveConfigLabel((string) config('e-billing.resources.'.static::resourceConfigKey().'.label', $default));
     }
 
     public static function getPluralModelLabel(): string
     {
         $default = 'trans//e-billing::ebilling.invoices';
 
-        return self::resolveConfigLabel((string) config('e-billing.resources.invoices.plural_label', $default));
+        return self::resolveConfigLabel((string) config('e-billing.resources.'.static::resourceConfigKey().'.plural_label', $default));
     }
 
     public static function getNavigationLabel(): string
@@ -547,14 +703,14 @@ final class InvoiceResource extends BaseItemResource
 
     public static function getNavigationGroup(): ?string
     {
-        $group = config('e-billing.resources.invoices.navigation_group');
+        $group = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_group');
 
         return is_string($group) && $group !== '' ? self::resolveConfigLabel($group) : null;
     }
 
     public static function getNavigationIcon(): string|\BackedEnum|null
     {
-        $icon = config('e-billing.resources.invoices.navigation_icon');
+        $icon = config('e-billing.resources.'.static::resourceConfigKey().'.navigation_icon');
 
         return is_string($icon) && $icon !== '' ? $icon : Heroicon::OutlinedDocumentText;
     }

@@ -104,9 +104,9 @@ function mockHybridXmlExtraction(): HybridArtifactGeneratorStrategyInterface
     return $strategy;
 }
 
-function runValidateArtifactJob(int $attachmentId): void
+function runValidateArtifactJob(string $documentId): void
 {
-    app(ValidateArtifactJob::class, ['inboxAttachmentId' => $attachmentId])->handle(
+    app(ValidateArtifactJob::class, ['ebillingDocumentId' => $documentId])->handle(
         app(FormatRegistry::class),
         app(KositService::class),
         app(RecordKositValidation::class),
@@ -117,12 +117,11 @@ function runValidateArtifactJob(int $attachmentId): void
     );
 }
 
-test('validate artifact job seam passes for hybrid zugferd in kosit-only degraded mode', function (): void {
+test('hybrid validation fails closed when verapdf is unavailable', function (): void {
     $fixture = PipelineFixtures::arrangeInvoice(
         $this,
         documentFactory: PipelineFixtures::validatingHybridDocument(...),
     );
-    $attachment = $fixture->attachment;
     $document = $fixture->document;
 
     mockHybridXmlExtraction();
@@ -134,20 +133,21 @@ test('validate artifact job seam passes for hybrid zugferd in kosit-only degrade
         ->once()
         ->andReturn(PipelineFixtures::passingKositResult());
 
-    runValidateArtifactJob($attachment->id);
+    $pdfPath = (string) $document->pdf_storage_path;
+
+    runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 
-    $pdfContent = Storage::disk('zugferd')->get((string) $document->pdf_storage_path);
-
-    expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::Validated)
-        ->and($document->artifact_content_hash)->toMatch('/^[a-f0-9]{64}$/')
-        ->and($document->artifact_content_hash)->toBe(hash('sha256', (string) $pdfContent))
+    expect($document->gateway_status)->toBe(EBillingAttachmentProcessingStatus::ValidationFailed)
+        ->and($document->artifact_content_hash)->toBeNull()
+        ->and(Storage::disk('zugferd')->exists($pdfPath))->toBeTrue()
         ->and($document->latestKositValidation()?->passed)->toBeTrue()
-        ->and($document->latestVeraPdfValidation())->toBeNull();
+        ->and($document->latestVeraPdfValidation())->toBeNull()
+        ->and($document->isDeliverable())->toBeFalse();
 
-    Event::assertDispatched(ArtifactValidated::class);
-    Event::assertNotDispatched(ArtifactValidationFailed::class);
+    Event::assertDispatched(ArtifactValidationFailed::class);
+    Event::assertNotDispatched(ArtifactValidated::class);
 });
 
 test('failed validation retains artifact and is not deliverable', function (): void {
@@ -169,7 +169,7 @@ test('failed validation retains artifact and is not deliverable', function (): v
 
     $pdfPath = (string) $document->pdf_storage_path;
 
-    runValidateArtifactJob($attachment->id);
+    runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 
@@ -196,7 +196,7 @@ test('validate artifact job short-circuits when already validated', function ():
 
     mockValidationServicesDisabled();
 
-    runValidateArtifactJob($attachment->id);
+    runValidateArtifactJob($document->getKey());
 
     expect($document->fresh()->gateway_status)->toBe(EBillingAttachmentProcessingStatus::Validated);
 });
@@ -221,7 +221,7 @@ test('hybrid validation passes only when kosit and verapdf both pass', function 
         ->once()
         ->andReturn(PipelineFixtures::passingVeraPdfResult());
 
-    runValidateArtifactJob($attachment->id);
+    runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 
@@ -259,7 +259,7 @@ test('hybrid validation fails when verapdf fails though kosit passes', function 
             pdfPath: '/tmp/validated.pdf',
         ));
 
-    runValidateArtifactJob($attachment->id);
+    runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 
@@ -291,9 +291,9 @@ test('hybrid validation surfaces validator error on verapdf tooling failure', fu
         ->andThrow(new RuntimeException('veraPDF launcher crashed'));
 
     try {
-        runValidateArtifactJob($attachment->id);
+        runValidateArtifactJob($document->getKey());
     } catch (RuntimeException) {
-        app(ValidateArtifactJob::class, ['inboxAttachmentId' => $attachment->id])->failed(
+        app(ValidateArtifactJob::class, ['ebillingDocumentId' => $document->getKey()])->failed(
             new RuntimeException('veraPDF launcher crashed')
         );
     }
@@ -322,7 +322,7 @@ test('xrechnung document validates with kosit only and reaches validated', funct
         ->once()
         ->andReturn(PipelineFixtures::passingKositResult());
 
-    runValidateArtifactJob($attachment->id);
+    runValidateArtifactJob($document->getKey());
 
     $document->refresh();
 

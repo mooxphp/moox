@@ -8,37 +8,38 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\MailInbox\Models\InboxAttachment;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class InvoiceDocumentController
 {
     /**
-     * Stream the original source PDF for inline viewing.
+     * Stream the visible PDF (generated hybrid when present, otherwise the source).
      */
-    public function previewOriginal(InboxAttachment $attachment): Response
+    public function previewOriginal(EbillingDocument $document): Response
     {
-        $this->guardAttachment($attachment);
+        $generated = $this->generatedPdfPreview($document);
+        if ($generated !== null) {
+            return $this->streamPdf($generated['contents'], $generated['filename']);
+        }
 
-        $disk = $attachment->storage_disk ?? (string) config('mail-inbox.attachments.disk', 'local');
-        $path = $attachment->storage_path;
-
+        $path = $document->sourceStoragePath();
         $this->guardPath($path);
-        abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamPdf(
-            Storage::disk($disk)->get($path),
-            $this->downloadFilename($attachment, 'storage_path', 'pdf'),
-        );
+        $contents = $document->sourcePreviewContents();
+        abort_unless(is_string($contents), 404);
+
+        $filename = is_string($path) && $path !== ''
+            ? basename($path)
+            : $document->sourceOriginalFilename();
+
+        return $this->streamPdf($contents, $filename);
     }
 
     /**
      * Download the ZUGFeRD PDF.
      */
-    public function downloadZugferd(InboxAttachment $attachment): StreamedResponse
+    public function downloadZugferd(EbillingDocument $document): StreamedResponse
     {
-        $document = $this->guardAttachmentWithDocument($attachment);
-
         $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
@@ -49,20 +50,14 @@ final class InvoiceDocumentController
         $this->guardPath($path);
         abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamedDownloadFromDisk(
-            $disk,
-            $path,
-            $this->artifactDownloadFilename($attachment, $document->pdf_storage_path, 'pdf'),
-        );
+        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
     }
 
     /**
      * Download the raw XML.
      */
-    public function downloadXml(InboxAttachment $attachment): StreamedResponse
+    public function downloadXml(EbillingDocument $document): StreamedResponse
     {
-        $document = $this->guardAttachmentWithDocument($attachment);
-
         $this->guardDeliverableArtifact($document);
 
         $disk = $document->storage_disk
@@ -73,11 +68,56 @@ final class InvoiceDocumentController
         $this->guardPath($path);
         abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamedDownloadFromDisk(
-            $disk,
-            $path,
-            $this->artifactDownloadFilename($attachment, $document->xml_storage_path, 'xml'),
-        );
+        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+    }
+
+    /**
+     * Download the human-readable XRechnung copy PDF (never the hybrid invoice).
+     */
+    public function downloadCopy(EbillingDocument $document): StreamedResponse
+    {
+        $this->guardDeliverableArtifact($document);
+
+        $disk = $document->storage_disk
+            ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
+        $path = $document->copy_pdf_storage_path;
+
+        abort_unless(is_string($path) && $path !== '', 404);
+        $this->guardPath($path);
+        abort_unless(Storage::disk($disk)->exists($path), 404);
+
+        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+    }
+
+    /**
+     * @return array{contents: string, filename: string}|null
+     */
+    private function generatedPdfPreview(EbillingDocument $document): ?array
+    {
+        $path = $document->humanReadablePdfStoragePath();
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $this->guardPath($path);
+
+        $disk = $document->storage_disk
+            ?? (string) config('e-billing.zugferd.storage_disk', 'zugferd');
+
+        if (! Storage::disk($disk)->exists($path)) {
+            return null;
+        }
+
+        $contents = Storage::disk($disk)->get($path);
+
+        if (! is_string($contents) || $contents === '') {
+            return null;
+        }
+
+        return [
+            'contents' => $contents,
+            'filename' => basename($path),
+        ];
     }
 
     private function streamedDownloadFromDisk(string $disk, string $path, string $filename): StreamedResponse
@@ -91,24 +131,6 @@ final class InvoiceDocumentController
         return $filesystem->download($path, $filename);
     }
 
-    private function guardAttachmentWithDocument(InboxAttachment $attachment): EbillingDocument
-    {
-        $document = EbillingDocument::forSourceAttachment($attachment);
-
-        abort_if(
-            $document === null
-            || $document->invoice_id === null,
-            404,
-        );
-
-        return $document;
-    }
-
-    private function guardAttachment(InboxAttachment $attachment): void
-    {
-        $this->guardAttachmentWithDocument($attachment);
-    }
-
     private function guardDeliverableArtifact(EbillingDocument $document): void
     {
         abort_unless($document->isDeliverable(), 404);
@@ -120,32 +142,20 @@ final class InvoiceDocumentController
         abort_if(str_contains($path, '..'), 400);
     }
 
-    private function downloadFilename(InboxAttachment $attachment, string $storagePathColumn, string $extension): string
-    {
-        $path = $attachment->{$storagePathColumn};
-        if ($path === null || ! is_string($path) || $path === '') {
-            return pathinfo($attachment->filename ?? 'document', PATHINFO_FILENAME).'.'.$extension;
-        }
-
-        return basename($path);
-    }
-
-    private function artifactDownloadFilename(InboxAttachment $attachment, ?string $storagePath, string $extension): string
-    {
-        if ($storagePath === null || $storagePath === '') {
-            return pathinfo($attachment->filename ?? 'document', PATHINFO_FILENAME).'.'.$extension;
-        }
-
-        return basename($storagePath);
-    }
-
     private function streamPdf(string $content, string $filename): Response
     {
         return response($content, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            'Content-Disposition' => 'inline; filename="'.$this->safeDownloadFilename($filename).'"',
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, max-age=0, must-revalidate',
         ]);
+    }
+
+    private function safeDownloadFilename(string $filename): string
+    {
+        $basename = basename(str_replace('\\', '/', $filename));
+
+        return str_replace(['"', "\r", "\n"], '', $basename);
     }
 }

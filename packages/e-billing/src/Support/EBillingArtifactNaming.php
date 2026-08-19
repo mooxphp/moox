@@ -7,7 +7,6 @@ namespace Moox\EBilling\Support;
 use DateTimeInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Moox\MailInbox\Models\InboxAttachment;
 use RuntimeException;
 use Throwable;
 
@@ -18,17 +17,17 @@ use Throwable;
  * because the gateway owns the artifact lifecycle.
  *
  * Directory layout matches mail-inbox: `{scope}/{Y}/{m}/{d}/…`.
- * Basenames derive from the original PDF attachment filename (sanitized).
+ * Basenames derive from the original PDF filename (sanitized).
  */
 final class EBillingArtifactNaming
 {
     /**
-     * Sanitized basename derived from the original PDF attachment filename.
-     * Does NOT consider collisions — pure function of $attachment->filename.
+     * Sanitized basename derived from the original PDF filename.
+     * Does NOT consider collisions — pure function of $filename.
      */
-    public static function basenameFor(InboxAttachment $attachment): string
+    public static function basenameFor(string $filename): string
     {
-        $candidate = pathinfo($attachment->filename ?? '', PATHINFO_FILENAME);
+        $candidate = pathinfo($filename, PATHINFO_FILENAME);
 
         $candidate = preg_replace('/[^\p{L}\p{N}._-]+/u', '_', $candidate);
         $candidate = is_string($candidate) ? $candidate : '';
@@ -39,8 +38,8 @@ final class EBillingArtifactNaming
 
         if ($candidate === '') {
             throw new RuntimeException(sprintf(
-                'Cannot derive storage basename from attachment filename: %s',
-                $attachment->filename ?? '(null)',
+                'Cannot derive storage basename from filename: %s',
+                $filename === '' ? '(empty)' : $filename,
             ));
         }
 
@@ -53,16 +52,16 @@ final class EBillingArtifactNaming
      * .xml or .pdf exists for a candidate, the candidate is skipped and the
      * next numeric suffix is tried.
      *
-     * Call this exactly once per attachment, in GenerateArtifactJob, when no
+     * Call this exactly once per document, in GenerateArtifactJob, when no
      * existing storage path is set on the document yet. Subsequent retries
      * reuse the stored xml_storage_path and pdf_storage_path.
      */
     public static function uniqueBasenameFor(
-        InboxAttachment $attachment,
+        string $filename,
         string $disk,
         string $directory,
     ): string {
-        $base = self::basenameFor($attachment);
+        $base = self::basenameFor($filename);
         $candidate = $base;
         $counter = 2;
         $storage = Storage::disk($disk);

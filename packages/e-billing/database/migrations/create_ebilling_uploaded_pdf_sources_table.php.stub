@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('ebilling_uploaded_pdf_sources', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->string('source_pdf_disk')->default('local');
+            $table->string('source_pdf_path');
+            $table->string('original_filename')->nullable();
+            $table->string('scope')->nullable()->index();
+            $table->boolean('requires_letterhead_overlay')->default(false);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('ebilling_uploaded_pdf_sources');
+    }
+};

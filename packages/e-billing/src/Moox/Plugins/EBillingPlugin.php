@@ -6,6 +6,7 @@ namespace Moox\EBilling\Moox\Plugins;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 
 final class EBillingPlugin implements Plugin
@@ -19,6 +20,7 @@ final class EBillingPlugin implements Plugin
     {
         $panel->resources([
             InvoiceResource::class,
+            CreditNoteResource::class,
         ]);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
 use Moox\KositValidator\Models\KositValidatable;
 use Moox\KositValidator\Models\KositValidation;
@@ -50,6 +51,53 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Manual uploads
+    |--------------------------------------------------------------------------
+    |
+    | Internal admin uploads for documents that never enter the mailbox flow.
+    | Enabled per resource via resources.*.manual_upload.enabled.
+    |
+    */
+
+    'manual_upload' => [
+        'source_disk' => env('EBILLING_MANUAL_SOURCE_DISK', 'local'),
+        'source_path' => env('EBILLING_MANUAL_SOURCE_PATH', 'ebilling/manual-uploads/source'),
+        'max_size_kb' => (int) env('EBILLING_MANUAL_MAX_SIZE_KB', 20480),
+    ],
+
+    'letterhead' => [
+        'default' => [
+            'label' => 'Default letterhead',
+            'pdf_path' => env('EBILLING_MANUAL_DEFAULT_LETTERHEAD_PDF', ''),
+            'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_X_MM', 0),
+            'offset_y_mm' => (float) env('EBILLING_LETTERHEAD_OFFSET_Y_MM', 0),
+        ],
+        'by_seller' => [
+            // '655371' => [
+            //     'label' => 'HECO seller-specific letterhead',
+            //     'pdf_path' => env('EBILLING_MANUAL_LETTERHEAD_655371_PDF', ''),
+            //     'offset_x_mm' => (float) env('EBILLING_LETTERHEAD_655371_OFFSET_X_MM', 0),
+            //     'offset_y_mm' => (float) env('EBILLING_LETTERHEAD_655371_OFFSET_Y_MM', 0),
+            // ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | qpdf binary (letterhead overlay preprocessing)
+    |--------------------------------------------------------------------------
+    |
+    | Used to rewrite encrypted or FPDI-unreadable PDFs before underlay merge.
+    | Leave empty to rely on qpdf on PATH (Homebrew: /opt/homebrew/bin/qpdf).
+    |
+    */
+
+    'qpdf' => [
+        'binary_path' => env('EBILLING_QPDF_PATH', env('QPDF_PATH', '')),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Send visual copy with XRechnung mail
     |--------------------------------------------------------------------------
     |
@@ -61,6 +109,23 @@ return [
     */
 
     'send_visual_copy' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | XRechnung copy PDF marking (§14c)
+    |--------------------------------------------------------------------------
+    |
+    | Always produced for XRechnung. send_visual_copy only gates outbound mail.
+    |
+    */
+
+    'copy_pdf' => [
+        'term' => env('EBILLING_COPY_PDF_TERM', 'Kopie'),
+        'notice' => env(
+            'EBILLING_COPY_PDF_NOTICE',
+            'Die elektronische XRechnung (XML) ist das maßgebliche Original. Dieses PDF ist nur eine bildliche Kopie und keine weitere Rechnung.',
+        ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -104,6 +169,7 @@ return [
             'navigation_icon' => 'heroicon-o-document-text',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
+            'document_types' => ['380'],
             /*
             |--------------------------------------------------------------------------
             | Soft Delete Tab Key
@@ -123,6 +189,30 @@ return [
             */
             'soft_delete_tab_key' => 'deleted',
             'resource' => InvoiceResource::class,
+            'manual_upload' => [
+                'enabled' => false,
+                'label' => 'Manual upload',
+                'scope' => 'invoices',
+                'requires_letterhead_overlay' => false,
+            ],
+        ],
+        'credit_notes' => [
+            'enabled' => true,
+            'label' => 'trans//e-billing::ebilling.credit_note',
+            'plural_label' => 'trans//e-billing::ebilling.credit_notes',
+            'navigation_group' => 'trans//e-billing::ebilling.navigation_group',
+            'navigation_icon' => 'heroicon-o-receipt-refund',
+            'navigation_sort' => 2,
+            'navigation_count_badge' => true,
+            'document_types' => ['381'],
+            'soft_delete_tab_key' => 'deleted',
+            'resource' => CreditNoteResource::class,
+            'manual_upload' => [
+                'enabled' => true,
+                'label' => 'Upload credit note',
+                'scope' => 'credit-notes',
+                'requires_letterhead_overlay' => true,
+            ],
         ],
     ],
 

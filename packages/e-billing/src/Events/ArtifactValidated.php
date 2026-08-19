@@ -7,7 +7,7 @@ namespace Moox\EBilling\Events;
 final class ArtifactValidated
 {
     public function __construct(
-        public int $inboxAttachmentId,
+        public string $ebillingDocumentId,
         public string $format,
     ) {
     }

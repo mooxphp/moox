@@ -31,7 +31,7 @@ class PdfParserServiceProvider extends MooxServiceProvider
 
         $this->app->singleton(PdfParser::class, function ($app) {
             return new PdfParser(
-                config('pdf-parser.pdftotext_path')
+                PdfParser::usableBinaryPath(config('pdf-parser.pdftotext_path'))
             );
         });
     }
