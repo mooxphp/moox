@@ -6,9 +6,9 @@ namespace Moox\LoginLink;
 
 use Illuminate\Support\Facades\Route;
 use Moox\Core\MooxServiceProvider;
-use Moox\LoginLink\Commands\DemoIssueCommand;
+use Moox\LoginLink\Commands\ExampleIssueCommand;
 use Moox\LoginLink\Commands\InstallCommand;
-use Moox\LoginLink\Http\Controllers\DumpDemoController;
+use Moox\LoginLink\Http\Controllers\ExampleResultController;
 use Moox\LoginLink\Http\Controllers\PublicLoginLinkRedemptionController;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Spatie\LaravelPackageTools\Package;
@@ -32,7 +32,7 @@ class LoginLinkServiceProvider extends MooxServiceProvider
             ])
             ->hasCommands([
                 InstallCommand::class,
-                DemoIssueCommand::class,
+                ExampleIssueCommand::class,
             ]);
     }
 
@@ -51,7 +51,19 @@ class LoginLinkServiceProvider extends MooxServiceProvider
             ->name('login-link.public.consume');
 
         Route::middleware(['web'])
-            ->get('login-link/demo/dump', DumpDemoController::class)
-            ->name('login-link.demo.dump');
+            ->get('login-link/examples', [ExampleResultController::class, 'index'])
+            ->name('login-link.examples.index');
+
+        Route::middleware(['web'])
+            ->get('login-link/examples/mail/{template}', [ExampleResultController::class, 'mail'])
+            ->name('login-link.examples.mail');
+
+        Route::middleware(['web'])
+            ->get('login-link/examples/email-verified', [ExampleResultController::class, 'emailVerified'])
+            ->name('login-link.examples.email-verified');
+
+        Route::middleware(['web'])
+            ->get('login-link/examples/mailing-confirmed', [ExampleResultController::class, 'mailingConfirmed'])
+            ->name('login-link.examples.mailing-confirmed');
     }
 }

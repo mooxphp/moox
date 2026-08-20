@@ -26,9 +26,9 @@ class ProcessInboxAttachmentListener
             return;
         }
 
-        $this->resolveOrCreateEbillingDocument($attachment);
+        $document = $this->resolveOrCreateEbillingDocument($attachment);
 
-        StoreBillDataJob::dispatch($attachment->id);
+        StoreBillDataJob::dispatch($document->getKey());
     }
 
     private function resolveOrCreateEbillingDocument(InboxAttachment $attachment): EbillingDocument

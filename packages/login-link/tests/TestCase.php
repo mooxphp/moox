@@ -23,6 +23,7 @@ abstract class TestCase extends Orchestra
     protected function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
+        config()->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
         config()->set('login-link.passwordless.enabled', true);
         config()->set('login-link.rate_limit.send', [
             'max_attempts' => 3,
@@ -36,8 +37,9 @@ abstract class TestCase extends Orchestra
         ]);
         config()->set('login-link.templates', [
             'login' => 'login-link::mail.login-link',
+            'verify-email' => 'login-link::mail.verify-email',
+            'mass-mail' => 'login-link::mail.mass-mail',
             'ack' => 'login-link::mail.process-link',
-            'dump' => 'login-link::mail.dump',
         ]);
         config()->set('login-link.public_consume_path', 'signed-link/{loginLink}');
         config()->set('login-link.ack.redirect_url', '/ack-ok');

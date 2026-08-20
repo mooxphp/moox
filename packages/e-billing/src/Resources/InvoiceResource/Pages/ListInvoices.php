@@ -4,73 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Resources\InvoiceResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
-use Moox\Core\Traits\Tabs\HasListPageTabs;
+use Moox\EBilling\Resources\Concerns\HasEBillingDocumentListTabs;
 use Moox\EBilling\Resources\InvoiceResource;
-use Moox\Invoice\Support\InvoiceModels;
 
 final class ListInvoices extends ListRecords
 {
     use BaseInListPage;
-    use HasListPageTabs;
+    use HasEBillingDocumentListTabs;
     use SingleSoftDeleteInListPage;
 
     protected static string $resource = InvoiceResource::class;
 
-    public function mount(): void
+    /**
+     * @return array<Action>
+     */
+    protected function getHeaderActions(): array
     {
-        parent::mount();
-        $this->mountTabsInListPage();
-    }
-
-    public function getTabs(): array
-    {
-        return $this->getDynamicTabs('e-billing.tabs.invoices', InvoiceModels::invoice()); // resolves host subclass via config('invoice.models.invoice')
-    }
-
-    protected function applyConditions($query, $conditions)
-    {
-        foreach ($conditions as $condition) {
-            $value = $condition['value'];
-
-            if ($value instanceof \Closure) {
-                $value = $value();
-            }
-
-            if ($condition['field'] === 'deleted_at' && in_array(SoftDeletes::class, class_uses_recursive($query->getModel()))) {
-                $query = $query->withTrashed();
-            }
-
-            if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
-                $query->whereHas(
-                    'ebillingDocument',
-                    fn ($documentQuery) => $documentQuery->whereIn('review_status', (array) $value),
-                );
-
-                continue;
-            }
-
-            if ($condition['field'] === 'gateway_status' && $condition['operator'] === 'in') {
-                $query->whereHas(
-                    'ebillingDocument',
-                    fn ($documentQuery) => $documentQuery->whereIn('gateway_status', (array) $value),
-                );
-
-                continue;
-            }
-
-            if ($condition['operator'] === 'in') {
-                $query->whereIn($condition['field'], (array) $value);
-            } elseif ($condition['operator'] === 'not_in') {
-                $query->whereNotIn($condition['field'], (array) $value);
-            } else {
-                $query->where($condition['field'], $condition['operator'], $value);
-            }
-        }
-
-        return $query;
+        return array_values(array_filter([
+            InvoiceResource::getManualUploadAction(),
+        ]));
     }
 }

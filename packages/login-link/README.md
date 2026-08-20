@@ -31,36 +31,49 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 ## How it works (high level)
 
 - Auth login: Filament login → issue `login` process → panel consume URL → `login` handler authenticates.
-- Public process: `LoginLinkService::issue(...)` with `panelId: null` → public consume URL → handler (e.g. `ack`) runs **without** Auth.
+- Public process: `LoginLinkService::issue(...)` with `panelId: null` → public consume URL → handler (e.g. `verify-email`) runs **without** Auth.
 - Redemption looks up the process definition and dispatches to its **handler_key**.
 - Other packages register handlers under `{package}.login-link.handlers`.
 
-### Public / non-login example
+### Packaged examples
+
+Seeded processes, each with its own English mail template:
+
+| Process | Context | Template | Handler | Invalidate prior |
+|---|---|---|---|---|
+| `login` | auth | `login-link::mail.login-link` | signs the user into the panel | yes |
+| `verify-email` | public | `login-link::mail.verify-email` | confirms mailbox ownership, no login | yes |
+| `mass-mail` | public | `login-link::mail.mass-mail` | confirms a campaign recipient, no login | **no** |
 
 ```php
 app(\Moox\LoginLink\Services\LoginLinkService::class)->issue(
-    processSlug: 'ack',
-    subject: $address,
-    email: 'ap@example.com',
-    panelId: null, // required null for public-context processes
+    processSlug: 'verify-email',
+    subject: $user,
+    email: 'owner@example.com',
+    panelId: null,
     request: request(),
-    payload: ['source' => 'portal'],
+);
+
+app(\Moox\LoginLink\Services\LoginLinkService::class)->issue(
+    processSlug: 'mass-mail',
+    subject: $contact,
+    email: 'reader@example.com',
+    panelId: null,
+    request: request(),
+    payload: ['campaign' => 'Spring newsletter', 'mailing_id' => '2026-03-01'],
 );
 ```
 
-Register real verification handlers in consumer packages; `ack` is the built-in proof handler.
-
-### Demo with dump views
-
 ```bash
 php artisan db:seed --class="Moox\LoginLink\Database\Seeders\LoginLinkProcessSeeder"
-php artisan login-link:demo
-# or campaign-style (invalidate_prior off):
-php artisan login-link:demo demo-campaign --payload='{"campaign":"spring","variant":"A"}'
+php artisan login-link:example
+php artisan login-link:example mass-mail --payload='{"campaign":"Spring newsletter","mailing_id":"demo-001"}'
 ```
 
-1. Open the printed signed URL (or the queued dump mail).
-2. Land on `/login-link/demo/dump` — JSON dump of process, subject, payload, `auth.check=false`.
+1. Open the printed signed URL (or the queued example mail).
+2. Land on `/login-link/examples/email-verified` or `/login-link/examples/mailing-confirmed`.
+3. Preview the three English mail templates at `/login-link/examples` (no queue needed).
+4. Passwordless login is issued from the Filament login form, not this command.
 
 ## Installation
 
@@ -93,8 +106,9 @@ Admins manage processes under **Link processes**:
 
 Seeded on install:
 
-- `login` — auth, template `login`, invalidate prior on
-- `ack` — public, template `ack`, invalidate prior on
+- `login` — auth, template `login`, signs the user in, invalidate prior on
+- `verify-email` — public, template `verify-email`, mailbox confirmation, invalidate prior on
+- `mass-mail` — public, template `mass-mail`, campaign confirmation, invalidate prior **off**
 
 ## Key configuration knobs
 
@@ -102,7 +116,7 @@ Seeded on install:
 - `login-link.templates` — template key → Blade view
 - `login-link.public_consume_path` — public signed route path
 - `login-link.public_invalid_redirect` — redirect when public redeem fails
-- `login-link.ack.redirect_url` — ack handler success redirect
+- `login-link.ack.redirect_url` — fallback redirect for the generic `ack` handler
 - `login-link.passwordless.enabled`, `rate_limit.send`, `expiration_minutes`, `user_models`, `mail_logo_url`
 
 ## Security notes

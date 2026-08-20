@@ -39,64 +39,128 @@ final class DbTableSourceQuery
                 continue;
             }
 
-            $column = $clause['column'] ?? null;
-            $operator = strtolower((string) ($clause['operator'] ?? '='));
-
-            if (! is_string($column) || $column === '') {
-                continue;
-            }
-
-            if ($operator === 'null') {
-                $query->whereNull($column);
-
-                continue;
-            }
-
-            if ($operator === 'not_null') {
-                $query->whereNotNull($column);
-
-                continue;
-            }
-
-            if ($operator === 'in' && is_array($clause['value'] ?? null)) {
-                $query->where(function (Builder $nested) use ($column, $clause): void {
-                    foreach ($clause['value'] as $value) {
-                        if ($value === null) {
-                            $nested->orWhereNull($column);
-                        } else {
-                            $nested->orWhere($column, $value);
-                        }
-                    }
-                });
-
-                continue;
-            }
-
-            if ($operator === 'not_in_subquery' && is_array($clause['value'] ?? null)) {
-                $subquery = $clause['value'];
-                $subTable = $subquery['table'] ?? null;
-                $subColumn = $subquery['column'] ?? null;
-
-                if (! is_string($subTable) || $subTable === '' || ! is_string($subColumn) || $subColumn === '') {
-                    continue;
-                }
-
-                $query->whereNotIn($column, function (Builder $sub) use ($subTable, $subColumn, $subquery): void {
-                    $sub->from($subTable)->select($subColumn);
-                    self::applyWhereClauses($sub, ['where' => $subquery['where'] ?? []]);
-                });
-
-                continue;
-            }
-
-            if (array_key_exists('value', $clause)) {
-                $query->where($column, $operator, $clause['value']);
-
-                continue;
-            }
-
-            $query->where($column, $operator);
+            self::applyWhereClause($query, $clause);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $clause
+     */
+    private static function applyWhereClause(Builder $query, array $clause, bool $or = false): void
+    {
+        $operator = strtolower((string) ($clause['operator'] ?? '='));
+
+        if ($operator === 'raw' && is_array($clause['value'] ?? null)) {
+            $sql = $clause['value']['sql'] ?? null;
+            $bindings = $clause['value']['bindings'] ?? [];
+
+            if (! is_string($sql) || $sql === '') {
+                return;
+            }
+
+            if (! is_array($bindings)) {
+                $bindings = [];
+            }
+
+            $or ? $query->orWhereRaw($sql, $bindings) : $query->whereRaw($sql, $bindings);
+
+            return;
+        }
+
+        if ($operator === 'or' && is_array($clause['value'] ?? null)) {
+            $callback = function (Builder $nested) use ($clause): void {
+                $subClauses = array_values(array_filter(
+                    $clause['value'],
+                    static fn (mixed $subClause): bool => is_array($subClause),
+                ));
+
+                foreach ($subClauses as $index => $subClause) {
+                    if ($index === 0) {
+                        self::applyWhereClause($nested, $subClause);
+
+                        continue;
+                    }
+
+                    $nested->orWhere(function (Builder $inner) use ($subClause): void {
+                        self::applyWhereClause($inner, $subClause);
+                    });
+                }
+            };
+
+            if ($or) {
+                $query->orWhere($callback);
+            } else {
+                $query->where($callback);
+            }
+
+            return;
+        }
+
+        $column = $clause['column'] ?? null;
+        if (! is_string($column) || $column === '') {
+            return;
+        }
+
+        if ($operator === 'null') {
+            $or ? $query->orWhereNull($column) : $query->whereNull($column);
+
+            return;
+        }
+
+        if ($operator === 'not_null') {
+            $or ? $query->orWhereNotNull($column) : $query->whereNotNull($column);
+
+            return;
+        }
+
+        if ($operator === 'in' && is_array($clause['value'] ?? null)) {
+            $callback = function (Builder $nested) use ($column, $clause): void {
+                foreach ($clause['value'] as $value) {
+                    if ($value === null) {
+                        $nested->orWhereNull($column);
+                    } else {
+                        $nested->orWhere($column, $value);
+                    }
+                }
+            };
+
+            $or ? $query->orWhere($callback) : $query->where($callback);
+
+            return;
+        }
+
+        if ($operator === 'not_in_subquery' && is_array($clause['value'] ?? null)) {
+            $subquery = $clause['value'];
+            $subTable = $subquery['table'] ?? null;
+            $subColumn = $subquery['column'] ?? null;
+
+            if (! is_string($subTable) || $subTable === '' || ! is_string($subColumn) || $subColumn === '') {
+                return;
+            }
+
+            $callback = function (Builder $sub) use ($subTable, $subColumn, $subquery): void {
+                $sub->from($subTable)->select($subColumn);
+                self::applyWhereClauses($sub, ['where' => $subquery['where'] ?? []]);
+            };
+
+            $or ? $query->orWhereNotIn($column, $callback) : $query->whereNotIn($column, $callback);
+
+            return;
+        }
+
+        if ($operator === 'datetime_gte' && array_key_exists('value', $clause)) {
+            $or ? $query->orWhere($column, '>=', $clause['value']) : $query->where($column, '>=', $clause['value']);
+
+            return;
+        }
+
+        if (array_key_exists('value', $clause)) {
+            $or ? $query->orWhere($column, $operator, $clause['value']) : $query->where($column, $operator, $clause['value']);
+
+            return;
+        }
+
+        $or ? $query->orWhere($column, $operator) : $query->where($column, $operator);
     }
 
     public static function hasRowKey(mixed $rowKey): bool

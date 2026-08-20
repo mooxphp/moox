@@ -34,7 +34,7 @@ The pipeline then runs in order:
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
 | 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are settled as `Ignored` on the inbox driver and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
-| 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation when `moox/verapdf` is installed; on pass, stores a SHA-256 hash of the deliverable and marks the document `Validated`. When veraPDF is not configured, hybrid validation falls back to KOSIT-only (degraded mode). |
+| 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation. A hybrid passes only when both succeed; if veraPDF is missing the document is retained and flagged, never `Validated`. On pass, stores a SHA-256 hash of the deliverable. |
 
 There is no `HandleFailedJob`. Failure handling uses each job's `failed()` method plus `InboxMessagePipelineFinalizer` to update attachment and message status.
 

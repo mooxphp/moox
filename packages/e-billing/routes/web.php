@@ -6,12 +6,15 @@ use Illuminate\Support\Facades\Route;
 use Moox\EBilling\Http\Controllers\InvoiceDocumentController;
 
 Route::middleware(['web', 'auth'])->prefix('ebilling')->group(function (): void {
-    Route::get('pdf/{attachment}', [InvoiceDocumentController::class, 'previewOriginal'])
+    Route::get('pdf/{document}', [InvoiceDocumentController::class, 'previewOriginal'])
         ->name('ebilling.pdf.preview');
 
-    Route::get('zugferd-download/{attachment}', [InvoiceDocumentController::class, 'downloadZugferd'])
+    Route::get('zugferd-download/{document}', [InvoiceDocumentController::class, 'downloadZugferd'])
         ->name('ebilling.zugferd.download');
 
-    Route::get('xml-download/{attachment}', [InvoiceDocumentController::class, 'downloadXml'])
+    Route::get('xml-download/{document}', [InvoiceDocumentController::class, 'downloadXml'])
         ->name('ebilling.xml.download');
+
+    Route::get('copy-download/{document}', [InvoiceDocumentController::class, 'downloadCopy'])
+        ->name('ebilling.copy.download');
 });

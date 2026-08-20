@@ -60,26 +60,13 @@ class ZugferdConverter
     {
         $tempDir = rtrim(sys_get_temp_dir(), '/');
         $uid = Str::uuid()->toString();
-        $decryptedPath = "{$tempDir}/{$uid}_decrypted.pdf";
+        $readablePath = "{$tempDir}/{$uid}_readable.pdf";
         $mergedPath = "{$tempDir}/{$uid}_merged.pdf";
         $passwordRaw = config('mail-inbox.zugferd.pdf_password');
         $password = is_string($passwordRaw) && $passwordRaw !== '' ? $passwordRaw : null;
 
         try {
-            $decryptCmd = array_values(array_filter([
-                'qpdf',
-                '--decrypt',
-                $password !== null ? "--password={$password}" : null,
-                $pdfPath,
-                $decryptedPath,
-            ]));
-
-            $decryptProcess = new Process($decryptCmd);
-            $decryptProcess->run();
-
-            $sourcePath = ($decryptProcess->isSuccessful() && is_file($decryptedPath))
-                ? $decryptedPath
-                : $pdfPath;
+            $sourcePath = $this->rewritePdfForFpdi($pdfPath, $readablePath, $password);
 
             $merger = new ZugferdDocumentPdfMerger($xml, $sourcePath);
             $merger->generateDocument()->saveDocument($mergedPath);
@@ -91,12 +78,58 @@ class ZugferdConverter
 
             return $mergedContent;
         } finally {
-            foreach ([$decryptedPath, $mergedPath] as $tmp) {
+            foreach ([$readablePath, $mergedPath] as $tmp) {
                 if (is_file($tmp)) {
                     @unlink($tmp);
                 }
             }
         }
+    }
+
+    /**
+     * Ghostscript PDF/A output (and some supplier PDFs) uses compressed object
+     * streams / xref that the free FPDI parser cannot read. qpdf rewrites them
+     * to a classic xref. Exit code 3 is a warning with a usable file.
+     */
+    private function rewritePdfForFpdi(string $pdfPath, string $outputPath, ?string $password): string
+    {
+        $command = array_values(array_filter([
+            $this->qpdfBinary(),
+            '--decrypt',
+            '--object-streams=disable',
+            $password !== null ? "--password={$password}" : null,
+            $pdfPath,
+            $outputPath,
+        ]));
+
+        $process = new Process($command);
+        $process->setTimeout(30);
+        $process->run();
+
+        $exitCode = $process->getExitCode();
+        $rewritten = is_file($outputPath) && filesize($outputPath) > 8;
+
+        if ($rewritten && ($exitCode === 0 || $exitCode === 3)) {
+            return $outputPath;
+        }
+
+        return $pdfPath;
+    }
+
+    private function qpdfBinary(): string
+    {
+        foreach ([
+            trim((string) config('e-billing.qpdf.binary_path', '')),
+            '/opt/homebrew/bin/qpdf',
+            '/usr/local/bin/qpdf',
+            'qpdf',
+        ] as $candidate) {
+            if ($candidate !== '' && ($candidate === 'qpdf' || is_executable($candidate))) {
+                return $candidate;
+            }
+        }
+
+        return 'qpdf';
     }
 
     public function extractXmlFromPdf(string $absolutePdfPath): string

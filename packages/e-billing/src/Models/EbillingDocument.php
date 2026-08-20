@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Moox\Company\Models\Company;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
@@ -27,6 +28,7 @@ use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\VeraPdf\Models\VeraPdfValidation;
+use RuntimeException;
 
 /**
  * Temporary duplication: review/score methods below mirror legacy {@see Invoice}
@@ -39,6 +41,7 @@ use Moox\VeraPdf\Models\VeraPdfValidation;
  * @property string|null $xml_storage_path
  * @property string|null $storage_disk
  * @property string|null $pdf_storage_path
+ * @property string|null $copy_pdf_storage_path
  * @property string $format
  * @property string|null $artifact_content_hash
  * @property array<string, mixed>|null $ignored_reason
@@ -80,6 +83,7 @@ class EbillingDocument extends BaseItemModel
         'xml_storage_path',
         'storage_disk',
         'pdf_storage_path',
+        'copy_pdf_storage_path',
         'format',
         'artifact_content_hash',
         'ignored_reason',
@@ -132,6 +136,91 @@ class EbillingDocument extends BaseItemModel
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function inboxAttachment(): ?InboxAttachment
+    {
+        $source = $this->source;
+
+        return $source instanceof InboxAttachment ? $source : null;
+    }
+
+    public function sourceFullPath(): string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->fullPath();
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->sourceFullPath();
+        }
+
+        throw new RuntimeException('Ebilling document has no resolvable source PDF path.');
+    }
+
+    public function sourceOriginalFilename(): string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return (string) ($source->filename ?? 'document.pdf');
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return (string) ($source->original_filename ?: basename($source->source_pdf_path));
+        }
+
+        return 'document.pdf';
+    }
+
+    public function sourceStorageDisk(): ?string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->storage_disk ?? (string) config('mail-inbox.attachments.disk', 'local');
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->source_pdf_disk;
+        }
+
+        return null;
+    }
+
+    public function sourceStoragePath(): ?string
+    {
+        $source = $this->source;
+
+        if ($source instanceof InboxAttachment) {
+            return $source->storage_path;
+        }
+
+        if ($source instanceof UploadedPdfSource) {
+            return $source->source_pdf_path;
+        }
+
+        return null;
+    }
+
+    public function sourcePreviewContents(): ?string
+    {
+        $disk = $this->sourceStorageDisk();
+        $path = $this->sourceStoragePath();
+
+        if (! is_string($disk) || $disk === '' || ! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (! Storage::disk($disk)->exists($path)) {
+            return null;
+        }
+
+        $contents = Storage::disk($disk)->get($path);
+
+        return is_string($contents) ? $contents : null;
     }
 
     /**
@@ -199,6 +288,23 @@ class EbillingDocument extends BaseItemModel
             ArtifactKind::Xml => $this->xml_storage_path,
             ArtifactKind::Pdf => $this->pdf_storage_path,
         };
+    }
+
+    /**
+     * Visible PDF for humans: the hybrid invoice PDF, or the XRechnung copy PDF.
+     * Never treats the copy as the hybrid deliverable of record.
+     */
+    public function humanReadablePdfStoragePath(): ?string
+    {
+        if (is_string($this->pdf_storage_path) && $this->pdf_storage_path !== '') {
+            return $this->pdf_storage_path;
+        }
+
+        if (is_string($this->copy_pdf_storage_path) && $this->copy_pdf_storage_path !== '') {
+            return $this->copy_pdf_storage_path;
+        }
+
+        return null;
     }
 
     /**
@@ -367,6 +473,10 @@ class EbillingDocument extends BaseItemModel
     public function transitionTo(InvoiceProcessingStatus $newStatus): void
     {
         $current = $this->resolveReviewStatusEnum();
+
+        if ($current === $newStatus) {
+            return;
+        }
 
         if (! $current->canTransitionTo($newStatus)) {
             throw new InvalidArgumentException(

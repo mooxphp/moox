@@ -10,11 +10,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
-use Moox\MailInbox\Models\InboxAttachment;
+use Throwable;
 
 /**
  * Parses the PDF once and persists bill data on the ebilling document before the foreign-invoice filter and XML generation run.
@@ -37,7 +38,7 @@ final class StoreBillDataJob implements ShouldQueue
     public array $backoff = [60, 300];
 
     public function __construct(
-        public int $inboxAttachmentId,
+        public string $ebillingDocumentId,
     ) {
     }
 
@@ -45,51 +46,60 @@ final class StoreBillDataJob implements ShouldQueue
     {
         $this->setProgress(0);
 
-        $attachment = InboxAttachment::query()->find($this->inboxAttachmentId);
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
 
-        if ($attachment === null) {
-            Log::warning('[EBilling] StoreBillDataJob: attachment not found', [
-                'inbox_attachment_id' => $this->inboxAttachmentId,
+        if (! $document instanceof EbillingDocument) {
+            Log::warning('[EBilling] StoreBillDataJob: document not found', [
+                'ebilling_document_id' => $this->ebillingDocumentId,
             ]);
             $this->setProgress(100);
 
             return;
         }
 
-        if (! $attachment->isPdf()) {
-            $this->setProgress(100);
+        $attachment = $document->inboxAttachment();
 
-            return;
-        }
+        if ($attachment !== null) {
+            if (! $attachment->isPdf()) {
+                $this->setProgress(100);
 
-        if ($attachment->processing_status !== InboxAttachmentProcessingStatus::Processing->value) {
-            $this->setProgress(100);
+                return;
+            }
 
-            return;
+            if ($attachment->processing_status !== InboxAttachmentProcessingStatus::Processing->value) {
+                $this->setProgress(100);
+
+                return;
+            }
         }
 
         $this->setProgress(20);
 
-        $document = EbillingDocument::forSourceAttachment($attachment);
-
-        if ($document === null) {
-            Log::warning('[EBilling] StoreBillDataJob: no EbillingDocument found for attachment', [
-                'inbox_attachment_id' => $this->inboxAttachmentId,
-                'attachment_id' => $attachment->id,
-            ]);
-            $this->setProgress(100);
-
-            return;
-        }
-
-        $invoice = $eBilling->parseInvoiceFromPdf($attachment->fullPath());
+        $invoice = $eBilling->parseInvoiceFromPdf($document->sourceFullPath());
         $document->bill_data = $invoice->toArray();
         $document->save();
 
         $this->setProgress(80);
 
-        FilterForeignInvoiceJob::dispatch($this->inboxAttachmentId);
+        FilterForeignInvoiceJob::dispatch($document->getKey());
 
         $this->setProgress(100);
+    }
+
+    public function failed(?Throwable $exception = null): void
+    {
+        Log::error('[EBilling] StoreBillDataJob failed', [
+            'ebilling_document_id' => $this->ebillingDocumentId,
+            'exception' => $exception,
+        ]);
+
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
+
+        if (! $document instanceof EbillingDocument || $document->inboxAttachment() !== null) {
+            return;
+        }
+
+        $document->gateway_status = EBillingAttachmentProcessingStatus::GenerationFailed;
+        $document->save();
     }
 }

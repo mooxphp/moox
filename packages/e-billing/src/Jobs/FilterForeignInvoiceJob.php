@@ -74,7 +74,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     public array $backoff = [60, 300];
 
     public function __construct(
-        public int $inboxAttachmentId,
+        public string $ebillingDocumentId,
     ) {
     }
 
@@ -83,26 +83,33 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     ): void {
         $this->setProgress(0);
 
-        $attachment = InboxAttachment::query()->find($this->inboxAttachmentId);
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
 
-        if ($attachment === null) {
-            Log::warning('[EBilling] FilterForeignInvoiceJob: attachment not found', [
-                'inbox_attachment_id' => $this->inboxAttachmentId,
+        if (! $document instanceof EbillingDocument) {
+            Log::warning('[EBilling] FilterForeignInvoiceJob: document not found', [
+                'ebilling_document_id' => $this->ebillingDocumentId,
             ]);
             $this->setProgress(100);
 
             return;
         }
 
-        if (! $attachment->isPdf()) {
+        if ($document->gateway_status === EBillingAttachmentProcessingStatus::IgnoredForeign) {
             $this->setProgress(100);
 
             return;
         }
 
-        $document = EbillingDocument::forSourceAttachment($attachment);
+        $attachment = $document->inboxAttachment();
 
-        if ($document?->gateway_status === EBillingAttachmentProcessingStatus::IgnoredForeign) {
+        if ($attachment === null) {
+            $this->dispatchGenerateArtifact($document);
+            $this->setProgress(100);
+
+            return;
+        }
+
+        if (! $attachment->isPdf()) {
             $this->setProgress(100);
 
             return;
@@ -132,7 +139,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             Log::warning('FilterForeignInvoiceJob: bill_data missing on ebilling document', [
                 'attachment_id' => $attachment->id,
             ]);
-            $this->dispatchGenerateArtifact($attachment);
+            $this->dispatchGenerateArtifact($document);
             $this->setProgress(100);
 
             return;
@@ -142,7 +149,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             Log::warning('[EBilling] FilterForeignInvoiceJob: empty parsed invoice; continuing pipeline', [
                 'inbox_attachment_id' => $attachment->id,
             ]);
-            $this->dispatchGenerateArtifact($attachment);
+            $this->dispatchGenerateArtifact($document);
             $this->setProgress(100);
 
             return;
@@ -152,7 +159,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $classification = $this->classifyInvoiceOrigin($billData);
         if (! $classification['is_foreign']) {
-            $this->dispatchGenerateArtifact($attachment);
+            $this->dispatchGenerateArtifact($document);
             $this->setProgress(100);
 
             return;
@@ -297,22 +304,13 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         return (float) $value;
     }
 
-    private function dispatchGenerateArtifact(InboxAttachment $attachment): void
+    private function dispatchGenerateArtifact(EbillingDocument $document): void
     {
-        $document = EbillingDocument::forSourceAttachment($attachment);
-        $billData = $document?->bill_data;
+        $billData = $document->bill_data;
         if (is_array($billData) && $billData !== [] && ! $this->hasExtractedInvoiceNumber($billData)) {
             Log::warning('[EBilling] FilterForeignInvoiceJob: invoice_number (BT-1) missing; skipping XML generation', [
-                'inbox_attachment_id' => $attachment->id,
+                'ebilling_document_id' => $document->getKey(),
                 'invoice_number' => $billData['invoice_number'] ?? null,
-            ]);
-
-            return;
-        }
-
-        if ($document === null) {
-            Log::warning('[EBilling] FilterForeignInvoiceJob: no ebilling document for generating promotion', [
-                'inbox_attachment_id' => $attachment->id,
             ]);
 
             return;
@@ -321,7 +319,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         $document->gateway_status = EBillingAttachmentProcessingStatus::Generating;
         $document->save();
 
-        GenerateArtifactJob::dispatch($attachment->id);
+        GenerateArtifactJob::dispatch($document->getKey());
     }
 
     /**
@@ -401,8 +399,17 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     public function failed(?Throwable $exception = null): void
     {
         Log::error('[EBilling] FilterForeignInvoiceJob failed', [
-            'inbox_attachment_id' => $this->inboxAttachmentId,
+            'ebilling_document_id' => $this->ebillingDocumentId,
             'exception' => $exception,
         ]);
+
+        $document = EbillingDocument::query()->find($this->ebillingDocumentId);
+
+        if (! $document instanceof EbillingDocument || $document->inboxAttachment() !== null) {
+            return;
+        }
+
+        $document->gateway_status = EBillingAttachmentProcessingStatus::GenerationFailed;
+        $document->save();
     }
 }

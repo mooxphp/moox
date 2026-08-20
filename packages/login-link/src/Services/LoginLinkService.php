@@ -68,6 +68,7 @@ class LoginLinkService
         Request $request,
         bool $setUserMorph = false,
         ?array $payload = null,
+        bool $queueMail = true,
     ): LoginLink {
         $process = $this->resolveProcessDefinition($processSlug);
         $expiresMinutes = $process?->resolveExpiryMinutes()
@@ -109,7 +110,13 @@ class LoginLinkService
 
         $loginLink = LoginLink::query()->create($attributes);
 
-        Mail::to($email)->queue(new ProcessLinkMail($loginLink, $process));
+        $mailable = new ProcessLinkMail($loginLink, $process);
+
+        if ($queueMail) {
+            Mail::to($email)->queue($mailable);
+        } else {
+            Mail::to($email)->sendNow($mailable);
+        }
 
         return $loginLink;
     }
