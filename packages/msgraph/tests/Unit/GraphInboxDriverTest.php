@@ -266,12 +266,18 @@ it('honours page_size on the initial delta request', function () {
 
 it('settles each outcome into the configured folder and moves the message there', function (SettlementOutcome $outcome, string $folderName, string $folderId) {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
+    $responses = [];
+    if ($outcome === SettlementOutcome::Processed) {
+        $responses[] = GraphHttp::markedAsRead();
+    }
+    $responses = [
+        ...$responses,
         GraphHttp::folderCollection($folderId, $folderName),
         GraphHttp::messageParent('folder-inbox'),
         GraphHttp::inboxFolder(),
         GraphHttp::movedMessage(),
-    ]), $history);
+    ];
+    $driver = GraphHttp::driver(GraphHttp::mock($responses), $history);
 
     $driver->settle('msg-1', $outcome);
 
@@ -279,9 +285,30 @@ it('settles each outcome into the configured folder and moves the message there'
     $methods = array_map(fn (array $entry): string => $entry['request']->getMethod(), $graph);
     $uris = array_map(fn (array $entry): string => (string) $entry['request']->getUri(), $graph);
 
-    expect($uris[0])->toContain('mailFolders')
-        ->and(urldecode($uris[0]))->toContain($folderName)
+    $folderLookup = null;
+    foreach ($graph as $entry) {
+        $uri = (string) $entry['request']->getUri();
+        if ($entry['request']->getMethod() === 'GET' && str_contains($uri, 'mailFolders')) {
+            $folderLookup = $uri;
+            break;
+        }
+    }
+
+    expect($folderLookup)->not->toBeNull()
+        ->and(urldecode((string) $folderLookup))->toContain($folderName)
         ->and($methods)->toContain('POST');
+
+    if ($outcome === SettlementOutcome::Processed) {
+        $patch = null;
+        foreach ($graph as $entry) {
+            if ($entry['request']->getMethod() === 'PATCH') {
+                $patch = $entry['request'];
+                break;
+            }
+        }
+        expect($patch)->not->toBeNull()
+            ->and(requestBody($patch)['isRead'] ?? null)->toBeTrue();
+    }
 
     $move = null;
     foreach ($graph as $entry) {
@@ -302,6 +329,7 @@ it('settles each outcome into the configured folder and moves the message there'
 it('creates a missing folder then uses the new id for settle', function () {
     $history = [];
     $driver = GraphHttp::driver(GraphHttp::mock([
+        GraphHttp::markedAsRead(),
         GraphHttp::emptyFolderCollection(),
         GraphHttp::createdFolder('folder-done-new', 'DoneBox'),
         GraphHttp::messageParent('folder-inbox'),
@@ -334,6 +362,7 @@ it('creates a missing folder then uses the new id for settle', function () {
 it('does not POST a move when the message is already in the destination folder', function () {
     $history = [];
     $driver = GraphHttp::driver(GraphHttp::mock([
+        GraphHttp::markedAsRead(),
         GraphHttp::folderCollection('folder-done', 'DoneBox'),
         GraphHttp::messageParent('folder-done'),
     ]), $history);

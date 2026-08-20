@@ -328,52 +328,58 @@ class MailInboxService
     {
         $messages = InboxMessage::forScope($scope)->failed()->with('attachments')->get();
 
-        $stalenessMinutes = max(1, (int) config('mail-inbox.retry_staleness_minutes', 30));
-        $stalenessThreshold = now()->subMinutes($stalenessMinutes);
-
         foreach ($messages as $message) {
-            $messageId = $message->id;
-
-            DB::transaction(function () use ($message, $stalenessThreshold): void {
-                $message->update([
-                    'processing_status' => InboxMessageProcessingStatus::New->value,
-                    'error_message' => null,
-                ]);
-
-                $message->attachments()
-                    ->where('processing_status', InboxAttachmentProcessingStatus::Failed->value)
-                    ->update([
-                        'processing_status' => InboxAttachmentProcessingStatus::New->value,
-                        'error_message' => null,
-                    ]);
-
-                $message->attachments()
-                    ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
-                    ->where('updated_at', '<', $stalenessThreshold)
-                    ->update([
-                        'processing_status' => InboxAttachmentProcessingStatus::New->value,
-                        'error_message' => null,
-                    ]);
-            });
-
-            $recentProcessingCount = InboxAttachment::query()
-                ->where('inbox_message_id', $messageId)
-                ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
-                ->where('updated_at', '>=', $stalenessThreshold)
-                ->count();
-
-            if ($recentProcessingCount > 0) {
-                Log::channel('mail-inbox')->warning('[MailInbox] retryFailedMessages: left processing attachments unchanged (within staleness window)', [
-                    'inbox_message_id' => $messageId,
-                    'count' => $recentProcessingCount,
-                    'staleness_minutes' => $stalenessMinutes,
-                ]);
-            }
-
-            $this->enqueueParseJobsForInboxMessage($message->fresh(['attachments']));
+            $this->retryFailedMessage($message);
         }
 
         return $messages->count();
+    }
+
+    public function retryFailedMessage(InboxMessage $message): void
+    {
+        $message->loadMissing('attachments');
+
+        $stalenessMinutes = max(1, (int) config('mail-inbox.retry_staleness_minutes', 30));
+        $stalenessThreshold = now()->subMinutes($stalenessMinutes);
+        $messageId = $message->id;
+
+        DB::transaction(function () use ($message, $stalenessThreshold): void {
+            $message->update([
+                'processing_status' => InboxMessageProcessingStatus::New->value,
+                'error_message' => null,
+            ]);
+
+            $message->attachments()
+                ->where('processing_status', InboxAttachmentProcessingStatus::Failed->value)
+                ->update([
+                    'processing_status' => InboxAttachmentProcessingStatus::New->value,
+                    'error_message' => null,
+                ]);
+
+            $message->attachments()
+                ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
+                ->where('updated_at', '<', $stalenessThreshold)
+                ->update([
+                    'processing_status' => InboxAttachmentProcessingStatus::New->value,
+                    'error_message' => null,
+                ]);
+        });
+
+        $recentProcessingCount = InboxAttachment::query()
+            ->where('inbox_message_id', $messageId)
+            ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
+            ->where('updated_at', '>=', $stalenessThreshold)
+            ->count();
+
+        if ($recentProcessingCount > 0) {
+            Log::channel('mail-inbox')->warning('[MailInbox] retryFailedMessage: left processing attachments unchanged (within staleness window)', [
+                'inbox_message_id' => $messageId,
+                'count' => $recentProcessingCount,
+                'staleness_minutes' => $stalenessMinutes,
+            ]);
+        }
+
+        $this->enqueueParseJobsForInboxMessage($message->fresh(['attachments']));
     }
 
     /**

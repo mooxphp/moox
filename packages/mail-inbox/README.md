@@ -41,6 +41,8 @@ php artisan moox:install
 
 Learn more about the [Moox Installer or common requirements](https://moox.org/docs/getting-started/installation).
 
+This package does **not** require the Microsoft Graph SDK. For Exchange Online mailboxes, also require `moox/msgraph` (listed under `suggest` in `composer.json`). IMAP-only or custom drivers need only `moox/mail-inbox`.
+
 ## Screenshot
 
 ![Moox MailInbox screenshot](screenshot/main.jpg)
@@ -118,4 +120,5 @@ Want to help us to develop and grow Moox. Fortunately there are so many ways to 
 ## License
 
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+
 

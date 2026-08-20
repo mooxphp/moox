@@ -141,6 +141,14 @@ final class GraphHttp
         return self::json(200, ['id' => 'msg-1']);
     }
 
+    public static function markedAsRead(): Response
+    {
+        return self::json(200, [
+            'id' => 'msg-1',
+            'isRead' => true,
+        ]);
+    }
+
     /**
      * @param  array<int, mixed>  $history
      */

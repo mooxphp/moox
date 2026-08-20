@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Msgraph\Mail;
 
 use Illuminate\Support\Facades\Log;
+use Microsoft\Graph\Generated\Models\Message;
 use Microsoft\Graph\Generated\Models\ODataErrors\ODataError;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\MessageItemRequestBuilderGetQueryParameters;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\MessageItemRequestBuilderGetRequestConfiguration;
@@ -24,7 +25,8 @@ final class GraphPipelineMover
         private GraphCall $graphCall,
         private GraphFolderResolver $folders,
         private MailSettings $settings,
-    ) {}
+    ) {
+    }
 
     public function claim(string $externalId): ClaimResult
     {
@@ -64,6 +66,10 @@ final class GraphPipelineMover
     public function settle(string $externalId, SettlementOutcome $outcome): void
     {
         try {
+            if ($outcome === SettlementOutcome::Processed) {
+                $this->markMessageAsRead($externalId);
+            }
+
             $destinationId = $this->folders->getOrCreate($this->settings->folderFor($outcome));
             $this->moveMessageToFolder($externalId, $destinationId);
         } catch (GraphException $e) {
@@ -74,6 +80,16 @@ final class GraphPipelineMover
                 'exception_message' => $e->getMessage(),
             ]);
         }
+    }
+
+    private function markMessageAsRead(string $messageId): void
+    {
+        $this->graphCall->run(function () use ($messageId): void {
+            $body = new Message;
+            $body->setIsRead(true);
+
+            $this->mailbox->message($messageId)->patch($body)->wait();
+        }, 'markMessageAsRead');
     }
 
     private function moveMessageToFolder(string $messageId, string $destinationFolderId): void
@@ -166,7 +182,7 @@ final class GraphPipelineMover
         ];
 
         try {
-            foreach ([$this->settings->processedFolder, $this->settings->failedFolder] as $folderName) {
+            foreach ([$this->settings->processedFolder, $this->settings->failedFolder, $this->settings->ignoredFolder] as $folderName) {
                 $folderId = $this->folders->getOrCreate($folderName);
                 if ($parentFolderId !== null && $parentFolderId === $folderId) {
                     Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: message parent appears to be a terminal mailbox folder', $context);

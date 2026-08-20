@@ -12,7 +12,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - EN 16931 / ZUGFeRD artifact generation via `moox/zugferd` (hybrid PDF built before validation)
 - KoSIT validation integration via `moox/kosit-validator` (XML from loose file or embedded in hybrid PDF)
 - PDF/A-3 validation for hybrid formats via `moox/verapdf` when installed (skipped gracefully when not configured)
-- Foreign-invoice filtering (non-domestic invoices moved to an ignored mailbox folder)
+- Foreign-invoice filtering (non-domestic invoices settled as `Ignored` on the inbox driver and marked `IgnoredForeign`)
 - MoSCoW field validation and validation scoring on `EbillingDocument`
 - Filament `InvoiceResource` for list, filter, and manual review workflows
 - Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
@@ -32,7 +32,7 @@ The pipeline then runs in order:
 | --- | --- | --- |
 | 1 | `ProcessInboxAttachmentListener` | Creates or finds an `EbillingDocument` for the attachment and dispatches `StoreBillDataJob`. |
 | 2 | `StoreBillDataJob` | Reads parsed `bill_data` on the document (populated upstream by the host parser) and dispatches `FilterForeignInvoiceJob`. |
-| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are moved to the ignored Graph folder and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
+| 3 | `FilterForeignInvoiceJob` | Classifies domestic vs. foreign invoices; foreign invoices are settled as `Ignored` on the inbox driver and marked `IgnoredForeign`; domestic invoices advance to artifact generation. |
 | 4 | `GenerateArtifactJob` | Maps `bill_data` to a persisted `Invoice`, generates the format-specific artifact (XML only or hybrid PDF with embedded XML), runs field validation, and dispatches `ValidateArtifactJob`. |
 | 5 | `ValidateArtifactJob` | Runs KoSIT validation on the XML that will be delivered (loose XML or XML extracted from the hybrid PDF). For hybrid formats, also runs veraPDF PDF/A-3 validation when `moox/verapdf` is installed; on pass, stores a SHA-256 hash of the deliverable and marks the document `Validated`. When veraPDF is not configured, hybrid validation falls back to KOSIT-only (degraded mode). |
 
@@ -56,9 +56,11 @@ This package composes the other Moox e-billing packages. Composer requires:
 | `moox/jobs` | Job progress traits |
 | `moox/kosit-validator` | KoSIT XML validation and audit persistence |
 | `moox/verapdf` | PDF/A-3 validation for hybrid artifacts (optional; KOSIT-only degraded mode when not installed) |
-| `moox/mail-inbox` | Graph inbox, attachment storage, `ParsePdfJob` |
+| `moox/mail-inbox` | Inbox driver contract, attachment storage, `ParsePdfJob` |
 | `moox/pdf-parser` | PDF text extraction (used by the host parser) |
 | `moox/zugferd` | EN 16931 / ZUGFeRD XML generation and PDF merge |
+
+This package does not require the Microsoft Graph SDK. When mailboxes use the `msgraph` driver, the host application must also require `moox/msgraph` (folder names and Graph credentials live there).
 
 See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
 
@@ -85,7 +87,6 @@ Published as `config/e-billing.php`.
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
 | `default_format` | FormatRegistry key frozen onto `ebilling_documents.format` at generation (default `zugferd`). Allowed: `xrechnung`, `zugferd`, `factur-x` |
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`); profile lives in `moox/zugferd` (`config('zugferd.profile')`) |
-| `foreign_invoice` | Foreign-invoice handling (`ignored_folder_name`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `address_roles` |
@@ -94,16 +95,16 @@ Published as `config/e-billing.php`.
 
 ### Environment variables
 
-This package exposes one environment variable. Microsoft Graph credentials and mailbox settings belong to `moox/mail-inbox`.
+Mailbox credentials, driver registration, and folder names belong to `moox/mail-inbox` and your inbox driver package (for example `moox/msgraph` — foreign invoices settle as `SettlementOutcome::Ignored`, folder `msgraph.mail.folders.ignored` / `MSGRAPH_MAIL_IGNORED_FOLDER`).
 
 ```env
-# Optional — Graph folder display name for ignored foreign invoices (default: Ignored)
-EBILLING_IGNORED_FOLDER=Ignored
+# Optional — preferred UN/ECE piece unit code for line unit normalization (default: H87)
+EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 ```
 
 | Variable | Config key | Default | Required |
 | --- | --- | --- | --- |
-| `EBILLING_IGNORED_FOLDER` | `foreign_invoice.ignored_folder_name` | `Ignored` | No |
+| `EBILLING_PREFERRED_PIECE_UNIT_CODE` | `preferred_piece_unit_code` | `H87` | No |
 
 ### Supplier block
 

@@ -11,6 +11,9 @@
 
 ### Changed
 
+- `GraphPipelineMover::settle(Processed)` marks the message as read before the folder move (parity with the former consumer finalizer).
+- Terminal-folder skip detection in `logUnexpectedParentForMove()` also treats the ignored folder as terminal.
+
 - `GraphPipelineMover` logs folder-move diagnostics on the `mail-inbox` log channel
 - `GraphPipelineMover::claim()` returns `ClaimResult` and distinguishes already-held from move-failed
 
@@ -35,3 +38,4 @@
 ### Changed
 
 - `microsoft/microsoft-graph` constraint stays `^2.0`. The driver uses delta/`withUrl`, mail folders and attachments — all present in 2.0 — so narrowing to `^2.26` would exclude consumers without a compatibility reason.
+

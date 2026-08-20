@@ -16,13 +16,14 @@ use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
-use Moox\MailInbox\Services\GraphMailService;
 use Throwable;
 
 /**
- * After PDF parsing, classifies domestic vs. foreign invoice; foreign invoices are moved to a dedicated mailbox folder
+ * After PDF parsing, classifies domestic vs. foreign invoice; foreign invoices are settled as Ignored on the inbox driver
  * and marked {@see EBillingAttachmentProcessingStatus::IgnoredForeign} without persisting an e-billing {@see Invoice} record.
  */
 final class FilterForeignInvoiceJob implements ShouldQueue
@@ -78,7 +79,7 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     }
 
     public function handle(
-        GraphMailService $graph,
+        InboxDriverManager $drivers,
     ): void {
         $this->setProgress(0);
 
@@ -164,12 +165,11 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $externalId = $message->external_id;
         if ($externalId === null || $externalId === '') {
-            throw new \RuntimeException('FilterForeignInvoiceJob: inbox message has no external_id; cannot move in Graph.');
+            throw new \RuntimeException('FilterForeignInvoiceJob: inbox message has no external_id; cannot settle as Ignored.');
         }
 
-        $folderName = (string) config('e-billing.foreign_invoice.ignored_folder_name', 'Ignored');
-
-        $graph->moveMessageToFolderByName($externalId, $folderName, true);
+        $drivers->mailbox((string) ($message->scope ?? 'default'))
+            ->settle($externalId, SettlementOutcome::Ignored);
 
         DB::transaction(function () use ($attachment, $document, $country, $matchedRule): void {
             $ignoredReason = [

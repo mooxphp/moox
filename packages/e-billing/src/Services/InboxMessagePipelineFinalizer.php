@@ -9,10 +9,10 @@ use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Enums\InboxMessageProcessingStatus;
-use Moox\MailInbox\Exceptions\GraphItemNotFoundException;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
-use Moox\MailInbox\Services\GraphMailService;
 use Throwable;
 
 /**
@@ -23,7 +23,7 @@ use Throwable;
 class InboxMessagePipelineFinalizer
 {
     public function __construct(
-        private GraphMailService $graphService,
+        private InboxDriverManager $drivers,
     ) {
     }
 
@@ -63,7 +63,7 @@ class InboxMessagePipelineFinalizer
                 ? $message->error_message
                 : 'Attachment storage failed';
             $message->markAsFailed($error);
-            $this->moveGraphMessage($message->external_id, false, $message->id);
+            $this->settleMessage($message, false);
 
             return;
         }
@@ -84,11 +84,11 @@ class InboxMessagePipelineFinalizer
                     ? $message->error_message
                     : 'One or more attachments failed processing';
                 $message->markAsFailed($error);
-                $this->moveGraphMessage($message->external_id, false, $message->id);
+                $this->settleMessage($message, false);
             } else {
                 $message->error_message = null;
                 $message->markAsProcessed();
-                $this->moveGraphMessage($message->external_id, true, $message->id);
+                $this->settleMessage($message, true);
             }
 
             return;
@@ -96,21 +96,21 @@ class InboxMessagePipelineFinalizer
 
         if ($allPdfs->isEmpty()) {
             $message->markAsProcessed();
-            $this->moveGraphMessage($message->external_id, true, $message->id);
+            $this->settleMessage($message, true);
 
             return;
         }
 
         if ($hasFailed) {
             $message->markAsFailed('One or more attachments failed processing');
-            $this->moveGraphMessage($message->external_id, false, $message->id);
+            $this->settleMessage($message, false);
 
             return;
         }
 
         if ($allPdfs->every(fn (InboxAttachment $a): bool => $this->pdfPipelineComplete($a))) {
             $message->markAsProcessed();
-            $this->moveGraphMessage($message->external_id, true, $message->id);
+            $this->settleMessage($message, true);
         }
     }
 
@@ -158,36 +158,25 @@ class InboxMessagePipelineFinalizer
         return EbillingDocument::forSourceAttachment($attachment)?->gateway_status;
     }
 
-    private function moveGraphMessage(?string $externalId, bool $success, ?int $inboxMessageId = null): void
+    private function settleMessage(InboxMessage $message, bool $success): void
     {
+        $externalId = $message->external_id;
         if ($externalId === null || $externalId === '') {
             return;
         }
 
-        $targetFolder = $success
-            ? (string) config('mail-inbox.processed_folder')
-            : (string) config('mail-inbox.failed_folder');
+        $outcome = $success ? SettlementOutcome::Processed : SettlementOutcome::Failed;
+        $mailbox = (string) ($message->scope ?? 'default');
 
         try {
-            if ($success) {
-                $folderId = $this->graphService->getOrCreateFolder((string) config('mail-inbox.processed_folder'));
-                $this->graphService->markMessageAsRead($externalId);
-                $this->graphService->moveMessageToFolder($externalId, $folderId);
-            } else {
-                $folderId = $this->graphService->getOrCreateFolder((string) config('mail-inbox.failed_folder'));
-                $this->graphService->moveMessageToFolder($externalId, $folderId);
-            }
-        } catch (GraphItemNotFoundException $e) {
-            Log::channel('mail-inbox')->warning('Finalizer move target message not found in Graph (likely already moved or listing phantom)', [
-                'external_id' => $externalId,
-                'inbox_message_id' => $inboxMessageId,
-                'target_folder' => $targetFolder,
-            ]);
+            $this->drivers->mailbox($mailbox)->settle($externalId, $outcome);
         } catch (Throwable $e) {
-            Log::error('[EBilling] Graph folder move failed after XML pipeline finalization', [
+            Log::channel('mail-inbox')->error('[EBilling] Settlement failed after XML pipeline finalization', [
                 'exception' => $e,
                 'external_id' => $externalId,
-                'success_path' => $success,
+                'inbox_message_id' => $message->id,
+                'outcome' => $outcome->value,
+                'scope' => $mailbox,
             ]);
         }
     }

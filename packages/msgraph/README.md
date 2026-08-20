@@ -108,7 +108,7 @@ $client = $factory->make('secondary');
 
 `Moox\Msgraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. The service provider registers it as the `msgraph` driver on `InboxDriverManager` when that manager is bound. Construct it manually with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` if you need a one-off instance. Expired delta tokens surface as `Moox\MailInbox\Exceptions\InvalidSyncCursorException`.
 
-Folder display names, `$top` (`page_size`), and the per-run page cap (`delta_max_pages_per_poll`, default 50) live **only** in `config/msgraph.php`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name.
+Folder display names, `$top` (`page_size`), and the per-run page cap (`delta_max_pages_per_poll`, default 50) live **only** in `config/msgraph.php`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name. Consumers such as `moox/e-billing` settle foreign invoices as `Ignored` — they do not define `EBILLING_IGNORED_FOLDER` or other mailbox folder settings locally.
 
 ```env
 MSGRAPH_MAIL_PROCESSING_FOLDER=Processing
@@ -141,6 +141,8 @@ An empty `processing` folder skips the claim move (and creates nothing). Outcome
 | `settle(Failed)` | `msgraph.mail.folders.failed` | `Failed` |
 | `settle(Ignored)` | `msgraph.mail.folders.ignored` | `Ignored` |
 
+`settle(Processed)` marks the message as read in Graph before moving it to the processed folder (same behaviour as the pre-extraction pipeline finalizer).
+
 Folders are resolved by display name and created when missing. `fetch()` follows Graph `@odata.nextLink` up to `delta_max_pages_per_poll`, then returns `MessagePage::$continuationCursor` so the next run can resume mid-catch-up. When Graph returns `@odata.deltaLink`, that value is `MessagePage::$resumeCursor` (persist for the next poll). Both tokens are opaque; this driver allowlists Graph national-cloud hosts before calling `withUrl()`. Every request carries `Prefer: IdType="ImmutableId"`.
 
 <!-- /Usage -->
@@ -159,3 +161,4 @@ Want to help us to develop and grow Moox. Fortunately there are so many ways to 
 
 ## License
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+

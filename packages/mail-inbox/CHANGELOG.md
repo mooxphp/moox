@@ -10,6 +10,7 @@
 
 ### Changed
 
+- Removed `microsoft/microsoft-graph` from package requirements; `suggest` points at `moox/msgraph` / `microsoft/microsoft-graph`. Legacy `GraphMailService` registration remains until a later cleanup ticket. Package description no longer claims to be Graph-based.
 - Unconfigured mailbox exceptions name the scope, the `mail-inbox.mailboxes.{scope}` key, and required fields
 - `InvalidSyncCursorException` and `InboxDriver::fetch()` document that the exception means a rejected cursor, not general failures
 - `FetchMailsJob` stops resetting after `cursor_reset_max_per_run` and fails loudly instead of spinning
@@ -52,3 +53,4 @@
 ---
 
 We previously didn't track changes in this package. Please refer to the [Moox Monorepo](https://github.com/mooxphp/moox) for historical changes.
+

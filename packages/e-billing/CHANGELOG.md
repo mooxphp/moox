@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+- `FilterForeignInvoiceJob` and `InboxMessagePipelineFinalizer` settle mailbox messages via `InboxDriverManager` / `SettlementOutcome` (no Graph types).
+- Removed `foreign_invoice.ignored_folder_name` and `EBILLING_IGNORED_FOLDER`; foreign invoices settle as `SettlementOutcome::Ignored` (folder name lives in the inbox driver package, e.g. `moox/msgraph` `msgraph.mail.folders.ignored`).
+
 ### Added
 
 - Consignee delivery is a party (name + address). `DeliveryPartyMapper` (shared by `ParsedInvoiceMapper` and `InvoiceFactory`) maps DTO `delivery_address.company` onto `Party.name` (street stays `line1`; VAT, tax number, and contact stay null). A consignee with a name or any address content is persisted even without a country; empty parties are not. Header and line detail views format the party through `PartyAddressFormatter` (name first). The `delivery_address` field label is Consignee / Warenempfänger (BT/BG hint **BG-13**). `InvoiceFieldValidator` treats the field as empty only when the party is missing or both name and address are empty. `ZugferdInvoiceAdapter` maps the party onto `shipToName` / `shipToAddress`; the converter decides whether BG-15 is emitted ([mooxphp/invoice#8](https://github.com/mooxphp/invoice/issues/8)).

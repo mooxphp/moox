@@ -523,3 +523,55 @@ it('warns on repeated cursor reset across runs', function () {
 
     expect($repeatedResetLogged)->toBeTrue();
 });
+
+it('marks catch-up idle when fetch completes with resume cursor', function () {
+    Bus::fake([StoreAttachmentsJob::class, ParsePdfJob::class]);
+
+    $this->fakeDriver = new InMemoryDriver([
+        new MessagePage(
+            messages: [pipelineDto()],
+            continuationCursor: null,
+            resumeCursor: 'resume-token-1',
+        ),
+    ]);
+    app(InboxDriverManager::class)->flush();
+    app(InboxDriverManager::class)->register('memory', fn (): InMemoryDriver => $this->fakeDriver);
+
+    (new FetchMailsJob('default'))->handle(
+        app(InboxDriverManager::class),
+        app(MailInboxService::class),
+    );
+
+    $sync = MailInboxSyncState::query()->find('default');
+    expect($sync->catch_up_in_progress)->toBeFalse();
+});
+
+it('marks catch-up in progress when fetch defers continuation at page cap', function () {
+    Bus::fake([StoreAttachmentsJob::class, ParsePdfJob::class]);
+
+    config()->set('mail-inbox.delta_max_pages_per_poll', 1);
+
+    $this->fakeDriver = new InMemoryDriver([
+        new MessagePage(
+            messages: [pipelineDto(externalId: 'ext-page-1')],
+            continuationCursor: 'page-2',
+            resumeCursor: null,
+        ),
+        new MessagePage(
+            messages: [pipelineDto(externalId: 'ext-page-2', messageId: '<msg-2@example.com>')],
+            continuationCursor: null,
+            resumeCursor: 'resume-token-2',
+        ),
+    ]);
+    app(InboxDriverManager::class)->flush();
+    app(InboxDriverManager::class)->register('memory', fn (): InMemoryDriver => $this->fakeDriver);
+
+    (new FetchMailsJob('default'))->handle(
+        app(InboxDriverManager::class),
+        app(MailInboxService::class),
+    );
+
+    $sync = MailInboxSyncState::query()->find('default');
+    expect($sync->delta_link)->toBe('page-2');
+    expect($sync->catch_up_in_progress)->toBeTrue();
+});
