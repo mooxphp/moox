@@ -113,10 +113,13 @@ class MailInboxService
                     continue;
                 }
             } else {
-                Log::channel('mail-inbox')->warning('[MailInbox] Message missing messageId, falling back to external_id for dedup', [
-                    'external_id' => $externalId,
-                    'scope' => $scope,
-                ]);
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Message missing messageId, falling back to external_id for dedup',
+                    [
+                        'external_id' => $externalId,
+                        'scope' => $scope,
+                    ],
+                );
 
                 $existsAlready = InboxMessage::query()
                     ->where('scope', $scope)
@@ -173,7 +176,10 @@ class MailInboxService
                     $payload['diagnostic_error'] = $diagnosticError::class.': '.$diagnosticError->getMessage();
                 }
 
-                Log::channel('mail-inbox')->info('[MailInbox] Persist race condition caught by unique constraint, skipping', $payload);
+                Log::channel('mail-inbox')->info(
+                    '[MailInbox] Persist race condition caught by unique constraint, skipping',
+                    $payload,
+                );
             }
         }
 
@@ -274,7 +280,12 @@ class MailInboxService
         }
     }
 
-    private function trySettle(?string $externalId, SettlementOutcome $outcome, ?int $inboxMessageId = null, ?string $scope = null): void
+    private function trySettle(
+        ?string $externalId,
+        SettlementOutcome $outcome,
+        ?int $inboxMessageId = null,
+        ?string $scope = null,
+    ): void
     {
         if ($externalId === null || $externalId === '') {
             return;
@@ -379,11 +390,15 @@ class MailInboxService
             ->count();
 
         if ($recentProcessingCount > 0) {
-            Log::channel('mail-inbox')->warning('[MailInbox] retryFailedMessage: left processing attachments unchanged (within staleness window)', [
-                'inbox_message_id' => $messageId,
-                'count' => $recentProcessingCount,
-                'staleness_minutes' => $stalenessMinutes,
-            ]);
+            Log::channel('mail-inbox')->warning(
+                '[MailInbox] retryFailedMessage: left processing attachments unchanged'
+                    .' (within staleness window)',
+                [
+                    'inbox_message_id' => $messageId,
+                    'count' => $recentProcessingCount,
+                    'staleness_minutes' => $stalenessMinutes,
+                ],
+            );
         }
 
         $this->enqueueParseJobsForInboxMessage($message->fresh(['attachments']));

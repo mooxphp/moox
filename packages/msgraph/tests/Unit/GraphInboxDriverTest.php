@@ -88,7 +88,8 @@ beforeEach(function () {
 
 it('fetches the first delta page with page size, select, immutable ids, and a nextLink cursor', function () {
     $history = [];
-    $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
+    $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$skiptoken=PAGE2';
 
     $driver = GraphHttp::driver(
         GraphHttp::mock([
@@ -131,8 +132,10 @@ it('fetches the first delta page with page size, select, immutable ids, and a ne
 
 it('resumes from the returned cursor without walking remaining pages', function () {
     $history = [];
-    $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
-    $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$deltatoken=FINAL';
+    $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$skiptoken=PAGE2';
+    $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$deltatoken=FINAL';
 
     $driver = GraphHttp::driver(
         GraphHttp::mock([
@@ -172,7 +175,8 @@ it('resumes from the returned cursor without walking remaining pages', function 
 
 it('uses the deltaLink as resumeCursor on the last page', function () {
     $history = [];
-    $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$deltatoken=FINAL';
+    $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$deltatoken=FINAL';
 
     $driver = GraphHttp::driver(
         GraphHttp::mock([
@@ -285,7 +289,11 @@ it('honours page_size on the initial delta request', function () {
     expect((int) ($query['$top'] ?? $query['top'] ?? 0))->toBe(7);
 });
 
-it('settles each outcome into the configured folder and moves the message there', function (SettlementOutcome $outcome, string $folderName, string $folderId) {
+it('settles each outcome into the configured folder and moves the message there', function (
+    SettlementOutcome $outcome,
+    string $folderName,
+    string $folderId,
+) {
     $history = [];
     $responses = [];
     if ($outcome === SettlementOutcome::Processed) {
@@ -524,8 +532,10 @@ it('throws when a delta page has neither nextLink nor deltaLink', function () {
 })->throws(GraphException::class);
 
 it('returns one Graph page per fetch and leaves further nextLinks for the caller', function () {
-    $page2 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
-    $page3 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE3';
+    $page2 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$skiptoken=PAGE2';
+    $page3 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta'
+        .'?$skiptoken=PAGE3';
 
     $history = [];
     $driver = GraphHttp::driver(

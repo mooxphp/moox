@@ -41,7 +41,8 @@ return [
     'action_view' => 'Ansehen',
     'action_retry_failed' => 'Fehlgeschlagen wiederholen',
     'action_retry_failed_heading' => 'Fehlgeschlagene Nachricht wiederholen?',
-    'action_retry_failed_description' => 'Setzt fehlgeschlagene Anhänge zurück und stellt die PDF-Verarbeitung für diese Nachricht erneut in die Warteschlange.',
+    'action_retry_failed_description' => 'Setzt fehlgeschlagene Anhänge zurück und stellt die'
+        .' PDF-Verarbeitung für diese Nachricht erneut in die Warteschlange.',
     'action_reenqueue' => 'Verarbeitung erneut einreihen',
     'action_reenqueue_heading' => 'Verarbeitung erneut einreihen?',
     'action_reenqueue_description' => 'Stellt Parse-Jobs für neue PDF-Anhänge dieser Nachricht in die Warteschlange.',

@@ -77,7 +77,11 @@ final class MailInboxSyncStateResource extends BaseItemResource
                     ->sortable(),
                 TextColumn::make('mailbox_address')
                     ->label(__('mail-inbox::fields.mailbox_address'))
-                    ->getStateUsing(fn (MailInboxSyncState $record): string => InboxProcessingStatusPresenter::mailboxAddressForScope($record->scope) ?? '—')
+                    ->getStateUsing(
+                        function (MailInboxSyncState $record): string {
+                            return InboxProcessingStatusPresenter::mailboxAddressForScope($record->scope) ?? '—';
+                        }
+                    )
                     ->toggleable(),
                 TextColumn::make('driver')
                     ->label(__('mail-inbox::fields.driver'))
@@ -121,7 +125,12 @@ final class MailInboxSyncStateResource extends BaseItemResource
                     ->tooltip(fn (?string $state): ?string => $state)
                     ->copyable(fn (?string $state): bool => filled($state))
                     ->copyableState(fn (?string $state): ?string => $state)
-                    ->formatStateUsing(fn (?string $state): string => InboxProcessingStatusPresenter::truncateDiagnosticBlob($state, 80) ?? '—')
+                    ->formatStateUsing(
+                        fn (?string $state): string => InboxProcessingStatusPresenter::truncateDiagnosticBlob(
+                            $state,
+                            80
+                        ) ?? '—'
+                    )
                     ->toggleable(isToggledHiddenByDefault: true),
             ]);
     }

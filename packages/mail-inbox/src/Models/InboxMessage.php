@@ -15,7 +15,8 @@ use Moox\MailInbox\Enums\InboxMessageProcessingStatus;
  *
  * The `processing_status` attribute stores {@see InboxMessageProcessingStatus} string values.
  *
- * Note: the `message_id` column stores RFC822 `internetMessageId`; the driver uses `external_id` as its provider-side identifier.
+ * Note: the `message_id` column stores RFC822 `internetMessageId`; the driver uses
+ * `external_id` as its provider-side identifier.
  */
 class InboxMessage extends Model
 {

@@ -128,12 +128,15 @@ final class GraphPipelineMover
         try {
             $acceptable = $this->parentIsAcceptablePipelineSource($currentParentId, $inboxFolderId);
         } catch (GraphException $e) {
-            Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: could not resolve folder ids for pipeline guard', [
-                'messageId' => $messageId,
-                'parentFolderId' => $currentParentId,
-                'exception_class' => $e::class,
-                'exception_message' => $e->getMessage(),
-            ]);
+            Log::channel('mail-inbox')->warning(
+                '[Msgraph] Skipping move: could not resolve folder ids for pipeline guard',
+                [
+                    'messageId' => $messageId,
+                    'parentFolderId' => $currentParentId,
+                    'exception_class' => $e::class,
+                    'exception_message' => $e->getMessage(),
+                ],
+            );
 
             return;
         }
@@ -186,7 +189,11 @@ final class GraphPipelineMover
         ];
 
         try {
-            foreach ([$this->settings->processedFolder, $this->settings->failedFolder, $this->settings->ignoredFolder] as $folderName) {
+            foreach ([
+                $this->settings->processedFolder,
+                $this->settings->failedFolder,
+                $this->settings->ignoredFolder,
+            ] as $folderName) {
                 $folderId = $this->folders->getOrCreate($folderName);
                 if ($parentFolderId !== null && $parentFolderId === $folderId) {
                     Log::channel('mail-inbox')->warning(
@@ -222,7 +229,10 @@ final class GraphPipelineMover
         for ($i = 0; $i < 6 && $current !== null; $i++) {
             if ($current instanceof ODataError) {
                 $code = $current->getError()?->getCode();
-                if ($code !== null && in_array((string) $code, ['ErrorFolderNotFound', 'ErrorInvalidIdMalformed'], true)) {
+                if (
+                    $code !== null
+                    && in_array((string) $code, ['ErrorFolderNotFound', 'ErrorInvalidIdMalformed'], true)
+                ) {
                     return true;
                 }
             }

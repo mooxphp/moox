@@ -63,7 +63,10 @@ final class GraphClientFactory
     {
         $handlerStack->unshift(
             Middleware::mapRequest(
-                fn (RequestInterface $request): RequestInterface => $request->withHeader('Prefer', 'IdType="ImmutableId"'),
+                fn (RequestInterface $request): RequestInterface => $request->withHeader(
+                    'Prefer',
+                    'IdType="ImmutableId"',
+                ),
             ),
             'msgraph_prefer_immutable_id',
         );

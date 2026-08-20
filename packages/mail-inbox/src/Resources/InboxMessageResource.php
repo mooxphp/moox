@@ -220,7 +220,9 @@ final class InboxMessageResource extends BaseItemResource
                     ->label(__('mail-inbox::fields.processing_status'))
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn (?string $state): string => InboxProcessingStatusPresenter::messageLabel($state))
+                    ->formatStateUsing(
+                        fn (?string $state): string => InboxProcessingStatusPresenter::messageLabel($state)
+                    )
                     ->color(fn (?string $state): string => InboxProcessingStatusPresenter::messageColor($state)),
                 TextColumn::make('scope')
                     ->label(__('mail-inbox::fields.scope'))

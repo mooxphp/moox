@@ -17,7 +17,9 @@ final readonly class GraphConnection
         public string $clientSecret,
     ) {
         if ($tenantId === '' || $clientId === '' || $clientSecret === '') {
-            throw new InvalidConnectionException('All credential fields (tenant_id, client_id, client_secret) must be non-empty.');
+            throw new InvalidConnectionException(
+                'All credential fields (tenant_id, client_id, client_secret) must be non-empty.',
+            );
         }
     }
 

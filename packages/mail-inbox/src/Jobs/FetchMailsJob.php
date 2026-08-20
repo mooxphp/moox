@@ -65,11 +65,14 @@ class FetchMailsJob implements ShouldQueue
             && $syncState->driver !== ''
             && $syncState->driver !== $driverName
         ) {
-            Log::channel('mail-inbox')->warning('[MailInbox] Sync-state driver mismatch — clearing cursor for fresh sync', [
-                'scope' => $this->scope,
-                'stored_driver' => $syncState->driver,
-                'configured_driver' => $driverName,
-            ]);
+            Log::channel('mail-inbox')->warning(
+                '[MailInbox] Sync-state driver mismatch — clearing cursor for fresh sync',
+                [
+                    'scope' => $this->scope,
+                    'stored_driver' => $syncState->driver,
+                    'configured_driver' => $driverName,
+                ],
+            );
             $syncState->update([
                 'driver' => $driverName,
                 'delta_link' => null,
@@ -92,13 +95,16 @@ class FetchMailsJob implements ShouldQueue
                 $page = $driver->fetch($cursor);
             } catch (InvalidSyncCursorException $e) {
                 if ($cursorResetsThisRun >= $maxCursorResetsPerRun) {
-                    Log::channel('mail-inbox')->error('[MailInbox] Sync cursor reset limit reached — aborting fetch', [
-                        'scope' => $this->scope,
-                        'driver' => $driverName,
-                        'cursor_reset_max_per_run' => $maxCursorResetsPerRun,
-                        'rejected_host' => $e->rejectedHost,
-                        'exception' => $e,
-                    ]);
+                    Log::channel('mail-inbox')->error(
+                        '[MailInbox] Sync cursor reset limit reached — aborting fetch',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'cursor_reset_max_per_run' => $maxCursorResetsPerRun,
+                            'rejected_host' => $e->rejectedHost,
+                            'exception' => $e,
+                        ],
+                    );
 
                     throw $e;
                 }
@@ -126,11 +132,14 @@ class FetchMailsJob implements ShouldQueue
                         ],
                     );
                 } else {
-                    Log::channel('mail-inbox')->warning('[MailInbox] Sync cursor invalid — clearing token for full resync', [
-                        'scope' => $this->scope,
-                        'driver' => $driverName,
-                        'exception' => $e,
-                    ]);
+                    Log::channel('mail-inbox')->warning(
+                        '[MailInbox] Sync cursor invalid — clearing token for full resync',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'exception' => $e,
+                        ],
+                    );
                 }
 
                 $cursorResetsThisRun++;
@@ -174,12 +183,15 @@ class FetchMailsJob implements ShouldQueue
                         );
                     }
                 } catch (Throwable $e) {
-                    Log::channel('mail-inbox')->warning('[MailInbox] claim failed (best-effort, will retry on next fetch)', [
-                        'external_id' => $dto->externalId,
-                        'scope' => $this->scope,
-                        'exception_class' => $e::class,
-                        'exception_message' => $e->getMessage(),
-                    ]);
+                    Log::channel('mail-inbox')->warning(
+                        '[MailInbox] claim failed (best-effort, will retry on next fetch)',
+                        [
+                            'external_id' => $dto->externalId,
+                            'scope' => $this->scope,
+                            'exception_class' => $e::class,
+                            'exception_message' => $e->getMessage(),
+                        ],
+                    );
                 }
             }
 
@@ -253,3 +265,4 @@ class FetchMailsJob implements ShouldQueue
         ini_set('memory_limit', (string) config('mail-inbox.memory_limit', '512M'));
     }
 }
+

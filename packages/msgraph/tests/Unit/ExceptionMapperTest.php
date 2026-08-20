@@ -58,9 +58,13 @@ it('maps a generic 404 to GraphMailboxNotFoundException', function () {
 it('maps 404 ErrorItemNotFound to GraphItemNotFoundException', function () {
     $original = RequestException::create(
         new Request('GET', '/'),
-        new Response(404, [], json_encode([
-            'error' => ['code' => 'ErrorItemNotFound', 'message' => 'gone'],
-        ])),
+        new Response(
+            404,
+            [],
+            json_encode([
+                'error' => ['code' => 'ErrorItemNotFound', 'message' => 'gone'],
+            ]),
+        ),
     );
 
     $mapped = ExceptionMapper::map($original);

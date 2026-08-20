@@ -112,7 +112,10 @@ class StoreAttachmentsJob implements ShouldQueue
                 && $inboxAttachment->storage_path !== null
                 && $inboxAttachment->storage_path !== ''
             ) {
-                if ($inboxAttachment->is_pdf && $inboxAttachment->processing_status === InboxAttachmentProcessingStatus::New->value) {
+                if (
+                    $inboxAttachment->is_pdf
+                    && $inboxAttachment->processing_status === InboxAttachmentProcessingStatus::New->value
+                ) {
                     $pdfAttachmentIds[] = $inboxAttachment->id;
                 }
                 $this->setProgress((int) round(($i / $total) * 90));
@@ -121,7 +124,9 @@ class StoreAttachmentsJob implements ShouldQueue
             }
 
             $filename = $attachmentMeta['name'] !== '' ? $attachmentMeta['name'] : 'attachment';
-            $mimeType = $attachmentMeta['content_type'] !== '' ? $attachmentMeta['content_type'] : 'application/octet-stream';
+            $mimeType = $attachmentMeta['content_type'] !== ''
+                ? $attachmentMeta['content_type']
+                : 'application/octet-stream';
             $isPdf = $mimeType === 'application/pdf'
                 || str_ends_with(strtolower($filename), '.pdf');
 
