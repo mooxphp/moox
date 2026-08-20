@@ -96,7 +96,9 @@ final class GraphDeltaFetcher
             $hasFinal = $finalDelta !== null && $finalDelta !== '';
 
             if (($hasNext && $hasFinal) || (! $hasNext && ! $hasFinal)) {
-                throw new GraphException('Graph delta page must expose exactly one of @odata.nextLink or @odata.deltaLink.');
+                throw new GraphException(
+                    'Graph delta page must expose exactly one of @odata.nextLink or @odata.deltaLink.',
+                );
             }
 
             return [

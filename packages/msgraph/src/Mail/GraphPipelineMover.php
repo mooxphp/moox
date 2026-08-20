@@ -114,9 +114,13 @@ final class GraphPipelineMover
                 'exception_message' => $e->getMessage(),
             ];
             if ($this->looksLikeGraphFolderResolutionFailure($e)) {
-                $context['hint'] = 'Could not resolve the well-known Inbox folder id — verify the mailbox address and Graph permissions.';
+                $context['hint'] = 'Could not resolve the well-known Inbox folder id'
+                    .' — verify the mailbox address and Graph permissions.';
             }
-            Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: Inbox folder id unavailable for pipeline guard', $context);
+            Log::channel('mail-inbox')->warning(
+                '[Msgraph] Skipping move: Inbox folder id unavailable for pipeline guard',
+                $context,
+            );
 
             return;
         }
@@ -185,7 +189,10 @@ final class GraphPipelineMover
             foreach ([$this->settings->processedFolder, $this->settings->failedFolder, $this->settings->ignoredFolder] as $folderName) {
                 $folderId = $this->folders->getOrCreate($folderName);
                 if ($parentFolderId !== null && $parentFolderId === $folderId) {
-                    Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: message parent appears to be a terminal mailbox folder', $context);
+                    Log::channel('mail-inbox')->warning(
+                        '[Msgraph] Skipping move: message parent appears to be a terminal mailbox folder',
+                        $context,
+                    );
 
                     return;
                 }
@@ -193,7 +200,10 @@ final class GraphPipelineMover
         } catch (GraphException) {
         }
 
-        Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: message parent is not an acceptable pipeline source (Inbox or Processing)', $context);
+        Log::channel('mail-inbox')->warning(
+            '[Msgraph] Skipping move: message parent is not an acceptable pipeline source (Inbox or Processing)',
+            $context,
+        );
     }
 
     private function postGraphMoveMessageToFolder(string $messageId, string $destinationFolderId): void

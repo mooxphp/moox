@@ -91,8 +91,12 @@ final class InboxMessageResource extends BaseItemResource
                             TextEntry::make('processing_status')
                                 ->label(__('mail-inbox::fields.processing_status'))
                                 ->badge()
-                                ->formatStateUsing(fn (?string $state): string => InboxProcessingStatusPresenter::messageLabel($state))
-                                ->color(fn (?string $state): string => InboxProcessingStatusPresenter::messageColor($state)),
+                                ->formatStateUsing(
+                                    fn (?string $state): string => InboxProcessingStatusPresenter::messageLabel($state)
+                                )
+                                ->color(
+                                    fn (?string $state): string => InboxProcessingStatusPresenter::messageColor($state)
+                                ),
                             TextEntry::make('scope')
                                 ->label(__('mail-inbox::fields.scope')),
                             TextEntry::make('received_at')
@@ -143,8 +147,16 @@ final class InboxMessageResource extends BaseItemResource
                                     ->weight('medium'),
                                 TextEntry::make('processing_status')
                                     ->badge()
-                                    ->formatStateUsing(fn (?string $state): string => InboxProcessingStatusPresenter::attachmentLabel($state))
-                                    ->color(fn (?string $state): string => InboxProcessingStatusPresenter::attachmentColor($state)),
+                                    ->formatStateUsing(
+                                        fn (?string $state): string => InboxProcessingStatusPresenter::attachmentLabel(
+                                            $state
+                                        )
+                                    )
+                                    ->color(
+                                        fn (?string $state): string => InboxProcessingStatusPresenter::attachmentColor(
+                                            $state
+                                        )
+                                    ),
                                 TextEntry::make('filesize')
                                     ->formatStateUsing(fn (?int $state): string => $state !== null
                                         ? number_format($state / 1024, 1).' KB'

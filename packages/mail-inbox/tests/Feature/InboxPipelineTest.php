@@ -503,12 +503,14 @@ it('warns on repeated cursor reset across runs', function () {
     $repeatedResetLogged = false;
 
     Log::shouldReceive('channel')->with('mail-inbox')->andReturnSelf();
-    Log::shouldReceive('warning')->andReturnUsing(function (string $message, array $context = []) use (&$repeatedResetLogged): void {
-        if ($message === '[MailInbox] Repeated sync cursor reset for scope') {
-            $repeatedResetLogged = true;
-            expect($context['scope'] ?? null)->toBe('default');
-        }
-    });
+    Log::shouldReceive('warning')->andReturnUsing(
+        function (string $message, array $context = []) use (&$repeatedResetLogged): void {
+            if ($message === '[MailInbox] Repeated sync cursor reset for scope') {
+                $repeatedResetLogged = true;
+                expect($context['scope'] ?? null)->toBe('default');
+            }
+        },
+    );
     Log::shouldReceive('info')->zeroOrMoreTimes();
     Log::shouldReceive('debug')->zeroOrMoreTimes();
     Log::shouldReceive('error')->zeroOrMoreTimes();

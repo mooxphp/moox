@@ -119,9 +119,13 @@ it('puts Retry-After seconds on GraphRateLimitException', function () {
 it('maps 410 syncStateNotFound to GraphSyncStateNotFoundException', function () {
     $original = RequestException::create(
         new Request('GET', '/'),
-        new Response(410, [], json_encode([
-            'error' => ['code' => 'syncStateNotFound', 'message' => 'gone'],
-        ])),
+        new Response(
+            410,
+            [],
+            json_encode([
+                'error' => ['code' => 'syncStateNotFound', 'message' => 'gone'],
+            ]),
+        ),
     );
 
     expect(ExceptionMapper::map($original))->toBeInstanceOf(GraphSyncStateNotFoundException::class);

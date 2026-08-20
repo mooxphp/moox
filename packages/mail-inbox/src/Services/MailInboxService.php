@@ -100,11 +100,14 @@ class MailInboxService
                         }
                     }
 
-                    Log::channel('mail-inbox')->debug('[MailInbox] Driver returned known message, skipping (pre-check)', [
-                        'external_id' => $externalId,
-                        'message_id' => $internetId,
-                        'scope' => $scope,
-                    ]);
+                    Log::channel('mail-inbox')->debug(
+                        '[MailInbox] Driver returned known message, skipping (pre-check)',
+                        [
+                            'external_id' => $externalId,
+                            'message_id' => $internetId,
+                            'scope' => $scope,
+                        ],
+                    );
                     $skippedKnown++;
 
                     continue;
@@ -121,11 +124,14 @@ class MailInboxService
                     ->exists();
 
                 if ($existsAlready) {
-                    Log::channel('mail-inbox')->debug('[MailInbox] Driver returned known message, skipping (pre-check)', [
-                        'external_id' => $externalId,
-                        'message_id' => null,
-                        'scope' => $scope,
-                    ]);
+                    Log::channel('mail-inbox')->debug(
+                        '[MailInbox] Driver returned known message, skipping (pre-check)',
+                        [
+                            'external_id' => $externalId,
+                            'message_id' => null,
+                            'scope' => $scope,
+                        ],
+                    );
                     $skippedKnown++;
 
                     continue;

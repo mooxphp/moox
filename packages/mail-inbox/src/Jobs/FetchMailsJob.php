@@ -116,12 +116,15 @@ class FetchMailsJob implements ShouldQueue
                 }
 
                 if ($e->rejectedHost !== null) {
-                    Log::channel('mail-inbox')->error('[MailInbox] Sync cursor rejected — unexpected host; clearing token for full resync', [
-                        'scope' => $this->scope,
-                        'driver' => $driverName,
-                        'rejected_host' => $e->rejectedHost,
-                        'exception' => $e,
-                    ]);
+                    Log::channel('mail-inbox')->error(
+                        '[MailInbox] Sync cursor rejected — unexpected host; clearing token for full resync',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'rejected_host' => $e->rejectedHost,
+                            'exception' => $e,
+                        ],
+                    );
                 } else {
                     Log::channel('mail-inbox')->warning('[MailInbox] Sync cursor invalid — clearing token for full resync', [
                         'scope' => $this->scope,
@@ -162,10 +165,13 @@ class FetchMailsJob implements ShouldQueue
                     }
 
                     if ($claimResult === ClaimResult::MoveFailed) {
-                        Log::channel('mail-inbox')->warning('[MailInbox] claim move failed (best-effort, will retry on next fetch)', [
-                            'external_id' => $dto->externalId,
-                            'scope' => $this->scope,
-                        ]);
+                        Log::channel('mail-inbox')->warning(
+                            '[MailInbox] claim move failed (best-effort, will retry on next fetch)',
+                            [
+                                'external_id' => $dto->externalId,
+                                'scope' => $this->scope,
+                            ],
+                        );
                     }
                 } catch (Throwable $e) {
                     Log::channel('mail-inbox')->warning('[MailInbox] claim failed (best-effort, will retry on next fetch)', [
@@ -193,18 +199,24 @@ class FetchMailsJob implements ShouldQueue
 
             $next = $page->continuationCursor;
             if ($next === null || $next === '') {
-                Log::channel('mail-inbox')->warning('[MailInbox] Message page missing both resumeCursor and continuationCursor', [
-                    'scope' => $this->scope,
-                ]);
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Message page missing both resumeCursor and continuationCursor',
+                    [
+                        'scope' => $this->scope,
+                    ],
+                );
 
                 break;
             }
 
             if ($pagesThisPoll >= $maxPages) {
-                Log::channel('mail-inbox')->warning('[MailInbox] Poll reached delta_max_pages_per_poll; deferring continuation to next poll', [
-                    'scope' => $this->scope,
-                    'delta_max_pages_per_poll' => $maxPages,
-                ]);
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Poll reached delta_max_pages_per_poll; deferring continuation to next poll',
+                    [
+                        'scope' => $this->scope,
+                        'delta_max_pages_per_poll' => $maxPages,
+                    ],
+                );
                 $syncState->update([
                     'delta_link' => $next,
                     'driver' => $driverName,

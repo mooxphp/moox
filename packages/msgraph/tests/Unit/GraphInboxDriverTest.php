@@ -90,14 +90,17 @@ it('fetches the first delta page with page size, select, immutable ids, and a ne
     $history = [];
     $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
 
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.nextLink' => $nextLink,
-            'value' => [
-                deltaMessage('msg-1', 'Invoice', 'from@example.com'),
-            ],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.nextLink' => $nextLink,
+                'value' => [
+                    deltaMessage('msg-1', 'Invoice', 'from@example.com'),
+                ],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $page = $driver->fetch();
 
@@ -131,16 +134,19 @@ it('resumes from the returned cursor without walking remaining pages', function 
     $nextLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
     $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$deltatoken=FINAL';
 
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.nextLink' => $nextLink,
-            'value' => [deltaMessage('msg-1')],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.nextLink' => $nextLink,
+                'value' => [deltaMessage('msg-1')],
+            ]),
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => $deltaLink,
+                'value' => [deltaMessage('msg-2')],
+            ]),
         ]),
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => $deltaLink,
-            'value' => [deltaMessage('msg-2')],
-        ]),
-    ]), $history);
+        $history,
+    );
 
     $first = $driver->fetch();
     $second = $driver->fetch($first->continuationCursor);
@@ -168,12 +174,15 @@ it('uses the deltaLink as resumeCursor on the last page', function () {
     $history = [];
     $deltaLink = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$deltatoken=FINAL';
 
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => $deltaLink,
-            'value' => [deltaMessage('msg-last')],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => $deltaLink,
+                'value' => [deltaMessage('msg-last')],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $page = $driver->fetch();
 
@@ -184,15 +193,18 @@ it('uses the deltaLink as resumeCursor on the last page', function () {
 
 it('drops @removed delta placeholders', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
-            'value' => [
-                deltaMessage('msg-gone', removed: true),
-                deltaMessage('msg-keep'),
-            ],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
+                'value' => [
+                    deltaMessage('msg-gone', removed: true),
+                    deltaMessage('msg-keep'),
+                ],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $page = $driver->fetch();
 
@@ -202,12 +214,15 @@ it('drops @removed delta placeholders', function () {
 
 it('does not list attachments during fetch', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
-            'value' => [deltaMessage('msg-1', hasAttachments: true)],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
+                'value' => [deltaMessage('msg-1', hasAttachments: true)],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $page = $driver->fetch();
 
@@ -218,24 +233,27 @@ it('does not list attachments during fetch', function () {
 
 it('lists file attachment metadata via listAttachments and skips non-file attachments', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            'value' => [
-                [
-                    '@odata.type' => '#microsoft.graph.fileAttachment',
-                    'id' => 'att-file',
-                    'name' => 'doc.pdf',
-                    'contentType' => 'application/pdf',
-                    'size' => 1234,
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                'value' => [
+                    [
+                        '@odata.type' => '#microsoft.graph.fileAttachment',
+                        'id' => 'att-file',
+                        'name' => 'doc.pdf',
+                        'contentType' => 'application/pdf',
+                        'size' => 1234,
+                    ],
+                    [
+                        '@odata.type' => '#microsoft.graph.itemAttachment',
+                        'id' => 'att-item',
+                        'name' => 'embedded',
+                    ],
                 ],
-                [
-                    '@odata.type' => '#microsoft.graph.itemAttachment',
-                    'id' => 'att-item',
-                    'name' => 'embedded',
-                ],
-            ],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     expect($driver->listAttachments('msg-1'))->toBe([
         [
@@ -251,12 +269,15 @@ it('honours page_size on the initial delta request', function () {
     config()->set('msgraph.mail.page_size', 7);
 
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
-            'value' => [],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
+                'value' => [],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $driver->fetch();
 
@@ -277,7 +298,10 @@ it('settles each outcome into the configured folder and moves the message there'
         GraphHttp::inboxFolder(),
         GraphHttp::movedMessage(),
     ];
-    $driver = GraphHttp::driver(GraphHttp::mock($responses), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock($responses),
+        $history,
+    );
 
     $driver->settle('msg-1', $outcome);
 
@@ -328,14 +352,17 @@ it('settles each outcome into the configured folder and moves the message there'
 
 it('creates a missing folder then uses the new id for settle', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::markedAsRead(),
-        GraphHttp::emptyFolderCollection(),
-        GraphHttp::createdFolder('folder-done-new', 'DoneBox'),
-        GraphHttp::messageParent('folder-inbox'),
-        GraphHttp::inboxFolder(),
-        GraphHttp::movedMessage(),
-    ]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::markedAsRead(),
+            GraphHttp::emptyFolderCollection(),
+            GraphHttp::createdFolder('folder-done-new', 'DoneBox'),
+            GraphHttp::messageParent('folder-inbox'),
+            GraphHttp::inboxFolder(),
+            GraphHttp::movedMessage(),
+        ]),
+        $history,
+    );
 
     $driver->settle('msg-1', SettlementOutcome::Processed);
 
@@ -361,11 +388,14 @@ it('creates a missing folder then uses the new id for settle', function () {
 
 it('does not POST a move when the message is already in the destination folder', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::markedAsRead(),
-        GraphHttp::folderCollection('folder-done', 'DoneBox'),
-        GraphHttp::messageParent('folder-done'),
-    ]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::markedAsRead(),
+            GraphHttp::folderCollection('folder-done', 'DoneBox'),
+            GraphHttp::messageParent('folder-done'),
+        ]),
+        $history,
+    );
 
     $driver->settle('msg-1', SettlementOutcome::Processed);
 
@@ -380,13 +410,16 @@ it('does not POST a move when the message is already in the destination folder',
 
 it('does not throw or move when the parent is not Inbox or Processing', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::folderCollection('folder-dead', 'DeadLetter'),
-        GraphHttp::messageParent('folder-done'),
-        GraphHttp::inboxFolder(),
-        GraphHttp::folderCollection('folder-claim', 'ClaimHold'),
-        GraphHttp::folderCollection('folder-done', 'DoneBox'),
-    ]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::folderCollection('folder-dead', 'DeadLetter'),
+            GraphHttp::messageParent('folder-done'),
+            GraphHttp::inboxFolder(),
+            GraphHttp::folderCollection('folder-claim', 'ClaimHold'),
+            GraphHttp::folderCollection('folder-done', 'DoneBox'),
+        ]),
+        $history,
+    );
 
     $driver->settle('msg-1', SettlementOutcome::Failed);
 
@@ -402,20 +435,24 @@ it('does not throw or move when the parent is not Inbox or Processing', function
 it('retries a 429 using the Retry-After delay then succeeds', function () {
     $slept = [];
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(429, [
-            'error' => [
-                'code' => 'TooManyRequests',
-                'message' => 'throttled',
-            ],
-        ], ['Retry-After' => '7']),
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
-            'value' => [deltaMessage('msg-after-retry')],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(429, [
+                'error' => [
+                    'code' => 'TooManyRequests',
+                    'message' => 'throttled',
+                ],
+            ], ['Retry-After' => '7']),
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
+                'value' => [deltaMessage('msg-after-retry')],
+            ]),
         ]),
-    ]), $history, sleeper: function (int $seconds) use (&$slept): void {
-        $slept[] = $seconds;
-    });
+        $history,
+        sleeper: function (int $seconds) use (&$slept): void {
+            $slept[] = $seconds;
+        },
+    );
 
     $page = $driver->fetch();
 
@@ -427,16 +464,19 @@ it('retries a 429 using the Retry-After delay then succeeds', function () {
 it('returns attachment bytes identically including non-UTF8 content', function () {
     $bytes = "\x00\x01\x02\xff\xfe\x80binary";
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.type' => '#microsoft.graph.fileAttachment',
-            'id' => 'att-1',
-            'name' => 'payload.bin',
-            'contentType' => 'application/octet-stream',
-            'size' => strlen($bytes),
-            'contentBytes' => base64_encode($bytes),
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.type' => '#microsoft.graph.fileAttachment',
+                'id' => 'att-1',
+                'name' => 'payload.bin',
+                'contentType' => 'application/octet-stream',
+                'size' => strlen($bytes),
+                'contentBytes' => base64_encode($bytes),
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $content = $driver->readAttachment('msg-1', 'att-1');
 
@@ -445,13 +485,16 @@ it('returns attachment bytes identically including non-UTF8 content', function (
 
 it('claims a message by moving it to the processing folder', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::folderCollection('folder-claim', 'ClaimHold'),
-        GraphHttp::messageParent('folder-inbox'),
-        GraphHttp::inboxFolder(),
-        GraphHttp::movedMessage(),
-        GraphHttp::messageParent('folder-claim'),
-    ]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::folderCollection('folder-claim', 'ClaimHold'),
+            GraphHttp::messageParent('folder-inbox'),
+            GraphHttp::inboxFolder(),
+            GraphHttp::movedMessage(),
+            GraphHttp::messageParent('folder-claim'),
+        ]),
+        $history,
+    );
 
     expect($driver->claim('msg-1'))->toBe(ClaimResult::Won)
         ->and($driver->claim('msg-1'))->toBe(ClaimResult::AlreadyHeld);
@@ -468,11 +511,14 @@ it('claims a message by moving it to the processing folder', function () {
 
 it('throws when a delta page has neither nextLink nor deltaLink', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            'value' => [deltaMessage('msg-1')],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                'value' => [deltaMessage('msg-1')],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $driver->fetch();
 })->throws(GraphException::class);
@@ -482,16 +528,19 @@ it('returns one Graph page per fetch and leaves further nextLinks for the caller
     $page3 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE3';
 
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(200, [
-            '@odata.nextLink' => $page2,
-            'value' => [deltaMessage('msg-1')],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(200, [
+                '@odata.nextLink' => $page2,
+                'value' => [deltaMessage('msg-1')],
+            ]),
+            GraphHttp::json(200, [
+                '@odata.nextLink' => $page3,
+                'value' => [deltaMessage('msg-2')],
+            ]),
         ]),
-        GraphHttp::json(200, [
-            '@odata.nextLink' => $page3,
-            'value' => [deltaMessage('msg-2')],
-        ]),
-    ]), $history);
+        $history,
+    );
 
     $page = $driver->fetch();
 
@@ -508,20 +557,24 @@ it('returns one Graph page per fetch and leaves further nextLinks for the caller
 it('retries a 429 without Retry-After using exponential backoff', function () {
     $slept = [];
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(429, [
-            'error' => [
-                'code' => 'TooManyRequests',
-                'message' => 'throttled',
-            ],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(429, [
+                'error' => [
+                    'code' => 'TooManyRequests',
+                    'message' => 'throttled',
+                ],
+            ]),
+            GraphHttp::json(200, [
+                '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
+                'value' => [deltaMessage('msg-after-backoff')],
+            ]),
         ]),
-        GraphHttp::json(200, [
-            '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
-            'value' => [deltaMessage('msg-after-backoff')],
-        ]),
-    ]), $history, sleeper: function (int $seconds) use (&$slept): void {
-        $slept[] = $seconds;
-    });
+        $history,
+        sleeper: function (int $seconds) use (&$slept): void {
+            $slept[] = $seconds;
+        },
+    );
 
     $page = $driver->fetch();
 
@@ -537,7 +590,10 @@ it('skips claim moves when the processing folder is empty', function () {
     config()->set('msgraph.mail.folders.processing', '');
 
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([]),
+        $history,
+    );
 
     expect($driver->claim('msg-1'))->toBe(ClaimResult::Won)
         ->and(GraphHttp::graphRequests($history))->toBeEmpty();
@@ -545,14 +601,17 @@ it('skips claim moves when the processing folder is empty', function () {
 
 it('does not propagate folder failures from settle', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([
-        GraphHttp::json(404, [
-            'error' => [
-                'code' => 'ErrorItemNotFound',
-                'message' => 'gone',
-            ],
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([
+            GraphHttp::json(404, [
+                'error' => [
+                    'code' => 'ErrorItemNotFound',
+                    'message' => 'gone',
+                ],
+            ]),
         ]),
-    ]), $history);
+        $history,
+    );
 
     $driver->settle('msg-1', SettlementOutcome::Processed);
 
@@ -561,7 +620,10 @@ it('does not propagate folder failures from settle', function () {
 
 it('rejects a cursor pointing at a non-Graph host before making a request', function () {
     $history = [];
-    $driver = GraphHttp::driver(GraphHttp::mock([]), $history);
+    $driver = GraphHttp::driver(
+        GraphHttp::mock([]),
+        $history,
+    );
 
     expect(fn () => $driver->fetch('https://attacker.example/steal'))
         ->toThrow(InvalidSyncCursorException::class)

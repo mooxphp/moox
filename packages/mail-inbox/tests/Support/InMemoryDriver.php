@@ -36,7 +36,8 @@ class InMemoryDriver implements InboxDriver
     public int $fetchCallCount = 0;
 
     /**
-     * @param  array<int, MessagePage>  $pages  Scripted pages; continuationCursor (else resumeCursor) chains to the next.
+     * @param  array<int, MessagePage>  $pages  Scripted pages; continuationCursor
+     *                                            (else resumeCursor) chains to the next.
      */
     public function __construct(array $pages = [])
     {
