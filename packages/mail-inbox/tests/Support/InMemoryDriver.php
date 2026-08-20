@@ -37,7 +37,7 @@ class InMemoryDriver implements InboxDriver
 
     /**
      * @param  array<int, MessagePage>  $pages  Scripted pages; continuationCursor
-     *                                            (else resumeCursor) chains to the next.
+     *                                          (else resumeCursor) chains to the next.
      */
     public function __construct(array $pages = [])
     {
