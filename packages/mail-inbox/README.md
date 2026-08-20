@@ -24,7 +24,7 @@ Learn more about [Moox](https://moox.org).
 - Semantic settlement outcomes: `Processed`, `Failed`, `Ignored` — no folder assumptions
 - Driver manager resolving named mailboxes to driver instances via configuration
 - Two-tier config: connections (credentials) + mailboxes (driver, connection, address)
-- In-memory fake driver for testing with no network access
+- In-memory fake driver (`tests/Support/InMemoryDriver`) for testing with no network access
 - Opaque sync cursors — the package never inspects them; drivers must validate them
 - Microsoft Graph polling via delta API (when paired with `moox/msgraph`)
 
@@ -51,12 +51,15 @@ Learn more about the [Moox Installer or common requirements](https://moox.org/do
 
 ### Driver Contract
 
-The package defines an `InboxDriver` contract in `Moox\MailInbox\Contracts\InboxDriver`. Drivers implement four methods:
+The package defines an `InboxDriver` contract in `Moox\MailInbox\Contracts\InboxDriver`. Drivers implement five methods:
 
 - `fetch(?string $cursor): MessagePage` — resumable page of messages against an opaque cursor
-- `claim(string $externalId): bool` — claim a message for exclusive processing
+- `claim(string $externalId): ClaimResult` — claim a message for exclusive processing (`Won`, `AlreadyHeld`, `MoveFailed`)
 - `settle(string $externalId, SettlementOutcome $outcome): void` — report outcome: `Processed` (success), `Failed` (error), or `Ignored` (recognised and deliberately not processed)
+- `listAttachments(string $externalId): array` — file attachment metadata from the provider (no content bytes)
 - `readAttachment(string $externalId, string|int $attachmentId): string` — read attachment content
+
+`StoreAttachmentsJob` calls `listAttachments()` and `readAttachment()`; the fetch loop does not list attachments per message.
 
 `MessagePage` carries two opaque tokens. `continuationCursor` is set while more pages remain in the current run and is null when that run is complete. `resumeCursor` is set only on the last page of a run and is what a later poll should pass back. Because this package never inspects a cursor, **validating it is the driver's responsibility**.
 
@@ -75,7 +78,7 @@ The config (`config/mail-inbox.php`) uses a two-tier shape:
 
 'mailboxes' => [
     'default' => [
-        'driver' => 'msgraph',
+        'driver' => env('MAIL_INBOX_DRIVER'),
         'connection' => 'default',
         'address' => env('MAIL_INBOX_MAILBOX'),
     ],
@@ -85,6 +88,16 @@ The config (`config/mail-inbox.php`) uses a two-tier shape:
 A mailbox names a driver and references a connection **by name** (a plain string, never a class). Several connections and several mailboxes can be configured, and two mailboxes may reference different connections.
 
 There is no `direction` field — a mailbox's role follows from which configuration file it appears in.
+
+Jobs and services resolve the driver through `InboxDriverManager` using the mailbox name as pipeline `scope`. Settlement uses `SettlementOutcome` (`Processed`, `Failed`, `Ignored`) — never folder names. Graph folder names live in `config/msgraph.php` when using `moox/msgraph`.
+
+The sync-state table stores an opaque cursor (`delta_link`), a `driver` column, and `cursor_reset_at` (timestamp of the last cursor reset). Each pipeline `scope` must have a matching `mail-inbox.mailboxes.{scope}` entry — the package does not backfill configuration from sync-state rows. Run `php artisan mail-inbox:status` after upgrades to list any sync-state scopes missing from configuration.
+
+When a driver rejects a stored cursor as expired, `FetchMailsJob` clears it and starts a fresh sync. That reset is bounded by `cursor_reset_max_per_run` (default `1`). Repeated resets within `cursor_reset_warning_minutes` (default `60`) are logged as a warning.
+
+### Breaking configuration change
+
+Flat `graph`, `mailbox`, and folder keys were removed from the package config. Use `connections` + `mailboxes` instead. Require `moox/msgraph` for the Graph driver and set folder names there.
 
 ## Changelog
 

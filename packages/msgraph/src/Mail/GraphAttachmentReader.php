@@ -6,8 +6,6 @@ namespace Moox\Msgraph\Mail;
 
 use InvalidArgumentException;
 use Microsoft\Graph\Generated\Models\FileAttachment;
-use Microsoft\Graph\Generated\Models\Message;
-use Moox\MailInbox\InboxMessageDto;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -21,21 +19,12 @@ final class GraphAttachmentReader
     ) {}
 
     /**
-     * @return array<int, array{id: string|int, name: string, content_type: string, size: int}>
+     * @return list<array{id: string|int, name: string, content_type: string, size: int}>
      */
-    public function metadataFor(Message $message): array
+    public function listForMessage(string $externalId): array
     {
-        if (! ($message->getHasAttachments() ?? false)) {
-            return [];
-        }
-
-        $messageId = $message->getId();
-        if ($messageId === null || $messageId === '') {
-            return [];
-        }
-
         $attachments = $this->graphCall->run(
-            fn () => $this->mailbox->message($messageId)->attachments()->get()->wait()?->getValue() ?? [],
+            fn () => $this->mailbox->message($externalId)->attachments()->get()->wait()?->getValue() ?? [],
             'listAttachments',
         );
 
@@ -77,11 +66,6 @@ final class GraphAttachmentReader
 
             return $this->binaryContentFromFileAttachment($attachment);
         }, 'readAttachment');
-    }
-
-    public function mapMessage(Message $message, GraphMessageMapper $mapper): ?InboxMessageDto
-    {
-        return $mapper->map($message, $this->metadataFor($message));
     }
 
     private function binaryContentFromFileAttachment(FileAttachment $attachment): string

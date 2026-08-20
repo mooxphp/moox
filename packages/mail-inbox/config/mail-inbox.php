@@ -7,8 +7,9 @@ return [
     | Connections
     |--------------------------------------------------------------------------
     |
-    | Each connection holds provider-specific credentials. A connection name is
-    | a plain string referenced by mailboxes below — never a class.
+    | Named connection slots referenced by mailboxes. Credential keys depend on
+    | the driver package that consumes each connection. Legacy GraphMailService
+    | (still registered until removed) reads `connections.default` tenant credentials.
     |
     */
     'connections' => [
@@ -25,40 +26,41 @@ return [
     |--------------------------------------------------------------------------
     |
     | Each mailbox names a driver and references a connection by name.
+    | The mailbox name is the pipeline `scope` (e.g. FetchMailsJob scope).
     | A mailbox's role follows from which config file it appears in —
     | there is no direction field.
+    |
+    | `driver` must be set explicitly — register the driver in your adapter
+    | package and reference it here (e.g. env('MAIL_INBOX_DRIVER')).
     |
     */
     'mailboxes' => [
         'default' => [
-            'driver' => env('MAIL_INBOX_DRIVER', 'msgraph'),
+            'driver' => env('MAIL_INBOX_DRIVER'),
             'connection' => env('MAIL_INBOX_CONNECTION', 'default'),
             'address' => env('MAIL_INBOX_MAILBOX'),
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Legacy flat keys (deprecated — migrate to connections + mailboxes)
-    |--------------------------------------------------------------------------
-    */
-    'graph' => [
-        'tenant_id' => env('MAIL_INBOX_TENANT_ID'),
-        'client_id' => env('MAIL_INBOX_CLIENT_ID'),
-        'client_secret' => env('MAIL_INBOX_CLIENT_SECRET'),
-    ],
-
-    'mailbox' => env('MAIL_INBOX_MAILBOX'),
-
-    'processed_folder' => env('MAIL_INBOX_PROCESSED_FOLDER', 'Processed'),
-
-    'failed_folder' => env('MAIL_INBOX_FAILED_FOLDER', 'Failed'),
-
-    'processing_folder' => env('MAIL_INBOX_PROCESSING_FOLDER', 'Processing'),
-
     'poll_interval' => env('MAIL_INBOX_POLL_INTERVAL', 5),
 
     'delta_max_pages_per_poll' => (int) env('MAIL_INBOX_DELTA_MAX_PAGES_PER_POLL', 50),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync cursor reset bounds
+    |--------------------------------------------------------------------------
+    |
+    | When a driver rejects a stored cursor as expired, FetchMailsJob clears it
+    | and starts a fresh sync. cursor_reset_max_per_run caps how many times that
+    | may happen in one job run (default 1 — one legitimate expiry needs one reset).
+    | cursor_reset_warning_minutes logs a warning when another reset happens within
+    | that window across separate runs.
+    |
+    */
+    'cursor_reset_max_per_run' => (int) env('MAIL_INBOX_CURSOR_RESET_MAX_PER_RUN', 1),
+
+    'cursor_reset_warning_minutes' => (int) env('MAIL_INBOX_CURSOR_RESET_WARNING_MINUTES', 60),
 
     'memory_limit' => env('MAIL_INBOX_MEMORY_LIMIT', '512M'),
 

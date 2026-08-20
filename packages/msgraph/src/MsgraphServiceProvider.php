@@ -6,8 +6,11 @@ namespace Moox\Msgraph;
 
 use Illuminate\Contracts\Foundation\Application;
 use Moox\Core\MooxServiceProvider;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\Msgraph\Auth\ConnectionRegistry;
 use Moox\Msgraph\Auth\GraphClientFactory;
+use Moox\Msgraph\Mail\GraphInboxDriver;
+use Moox\Msgraph\Mail\MailSettings;
 use Spatie\LaravelPackageTools\Package;
 
 class MsgraphServiceProvider extends MooxServiceProvider
@@ -40,5 +43,32 @@ class MsgraphServiceProvider extends MooxServiceProvider
         $this->app->singleton(GraphClientFactory::class, function (Application $app): GraphClientFactory {
             return new GraphClientFactory($app->make(ConnectionRegistry::class));
         });
+    }
+
+    public function packageBooted(): void
+    {
+        if (! $this->app->bound(InboxDriverManager::class)) {
+            return;
+        }
+
+        $this->app->make(InboxDriverManager::class)->register(
+            'msgraph',
+            function (array $config) {
+                $connection = is_string($config['connection'] ?? null) && $config['connection'] !== ''
+                    ? $config['connection']
+                    : 'default';
+                $address = is_string($config['mailbox_address'] ?? null)
+                    ? $config['mailbox_address']
+                    : '';
+
+                $client = $this->app->make(GraphClientFactory::class)->make($connection);
+
+                return GraphInboxDriver::make(
+                    $client,
+                    $address,
+                    MailSettings::fromConfig(),
+                );
+            },
+        );
     }
 }

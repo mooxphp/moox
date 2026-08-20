@@ -16,7 +16,7 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - a named connection registry (tenant + app credentials resolved by name)
 - a Graph client factory
 - an immutable-identifier header middleware on every outgoing request
-- a Graph `InboxDriver` (`Moox\Msgraph\Mail\GraphInboxDriver`) that is not registered on any driver manager yet
+- a Graph `InboxDriver` (`Moox\Msgraph\Mail\GraphInboxDriver`) auto-registered as `msgraph` on `InboxDriverManager` when `moox/mail-inbox` is installed
 
 ## Features
 
@@ -106,7 +106,7 @@ $client = $factory->make('secondary');
 
 ### Mail inbox driver
 
-`Moox\Msgraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. Construct it with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` from this package's config. It is a working alternative to in-app Graph mail code — nothing in this package registers it on `InboxDriverManager` or switches jobs over.
+`Moox\Msgraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. The service provider registers it as the `msgraph` driver on `InboxDriverManager` when that manager is bound. Construct it manually with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` if you need a one-off instance. Expired delta tokens surface as `Moox\MailInbox\Exceptions\InvalidSyncCursorException`.
 
 Folder display names, `$top` (`page_size`), and the per-run page cap (`delta_max_pages_per_poll`, default 50) live **only** in `config/msgraph.php`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name.
 

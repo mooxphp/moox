@@ -11,8 +11,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Moox\Jobs\Traits\JobProgress;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxMessage;
-use Moox\MailInbox\Services\GraphMailService;
 use Throwable;
 
 class HandleFailedJob implements ShouldQueue
@@ -30,10 +31,9 @@ class HandleFailedJob implements ShouldQueue
     public function __construct(
         public ?int $inboxMessageId,
         public string $errorMessage = '',
-    ) {
-    }
+    ) {}
 
-    public function handle(GraphMailService $graph): void
+    public function handle(InboxDriverManager $drivers): void
     {
         $this->setProgress(0);
 
@@ -70,9 +70,10 @@ class HandleFailedJob implements ShouldQueue
         $externalId = $message->external_id;
         if ($externalId !== null && $externalId !== '') {
             try {
-                $graph->moveGraphMessageToProcessedOrFailedFolder($externalId, false, $message->scope ?? 'default');
+                $drivers->mailbox((string) ($message->scope ?? 'default'))
+                    ->settle($externalId, SettlementOutcome::Failed);
             } catch (Throwable $e) {
-                Log::channel('mail-inbox')->error('[MailInbox] HandleFailedJob: could not move message to Failed folder', [
+                Log::channel('mail-inbox')->error('[MailInbox] HandleFailedJob: could not settle message as Failed', [
                     'exception' => $e,
                     'inbox_message_id' => $message->id,
                     'external_id' => $externalId,

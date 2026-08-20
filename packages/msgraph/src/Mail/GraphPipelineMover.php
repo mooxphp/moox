@@ -9,6 +9,7 @@ use Microsoft\Graph\Generated\Models\ODataErrors\ODataError;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\MessageItemRequestBuilderGetQueryParameters;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\MessageItemRequestBuilderGetRequestConfiguration;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\Move\MovePostRequestBody;
+use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
 use Moox\Msgraph\Exceptions\GraphException;
 use Throwable;
@@ -25,10 +26,10 @@ final class GraphPipelineMover
         private MailSettings $settings,
     ) {}
 
-    public function claim(string $externalId): bool
+    public function claim(string $externalId): ClaimResult
     {
         if ($this->settings->processingFolder === null) {
-            return true;
+            return ClaimResult::Won;
         }
 
         try {
@@ -36,27 +37,27 @@ final class GraphPipelineMover
             $currentParentId = $this->getMessageParentFolderId($externalId);
 
             if ($currentParentId !== null && $currentParentId === $processingId) {
-                return false;
+                return ClaimResult::AlreadyHeld;
             }
 
             $inboxFolderId = $this->folders->inboxFolderId();
             if ($currentParentId === null || $currentParentId !== $inboxFolderId) {
                 $this->logUnexpectedParentForMove($externalId, $currentParentId);
 
-                return false;
+                return ClaimResult::MoveFailed;
             }
 
             $this->postGraphMoveMessageToFolder($externalId, $processingId);
 
-            return true;
+            return ClaimResult::Won;
         } catch (GraphException $e) {
-            Log::warning('[Msgraph] claim skipped: processing folder move failed', [
+            Log::channel('mail-inbox')->warning('[Msgraph] claim skipped: processing folder move failed', [
                 'messageId' => $externalId,
                 'exception_class' => $e::class,
                 'exception_message' => $e->getMessage(),
             ]);
 
-            return false;
+            return ClaimResult::MoveFailed;
         }
     }
 
@@ -66,7 +67,7 @@ final class GraphPipelineMover
             $destinationId = $this->folders->getOrCreate($this->settings->folderFor($outcome));
             $this->moveMessageToFolder($externalId, $destinationId);
         } catch (GraphException $e) {
-            Log::warning('[Msgraph] settle skipped: folder move failed', [
+            Log::channel('mail-inbox')->warning('[Msgraph] settle skipped: folder move failed', [
                 'messageId' => $externalId,
                 'outcome' => $outcome->value,
                 'exception_class' => $e::class,
@@ -80,7 +81,7 @@ final class GraphPipelineMover
         $currentParentId = $this->getMessageParentFolderId($messageId);
 
         if ($currentParentId !== null && $currentParentId === $destinationFolderId) {
-            Log::debug('[Msgraph] Message already in destination folder; skipping move', [
+            Log::channel('mail-inbox')->debug('[Msgraph] Message already in destination folder; skipping move', [
                 'messageId' => $messageId,
                 'destinationFolderId' => $destinationFolderId,
             ]);
@@ -99,7 +100,7 @@ final class GraphPipelineMover
             if ($this->looksLikeGraphFolderResolutionFailure($e)) {
                 $context['hint'] = 'Could not resolve the well-known Inbox folder id — verify the mailbox address and Graph permissions.';
             }
-            Log::warning('[Msgraph] Skipping move: Inbox folder id unavailable for pipeline guard', $context);
+            Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: Inbox folder id unavailable for pipeline guard', $context);
 
             return;
         }
@@ -107,7 +108,7 @@ final class GraphPipelineMover
         try {
             $acceptable = $this->parentIsAcceptablePipelineSource($currentParentId, $inboxFolderId);
         } catch (GraphException $e) {
-            Log::warning('[Msgraph] Skipping move: could not resolve folder ids for pipeline guard', [
+            Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: could not resolve folder ids for pipeline guard', [
                 'messageId' => $messageId,
                 'parentFolderId' => $currentParentId,
                 'exception_class' => $e::class,
@@ -168,7 +169,7 @@ final class GraphPipelineMover
             foreach ([$this->settings->processedFolder, $this->settings->failedFolder] as $folderName) {
                 $folderId = $this->folders->getOrCreate($folderName);
                 if ($parentFolderId !== null && $parentFolderId === $folderId) {
-                    Log::warning('[Msgraph] Skipping move: message parent appears to be a terminal mailbox folder', $context);
+                    Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: message parent appears to be a terminal mailbox folder', $context);
 
                     return;
                 }
@@ -176,7 +177,7 @@ final class GraphPipelineMover
         } catch (GraphException) {
         }
 
-        Log::warning('[Msgraph] Skipping move: message parent is not an acceptable pipeline source (Inbox or Processing)', $context);
+        Log::channel('mail-inbox')->warning('[Msgraph] Skipping move: message parent is not an acceptable pipeline source (Inbox or Processing)', $context);
     }
 
     private function postGraphMoveMessageToFolder(string $messageId, string $destinationFolderId): void

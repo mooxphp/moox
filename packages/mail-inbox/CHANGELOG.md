@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+### Added
+
+- `mail-inbox:status` reports sync-state scopes with no matching `mailboxes` entry (actionable configuration instructions)
+- `cursor_reset_max_per_run` and `cursor_reset_warning_minutes` config keys to bound invalid-cursor reset loops
+- Sync-state `cursor_reset_at` column recording when the cursor was last cleared
+
+### Changed
+
+- Unconfigured mailbox exceptions name the scope, the `mail-inbox.mailboxes.{scope}` key, and required fields
+- `InvalidSyncCursorException` and `InboxDriver::fetch()` document that the exception means a rejected cursor, not general failures
+- `FetchMailsJob` stops resetting after `cursor_reset_max_per_run` and fails loudly instead of spinning
+
+### Changed
+
+- **Breaking:** Removed flat `graph`, `mailbox`, and folder keys from `config/mail-inbox.php`. Configure via `connections` + `mailboxes`; folder names live in the adapter package that registers your driver.
+- **Breaking:** `mailboxes.*.driver` has no package default — set it explicitly in config or env.
+- **Breaking:** `InboxDriver::claim()` returns `ClaimResult` (`Won`, `AlreadyHeld`, `MoveFailed`) instead of `bool`.
+- Pipeline jobs and `MailInboxService` use `InboxDriver` / `SettlementOutcome` only (no Graph types at those call sites).
+- `StoreAttachmentsJob` lists attachments from the driver; persist no longer writes stub attachment rows.
+- Sync-state `driver` column is nullable with no default; mismatch with the configured driver clears the cursor for a fresh sync.
+- `InMemoryDriver` moved to `tests/Support/` (dev autoload only).
+
+### Added
+
+- `InvalidSyncCursorException` for invalid/expired sync cursors
+- `ClaimResult` enum for exclusive claim outcomes
+- `InboxDriver::listAttachments()` for provider-side attachment metadata
+- `InboxDriverManager::driverNameFor()` as the single source for mailbox driver names
+- `InboxMessageDto::$messageId` (plus optional from/to name fields) for dual-key dedup
+- Feature tests for persist, fetch, attachments, in-flight upgrade regression, and fake-driver E2E pipeline
+- Package `phpunit.xml` and host test-suite wiring
+
 ### Changed
 
 - **Breaking:** `MessagePage` now distinguishes `continuationCursor` (more pages in this run; Graph `@odata.nextLink`) from `resumeCursor` (start of the next run; Graph `@odata.deltaLink`). The previous `nextCursor` property is removed.
@@ -15,10 +47,8 @@
 - `MessagePage`: resumable page result with opaque continuation and resume cursors
 - `InboxDriverManager`: resolves a named mailbox to its configured driver via configuration strings
 - Two-tier config shape: connections (credentials) + mailboxes (driver, connection, address)
-- `InMemoryDriver`: in-memory fake driver for testing with no network access
 - Pest test suite covering the contract, driver manager, and fake driver
 
 ---
 
 We previously didn't track changes in this package. Please refer to the [Moox Monorepo](https://github.com/mooxphp/moox) for historical changes.
-

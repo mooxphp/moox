@@ -22,7 +22,6 @@ final class GraphDeltaFetcher
         private MailSettings $settings,
         private CursorHostGuard $cursorGuard,
         private GraphMessageMapper $mapper,
-        private GraphAttachmentReader $attachments,
     ) {}
 
     public function fetch(?string $cursor): MessagePage
@@ -97,7 +96,7 @@ final class GraphDeltaFetcher
                     continue;
                 }
 
-                $mapped = $this->attachments->mapMessage($item, $this->mapper);
+                $mapped = $this->mapper->map($item);
                 if ($mapped instanceof InboxMessageDto) {
                     $messages[] = $mapped;
                 }

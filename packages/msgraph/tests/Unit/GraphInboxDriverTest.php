@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
 use Moox\MailInbox\InboxMessageDto;
 use Moox\Msgraph\Exceptions\GraphException;
@@ -199,13 +200,25 @@ it('drops @removed delta placeholders', function () {
         ->and($page->messages[0]->externalId)->toBe('msg-keep');
 });
 
-it('includes file attachment metadata on fetch and skips non-file attachments', function () {
+it('does not list attachments during fetch', function () {
     $history = [];
     $driver = GraphHttp::driver(GraphHttp::mock([
         GraphHttp::json(200, [
             '@odata.deltaLink' => 'https://graph.microsoft.com/v1.0/delta-final',
             'value' => [deltaMessage('msg-1', hasAttachments: true)],
         ]),
+    ]), $history);
+
+    $page = $driver->fetch();
+
+    expect($page->messages[0]->attachments)->toBe([]);
+    expect($page->messages[0]->hasAttachments)->toBeTrue();
+    expect(GraphHttp::graphRequests($history))->toHaveCount(1);
+});
+
+it('lists file attachment metadata via listAttachments and skips non-file attachments', function () {
+    $history = [];
+    $driver = GraphHttp::driver(GraphHttp::mock([
         GraphHttp::json(200, [
             'value' => [
                 [
@@ -224,9 +237,7 @@ it('includes file attachment metadata on fetch and skips non-file attachments', 
         ]),
     ]), $history);
 
-    $page = $driver->fetch();
-
-    expect($page->messages[0]->attachments)->toBe([
+    expect($driver->listAttachments('msg-1'))->toBe([
         [
             'id' => 'att-file',
             'name' => 'doc.pdf',
@@ -413,8 +424,8 @@ it('claims a message by moving it to the processing folder', function () {
         GraphHttp::messageParent('folder-claim'),
     ]), $history);
 
-    expect($driver->claim('msg-1'))->toBeTrue()
-        ->and($driver->claim('msg-1'))->toBeFalse();
+    expect($driver->claim('msg-1'))->toBe(ClaimResult::Won)
+        ->and($driver->claim('msg-1'))->toBe(ClaimResult::AlreadyHeld);
 
     $movePosts = array_values(array_filter(
         GraphHttp::graphRequests($history),
@@ -504,7 +515,7 @@ it('skips claim moves when the processing folder is empty', function () {
     $history = [];
     $driver = GraphHttp::driver(GraphHttp::mock([]), $history);
 
-    expect($driver->claim('msg-1'))->toBeTrue()
+    expect($driver->claim('msg-1'))->toBe(ClaimResult::Won)
         ->and(GraphHttp::graphRequests($history))->toBeEmpty();
 });
 

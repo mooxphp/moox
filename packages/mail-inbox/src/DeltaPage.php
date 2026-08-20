@@ -19,6 +19,5 @@ readonly class DeltaPage
         public ?string $nextLink,
         public ?string $deltaLink,
         public int $removedFiltered,
-    ) {
-    }
+    ) {}
 }

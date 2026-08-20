@@ -8,8 +8,11 @@ use Closure;
 use Illuminate\Support\Facades\Cache;
 use Microsoft\Graph\GraphServiceClient;
 use Moox\MailInbox\Contracts\InboxDriver;
+use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
 use Moox\MailInbox\MessagePage;
+use Moox\Msgraph\Exceptions\GraphSyncStateNotFoundException;
 
 /**
  * Graph implementation of {@see InboxDriver}. Folder names come from this package's config only.
@@ -49,7 +52,6 @@ final class GraphInboxDriver implements InboxDriver
                 $settings,
                 new CursorHostGuard($settings->allowedDeltaHosts),
                 new GraphMessageMapper,
-                $attachments,
             ),
             new GraphPipelineMover($mailbox, $graphCall, $folders, $settings),
             $attachments,
@@ -58,10 +60,14 @@ final class GraphInboxDriver implements InboxDriver
 
     public function fetch(?string $cursor = null): MessagePage
     {
-        return $this->deltaFetcher->fetch($cursor);
+        try {
+            return $this->deltaFetcher->fetch($cursor);
+        } catch (GraphSyncStateNotFoundException $e) {
+            throw new InvalidSyncCursorException($e->getMessage(), (int) $e->getCode(), $e);
+        }
     }
 
-    public function claim(string $externalId): bool
+    public function claim(string $externalId): ClaimResult
     {
         return $this->pipelineMover->claim($externalId);
     }
@@ -69,6 +75,14 @@ final class GraphInboxDriver implements InboxDriver
     public function settle(string $externalId, SettlementOutcome $outcome): void
     {
         $this->pipelineMover->settle($externalId, $outcome);
+    }
+
+    /**
+     * @return list<array{id: string|int, name: string, content_type: string, size: int}>
+     */
+    public function listAttachments(string $externalId): array
+    {
+        return $this->attachmentReader->listForMessage($externalId);
     }
 
     public function readAttachment(string $externalId, string|int $attachmentId): string

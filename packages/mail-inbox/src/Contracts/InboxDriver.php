@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\MailInbox\Contracts;
 
+use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
 use Moox\MailInbox\MessagePage;
 
 /**
@@ -24,15 +26,15 @@ interface InboxDriver
      * Fetch a resumable page of messages.
      *
      * @param  string|null  $cursor  Opaque continuation or resume token from a previous page, or null for the first page.
+     *
+     * @throws InvalidSyncCursorException when the provider rejected this specific cursor (expired or malformed resume token). Do not use for general transport or API failures.
      */
     public function fetch(?string $cursor = null): MessagePage;
 
     /**
      * Claim a message for exclusive processing.
-     *
-     * Returns true if this caller won the claim, false if another process already holds it.
      */
-    public function claim(string $externalId): bool;
+    public function claim(string $externalId): ClaimResult;
 
     /**
      * Settle a previously claimed message with an outcome.
@@ -42,6 +44,13 @@ interface InboxDriver
      * webhook-based driver might do nothing.
      */
     public function settle(string $externalId, SettlementOutcome $outcome): void;
+
+    /**
+     * List file-attachment metadata for a message (no content bytes).
+     *
+     * @return list<array{id: string|int, name: string, content_type: string, size: int}>
+     */
+    public function listAttachments(string $externalId): array;
 
     /**
      * Read an attachment's raw content by external message id and attachment index or id.

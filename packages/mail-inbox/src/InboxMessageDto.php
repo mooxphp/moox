@@ -16,6 +16,7 @@ readonly class InboxMessageDto
     /**
      * @param  string  $externalId  Stable identifier the driver guarantees across fetches.
      * @param  array<int, AttachmentDto>  $attachments
+     * @param  string|null  $messageId  RFC822 Message-ID when the provider exposes it (dual-key dedup).
      */
     public function __construct(
         public string $externalId,
@@ -25,5 +26,10 @@ readonly class InboxMessageDto
         public ?string $bodyHtml,
         public ?string $bodyText,
         public array $attachments = [],
+        public ?string $messageId = null,
+        public ?string $fromName = null,
+        public ?string $toEmail = null,
+        public ?string $toName = null,
+        public bool $hasAttachments = false,
     ) {}
 }

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Moox\MailInbox\Testing;
+namespace Moox\MailInbox\Tests\Support;
 
 use Moox\MailInbox\Contracts\InboxDriver;
+use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
 use Moox\MailInbox\MessagePage;
 
@@ -23,6 +24,9 @@ class InMemoryDriver implements InboxDriver
 
     /** @var array<string, string> */
     private array $attachments = [];
+
+    /** @var array<string, list<array{id: string|int, name: string, content_type: string, size: int}>> */
+    private array $attachmentMetadata = [];
 
     /** @var array<string, MessagePage> cursor → page */
     private readonly array $cursorIndex;
@@ -53,20 +57,28 @@ class InMemoryDriver implements InboxDriver
         return $this->cursorIndex[$key] ?? new MessagePage(messages: [], continuationCursor: null, resumeCursor: null);
     }
 
-    public function claim(string $externalId): bool
+    public function claim(string $externalId): ClaimResult
     {
         if (isset($this->claimed[$externalId])) {
-            return false;
+            return ClaimResult::AlreadyHeld;
         }
 
         $this->claimed[$externalId] = true;
 
-        return true;
+        return ClaimResult::Won;
     }
 
     public function settle(string $externalId, SettlementOutcome $outcome): void
     {
         $this->settled[$externalId] = $outcome;
+    }
+
+    /**
+     * @return list<array{id: string|int, name: string, content_type: string, size: int}>
+     */
+    public function listAttachments(string $externalId): array
+    {
+        return $this->attachmentMetadata[$externalId] ?? [];
     }
 
     public function readAttachment(string $externalId, string|int $attachmentId): string
@@ -77,11 +89,22 @@ class InMemoryDriver implements InboxDriver
     }
 
     /**
-     * Script an attachment content for readAttachment().
+     * Script attachment metadata and content for listAttachments() / readAttachment().
      */
-    public function addAttachment(string $externalId, string|int $attachmentId, string $content): void
-    {
+    public function addFileAttachment(
+        string $externalId,
+        string|int $attachmentId,
+        string $content,
+        string $name = 'attachment',
+        string $contentType = 'application/octet-stream',
+    ): void {
         $this->attachments[$externalId.':'.$attachmentId] = $content;
+        $this->attachmentMetadata[$externalId][] = [
+            'id' => $attachmentId,
+            'name' => $name,
+            'content_type' => $contentType,
+            'size' => strlen($content),
+        ];
     }
 
     /**

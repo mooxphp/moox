@@ -15,10 +15,7 @@ use Moox\MailInbox\InboxMessageDto;
  */
 final class GraphMessageMapper
 {
-    /**
-     * @param  array<int, array{id: string|int, name: string, content_type: string, size: int}>  $attachments
-     */
-    public function map(Message $message, array $attachments = []): ?InboxMessageDto
+    public function map(Message $message): ?InboxMessageDto
     {
         $externalId = $message->getId();
         if ($externalId === null || $externalId === '') {
@@ -32,14 +29,23 @@ final class GraphMessageMapper
         $bodyHtml = ($contentType !== null && $contentType->value() === BodyType::HTML) ? $content : null;
         $bodyText = ($contentType !== null && $contentType->value() === BodyType::TEXT) ? $content : null;
 
+        $from = $message->getFrom()?->getEmailAddress();
+        $toRecipients = $message->getToRecipients() ?? [];
+        $firstTo = ($toRecipients[0] ?? null)?->getEmailAddress();
+
         return new InboxMessageDto(
             externalId: $externalId,
             subject: $message->getSubject() ?? '',
-            from: $message->getFrom()?->getEmailAddress()?->getAddress() ?? '',
+            from: $from?->getAddress() ?? '',
             receivedAt: self::receivedAt($message),
             bodyHtml: $bodyHtml,
             bodyText: $bodyText,
-            attachments: $attachments,
+            attachments: [],
+            messageId: $message->getInternetMessageId(),
+            fromName: $from?->getName(),
+            toEmail: $firstTo?->getAddress(),
+            toName: $firstTo?->getName(),
+            hasAttachments: $message->getHasAttachments() ?? false,
         );
     }
 

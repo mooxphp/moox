@@ -12,12 +12,11 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use Microsoft\Graph\Generated\Models\FileAttachment;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
-use Moox\MailInbox\Services\GraphMailService;
 use Moox\MailInbox\Services\MailInboxService;
 use Throwable;
 
@@ -40,15 +39,14 @@ class StoreAttachmentsJob implements ShouldQueue
 
     public function __construct(
         public int $inboxMessageId,
-    ) {
-    }
+    ) {}
 
-    public function handle(GraphMailService $graph, MailInboxService $inbox): void
+    public function handle(InboxDriverManager $drivers, MailInboxService $inbox): void
     {
         $this->applyMemoryLimit();
         $this->setProgress(0);
 
-        $message = InboxMessage::query()->find($this->inboxMessageId);
+        $message = InboxMessage::query()->with('attachments')->find($this->inboxMessageId);
 
         if ($message === null) {
             Log::channel('mail-inbox')->error('[MailInbox] StoreAttachmentsJob: message not found', [
@@ -67,26 +65,39 @@ class StoreAttachmentsJob implements ShouldQueue
             throw new InvalidArgumentException('Inbox message has no external_id');
         }
 
-        $attachments = $graph->fetchAttachments($externalId);
-        $total = max(1, $attachments->count());
+        if (! $message->has_attachments) {
+            $inbox->finalizeMessageProcessingAfterAttachments($message->fresh(['attachments']));
+            $this->setProgress(100);
+
+            return;
+        }
+
+        $driver = $drivers->mailbox((string) ($message->scope ?? 'default'));
+        $metadataList = $driver->listAttachments($externalId);
+
+        if ($metadataList === []) {
+            $inbox->finalizeMessageProcessingAfterAttachments($message->fresh(['attachments']));
+            $this->setProgress(100);
+
+            return;
+        }
+
         $disk = (string) config('mail-inbox.attachments.disk');
         $basePath = trim((string) config('mail-inbox.attachments.path'), '/');
+        $existingByExternalId = $message->attachments->keyBy(
+            fn (InboxAttachment $attachment): string => (string) $attachment->external_attachment_id
+        );
 
         $pdfAttachmentIds = [];
+        $total = max(1, count($metadataList));
         $i = 0;
 
-        foreach ($attachments as $attachment) {
+        foreach ($metadataList as $attachmentMeta) {
             $i++;
+            $attachmentId = (string) $attachmentMeta['id'];
 
-            if (! $attachment instanceof FileAttachment) {
-                $this->setProgress((int) round(($i / $total) * 90));
-
-                continue;
-            }
-
-            $attachmentId = $attachment->getId();
-            if ($attachmentId === null) {
-                Log::channel('mail-inbox')->error('[MailInbox] Skipping attachment with null id', [
+            if ($attachmentId === '') {
+                Log::channel('mail-inbox')->error('[MailInbox] Skipping attachment with empty external id', [
                     'message_external_id' => $externalId,
                 ]);
                 $this->setProgress((int) round(($i / $total) * 90));
@@ -94,33 +105,22 @@ class StoreAttachmentsJob implements ShouldQueue
                 continue;
             }
 
-            if (InboxAttachment::query()
-                ->where('inbox_message_id', $message->id)
-                ->where('external_attachment_id', $attachmentId)
-                ->exists()
+            $inboxAttachment = $existingByExternalId->get($attachmentId);
+
+            if ($inboxAttachment instanceof InboxAttachment
+                && $inboxAttachment->storage_path !== null
+                && $inboxAttachment->storage_path !== ''
             ) {
-                $existing = InboxAttachment::query()
-                    ->where('inbox_message_id', $message->id)
-                    ->where('external_attachment_id', $attachmentId)
-                    ->first();
-                if ($existing !== null && $existing->is_pdf && $existing->processing_status === InboxAttachmentProcessingStatus::New->value) {
-                    $pdfAttachmentIds[] = $existing->id;
+                if ($inboxAttachment->is_pdf && $inboxAttachment->processing_status === InboxAttachmentProcessingStatus::New->value) {
+                    $pdfAttachmentIds[] = $inboxAttachment->id;
                 }
                 $this->setProgress((int) round(($i / $total) * 90));
 
                 continue;
             }
 
-            $payload = $graph->downloadAttachmentContent($externalId, $attachmentId);
-            $contentBytes = $payload['contentBytes'];
-            $filename = $attachment->getName() ?? 'attachment';
-
-            $relativePath = "{$basePath}/{$message->scope}/".now()->format('Y/m/d')."/msg-{$message->id}/{$filename}";
-
-            Storage::disk($disk)->put($relativePath, $contentBytes);
-
-            $checksum = hash('sha256', $contentBytes);
-            $mimeType = $attachment->getContentType() ?? 'application/octet-stream';
+            $filename = $attachmentMeta['name'] !== '' ? $attachmentMeta['name'] : 'attachment';
+            $mimeType = $attachmentMeta['content_type'] !== '' ? $attachmentMeta['content_type'] : 'application/octet-stream';
             $isPdf = $mimeType === 'application/pdf'
                 || str_ends_with(strtolower($filename), '.pdf');
 
@@ -130,16 +130,39 @@ class StoreAttachmentsJob implements ShouldQueue
                 default => 'other',
             };
 
-            $inboxAttachment = InboxAttachment::create([
-                'scope' => $message->scope,
-                'inbox_message_id' => $message->id,
-                'external_attachment_id' => $attachmentId,
+            if (! $inboxAttachment instanceof InboxAttachment) {
+                $inboxAttachment = InboxAttachment::create([
+                    'scope' => (string) $message->scope,
+                    'inbox_message_id' => $message->id,
+                    'external_attachment_id' => $attachmentId,
+                    'storage_disk' => $disk,
+                    'storage_path' => '',
+                    'filename' => $filename,
+                    'mime_type' => $mimeType,
+                    'extension' => pathinfo($filename, PATHINFO_EXTENSION) ?: null,
+                    'filesize' => 0,
+                    'checksum' => null,
+                    'is_pdf' => $isPdf,
+                    'attachment_role' => $role,
+                    'processing_status' => InboxAttachmentProcessingStatus::New->value,
+                ]);
+            }
+
+            $contentBytes = $driver->readAttachment($externalId, $attachmentId);
+            $relativePath = "{$basePath}/{$message->scope}/".now()->format('Y/m/d')."/msg-{$message->id}/{$filename}";
+
+            Storage::disk($disk)->put($relativePath, $contentBytes);
+
+            $storedBytes = strlen($contentBytes);
+            $checksum = hash('sha256', $contentBytes);
+
+            $inboxAttachment->update([
                 'storage_disk' => $disk,
                 'storage_path' => $relativePath,
                 'filename' => $filename,
                 'mime_type' => $mimeType,
                 'extension' => pathinfo($filename, PATHINFO_EXTENSION) ?: null,
-                'filesize' => $attachment->getSize(),
+                'filesize' => $storedBytes,
                 'checksum' => $checksum,
                 'is_pdf' => $isPdf,
                 'attachment_role' => $role,

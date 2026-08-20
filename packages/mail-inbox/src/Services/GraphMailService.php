@@ -439,15 +439,15 @@ class GraphMailService
     private function buildDefaultClient(): GraphServiceClient
     {
         return MailInboxGraphServiceClientFactory::make(new ClientCredentialContext(
-            (string) config('mail-inbox.graph.tenant_id'),
-            (string) config('mail-inbox.graph.client_id'),
-            (string) config('mail-inbox.graph.client_secret'),
+            (string) (config('mail-inbox.connections.default.tenant_id') ?? config('mail-inbox.graph.tenant_id')),
+            (string) (config('mail-inbox.connections.default.client_id') ?? config('mail-inbox.graph.client_id')),
+            (string) (config('mail-inbox.connections.default.client_secret') ?? config('mail-inbox.graph.client_secret')),
         ));
     }
 
     private function mailbox(): string
     {
-        return (string) config('mail-inbox.mailbox');
+        return (string) (config('mail-inbox.mailboxes.default.address') ?? config('mail-inbox.mailbox'));
     }
 
     /**
@@ -607,7 +607,8 @@ class GraphMailService
 
     private function optionalProcessingFolderId(): ?string
     {
-        $name = config('mail-inbox.processing_folder');
+        // TODO(mooxphp/msgraph#7): remove GraphMailService; folder names belong in moox/msgraph only.
+        $name = config('msgraph.mail.folders.processing') ?? config('mail-inbox.processing_folder');
         if ($name === null || $name === '') {
             return null;
         }
@@ -642,13 +643,13 @@ class GraphMailService
         ];
 
         try {
-            $processedId = $this->getOrCreateFolder((string) config('mail-inbox.processed_folder'));
+            $processedId = $this->getOrCreateFolder((string) (config('mail-inbox.processed_folder')));
             if ($parentFolderId !== null && $parentFolderId === $processedId) {
                 Log::channel('mail-inbox')->warning('[MailInbox] Skipping move: message parent appears to be a terminal mailbox folder (Processed/Failed)', $context);
 
                 return;
             }
-            $failedId = $this->getOrCreateFolder((string) config('mail-inbox.failed_folder'));
+            $failedId = $this->getOrCreateFolder((string) (config('mail-inbox.failed_folder')));
             if ($parentFolderId !== null && $parentFolderId === $failedId) {
                 Log::channel('mail-inbox')->warning('[MailInbox] Skipping move: message parent appears to be a terminal mailbox folder (Processed/Failed)', $context);
 

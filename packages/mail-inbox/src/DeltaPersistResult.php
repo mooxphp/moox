@@ -10,6 +10,5 @@ readonly class DeltaPersistResult
         public int $persisted,
         public int $skippedKnown,
         public int $skippedNoAttachments,
-    ) {
-    }
+    ) {}
 }

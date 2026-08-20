@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Service provider auto-registers the `msgraph` inbox driver on `InboxDriverManager`
+- `GraphMessageMapper` maps RFC822 `internetMessageId` onto `InboxMessageDto::$messageId`
+- `GraphInboxDriver::fetch()` wraps expired sync state as `InvalidSyncCursorException`
+- `GraphInboxDriver::listAttachments()` lists file attachment metadata (delta fetch does not)
+
+### Changed
+
+- `GraphPipelineMover` logs folder-move diagnostics on the `mail-inbox` log channel
+- `GraphPipelineMover::claim()` returns `ClaimResult` and distinguishes already-held from move-failed
+
 ## 1.0.0 — 2026-08-19
 
 ### Added

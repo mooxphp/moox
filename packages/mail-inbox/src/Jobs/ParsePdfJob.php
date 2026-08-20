@@ -31,8 +31,7 @@ class ParsePdfJob implements ShouldQueue
 
     public function __construct(
         public int $inboxAttachmentId,
-    ) {
-    }
+    ) {}
 
     public function handle(MailInboxService $inbox): void
     {
