@@ -50,6 +50,23 @@ final class DbTableSourceQuery
     {
         $operator = strtolower((string) ($clause['operator'] ?? '='));
 
+        if ($operator === 'raw' && is_array($clause['value'] ?? null)) {
+            $sql = $clause['value']['sql'] ?? null;
+            $bindings = $clause['value']['bindings'] ?? [];
+
+            if (! is_string($sql) || $sql === '') {
+                return;
+            }
+
+            if (! is_array($bindings)) {
+                $bindings = [];
+            }
+
+            $or ? $query->orWhereRaw($sql, $bindings) : $query->whereRaw($sql, $bindings);
+
+            return;
+        }
+
         if ($operator === 'or' && is_array($clause['value'] ?? null)) {
             $callback = function (Builder $nested) use ($clause): void {
                 $subClauses = array_values(array_filter(
@@ -132,7 +149,7 @@ final class DbTableSourceQuery
         }
 
         if ($operator === 'datetime_gte' && array_key_exists('value', $clause)) {
-            self::applyDateTimeGteClause($query, $column, $clause['value'], $or);
+            $or ? $query->orWhere($column, '>=', $clause['value']) : $query->where($column, '>=', $clause['value']);
 
             return;
         }
@@ -144,27 +161,6 @@ final class DbTableSourceQuery
         }
 
         $or ? $query->orWhere($column, $operator) : $query->where($column, $operator);
-    }
-
-    private static function applyDateTimeGteClause(Builder $query, string $column, mixed $value, bool $or = false): void
-    {
-        if ($query->getConnection()->getDriverName() === 'sqlsrv') {
-            $wrappedColumn = $query->getGrammar()->wrap($column);
-            $callback = static fn (Builder $builder): Builder => $builder->whereRaw(
-                "TRY_CONVERT(datetime, {$wrappedColumn}, 120) >= ?",
-                [$value],
-            );
-
-            if ($or) {
-                $query->orWhere($callback);
-            } else {
-                $query->where($callback);
-            }
-
-            return;
-        }
-
-        $or ? $query->orWhere($column, '>=', $value) : $query->where($column, '>=', $value);
     }
 
     public static function hasRowKey(mixed $rowKey): bool
