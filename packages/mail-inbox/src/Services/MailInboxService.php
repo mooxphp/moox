@@ -543,13 +543,4 @@ class MailInboxService
 
         return $row;
     }
-
-    private function mimeLooksLikeXml(string $mimeType): bool
-    {
-        $lower = strtolower($mimeType);
-
-        return str_contains($lower, 'xml')
-            || $lower === 'application/xml'
-            || $lower === 'text/xml';
-    }
 }

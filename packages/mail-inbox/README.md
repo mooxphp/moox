@@ -26,6 +26,8 @@ Learn more about [Moox](https://moox.org).
 - Two-tier config: connections (credentials) + mailboxes (driver, connection, address)
 - In-memory fake driver (`tests/Support/InMemoryDriver`) for testing with no network access
 - Opaque sync cursors — the package never inspects them; drivers must validate them
+- Catch-up flag on sync state when a poll defers continuation before a resume cursor
+- Optional Filament operator UI (`MailInboxPlugin`): inbox messages, attachments, sync state, retry/re-enqueue
 - Microsoft Graph polling via delta API (when paired with `moox/msgraph`)
 
 <!-- /Features -->
@@ -93,9 +95,20 @@ There is no `direction` field — a mailbox's role follows from which configurat
 
 Jobs and services resolve the driver through `InboxDriverManager` using the mailbox name as pipeline `scope`. Settlement uses `SettlementOutcome` (`Processed`, `Failed`, `Ignored`) — never folder names. Graph folder names live in `config/msgraph.php` when using `moox/msgraph`.
 
-The sync-state table stores an opaque cursor (`delta_link`), a `driver` column, and `cursor_reset_at` (timestamp of the last cursor reset). Each pipeline `scope` must have a matching `mail-inbox.mailboxes.{scope}` entry — the package does not backfill configuration from sync-state rows. Run `php artisan mail-inbox:status` after upgrades to list any sync-state scopes missing from configuration.
+The sync-state table stores an opaque cursor (`delta_link`), a `driver` column, `cursor_reset_at` (timestamp of the last cursor reset), and `catch_up_in_progress` (whether a poll deferred continuation before completing). Each pipeline `scope` must have a matching `mail-inbox.mailboxes.{scope}` entry — the package does not backfill configuration from sync-state rows. Run `php artisan mail-inbox:status` after upgrades to list any sync-state scopes missing from configuration.
 
 When a driver rejects a stored cursor as expired, `FetchMailsJob` clears it and starts a fresh sync. That reset is bounded by `cursor_reset_max_per_run` (default `1`). Repeated resets within `cursor_reset_warning_minutes` (default `60`) are logged as a warning.
+
+### Filament operator UI
+
+When Filament is installed, register `Moox\MailInbox\Plugins\MailInboxPlugin` on your panel (the Moox installer can do this automatically). The plugin adds two readonly resources:
+
+- **Inbox messages** — list with config-driven tabs (all, new, failed, processed) and filters for mailbox, status, and received date. Open a message to see attachments with individual processing statuses and failure reasons. Body preview uses plain text when present, otherwise a stripped plain-text fallback from HTML (provider payloads are often HTML-only).
+- **Mailbox sync** — per-scope sync state: mailbox name, address, driver, last sync, catch-up indicator, and the sync cursor as a truncated diagnostic blob (never parsed or presented as structured data).
+
+Resource titles and tabs follow the Moox address-style config keys (`resources.*.single` / `plural`, tabs nested under the resource, top-level `navigation_group`).
+
+Header actions on a message dispatch the existing pipeline services — **Retry failed** calls `MailInboxService::retryFailedMessage()` (same reset logic as `mail-inbox:process --retry-failed`, scoped to one message); **Re-enqueue processing** calls `enqueueParseJobsForInboxMessage()`. The package pipeline runs without Filament when the plugin is not registered.
 
 ### Breaking configuration change
 

@@ -123,6 +123,7 @@ class FetchMailsJob implements ShouldQueue
                 $syncState->update([
                     'delta_link' => null,
                     'cursor_reset_at' => now(),
+                    'catch_up_in_progress' => true,
                 ]);
                 $cursor = null;
 
@@ -173,6 +174,7 @@ class FetchMailsJob implements ShouldQueue
                     'delta_link' => $page->resumeCursor,
                     'driver' => $driverName,
                     'last_synced_at' => now(),
+                    'catch_up_in_progress' => false,
                 ]);
 
                 break;
@@ -195,6 +197,7 @@ class FetchMailsJob implements ShouldQueue
                 $syncState->update([
                     'delta_link' => $next,
                     'driver' => $driverName,
+                    'catch_up_in_progress' => true,
                 ]);
 
                 break;
@@ -227,3 +230,4 @@ class FetchMailsJob implements ShouldQueue
         ini_set('memory_limit', (string) config('mail-inbox.memory_limit', '512M'));
     }
 }
+

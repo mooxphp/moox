@@ -28,6 +28,7 @@ class MailInboxSyncState extends Model
         'delta_link',
         'last_synced_at',
         'cursor_reset_at',
+        'catch_up_in_progress',
         'updated_at',
         'created_at',
     ];
@@ -40,6 +41,8 @@ class MailInboxSyncState extends Model
         return [
             'last_synced_at' => 'datetime',
             'cursor_reset_at' => 'datetime',
+            'catch_up_in_progress' => 'boolean',
         ];
     }
 }
+

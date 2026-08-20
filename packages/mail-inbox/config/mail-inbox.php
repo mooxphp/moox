@@ -1,5 +1,19 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::core.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
 return [
 
     /*
@@ -8,8 +22,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Named connection slots referenced by mailboxes. Credential keys depend on
-    | the driver package that consumes each connection. Legacy GraphMailService
-    | (still registered until removed) reads `connections.default` tenant credentials.
+    | the driver package that consumes each connection.
     |
     */
     'connections' => [
@@ -27,11 +40,6 @@ return [
     |
     | Each mailbox names a driver and references a connection by name.
     | The mailbox name is the pipeline `scope` (e.g. FetchMailsJob scope).
-    | A mailbox's role follows from which config file it appears in —
-    | there is no direction field.
-    |
-    | `driver` must be set explicitly — register the driver in your adapter
-    | package and reference it here (e.g. env('MAIL_INBOX_DRIVER')).
     |
     */
     'mailboxes' => [
@@ -46,18 +54,6 @@ return [
 
     'delta_max_pages_per_poll' => (int) env('MAIL_INBOX_DELTA_MAX_PAGES_PER_POLL', 50),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Sync cursor reset bounds
-    |--------------------------------------------------------------------------
-    |
-    | When a driver rejects a stored cursor as expired, FetchMailsJob clears it
-    | and starts a fresh sync. cursor_reset_max_per_run caps how many times that
-    | may happen in one job run (default 1 — one legitimate expiry needs one reset).
-    | cursor_reset_warning_minutes logs a warning when another reset happens within
-    | that window across separate runs.
-    |
-    */
     'cursor_reset_max_per_run' => (int) env('MAIL_INBOX_CURSOR_RESET_MAX_PER_RUN', 1),
 
     'cursor_reset_warning_minutes' => (int) env('MAIL_INBOX_CURSOR_RESET_WARNING_MINUTES', 60),
@@ -77,5 +73,78 @@ return [
         'path' => env('MAIL_INBOX_ZUGFERD_PATH', 'zugferd'),
         'pdf_password' => env('MAIL_INBOX_PDF_PASSWORD'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resources
+    |--------------------------------------------------------------------------
+    |
+    | Filament operator UI for inbox messages and mailbox sync state.
+    |
+    */
+    'resources' => [
+        'inbox-messages' => [
+
+            'single' => 'trans//mail-inbox::mail-inbox.message',
+            'plural' => 'trans//mail-inbox::mail-inbox.messages',
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//mail-inbox::fields.tab_all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'new' => [
+                    'label' => 'trans//mail-inbox::fields.tab_new',
+                    'icon' => 'gmdi-mark-email-unread',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => '=',
+                            'value' => 'new',
+                        ],
+                    ],
+                ],
+                'failed' => [
+                    'label' => 'trans//mail-inbox::fields.tab_failed',
+                    'icon' => 'gmdi-error',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => 'in',
+                            'value' => ['failed', 'partially_failed'],
+                        ],
+                    ],
+                ],
+                'processed' => [
+                    'label' => 'trans//mail-inbox::fields.tab_processed',
+                    'icon' => 'gmdi-check-circle',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => '=',
+                            'value' => 'processed',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+
+        'sync-states' => [
+
+            'single' => 'trans//mail-inbox::mail-inbox.sync_state',
+            'plural' => 'trans//mail-inbox::mail-inbox.sync_states',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group for both inbox resources.
+    |
+    */
+    'navigation_group' => 'trans//mail-inbox::mail-inbox.navigation_group',
 
 ];

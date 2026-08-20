@@ -4,6 +4,19 @@
 
 ### Added
 
+- Filament operator UI: `InboxMessageResource` (list, view, config-driven tabs under `resources.inbox-messages.tabs`, retry/re-enqueue actions) and `MailInboxSyncStateResource` (per-mailbox sync diagnostics)
+- `MailInboxPlugin` for optional Filament panel registration (pipeline unchanged when not registered)
+- `MailInboxService::retryFailedMessage()` for single-message retry (shared by the resource and `retryFailedMessages()`)
+- Sync-state `catch_up_in_progress` column, set by `FetchMailsJob` when a poll defers continuation and cleared when a resume cursor is stored
+- English and German translations for Filament resource titles and field labels (`resources/lang/{en,de}/`)
+
+### Changed
+
+- Filament config shape follows Moox address-style resources: `resources.*.single` / `plural`, tabs nested under each resource, top-level `navigation_group`
+- Message body preview prefers `raw_body_text` and falls back to stripped plain text from `raw_body_html` (many provider payloads are HTML-only)
+
+### Added
+
 - `mail-inbox:status` reports sync-state scopes with no matching `mailboxes` entry (actionable configuration instructions)
 - `cursor_reset_max_per_run` and `cursor_reset_warning_minutes` config keys to bound invalid-cursor reset loops
 - Sync-state `cursor_reset_at` column recording when the cursor was last cleared

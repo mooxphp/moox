@@ -44,6 +44,21 @@ _Avoid_: Skipped, rejected, discarded, foreign
 The opaque marker of how far a Mailbox has been read. Only the Driver may interpret its contents.
 _Avoid_: Delta link, sync token, offset, watermark
 
+**Catch-up**:
+A sync run that has not finished paging through the current fetch: the poll deferred on a continuation cursor (for example after `delta_max_pages_per_poll`) and will continue on the next poll. Stored as `catch_up_in_progress` on sync state — never inferred by parsing the Cursor.
+_Avoid_: Backlog, lag, full sync, resync (those mean different things; resync is clearing an expired Cursor)
+
+### Operator surface
+
+**Inbox message resource**:
+Readonly Filament list and detail over Inbox Messages and their Attachments — status, failure reason, retry / re-enqueue — registered only when `MailInboxPlugin` is on the panel.
+_Avoid_: CRUD admin, second pipeline
+
+**Sync state resource**:
+Readonly Filament list of per-Scope sync diagnostics (Mailbox address, driver, last run, Catch-up, Cursor as diagnostic blob only).
+_Avoid_: Cursor editor, sync control panel
+
 ## Not this context
 
 **Send window**, **Send log**, **Delivery channel** and **Approval** belong to outbound mail and invoice delivery. They are defined in [ADR 0002](../../docs/adr/0002-outbound-mail-through-laravels-mailer.md) and [ADR 0003](../../docs/adr/0003-outgoing-invoice-delivery-and-central-approval.md) until `moox/mail-outbox` exists and gets its own `CONTEXT.md`.
+

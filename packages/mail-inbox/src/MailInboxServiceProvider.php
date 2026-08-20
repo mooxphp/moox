@@ -24,12 +24,14 @@ class MailInboxServiceProvider extends MooxServiceProvider
         $package
             ->name('mail-inbox')
             ->hasConfigFile()
+            ->hasTranslations()
             ->hasMigrations([
                 'create_inbox_messages_table',
                 'create_inbox_attachments_table',
                 'create_mail_inbox_sync_states_table',
                 'add_driver_to_mail_inbox_sync_states_table',
                 'add_cursor_reset_at_to_mail_inbox_sync_states_table',
+                'add_catch_up_in_progress_to_mail_inbox_sync_states_table',
             ])
             ->hasCommands([
                 FetchMailCommand::class,
@@ -114,3 +116,4 @@ class MailInboxServiceProvider extends MooxServiceProvider
         }
     }
 }
+
