@@ -11,11 +11,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Moox\Jobs\Traits\JobProgress;
-use Moox\MailInbox\Exceptions\GraphSyncStateNotFoundException;
+use Moox\MailInbox\Enums\ClaimResult;
+use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\MailInboxSyncState;
-use Moox\MailInbox\Services\GraphMailService;
 use Moox\MailInbox\Services\MailInboxService;
-use Moox\MailInbox\Support\DeltaMessageInspector;
 use Throwable;
 
 class FetchMailsJob implements ShouldQueue
@@ -40,112 +40,212 @@ class FetchMailsJob implements ShouldQueue
     ) {
     }
 
-    public function handle(GraphMailService $graph, MailInboxService $inbox): void
+    public function handle(InboxDriverManager $drivers, MailInboxService $inbox): void
     {
         $this->applyMemoryLimit();
         $this->setProgress(0);
 
         $maxPages = max(1, (int) config('mail-inbox.delta_max_pages_per_poll', 50));
+        $maxCursorResetsPerRun = max(0, (int) config('mail-inbox.cursor_reset_max_per_run', 1));
+        $cursorResetWarningMinutes = max(1, (int) config('mail-inbox.cursor_reset_warning_minutes', 60));
+
+        $driverName = $drivers->driverNameFor($this->scope);
+        $driver = $drivers->mailbox($this->scope);
 
         $syncState = MailInboxSyncState::query()->firstOrCreate(
             ['scope' => $this->scope],
-            ['delta_link' => null, 'last_synced_at' => null],
+            [
+                'driver' => $driverName,
+                'delta_link' => null,
+                'last_synced_at' => null,
+            ],
         );
 
-        /** @var string|null $continuationUrl null starts a full delta sync round */
-        $continuationUrl = $syncState->delta_link;
+        if ($syncState->driver !== null
+            && $syncState->driver !== ''
+            && $syncState->driver !== $driverName
+        ) {
+            Log::channel('mail-inbox')->warning(
+                '[MailInbox] Sync-state driver mismatch — clearing cursor for fresh sync',
+                [
+                    'scope' => $this->scope,
+                    'stored_driver' => $syncState->driver,
+                    'configured_driver' => $driverName,
+                ],
+            );
+            $syncState->update([
+                'driver' => $driverName,
+                'delta_link' => null,
+            ]);
+        } elseif ($syncState->driver === null || $syncState->driver === '') {
+            $syncState->update(['driver' => $driverName]);
+        }
+
+        /** @var string|null $cursor null starts a full sync round */
+        $cursor = $syncState->delta_link;
 
         $pagesThisPoll = 0;
         $persistedTotal = 0;
         $skippedKnownTotal = 0;
         $skippedNoAttachmentsTotal = 0;
-        $removedFilteredTotal = 0;
+        $cursorResetsThisRun = 0;
 
         while (true) {
             try {
-                $page = $graph->fetchInboxMessagesViaDelta($continuationUrl);
-            } catch (GraphSyncStateNotFoundException $e) {
-                Log::channel('mail-inbox')->warning('[MailInbox] Delta sync state not found — clearing token for full resync', [
-                    'scope' => $this->scope,
-                    'exception' => $e,
+                $page = $driver->fetch($cursor);
+            } catch (InvalidSyncCursorException $e) {
+                if ($cursorResetsThisRun >= $maxCursorResetsPerRun) {
+                    Log::channel('mail-inbox')->error(
+                        '[MailInbox] Sync cursor reset limit reached — aborting fetch',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'cursor_reset_max_per_run' => $maxCursorResetsPerRun,
+                            'rejected_host' => $e->rejectedHost,
+                            'exception' => $e,
+                        ],
+                    );
+
+                    throw $e;
+                }
+
+                $recentReset = $syncState->cursor_reset_at !== null
+                    && $syncState->cursor_reset_at->greaterThan(now()->subMinutes($cursorResetWarningMinutes));
+
+                if ($recentReset) {
+                    Log::channel('mail-inbox')->warning('[MailInbox] Repeated sync cursor reset for scope', [
+                        'scope' => $this->scope,
+                        'driver' => $driverName,
+                        'previous_reset_at' => $syncState->cursor_reset_at?->toIso8601String(),
+                        'cursor_reset_warning_minutes' => $cursorResetWarningMinutes,
+                    ]);
+                }
+
+                if ($e->rejectedHost !== null) {
+                    Log::channel('mail-inbox')->error(
+                        '[MailInbox] Sync cursor rejected — unexpected host; clearing token for full resync',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'rejected_host' => $e->rejectedHost,
+                            'exception' => $e,
+                        ],
+                    );
+                } else {
+                    Log::channel('mail-inbox')->warning(
+                        '[MailInbox] Sync cursor invalid — clearing token for full resync',
+                        [
+                            'scope' => $this->scope,
+                            'driver' => $driverName,
+                            'exception' => $e,
+                        ],
+                    );
+                }
+
+                $cursorResetsThisRun++;
+                $syncState->update([
+                    'delta_link' => null,
+                    'cursor_reset_at' => now(),
+                    'catch_up_in_progress' => true,
                 ]);
-                $syncState->update(['delta_link' => null]);
-                $continuationUrl = null;
+                $cursor = null;
 
                 continue;
             }
 
             $pagesThisPoll++;
 
-            $result = $inbox->persistDeltaMessages($page->messages, $this->scope);
+            $result = $inbox->persistMessages($page->messages, $this->scope);
             $persistedTotal += $result->persisted;
             $skippedKnownTotal += $result->skippedKnown;
             $skippedNoAttachmentsTotal += $result->skippedNoAttachments;
-            $removedFilteredTotal += $page->removedFiltered;
 
-            foreach ($page->messages as $graphMessage) {
-                if (DeltaMessageInspector::isRemovedPlaceholder($graphMessage)) {
-                    continue;
-                }
-
-                $messageId = $graphMessage->getId();
-                if ($messageId === null || $messageId === '') {
-                    continue;
-                }
-
+            foreach ($page->messages as $dto) {
                 try {
-                    $graph->moveGraphMessageToProcessingFolder($messageId, $this->scope);
+                    $claimResult = $driver->claim($dto->externalId);
+
+                    if ($claimResult === ClaimResult::AlreadyHeld) {
+                        Log::channel('mail-inbox')->debug('[MailInbox] Message already claimed; skipping claim move', [
+                            'external_id' => $dto->externalId,
+                            'scope' => $this->scope,
+                        ]);
+
+                        continue;
+                    }
+
+                    if ($claimResult === ClaimResult::MoveFailed) {
+                        Log::channel('mail-inbox')->warning(
+                            '[MailInbox] claim move failed (best-effort, will retry on next fetch)',
+                            [
+                                'external_id' => $dto->externalId,
+                                'scope' => $this->scope,
+                            ],
+                        );
+                    }
                 } catch (Throwable $e) {
-                    Log::channel('mail-inbox')->warning('[MailInbox] move to Processing folder failed (best-effort, will retry on next delta)', [
-                        'messageId' => $messageId,
-                        'scope' => $this->scope,
-                        'exception_class' => $e::class,
-                        'exception_message' => $e->getMessage(),
-                    ]);
+                    Log::channel('mail-inbox')->warning(
+                        '[MailInbox] claim failed (best-effort, will retry on next fetch)',
+                        [
+                            'external_id' => $dto->externalId,
+                            'scope' => $this->scope,
+                            'exception_class' => $e::class,
+                            'exception_message' => $e->getMessage(),
+                        ],
+                    );
                 }
             }
 
             $progressCap = max(1, min($pagesThisPoll + 3, $maxPages + 2));
             $this->setProgress((int) min(99, round(($pagesThisPoll / $progressCap) * 100)));
 
-            $deltaUrl = $page->deltaLink;
-            if ($deltaUrl !== null && $deltaUrl !== '') {
+            if ($page->resumeCursor !== null && $page->resumeCursor !== '') {
                 $syncState->update([
-                    'delta_link' => $deltaUrl,
+                    'delta_link' => $page->resumeCursor,
+                    'driver' => $driverName,
                     'last_synced_at' => now(),
+                    'catch_up_in_progress' => false,
                 ]);
 
                 break;
             }
 
-            $next = $page->nextLink;
+            $next = $page->continuationCursor;
             if ($next === null || $next === '') {
-                Log::channel('mail-inbox')->warning('[MailInbox] Delta page missing both deltaLink and nextLink', [
-                    'scope' => $this->scope,
-                ]);
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Message page missing both resumeCursor and continuationCursor',
+                    [
+                        'scope' => $this->scope,
+                    ],
+                );
 
                 break;
             }
 
             if ($pagesThisPoll >= $maxPages) {
-                Log::channel('mail-inbox')->warning('[MailInbox] Delta poll reached delta_max_pages_per_poll; deferring continuation to next poll', [
-                    'scope' => $this->scope,
-                    'delta_max_pages_per_poll' => $maxPages,
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Poll reached delta_max_pages_per_poll; deferring continuation to next poll',
+                    [
+                        'scope' => $this->scope,
+                        'delta_max_pages_per_poll' => $maxPages,
+                    ],
+                );
+                $syncState->update([
+                    'delta_link' => $next,
+                    'driver' => $driverName,
+                    'catch_up_in_progress' => true,
                 ]);
-                $syncState->update(['delta_link' => $next]);
 
                 break;
             }
 
-            $continuationUrl = $next;
+            $cursor = $next;
         }
 
-        Log::channel('mail-inbox')->info('[MailInbox] Delta sync complete', [
+        Log::channel('mail-inbox')->info('[MailInbox] Sync complete', [
             'scope' => $this->scope,
             'persisted' => $persistedTotal,
             'skipped_known' => $skippedKnownTotal,
             'skipped_no_attachments' => $skippedNoAttachmentsTotal,
-            'removed_filtered' => $removedFilteredTotal,
             'total_pages' => $pagesThisPoll,
         ]);
 

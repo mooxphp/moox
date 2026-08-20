@@ -6,6 +6,8 @@ namespace Moox\MailInbox\Commands;
 
 use Illuminate\Console\Command;
 use Moox\MailInbox\Enums\InboxMessageProcessingStatus;
+use Moox\MailInbox\InboxDriverManager;
+use Moox\MailInbox\Models\MailInboxSyncState;
 use Moox\MailInbox\Services\MailInboxService;
 
 class StatusCommand extends Command
@@ -14,8 +16,20 @@ class StatusCommand extends Command
 
     protected $description = 'Show current inbox status and message counts';
 
-    public function handle(MailInboxService $service): int
+    public function handle(MailInboxService $service, InboxDriverManager $drivers): int
     {
+        $unconfiguredScopes = $drivers->unconfiguredScopes(
+            MailInboxSyncState::query()->pluck('scope')
+        );
+
+        if ($unconfiguredScopes !== []) {
+            $this->error('Sync-state scopes without mailboxes configuration:');
+            foreach ($unconfiguredScopes as $scope) {
+                $this->line('  • '.InboxDriverManager::unconfiguredMailboxMessage($scope));
+            }
+            $this->newLine();
+        }
+
         $scope = (string) $this->option('scope');
         $breakdown = $service->inboxStatusBreakdown($scope);
 

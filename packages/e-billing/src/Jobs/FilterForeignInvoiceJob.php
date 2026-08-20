@@ -16,14 +16,16 @@ use Moox\EBilling\Enums\InvoiceOriginRule;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
-use Moox\MailInbox\Services\GraphMailService;
 use Throwable;
 
 /**
- * After PDF parsing, classifies domestic vs. foreign invoice; foreign invoices are moved to a dedicated mailbox folder
- * and marked {@see EBillingAttachmentProcessingStatus::IgnoredForeign} without persisting an e-billing {@see Invoice} record.
+ * After PDF parsing, classifies domestic vs. foreign invoice; foreign invoices are settled as
+ * Ignored on the inbox driver and marked {@see EBillingAttachmentProcessingStatus::IgnoredForeign}
+ * without persisting an e-billing {@see Invoice} record.
  */
 final class FilterForeignInvoiceJob implements ShouldQueue
 {
@@ -77,8 +79,9 @@ final class FilterForeignInvoiceJob implements ShouldQueue
     ) {
     }
 
-    public function handle(): void
-    {
+    public function handle(
+        InboxDriverManager $drivers,
+    ): void {
         $this->setProgress(0);
 
         $document = EbillingDocument::query()->find($this->ebillingDocumentId);
@@ -170,12 +173,13 @@ final class FilterForeignInvoiceJob implements ShouldQueue
 
         $externalId = $message->external_id;
         if ($externalId === null || $externalId === '') {
-            throw new \RuntimeException('FilterForeignInvoiceJob: inbox message has no external_id; cannot move in Graph.');
+            throw new \RuntimeException(
+                'FilterForeignInvoiceJob: inbox message has no external_id; cannot settle as Ignored.',
+            );
         }
 
-        $folderName = (string) config('e-billing.foreign_invoice.ignored_folder_name', 'Ignored');
-
-        app(GraphMailService::class)->moveMessageToFolderByName($externalId, $folderName, true);
+        $drivers->mailbox((string) ($message->scope ?? 'default'))
+            ->settle($externalId, SettlementOutcome::Ignored);
 
         DB::transaction(function () use ($attachment, $document, $country, $matchedRule): void {
             $ignoredReason = [
@@ -194,7 +198,11 @@ final class FilterForeignInvoiceJob implements ShouldQueue
             $attachment->markAsSkipped();
         });
 
-        Log::info("Foreign invoice ignored: attachment=#{$attachment->id} country=".($country ?? 'null').' matched_rule='.$matchedRule);
+        Log::info(
+            "Foreign invoice ignored: attachment=#{$attachment->id} country="
+                .($country ?? 'null')
+                .' matched_rule='.$matchedRule
+        );
 
         $this->maybeMarkInboxMessageProcessedIfAllPdfAttachmentsTerminal($message->fresh());
 
@@ -228,7 +236,11 @@ final class FilterForeignInvoiceJob implements ShouldQueue
         }
 
         if ($country === 'DE') {
-            return ['is_foreign' => false, 'country' => $country, 'matched_rule' => InvoiceOriginRule::CountryDetectedDe];
+            return [
+                'is_foreign' => false,
+                'country' => $country,
+                'matched_rule' => InvoiceOriginRule::CountryDetectedDe,
+            ];
         }
 
         if ($this->isNetOnly($grossTotal, $taxAmount)) {

@@ -8,52 +8,55 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Microsoft\Graph\Generated\Models\BodyType;
-use Microsoft\Graph\Generated\Models\Message;
 use Moox\MailInbox\DeltaPersistResult;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Enums\InboxMessageProcessingStatus;
-use Moox\MailInbox\Exceptions\GraphItemNotFoundException;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
+use Moox\MailInbox\InboxMessageDto;
 use Moox\MailInbox\Jobs\ParsePdfJob;
 use Moox\MailInbox\Jobs\StoreAttachmentsJob;
 use Moox\MailInbox\Models\InboxAttachment;
 use Moox\MailInbox\Models\InboxMessage;
+use Throwable;
 
 class MailInboxService
 {
     public function __construct(
-        private GraphMailService $graphService,
+        private InboxDriverManager $drivers,
     ) {
     }
 
     /**
-     * @param  array<int, Message>  $graphMessages
+     * Persist driver DTOs for a mailbox scope (dual-key dedup; attachments listed in StoreAttachmentsJob).
+     *
+     * @param  array<int, InboxMessageDto>  $messages
      */
-    public function persistDeltaMessages(array $graphMessages, string $scope): DeltaPersistResult
+    public function persistMessages(array $messages, string $scope): DeltaPersistResult
     {
         $persisted = 0;
         $skippedKnown = 0;
         $skippedNoAttachments = 0;
 
-        foreach ($graphMessages as $graphMessage) {
-            if (! $graphMessage instanceof Message) {
+        foreach ($messages as $dto) {
+            if (! $dto instanceof InboxMessageDto) {
                 continue;
             }
 
-            $externalId = $graphMessage->getId();
-            if ($externalId === null || $externalId === '') {
-                Log::channel('mail-inbox')->error('[MailInbox] Skipping Graph message with null id during delta persist');
+            $externalId = $dto->externalId;
+            if ($externalId === '') {
+                Log::channel('mail-inbox')->error('[MailInbox] Skipping message with empty external id during persist');
 
                 continue;
             }
 
-            if (! ($graphMessage->getHasAttachments() ?? false)) {
+            if (! $dto->hasAttachments) {
                 $skippedNoAttachments++;
 
                 continue;
             }
 
-            $internetId = $graphMessage->getInternetMessageId();
+            $internetId = $dto->messageId;
             $internetPresent = $internetId !== null && $internetId !== '';
 
             if ($internetPresent) {
@@ -67,7 +70,7 @@ class MailInboxService
                         $currentExternalId = $existing->external_id;
 
                         try {
-                            // Migrate volatile → immutable as Delta re-delivers this mail (Prefer immutable on Graph traffic).
+                            // Migrate volatile → immutable as the driver re-delivers this mail.
                             $existing->external_id = $externalId;
                             $existing->saveQuietly();
 
@@ -97,33 +100,41 @@ class MailInboxService
                         }
                     }
 
-                    Log::channel('mail-inbox')->debug('[MailInbox] Delta returned known message, skipping (pre-check)', [
-                        'external_id' => $externalId,
-                        'message_id' => $internetId,
-                        'scope' => $scope,
-                    ]);
+                    Log::channel('mail-inbox')->debug(
+                        '[MailInbox] Driver returned known message, skipping (pre-check)',
+                        [
+                            'external_id' => $externalId,
+                            'message_id' => $internetId,
+                            'scope' => $scope,
+                        ],
+                    );
                     $skippedKnown++;
 
                     continue;
                 }
             } else {
-                Log::channel('mail-inbox')->warning('[MailInbox] Delta message missing internetMessageId, falling back to external_id for dedup', [
-                    'external_id' => $externalId,
-                    'scope' => $scope,
-                ]);
+                Log::channel('mail-inbox')->warning(
+                    '[MailInbox] Message missing messageId, falling back to external_id for dedup',
+                    [
+                        'external_id' => $externalId,
+                        'scope' => $scope,
+                    ],
+                );
 
-                // Dedupe uses Graph id equals row.external_id; there is nothing to reconcile (no RFC822 anchor for a stale-id update).
                 $existsAlready = InboxMessage::query()
                     ->where('scope', $scope)
                     ->where('external_id', $externalId)
                     ->exists();
 
                 if ($existsAlready) {
-                    Log::channel('mail-inbox')->debug('[MailInbox] Delta returned known message, skipping (pre-check)', [
-                        'external_id' => $externalId,
-                        'message_id' => null,
-                        'scope' => $scope,
-                    ]);
+                    Log::channel('mail-inbox')->debug(
+                        '[MailInbox] Driver returned known message, skipping (pre-check)',
+                        [
+                            'external_id' => $externalId,
+                            'message_id' => null,
+                            'scope' => $scope,
+                        ],
+                    );
                     $skippedKnown++;
 
                     continue;
@@ -131,7 +142,7 @@ class MailInboxService
             }
 
             try {
-                $row = $this->createInboxMessageFromGraphMessage($graphMessage, $scope);
+                $row = $this->createInboxMessageFromDto($dto, $scope);
 
                 if ($row !== null) {
                     StoreAttachmentsJob::dispatch($row->id);
@@ -160,12 +171,15 @@ class MailInboxService
                         $payload['db_subject'] = $colliding->subject;
                         $payload['db_created_at'] = $colliding->created_at?->toIso8601String();
                     }
-                } catch (\Throwable $diagnosticError) {
+                } catch (Throwable $diagnosticError) {
                     $payload['db_match'] = 'diagnostic_query_failed';
                     $payload['diagnostic_error'] = $diagnosticError::class.': '.$diagnosticError->getMessage();
                 }
 
-                Log::channel('mail-inbox')->info('[MailInbox] Delta race condition caught by unique constraint, skipping', $payload);
+                Log::channel('mail-inbox')->info(
+                    '[MailInbox] Persist race condition caught by unique constraint, skipping',
+                    $payload,
+                );
             }
         }
 
@@ -208,7 +222,7 @@ class MailInboxService
                 ? $message->error_message
                 : 'Attachment storage failed';
             $message->markAsFailed($error);
-            $this->tryMoveGraphMessageToTerminalFolder($message->external_id, false, $message->id, $message->scope);
+            $this->trySettle($message->external_id, SettlementOutcome::Failed, $message->id, $message->scope);
 
             return;
         }
@@ -234,11 +248,11 @@ class MailInboxService
                     ? $message->error_message
                     : 'One or more attachments failed processing';
                 $message->markAsFailed($error);
-                $this->tryMoveGraphMessageToTerminalFolder($message->external_id, false, $message->id, $message->scope);
+                $this->trySettle($message->external_id, SettlementOutcome::Failed, $message->id, $message->scope);
             } else {
                 $message->error_message = null;
                 $message->markAsProcessed();
-                $this->tryMoveGraphMessageToTerminalFolder($message->external_id, true, $message->id, $message->scope);
+                $this->trySettle($message->external_id, SettlementOutcome::Processed, $message->id, $message->scope);
             }
 
             return;
@@ -246,14 +260,14 @@ class MailInboxService
 
         if ($allPdfs->isEmpty()) {
             $message->markAsProcessed();
-            $this->tryMoveGraphMessageToTerminalFolder($message->external_id, true, $message->id, $message->scope);
+            $this->trySettle($message->external_id, SettlementOutcome::Processed, $message->id, $message->scope);
 
             return;
         }
 
         if ($hasFailed) {
             $message->markAsFailed('One or more attachments failed processing');
-            $this->tryMoveGraphMessageToTerminalFolder($message->external_id, false, $message->id, $message->scope);
+            $this->trySettle($message->external_id, SettlementOutcome::Failed, $message->id, $message->scope);
 
             return;
         }
@@ -262,31 +276,31 @@ class MailInboxService
             fn (InboxAttachment $a): bool => $a->processing_status === InboxAttachmentProcessingStatus::Processed->value
         )) {
             $message->markAsProcessed();
-            $this->tryMoveGraphMessageToTerminalFolder($message->external_id, true, $message->id, $message->scope);
+            $this->trySettle($message->external_id, SettlementOutcome::Processed, $message->id, $message->scope);
         }
     }
 
-    private function tryMoveGraphMessageToTerminalFolder(?string $externalId, bool $success, ?int $inboxMessageId = null, ?string $scope = null): void
-    {
+    private function trySettle(
+        ?string $externalId,
+        SettlementOutcome $outcome,
+        ?int $inboxMessageId = null,
+        ?string $scope = null,
+    ): void {
         if ($externalId === null || $externalId === '') {
             return;
         }
 
+        $mailbox = $scope !== null && $scope !== '' ? $scope : 'default';
+
         try {
-            $this->graphService->moveGraphMessageToProcessedOrFailedFolder($externalId, $success, $scope);
-        } catch (GraphItemNotFoundException $e) {
-            Log::channel('mail-inbox')->warning('[MailInbox] Terminal folder move skipped: Graph message not found', [
-                'external_id' => $externalId,
-                'inbox_message_id' => $inboxMessageId,
-                'success_path' => $success,
-                'exception' => $e,
-            ]);
-        } catch (\Throwable $e) {
-            Log::channel('mail-inbox')->error('[MailInbox] Terminal folder move failed', [
+            $this->drivers->mailbox($mailbox)->settle($externalId, $outcome);
+        } catch (Throwable $e) {
+            Log::channel('mail-inbox')->error('[MailInbox] Settlement failed', [
                 'exception' => $e,
                 'external_id' => $externalId,
                 'inbox_message_id' => $inboxMessageId,
-                'success_path' => $success,
+                'outcome' => $outcome->value,
+                'scope' => $mailbox,
             ]);
         }
     }
@@ -331,52 +345,62 @@ class MailInboxService
     {
         $messages = InboxMessage::forScope($scope)->failed()->with('attachments')->get();
 
-        $stalenessMinutes = max(1, (int) config('mail-inbox.retry_staleness_minutes', 30));
-        $stalenessThreshold = now()->subMinutes($stalenessMinutes);
-
         foreach ($messages as $message) {
-            $messageId = $message->id;
-
-            DB::transaction(function () use ($message, $stalenessThreshold): void {
-                $message->update([
-                    'processing_status' => InboxMessageProcessingStatus::New->value,
-                    'error_message' => null,
-                ]);
-
-                $message->attachments()
-                    ->where('processing_status', InboxAttachmentProcessingStatus::Failed->value)
-                    ->update([
-                        'processing_status' => InboxAttachmentProcessingStatus::New->value,
-                        'error_message' => null,
-                    ]);
-
-                $message->attachments()
-                    ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
-                    ->where('updated_at', '<', $stalenessThreshold)
-                    ->update([
-                        'processing_status' => InboxAttachmentProcessingStatus::New->value,
-                        'error_message' => null,
-                    ]);
-            });
-
-            $recentProcessingCount = InboxAttachment::query()
-                ->where('inbox_message_id', $messageId)
-                ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
-                ->where('updated_at', '>=', $stalenessThreshold)
-                ->count();
-
-            if ($recentProcessingCount > 0) {
-                Log::channel('mail-inbox')->warning('[MailInbox] retryFailedMessages: left processing attachments unchanged (within staleness window)', [
-                    'inbox_message_id' => $messageId,
-                    'count' => $recentProcessingCount,
-                    'staleness_minutes' => $stalenessMinutes,
-                ]);
-            }
-
-            $this->enqueueParseJobsForInboxMessage($message->fresh(['attachments']));
+            $this->retryFailedMessage($message);
         }
 
         return $messages->count();
+    }
+
+    public function retryFailedMessage(InboxMessage $message): void
+    {
+        $message->loadMissing('attachments');
+
+        $stalenessMinutes = max(1, (int) config('mail-inbox.retry_staleness_minutes', 30));
+        $stalenessThreshold = now()->subMinutes($stalenessMinutes);
+        $messageId = $message->id;
+
+        DB::transaction(function () use ($message, $stalenessThreshold): void {
+            $message->update([
+                'processing_status' => InboxMessageProcessingStatus::New->value,
+                'error_message' => null,
+            ]);
+
+            $message->attachments()
+                ->where('processing_status', InboxAttachmentProcessingStatus::Failed->value)
+                ->update([
+                    'processing_status' => InboxAttachmentProcessingStatus::New->value,
+                    'error_message' => null,
+                ]);
+
+            $message->attachments()
+                ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
+                ->where('updated_at', '<', $stalenessThreshold)
+                ->update([
+                    'processing_status' => InboxAttachmentProcessingStatus::New->value,
+                    'error_message' => null,
+                ]);
+        });
+
+        $recentProcessingCount = InboxAttachment::query()
+            ->where('inbox_message_id', $messageId)
+            ->where('processing_status', InboxAttachmentProcessingStatus::Processing->value)
+            ->where('updated_at', '>=', $stalenessThreshold)
+            ->count();
+
+        if ($recentProcessingCount > 0) {
+            Log::channel('mail-inbox')->warning(
+                '[MailInbox] retryFailedMessage: left processing attachments unchanged'
+                    .' (within staleness window)',
+                [
+                    'inbox_message_id' => $messageId,
+                    'count' => $recentProcessingCount,
+                    'staleness_minutes' => $stalenessMinutes,
+                ],
+            );
+        }
+
+        $this->enqueueParseJobsForInboxMessage($message->fresh(['attachments']));
     }
 
     /**
@@ -514,52 +538,30 @@ class MailInboxService
             ->first();
     }
 
-    protected function createInboxMessageFromGraphMessage(Message $graphMessage, string $scope): ?InboxMessage
+    protected function createInboxMessageFromDto(InboxMessageDto $dto, string $scope): ?InboxMessage
     {
-        $externalId = $graphMessage->getId();
-        if ($externalId === null || $externalId === '') {
+        if ($dto->externalId === '') {
             return null;
         }
 
-        $from = $graphMessage->getFrom()?->getEmailAddress();
-        $toRecipients = $graphMessage->getToRecipients() ?? [];
-        $firstRecipient = $toRecipients[0] ?? null;
-        $firstTo = $firstRecipient?->getEmailAddress();
-        $body = $graphMessage->getBody();
-
-        $headers = collect($graphMessage->getInternetMessageHeaders() ?? [])
-            ->mapWithKeys(function ($h): array {
-                $name = $h->getName();
-                if ($name === null || $name === '') {
-                    return [];
-                }
-
-                return [$name => $h->getValue()];
-            })
-            ->toArray();
-
-        $contentType = $body?->getContentType();
-
-        return InboxMessage::create([
+        $row = InboxMessage::create([
             'scope' => $scope,
             'channel' => 'email',
-            'external_id' => $graphMessage->getId(),
-            'message_id' => $graphMessage->getInternetMessageId(),
-            'from_email' => $from?->getAddress(),
-            'from_name' => $from?->getName(),
-            'to_email' => $firstTo?->getAddress(),
-            'to_name' => $firstTo?->getName(),
-            'subject' => $graphMessage->getSubject(),
-            'received_at' => $graphMessage->getReceivedDateTime(),
-            'raw_headers' => $headers !== [] ? $headers : null,
-            'raw_body_text' => ($contentType !== null && $contentType->value() === BodyType::TEXT)
-                ? $body?->getContent()
-                : null,
-            'raw_body_html' => ($contentType !== null && $contentType->value() === BodyType::HTML)
-                ? $body?->getContent()
-                : null,
-            'has_attachments' => $graphMessage->getHasAttachments() ?? false,
+            'external_id' => $dto->externalId,
+            'message_id' => $dto->messageId,
+            'from_email' => $dto->from !== '' ? $dto->from : null,
+            'from_name' => $dto->fromName,
+            'to_email' => $dto->toEmail,
+            'to_name' => $dto->toName,
+            'subject' => $dto->subject !== '' ? $dto->subject : null,
+            'received_at' => $dto->receivedAt,
+            'raw_headers' => null,
+            'raw_body_text' => $dto->bodyText,
+            'raw_body_html' => $dto->bodyHtml,
+            'has_attachments' => $dto->hasAttachments,
             'processing_status' => InboxMessageProcessingStatus::New->value,
         ]);
+
+        return $row;
     }
 }

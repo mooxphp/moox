@@ -1,0 +1,60 @@
+{
+    "name": "moox/msgraph",
+    "description": "Microsoft Graph SDK integration for Laravel — connection registry, authenticated client factory, immutable-ID middleware, and Graph inbox driver.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Microsoft Graph",
+        "OAuth2",
+        "API client"
+    ],
+    "homepage": "https://moox.org/docs/msgraph",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "moox/core": "dev-main",
+        "moox/mail-inbox": "dev-main",
+        "microsoft/microsoft-graph": "^2.0",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\MsGraph\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\MsGraph\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\MsGraph\\MsgraphServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main",
+        "pestphp/pest": "^4.0",
+        "orchestra/testbench": "^10.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
+

@@ -324,20 +324,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Foreign invoice handling (pre-XML filter)
-    |--------------------------------------------------------------------------
-    |
-    | Non-German invoices are moved to this Microsoft 365 folder and marked
-    | ignored on the attachment row (no Invoice record).
-    |
-    */
-
-    'foreign_invoice' => [
-        'ignored_folder_name' => env('EBILLING_IGNORED_FOLDER', 'Ignored'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Default customer country (TRANSITIONAL)
     |--------------------------------------------------------------------------
     |

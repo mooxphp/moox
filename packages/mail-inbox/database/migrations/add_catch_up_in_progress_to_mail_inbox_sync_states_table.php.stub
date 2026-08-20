@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('mail_inbox_sync_states', function (Blueprint $table): void {
+            $table->boolean('catch_up_in_progress')->default(false)->after('cursor_reset_at');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('mail_inbox_sync_states', function (Blueprint $table): void {
+            $table->dropColumn('catch_up_in_progress');
+        });
+    }
+};

@@ -13,6 +13,7 @@ use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
  * File stored for an {@see InboxMessage} (email attachment).
  *
  * The `processing_status` attribute stores {@see InboxAttachmentProcessingStatus} string values.
+ * `filesize` is the number of bytes stored on disk after download ({@see strlen} of attachment content).
  */
 class InboxAttachment extends Model
 {

@@ -405,6 +405,11 @@ return [
             'path' => $public_base_path.'/monorepo',
             'type' => 'public',
         ],
+        'msgraph' => [
+            'active' => false,
+            'path' => $public_base_path.'/msgraph',
+            'type' => 'public',
+        ],
         'news' => [
             'active' => false,
             'path' => $public_base_path.'/news',

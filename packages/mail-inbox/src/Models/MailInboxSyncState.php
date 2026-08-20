@@ -7,7 +7,7 @@ namespace Moox\MailInbox\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Per-scope persisted Microsoft Graph mail folder delta synchronization state (see `@odata.deltaLink`).
+ * Per-scope persisted inbox sync cursor (opaque to this package; interpreted by the driver).
  */
 class MailInboxSyncState extends Model
 {
@@ -24,8 +24,11 @@ class MailInboxSyncState extends Model
      */
     protected $fillable = [
         'scope',
+        'driver',
         'delta_link',
         'last_synced_at',
+        'cursor_reset_at',
+        'catch_up_in_progress',
         'updated_at',
         'created_at',
     ];
@@ -37,6 +40,8 @@ class MailInboxSyncState extends Model
     {
         return [
             'last_synced_at' => 'datetime',
+            'cursor_reset_at' => 'datetime',
+            'catch_up_in_progress' => 'boolean',
         ];
     }
 }

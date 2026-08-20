@@ -1,10 +1,9 @@
 {
     "name": "moox/mail-inbox",
-    "description": "Microsoft Graph–based mail inbox for Laravel (Moox package).",
+    "description": "Transport-neutral mail inbox for Laravel with a driver contract (Moox package).",
     "keywords": [
         "Moox",
         "Laravel",
-        "Microsoft Graph",
         "mail",
         "inbox",
         "Moox package",
@@ -20,7 +19,6 @@
         }
     ],
     "require": {
-        "microsoft/microsoft-graph": "^2.26",
         "moox/core": "dev-main",
         "moox/jobs": "dev-main"
     },
@@ -41,7 +39,12 @@
             ]
         },
         "moox": {
-            "stability": "dev"
+            "stability": "dev",
+            "install": {
+                "plugins": [
+                    "Moox\\MailInbox\\Plugins\\MailInboxPlugin"
+                ]
+            }
         }
     },
     "minimum-stability": "dev",
@@ -53,5 +56,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "suggest": {
+        "moox/msgraph": "Optional inbox driver adapter for Exchange Online mailboxes."
     }
 }

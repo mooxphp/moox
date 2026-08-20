@@ -67,6 +67,7 @@
         "moox/media": "dev-main",
         "moox/module": "dev-main",
         "moox/monorepo": "dev-main",
+        "moox/msgraph": "dev-main",
         "moox/news": "dev-main",
         "moox/notifications": "dev-main",
         "moox/packagist": "dev-main",

@@ -1,43 +1,62 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::core.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Microsoft Graph API Credentials
-    |--------------------------------------------------------------------------
-    */
-    'graph' => [
-        'tenant_id' => env('MAIL_INBOX_TENANT_ID'),
-        'client_id' => env('MAIL_INBOX_CLIENT_ID'),
-        'client_secret' => env('MAIL_INBOX_CLIENT_SECRET'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mailbox Configuration
-    |--------------------------------------------------------------------------
-    */
-    'mailbox' => env('MAIL_INBOX_MAILBOX'),  // e.g. rechnungen@firma.de
-
-    'processed_folder' => env('MAIL_INBOX_PROCESSED_FOLDER', 'Processed'),
-
-    'failed_folder' => env('MAIL_INBOX_FAILED_FOLDER', 'Failed'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Processing folder (optional UX)
+    | Mailboxes
     |--------------------------------------------------------------------------
     |
-    | When set, FetchMailsJob moves each newly delta-persisted message into this
-    | folder on the Graph side. Null or empty skips the move (backwards compatible).
+    | Each mailbox names a driver and references a connection by name (a plain
+    | string). There is intentionally no `connections` array here: credentials
+    | belong in the adapter package that registers the driver (for example
+    | config/msgraph.php). Putting an empty connections registry in this file
+    | invited provider secrets into the transport-neutral package.
+    |
+    | The mailbox name is the pipeline `scope` (e.g. FetchMailsJob scope).
+    |
     */
-    'processing_folder' => env('MAIL_INBOX_PROCESSING_FOLDER', 'Processing'),
+    'mailboxes' => [
+        'default' => [
+            'driver' => env('MAIL_INBOX_DRIVER'),
+            'connection' => env('MAIL_INBOX_CONNECTION', 'default'),
+            'address' => env('MAIL_INBOX_MAILBOX'),
+        ],
+    ],
 
-    'poll_interval' => env('MAIL_INBOX_POLL_INTERVAL', 5),  // minutes
+    'poll_interval' => env('MAIL_INBOX_POLL_INTERVAL', 5),
 
-    // Max Graph delta pages fetched per single FetchMailsJob run (initial catch-up spans multiple polls).
     'delta_max_pages_per_poll' => (int) env('MAIL_INBOX_DELTA_MAX_PAGES_PER_POLL', 50),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync cursor reset bounds
+    |--------------------------------------------------------------------------
+    |
+    | When a driver rejects a stored cursor as expired, FetchMailsJob clears it
+    | and starts a fresh sync. cursor_reset_max_per_run caps how many times that
+    | may happen in one job run (default 1 — one legitimate expiry needs one reset).
+    | cursor_reset_warning_minutes logs a warning when another reset happens within
+    | that window across separate runs.
+    |
+    */
+    'cursor_reset_max_per_run' => (int) env('MAIL_INBOX_CURSOR_RESET_MAX_PER_RUN', 1),
+
+    'cursor_reset_warning_minutes' => (int) env('MAIL_INBOX_CURSOR_RESET_WARNING_MINUTES', 60),
 
     'memory_limit' => env('MAIL_INBOX_MEMORY_LIMIT', '512M'),
 
@@ -45,11 +64,6 @@ return [
 
     'listener_timeout_minutes' => env('MAIL_INBOX_LISTENER_TIMEOUT_MINUTES', 5),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Attachment Storage
-    |--------------------------------------------------------------------------
-    */
     'attachments' => [
         'disk' => env('MAIL_INBOX_ATTACHMENT_DISK', 'local'),
         'path' => env('MAIL_INBOX_ATTACHMENT_PATH', 'mail-inbox/attachments'),
@@ -59,5 +73,78 @@ return [
         'path' => env('MAIL_INBOX_ZUGFERD_PATH', 'zugferd'),
         'pdf_password' => env('MAIL_INBOX_PDF_PASSWORD'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resources
+    |--------------------------------------------------------------------------
+    |
+    | Filament operator UI for inbox messages and mailbox sync state.
+    |
+    */
+    'resources' => [
+        'inbox-messages' => [
+
+            'single' => 'trans//mail-inbox::mail-inbox.message',
+            'plural' => 'trans//mail-inbox::mail-inbox.messages',
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//mail-inbox::fields.tab_all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'new' => [
+                    'label' => 'trans//mail-inbox::fields.tab_new',
+                    'icon' => 'gmdi-mark-email-unread',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => '=',
+                            'value' => 'new',
+                        ],
+                    ],
+                ],
+                'failed' => [
+                    'label' => 'trans//mail-inbox::fields.tab_failed',
+                    'icon' => 'gmdi-error',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => 'in',
+                            'value' => ['failed', 'partially_failed'],
+                        ],
+                    ],
+                ],
+                'processed' => [
+                    'label' => 'trans//mail-inbox::fields.tab_processed',
+                    'icon' => 'gmdi-check-circle',
+                    'query' => [
+                        [
+                            'field' => 'processing_status',
+                            'operator' => '=',
+                            'value' => 'processed',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+
+        'sync-states' => [
+
+            'single' => 'trans//mail-inbox::mail-inbox.sync_state',
+            'plural' => 'trans//mail-inbox::mail-inbox.sync_states',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------------------
+    |
+    | The navigation group for both inbox resources.
+    |
+    */
+    'navigation_group' => 'trans//mail-inbox::mail-inbox.navigation_group',
 
 ];

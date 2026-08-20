@@ -11,8 +11,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
+use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\InboxDriverManager;
 use Moox\MailInbox\Models\InboxAttachment;
-use Moox\MailInbox\Services\GraphMailService;
 
 class VerifyAttachmentProgressJob implements ShouldQueue
 {
@@ -28,9 +29,9 @@ class VerifyAttachmentProgressJob implements ShouldQueue
     ) {
     }
 
-    public function handle(GraphMailService $graphMailService): void
+    public function handle(InboxDriverManager $drivers): void
     {
-        $attachment = InboxAttachment::query()->find($this->attachmentId);
+        $attachment = InboxAttachment::query()->with('message')->find($this->attachmentId);
         if ($attachment === null) {
             return;
         }
@@ -57,6 +58,6 @@ class VerifyAttachmentProgressJob implements ShouldQueue
         }
 
         $scope = (string) ($attachment->scope ?? $attachment->message?->scope ?? 'default');
-        $graphMailService->moveGraphMessageToIgnoredFolder($externalId, 'Ignored', $scope);
+        $drivers->mailbox($scope)->settle($externalId, SettlementOutcome::Ignored);
     }
 }

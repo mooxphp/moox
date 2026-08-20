@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Moox\MailInbox;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Microsoft\Graph\GraphServiceClient;
-use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Moox\Core\MooxServiceProvider;
 use Moox\MailInbox\Commands\FetchMailCommand;
 use Moox\MailInbox\Commands\PollMailCommand;
 use Moox\MailInbox\Commands\ProcessMailCommand;
 use Moox\MailInbox\Commands\StatusCommand;
-use Moox\MailInbox\Services\GraphMailService;
 use Moox\MailInbox\Services\MailInboxService;
-use Moox\MailInbox\Support\MailInboxGraphServiceClientFactory;
 use Spatie\LaravelPackageTools\Package;
 
 class MailInboxServiceProvider extends MooxServiceProvider
@@ -24,10 +20,14 @@ class MailInboxServiceProvider extends MooxServiceProvider
         $package
             ->name('mail-inbox')
             ->hasConfigFile()
+            ->hasTranslations()
             ->hasMigrations([
                 'create_inbox_messages_table',
                 'create_inbox_attachments_table',
                 'create_mail_inbox_sync_states_table',
+                'add_driver_to_mail_inbox_sync_states_table',
+                'add_cursor_reset_at_to_mail_inbox_sync_states_table',
+                'add_catch_up_in_progress_to_mail_inbox_sync_states_table',
             ])
             ->hasCommands([
                 FetchMailCommand::class,
@@ -42,7 +42,7 @@ class MailInboxServiceProvider extends MooxServiceProvider
             ->stability('dev')
             ->category('billing')
             ->usedFor([
-                'Microsoft Graph mailbox polling for inbound mail',
+                'Transport-neutral mailbox polling for inbound mail',
             ]);
     }
 
@@ -59,16 +59,13 @@ class MailInboxServiceProvider extends MooxServiceProvider
             ]);
         }
 
-        $this->app->singleton(GraphServiceClient::class, fn (): GraphServiceClient => MailInboxGraphServiceClientFactory::make(
-            new ClientCredentialContext(
-                (string) config('mail-inbox.graph.tenant_id'),
-                (string) config('mail-inbox.graph.client_id'),
-                (string) config('mail-inbox.graph.client_secret'),
-            ),
-        ));
+        $this->app->singleton(InboxDriverManager::class, function ($app): InboxDriverManager {
+            /** @var array<string, array{driver: string, connection: string, address?: string|null}> $mailboxes */
+            $mailboxes = $app['config']->get('mail-inbox.mailboxes', []);
 
-        $this->app->singleton(GraphMailService::class, function ($app): GraphMailService {
-            return new GraphMailService($app->make(GraphServiceClient::class));
+            return new InboxDriverManager(
+                is_array($mailboxes) ? $mailboxes : [],
+            );
         });
 
         $this->app->singleton(MailInboxService::class);
