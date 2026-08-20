@@ -11,11 +11,11 @@ use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Moox\MailInbox\Enums\InboxMessageProcessingStatus;
 
 /**
- * Inbound mailbox message synchronized from Microsoft Graph.
+ * Inbound mailbox message synchronized from a configured inbox driver.
  *
  * The `processing_status` attribute stores {@see InboxMessageProcessingStatus} string values.
  *
- * Note: the `message_id` column stores RFC822 `internetMessageId` (not the Graph REST id); Graph calls use `external_id` (Microsoft Graph **immutable** REST id, requested via Prefer: IdType="ImmutableId" on API traffic).
+ * Note: the `message_id` column stores RFC822 `internetMessageId`; the driver uses `external_id` as its provider-side identifier.
  */
 class InboxMessage extends Model
 {

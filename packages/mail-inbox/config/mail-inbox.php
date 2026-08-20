@@ -26,11 +26,7 @@ return [
     |
     */
     'connections' => [
-        'default' => [
-            'tenant_id' => env('MAIL_INBOX_TENANT_ID'),
-            'client_id' => env('MAIL_INBOX_CLIENT_ID'),
-            'client_secret' => env('MAIL_INBOX_CLIENT_SECRET'),
-        ],
+        'default' => [],
     ],
 
     /*
@@ -54,6 +50,18 @@ return [
 
     'delta_max_pages_per_poll' => (int) env('MAIL_INBOX_DELTA_MAX_PAGES_PER_POLL', 50),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sync cursor reset bounds
+    |--------------------------------------------------------------------------
+    |
+    | When a driver rejects a stored cursor as expired, FetchMailsJob clears it
+    | and starts a fresh sync. cursor_reset_max_per_run caps how many times that
+    | may happen in one job run (default 1 — one legitimate expiry needs one reset).
+    | cursor_reset_warning_minutes logs a warning when another reset happens within
+    | that window across separate runs.
+    |
+    */
     'cursor_reset_max_per_run' => (int) env('MAIL_INBOX_CURSOR_RESET_MAX_PER_RUN', 1),
 
     'cursor_reset_warning_minutes' => (int) env('MAIL_INBOX_CURSOR_RESET_WARNING_MINUTES', 60),

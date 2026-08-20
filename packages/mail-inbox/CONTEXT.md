@@ -1,6 +1,6 @@
 # Mail Inbox
 
-Inbound mail processing: messages arriving in a mailbox, their attachments, and how far each one has got. The vocabulary here is deliberately transport-neutral — Microsoft Graph is one driver among possible others (see [ADR 0001](../../docs/adr/0001-extract-msgraph-mail-packages-depend-on-contracts.md)).
+Inbound mail processing: messages arriving in a mailbox, their attachments, and how far each one has got. The vocabulary here is deliberately transport-neutral — provider-specific drivers (for example `moox/msgraph`) register against the contract in this package (see [ADR 0001](../../docs/adr/0001-extract-msgraph-mail-packages-depend-on-contracts.md)).
 
 ## Language
 

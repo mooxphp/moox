@@ -21,9 +21,14 @@
 - `cursor_reset_max_per_run` and `cursor_reset_warning_minutes` config keys to bound invalid-cursor reset loops
 - Sync-state `cursor_reset_at` column recording when the cursor was last cleared
 
+### Removed
+
+- **Breaking:** Legacy Graph integration: `GraphMailService`, `MailInboxGraphServiceClientFactory`, `DeltaPage`, `DeltaMessageInspector`, and Graph exception classes. No Microsoft SDK types or Graph credential keys remain in this package.
+- `suggest.microsoft/microsoft-graph` from `composer.json`.
+
 ### Changed
 
-- Removed `microsoft/microsoft-graph` from package requirements; `suggest` points at `moox/msgraph` / `microsoft/microsoft-graph`. Legacy `GraphMailService` registration remains until a later cleanup ticket. Package description no longer claims to be Graph-based.
+- **Breaking:** Removed `microsoft/microsoft-graph` from package requirements; `suggest` points at `moox/msgraph` only. Package description no longer claims to be Graph-based. Move Azure AD credentials from `MAIL_INBOX_TENANT_ID` / `CLIENT_ID` / `CLIENT_SECRET` to `MSGRAPH_*` in the host (and publish `config/msgraph.php`).
 - Unconfigured mailbox exceptions name the scope, the `mail-inbox.mailboxes.{scope}` key, and required fields
 - `InvalidSyncCursorException` and `InboxDriver::fetch()` document that the exception means a rejected cursor, not general failures
 - `FetchMailsJob` stops resetting after `cursor_reset_max_per_run` and fails loudly instead of spinning
@@ -33,7 +38,7 @@
 - **Breaking:** Removed flat `graph`, `mailbox`, and folder keys from `config/mail-inbox.php`. Configure via `connections` + `mailboxes`; folder names live in the adapter package that registers your driver.
 - **Breaking:** `mailboxes.*.driver` has no package default — set it explicitly in config or env.
 - **Breaking:** `InboxDriver::claim()` returns `ClaimResult` (`Won`, `AlreadyHeld`, `MoveFailed`) instead of `bool`.
-- Pipeline jobs and `MailInboxService` use `InboxDriver` / `SettlementOutcome` only (no Graph types at those call sites).
+- Pipeline jobs and `MailInboxService` use `InboxDriver` / `SettlementOutcome` only (no provider SDK types at those call sites).
 - `StoreAttachmentsJob` lists attachments from the driver; persist no longer writes stub attachment rows.
 - Sync-state `driver` column is nullable with no default; mismatch with the configured driver clears the cursor for a fresh sync.
 - `InMemoryDriver` moved to `tests/Support/` (dev autoload only).
@@ -50,7 +55,7 @@
 
 ### Changed
 
-- **Breaking:** `MessagePage` now distinguishes `continuationCursor` (more pages in this run; Graph `@odata.nextLink`) from `resumeCursor` (start of the next run; Graph `@odata.deltaLink`). The previous `nextCursor` property is removed.
+- **Breaking:** `MessagePage` now distinguishes `continuationCursor` (more pages in this run) from `resumeCursor` (start of the next run). The previous `nextCursor` property is removed.
 - `InboxDriver` documents that cursor validation is the driver's responsibility, because the domain package treats cursors as opaque.
 
 ### Added

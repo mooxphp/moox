@@ -39,7 +39,7 @@ interface InboxDriver
     /**
      * Settle a previously claimed message with an outcome.
      *
-     * What "settling" means is the driver's business — the Graph driver moves
+     * What "settling" means is the driver's business — one driver might move
      * messages between folders, an IMAP driver might flag or delete, a
      * webhook-based driver might do nothing.
      */

@@ -58,7 +58,6 @@
         }
     },
     "suggest": {
-        "moox/msgraph": "Microsoft Graph inbox driver and connection registry.",
-        "microsoft/microsoft-graph": "Required only while legacy GraphMailService registration remains (removed in a later ticket)."
+        "moox/msgraph": "Optional inbox driver adapter for Exchange Online mailboxes."
     }
 }

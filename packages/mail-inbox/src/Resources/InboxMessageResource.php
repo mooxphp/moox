@@ -174,7 +174,7 @@ final class InboxMessageResource extends BaseItemResource
     }
 
     /**
-     * Prefer plain text; many Graph messages only store HTML — strip tags for a safe preview.
+     * Prefer plain text; many provider payloads only store HTML — strip tags for a safe preview.
      */
     private static function bodyPreviewFor(InboxMessage $record): ?string
     {
