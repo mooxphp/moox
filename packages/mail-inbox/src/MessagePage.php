@@ -31,4 +31,3 @@ readonly class MessagePage
         public ?string $resumeCursor = null,
     ) {}
 }
-

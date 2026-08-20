@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Illuminate\Support\Facades\Log;
 use Microsoft\Graph\Generated\Models\Message;
@@ -12,7 +12,7 @@ use Microsoft\Graph\Generated\Users\Item\Messages\Item\MessageItemRequestBuilder
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\Move\MovePostRequestBody;
 use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
-use Moox\Msgraph\Exceptions\GraphException;
+use Moox\MsGraph\Exceptions\GraphException;
 use Throwable;
 
 /**
@@ -25,8 +25,7 @@ final class GraphPipelineMover
         private GraphCall $graphCall,
         private GraphFolderResolver $folders,
         private MailSettings $settings,
-    ) {
-    }
+    ) {}
 
     public function claim(string $externalId): ClaimResult
     {

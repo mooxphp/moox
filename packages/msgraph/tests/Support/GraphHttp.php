@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Tests\Support;
+namespace Moox\MsGraph\Tests\Support;
 
 use Closure;
 use GuzzleHttp\Client;
@@ -18,9 +18,9 @@ use Microsoft\Graph\GraphRequestAdapter;
 use Microsoft\Graph\GraphServiceClient;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Microsoft\Kiota\Authentication\Oauth\ProviderFactory;
-use Moox\Msgraph\Auth\GraphClientFactory;
-use Moox\Msgraph\Mail\GraphInboxDriver;
-use Moox\Msgraph\Mail\MailSettings;
+use Moox\MsGraph\Auth\GraphClientFactory;
+use Moox\MsGraph\Mail\GraphInboxDriver;
+use Moox\MsGraph\Mail\MailSettings;
 
 final class GraphHttp
 {

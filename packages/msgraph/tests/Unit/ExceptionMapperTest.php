@@ -6,15 +6,15 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Microsoft\Graph\Generated\Models\ODataErrors\MainError;
 use Microsoft\Graph\Generated\Models\ODataErrors\ODataError;
-use Moox\Msgraph\Exceptions\ExceptionMapper;
-use Moox\Msgraph\Exceptions\GraphAuthenticationException;
-use Moox\Msgraph\Exceptions\GraphConnectionException;
-use Moox\Msgraph\Exceptions\GraphException;
-use Moox\Msgraph\Exceptions\GraphItemNotFoundException;
-use Moox\Msgraph\Exceptions\GraphMailboxNotFoundException;
-use Moox\Msgraph\Exceptions\GraphNotFoundException;
-use Moox\Msgraph\Exceptions\GraphRateLimitException;
-use Moox\Msgraph\Exceptions\GraphSyncStateNotFoundException;
+use Moox\MsGraph\Exceptions\ExceptionMapper;
+use Moox\MsGraph\Exceptions\GraphAuthenticationException;
+use Moox\MsGraph\Exceptions\GraphConnectionException;
+use Moox\MsGraph\Exceptions\GraphException;
+use Moox\MsGraph\Exceptions\GraphItemNotFoundException;
+use Moox\MsGraph\Exceptions\GraphMailboxNotFoundException;
+use Moox\MsGraph\Exceptions\GraphNotFoundException;
+use Moox\MsGraph\Exceptions\GraphRateLimitException;
+use Moox\MsGraph\Exceptions\GraphSyncStateNotFoundException;
 
 it('maps ConnectException to GraphConnectionException', function () {
     $original = new ConnectException('timeout', new Request('GET', '/'));

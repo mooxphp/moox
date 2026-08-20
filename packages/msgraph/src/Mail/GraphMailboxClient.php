@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\Delta\DeltaRequestBuilder;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\MailFoldersRequestBuilder;

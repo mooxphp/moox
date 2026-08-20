@@ -140,7 +140,7 @@ final class MailInboxSyncStateResource extends BaseItemResource
 
     public static function getNavigationSort(): ?int
     {
-        return static::$navigationSort;
+        return self::$navigationSort;
     }
 
     public static function getModelLabel(): string

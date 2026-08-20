@@ -16,7 +16,7 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - a named connection registry (tenant + app credentials resolved by name)
 - a Graph client factory
 - an immutable-identifier header middleware on every outgoing request
-- a Graph `InboxDriver` (`Moox\Msgraph\Mail\GraphInboxDriver`) auto-registered as `msgraph` on `InboxDriverManager` when `moox/mail-inbox` is installed
+- a Graph `InboxDriver` (`Moox\MsGraph\Mail\GraphInboxDriver`) auto-registered as `msgraph` on `InboxDriverManager` when `moox/mail-inbox` is installed
 
 ## Features
 
@@ -93,7 +93,7 @@ Grant admin consent after adding the permissions.
 ### Building a client
 
 ```php
-use Moox\Msgraph\Auth\GraphClientFactory;
+use Moox\MsGraph\Auth\GraphClientFactory;
 
 $factory = app(GraphClientFactory::class);
 
@@ -106,9 +106,9 @@ $client = $factory->make('secondary');
 
 ### Mail inbox driver
 
-`Moox\Msgraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. The service provider registers it as the `msgraph` driver on `InboxDriverManager` when that manager is bound. Construct it manually with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` if you need a one-off instance. Expired delta tokens surface as `Moox\MailInbox\Exceptions\InvalidSyncCursorException`.
+`Moox\MsGraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. The service provider registers it as the `msgraph` driver on `InboxDriverManager` when that manager is bound. Construct it manually with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` if you need a one-off instance. Expired delta tokens surface as `Moox\MailInbox\Exceptions\InvalidSyncCursorException`.
 
-Folder display names, `$top` (`page_size`), and the per-run page cap (`delta_max_pages_per_poll`, default 50) live **only** in `config/msgraph.php`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name. Consumers such as `moox/e-billing` settle foreign invoices as `Ignored` — they do not define `EBILLING_IGNORED_FOLDER` or other mailbox folder settings locally.
+Folder display names and `$top` (`page_size`) live **only** in `config/msgraph.php`. The per-run page budget (`mail-inbox.delta_max_pages_per_poll`) is enforced by `moox/mail-inbox`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name. Consumers such as `moox/e-billing` settle foreign invoices as `Ignored` — they do not define `EBILLING_IGNORED_FOLDER` or other mailbox folder settings locally.
 
 ```env
 MSGRAPH_MAIL_PROCESSING_FOLDER=Processing
@@ -116,7 +116,6 @@ MSGRAPH_MAIL_PROCESSED_FOLDER=Processed
 MSGRAPH_MAIL_FAILED_FOLDER=Failed
 MSGRAPH_MAIL_IGNORED_FOLDER=Ignored
 MSGRAPH_MAIL_PAGE_SIZE=50
-MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL=50
 ```
 
 ```php
@@ -128,7 +127,6 @@ MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL=50
         'ignored' => env('MSGRAPH_MAIL_IGNORED_FOLDER', 'Ignored'),
     ],
     'page_size' => (int) env('MSGRAPH_MAIL_PAGE_SIZE', 50),
-    'delta_max_pages_per_poll' => (int) env('MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL', 50),
 ],
 ```
 
@@ -143,7 +141,7 @@ An empty `processing` folder skips the claim move (and creates nothing). Outcome
 
 `settle(Processed)` marks the message as read in Graph before moving it to the processed folder (same behaviour as the pre-extraction pipeline finalizer).
 
-Folders are resolved by display name and created when missing. `fetch()` follows Graph `@odata.nextLink` up to `delta_max_pages_per_poll`, then returns `MessagePage::$continuationCursor` so the next run can resume mid-catch-up. When Graph returns `@odata.deltaLink`, that value is `MessagePage::$resumeCursor` (persist for the next poll). Both tokens are opaque; this driver allowlists Graph national-cloud hosts before calling `withUrl()`. Every request carries `Prefer: IdType="ImmutableId"`.
+Folders are resolved by display name and created when missing. `fetch()` returns **one** Graph delta page. When Graph returns `@odata.nextLink`, that value is `MessagePage::$continuationCursor` so the domain job can loop up to `mail-inbox.delta_max_pages_per_poll`. When Graph returns `@odata.deltaLink`, that value is `MessagePage::$resumeCursor` (persist for the next poll). Both tokens are opaque; this driver allowlists Graph national-cloud hosts before calling `withUrl()`. Every request carries `Prefer: IdType="ImmutableId"`.
 
 <!-- /Usage -->
 

@@ -6,4 +6,3 @@ use Moox\MailInbox\Tests\TestCase;
 
 pest()->extends(TestCase::class)
     ->in('Feature', 'Unit');
-

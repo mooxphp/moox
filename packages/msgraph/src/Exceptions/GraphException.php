@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Exceptions;
+namespace Moox\MsGraph\Exceptions;
 
 use RuntimeException;
 

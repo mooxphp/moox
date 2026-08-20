@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Auth;
+namespace Moox\MsGraph\Auth;
 
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;

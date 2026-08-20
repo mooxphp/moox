@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Auth;
+namespace Moox\MsGraph\Auth;
 
-use Moox\Msgraph\Exceptions\InvalidConnectionException;
+use Moox\MsGraph\Exceptions\InvalidConnectionException;
 
 /**
  * Immutable value object holding Azure AD credentials for a single Graph connection.

@@ -18,23 +18,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Connections
-    |--------------------------------------------------------------------------
-    |
-    | Named connection slots referenced by mailboxes. Credential keys depend on
-    | the driver package that consumes each connection.
-    |
-    */
-    'connections' => [
-        'default' => [],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Mailboxes
     |--------------------------------------------------------------------------
     |
-    | Each mailbox names a driver and references a connection by name.
+    | Each mailbox names a driver and references a connection by name (a plain
+    | string). There is intentionally no `connections` array here: credentials
+    | belong in the adapter package that registers the driver (for example
+    | config/msgraph.php). Putting an empty connections registry in this file
+    | invited provider secrets into the transport-neutral package.
+    |
     | The mailbox name is the pipeline `scope` (e.g. FetchMailsJob scope).
     |
     */

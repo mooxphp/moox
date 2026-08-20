@@ -1,7 +1,7 @@
 <?php
 
 use Moox\MailInbox\Contracts\InboxDriver;
-use Moox\Msgraph\Mail\GraphInboxDriver;
+use Moox\MsGraph\Mail\GraphInboxDriver;
 
 it('GraphInboxDriver exists and implements InboxDriver', function () {
     expect(class_exists(GraphInboxDriver::class))->toBeTrue()

@@ -45,4 +45,3 @@ class MailInboxSyncState extends Model
         ];
     }
 }
-

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Closure;
 use GuzzleHttp\Exception\ConnectException;
@@ -10,10 +10,10 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Microsoft\Kiota\Abstractions\ApiException;
-use Moox\Msgraph\Exceptions\ExceptionMapper;
-use Moox\Msgraph\Exceptions\GraphConnectionException;
-use Moox\Msgraph\Exceptions\GraphException;
-use Moox\Msgraph\Exceptions\GraphRateLimitException;
+use Moox\MsGraph\Exceptions\ExceptionMapper;
+use Moox\MsGraph\Exceptions\GraphConnectionException;
+use Moox\MsGraph\Exceptions\GraphException;
+use Moox\MsGraph\Exceptions\GraphRateLimitException;
 use Throwable;
 
 /**

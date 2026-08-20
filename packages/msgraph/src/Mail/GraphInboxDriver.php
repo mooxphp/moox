@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Closure;
 use Illuminate\Support\Facades\Cache;
@@ -12,7 +12,7 @@ use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
 use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
 use Moox\MailInbox\MessagePage;
-use Moox\Msgraph\Exceptions\GraphSyncStateNotFoundException;
+use Moox\MsGraph\Exceptions\GraphSyncStateNotFoundException;
 
 /**
  * Graph implementation of {@see InboxDriver}. Folder names come from this package's config only.

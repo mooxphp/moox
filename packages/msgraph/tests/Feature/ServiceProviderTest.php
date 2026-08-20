@@ -5,8 +5,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Moox\Msgraph\Auth\ConnectionRegistry;
-use Moox\Msgraph\Auth\GraphClientFactory;
+use Moox\MsGraph\Auth\ConnectionRegistry;
+use Moox\MsGraph\Auth\GraphClientFactory;
 
 it('factory applies immutable-ID header when given a custom handler stack', function () {
     $history = [];

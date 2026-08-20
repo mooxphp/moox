@@ -26,18 +26,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Msgraph\\": "src"
+            "Moox\\MsGraph\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\Msgraph\\Tests\\": "tests"
+            "Moox\\MsGraph\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Msgraph\\MsgraphServiceProvider"
+                "Moox\\MsGraph\\MsgraphServiceProvider"
             ]
         },
         "moox": {

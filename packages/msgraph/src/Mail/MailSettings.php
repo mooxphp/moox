@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Moox\MailInbox\Enums\SettlementOutcome;
 
@@ -20,12 +20,11 @@ final readonly class MailSettings
         public string $failedFolder,
         public string $ignoredFolder,
         public int $pageSize,
-        public int $deltaMaxPagesPerPoll,
         public array $allowedDeltaHosts,
     ) {}
 
     /**
-     * @param  array{folders?: array{processing?: string|null, processed?: string, failed?: string, ignored?: string}, page_size?: int, delta_max_pages_per_poll?: int, allowed_delta_hosts?: list<string>}  $mail
+     * @param  array{folders?: array{processing?: string|null, processed?: string, failed?: string, ignored?: string}, page_size?: int, allowed_delta_hosts?: list<string>}  $mail
      */
     public static function fromArray(array $mail): self
     {
@@ -38,7 +37,6 @@ final readonly class MailSettings
             failedFolder: (string) ($folders['failed'] ?? 'Failed'),
             ignoredFolder: (string) ($folders['ignored'] ?? 'Ignored'),
             pageSize: max(1, (int) ($mail['page_size'] ?? 50)),
-            deltaMaxPagesPerPoll: max(1, (int) ($mail['delta_max_pages_per_poll'] ?? 50)),
             allowedDeltaHosts: self::hostsFrom($mail['allowed_delta_hosts'] ?? null),
         );
     }

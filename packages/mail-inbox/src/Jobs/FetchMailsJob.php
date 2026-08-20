@@ -95,6 +95,7 @@ class FetchMailsJob implements ShouldQueue
                         'scope' => $this->scope,
                         'driver' => $driverName,
                         'cursor_reset_max_per_run' => $maxCursorResetsPerRun,
+                        'rejected_host' => $e->rejectedHost,
                         'exception' => $e,
                     ]);
 
@@ -113,11 +114,20 @@ class FetchMailsJob implements ShouldQueue
                     ]);
                 }
 
-                Log::channel('mail-inbox')->warning('[MailInbox] Sync cursor invalid — clearing token for full resync', [
-                    'scope' => $this->scope,
-                    'driver' => $driverName,
-                    'exception' => $e,
-                ]);
+                if ($e->rejectedHost !== null) {
+                    Log::channel('mail-inbox')->error('[MailInbox] Sync cursor rejected — unexpected host; clearing token for full resync', [
+                        'scope' => $this->scope,
+                        'driver' => $driverName,
+                        'rejected_host' => $e->rejectedHost,
+                        'exception' => $e,
+                    ]);
+                } else {
+                    Log::channel('mail-inbox')->warning('[MailInbox] Sync cursor invalid — clearing token for full resync', [
+                        'scope' => $this->scope,
+                        'driver' => $driverName,
+                        'exception' => $e,
+                    ]);
+                }
 
                 $cursorResetsThisRun++;
                 $syncState->update([
@@ -230,4 +240,3 @@ class FetchMailsJob implements ShouldQueue
         ini_set('memory_limit', (string) config('mail-inbox.memory_limit', '512M'));
     }
 }
-

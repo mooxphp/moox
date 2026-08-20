@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Microsoft\Graph\Core\NationalCloud;
-use Moox\Msgraph\Exceptions\GraphException;
+use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
 
 /**
  * Rejects delta cursors that would send the Graph bearer token to a non-Graph host.
@@ -47,12 +47,18 @@ final class CursorHostGuard
         $host = is_array($parts) ? ($parts['host'] ?? null) : null;
 
         if ($scheme !== 'https' || ! is_string($host) || $host === '') {
-            throw new GraphException('Delta cursor is not an https Graph URL.');
+            throw new InvalidSyncCursorException(
+                'Delta cursor is not an https Graph URL.',
+                rejectedHost: is_string($host) && $host !== '' ? $host : '(missing)',
+            );
         }
 
         $allowed = array_map(strtolower(...), $this->allowedHosts);
         if (! in_array(strtolower($host), $allowed, true)) {
-            throw new GraphException("Delta cursor host [{$host}] is not an allowed Graph endpoint.");
+            throw new InvalidSyncCursorException(
+                "Delta cursor host [{$host}] is not an allowed Graph endpoint.",
+                rejectedHost: $host,
+            );
         }
     }
 }

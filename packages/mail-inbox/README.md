@@ -64,17 +64,15 @@ The package defines an `InboxDriver` contract in `Moox\MailInbox\Contracts\Inbox
 
 `StoreAttachmentsJob` calls `listAttachments()` and `readAttachment()`; the fetch loop does not list attachments per message.
 
+Per-run paging is a domain policy: `FetchMailsJob` enforces `delta_max_pages_per_poll` (default 50) by calling `fetch()` once per provider page. Drivers return a single page plus continuation/resume tokens.
+
 `MessagePage` carries two opaque tokens. `continuationCursor` is set while more pages remain in the current run and is null when that run is complete. `resumeCursor` is set only on the last page of a run and is what a later poll should pass back. Because this package never inspects a cursor, **validating it is the driver's responsibility**.
 
 ### Configuration
 
-The config (`config/mail-inbox.php`) uses a two-tier shape:
+The config (`config/mail-inbox.php`) owns **mailboxes only**. There is intentionally no `connections` array — credentials belong in the adapter package that registers the driver:
 
 ```php
-'connections' => [
-    'default' => [],
-],
-
 'mailboxes' => [
     'default' => [
         'driver' => env('MAIL_INBOX_DRIVER'),
@@ -84,7 +82,7 @@ The config (`config/mail-inbox.php`) uses a two-tier shape:
 ],
 ```
 
-A mailbox names a driver and references a connection **by name** (a plain string, never a class). Credential keys for a driver live in that driver's package config (for example `config/msgraph.php` when using `moox/msgraph`). Several connections and several mailboxes can be configured, and two mailboxes may reference different connections.
+A mailbox names a driver and references a connection **by name** (a plain string, never a class). The driver package resolves that name against its own credential registry (for example `config/msgraph.php` when using `moox/msgraph`). Several mailboxes may reference different connection names.
 
 There is no `direction` field — a mailbox's role follows from which configuration file it appears in.
 
@@ -107,7 +105,7 @@ Header actions on a message dispatch the existing pipeline services — **Retry 
 
 ### Breaking configuration change
 
-Flat provider-specific keys were removed from the package config. Use `connections` + `mailboxes` instead. Require `moox/msgraph` for the Exchange Online driver and configure credentials and folder names there (`MSGRAPH_TENANT_ID` / `MSGRAPH_CLIENT_ID` / `MSGRAPH_CLIENT_SECRET`, not the old `MAIL_INBOX_*` credential keys). Connection **names** must still appear under `mail-inbox.connections` (even as `[]`) so the manager can resolve them; credential values are read from the driver package config under the same name.
+Flat provider-specific keys were removed from the package config. Configure `mailboxes` here and put credentials and folder names in the adapter (`moox/msgraph`: `MSGRAPH_TENANT_ID` / `MSGRAPH_CLIENT_ID` / `MSGRAPH_CLIENT_SECRET`). Do not add a `connections` array to `mail-inbox` — that hollow registry invited secrets into the wrong package.
 
 ## Changelog
 

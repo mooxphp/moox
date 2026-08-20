@@ -24,9 +24,6 @@ use Moox\MailInbox\Services\MailInboxService;
 use Moox\MailInbox\Tests\Support\InMemoryDriver;
 
 beforeEach(function () {
-    config()->set('mail-inbox.connections', [
-        'default' => [],
-    ]);
     config()->set('mail-inbox.mailboxes', [
         'default' => [
             'driver' => 'memory',
@@ -546,10 +543,10 @@ it('marks catch-up idle when fetch completes with resume cursor', function () {
     expect($sync->catch_up_in_progress)->toBeFalse();
 });
 
-it('marks catch-up in progress when fetch defers continuation at page cap', function () {
+it('stops a catch-up at delta_max_pages_per_poll and resumes on the next run', function () {
     Bus::fake([StoreAttachmentsJob::class, ParsePdfJob::class]);
 
-    config()->set('mail-inbox.delta_max_pages_per_poll', 1);
+    config()->set('mail-inbox.delta_max_pages_per_poll', 2);
 
     $this->fakeDriver = new InMemoryDriver([
         new MessagePage(
@@ -559,8 +556,18 @@ it('marks catch-up in progress when fetch defers continuation at page cap', func
         ),
         new MessagePage(
             messages: [pipelineDto(externalId: 'ext-page-2', messageId: '<msg-2@example.com>')],
+            continuationCursor: 'page-3',
+            resumeCursor: null,
+        ),
+        new MessagePage(
+            messages: [pipelineDto(externalId: 'ext-page-3', messageId: '<msg-3@example.com>')],
+            continuationCursor: 'page-4',
+            resumeCursor: null,
+        ),
+        new MessagePage(
+            messages: [pipelineDto(externalId: 'ext-page-4', messageId: '<msg-4@example.com>')],
             continuationCursor: null,
-            resumeCursor: 'resume-token-2',
+            resumeCursor: 'resume-token-final',
         ),
     ]);
     app(InboxDriverManager::class)->flush();
@@ -572,6 +579,75 @@ it('marks catch-up in progress when fetch defers continuation at page cap', func
     );
 
     $sync = MailInboxSyncState::query()->find('default');
-    expect($sync->delta_link)->toBe('page-2');
-    expect($sync->catch_up_in_progress)->toBeTrue();
+    expect($this->fakeDriver->fetchCallCount)->toBe(2)
+        ->and($sync->delta_link)->toBe('page-3')
+        ->and($sync->catch_up_in_progress)->toBeTrue();
+
+    (new FetchMailsJob('default'))->handle(
+        app(InboxDriverManager::class),
+        app(MailInboxService::class),
+    );
+
+    $sync->refresh();
+    expect($this->fakeDriver->fetchCallCount)->toBe(4)
+        ->and($sync->delta_link)->toBe('resume-token-final')
+        ->and($sync->catch_up_in_progress)->toBeFalse();
+});
+
+it('clears a host-rejected cursor and logs the rejected host at error level', function () {
+    Bus::fake([StoreAttachmentsJob::class, ParsePdfJob::class]);
+
+    Log::shouldReceive('channel')->with('mail-inbox')->andReturnSelf();
+    Log::shouldReceive('error')
+        ->once()
+        ->withArgs(function (string $message, array $context): bool {
+            return str_contains($message, 'unexpected host')
+                && ($context['scope'] ?? null) === 'default'
+                && ($context['rejected_host'] ?? null) === 'attacker.example';
+        });
+    Log::shouldReceive('warning')->zeroOrMoreTimes();
+    Log::shouldReceive('debug')->zeroOrMoreTimes();
+    Log::shouldReceive('info')->zeroOrMoreTimes();
+
+    MailInboxSyncState::query()->updateOrCreate(
+        ['scope' => 'default'],
+        [
+            'driver' => 'memory',
+            'delta_link' => 'https://attacker.example/steal',
+            'catch_up_in_progress' => false,
+        ],
+    );
+
+    $this->fakeDriver = new class extends InMemoryDriver
+    {
+        public function fetch(?string $cursor = null): MessagePage
+        {
+            $this->fetchCallCount++;
+
+            if ($cursor === 'https://attacker.example/steal') {
+                throw new InvalidSyncCursorException(
+                    'Delta cursor host [attacker.example] is not an allowed Graph endpoint.',
+                    rejectedHost: 'attacker.example',
+                );
+            }
+
+            return new MessagePage(
+                messages: [],
+                continuationCursor: null,
+                resumeCursor: 'fresh-delta',
+            );
+        }
+    };
+    app(InboxDriverManager::class)->flush();
+    app(InboxDriverManager::class)->register('memory', fn (): InMemoryDriver => $this->fakeDriver);
+
+    (new FetchMailsJob('default'))->handle(
+        app(InboxDriverManager::class),
+        app(MailInboxService::class),
+    );
+
+    $sync = MailInboxSyncState::query()->find('default');
+    expect($sync->delta_link)->toBe('fresh-delta')
+        ->and($sync->cursor_reset_at)->not->toBeNull()
+        ->and($this->fakeDriver->fetchCallCount)->toBe(2);
 });

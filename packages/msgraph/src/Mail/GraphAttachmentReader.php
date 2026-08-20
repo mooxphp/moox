@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use InvalidArgumentException;
 use Microsoft\Graph\Generated\Models\FileAttachment;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Moox\Msgraph\Tests;
+namespace Moox\MsGraph\Tests;
 
-use Moox\Msgraph\MsgraphServiceProvider;
+use Moox\MsGraph\MsgraphServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -37,7 +37,6 @@ class TestCase extends Orchestra
                 'ignored' => 'SkipBin',
             ],
             'page_size' => 10,
-            'delta_max_pages_per_poll' => 1,
         ]);
     }
 }

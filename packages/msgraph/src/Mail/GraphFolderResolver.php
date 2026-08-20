@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Illuminate\Contracts\Cache\Repository;
 use Microsoft\Graph\Generated\Models\MailFolder;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\MailFoldersRequestBuilderGetQueryParameters;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\MailFoldersRequestBuilderGetRequestConfiguration;
-use Moox\Msgraph\Exceptions\GraphException;
+use Moox\MsGraph\Exceptions\GraphException;
 
 /**
  * Resolves mailbox folders by display name, creating them when missing, with a 24h cache.

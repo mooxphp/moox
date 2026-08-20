@@ -33,6 +33,8 @@ class InMemoryDriver implements InboxDriver
 
     private readonly string $firstCursor;
 
+    public int $fetchCallCount = 0;
+
     /**
      * @param  array<int, MessagePage>  $pages  Scripted pages; continuationCursor (else resumeCursor) chains to the next.
      */
@@ -52,6 +54,8 @@ class InMemoryDriver implements InboxDriver
 
     public function fetch(?string $cursor = null): MessagePage
     {
+        $this->fetchCallCount++;
+
         $key = $cursor ?? $this->firstCursor;
 
         return $this->cursorIndex[$key] ?? new MessagePage(messages: [], continuationCursor: null, resumeCursor: null);

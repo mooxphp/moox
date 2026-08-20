@@ -12,6 +12,9 @@ use Moox\MailInbox\Contracts\InboxDriver;
  *
  * Resolution path: mailbox config → driver name → registered driver factory → driver instance.
  *
+ * A mailbox references a connection **by name** only. Credential resolution belongs
+ * to the driver package — this manager never holds a connections registry.
+ *
  * Sync-state rows are never backfilled into mailboxes configuration: this package
  * cannot invent a driver name without knowing which adapter packages are installed.
  */
@@ -25,11 +28,9 @@ class InboxDriverManager
 
     /**
      * @param  array<string, array{driver: string, connection: string, address?: string|null}>  $mailboxes
-     * @param  array<string, array<string, mixed>>  $connections
      */
     public function __construct(
         private readonly array $mailboxes,
-        private readonly array $connections,
     ) {}
 
     /**
@@ -79,7 +80,7 @@ class InboxDriverManager
     /**
      * Register a driver factory under a name.
      *
-     * @param  callable(array<string, mixed>): InboxDriver  $factory  Receives the resolved connection config.
+     * @param  callable(array{connection: string, mailbox_address: string|null}): InboxDriver  $factory
      */
     public function register(string $driver, callable $factory): void
     {
@@ -123,22 +124,22 @@ class InboxDriverManager
 
         $config = $this->mailboxes[$name];
         $driverName = $this->driverNameFor($name);
-        $connectionName = $config['connection'];
+        $connectionName = $config['connection'] ?? null;
 
         if (! isset($this->driverFactories[$driverName])) {
             throw new InvalidArgumentException("Inbox driver [{$driverName}] has not been registered.");
         }
 
-        if (! isset($this->connections[$connectionName])) {
-            throw new InvalidArgumentException("Connection [{$connectionName}] is not configured.");
+        if (! is_string($connectionName) || $connectionName === '') {
+            throw new InvalidArgumentException(
+                "Mailbox [{$name}] has no connection configured. Set mail-inbox.mailboxes.{$name}.connection in config."
+            );
         }
 
-        $this->resolved[$name] = ($this->driverFactories[$driverName])(
-            array_merge($this->connections[$connectionName], [
-                'connection' => $connectionName,
-                'mailbox_address' => $config['address'] ?? null,
-            ])
-        );
+        $this->resolved[$name] = ($this->driverFactories[$driverName])([
+            'connection' => $connectionName,
+            'mailbox_address' => $config['address'] ?? null,
+        ]);
 
         return $this->resolved[$name];
     }

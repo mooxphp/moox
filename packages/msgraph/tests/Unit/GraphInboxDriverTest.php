@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 use Moox\MailInbox\Enums\ClaimResult;
 use Moox\MailInbox\Enums\SettlementOutcome;
+use Moox\MailInbox\Exceptions\InvalidSyncCursorException;
 use Moox\MailInbox\InboxMessageDto;
-use Moox\Msgraph\Exceptions\GraphException;
-use Moox\Msgraph\Tests\Support\GraphHttp;
+use Moox\MsGraph\Exceptions\GraphException;
+use Moox\MsGraph\Tests\Support\GraphHttp;
 use Psr\Http\Message\RequestInterface;
 
 require_once dirname(__DIR__).'/Support/GraphHttp.php';
@@ -82,7 +83,6 @@ beforeEach(function () {
             'ignored' => 'SkipBin',
         ],
         'page_size' => 10,
-        'delta_max_pages_per_poll' => 1,
     ]);
 });
 
@@ -477,9 +477,7 @@ it('throws when a delta page has neither nextLink nor deltaLink', function () {
     $driver->fetch();
 })->throws(GraphException::class);
 
-it('follows nextLinks up to delta_max_pages_per_poll then returns a continuation cursor', function () {
-    config()->set('msgraph.mail.delta_max_pages_per_poll', 2);
-
+it('returns one Graph page per fetch and leaves further nextLinks for the caller', function () {
     $page2 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE2';
     $page3 = 'https://graph.microsoft.com/v1.0/users/mailbox@example.com/mailFolders/inbox/messages/delta?$skiptoken=PAGE3';
 
@@ -497,17 +495,14 @@ it('follows nextLinks up to delta_max_pages_per_poll then returns a continuation
 
     $page = $driver->fetch();
 
-    expect($page->messages)->toHaveCount(2)
+    expect($page->messages)->toHaveCount(1)
         ->and($page->messages[0]->externalId)->toBe('msg-1')
-        ->and($page->messages[1]->externalId)->toBe('msg-2')
-        ->and($page->continuationCursor)->toBe($page3)
+        ->and($page->continuationCursor)->toBe($page2)
         ->and($page->resumeCursor)->toBeNull();
 
     $graph = GraphHttp::graphRequests($history);
-    expect($graph)->toHaveCount(2);
-    foreach ($graph as $entry) {
-        expect($entry['request']->getHeaderLine('Prefer'))->toBe('IdType="ImmutableId"');
-    }
+    expect($graph)->toHaveCount(1)
+        ->and($graph[0]['request']->getHeaderLine('Prefer'))->toBe('IdType="ImmutableId"');
 });
 
 it('retries a 429 without Retry-After using exponential backoff', function () {
@@ -569,6 +564,6 @@ it('rejects a cursor pointing at a non-Graph host before making a request', func
     $driver = GraphHttp::driver(GraphHttp::mock([]), $history);
 
     expect(fn () => $driver->fetch('https://attacker.example/steal'))
-        ->toThrow(GraphException::class)
+        ->toThrow(InvalidSyncCursorException::class)
         ->and(GraphHttp::graphRequests($history))->toBeEmpty();
 });

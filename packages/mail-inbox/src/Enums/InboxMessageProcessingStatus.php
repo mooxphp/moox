@@ -26,4 +26,3 @@ enum InboxMessageProcessingStatus: string
     case PartiallyFailed = 'partially_failed';
     case Skipped = 'skipped';
 }
-

@@ -299,7 +299,7 @@ final class InboxMessageResource extends BaseItemResource
 
     public static function getNavigationSort(): ?int
     {
-        return static::$navigationSort;
+        return self::$navigationSort;
     }
 
     public static function getNavigationBadge(): ?string

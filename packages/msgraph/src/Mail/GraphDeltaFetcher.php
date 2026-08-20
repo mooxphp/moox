@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph\Mail;
+namespace Moox\MsGraph\Mail;
 
 use Microsoft\Graph\Generated\Models\Message;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\Delta\DeltaRequestBuilderGetQueryParameters;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\Delta\DeltaRequestBuilderGetRequestConfiguration;
 use Moox\MailInbox\InboxMessageDto;
 use Moox\MailInbox\MessagePage;
-use Moox\Msgraph\Exceptions\GraphException;
+use Moox\MsGraph\Exceptions\GraphException;
 
 /**
- * Resumable Graph delta fetch with a per-run page cap.
+ * Single-page Graph delta fetch. The domain job owns the per-run page budget.
  */
 final class GraphDeltaFetcher
 {
@@ -28,39 +28,26 @@ final class GraphDeltaFetcher
     {
         $this->cursorGuard->assertAllowed($cursor);
 
+        $page = $this->fetchDeltaPage($cursor);
+
         $messages = [];
-        $pagesFetched = 0;
-        $currentCursor = $cursor;
+        foreach ($page['messages'] as $mapped) {
+            $messages[] = $mapped;
+        }
 
-        while (true) {
-            $pagesFetched++;
-            $page = $this->fetchDeltaPage($currentCursor);
-
-            foreach ($page['messages'] as $mapped) {
-                $messages[] = $mapped;
-            }
-
-            if ($page['nextLink'] !== null) {
-                if ($pagesFetched >= $this->settings->deltaMaxPagesPerPoll) {
-                    return new MessagePage(
-                        messages: $messages,
-                        continuationCursor: $page['nextLink'],
-                        resumeCursor: null,
-                    );
-                }
-
-                $this->cursorGuard->assertAllowed($page['nextLink']);
-                $currentCursor = $page['nextLink'];
-
-                continue;
-            }
-
+        if ($page['nextLink'] !== null) {
             return new MessagePage(
                 messages: $messages,
-                continuationCursor: null,
-                resumeCursor: $page['deltaLink'],
+                continuationCursor: $page['nextLink'],
+                resumeCursor: null,
             );
         }
+
+        return new MessagePage(
+            messages: $messages,
+            continuationCursor: null,
+            resumeCursor: $page['deltaLink'],
+        );
     }
 
     /**

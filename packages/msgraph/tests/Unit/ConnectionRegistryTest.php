@@ -1,8 +1,8 @@
 <?php
 
-use Moox\Msgraph\Auth\ConnectionRegistry;
-use Moox\Msgraph\Auth\GraphConnection;
-use Moox\Msgraph\Exceptions\InvalidConnectionException;
+use Moox\MsGraph\Auth\ConnectionRegistry;
+use Moox\MsGraph\Auth\GraphConnection;
+use Moox\MsGraph\Exceptions\InvalidConnectionException;
 
 it('resolves a named connection as a GraphConnection value object', function () {
     $registry = new ConnectionRegistry([

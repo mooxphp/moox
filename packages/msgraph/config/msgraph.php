@@ -46,7 +46,6 @@ return [
             'ignored' => env('MSGRAPH_MAIL_IGNORED_FOLDER', 'Ignored'),
         ],
         'page_size' => (int) env('MSGRAPH_MAIL_PAGE_SIZE', 50),
-        'delta_max_pages_per_poll' => (int) env('MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL', 50),
         'allowed_delta_hosts' => [
             'graph.microsoft.com',
             'graph.microsoft.us',
@@ -57,3 +56,4 @@ return [
     ],
 
 ];
+

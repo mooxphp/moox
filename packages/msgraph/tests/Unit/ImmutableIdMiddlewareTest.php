@@ -5,7 +5,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Moox\Msgraph\Auth\GraphClientFactory;
+use Moox\MsGraph\Auth\GraphClientFactory;
 
 it('prepends Prefer: IdType="ImmutableId" header to every request', function () {
     $history = [];

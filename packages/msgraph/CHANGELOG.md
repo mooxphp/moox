@@ -2,7 +2,14 @@
 
 ## Unreleased
 
+### Changed
+
+- **Breaking:** PHP namespace corrected from `Moox\Msgraph` to `Moox\MsGraph` (ADR casing).
+- `GraphDeltaFetcher::fetch()` returns a **single** Graph delta page; per-run page budget moved to `moox/mail-inbox` (`delta_max_pages_per_poll`). Removed `msgraph.mail.delta_max_pages_per_poll`.
+- `CursorHostGuard` raises `InvalidSyncCursorException` with `$rejectedHost` so a tampered cursor is recoverable via the inbox reset path.
+
 ### Added
+
 
 - Service provider auto-registers the `msgraph` inbox driver on `InboxDriverManager`
 - `GraphMessageMapper` maps RFC822 `internetMessageId` onto `InboxMessageDto::$messageId`

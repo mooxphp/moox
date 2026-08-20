@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Moox\Msgraph;
+namespace Moox\MsGraph;
 
 use Illuminate\Contracts\Foundation\Application;
 use Moox\Core\MooxServiceProvider;
 use Moox\MailInbox\InboxDriverManager;
-use Moox\Msgraph\Auth\ConnectionRegistry;
-use Moox\Msgraph\Auth\GraphClientFactory;
-use Moox\Msgraph\Mail\GraphInboxDriver;
-use Moox\Msgraph\Mail\MailSettings;
+use Moox\MsGraph\Auth\ConnectionRegistry;
+use Moox\MsGraph\Auth\GraphClientFactory;
+use Moox\MsGraph\Mail\GraphInboxDriver;
+use Moox\MsGraph\Mail\MailSettings;
 use Spatie\LaravelPackageTools\Package;
 
 class MsgraphServiceProvider extends MooxServiceProvider

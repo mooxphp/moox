@@ -1,7 +1,7 @@
 <?php
 
-use Moox\Msgraph\Auth\GraphConnection;
-use Moox\Msgraph\Exceptions\InvalidConnectionException;
+use Moox\MsGraph\Auth\GraphConnection;
+use Moox\MsGraph\Exceptions\InvalidConnectionException;
 
 it('constructs from valid credentials', function () {
     $conn = new GraphConnection('tenant', 'client', 'secret');

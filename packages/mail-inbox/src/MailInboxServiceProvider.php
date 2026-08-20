@@ -62,12 +62,9 @@ class MailInboxServiceProvider extends MooxServiceProvider
         $this->app->singleton(InboxDriverManager::class, function ($app): InboxDriverManager {
             /** @var array<string, array{driver: string, connection: string, address?: string|null}> $mailboxes */
             $mailboxes = $app['config']->get('mail-inbox.mailboxes', []);
-            /** @var array<string, array<string, mixed>> $connections */
-            $connections = $app['config']->get('mail-inbox.connections', []);
 
             return new InboxDriverManager(
                 is_array($mailboxes) ? $mailboxes : [],
-                is_array($connections) ? $connections : [],
             );
         });
 
