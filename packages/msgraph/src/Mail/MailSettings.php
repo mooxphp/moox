@@ -21,7 +21,8 @@ final readonly class MailSettings
         public string $ignoredFolder,
         public int $pageSize,
         public array $allowedDeltaHosts,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{folders?: array{processing?: string|null, processed?: string, failed?: string, ignored?: string}, page_size?: int, allowed_delta_hosts?: list<string>}  $mail

@@ -27,7 +27,8 @@ final class GraphCall
     public function __construct(
         private Closure $sleeper,
         private int $maxRetries = 3,
-    ) {}
+    ) {
+    }
 
     /**
      * @template T

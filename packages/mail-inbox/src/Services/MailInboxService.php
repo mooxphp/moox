@@ -24,7 +24,8 @@ class MailInboxService
 {
     public function __construct(
         private InboxDriverManager $drivers,
-    ) {}
+    ) {
+    }
 
     /**
      * Persist driver DTOs for a mailbox scope (dual-key dedup; attachments listed in StoreAttachmentsJob).

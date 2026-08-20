@@ -17,7 +17,8 @@ final class ConnectionRegistry
     public function __construct(
         private array $connections,
         private string $defaultName = 'default',
-    ) {}
+    ) {
+    }
 
     public function get(?string $name = null): GraphConnection
     {

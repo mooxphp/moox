@@ -31,7 +31,8 @@ class InboxDriverManager
      */
     public function __construct(
         private readonly array $mailboxes,
-    ) {}
+    ) {
+    }
 
     /**
      * Actionable message when a scope has no mailboxes configuration entry.

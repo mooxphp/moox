@@ -15,7 +15,9 @@ final class CursorHostGuard
     /**
      * @param  list<string>  $allowedHosts
      */
-    public function __construct(private array $allowedHosts) {}
+    public function __construct(private array $allowedHosts)
+    {
+    }
 
     /**
      * @return list<string>

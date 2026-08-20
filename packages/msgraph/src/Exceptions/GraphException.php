@@ -9,4 +9,6 @@ use RuntimeException;
 /**
  * Base exception for all Graph API errors (HTTP responses, transport failures).
  */
-class GraphException extends RuntimeException {}
+class GraphException extends RuntimeException
+{
+}

@@ -31,5 +31,6 @@ readonly class InboxMessageDto
         public ?string $toEmail = null,
         public ?string $toName = null,
         public bool $hasAttachments = false,
-    ) {}
+    ) {
+    }
 }

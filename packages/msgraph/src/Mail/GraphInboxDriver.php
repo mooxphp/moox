@@ -23,7 +23,8 @@ final class GraphInboxDriver implements InboxDriver
         private GraphDeltaFetcher $deltaFetcher,
         private GraphPipelineMover $pipelineMover,
         private GraphAttachmentReader $attachmentReader,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  Closure(int): void|null  $sleeper

@@ -22,7 +22,8 @@ final class GraphDeltaFetcher
         private MailSettings $settings,
         private CursorHostGuard $cursorGuard,
         private GraphMessageMapper $mapper,
-    ) {}
+    ) {
+    }
 
     public function fetch(?string $cursor): MessagePage
     {

@@ -23,7 +23,9 @@ use Psr\Http\Message\RequestInterface;
  */
 final class GraphClientFactory
 {
-    public function __construct(private ConnectionRegistry $registry) {}
+    public function __construct(private ConnectionRegistry $registry)
+    {
+    }
 
     public function make(
         ?string $connection = null,

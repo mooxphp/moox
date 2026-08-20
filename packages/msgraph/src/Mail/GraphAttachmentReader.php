@@ -16,7 +16,8 @@ final class GraphAttachmentReader
     public function __construct(
         private GraphMailboxClient $mailbox,
         private GraphCall $graphCall,
-    ) {}
+    ) {
+    }
 
     /**
      * @return list<array{id: string|int, name: string, content_type: string, size: int}>

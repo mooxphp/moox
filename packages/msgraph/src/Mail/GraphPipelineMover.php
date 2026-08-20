@@ -25,7 +25,8 @@ final class GraphPipelineMover
         private GraphCall $graphCall,
         private GraphFolderResolver $folders,
         private MailSettings $settings,
-    ) {}
+    ) {
+    }
 
     public function claim(string $externalId): ClaimResult
     {

@@ -23,5 +23,6 @@ class InboxAttachmentProcessed
         public InboxMessage $message,
         public InboxAttachment $attachment,
         public ?array $result = null,
-    ) {}
+    ) {
+    }
 }

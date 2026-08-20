@@ -29,5 +29,6 @@ readonly class MessagePage
         public array $messages,
         public ?string $continuationCursor,
         public ?string $resumeCursor = null,
-    ) {}
+    ) {
+    }
 }

@@ -20,7 +20,8 @@ final class GraphFolderResolver
         private GraphCall $graphCall,
         private Repository $cache,
         private string $mailboxAddress,
-    ) {}
+    ) {
+    }
 
     public function getOrCreate(string $folderName): string
     {

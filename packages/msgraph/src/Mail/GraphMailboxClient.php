@@ -17,7 +17,8 @@ final class GraphMailboxClient
     public function __construct(
         private GraphServiceClient $client,
         private string $mailboxAddress,
-    ) {}
+    ) {
+    }
 
     public function inboxDelta(): DeltaRequestBuilder
     {

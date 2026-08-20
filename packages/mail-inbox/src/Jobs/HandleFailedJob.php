@@ -31,7 +31,8 @@ class HandleFailedJob implements ShouldQueue
     public function __construct(
         public ?int $inboxMessageId,
         public string $errorMessage = '',
-    ) {}
+    ) {
+    }
 
     public function handle(InboxDriverManager $drivers): void
     {
