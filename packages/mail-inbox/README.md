@@ -25,7 +25,7 @@ Learn more about [Moox](https://moox.org).
 - Driver manager resolving named mailboxes to driver instances via configuration
 - Two-tier config: connections (credentials) + mailboxes (driver, connection, address)
 - In-memory fake driver for testing with no network access
-- Opaque sync cursor — the package never inspects or parses resumption tokens
+- Opaque sync cursors — the package never inspects them; drivers must validate them
 - Microsoft Graph polling via delta API (when paired with `moox/msgraph`)
 
 <!-- /Features -->
@@ -57,6 +57,8 @@ The package defines an `InboxDriver` contract in `Moox\MailInbox\Contracts\Inbox
 - `claim(string $externalId): bool` — claim a message for exclusive processing
 - `settle(string $externalId, SettlementOutcome $outcome): void` — report outcome: `Processed` (success), `Failed` (error), or `Ignored` (recognised and deliberately not processed)
 - `readAttachment(string $externalId, string|int $attachmentId): string` — read attachment content
+
+`MessagePage` carries two opaque tokens. `continuationCursor` is set while more pages remain in the current run and is null when that run is complete. `resumeCursor` is set only on the last page of a run and is what a later poll should pass back. Because this package never inspects a cursor, **validating it is the driver's responsibility**.
 
 ### Configuration
 
@@ -103,3 +105,4 @@ Want to help us to develop and grow Moox. Fortunately there are so many ways to 
 ## License
 
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+

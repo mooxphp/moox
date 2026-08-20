@@ -29,5 +29,15 @@ class TestCase extends Orchestra
             ],
         ]);
         config()->set('msgraph.default', 'default');
+        config()->set('msgraph.mail', [
+            'folders' => [
+                'processing' => 'ClaimHold',
+                'processed' => 'DoneBox',
+                'failed' => 'DeadLetter',
+                'ignored' => 'SkipBin',
+            ],
+            'page_size' => 10,
+            'delta_max_pages_per_poll' => 1,
+        ]);
     }
 }

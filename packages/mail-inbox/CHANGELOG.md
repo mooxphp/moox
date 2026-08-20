@@ -2,12 +2,17 @@
 
 ## Unreleased
 
+### Changed
+
+- **Breaking:** `MessagePage` now distinguishes `continuationCursor` (more pages in this run; Graph `@odata.nextLink`) from `resumeCursor` (start of the next run; Graph `@odata.deltaLink`). The previous `nextCursor` property is removed.
+- `InboxDriver` documents that cursor validation is the driver's responsibility, because the domain package treats cursors as opaque.
+
 ### Added
 
 - `InboxDriver` contract: transport-neutral interface for fetching, claiming and settling inbox messages
 - `SettlementOutcome` enum: `Processed`, `Failed`, `Ignored` — semantic outcomes, not folder operations
 - `InboxMessageDto`: provider-agnostic message representation
-- `MessagePage`: resumable page result with opaque cursor
+- `MessagePage`: resumable page result with opaque continuation and resume cursors
 - `InboxDriverManager`: resolves a named mailbox to its configured driver via configuration strings
 - Two-tier config shape: connections (credentials) + mailboxes (driver, connection, address)
 - `InMemoryDriver`: in-memory fake driver for testing with no network access
@@ -16,3 +21,4 @@
 ---
 
 We previously didn't track changes in this package. Please refer to the [Moox Monorepo](https://github.com/mooxphp/moox) for historical changes.
+

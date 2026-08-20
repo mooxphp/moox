@@ -1,6 +1,6 @@
 {
     "name": "moox/msgraph",
-    "description": "Microsoft Graph SDK integration for Laravel — connection registry, authenticated client factory, and immutable-ID middleware.",
+    "description": "Microsoft Graph SDK integration for Laravel — connection registry, authenticated client factory, immutable-ID middleware, and Graph inbox driver.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -20,6 +20,7 @@
     "require": {
         "php": "^8.2",
         "moox/core": "dev-main",
+        "moox/mail-inbox": "dev-main",
         "microsoft/microsoft-graph": "^2.0",
         "guzzlehttp/guzzle": "^7.5"
     },
@@ -56,3 +57,4 @@
         }
     }
 }
+

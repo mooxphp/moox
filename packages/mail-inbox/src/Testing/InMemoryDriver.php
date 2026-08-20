@@ -30,7 +30,7 @@ class InMemoryDriver implements InboxDriver
     private readonly string $firstCursor;
 
     /**
-     * @param  array<int, MessagePage>  $pages  Scripted pages; each page's nextCursor chains to the next.
+     * @param  array<int, MessagePage>  $pages  Scripted pages; continuationCursor (else resumeCursor) chains to the next.
      */
     public function __construct(array $pages = [])
     {
@@ -38,7 +38,7 @@ class InMemoryDriver implements InboxDriver
         $first = '__first__';
 
         foreach ($pages as $i => $page) {
-            $key = $i === 0 ? $first : ($pages[$i - 1]->nextCursor ?? $first);
+            $key = $i === 0 ? $first : ($pages[$i - 1]->continuationCursor ?? $pages[$i - 1]->resumeCursor ?? $first);
             $index[$key] = $page;
         }
 
@@ -50,7 +50,7 @@ class InMemoryDriver implements InboxDriver
     {
         $key = $cursor ?? $this->firstCursor;
 
-        return $this->cursorIndex[$key] ?? new MessagePage(messages: [], nextCursor: null);
+        return $this->cursorIndex[$key] ?? new MessagePage(messages: [], continuationCursor: null, resumeCursor: null);
     }
 
     public function claim(string $externalId): bool

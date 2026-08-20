@@ -16,6 +16,7 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - a named connection registry (tenant + app credentials resolved by name)
 - a Graph client factory
 - an immutable-identifier header middleware on every outgoing request
+- a Graph `InboxDriver` (`Moox\Msgraph\Mail\GraphInboxDriver`) that is not registered on any driver manager yet
 
 ## Features
 
@@ -24,7 +25,9 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - Named connection registry (`Auth\ConnectionRegistry`) resolving credentials by connection name
 - `Auth\GraphClientFactory` building authenticated `GraphServiceClient` instances for named connections
 - Every outgoing request carries `Prefer: IdType="ImmutableId"` (immutable identifiers)
-- Typed exception types for Graph API failures (authentication, rate limiting, not found, connection/transport)
+- Typed exception types for Graph API failures (authentication, rate limiting, not found, connection/transport, expired delta sync state)
+- Graph inbox driver: resumable delta fetch, claim, settle-by-outcome, attachment download
+- This package owns mailbox folder names; consumers pass settlement outcomes only
 - Configuration-only package: no models, no migrations, and no Filament surface
 
 <!-- /Features -->
@@ -100,6 +103,45 @@ $client = $factory->make();
 // Named connection
 $client = $factory->make('secondary');
 ```
+
+### Mail inbox driver
+
+`Moox\Msgraph\Mail\GraphInboxDriver` implements `Moox\MailInbox\Contracts\InboxDriver`. Construct it with a `GraphServiceClient` from `GraphClientFactory`, a mailbox address, and `MailSettings` from this package's config. It is a working alternative to in-app Graph mail code — nothing in this package registers it on `InboxDriverManager` or switches jobs over.
+
+Folder display names, `$top` (`page_size`), and the per-run page cap (`delta_max_pages_per_poll`, default 50) live **only** in `config/msgraph.php`. Domain code passes a `SettlementOutcome` (`Processed`, `Failed`, `Ignored`); it never passes a folder name.
+
+```env
+MSGRAPH_MAIL_PROCESSING_FOLDER=Processing
+MSGRAPH_MAIL_PROCESSED_FOLDER=Processed
+MSGRAPH_MAIL_FAILED_FOLDER=Failed
+MSGRAPH_MAIL_IGNORED_FOLDER=Ignored
+MSGRAPH_MAIL_PAGE_SIZE=50
+MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL=50
+```
+
+```php
+'mail' => [
+    'folders' => [
+        'processing' => env('MSGRAPH_MAIL_PROCESSING_FOLDER', 'Processing'),
+        'processed' => env('MSGRAPH_MAIL_PROCESSED_FOLDER', 'Processed'),
+        'failed' => env('MSGRAPH_MAIL_FAILED_FOLDER', 'Failed'),
+        'ignored' => env('MSGRAPH_MAIL_IGNORED_FOLDER', 'Ignored'),
+    ],
+    'page_size' => (int) env('MSGRAPH_MAIL_PAGE_SIZE', 50),
+    'delta_max_pages_per_poll' => (int) env('MSGRAPH_MAIL_DELTA_MAX_PAGES_PER_POLL', 50),
+],
+```
+
+An empty `processing` folder skips the claim move (and creates nothing). Outcome mapping:
+
+| Call | Config key | Default folder |
+|---|---|---|
+| `claim()` | `msgraph.mail.folders.processing` | `Processing` |
+| `settle(Processed)` | `msgraph.mail.folders.processed` | `Processed` |
+| `settle(Failed)` | `msgraph.mail.folders.failed` | `Failed` |
+| `settle(Ignored)` | `msgraph.mail.folders.ignored` | `Ignored` |
+
+Folders are resolved by display name and created when missing. `fetch()` follows Graph `@odata.nextLink` up to `delta_max_pages_per_poll`, then returns `MessagePage::$continuationCursor` so the next run can resume mid-catch-up. When Graph returns `@odata.deltaLink`, that value is `MessagePage::$resumeCursor` (persist for the next poll). Both tokens are opaque; this driver allowlists Graph national-cloud hosts before calling `withUrl()`. Every request carries `Prefer: IdType="ImmutableId"`.
 
 <!-- /Usage -->
 

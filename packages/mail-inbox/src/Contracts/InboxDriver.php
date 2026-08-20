@@ -12,13 +12,18 @@ use Moox\MailInbox\MessagePage;
  *
  * Outcomes, not destinations: no method takes a folder name and no driver
  * is required to have a concept of folders.
+ *
+ * Cursors returned by {@see fetch()} are opaque to this package. Because the
+ * domain never inspects them, **validating a cursor is the driver's
+ * responsibility** — including rejecting tokens that would send credentials
+ * to an unexpected host.
  */
 interface InboxDriver
 {
     /**
      * Fetch a resumable page of messages.
      *
-     * @param  string|null  $cursor  Opaque resumption token from a previous page, or null for the first page.
+     * @param  string|null  $cursor  Opaque continuation or resume token from a previous page, or null for the first page.
      */
     public function fetch(?string $cursor = null): MessagePage;
 

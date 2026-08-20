@@ -24,7 +24,7 @@ class MsgraphServiceProvider extends MooxServiceProvider
             ->stability('dev')
             ->category('integration')
             ->usedFor([
-                'Microsoft Graph API integration with connection registry and client factory',
+                'Microsoft Graph API integration with connection registry, client factory, and Graph inbox driver',
             ]);
     }
 
