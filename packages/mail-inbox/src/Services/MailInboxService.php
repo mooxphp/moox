@@ -285,8 +285,7 @@ class MailInboxService
         SettlementOutcome $outcome,
         ?int $inboxMessageId = null,
         ?string $scope = null,
-    ): void
-    {
+    ): void {
         if ($externalId === null || $externalId === '') {
             return;
         }

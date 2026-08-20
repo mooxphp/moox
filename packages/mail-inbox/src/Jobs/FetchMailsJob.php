@@ -265,4 +265,3 @@ class FetchMailsJob implements ShouldQueue
         ini_set('memory_limit', (string) config('mail-inbox.memory_limit', '512M'));
     }
 }
-

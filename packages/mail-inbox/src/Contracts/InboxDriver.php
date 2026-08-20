@@ -26,11 +26,11 @@ interface InboxDriver
      * Fetch a resumable page of messages.
      *
      * @param  string|null  $cursor  Opaque continuation or resume token from a previous page,
-     *                             or null for the first page.
+     *                               or null for the first page.
      *
      * @throws InvalidSyncCursorException when the provider rejected this specific cursor
-     *                                  (expired or malformed resume token). Do not use for
-     *                                  general transport or API failures.
+     *                                    (expired or malformed resume token). Do not use for
+     *                                    general transport or API failures.
      */
     public function fetch(?string $cursor = null): MessagePage;
 
