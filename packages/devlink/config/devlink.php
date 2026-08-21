@@ -379,6 +379,11 @@ return [
             'path' => $public_base_path.'/mail-inbox',
             'type' => 'public',
         ],
+        'mail-outbox' => [
+            'active' => false,
+            'path' => $public_base_path.'/mail-outbox',
+            'type' => 'public',
+        ],
         'markdown' => [
             'active' => false,
             'path' => $public_base_path.'/markdown',
@@ -655,3 +660,4 @@ return [
     'export_path' => $export_path,
 
 ];
+

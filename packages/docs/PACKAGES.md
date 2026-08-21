@@ -91,11 +91,13 @@ All rows use the Composer-style name `moox/…`. Includes packages with `compose
 | moox/laravel-icons     | moox          | Stable       | No    | ...             |
 | moox/localization      | moox          | Stable       | No    | ...             |
 | moox/login-link        | moox          | Stable       | No    | ...             |
-| moox/mail-inbox        | moox          | Idea         | Todo  | ...             |
+| moox/mail-inbox        | moox          | Beta         | No    | ...             |
+| moox/mail-outbox       | moox          | Idea         | Todo  | ...             |
 | moox/markdown          | moox          | Idea         | Todo  | ...             |
 | moox/media             | moox          | Stable       | Yes   | ...             |
 | moox/module            | moox          | Idea         | Todo  | ...             |
 | moox/monorepo          | moox          | Stable       | No    | ...             |
+| moox/msgraph           | moox          | Beta         | No    | ...             |
 | moox/news              | moox          | Beta         | Yes   | ...             |
 | moox/notifications     | moox          | Stable       | Todo  | ...             |
 | moox/packages          | moox          | Stable       | Todo  | ...             |

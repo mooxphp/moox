@@ -63,6 +63,7 @@
         "moox/localization": "dev-main",
         "moox/login-link": "dev-main",
         "moox/mail-inbox": "dev-main",
+        "moox/mail-outbox": "dev-main",
         "moox/markdown": "dev-main",
         "moox/media": "dev-main",
         "moox/module": "dev-main",
