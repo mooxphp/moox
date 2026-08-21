@@ -1,0 +1,55 @@
+{
+    "name": "moox/mail-outbox",
+    "description": "Queued outbound mail with send logging, size guard, retry classification, and correlation identifiers (Moox package).",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "mail",
+        "outbox",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/mail-outbox",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/jobs": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\MailOutbox\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\MailOutbox\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\MailOutbox\\MailOutboxServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
