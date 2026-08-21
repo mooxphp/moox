@@ -1,0 +1,156 @@
+<div class="filament-hidden">
+
+![Moox MailOutbox](banner.jpg)
+
+</div>
+
+# Moox Mail Outbox
+
+<!-- Description -->
+
+Queued outbound mail for Laravel: send through `SendMailJob`, record a queryable send log, enforce a size ceiling before transport, classify transient vs permanent failures for retry, and mint correlation identifiers at send time.
+
+<!-- /Description -->
+
+The package is part of the **Moox ecosystem** — a suite of Filament packages that form a solid foundation for Laravel apps, websites, CMS, and eCommerce projects.
+
+Learn more about [Moox](https://moox.org).
+
+## Features
+
+<!-- Features -->
+
+- `SendMailJob` — send a Mailable via a named Laravel mailer and write one send-log row
+- Send log statuses: `queued`, `sent`, `failed`, `suppressed` (`sent` means provider accepted + logged, not mailbox delivery)
+- Size guard — fail with `MessageTooLargeException` before the transport runs
+- Retry classification — transient (rate limit, timeout, connection) vs permanent (rejected/malformed recipient)
+- Correlation — self-assigned header plus optional provider message-id read-back (per mailer)
+- Optional polymorphic related business object on the log row
+
+<!-- /Features -->
+
+## Installation
+
+To install this package, require it via Composer and run the Moox Installer:
+
+```bash
+composer require moox/mail-outbox
+php artisan moox:install
+```
+
+Publish config and migrations if you prefer to do it manually:
+
+```bash
+php artisan vendor:publish --tag=mail-outbox-config
+php artisan vendor:publish --tag=mail-outbox-migrations
+php artisan migrate
+```
+
+Learn more about the [Moox Installer or common requirements](https://moox.org/docs/getting-started/installation).
+
+## Screenshot
+
+![Moox MailOutbox screenshot](screenshot/main.jpg)
+
+## Configuration
+
+Keys in `config/mail-outbox.php`:
+
+| Key | Purpose |
+| --- | --- |
+| `max_message_bytes` | Rendered message size ceiling (default 10 MiB). Oversize fails before transport. |
+| `retry.max_tries` | Maximum send attempts for transient failures (default 5). |
+| `retry.backoff` | Backoff seconds between retries (default `[60, 300, 900]`). |
+| `correlation_header` | Header name for the self-assigned correlation id (default `X-Moox-Mail-Correlation-Id`). |
+| `read_back_provider_id` | Default: whether to read the provider message id after send (default `false`). |
+| `mailers.{name}.read_back_provider_id` | Per-mailer override for provider id read-back. |
+
+Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`.
+
+## Usage
+
+### Send through the job
+
+```php
+use Moox\MailOutbox\Jobs\SendMailJob;
+
+SendMailJob::dispatch($mailable, 'smtp');
+
+// Optional related Eloquent model (polymorphic on the log row)
+SendMailJob::dispatch($mailable, 'docs', $invoice);
+```
+
+The job:
+
+1. Creates exactly one `mail_send_logs` row as `queued`
+2. Checks rendered size against `max_message_bytes`
+3. Mints a correlation id and adds it as a message header
+4. Sends via Laravel’s mailer (`Mail::mailer($name)->send(...)`)
+5. Updates the row to `sent` or `failed`
+
+Work lives in the job (progress via `Moox\Jobs\Traits\JobProgress`, terminal handling in `failed()`). Listeners are not used for sending.
+
+### Send log
+
+Model: `Moox\MailOutbox\Models\MailSendLog`  
+Table: `mail_send_logs`
+
+Notable columns: `mailer`, `intended_recipients`, `actual_recipients`, `subject`, `template_key`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
+
+`sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery.
+
+### Retry classification
+
+| Kind | Examples | Behaviour |
+| --- | --- | --- |
+| Transient | Rate limit, timeout, connection error, HTTP 429/5xx | Retry with configured backoff; honour provider `retry-after` when present (`release($seconds)`). |
+| Permanent | Rejected/malformed recipient, HTTP 4xx (except 429) | No retry; terminal on first attempt; `attempt_count = 1`. |
+
+Exhausting transient retries leaves the row `failed`, not stuck in `queued`.
+
+You can also throw `Moox\MailOutbox\Exceptions\TransientMailFailureException` or `PermanentMailFailureException` from custom transports/adapters.
+
+### Correlation identifiers
+
+Minted **only at send time**:
+
+1. **Correlation id** — always minted, stored on the log, and set on the configured message header.
+2. **Provider reference** — optional read-back via `ProviderMessageIdReader` after a successful send (switchable per mailer). This is **not** the RFC 5322 Message-ID (that column is separate). The default reader only returns provider-stamped headers already present on the sent Symfony message (`X-SES-Message-ID`, etc.). Bind a custom reader when the provider assigns ids only through a follow-up API call.
+
+If read-back fails, the send is still `sent` with `provider_reference` left null. Before transport, the job ensures a Symfony-generated RFC 5322 Message-ID is on the message so the log can capture the on-wire id; it never invents a package-local id after the fact.
+
+### Size guard
+
+Before transport, `MessageSizeGuard` estimates rendered HTML/text size plus `attach` / `attachData` / `attachFromStorage` payloads. Oversize raises `MessageTooLargeException` and records the row as `failed` without invoking the transport.
+
+## Testing
+
+Package tests use Pest, `Mail::fake()`, and in-memory/array transport doubles. No network access is required.
+
+```bash
+cd packages/mail-outbox
+# PHP 8.5+ (monorepo platform requirement), e.g. Herd's php85
+php ../../vendor/bin/pest --configuration=phpunit.xml.dist
+```
+
+(`phpunit.xml` is gitignored at the monorepo root; the tracked file is `phpunit.xml.dist`.)
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Security
+
+Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
+
+## Credits
+
+Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to Moox, special thanks to our sponsors.
+
+## Help Moox
+
+Want to help us to develop and grow Moox. Fortunately there are so many ways to do this, learn more about [helping Moox](https://moox.org/help-moox).
+
+## License
+
+The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
