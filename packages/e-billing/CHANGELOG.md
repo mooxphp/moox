@@ -4,6 +4,8 @@
 
 ### Changed
 
+- Manual uploads keep the client original filename on `UploadedPdfSource`; download responses use that name (with `_copy` / `.xml` / `.pdf`) instead of the hashed storage path
+- XRechnung copy PDFs are stored once with a single soft diagonal watermark at generation time (preview, download, and later mail all use that file). No footer notice.
 - `FilterForeignInvoiceJob` and `InboxMessagePipelineFinalizer` settle mailbox messages via `InboxDriverManager` / `SettlementOutcome` (no Graph types).
 - Removed `foreign_invoice.ignored_folder_name` and `EBILLING_IGNORED_FOLDER`; foreign invoices settle as `SettlementOutcome::Ignored` (folder name lives in the inbox driver package, e.g. `moox/msgraph` `msgraph.mail.folders.ignored`).
 

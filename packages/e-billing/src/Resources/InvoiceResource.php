@@ -631,6 +631,7 @@ class InvoiceResource extends BaseItemResource
                     ->maxSize($maxSizeKb)
                     ->disk($disk)
                     ->directory($directory)
+                    ->storeFileNamesIn('pdf_original_filename')
                     ->required(),
             ])
             ->action(function (array $data) use ($disk, $scope, $requiresLetterhead): void {
@@ -643,7 +644,7 @@ class InvoiceResource extends BaseItemResource
                 app(CreateManualUploadDocumentAction::class)->execute([
                     'source_pdf_path' => $path,
                     'source_pdf_disk' => $disk,
-                    'original_filename' => basename($path),
+                    'original_filename' => self::resolveUploadedOriginalFilename($data, $path),
                     'scope' => $scope,
                     'requires_letterhead_overlay' => $requiresLetterhead,
                 ]);
@@ -654,6 +655,28 @@ class InvoiceResource extends BaseItemResource
                     ->success()
                     ->send();
             });
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private static function resolveUploadedOriginalFilename(array $data, string $storedPath): string
+    {
+        $names = $data['pdf_original_filename'] ?? null;
+
+        if (is_array($names)) {
+            $candidate = $names[$storedPath] ?? null;
+
+            if (is_string($candidate) && $candidate !== '') {
+                return $candidate;
+            }
+        }
+
+        if (is_string($names) && $names !== '') {
+            return $names;
+        }
+
+        return basename($storedPath);
     }
 
     public static function shouldRegisterNavigation(): bool

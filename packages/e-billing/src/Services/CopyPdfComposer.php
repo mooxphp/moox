@@ -11,18 +11,19 @@ use setasign\Fpdi\PdfParser\PdfParserException;
 use Symfony\Component\Process\Process;
 
 /**
- * Stamps the XRechnung copy marking onto a visible PDF. No XML, no PDF/A.
+ * Stamps a single soft diagonal "copy" watermark onto a visible PDF. No XML, no PDF/A.
+ *
+ * Used when generating the stored XRechnung copy artifact (always watermarked).
  */
 final class CopyPdfComposer
 {
     public function stamp(string $sourcePdfPath): string
     {
         $term = trim((string) config('e-billing.copy_pdf.term', ''));
-        $notice = trim((string) config('e-billing.copy_pdf.notice', ''));
 
-        if ($term === '' || $notice === '') {
+        if ($term === '') {
             throw new RuntimeException(
-                'XRechnung copy marking is required. Set e-billing.copy_pdf.term and e-billing.copy_pdf.notice.'
+                'XRechnung copy marking is required. Set e-billing.copy_pdf.term.'
             );
         }
 
@@ -33,7 +34,7 @@ final class CopyPdfComposer
         $workingPath = $this->prepareReadablePdf($sourcePdfPath);
 
         try {
-            $pdf = new Fpdi;
+            $pdf = new WatermarkableFpdi;
             $pageCount = $pdf->setSourceFile($workingPath);
 
             if ($pageCount < 1) {
@@ -41,7 +42,6 @@ final class CopyPdfComposer
             }
 
             $termLatin1 = $this->toLatin1($term);
-            $noticeLatin1 = $this->toLatin1($notice);
 
             for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
                 $template = $pdf->importPage($pageNumber);
@@ -52,16 +52,7 @@ final class CopyPdfComposer
 
                 $pdf->AddPage($orientation, [$pageWidth, $pageHeight]);
                 $pdf->useTemplate($template, 0, 0, $pageWidth, $pageHeight);
-
-                $pdf->SetFont('Helvetica', 'B', 14);
-                $pdf->SetTextColor(176, 0, 0);
-                $pdf->SetXY(10, 8);
-                $pdf->Cell($pageWidth - 20, 8, $termLatin1, 0, 0, 'R');
-
-                $pdf->SetFont('Helvetica', '', 7);
-                $pdf->SetTextColor(80, 80, 80);
-                $pdf->SetXY(10, $pageHeight - 12);
-                $pdf->MultiCell($pageWidth - 20, 3.5, $noticeLatin1, 0, 'C');
+                $this->drawDiagonalWatermark($pdf, $termLatin1, $pageWidth, $pageHeight);
             }
 
             /** @var string $binary */
@@ -73,6 +64,28 @@ final class CopyPdfComposer
                 @unlink($workingPath);
             }
         }
+    }
+
+    private function drawDiagonalWatermark(
+        WatermarkableFpdi $pdf,
+        string $termLatin1,
+        float $pageWidth,
+        float $pageHeight,
+    ): void {
+        $centerX = $pageWidth / 2;
+        $centerY = $pageHeight / 2;
+        $labelWidth = max($pageWidth * 0.75, strlen($termLatin1) * 18.0);
+
+        $pdf->setAlpha(0.12);
+        $pdf->SetFont('Helvetica', 'B', 110);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $pdf->rotate(45.0, $centerX, $centerY);
+        $pdf->SetXY($centerX - ($labelWidth / 2), $centerY - 18);
+        $pdf->Cell($labelWidth, 36, $termLatin1, 0, 0, 'C');
+        $pdf->endRotate();
+
+        $pdf->setAlpha(1.0);
     }
 
     private function prepareReadablePdf(string $pdfPath): string

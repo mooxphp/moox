@@ -13,11 +13,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 final class InvoiceDocumentController
 {
     /**
-     * Stream the visible PDF (generated hybrid when present, otherwise the source).
+     * Stream the admin preview PDF: hybrid when present, otherwise the stored
+     * XRechnung copy (watermarked), otherwise the source.
      */
     public function previewOriginal(EbillingDocument $document): Response
     {
-        $generated = $this->generatedPdfPreview($document);
+        $generated = $this->previewStoredPdf($document);
         if ($generated !== null) {
             return $this->streamPdf($generated['contents'], $generated['filename']);
         }
@@ -28,9 +29,7 @@ final class InvoiceDocumentController
         $contents = $document->sourcePreviewContents();
         abort_unless(is_string($contents), 404);
 
-        $filename = is_string($path) && $path !== ''
-            ? basename($path)
-            : $document->sourceOriginalFilename();
+        $filename = $document->sourceOriginalFilename();
 
         return $this->streamPdf($contents, $filename);
     }
@@ -50,7 +49,11 @@ final class InvoiceDocumentController
         $this->guardPath($path);
         abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+        return $this->streamedDownloadFromDisk(
+            $disk,
+            $path,
+            $document->downloadFilenameForStoredPath($path),
+        );
     }
 
     /**
@@ -68,11 +71,15 @@ final class InvoiceDocumentController
         $this->guardPath($path);
         abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+        return $this->streamedDownloadFromDisk(
+            $disk,
+            $path,
+            $document->downloadFilenameForStoredPath($path),
+        );
     }
 
     /**
-     * Download the human-readable XRechnung copy PDF (never the hybrid invoice).
+     * Download the stored XRechnung copy PDF (watermark baked in at generation).
      */
     public function downloadCopy(EbillingDocument $document): StreamedResponse
     {
@@ -86,13 +93,19 @@ final class InvoiceDocumentController
         $this->guardPath($path);
         abort_unless(Storage::disk($disk)->exists($path), 404);
 
-        return $this->streamedDownloadFromDisk($disk, $path, basename($path));
+        return $this->streamedDownloadFromDisk(
+            $disk,
+            $path,
+            $document->downloadFilenameForStoredPath($path),
+        );
     }
 
     /**
+     * Stored visual PDF for admin preview: hybrid first, then XRechnung copy.
+     *
      * @return array{contents: string, filename: string}|null
      */
-    private function generatedPdfPreview(EbillingDocument $document): ?array
+    private function previewStoredPdf(EbillingDocument $document): ?array
     {
         $path = $document->humanReadablePdfStoragePath();
         if (! is_string($path) || $path === '') {
@@ -116,7 +129,7 @@ final class InvoiceDocumentController
 
         return [
             'contents' => $contents,
-            'filename' => basename($path),
+            'filename' => $document->downloadFilenameForStoredPath($path),
         ];
     }
 

@@ -23,6 +23,7 @@ use Moox\EBilling\Enums\AttributionSource;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
+use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Support\InvoiceModels;
 use Moox\KositValidator\Models\KositValidation;
@@ -291,7 +292,7 @@ class EbillingDocument extends BaseItemModel
     }
 
     /**
-     * Visible PDF for humans: the hybrid invoice PDF, or the XRechnung copy PDF.
+     * Visible PDF for humans: the hybrid invoice PDF, or the watermarked XRechnung copy.
      * Never treats the copy as the hybrid deliverable of record.
      */
     public function humanReadablePdfStoragePath(): ?string
@@ -305,6 +306,33 @@ class EbillingDocument extends BaseItemModel
         }
 
         return null;
+    }
+
+    /**
+     * Customer-facing download name derived from the source original filename.
+     * Keeps storage paths opaque while downloads stay human-readable.
+     */
+    public function downloadFilenameForStoredPath(string $storagePath): string
+    {
+        try {
+            $base = EBillingArtifactNaming::basenameFor($this->sourceOriginalFilename());
+        } catch (RuntimeException) {
+            return basename($storagePath);
+        }
+
+        if ($storagePath === $this->copy_pdf_storage_path) {
+            return $base.'_copy.pdf';
+        }
+
+        if ($storagePath === $this->xml_storage_path) {
+            return $base.'.xml';
+        }
+
+        if ($storagePath === $this->pdf_storage_path) {
+            return $base.'.pdf';
+        }
+
+        return basename($storagePath);
     }
 
     /**

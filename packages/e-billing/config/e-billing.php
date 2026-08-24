@@ -116,6 +116,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Always produced for XRechnung. send_visual_copy only gates outbound mail.
+    | `term` is stamped as a single soft diagonal watermark when the copy PDF is generated.
+    | `notice` is kept for config compatibility and is not rendered on the PDF.
     |
     */
 
