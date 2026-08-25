@@ -11,6 +11,10 @@
 
 ### Added
 
+- Audit consumer for outgoing invoices: `Invoice` and `EbillingDocument` register with `moox/audit` (log name `e-billing`); Invoice/CreditNote Filament resources expose the Activity tab via aggregate document subjects
+- Human-readable audit subject labels for invoices/credit notes (`Rechnung 12345` / `Gutschrift 12345`) via `InvoiceActivitySubjectLabel`; documents use translated type label + format
+- Document audit updates are limited to terminal gateway statuses and human confirmation (`significant_updates`), so a single upload no longer floods the activity log with pipeline noise
+- Invoice/credit-note detail pages embed the Activity relation manager below the document view (custom Blade layout; Filament content-schema tabs are not used on this page)
 - Consignee delivery is a party (name + address). `DeliveryPartyMapper` (shared by `ParsedInvoiceMapper` and `InvoiceFactory`) maps DTO `delivery_address.company` onto `Party.name` (street stays `line1`; VAT, tax number, and contact stay null). A consignee with a name or any address content is persisted even without a country; empty parties are not. Header and line detail views format the party through `PartyAddressFormatter` (name first). The `delivery_address` field label is Consignee / Warenempfänger (BT/BG hint **BG-13**). `InvoiceFieldValidator` treats the field as empty only when the party is missing or both name and address are empty. `ZugferdInvoiceAdapter` maps the party onto `shipToName` / `shipToAddress`; the converter decides whether BG-15 is emitted ([mooxphp/invoice#8](https://github.com/mooxphp/invoice/issues/8)).
 
 - Delivery dates now reach the generated artifact ([#62](https://github.com/mooxphp/e-billing/issues/62)). A single date is emitted as the actual delivery date (BT-72). Several differing dates stay per line and are never merged into an invoicing period (BG-14); EN16931/XRechnung carry each line date as a line period with start and end equal to that day, while EXTENDED uses the line-level actual delivery date. Intra-community invoices that would need an aggregate date for BR-IC-11 surface `delivery_date` as `needs_review` instead of aggregating.

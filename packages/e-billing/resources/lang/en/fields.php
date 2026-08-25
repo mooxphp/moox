@@ -148,6 +148,7 @@ return [
 
     // Tabs
     'tab_all' => 'All',
+    'tab_document' => 'Document',
     'tab_gateway_failed' => 'Failed',
     'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',

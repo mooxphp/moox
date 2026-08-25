@@ -43,4 +43,8 @@ return [
     'change_kind_changed' => 'Geändert',
     'change_kind_added' => 'Hinzugefügt',
     'change_kind_removed' => 'Entfernt',
+    'outcome_failed' => 'Fehlgeschlagen',
+    'outcome_generation_failed' => 'Erzeugung fehlgeschlagen',
+    'outcome_validation_failed' => 'Validierung fehlgeschlagen',
+    'outcome_validator_error' => 'Validator-Fehler',
 ];

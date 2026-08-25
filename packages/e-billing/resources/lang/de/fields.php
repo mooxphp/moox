@@ -148,6 +148,7 @@ return [
 
     // Tabs
     'tab_all' => 'Alle',
+    'tab_document' => 'Dokument',
     'tab_gateway_failed' => 'Fehlgeschlagen',
     'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',

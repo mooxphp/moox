@@ -345,6 +345,10 @@ On edit/view pages of configured resources, the **Activity** tab lists related e
 | `user_models` | Map of user model classes to `title_attribute` and `label` for property enrichment |
 | `presets` | Named preset blocks merged into per-model config |
 | `models` | App-level model overrides |
+| `models.*.label` | Human-readable subject type label (supports `trans//lang.key`) |
+| `models.*.title_attribute` | Attribute used as the subject title (falls back to the activity snapshot when the subject was deleted) |
+| `models.*.subject_label_resolver` | Class implementing `ActivitySubjectLabelResolver` for a full custom subject label |
+| `models.*.significant_updates` | Map of attribute => `true`/`*` or allowed new values; when set, `updated` audits only keep matching changes (skips intermediate noise) |
 | `models.*.sources` | Additional audit data sources for virtual or builder-backed fields |
 | `hooks` | App-level hook overrides |
 | `filament` | App-level Filament resource overrides |

@@ -5,6 +5,7 @@ return [
     'invoices' => 'Rechnungen',
     'credit_note' => 'Gutschrift',
     'credit_notes' => 'Gutschriften',
+    'ebilling_document' => 'E-Billing-Dokument',
     'navigation_group' => 'E-Billing',
     'invoice_settings' => 'Rechnungseinstellungen',
     'invoice_settings_description' => 'Format und Kopie für zukünftige Rechnungen. Änderungen gelten nicht rückwirkend.',

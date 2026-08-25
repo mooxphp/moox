@@ -7,6 +7,7 @@ namespace Moox\EBilling;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
@@ -29,6 +30,7 @@ use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
+use Moox\Invoice\Support\InvoiceModels;
 use Moox\MailInbox\Events\InboxAttachmentProcessed;
 use Spatie\LaravelPackageTools\Package;
 
@@ -132,6 +134,55 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->registerZugferdFilesystemDisk();
 
         Event::listen(InboxAttachmentProcessed::class, ProcessInboxAttachmentListener::class);
+    }
+
+    public function packageBooted(): void
+    {
+        if (! class_exists(AuditPackageRegistry::class) || ! config('audit.enabled', true)) {
+            return;
+        }
+
+        AuditPackageRegistry::register('e-billing', $this->auditConfigForRegistry());
+    }
+
+    /**
+     * Resolve host invoice model subclasses into the audit registry keys.
+     *
+     * @return array<string, mixed>
+     */
+    private function auditConfigForRegistry(): array
+    {
+        /** @var array<string, mixed> $audit */
+        $audit = config('e-billing.audit', []);
+        $invoiceClass = InvoiceModels::invoice();
+
+        if ($invoiceClass === Invoice::class) {
+            return $audit;
+        }
+
+        $models = is_array($audit['models'] ?? null) ? $audit['models'] : [];
+
+        if (isset($models[Invoice::class]) && is_array($models[Invoice::class])) {
+            $models[$invoiceClass] = $models[Invoice::class];
+            unset($models[Invoice::class]);
+            $audit['models'] = $models;
+        }
+
+        $filament = is_array($audit['filament'] ?? null) ? $audit['filament'] : [];
+
+        foreach ($filament as $resourceClass => $resourceConfig) {
+            if (! is_array($resourceConfig)) {
+                continue;
+            }
+
+            if (($resourceConfig['owner_model'] ?? null) === Invoice::class) {
+                $filament[$resourceClass]['owner_model'] = $invoiceClass;
+            }
+        }
+
+        $audit['filament'] = $filament;
+
+        return $audit;
     }
 
     /**

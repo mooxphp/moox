@@ -31,6 +31,9 @@ class ViewInvoice extends ViewRecord
     /**
      * Custom Blade view only — skip {@see ViewRecord::fillForm()} which would push
      * EN16931 Party value objects into Livewire's public {@see ViewRecord::$data}.
+     *
+     * The Activity relation manager is embedded directly in the Blade view, because
+     * this custom layout does not use Filament's default content schema tabs.
      */
     public function mount(int|string $record): void
     {

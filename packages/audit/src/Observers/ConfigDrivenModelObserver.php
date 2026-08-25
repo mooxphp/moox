@@ -65,6 +65,10 @@ final class ConfigDrivenModelObserver
 
         $changes = $this->buildChanges($model, $event, $config);
 
+        if ($event === ActivityEvent::Updated->value) {
+            $changes = $this->filterSignificantUpdates($changes, $config);
+        }
+
         if ($this->shouldSkip($changes, $event)) {
             return;
         }
@@ -122,6 +126,95 @@ final class ConfigDrivenModelObserver
             'attributes' => $dirtyAttributes,
             'old' => $dirtyOld,
         ];
+    }
+
+    /**
+     * When `significant_updates` is configured, keep only matching attribute
+     * changes. Keys may map to `true` (any change) or a list of new values.
+     *
+     * @param  array<string, mixed>  $changes
+     * @param  array<string, mixed>  $config
+     * @return array<string, mixed>
+     */
+    private function filterSignificantUpdates(array $changes, array $config): array
+    {
+        $significant = $config['significant_updates'] ?? null;
+
+        if (! is_array($significant) || $significant === []) {
+            return $changes;
+        }
+
+        $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
+        $old = is_array($changes['old'] ?? null) ? $changes['old'] : [];
+
+        $filteredAttributes = [];
+        $filteredOld = [];
+
+        foreach ($significant as $attribute => $allowedValues) {
+            if (! is_string($attribute) || $attribute === '' || ! array_key_exists($attribute, $attributes)) {
+                continue;
+            }
+
+            $newValue = $attributes[$attribute];
+
+            if (! $this->isSignificantUpdateValue($newValue, $allowedValues)) {
+                continue;
+            }
+
+            $filteredAttributes[$attribute] = $newValue;
+
+            if (array_key_exists($attribute, $old)) {
+                $filteredOld[$attribute] = $old[$attribute];
+            }
+        }
+
+        return [
+            'attributes' => $filteredAttributes,
+            'old' => $filteredOld,
+        ];
+    }
+
+    private function isSignificantUpdateValue(mixed $newValue, mixed $allowedValues): bool
+    {
+        if ($allowedValues === true || $allowedValues === '*') {
+            return true;
+        }
+
+        if (! is_array($allowedValues)) {
+            return false;
+        }
+
+        if ($allowedValues === []) {
+            return true;
+        }
+
+        $normalized = $this->normalizeComparableValue($newValue);
+
+        if ($normalized === null) {
+            return false;
+        }
+
+        return in_array($normalized, array_map(
+            $this->normalizeComparableValue(...),
+            $allowedValues,
+        ), true);
+    }
+
+    private function normalizeComparableValue(mixed $value): ?string
+    {
+        if ($value instanceof \BackedEnum) {
+            return (string) $value->value;
+        }
+
+        if ($value instanceof \UnitEnum) {
+            return $value->name;
+        }
+
+        if (is_scalar($value) || $value === null) {
+            return (string) $value;
+        }
+
+        return null;
     }
 
     /**

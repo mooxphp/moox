@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
@@ -41,6 +42,7 @@ use Throwable;
 
 class InvoiceResource extends BaseItemResource
 {
+    use InteractsWithAuditResourceRelations;
     use SingleSoftDeleteInResource;
 
     protected static ?string $slug = 'invoices';
@@ -497,11 +499,6 @@ class InvoiceResource extends BaseItemResource
             ...(self::enableDelete() ? [self::getDeleteBulkAction()] : []),
             ...(self::enableHardDelete() ? [self::getHardDeleteBulkAction()] : []),
         ];
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
     }
 
     public static function getPages(): array

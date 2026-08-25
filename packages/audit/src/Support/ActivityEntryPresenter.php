@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Moox\Audit\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\Audit\Contracts\ActivitySubjectLabelResolver;
 use Moox\Audit\Models\Activity;
 
 final class ActivityEntryPresenter
@@ -55,11 +57,13 @@ final class ActivityEntryPresenter
             }
 
             if ($oldValue !== null && $newValue !== null) {
-                $result[(string) $key] = self::formatValue($oldValue).' → '.self::formatValue($newValue);
+                $oldFormatted = self::formatPossiblySensitiveValue((string) $key, $oldValue) ?? '—';
+                $newFormatted = self::formatPossiblySensitiveValue((string) $key, $newValue) ?? '—';
+                $result[(string) $key] = $oldFormatted.' → '.$newFormatted;
             } elseif ($newValue !== null) {
-                $result[(string) $key] = self::formatValue($newValue);
+                $result[(string) $key] = self::formatPossiblySensitiveValue((string) $key, $newValue) ?? '—';
             } elseif ($oldValue !== null) {
-                $result[(string) $key] = self::formatValue($oldValue);
+                $result[(string) $key] = self::formatPossiblySensitiveValue((string) $key, $oldValue) ?? '—';
             }
         }
 
@@ -113,18 +117,21 @@ final class ActivityEntryPresenter
     }
 
     /**
-     * Compact field list for table columns, e.g. "Deutsch, Description +1".
+     * Compact change list for table columns, e.g. "Status → published, Color: red +1".
      */
     public static function changedFieldsSummary(mixed $changes, int $limit = 3): string
     {
-        $labels = array_column(self::changeRows($changes), 'field');
+        $items = array_map(
+            static fn (array $row): string => self::changeSummaryItem($row),
+            self::changeRows($changes),
+        );
 
-        if ($labels === []) {
+        if ($items === []) {
             return '—';
         }
 
-        $visible = array_slice($labels, 0, max(1, $limit));
-        $remaining = count($labels) - count($visible);
+        $visible = array_slice($items, 0, max(1, $limit));
+        $remaining = count($items) - count($visible);
         $summary = implode(', ', $visible);
 
         if ($remaining > 0) {
@@ -132,6 +139,132 @@ final class ActivityEntryPresenter
         }
 
         return $summary;
+    }
+
+    public static function isFailureEntry(mixed $changes): bool
+    {
+        return self::failureOutcomeValue($changes) !== null;
+    }
+
+    public static function failureOutcomeLabel(mixed $changes): ?string
+    {
+        $value = self::failureOutcomeValue($changes);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return self::failureOutcomeValueLabel($value);
+    }
+
+    public static function failureOutcomeValueLabel(string $value): ?string
+    {
+        if (! self::isFailureOutcomeValue($value)) {
+            return null;
+        }
+
+        $labels = config('audit.failure_outcome_labels', []);
+
+        if (is_array($labels) && isset($labels[$value]) && is_string($labels[$value])) {
+            return self::resolveConfiguredLabel($labels[$value]);
+        }
+
+        $key = 'core::audit.outcome_'.$value;
+        $translated = __($key);
+
+        if ($translated !== $key) {
+            return $translated;
+        }
+
+        $fallback = __('core::audit.outcome_failed');
+
+        if ($fallback !== 'core::audit.outcome_failed') {
+            return $fallback;
+        }
+
+        return Str::of($value)->replace('_', ' ')->headline()->toString();
+    }
+
+    public static function listRecordClasses(mixed $changes): ?string
+    {
+        if (! self::isFailureEntry($changes)) {
+            return null;
+        }
+
+        return 'border-s-2 border-danger-600 bg-danger-50/40 dark:bg-danger-950/20';
+    }
+
+    public static function failureOutcomeValue(mixed $changes): ?string
+    {
+        foreach (self::changeRows($changes) as $row) {
+            $newValue = $row['new'];
+
+            if (! is_string($newValue) || $newValue === '') {
+                continue;
+            }
+
+            if (self::isFailureOutcomeValue($newValue)) {
+                return $newValue;
+            }
+        }
+
+        return null;
+    }
+
+    private static function isFailureOutcomeValue(string $value): bool
+    {
+        $configured = config('audit.failure_outcome_values', []);
+
+        if (is_array($configured) && in_array($value, $configured, true)) {
+            return true;
+        }
+
+        if (str_ends_with($value, '_failed')) {
+            return true;
+        }
+
+        return in_array($value, ['validator_error', 'failed', 'error'], true);
+    }
+
+    /**
+     * @param  array{field: string, old: ?string, new: ?string, kind: 'changed'|'added'|'removed'}  $row
+     */
+    private static function changeSummaryItem(array $row): string
+    {
+        $field = $row['field'];
+
+        return match ($row['kind']) {
+            'changed' => $row['new'] !== null
+                ? sprintf('%s → %s', $field, self::formatSummaryDisplayValue($row['new']))
+                : $field,
+            'added' => $row['new'] !== null
+                ? sprintf('%s: %s', $field, self::formatSummaryDisplayValue($row['new']))
+                : $field,
+            'removed' => $row['old'] !== null
+                ? sprintf('%s: %s', $field, self::formatSummaryDisplayValue($row['old']))
+                : $field,
+            default => $field,
+        };
+    }
+
+    private static function formatSummaryDisplayValue(string $value): string
+    {
+        $label = self::failureOutcomeValueLabel($value);
+
+        if ($label !== null) {
+            return $label;
+        }
+
+        return self::truncateSummaryValue($value);
+    }
+
+    private static function truncateSummaryValue(string $value, int $limit = 40): string
+    {
+        if (mb_strlen($value) <= $limit) {
+            return $value;
+        }
+
+        return rtrim(mb_substr($value, 0, $limit - 1)).'…';
     }
 
     public static function propertyValue(?Activity $activity, string $key): ?string
@@ -649,6 +782,12 @@ final class ActivityEntryPresenter
             return '—';
         }
 
+        $resolved = self::resolveConfiguredSubjectLabel($activity);
+
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
         $typeLabel = self::subjectTypeLabel($type);
         $title = self::subjectTitle($activity);
 
@@ -723,12 +862,58 @@ final class ActivityEntryPresenter
 
     public static function subjectTypeLabel(string $type): string
     {
+        $config = self::subjectModelConfig($type);
+        $configuredLabel = is_array($config) ? ($config['label'] ?? null) : null;
+
+        if (is_string($configuredLabel) && $configuredLabel !== '') {
+            return self::resolveConfiguredLabel($configuredLabel);
+        }
+
         $basename = class_basename($type);
 
         return Str::of($basename)
             ->replaceEnd('Translation', ' translation')
             ->headline()
             ->toString();
+    }
+
+    /**
+     * Read a subject attribute from the live model, or from the activity snapshot
+     * when the subject was deleted.
+     */
+    public static function subjectAttributeValue(?Activity $activity, string $attribute): mixed
+    {
+        if ($activity === null || $attribute === '') {
+            return null;
+        }
+
+        $subject = $activity->subject;
+
+        if ($subject instanceof Model) {
+            $value = $subject->getAttribute($attribute);
+
+            if (self::isPresentAttributeValue($value)) {
+                return $value;
+            }
+        }
+
+        $changes = self::normalizeAttributeChanges($activity->attribute_changes);
+
+        foreach (['attributes', 'old'] as $bucket) {
+            $bucketValues = is_array($changes[$bucket] ?? null) ? $changes[$bucket] : [];
+
+            if (! array_key_exists($attribute, $bucketValues)) {
+                continue;
+            }
+
+            $value = $bucketValues[$attribute];
+
+            if (self::isPresentAttributeValue($value)) {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     public static function causerLabel(?Activity $activity): string
@@ -756,14 +941,28 @@ final class ActivityEntryPresenter
 
     private static function subjectTitle(?Activity $activity): ?string
     {
-        $subject = $activity?->subject;
-
-        if (! $subject instanceof Model) {
+        if ($activity === null) {
             return null;
         }
 
+        $type = $activity->subject_type;
+        $config = is_string($type) ? self::subjectModelConfig($type) : null;
+        $titleAttribute = is_array($config) ? ($config['title_attribute'] ?? null) : null;
+
+        if (is_string($titleAttribute) && $titleAttribute !== '') {
+            $configuredTitle = self::subjectAttributeValue($activity, $titleAttribute);
+
+            if (is_string($configuredTitle) && $configuredTitle !== '') {
+                return $configuredTitle;
+            }
+
+            if (is_scalar($configuredTitle) && (string) $configuredTitle !== '') {
+                return (string) $configuredTitle;
+            }
+        }
+
         foreach (['title', 'name', 'label'] as $attribute) {
-            $value = $subject->getAttribute($attribute);
+            $value = self::subjectAttributeValue($activity, $attribute);
 
             if (is_string($value) && $value !== '') {
                 return $value;
@@ -771,5 +970,88 @@ final class ActivityEntryPresenter
         }
 
         return null;
+    }
+
+    private static function resolveConfiguredSubjectLabel(Activity $activity): ?string
+    {
+        $type = $activity->subject_type;
+
+        if (! is_string($type) || $type === '') {
+            return null;
+        }
+
+        $config = self::subjectModelConfig($type);
+        $resolverClass = is_array($config) ? ($config['subject_label_resolver'] ?? null) : null;
+
+        if (! is_string($resolverClass) || $resolverClass === '' || ! class_exists($resolverClass)) {
+            return null;
+        }
+
+        $resolver = app($resolverClass);
+
+        if (! $resolver instanceof ActivitySubjectLabelResolver) {
+            return null;
+        }
+
+        $label = $resolver->resolve($activity);
+
+        return is_string($label) && $label !== '' ? $label : null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function subjectModelConfig(string $type): ?array
+    {
+        $modelClass = self::resolveSubjectModelClass($type);
+
+        return AuditConfigResolver::resolveModel($modelClass)
+            ?? ($modelClass !== $type ? AuditConfigResolver::resolveModel($type) : null);
+    }
+
+    private static function resolveSubjectModelClass(string $type): string
+    {
+        if (class_exists($type)) {
+            return $type;
+        }
+
+        $morphed = Relation::getMorphedModel($type);
+
+        return is_string($morphed) && $morphed !== '' ? $morphed : $type;
+    }
+
+    /**
+     * @param  array<string, mixed>|Collection<string, mixed>|null  $changes
+     * @return array<string, mixed>
+     */
+    private static function normalizeAttributeChanges(array|Collection|null $changes): array
+    {
+        if ($changes instanceof Collection) {
+            return $changes->toArray();
+        }
+
+        return is_array($changes) ? $changes : [];
+    }
+
+    private static function isPresentAttributeValue(mixed $value): bool
+    {
+        if ($value === null) {
+            return false;
+        }
+
+        if (is_string($value)) {
+            return $value !== '';
+        }
+
+        return true;
+    }
+
+    private static function resolveConfiguredLabel(string $label): string
+    {
+        if (str_starts_with($label, 'trans//')) {
+            return __(substr($label, strlen('trans//')));
+        }
+
+        return $label;
     }
 }
