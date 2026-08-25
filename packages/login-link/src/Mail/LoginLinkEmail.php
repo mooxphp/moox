@@ -16,7 +16,9 @@ class LoginLinkEmail extends ProcessLinkMail
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public LoginLink $loginLink) {}
+    public function __construct(public LoginLink $loginLink)
+    {
+    }
 
     public function build(): static
     {
