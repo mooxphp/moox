@@ -3,6 +3,7 @@
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\EbillingActivityAttributeLabels;
 use Moox\EBilling\Support\InvoiceActivitySubjectLabel;
 use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidatable;
@@ -624,6 +625,7 @@ return [
             Invoice::class => [
                 'log_name' => 'e-billing',
                 'subject_label_resolver' => InvoiceActivitySubjectLabel::class,
+                'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
                 'attributes' => [
                     'invoice_number',
                     'invoice_date',
@@ -652,6 +654,7 @@ return [
                 'log_name' => 'e-billing',
                 'label' => 'trans//e-billing::ebilling.ebilling_document',
                 'title_attribute' => 'format',
+                'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
                 // Pipeline writes many intermediate rows; only terminal gateway
                 // outcomes and human confirmation create update audits.
                 'significant_updates' => [

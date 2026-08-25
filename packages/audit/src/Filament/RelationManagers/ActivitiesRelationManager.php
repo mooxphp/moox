@@ -64,7 +64,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('changed_fields')
                     ->label(__('core::audit.attribute_changes'))
-                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes, activity: $record))
                     ->color(fn (Activity $record): ?string => ActivityEntryPresenter::isFailureEntry($record->attribute_changes) ? 'danger' : null)
                     ->wrap()
                     ->toggleable(),

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Moox\Audit\Contracts\ActivityAttributeLabelResolver;
 use Moox\Audit\Contracts\ActivitySubjectLabelResolver;
 use Moox\Audit\Models\Activity;
 
@@ -17,23 +18,65 @@ final class ActivityEntryPresenter
 
     public const SENSITIVE_VALUE_MASK = SensitiveAttributeGuard::MASK;
 
-    private static function formatPossiblySensitiveValue(string $key, mixed $value): ?string
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     * @return array{display: string, raw: ?string}|null
+     */
+    private static function presentAttributeValue(string $key, mixed $value, ?array $modelConfig = null): ?array
     {
         if ($value === null) {
             return null;
         }
 
         if (SensitiveAttributeGuard::shouldMaskKey($key)) {
-            return SensitiveAttributeGuard::MASK;
+            return [
+                'display' => SensitiveAttributeGuard::MASK,
+                'raw' => null,
+            ];
         }
 
-        return self::formatValue($value);
+        $rawString = self::rawComparableString($value);
+        $formatted = self::formatValue($value);
+
+        if ($rawString !== null) {
+            $labeled = self::resolveAttributeValueLabel($key, $rawString, $modelConfig)
+                ?? self::failureOutcomeValueLabel($rawString);
+
+            if ($labeled !== null && $labeled !== $rawString) {
+                return [
+                    'display' => sprintf('%s (%s)', $labeled, $rawString),
+                    'raw' => $rawString,
+                ];
+            }
+        }
+
+        return [
+            'display' => $formatted,
+            'raw' => $rawString,
+        ];
+    }
+
+    private static function rawComparableString(mixed $value): ?string
+    {
+        if ($value instanceof \BackedEnum) {
+            return (string) $value->value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        if (is_scalar($value)) {
+            return (string) $value;
+        }
+
+        return null;
     }
 
     /**
      * @return array<string, string>
      */
-    public static function flattenChanges(mixed $changes): array
+    public static function flattenChanges(mixed $changes, ?Activity $activity = null): array
     {
         if ($changes instanceof Collection) {
             $changes = $changes->all();
@@ -43,6 +86,7 @@ final class ActivityEntryPresenter
             return [];
         }
 
+        $modelConfig = self::modelConfigForActivity($activity);
         $old = is_array($changes['old'] ?? null) ? $changes['old'] : [];
         $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
         $keys = array_unique([...array_keys($old), ...array_keys($attributes)]);
@@ -56,14 +100,15 @@ final class ActivityEntryPresenter
                 continue;
             }
 
-            if ($oldValue !== null && $newValue !== null) {
-                $oldFormatted = self::formatPossiblySensitiveValue((string) $key, $oldValue) ?? '—';
-                $newFormatted = self::formatPossiblySensitiveValue((string) $key, $newValue) ?? '—';
-                $result[(string) $key] = $oldFormatted.' → '.$newFormatted;
-            } elseif ($newValue !== null) {
-                $result[(string) $key] = self::formatPossiblySensitiveValue((string) $key, $newValue) ?? '—';
-            } elseif ($oldValue !== null) {
-                $result[(string) $key] = self::formatPossiblySensitiveValue((string) $key, $oldValue) ?? '—';
+            $oldPresented = self::presentAttributeValue((string) $key, $oldValue, $modelConfig);
+            $newPresented = self::presentAttributeValue((string) $key, $newValue, $modelConfig);
+
+            if ($oldPresented !== null && $newPresented !== null) {
+                $result[(string) $key] = $oldPresented['display'].' → '.$newPresented['display'];
+            } elseif ($newPresented !== null) {
+                $result[(string) $key] = $newPresented['display'];
+            } elseif ($oldPresented !== null) {
+                $result[(string) $key] = $oldPresented['display'];
             }
         }
 
@@ -73,7 +118,7 @@ final class ActivityEntryPresenter
     /**
      * @return list<array{field: string, old: ?string, new: ?string, kind: 'changed'|'added'|'removed'}>
      */
-    public static function changeRows(mixed $changes): array
+    public static function changeRows(mixed $changes, ?Activity $activity = null): array
     {
         if ($changes instanceof Collection) {
             $changes = $changes->all();
@@ -83,6 +128,7 @@ final class ActivityEntryPresenter
             return [];
         }
 
+        $modelConfig = self::modelConfigForActivity($activity);
         $old = is_array($changes['old'] ?? null) ? $changes['old'] : [];
         $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
         $keys = array_unique([...array_keys($old), ...array_keys($attributes)]);
@@ -105,10 +151,13 @@ final class ActivityEntryPresenter
                 $kind = 'removed';
             }
 
+            $oldPresented = self::presentAttributeValue($keyString, $oldValue, $modelConfig);
+            $newPresented = self::presentAttributeValue($keyString, $newValue, $modelConfig);
+
             $rows[] = [
-                'field' => self::fieldLabel($keyString),
-                'old' => self::formatPossiblySensitiveValue($keyString, $oldValue),
-                'new' => self::formatPossiblySensitiveValue($keyString, $newValue),
+                'field' => self::fieldLabel($keyString, $modelConfig),
+                'old' => $oldPresented['display'] ?? null,
+                'new' => $newPresented['display'] ?? null,
                 'kind' => $kind,
             ];
         }
@@ -119,11 +168,11 @@ final class ActivityEntryPresenter
     /**
      * Compact change list for table columns, e.g. "Status → published, Color: red +1".
      */
-    public static function changedFieldsSummary(mixed $changes, int $limit = 3): string
+    public static function changedFieldsSummary(mixed $changes, int $limit = 3, ?Activity $activity = null): string
     {
         $items = array_map(
             static fn (array $row): string => self::changeSummaryItem($row),
-            self::changeRows($changes),
+            self::changeRows($changes, $activity),
         );
 
         if ($items === []) {
@@ -196,15 +245,29 @@ final class ActivityEntryPresenter
 
     public static function failureOutcomeValue(mixed $changes): ?string
     {
-        foreach (self::changeRows($changes) as $row) {
-            $newValue = $row['new'];
+        if ($changes instanceof Collection) {
+            $changes = $changes->all();
+        }
 
-            if (! is_string($newValue) || $newValue === '') {
+        if (! is_array($changes)) {
+            return null;
+        }
+
+        $attributes = is_array($changes['attributes'] ?? null) ? $changes['attributes'] : [];
+
+        foreach ($attributes as $value) {
+            if ($value instanceof \BackedEnum) {
+                $value = (string) $value->value;
+            }
+
+            if (! is_scalar($value)) {
                 continue;
             }
 
-            if (self::isFailureOutcomeValue($newValue)) {
-                return $newValue;
+            $stringValue = (string) $value;
+
+            if ($stringValue !== '' && self::isFailureOutcomeValue($stringValue)) {
+                return $stringValue;
             }
         }
 
@@ -227,7 +290,12 @@ final class ActivityEntryPresenter
     }
 
     /**
-     * @param  array{field: string, old: ?string, new: ?string, kind: 'changed'|'added'|'removed'}  $row
+     * @param  array{
+     *     field: string,
+     *     old: ?string,
+     *     new: ?string,
+     *     kind: 'changed'|'added'|'removed'
+     * }  $row
      */
     private static function changeSummaryItem(array $row): string
     {
@@ -235,30 +303,19 @@ final class ActivityEntryPresenter
 
         return match ($row['kind']) {
             'changed' => $row['new'] !== null
-                ? sprintf('%s → %s', $field, self::formatSummaryDisplayValue($row['new']))
+                ? sprintf('%s → %s', $field, self::truncateSummaryValue($row['new']))
                 : $field,
             'added' => $row['new'] !== null
-                ? sprintf('%s: %s', $field, self::formatSummaryDisplayValue($row['new']))
+                ? sprintf('%s: %s', $field, self::truncateSummaryValue($row['new']))
                 : $field,
             'removed' => $row['old'] !== null
-                ? sprintf('%s: %s', $field, self::formatSummaryDisplayValue($row['old']))
+                ? sprintf('%s: %s', $field, self::truncateSummaryValue($row['old']))
                 : $field,
             default => $field,
         };
     }
 
-    private static function formatSummaryDisplayValue(string $value): string
-    {
-        $label = self::failureOutcomeValueLabel($value);
-
-        if ($label !== null) {
-            return $label;
-        }
-
-        return self::truncateSummaryValue($value);
-    }
-
-    private static function truncateSummaryValue(string $value, int $limit = 40): string
+    private static function truncateSummaryValue(string $value, int $limit = 48): string
     {
         if (mb_strlen($value) <= $limit) {
             return $value;
@@ -852,12 +909,87 @@ final class ActivityEntryPresenter
         return mb_strlen($state) > self::CHANGE_VALUE_DISPLAY_LIMIT ? $state : null;
     }
 
-    public static function fieldLabel(string $field): string
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     */
+    public static function fieldLabel(string $field, ?array $modelConfig = null): string
     {
+        $configured = self::resolveAttributeFieldLabel($field, $modelConfig);
+
+        if ($configured !== null) {
+            return $configured;
+        }
+
         return Str::of($field)
             ->replace(['_', '-'], ' ')
             ->headline()
             ->toString();
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     */
+    private static function resolveAttributeFieldLabel(string $field, ?array $modelConfig): ?string
+    {
+        $labels = is_array($modelConfig['field_labels'] ?? null) ? $modelConfig['field_labels'] : [];
+
+        if (isset($labels[$field]) && is_string($labels[$field]) && $labels[$field] !== '') {
+            return self::resolveConfiguredLabel($labels[$field]);
+        }
+
+        $resolver = self::attributeLabelResolver($modelConfig);
+
+        return $resolver?->resolveFieldLabel($field);
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     */
+    private static function resolveAttributeValueLabel(string $field, string $value, ?array $modelConfig): ?string
+    {
+        $labels = is_array($modelConfig['value_labels'][$field] ?? null)
+            ? $modelConfig['value_labels'][$field]
+            : [];
+
+        if (isset($labels[$value]) && is_string($labels[$value]) && $labels[$value] !== '') {
+            return self::resolveConfiguredLabel($labels[$value]);
+        }
+
+        $resolver = self::attributeLabelResolver($modelConfig);
+
+        return $resolver?->resolveValueLabel($field, $value);
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $modelConfig
+     */
+    private static function attributeLabelResolver(?array $modelConfig): ?ActivityAttributeLabelResolver
+    {
+        $resolverClass = is_array($modelConfig) ? ($modelConfig['attribute_label_resolver'] ?? null) : null;
+
+        if (! is_string($resolverClass) || $resolverClass === '' || ! class_exists($resolverClass)) {
+            return null;
+        }
+
+        $resolver = app($resolverClass);
+
+        return $resolver instanceof ActivityAttributeLabelResolver ? $resolver : null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function modelConfigForActivity(?Activity $activity): ?array
+    {
+        if ($activity === null) {
+            return null;
+        }
+
+        $type = $activity->subject_type;
+
+        return is_string($type) && $type !== ''
+            ? self::subjectModelConfig($type)
+            : null;
     }
 
     public static function subjectTypeLabel(string $type): string

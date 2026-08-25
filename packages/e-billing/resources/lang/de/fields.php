@@ -89,6 +89,8 @@ return [
     'status_human_confirmed' => 'Manuell bestätigt',
     'status_validated' => 'Validiert',
 
+    'review_status' => 'Prüfstatus',
+
     // Gateway status
     'gateway_status' => 'Verarbeitungsstatus',
     'gateway_status_generating' => 'Wird erzeugt',

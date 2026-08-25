@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Support\ActivityEntryPresenter;
+use Moox\Audit\Tests\Support\TestAttributeLabelResolver;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\Support\TestSubjectLabelResolver;
 use Moox\Audit\Tests\TestCase;
@@ -217,7 +218,68 @@ it('shows gateway failure values in the changed-fields summary', function (): vo
         'attributes' => ['gateway_status' => 'generation_failed'],
     ];
 
-    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Gateway Status → Generation Failed');
+    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Gateway Status → Generation Failed (generation_failed)');
+});
+
+it('uses attribute_label_resolver for field and value labels', function (): void {
+    $this->registerTestAuditableModel([
+        'attribute_label_resolver' => TestAttributeLabelResolver::class,
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->attribute_changes = [
+        'old' => ['review_status' => 'db_validated'],
+        'attributes' => ['review_status' => 'human_confirmed'],
+    ];
+
+    $rows = ActivityEntryPresenter::changeRows($activity->attribute_changes, $activity);
+
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['field'])->toBe('Review')
+        ->and($rows[0]['old'])->toBe('Automatically pre-reviewed (db_validated)')
+        ->and($rows[0]['new'])->toBe('Manually confirmed (human_confirmed)')
+        ->and($rows[0]['kind'])->toBe('changed')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($activity->attribute_changes, activity: $activity))
+        ->toBe('Review → Manually confirmed (human_confirmed)');
+});
+
+it('uses configured field_labels and value_labels maps', function (): void {
+    $this->registerTestAuditableModel([
+        'field_labels' => [
+            'review_status' => 'Prüfstatus',
+        ],
+        'value_labels' => [
+            'review_status' => [
+                'db_validated' => 'Automatisch vorgeprüft',
+                'human_confirmed' => 'Manuell bestätigt',
+            ],
+        ],
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['review_status' => 'db_validated'],
+        'attributes' => ['review_status' => 'human_confirmed'],
+    ], $activity);
+
+    expect($rows[0]['field'])->toBe('Prüfstatus')
+        ->and($rows[0]['old'])->toBe('Automatisch vorgeprüft (db_validated)')
+        ->and($rows[0]['new'])->toBe('Manuell bestätigt (human_confirmed)');
+});
+
+it('masks sensitive values without exposing raw secrets', function (): void {
+    config()->set('audit.mask_attributes', ['password']);
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['password' => 'old-secret'],
+        'attributes' => ['password' => 'new-secret'],
+    ]);
+
+    expect($rows[0]['old'])->toBe(ActivityEntryPresenter::SENSITIVE_VALUE_MASK)
+        ->and($rows[0]['new'])->toBe(ActivityEntryPresenter::SENSITIVE_VALUE_MASK);
 });
 
 it('detects failure outcomes for list highlighting', function (): void {
@@ -244,26 +306,25 @@ it('builds structured change rows for the detail view', function (): void {
         'attributes' => ['title' => 'Hallo und ciao', 'color' => 'red'],
     ]);
 
-    expect($rows)->toBe([
-        [
+    expect($rows)->toHaveCount(3)
+        ->and($rows[0])->toMatchArray([
             'field' => 'Title',
             'old' => 'Hallo',
             'new' => 'Hallo und ciao',
             'kind' => 'changed',
-        ],
-        [
+        ])
+        ->and($rows[1])->toMatchArray([
             'field' => 'Status',
             'old' => 'draft',
             'new' => null,
             'kind' => 'removed',
-        ],
-        [
+        ])
+        ->and($rows[2])->toMatchArray([
             'field' => 'Color',
             'old' => null,
             'new' => 'red',
             'kind' => 'added',
-        ],
-    ]);
+        ]);
 });
 
 it('masks sensitive values in structured change rows', function (): void {
@@ -274,14 +335,13 @@ it('masks sensitive values in structured change rows', function (): void {
         'attributes' => ['password' => 'new-secret'],
     ]);
 
-    expect($rows)->toBe([
-        [
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0])->toMatchArray([
             'field' => 'Password',
             'old' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
             'new' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
             'kind' => 'changed',
-        ],
-    ]);
+        ]);
 });
 
 it('builds a headline and hides duplicate descriptions', function (): void {

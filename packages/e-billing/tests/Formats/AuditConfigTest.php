@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\EbillingActivityAttributeLabels;
 use Moox\EBilling\Support\InvoiceActivitySubjectLabel;
 use Moox\EBilling\Tests\ContainerTestCase;
 use Moox\Invoice\Models\Invoice;
@@ -24,7 +25,11 @@ test('e-billing audit config registers invoice and document for moox/audit', fun
         ->and($config['audit']['models'][Invoice::class]['log_name'])->toBe('e-billing')
         ->and($config['audit']['models'][Invoice::class]['subject_label_resolver'])
         ->toBe(InvoiceActivitySubjectLabel::class)
+        ->and($config['audit']['models'][Invoice::class]['attribute_label_resolver'])
+        ->toBe(EbillingActivityAttributeLabels::class)
         ->and($config['audit']['models'][EbillingDocument::class]['log_name'])->toBe('e-billing')
+        ->and($config['audit']['models'][EbillingDocument::class]['attribute_label_resolver'])
+        ->toBe(EbillingActivityAttributeLabels::class)
         ->and($config['audit']['models'][EbillingDocument::class]['label'])
         ->toBe('trans//e-billing::ebilling.ebilling_document')
         ->and($config['audit']['models'][EbillingDocument::class]['title_attribute'])->toBe('format')
