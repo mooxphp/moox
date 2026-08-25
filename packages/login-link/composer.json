@@ -18,7 +18,8 @@
     ],
     "require": {
         "moox/core": "dev-main",
-        "moox/slug": "dev-main"
+        "moox/mail-outbox": "dev-main",
+        "moox/mjml": "dev-main"
     },
     "require-dev": {
         "moox/devtools": "dev-main"

@@ -112,12 +112,12 @@ Seeded on install:
 
 ## Key configuration knobs
 
-- `login-link.handlers` — handler key → class
-- `login-link.templates` — template key → Blade view
-- `login-link.public_consume_path` — public signed route path
-- `login-link.public_invalid_redirect` — redirect when public redeem fails
-- `login-link.ack.redirect_url` — fallback redirect for the generic `ack` handler
-- `login-link.passwordless.enabled`, `rate_limit.send`, `expiration_minutes`, `user_models`, `mail_logo_url`
+- `login-link.passwordless.enabled`: enable/disable the passwordless integration.
+- `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
+- `login-link.expiration_minutes`: link validity window.
+- `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
+- `login-link.mail_logo_url`: optional logo shown when no MailTemplate row is used.
+- `login-link.mail_template_key`: MailTemplate key from `moox/mail-outbox` (default `login-link`).
 
 ## Security notes
 

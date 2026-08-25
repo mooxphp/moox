@@ -162,6 +162,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail template
+    |--------------------------------------------------------------------------
+    |
+    | Key of the moox/mail-outbox MailTemplate used for login-link emails.
+    | The template supplies the Blade view, logo, footer, and optional MJML
+    | content. When no matching row exists, the package MJML view is used.
+    |
+    */
+
+    'mail_template_key' => env('LOGIN_LINK_MAIL_TEMPLATE_KEY', 'login-link'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Passwordless / Login link (toggle)
     |--------------------------------------------------------------------------
     |
