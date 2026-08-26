@@ -21,7 +21,7 @@
         "php": "^8.2",
         "moox/core": "dev-main",
         "moox/mail-inbox": "dev-main",
-        "microsoft/microsoft-graph": "^2.0",
+        "microsoft/microsoft-graph": "^3.0",
         "guzzlehttp/guzzle": "^7.5"
     },
     "autoload": {
