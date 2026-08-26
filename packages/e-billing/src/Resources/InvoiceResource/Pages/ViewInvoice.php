@@ -88,7 +88,20 @@ class ViewInvoice extends ViewRecord
                 ->color('success')
                 ->requiresConfirmation()
                 ->modalHeading(__('e-billing::fields.action_confirm_modal_heading'))
-                ->modalDescription(__('e-billing::fields.action_confirm_modal_description'))
+                ->modalDescription(function () use ($record): string {
+                    $otherVersions = $record->versionFamily()
+                        ->reject(fn (Invoice $invoice): bool => (string) $invoice->getKey() === (string) $record->getKey())
+                        ->count();
+
+                    if ($otherVersions > 0) {
+                        return __('e-billing::fields.action_confirm_modal_description_with_versions', [
+                            'count' => $otherVersions,
+                            'version' => $record->document_version,
+                        ]);
+                    }
+
+                    return __('e-billing::fields.action_confirm_modal_description');
+                })
                 ->modalSubmitActionLabel(__('e-billing::fields.action_confirm_submit'))
                 ->visible(fn (): bool => $record instanceof Invoice
                     && $document?->review_status === InvoiceProcessingStatus::DbValidated)
@@ -97,15 +110,23 @@ class ViewInvoice extends ViewRecord
                         return;
                     }
 
-                    $confirmed = app(ConfirmInvoiceAction::class)->execute($record);
+                    $result = app(ConfirmInvoiceAction::class)->execute($record);
 
-                    if ($confirmed) {
+                    if ($result['confirmed']) {
+                        $body = $result['previous_current_count'] > 0
+                            ? __('e-billing::fields.notification_confirmed_body_with_versions', [
+                                'count' => $result['previous_current_count'],
+                                'version' => $record->fresh()?->document_version ?? $record->document_version,
+                            ])
+                            : __('e-billing::fields.notification_confirmed_body');
+
                         Notification::make()
                             ->title(__('e-billing::fields.notification_confirmed_title'))
-                            ->body(__('e-billing::fields.notification_confirmed_body'))
+                            ->body($body)
                             ->success()
                             ->send();
 
+                        $record->refresh();
                         $record->load('ebillingDocument');
                     } else {
                         Notification::make()

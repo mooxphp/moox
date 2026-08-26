@@ -172,7 +172,7 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{status?: string, matched_id?: string}|null  $validation
+     * @param  array{status?: string, matched_id?: string, reason?: string}|null  $validation
      */
     public static function hint(string $field, string $status, ?array $validation = null): ?string
     {
@@ -209,6 +209,9 @@ final class InvoiceFieldLabels
                 'minimum_quantity_surcharge' => __('e-billing::fields.hint_review_minimum_quantity_surcharge'),
                 'freight_flat_rate' => __('e-billing::fields.hint_review_freight_flat_rate'),
                 'delivery_date' => __('e-billing::fields.hint_review_delivery_date'),
+                'invoice_number' => ($validation['reason'] ?? null) === 'duplicate_invoice_number'
+                    ? __('e-billing::fields.hint_review_duplicate_invoice_number')
+                    : __('e-billing::fields.hint_review_default'),
                 default => __('e-billing::fields.hint_review_default'),
             };
         }
@@ -217,7 +220,7 @@ final class InvoiceFieldLabels
     }
 
     /**
-     * @param  array{matched_id?: mixed}|null  $validation
+     * @param  array{matched_id?: mixed, reason?: mixed}|null  $validation
      */
     private static function hasMatchedId(?array $validation): bool
     {

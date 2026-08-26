@@ -64,9 +64,18 @@ class InvoiceResource extends BaseItemResource
      */
     public static function getTableQuery(?string $activeTab = null): Builder
     {
-        unset($activeTab);
+        $query = parent::getTableQuery();
 
-        return parent::getTableQuery();
+        $deletedTabKey = (string) config('e-billing.resources.'.static::resourceConfigKey().'.soft_delete_tab_key', 'deleted');
+
+        // "all" / needs-review / deleted: every Fassung. Other tabs stay on the current one.
+        $showAllVersions = in_array($activeTab, [null, 'all', 'needs_review', $deletedTabKey], true);
+
+        if (! $showAllVersions) {
+            $query->where('is_current', true);
+        }
+
+        return $query;
     }
 
     protected static function applySoftDeleteQuery(Builder $query): Builder
@@ -168,6 +177,18 @@ class InvoiceResource extends BaseItemResource
                 ->sortable()
                 ->color('primary')
                 ->weight('medium')
+                ->toggleable(),
+            TextColumn::make('document_version')
+                ->label(__('e-billing::fields.document_version'))
+                ->formatStateUsing(function ($state, Invoice $record): string {
+                    $label = __('e-billing::fields.document_version_label', ['version' => $state]);
+
+                    if ($record->is_current) {
+                        return $label.' · '.__('e-billing::fields.document_version_current');
+                    }
+
+                    return $label;
+                })
                 ->toggleable(),
             TextColumn::make('supplier_name')
                 ->label(__('e-billing::fields.supplier'))
@@ -556,6 +577,10 @@ class InvoiceResource extends BaseItemResource
     {
         $query = static::constrainToDocumentTypes($query);
 
+        $isNeedsReviewTab = false;
+        $isDeletedTab = false;
+        $isAllTab = true;
+
         foreach ($conditions as $condition) {
             $value = $condition['value'];
 
@@ -567,7 +592,16 @@ class InvoiceResource extends BaseItemResource
                 $query = $query->withTrashed();
             }
 
+            if ($condition['field'] === 'deleted_at' && $condition['operator'] === '!=') {
+                $isDeletedTab = true;
+            }
+
+            if (in_array($condition['field'], ['review_status', 'gateway_status'], true)) {
+                $isAllTab = false;
+            }
+
             if ($condition['field'] === 'review_status' && $condition['operator'] === 'in') {
+                $isNeedsReviewTab = true;
                 $query->whereHas(
                     'ebillingDocument',
                     fn ($documentQuery) => $documentQuery->whereIn('review_status', (array) $value),
@@ -592,6 +626,11 @@ class InvoiceResource extends BaseItemResource
             } else {
                 $query->where($condition['field'], $condition['operator'], $value);
             }
+        }
+
+        // "Alle" and needs-review keep every Fassung; other status tabs stay on current only.
+        if (! $isAllTab && ! $isNeedsReviewTab && ! $isDeletedTab) {
+            $query->where('is_current', true);
         }
 
         return $query;

@@ -11,6 +11,8 @@
 
 ### Added
 
+- Duplicate invoice / credit-note numbers (`invoice_number` + same `document_type`) always flag `needs_review` with reason `duplicate_invoice_number` during field validation (billing#13 / #21 / #24). No silent de-duplication on upload; auto-`Validated` is blocked so the item lands in central review. Soft-deleted invoices are ignored; 380 vs 381 with the same number are not treated as duplicates.
+- Invoice document versioning: `document_version` + `is_current` on `invoices`. Re-uploads of the same number become the next version (non-current). Confirming a reviewed Fassung makes it current; older versions remain stored. The **All** and **Needs review** tabs list every Fassung; other status tabs stay on the current one.
 - Audit consumer for outgoing invoices: `Invoice` and `EbillingDocument` register with `moox/audit` (log name `e-billing`); Invoice/CreditNote Filament resources expose the Activity tab via aggregate document subjects
 - Human-readable audit subject labels for invoices/credit notes (`Rechnung 12345` / `Gutschrift 12345`) via `InvoiceActivitySubjectLabel`; documents use translated type label + format
 - Document audit updates are limited to terminal gateway statuses and human confirmation (`significant_updates`), so a single upload no longer floods the activity log with pipeline noise

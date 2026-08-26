@@ -10,6 +10,7 @@
 
 ### Added
 
+- Document versioning on invoices: `document_version` (int) and `is_current` (bool), with auto-assignment on create for the same `invoice_number` + `document_type` family. `makeCurrentVersion()` flips current without deleting older rows.
 - `Address::fromDocumentArray()`, `Address::hasCountry()`, and `Address::isEmpty()` for an address as read. `fromArray()` still requires a country (ready-to-emit / BR-57) and delegates field mapping to `fromDocumentArray()` ([#8](https://github.com/mooxphp/invoice/issues/8)).
 - Payment terms (EN 16931 BT-20) and shipping method on the persisted invoice: nullable `payment_terms` (text) and `shipping_method` (string) flow through `InvoiceDraft` / `InvoiceBuilder` onto the model; create-table stub and host migrations add the columns ([#6](https://github.com/mooxphp/invoice/issues/6)).
 
