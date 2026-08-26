@@ -13,7 +13,8 @@ class RenderedMailTemplate extends Mailable
     public function __construct(
         public string $htmlBody,
         public string $mailSubject,
-    ) {}
+    ) {
+    }
 
     public function envelope(): Envelope
     {
