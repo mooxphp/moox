@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('invoice_number')->index();
             $table->string('invoice_date');
             $table->string('document_type');
+            $table->unsignedInteger('document_version')->default(1);
+            $table->boolean('is_current')->default(true);
             $table->string('due_date')->nullable();
             $table->string('currency')->default('EUR');
             $table->string('customer_number')->nullable()->index();
@@ -37,6 +39,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->string('scope')->nullable()->index();
+            $table->index(['invoice_number', 'document_type', 'is_current'], 'invoices_number_type_current_index');
         });
     }
 

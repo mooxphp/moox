@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 use Moox\Audit\Models\Activity;
+use Moox\Audit\Observers\ConfigDrivenModelObserver;
 use Moox\Audit\Services\MooxActivityLogger;
+use Moox\Audit\Support\AuditConfigResolver;
 use Moox\Audit\Support\AuditRequestContext;
 use Moox\Audit\Support\CustomFieldAuditMerger;
 use Moox\Audit\Support\SensitiveAttributeGuard;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\Support\TestNonSoftDeleteAuditableItem;
+use Moox\Audit\Tests\Support\TestStatusEnum;
 use Moox\Audit\Tests\TestCase;
 
 uses(TestCase::class);
@@ -507,4 +510,68 @@ it('masks sensitive custom field values when merging into an activity', function
         ])
         ->and($activity->attribute_changes?->get('old')['api_key'] ?? null)->not->toBe('old-key')
         ->and($activity->attribute_changes?->get('attributes')['api_key'] ?? null)->not->toBe('new-key');
+});
+
+it('skips non-significant updates when significant_updates is configured', function (): void {
+    /** @var TestCase $this */
+    $this->registerTestAuditableModel([
+        'significant_updates' => [
+            'status' => ['published', 'archived'],
+        ],
+    ]);
+
+    $item = TestAuditableItem::query()->create([
+        'title' => 'Original',
+        'status' => 'draft',
+    ]);
+
+    Activity::query()->delete();
+
+    $item->update(['title' => 'Noise']);
+
+    expect(Activity::query()->where('event', 'updated')->count())->toBe(0);
+
+    $item->update(['status' => 'published', 'title' => 'Also changed']);
+
+    $activity = Activity::query()->where('event', 'updated')->first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->attribute_changes?->get('attributes'))->toMatchArray([
+            'status' => 'published',
+        ])
+        ->and($activity->attribute_changes?->get('attributes'))->not->toHaveKey('title');
+});
+
+it('matches significant_updates when the new value is a backed enum', function (): void {
+    /** @var TestCase $this */
+    $this->registerTestAuditableModel([
+        'significant_updates' => [
+            'status' => ['published'],
+        ],
+    ]);
+
+    $item = TestAuditableItem::query()->create([
+        'title' => 'Original',
+        'status' => 'draft',
+    ]);
+
+    Activity::query()->delete();
+
+    $observer = new ConfigDrivenModelObserver;
+    $config = AuditConfigResolver::resolveModel(TestAuditableItem::class);
+
+    expect($config)->not->toBeNull();
+
+    $method = new ReflectionMethod($observer, 'isSignificantUpdateValue');
+
+    expect($method->invoke(
+        $observer,
+        TestStatusEnum::Published,
+        ['published'],
+    ))->toBeTrue()
+        ->and($method->invoke(
+            $observer,
+            TestStatusEnum::Draft,
+            ['published'],
+        ))->toBeFalse();
 });

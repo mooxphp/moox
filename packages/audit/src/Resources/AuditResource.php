@@ -99,11 +99,11 @@ class AuditResource extends Resource
                             ->hiddenLabel()
                             ->state(__('core::audit.no_changes'))
                             ->color('gray')
-                            ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes) === []),
+                            ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes, $record) === []),
                         RepeatableEntry::make('attribute_changes')
                             ->hiddenLabel()
-                            ->state(fn (Activity $record): array => ActivityEntryPresenter::changeRows($record->attribute_changes))
-                            ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes) !== [])
+                            ->state(fn (Activity $record): array => ActivityEntryPresenter::changeRows($record->attribute_changes, $record))
+                            ->visible(fn (Activity $record): bool => ActivityEntryPresenter::changeRows($record->attribute_changes, $record) !== [])
                             ->table([
                                 TableColumn::make(__('core::audit.field')),
                                 TableColumn::make(__('core::audit.change')),
@@ -129,15 +129,13 @@ class AuditResource extends Resource
                                     ->fontFamily('mono')
                                     ->color(fn (?string $state): ?string => filled($state) ? 'danger' : null)
                                     ->limit(ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT)
-                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state))
-                                    ->copyable(fn (?string $state): bool => filled($state)),
+                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state)),
                                 TextEntry::make('new')
                                     ->placeholder('—')
                                     ->fontFamily('mono')
                                     ->color(fn (?string $state): ?string => filled($state) ? 'success' : null)
                                     ->limit(ActivityEntryPresenter::CHANGE_VALUE_DISPLAY_LIMIT)
-                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state))
-                                    ->copyable(fn (?string $state): bool => filled($state)),
+                                    ->tooltip(fn (?string $state): ?string => ActivityEntryPresenter::truncatedChangeTooltip($state)),
                             ]),
                     ]),
             ]);
@@ -150,6 +148,7 @@ class AuditResource extends Resource
             ->poll('60s')
             ->defaultSort('created_at', 'desc')
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['causer', 'subject']))
+            ->recordClasses(fn (Activity $record): ?string => ActivityEntryPresenter::listRecordClasses($record->attribute_changes))
             ->columns([
                 TextColumn::make('created_at')
                     ->label(__('core::audit.occurred_at'))
@@ -172,6 +171,7 @@ class AuditResource extends Resource
                     ->label(__('core::audit.action'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::eventLabel($record))
                     ->badge()
+                    ->color(fn (Activity $record): string => ActivityEntryPresenter::isFailureEntry($record->attribute_changes) ? 'danger' : 'gray')
                     ->toggleable(),
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
@@ -179,7 +179,8 @@ class AuditResource extends Resource
                     ->limit(40),
                 TextColumn::make('changed_fields')
                     ->label(__('core::audit.attribute_changes'))
-                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes, activity: $record))
+                    ->color(fn (Activity $record): ?string => ActivityEntryPresenter::isFailureEntry($record->attribute_changes) ? 'danger' : null)
                     ->wrap()
                     ->toggleable(),
                 TextColumn::make('causer_label')

@@ -21,8 +21,12 @@ final class AuditBootstrap
 
     private static bool $hooksRegistered = false;
 
+    private static ?int $dispatcherId = null;
+
     public static function boot(): void
     {
+        self::syncDispatcherGuards();
+
         if (! config('audit.enabled', true)) {
             return;
         }
@@ -34,12 +38,30 @@ final class AuditBootstrap
 
     public static function clear(): void
     {
-        self::$registeredModels = [];
+        // Keep observer guards while the Eloquent dispatcher is unchanged —
+        // listeners cannot be removed cleanly, and resetting would duplicate them.
+        // boot() resets guards automatically when the dispatcher is replaced
+        // (new application / refreshed test case).
         self::$registeredFilamentResources = [];
         self::$hooksRegistered = false;
         AuditPackageRegistry::clear();
         AuditFilamentRegistry::clear();
         AuditResourceRelationRegistry::clear();
+    }
+
+    private static function syncDispatcherGuards(): void
+    {
+        $dispatcher = Model::getEventDispatcher();
+        $dispatcherId = is_object($dispatcher) ? spl_object_id($dispatcher) : null;
+
+        if ($dispatcherId === self::$dispatcherId) {
+            return;
+        }
+
+        self::$registeredModels = [];
+        self::$registeredFilamentResources = [];
+        self::$hooksRegistered = false;
+        self::$dispatcherId = $dispatcherId;
     }
 
     private static function registerConfiguredModels(): void

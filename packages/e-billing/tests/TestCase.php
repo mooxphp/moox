@@ -16,6 +16,8 @@ class TestCase extends AppTestCase
     {
         parent::setUp();
 
+        $this->assertTestingUsesIsolatedDatabase();
+
         config([
             'mail-inbox.graph.tenant_id' => 'test-tenant',
             'mail-inbox.graph.client_id' => 'test-client',
@@ -24,6 +26,29 @@ class TestCase extends AppTestCase
 
         $this->ensureEbillingMorphRelationsConfig();
         $this->runVeraPdfMigrations();
+        $this->runActivityLogMigration();
+    }
+
+    /**
+     * Guard against RefreshDatabase wiping a real MySQL database when phpunit.xml
+     * env overrides are missing (e.g. ad-hoc pest runs against the host app).
+     */
+    private function assertTestingUsesIsolatedDatabase(): void
+    {
+        $connection = (string) config('database.default');
+        $database = (string) config("database.connections.{$connection}.database");
+
+        $isSqliteMemory = $connection === 'sqlite' && in_array($database, [':memory:', ''], true);
+        $isSqliteFile = $connection === 'sqlite' && str_contains($database, 'testing');
+
+        if ($isSqliteMemory || $isSqliteFile) {
+            return;
+        }
+
+        throw new \RuntimeException(
+            "Refusing to run e-billing tests against non-isolated DB [{$connection}:{$database}]. ".
+            'Use packages/e-billing/phpunit.xml (sqlite :memory:) or set DB_CONNECTION=sqlite DB_DATABASE=:memory:.'
+        );
     }
 
     public function seedDocumentTypeAndUnitCodelists(): void
@@ -67,5 +92,21 @@ class TestCase extends AppTestCase
             $uploadedSources = include dirname(__DIR__).'/database/migrations/create_ebilling_uploaded_pdf_sources_table.php.stub';
             $uploadedSources->up();
         }
+    }
+
+    private function runActivityLogMigration(): void
+    {
+        if (Schema::hasTable('activity_log')) {
+            return;
+        }
+
+        $stub = dirname(__DIR__, 2).'/audit/database/migrations/create_activity_log_table.php.stub';
+
+        if (! is_file($stub)) {
+            return;
+        }
+
+        $migration = include $stub;
+        $migration->up();
     }
 }

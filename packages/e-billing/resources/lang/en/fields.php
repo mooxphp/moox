@@ -89,6 +89,8 @@ return [
     'status_human_confirmed' => 'Manually confirmed',
     'status_validated' => 'Validated',
 
+    'review_status' => 'Review status',
+
     // Gateway status
     'gateway_status' => 'Processing status',
     'gateway_status_generating' => 'Generating',
@@ -148,6 +150,7 @@ return [
 
     // Tabs
     'tab_all' => 'All',
+    'tab_document' => 'Document',
     'tab_gateway_failed' => 'Failed',
     'tab_processing' => 'Processing',
     'tab_needs_review' => 'Review needed',
@@ -182,7 +185,11 @@ return [
     'action_confirm_with_attention' => 'Confirm invoice (:count fields need attention)',
     'action_confirm_modal_heading' => 'Confirm invoice',
     'action_confirm_modal_description' => 'By confirming, you attest that all fields on this invoice are correct. This step cannot be undone.',
+    'action_confirm_modal_description_with_versions' => 'You confirm version :version as the valid document. :count older version(s) with the same number are kept but no longer marked as current.',
     'action_confirm_submit' => 'Yes, confirm',
+    'document_version' => 'Version',
+    'document_version_label' => 'v:version',
+    'document_version_current' => 'Current',
     'action_set_attribution' => 'Set attribution',
     'action_set_attribution_modal_heading' => 'Set customer attribution',
     'action_set_attribution_modal_description' => 'Choose the customer this document belongs to. If the invoice was already confirmed or validated, that attestation is cleared and must be repeated.',
@@ -196,6 +203,7 @@ return [
     // Notifications
     'notification_confirmed_title' => 'Invoice confirmed',
     'notification_confirmed_body' => 'The invoice was marked as manually reviewed.',
+    'notification_confirmed_body_with_versions' => 'Version :version is now current. :count previous current version(s) remain stored as older versions.',
     'notification_confirm_failed_title' => 'Confirmation not possible',
     'notification_confirm_failed_body' => 'The invoice is not in status "Automatically pre-reviewed".',
     'notification_attribution_updated_title' => 'Attribution updated',
@@ -254,5 +262,7 @@ return [
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
+    'hint_review_duplicate_invoice_number' => 'This document number already exists. Central review must check the duplicate '
+        .'— regardless of whether the content is identical.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];
