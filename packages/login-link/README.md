@@ -117,7 +117,7 @@ Seeded on install:
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
 - `login-link.mail_logo_url`: optional logo shown when no MailTemplate row is used.
-- `login-link.mail_template_key`: MailTemplate key from `moox/mail-outbox` (default `login-link`).
+- `login-link.mail_template_key`: optional MailTemplate key when `moox/mail-outbox` is installed in the host (default `login-link`).
 
 ## Security notes
 

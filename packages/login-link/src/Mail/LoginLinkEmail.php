@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\LoginLink\Mail;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
-use Moox\MailOutbox\Support\MailTemplateRenderer;
-use Spatie\Mjml\Mjml;
 
 /**
  * @deprecated Use ProcessLinkMail. Kept for backwards compatibility.
+ *
+ * Optional moox/mail-outbox + moox/mjml: when installed, prefers MailTemplate rendering
+ * and Spatie MJML→HTML. Without them, falls back to the package Blade view.
  */
 class LoginLinkEmail extends ProcessLinkMail
 {
@@ -47,25 +51,34 @@ class LoginLinkEmail extends ProcessLinkMail
             'headline' => __('login-link::translations.mail_title'),
         ];
 
-        $renderer = app(MailTemplateRenderer::class);
-        $templateKey = (string) config('login-link.mail_template_key', 'login-link');
-        $template = $renderer->find($templateKey);
+        $subject = __('login-link::translations.mail_subject');
+        $rendererClass = 'Moox\\MailOutbox\\Support\\MailTemplateRenderer';
+        $mjmlClass = 'Spatie\\Mjml\\Mjml';
 
-        if ($template !== null) {
-            $html = $renderer->toHtml($template, $data);
-        } else {
-            $mjml = view('login-link::mail.login-link', array_merge($data, [
-                'logoUrl' => $this->resolveLogoUrl(),
-                'brandName' => config('app.name'),
-                'mailContent' => null,
-                'footer' => null,
-            ]))->render();
+        if (class_exists($rendererClass)) {
+            $renderer = app($rendererClass);
+            $templateKey = (string) config('login-link.mail_template_key', 'login-link');
+            $template = $renderer->find($templateKey);
 
-            $html = Mjml::new()->toHtml($mjml);
+            if ($template !== null) {
+                return $this->subject($subject)->html($renderer->toHtml($template, $data));
+            }
         }
 
-        return $this->subject(__('login-link::translations.mail_subject'))
-            ->html($html);
+        $viewData = array_merge($data, [
+            'logoUrl' => $this->resolveLogoUrl(),
+            'brandName' => config('app.name'),
+            'mailContent' => null,
+            'footer' => null,
+        ]);
+
+        if (class_exists($mjmlClass)) {
+            $mjml = view('login-link::mail.login-link', $viewData)->render();
+
+            return $this->subject($subject)->html($mjmlClass::new()->toHtml($mjml));
+        }
+
+        return $this->subject($subject)->view('login-link::mail.login-link', $viewData);
     }
 
     private function resolveLogoUrl(): ?string

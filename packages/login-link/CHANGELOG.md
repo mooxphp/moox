@@ -4,6 +4,10 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- `moox/mail-outbox` and `moox/mjml` are no longer hard dependencies of `login-link`. `LoginLinkEmail` uses MailTemplate/Spatie when those packages are present in the host and falls back to the package Blade view otherwise.
+
 ### Added
 
 - Packaged English examples: `login` (passwordless panel sign-in), `verify-email` (mailbox confirmation), `mass-mail` (campaign confirmation, invalidate prior off). Each has its own mail template. Issue public examples with `php artisan login-link:example`.

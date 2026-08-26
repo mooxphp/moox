@@ -165,9 +165,10 @@ return [
     | Mail template
     |--------------------------------------------------------------------------
     |
-    | Key of the moox/mail-outbox MailTemplate used for login-link emails.
-    | The template supplies the Blade view, logo, footer, and optional MJML
-    | content. When no matching row exists, the package MJML view is used.
+    | Key of an optional moox/mail-outbox MailTemplate used when that package
+    | is installed. Supplies Blade view, logo, footer, and optional MJML
+    | content. When outbox/mjml are missing or no row matches, package views
+    | are used instead.
     |
     */
 
