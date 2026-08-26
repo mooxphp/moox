@@ -22,6 +22,7 @@ class MailTemplate extends Model
         'locale',
         'view',
         'brand_name',
+        'subject',
         'logo_path',
         'mail_content',
         'footer',

@@ -5,20 +5,25 @@ declare(strict_types=1);
 namespace Moox\MailOutbox\Resources;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\MailOutbox\Actions\SendMailTemplate;
 use Moox\MailOutbox\Models\MailTemplate;
 use Moox\MailOutbox\Resources\MailTemplateResource\Pages\CreateMailTemplate;
 use Moox\MailOutbox\Resources\MailTemplateResource\Pages\EditMailTemplate;
 use Moox\MailOutbox\Resources\MailTemplateResource\Pages\ListMailTemplates;
+use Moox\MailOutbox\Support\MailSendConfig;
 use Override;
 
 class MailTemplateResource extends BaseRecordResource
@@ -80,6 +85,10 @@ class MailTemplateResource extends BaseRecordResource
                                     ->required(),
                                 TextInput::make('brand_name')
                                     ->label(__('mail-outbox::translations.brand_name'))
+                                    ->maxLength(255),
+                                TextInput::make('subject')
+                                    ->label(__('mail-outbox::translations.subject'))
+                                    ->required()
                                     ->maxLength(255),
                                 FileUpload::make('logo_path')
                                     ->label(__('mail-outbox::translations.logo'))
@@ -152,6 +161,80 @@ class MailTemplateResource extends BaseRecordResource
                         ]);
                     })
                     ->openUrlInNewTab(),
+                Action::make('send')
+                    ->label(__('mail-outbox::translations.send'))
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color(fn (): string => MailSendConfig::recipients() === [] ? 'gray' : 'primary')
+                    ->modalHeading(__('mail-outbox::translations.send_heading'))
+                    ->modalDescription(fn (): string => __('mail-outbox::translations.send_description', [
+                        'mailer' => (string) config('mail.default'),
+                        'from' => (string) config('mail.from.address'),
+                    ]))
+                    ->modalSubmitActionLabel(__('mail-outbox::translations.send_submit'))
+                    ->disabled(fn (): bool => MailSendConfig::recipients() === [])
+                    ->tooltip(fn (): ?string => MailSendConfig::recipients() === []
+                        ? __('mail-outbox::translations.send_no_recipients')
+                        : null)
+                    ->fillForm(fn (MailTemplate $record): array => [
+                        'locale' => (string) $record->locale,
+                        'subject' => filled($record->subject)
+                            ? (string) $record->subject
+                            : (string) ($record->brand_name ?: $record->key),
+                    ])
+                    ->schema([
+                        Select::make('locale')
+                            ->label(__('mail-outbox::translations.send_locale'))
+                            ->options(fn (): array => MailSendConfig::localeOptions())
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, mixed $state, MailTemplate $record): void {
+                                $locale = strtolower(trim((string) $state));
+
+                                if ($locale === '') {
+                                    return;
+                                }
+
+                                $sibling = MailTemplate::query()
+                                    ->where('key', $record->key)
+                                    ->where('locale', $locale)
+                                    ->first();
+
+                                if ($sibling === null || ! filled($sibling->subject)) {
+                                    return;
+                                }
+
+                                $set('subject', (string) $sibling->subject);
+                            }),
+                        CheckboxList::make('emails')
+                            ->label(__('mail-outbox::translations.send_recipients'))
+                            ->helperText(__('mail-outbox::translations.send_recipients_help'))
+                            ->options(fn (): array => MailSendConfig::recipientOptions())
+                            ->required()
+                            ->minItems(1),
+                        TextInput::make('subject')
+                            ->label(__('mail-outbox::translations.subject'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->action(function (MailTemplate $record, array $data): void {
+                        $emails = $data['emails'] ?? [];
+                        $subject = trim((string) ($data['subject'] ?? ''));
+                        $locale = isset($data['locale']) ? (string) $data['locale'] : null;
+
+                        if (! is_array($emails) || $emails === [] || $subject === '') {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('mail-outbox::translations.send_nothing_selected'))
+                                ->send();
+
+                            return;
+                        }
+
+                        /** @var list<string> $emails */
+                        $result = app(SendMailTemplate::class)->handle($record, $emails, $subject, $locale);
+
+                        static::notifySendResult($result);
+                    }),
                 ...static::getTableActions(),
             ])
             ->toolbarActions([
@@ -197,5 +280,47 @@ class MailTemplateResource extends BaseRecordResource
     public static function getNavigationGroup(): ?string
     {
         return config('mail-outbox.navigation_group');
+    }
+
+    /**
+     * @param  array{sent: list<string>, failed: array<string, string>}  $result
+     */
+    private static function notifySendResult(array $result): void
+    {
+        $sentCount = count($result['sent']);
+        $failedCount = count($result['failed']);
+        $failedAddresses = implode(', ', array_keys($result['failed']));
+
+        if ($sentCount > 0 && $failedCount === 0) {
+            Notification::make()
+                ->success()
+                ->title(__('mail-outbox::translations.send_success_title'))
+                ->body(__('mail-outbox::translations.send_success_body', ['count' => $sentCount]))
+                ->send();
+
+            return;
+        }
+
+        if ($sentCount > 0) {
+            Notification::make()
+                ->warning()
+                ->title(__('mail-outbox::translations.send_partial_title'))
+                ->body(__('mail-outbox::translations.send_partial_body', [
+                    'sent' => $sentCount,
+                    'failed' => $failedCount,
+                    'addresses' => $failedAddresses,
+                ]))
+                ->send();
+
+            return;
+        }
+
+        Notification::make()
+            ->danger()
+            ->title(__('mail-outbox::translations.send_failed_title'))
+            ->body($failedAddresses === ''
+                ? __('mail-outbox::translations.send_nothing_selected')
+                : __('mail-outbox::translations.send_failed_body', ['addresses' => $failedAddresses]))
+            ->send();
     }
 }

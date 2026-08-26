@@ -21,6 +21,7 @@ class MailTemplateFactory extends Factory
             'locale' => 'de',
             'view' => 'login-link::mail.login-link',
             'brand_name' => 'Acme',
+            'subject' => 'Login-Link',
             'logo_path' => null,
             'mail_content' => '<mj-text>bitte klicken Sie auf den folgenden Button, um sich anzumelden.</mj-text>',
             'footer' => '<mj-text font-size="12px" color="#777777">© Acme</mj-text>',
@@ -31,6 +32,7 @@ class MailTemplateFactory extends Factory
     {
         return $this->state(fn (): array => [
             'key' => 'invoice',
+            'subject' => 'Ihre Rechnung',
             'mail_content' => null,
             'footer' => null,
         ]);

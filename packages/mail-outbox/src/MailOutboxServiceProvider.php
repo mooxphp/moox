@@ -15,7 +15,10 @@ class MailOutboxServiceProvider extends MooxServiceProvider
             ->name('mail-outbox')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations(['create_mail_templates_table'])
+            ->hasMigrations([
+                'create_mail_templates_table',
+                'add_subject_to_mail_templates_table',
+            ])
             ->runsMigrations();
 
         $this->getMooxPackage()
