@@ -91,6 +91,60 @@ test('invoice and document creates are written to the activity log', function ()
         ]);
 });
 
+test('automatic and review review_status outcomes are written to the activity log', function (): void {
+    $invoiceClass = InvoiceModels::invoice();
+    $invoice = $invoiceClass::factory()->create([
+        'invoice_number' => 'AUDIT-1002',
+    ]);
+
+    $document = EbillingDocument::query()->create([
+        'invoice_id' => $invoice->getKey(),
+        'format' => 'zugferd',
+        'gateway_status' => 'validated',
+        'review_status' => 'parser_created',
+        'scope' => 'default',
+    ]);
+
+    $document->update([
+        'review_status' => 'db_validated',
+    ]);
+
+    expect(Activity::query()
+        ->where('subject_type', $document->getMorphClass())
+        ->where('subject_id', $document->getKey())
+        ->where('event', 'updated')
+        ->count())->toBe(1)
+        ->and(Activity::query()
+            ->where('subject_type', $document->getMorphClass())
+            ->where('subject_id', $document->getKey())
+            ->where('event', 'updated')
+            ->value('attribute_changes'))
+        ->toMatchArray([
+            'attributes' => ['review_status' => 'db_validated'],
+            'old' => ['review_status' => 'parser_created'],
+        ]);
+
+    $document->update([
+        'review_status' => 'validated',
+    ]);
+
+    expect(Activity::query()
+        ->where('subject_type', $document->getMorphClass())
+        ->where('subject_id', $document->getKey())
+        ->where('event', 'updated')
+        ->count())->toBe(2)
+        ->and(Activity::query()
+            ->where('subject_type', $document->getMorphClass())
+            ->where('subject_id', $document->getKey())
+            ->where('event', 'updated')
+            ->latest('id')
+            ->value('attribute_changes'))
+        ->toMatchArray([
+            'attributes' => ['review_status' => 'validated'],
+            'old' => ['review_status' => 'db_validated'],
+        ]);
+});
+
 test('invoice resource exposes the audit activities relation manager', function (): void {
     expect(InvoiceResource::getRelations())
         ->toContain(ActivitiesRelationManager::class);

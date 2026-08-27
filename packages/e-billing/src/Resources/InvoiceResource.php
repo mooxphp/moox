@@ -670,7 +670,7 @@ class InvoiceResource extends BaseItemResource
                     ->storeFileNamesIn('pdf_original_filename')
                     ->required(),
             ])
-            ->action(function (array $data) use ($disk, $scope, $requiresLetterhead): void {
+            ->action(function (array $data, $livewire) use ($disk, $scope, $requiresLetterhead): void {
                 $path = $data['pdf'] ?? null;
 
                 if (! is_string($path) || $path === '') {
@@ -690,6 +690,18 @@ class InvoiceResource extends BaseItemResource
                     ->body(__('e-billing::fields.notification_manual_upload_success_body'))
                     ->success()
                     ->send();
+
+                if (is_object($livewire) && method_exists($livewire, 'checkIdenticalDuplicateToast')) {
+                    $livewire->js(<<<'JS'
+                        let n = 0;
+                        const timer = setInterval(() => {
+                            $wire.checkIdenticalDuplicateToast();
+                            if (++n >= 10) {
+                                clearInterval(timer);
+                            }
+                        }, 2000);
+                    JS);
+                }
             });
     }
 

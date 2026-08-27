@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('ebilling_documents') || Schema::hasColumn('ebilling_documents', 'source_content_hash')) {
+            return;
+        }
+
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->string('source_content_hash')->nullable()->index()->after('artifact_content_hash');
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('ebilling_documents') || ! Schema::hasColumn('ebilling_documents', 'source_content_hash')) {
+            return;
+        }
+
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->dropColumn('source_content_hash');
+        });
+    }
+};

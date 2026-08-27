@@ -10,6 +10,7 @@ use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Jobs\StoreBillDataJob;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Models\UploadedPdfSource;
+use Moox\EBilling\Support\IdenticalDuplicateNotifier;
 use Moox\EBilling\Support\StoredRelativePath;
 
 final class CreateManualUploadDocumentAction
@@ -52,6 +53,8 @@ final class CreateManualUploadDocumentAction
             'gateway_status' => null,
             'review_status' => InvoiceProcessingStatus::ParserCreated,
         ]);
+
+        app(IdenticalDuplicateNotifier::class)->rememberCurrentUser($document);
 
         StoreBillDataJob::dispatch($document->getKey());
 

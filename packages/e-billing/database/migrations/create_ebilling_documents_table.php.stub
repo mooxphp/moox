@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('copy_pdf_storage_path')->nullable();
             $table->string('format')->default('zugferd');
             $table->string('artifact_content_hash')->nullable();
+            $table->string('source_content_hash')->nullable()->index();
             $table->json('ignored_reason')->nullable();
             $table->string('gateway_status')->nullable()->index();
             $table->string('review_status')->default('parser_created')->index();

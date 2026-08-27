@@ -100,6 +100,7 @@ return [
     'gateway_status_validation_failed' => 'Validation failed',
     'gateway_status_validator_error' => 'Validator error',
     'gateway_status_ignored_foreign' => 'Ignored (foreign)',
+    'gateway_status_ignored_identical_duplicate' => 'Ignored (identical file)',
 
     // Validation badges
     'validation_badge_validated' => 'Confirmed',
@@ -219,6 +220,8 @@ return [
     'manual_upload_pdf_helper' => 'PDF only, max. :max_mb MB. Processing starts after upload.',
     'notification_manual_upload_success_title' => 'PDF received',
     'notification_manual_upload_success_body' => 'Processing continues in the background.',
+    'notification_identical_duplicate_title' => 'Identical file detected',
+    'notification_identical_duplicate_body' => 'An identical file for document :number already exists. No new version was created.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD PDF',
@@ -262,7 +265,6 @@ return [
     'hint_review_freight_flat_rate' => 'Freight flat rate should be reviewed manually.',
     'hint_review_delivery_date' => 'Several delivery dates cannot satisfy the intra-community '
         .'actual delivery date rule without aggregating them into a period.',
-    'hint_review_duplicate_invoice_number' => 'This document number already exists. Central review must check the duplicate '
-        .'— regardless of whether the content is identical.',
+    'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];

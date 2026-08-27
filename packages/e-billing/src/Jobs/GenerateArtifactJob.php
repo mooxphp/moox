@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LogicException;
+use Moox\EBilling\Actions\DiscardIdenticalContentDuplicateAction;
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
@@ -26,8 +27,11 @@ use Moox\EBilling\Services\CopyPdfComposer;
 use Moox\EBilling\Services\InboxMessagePipelineFinalizer;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 use Moox\EBilling\Services\ParsedInvoiceMapper;
+use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\EBillingArtifactNaming;
 use Moox\EBilling\Support\EBillingFormatResolver;
+use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
+use Moox\EBilling\Support\SourceContentHasher;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Throwable;
@@ -62,6 +66,10 @@ class GenerateArtifactJob implements ShouldQueue
         SourcePdfPreparerInterface $sourcePdfPreparer,
         PdfaNormalizerInterface $pdfaNormalizer,
         CopyPdfComposer $copyPdfComposer,
+        SourceContentHasher $sourceContentHasher,
+        InvoiceNumberDuplicateChecker $duplicateChecker,
+        DocumentTypeCodeResolver $documentTypeCodeResolver,
+        DiscardIdenticalContentDuplicateAction $discardIdenticalContentDuplicate,
     ): void {
         $this->setProgress(0);
 
@@ -118,7 +126,35 @@ class GenerateArtifactJob implements ShouldQueue
 
         $this->setProgress(25);
 
+        $sourceHash = $sourceContentHasher->ensureOnDocument($document->fresh() ?? $document);
         $dto = InvoiceDto::fromArray($billData);
+
+        $documentType = null;
+        try {
+            $documentType = $documentTypeCodeResolver->resolveFromCodeOrLabel(
+                $dto->documentTypeCode,
+                $dto->documentType,
+            );
+        } catch (Throwable) {
+            $documentType = null;
+        }
+
+        if (is_string($sourceHash) && $sourceHash !== '' && is_string($documentType) && $documentType !== '') {
+            $identical = $duplicateChecker->findIdenticalContentDuplicate(
+                invoiceNumber: (string) $dto->invoiceNumber,
+                documentType: $documentType,
+                sourceContentHash: $sourceHash,
+                exceptDocumentId: (string) $document->getKey(),
+            );
+
+            if ($identical !== null) {
+                $discardIdenticalContentDuplicate->execute($document->fresh() ?? $document, $identical);
+                $this->setProgress(100);
+
+                return;
+            }
+        }
+
         $invoice = $parsedInvoiceMapper->createFromDto($dto, $document);
 
         $this->setProgress(40);
