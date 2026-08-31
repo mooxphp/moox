@@ -6,6 +6,10 @@ namespace Moox\MailOutbox\Support;
 
 final class MailOutboxConfig
 {
+    public const DEFAULT_MAILER = 'smtp';
+
+    public const DEFAULT_CORRELATION_HEADER = 'X-Moox-Mail-Correlation-Id';
+
     public function maxMessageBytes(): int
     {
         return max(1, (int) config('mail-outbox.max_message_bytes', 10 * 1024 * 1024));
@@ -33,9 +37,21 @@ final class MailOutboxConfig
 
     public function correlationHeader(): string
     {
-        $header = (string) config('mail-outbox.correlation_header', 'X-Moox-Mail-Correlation-Id');
+        $header = (string) config('mail-outbox.correlation_header', self::DEFAULT_CORRELATION_HEADER);
 
-        return $header !== '' ? $header : 'X-Moox-Mail-Correlation-Id';
+        return $header !== '' ? $header : self::DEFAULT_CORRELATION_HEADER;
+    }
+
+    public function shouldRecordForeignMail(): bool
+    {
+        return (bool) config('mail-outbox.record_foreign_mail', true);
+    }
+
+    public function defaultMailer(): string
+    {
+        $mailer = (string) config('mail.default', self::DEFAULT_MAILER);
+
+        return $mailer !== '' ? $mailer : self::DEFAULT_MAILER;
     }
 
     public function shouldReadBackProviderId(string $mailer): bool
