@@ -4,17 +4,28 @@ declare(strict_types=1);
 
 namespace Moox\MailOutbox;
 
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Moox\Core\MooxServiceProvider;
 use Moox\MailOutbox\Contracts\ProviderMessageIdReader;
+use Moox\MailOutbox\Listeners\ApplyTestModeListener;
 use Moox\MailOutbox\Listeners\RecordSentMailListener;
 use Moox\MailOutbox\Support\CorrelationIdGenerator;
 use Moox\MailOutbox\Support\MailableInspector;
+use Moox\MailOutbox\Support\MailableRecipientFilter;
 use Moox\MailOutbox\Support\MailFailureClassifier;
 use Moox\MailOutbox\Support\MailOutboxConfig;
 use Moox\MailOutbox\Support\MessageSizeGuard;
+use Moox\MailOutbox\Support\OutboundMessagePreparer;
+use Moox\MailOutbox\Support\ResendMailService;
 use Moox\MailOutbox\Support\SymfonySentMessageProviderIdReader;
+use Moox\MailOutbox\Support\TestModeMessageTransformer;
+use Moox\MailOutbox\Support\TestModeRecipientMatcher;
+use Moox\MailOutbox\Support\TestModeRecipientPlanner;
+use Moox\MailOutbox\Support\TestModeSendCoordinator;
+use Moox\MailOutbox\Support\TestModeSubjectPrefixer;
 use Spatie\LaravelPackageTools\Package;
 
 class MailOutboxServiceProvider extends MooxServiceProvider
@@ -24,6 +35,8 @@ class MailOutboxServiceProvider extends MooxServiceProvider
         $package
             ->name('mail-outbox')
             ->hasConfigFile()
+            ->hasTranslations()
+            ->hasViews()
             ->hasMigrations([
                 'create_mail_send_logs_table',
             ]);
@@ -40,7 +53,18 @@ class MailOutboxServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
+        Event::listen(MessageSending::class, ApplyTestModeListener::class);
         Event::listen(MessageSent::class, RecordSentMailListener::class);
+
+        $config = $this->app->make(MailOutboxConfig::class);
+
+        if (
+            $config->isTestModeEnabled()
+            && $config->shouldWarnTestModeInProduction()
+            && $this->app->environment('production')
+        ) {
+            Log::warning('Moox Mail Outbox test mode is enabled in production. Non-allowlisted recipients are redirected and logged as suppressed — not delivered.');
+        }
     }
 
     public function register(): void
@@ -53,5 +77,13 @@ class MailOutboxServiceProvider extends MooxServiceProvider
         $this->app->singleton(MailableInspector::class);
         $this->app->singleton(CorrelationIdGenerator::class);
         $this->app->singleton(ProviderMessageIdReader::class, SymfonySentMessageProviderIdReader::class);
+        $this->app->singleton(ResendMailService::class);
+        $this->app->singleton(TestModeRecipientMatcher::class);
+        $this->app->singleton(TestModeRecipientPlanner::class);
+        $this->app->singleton(TestModeSubjectPrefixer::class);
+        $this->app->singleton(MailableRecipientFilter::class);
+        $this->app->singleton(OutboundMessagePreparer::class);
+        $this->app->singleton(TestModeMessageTransformer::class);
+        $this->app->singleton(TestModeSendCoordinator::class);
     }
 }

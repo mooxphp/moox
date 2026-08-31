@@ -65,4 +65,57 @@ final class MailOutboxConfig
 
         return (bool) config('mail-outbox.read_back_provider_id', false);
     }
+
+    public function isTestModeEnabled(): bool
+    {
+        return (bool) config('mail-outbox.test_mode.enabled', false);
+    }
+
+    public function testModeRedirectTo(): string
+    {
+        return (string) config('mail-outbox.test_mode.redirect_to', '');
+    }
+
+    public function testModeRedirectName(): ?string
+    {
+        /** @var mixed $name */
+        $name = config('mail-outbox.test_mode.redirect_name');
+
+        if (! is_string($name) || $name === '') {
+            return null;
+        }
+
+        return $name;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function testModeAllowlistPatterns(): array
+    {
+        /** @var mixed $patterns */
+        $patterns = config('mail-outbox.test_mode.allowlist', []);
+
+        if (! is_array($patterns)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $patterns,
+            static fn (mixed $pattern): bool => is_string($pattern) && $pattern !== '',
+        ));
+    }
+
+    public function testModeSubjectPrefix(): string
+    {
+        $prefix = (string) config('mail-outbox.test_mode.subject_prefix', '[TEST to %s] ');
+
+        return $prefix !== '' ? $prefix : '[TEST to %s] ';
+    }
+
+    public function shouldWarnTestModeInProduction(): bool
+    {
+        return (bool) config('mail-outbox.test_mode.warn_in_production', true);
+    }
+
 }

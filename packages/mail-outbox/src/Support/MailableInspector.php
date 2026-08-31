@@ -68,14 +68,79 @@ final class MailableInspector
         }
 
         $recipients = $this->recipientsFromSent($symfonySent);
+        $intendedRecipients = $this->intendedRecipientsFromSent($symfonySent) ?? ($recipients !== [] ? $recipients : null);
+        $wasSuppressed = $this->wasSuppressedFromSent($symfonySent);
+        $originalSubject = $this->originalSubjectFromSent($symfonySent);
+        $wireSubject = $this->subjectFromSent($symfonySent);
 
         return new RecordedSentMailSnapshot(
             mailer: $this->resolveMailer($data, $config),
             recipients: $recipients !== [] ? $recipients : null,
-            subject: $this->subjectFromSent($symfonySent),
+            subject: $originalSubject ?? $wireSubject,
             messageId: $this->messageIdFromSent($symfonySent),
             correlationId: $this->correlationIdFromSent($symfonySent, $config->correlationHeader()),
+            rawMessage: $this->rawMessageFromSent($symfonySent),
+            intendedRecipients: $intendedRecipients,
+            wasSuppressed: $wasSuppressed,
         );
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function intendedRecipientsFromSent(SentMessage $sentMessage): ?array
+    {
+        $raw = $this->headerFromSent($sentMessage, TestModeMessageTransformer::INTENDED_RECIPIENTS_HEADER);
+
+        if ($raw === null) {
+            return null;
+        }
+
+        /** @var mixed $decoded */
+        $decoded = json_decode($raw, true);
+
+        if (! is_array($decoded)) {
+            return null;
+        }
+
+        $recipients = [];
+
+        foreach ($decoded as $entry) {
+            if (is_string($entry) && $entry !== '') {
+                $recipients[] = strtolower($entry);
+            }
+        }
+
+        return $recipients !== [] ? array_values(array_unique($recipients)) : null;
+    }
+
+    public function wasSuppressedFromSent(SentMessage $sentMessage): bool
+    {
+        $value = $this->headerFromSent($sentMessage, TestModeMessageTransformer::SUPPRESSED_HEADER);
+
+        return $value === '1';
+    }
+
+    public function originalSubjectFromSent(SentMessage $sentMessage): ?string
+    {
+        return $this->headerFromSent($sentMessage, TestModeMessageTransformer::ORIGINAL_SUBJECT_HEADER);
+    }
+
+    public function rawMessageFromSent(SentMessage $sentMessage): ?string
+    {
+        foreach ([$sentMessage->getOriginalMessage(), $sentMessage->getMessage()] as $candidate) {
+            if (! $candidate instanceof Message) {
+                continue;
+            }
+
+            $raw = $candidate->toString();
+
+            if ($raw !== '') {
+                return $raw;
+            }
+        }
+
+        return null;
     }
 
     public function messageIdFromSent(SentMessage $sentMessage): ?string

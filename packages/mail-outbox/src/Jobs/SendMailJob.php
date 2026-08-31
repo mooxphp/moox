@@ -24,6 +24,8 @@ use Moox\MailOutbox\Support\MailableInspector;
 use Moox\MailOutbox\Support\MailFailureClassifier;
 use Moox\MailOutbox\Support\MailOutboxConfig;
 use Moox\MailOutbox\Support\MessageSizeGuard;
+use Moox\MailOutbox\Support\OutboundMessagePreparer;
+use Moox\MailOutbox\Support\TestModeSendCoordinator;
 use Symfony\Component\Mailer\SentMessage as SymfonySentMessage;
 use Throwable;
 
@@ -66,6 +68,8 @@ class SendMailJob implements ShouldQueue
         CorrelationIdGenerator $correlationIds,
         ProviderMessageIdReader $providerMessageIdReader,
         MailOutboxConfig $config,
+        OutboundMessagePreparer $messagePreparer,
+        TestModeSendCoordinator $testModeCoordinator,
     ): void {
         $this->setProgress(0);
 
@@ -93,10 +97,24 @@ class SendMailJob implements ShouldQueue
         $correlationHeader = $config->correlationHeader();
         $correlationId = $log->correlation_id ?? $correlationIds->mint();
 
-        $this->prepareOutboundMessageOnce($correlationHeader, $correlationId);
-
         try {
-            $sent = Mail::mailer($this->mailer)->send($this->mailable);
+            if ($config->isTestModeEnabled()) {
+                $result = $testModeCoordinator->send(
+                    $this->mailable,
+                    $this->mailer,
+                    $config,
+                    $correlationHeader,
+                    $correlationId,
+                );
+                $sent = $result->sent;
+                $status = $result->status;
+                $actualRecipients = $result->actualRecipients;
+            } else {
+                $this->prepareOutboundMessageOnce($messagePreparer, $correlationHeader, $correlationId);
+                $sent = Mail::mailer($this->mailer)->send($this->mailable);
+                $status = MailSendStatus::Sent;
+                $actualRecipients = [];
+            }
         } catch (Throwable $e) {
             $this->handleSendFailure($log, $attempt, $e, $classifier);
 
@@ -108,7 +126,6 @@ class SendMailJob implements ShouldQueue
         $symfonySent = $this->symfonySentMessage($sent);
 
         $providerReference = null;
-        $actualRecipients = [];
         $messageId = null;
 
         if ($symfonySent instanceof SymfonySentMessage) {
@@ -120,7 +137,10 @@ class SendMailJob implements ShouldQueue
                 }
             }
 
-            $actualRecipients = $inspector->recipientsFromSent($symfonySent);
+            if ($actualRecipients === []) {
+                $actualRecipients = $inspector->recipientsFromSent($symfonySent);
+            }
+
             $messageId = $inspector->messageIdFromSent($symfonySent);
         }
 
@@ -129,7 +149,7 @@ class SendMailJob implements ShouldQueue
         }
 
         $log->forceFill([
-            'status' => MailSendStatus::Sent,
+            'status' => $status,
             'attempt_count' => $attempt,
             'error' => null,
             'actual_recipients' => $actualRecipients,
@@ -137,6 +157,9 @@ class SendMailJob implements ShouldQueue
             'provider_reference' => $providerReference,
             'correlation_id' => $correlationId,
             'subject' => $inspector->subject($this->mailable) ?? $log->subject,
+            'raw_message' => $symfonySent instanceof SymfonySentMessage
+                ? $inspector->rawMessageFromSent($symfonySent)
+                : $log->raw_message,
         ])->save();
 
         $this->setProgress(100);
@@ -150,7 +173,7 @@ class SendMailJob implements ShouldQueue
 
         $log = MailSendLog::query()->find($this->mailSendLogId);
 
-        if ($log === null || $log->status === MailSendStatus::Sent) {
+        if ($log === null || in_array($log->status, [MailSendStatus::Sent, MailSendStatus::Suppressed], true)) {
             return;
         }
 
@@ -179,6 +202,8 @@ class SendMailJob implements ShouldQueue
             'message_id' => null,
             'provider_reference' => null,
             'correlation_id' => $correlationIds->mint(),
+            'raw_message' => null,
+            'resend_payload' => $this->serializeResendPayload($this->mailable),
             'related_type' => $this->related?->getMorphClass(),
             'related_id' => $this->related?->getKey(),
         ]);
@@ -243,28 +268,16 @@ class SendMailJob implements ShouldQueue
         ])->save();
     }
 
-    private function prepareOutboundMessageOnce(string $header, string $correlationId): void
-    {
+    private function prepareOutboundMessageOnce(
+        OutboundMessagePreparer $preparer,
+        string $header,
+        string $correlationId,
+    ): void {
         if ($this->outboundMessagePrepared) {
             return;
         }
 
-        $this->mailable->withSymfonyMessage(function ($message) use ($header, $correlationId): void {
-            $headers = $message->getHeaders();
-
-            if ($headers->has($header)) {
-                $headers->remove($header);
-            }
-
-            $headers->addTextHeader($header, $correlationId);
-
-            // Ensure the on-wire RFC 5322 Message-ID exists before transport (Symfony's
-            // own generator). Never invent a package-local id after a failed read-back.
-            if (! $headers->has('Message-ID') && method_exists($message, 'generateMessageId')) {
-                $headers->addIdHeader('Message-ID', $message->generateMessageId());
-            }
-        });
-
+        $preparer->prepare($this->mailable, $header, $correlationId);
         $this->outboundMessagePrepared = true;
     }
 
@@ -279,5 +292,10 @@ class SendMailJob implements ShouldQueue
         }
 
         return null;
+    }
+
+    private function serializeResendPayload(Mailable $mailable): string
+    {
+        return encrypt(serialize($mailable));
     }
 }

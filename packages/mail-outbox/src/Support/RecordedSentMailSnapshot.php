@@ -15,7 +15,8 @@ use Moox\MailOutbox\Enums\MailSendStatus;
 final readonly class RecordedSentMailSnapshot
 {
     /**
-     * @param  list<string>|null  $recipients
+     * @param  list<string>|null  $recipients  Actual on-wire recipients.
+     * @param  list<string>|null  $intendedRecipients  Pre-test-mode intended recipients.
      */
     public function __construct(
         public string $mailer,
@@ -23,6 +24,9 @@ final readonly class RecordedSentMailSnapshot
         public ?string $subject,
         public ?string $messageId,
         public ?string $correlationId,
+        public ?string $rawMessage = null,
+        public ?array $intendedRecipients = null,
+        public bool $wasSuppressed = false,
     ) {
     }
 
@@ -46,15 +50,16 @@ final readonly class RecordedSentMailSnapshot
         return [
             'mailer' => $this->mailer,
             'source' => MailSendSource::Recorded,
-            'intended_recipients' => $this->recipients,
+            'intended_recipients' => $this->intendedRecipients ?? $this->recipients,
             'actual_recipients' => $this->recipients,
             'subject' => $this->subject,
-            'status' => MailSendStatus::Sent,
+            'status' => $this->wasSuppressed ? MailSendStatus::Suppressed : MailSendStatus::Sent,
             'attempt_count' => 1,
             'error' => null,
             'message_id' => $this->messageId,
             'provider_reference' => null,
             'correlation_id' => $this->correlationId,
+            'raw_message' => $this->rawMessage,
         ];
     }
 }

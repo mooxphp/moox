@@ -6,12 +6,14 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Added
 
+- Safe test mode — global `MessageSending` interception plus `SendMailJob` mixed-allowlist splitting; Laravel `alwaysTo` on redirect legs; wildcard allowlist; subject prefix; both recipient sets on the log; `suppressed` status; production boot warning; `MailSendLog::deliveredToIntendedRecipients()` contract
 - `RecordSentMailListener` on `MessageSent` — dispatches `RecordSentMailJob` only (no DB work in the listener)
 - `RecordSentMailJob` — records foreign Laravel mail sends from a queue-safe `RecordedSentMailSnapshot` built at dispatch; deduplication by correlation id (unique) or message id (indexed); disable via `record_foreign_mail` / `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`
 - `MailSendSource` enum (`outbox`, `recorded`) on `mail_send_logs.source`
 - `SendMailJob` — queued send of a Mailable through a named Laravel mailer with `JobProgress` and `failed()` hook
 - `MailSendLog` model and `create_mail_send_logs_table` migration (mailer, recipients, subject, status, attempts, error, message id, provider reference, correlation id, polymorphic related)
 - Statuses: `queued`, `sent`, `failed`, `suppressed` (`sent` = provider accepted + logged; `suppressed` reserved for test mode)
+- Statuses: `queued`, `sent`, `failed`, `suppressed` (`sent` = provider accepted + logged; `suppressed` = test mode redirected at least one intended recipient)
 - Size guard (`MessageSizeGuard` / `MessageTooLargeException`) before transport, including path and `attachData` attachments
 - Transient vs permanent failure classification (`MailFailureClassifier`) with configurable retry tries/backoff and provider retry-after honouring (delays clamped to ≥ 1s)
 - Correlation: self-assigned header + optional per-mailer provider id read-back (`ProviderMessageIdReader`; default never confuses Message-ID with provider reference)
