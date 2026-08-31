@@ -237,4 +237,3 @@ test('failed() marks a non-sent log row as failed', function (): void {
     expect($log->fresh()->status)->toBe(MailSendStatus::Failed)
         ->and($log->fresh()->error)->toBe('queue gave up');
 });
-
