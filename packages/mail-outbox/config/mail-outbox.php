@@ -204,4 +204,3 @@ return [
     'navigation_group' => 'trans//mail-outbox::mail-outbox.navigation_group',
 
 ];
-
