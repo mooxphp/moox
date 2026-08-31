@@ -43,6 +43,11 @@ class FrontendAuthMiddleware
             return $next($request);
         }
 
+        // Public signed-link consume (invites, verify, ack) must work for guests.
+        if (is_string($routeName) && str_starts_with($routeName, 'login-link.public.')) {
+            return $next($request);
+        }
+
         $this->configureAuthFromConfig();
 
         // Use Filament's auth check so we align with its panel access rules.

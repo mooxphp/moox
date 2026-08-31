@@ -32,6 +32,14 @@ return [
     'login_invalid_link_title' => 'Ungültiger oder abgelaufener Login-Link.',
     'login_throttled_title' => 'Zu viele Anfragen. Bitte versuche es in einer Minute erneut.',
 
+    'public_used_title' => 'Dieser Link wurde bereits verwendet',
+    'public_used_body' => 'Der Link kann nur einmal geöffnet werden. Wenn Sie Hilfe brauchen, wenden Sie sich bitte an den zuständigen Support.',
+    'public_expired_title' => 'Dieser Link ist abgelaufen',
+    'public_expired_body' => 'Bitte fordern Sie einen neuen Link an oder wenden Sie sich an den zuständigen Support.',
+    'public_invalid_title' => 'Dieser Link ist ungültig',
+    'public_invalid_body' => 'Der Link ist ungültig oder wurde nicht gefunden. Wenden Sie sich bitte an den zuständigen Support.',
+    'public_support_heading' => 'Zuständiger Support',
+
     'mail_subject' => 'Dein Login-Link',
     'mail_title' => 'Login-Link',
     'mail_greeting' => 'Hi',

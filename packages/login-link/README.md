@@ -24,7 +24,7 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 - Generates **temporary signed** links (expires + signature).
 - Enforces **single-use** (and optional invalidate-prior per process).
 - **Auth context**: panel-bound login consume route + guard authentication.
-- **Public context**: panel-free consume route (`signed-link/{loginLink}` by default).
+- **Public context**: panel-free consume route (`signed-link/{loginLink}` by default). Used, expired, or invalid public links render an unavailable page (optional support contact from `login-link.public_support`).
 - Sends email via the queue (`Mail::queue()`).
 - Adds a “Send login link” action on Filament’s login form (auth process).
 
@@ -117,7 +117,8 @@ Seeded on install:
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
 - `login-link.mail_logo_url`: optional logo shown when no MailTemplate row is used.
-- `login-link.mail_template_key`: optional MailTemplate key when `moox/mail-outbox` is installed in the host (default `login-link`).
+- `login-link.mail_template_key`: optional MailTemplate key for the **login** process when `moox/mail-outbox` is installed (default `login-link`). Other processes match a MailTemplate by their own `template_key` / slug only.
+- `login-link.templates`: process `template_key` → Blade view. Hosts remap these to branded views; the engine has no theme knowledge. MJML is compiled when Spatie is present.
 
 ## Security notes
 

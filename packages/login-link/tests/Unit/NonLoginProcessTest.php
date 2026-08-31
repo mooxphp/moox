@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Events\ProcessLinkAcknowledged;
 use Moox\LoginLink\Handlers\AckRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
@@ -161,4 +162,82 @@ it('resolves the handler via the process definition handler_key when slug differ
         ->and(Auth::guard('web')->check())->toBeFalse();
 
     Event::assertDispatched(ProcessLinkAcknowledged::class);
+});
+
+it('renders the unavailable page when a public link was already used', function (): void {
+    $subject = TestSubject::query()->create([
+        'name' => 'Address',
+        'email' => 'ap@example.com',
+    ]);
+
+    LoginLinkProcess::query()->create([
+        'title' => 'Verify',
+        'slug' => 'verify-address',
+        'context' => LinkProcessContext::PUBLIC,
+        'handler_key' => 'ack',
+        'template_key' => 'ack',
+    ]);
+
+    $link = LoginLink::query()->create([
+        'panel_id' => null,
+        'process' => 'verify-address',
+        'subject_type' => TestSubject::class,
+        'subject_id' => $subject->id,
+        'email' => 'ap@example.com',
+        'expires_at' => now()->addHour(),
+        'used_at' => now(),
+    ]);
+
+    config()->set('login-link.public_support', [
+        'name' => 'Acme Support',
+        'email' => 'help@example.com',
+        'phone' => '+49 1234',
+    ]);
+
+    $url = URL::temporarySignedRoute(
+        'login-link.public.consume',
+        $link->expires_at,
+        ['loginLink' => $link->getKey()],
+    );
+
+    $this->get($url)
+        ->assertOk()
+        ->assertSee(__('login-link::translations.public_used_title'), false)
+        ->assertSee('help@example.com', false)
+        ->assertSee('+49 1234', false);
+});
+
+it('renders the unavailable page when the signed public URL has expired', function (): void {
+    $subject = TestSubject::query()->create([
+        'name' => 'Address',
+        'email' => 'ap@example.com',
+    ]);
+
+    LoginLinkProcess::query()->create([
+        'title' => 'Verify',
+        'slug' => 'verify-address',
+        'context' => LinkProcessContext::PUBLIC,
+        'handler_key' => 'ack',
+        'template_key' => 'ack',
+    ]);
+
+    $link = LoginLink::query()->create([
+        'panel_id' => null,
+        'process' => 'verify-address',
+        'subject_type' => TestSubject::class,
+        'subject_id' => $subject->id,
+        'email' => 'ap@example.com',
+        'expires_at' => now()->subMinute(),
+        'used_at' => null,
+    ]);
+
+    $url = URL::temporarySignedRoute(
+        'login-link.public.consume',
+        now()->subMinute(),
+        ['loginLink' => $link->getKey()],
+    );
+
+    $this->get($url)
+        ->assertOk()
+        ->assertSee(__('login-link::translations.public_expired_title'), false);
 });

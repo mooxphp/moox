@@ -86,3 +86,16 @@ it('skips Livewire requests coming from Filament login referer', function () {
     $response->assertOk();
     $response->assertSeeText('ok');
 });
+
+it('allows guest access to public login-link consume routes', function () {
+    config()->set('moox-frontend-auth.enabled', true);
+
+    Route::middleware(['web'])->get('/__login_link_public_except', function () {
+        return response('consumed', 200);
+    })->name('login-link.public.test-except');
+
+    $response = $this->get('/__login_link_public_except');
+
+    $response->assertOk();
+    $response->assertSeeText('consumed');
+});

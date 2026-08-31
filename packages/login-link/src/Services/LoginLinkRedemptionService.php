@@ -61,6 +61,29 @@ class LoginLinkRedemptionService
         });
     }
 
+    /**
+     * Why a public consume cannot proceed. Used vs expired vs missing/invalid
+     * so the consume page can explain instead of a generic redirect.
+     */
+    public function failureReason(int|string $loginLinkId): string
+    {
+        $loginLink = LoginLink::query()->find($loginLinkId);
+
+        if ($loginLink === null) {
+            return 'missing';
+        }
+
+        if ($loginLink->used_at !== null) {
+            return 'used';
+        }
+
+        if ($loginLink->expires_at !== null && $loginLink->expires_at->isPast()) {
+            return 'expired';
+        }
+
+        return 'invalid';
+    }
+
     protected function resolveContext(LoginLink $loginLink): string
     {
         $definition = LoginLinkProcess::query()

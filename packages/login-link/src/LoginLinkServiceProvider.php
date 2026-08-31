@@ -10,6 +10,7 @@ use Moox\LoginLink\Commands\ExampleIssueCommand;
 use Moox\LoginLink\Commands\InstallCommand;
 use Moox\LoginLink\Http\Controllers\ExampleResultController;
 use Moox\LoginLink\Http\Controllers\PublicLoginLinkRedemptionController;
+use Moox\LoginLink\Http\Middleware\HandlePublicLoginLinkSignature;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Spatie\LaravelPackageTools\Package;
 
@@ -47,7 +48,7 @@ class LoginLinkServiceProvider extends MooxServiceProvider
 
         Route::middleware(['web'])
             ->get($path, PublicLoginLinkRedemptionController::class)
-            ->middleware(['signed', 'throttle:10,1'])
+            ->middleware([HandlePublicLoginLinkSignature::class, 'throttle:10,1'])
             ->name('login-link.public.consume');
 
         Route::middleware(['web'])
