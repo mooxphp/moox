@@ -18,7 +18,6 @@ _Avoid_: Archive, outbox folder, delivery receipt
 Whether the row was created by `SendMailJob` (`outbox`) or by `RecordSentMailJob` after Laravel's post-send event (`recorded`). Foreign mail from other packages is logged as `recorded`; outbox sends stay `outbox` even when the recorder runs (deduplicated by correlation id).
 
 **Status**:
-`queued` → `sent` | `failed` | `suppressed`. **`sent` means the provider accepted the message and the send was logged** — never that the recipient’s mailbox received it. `suppressed` is reserved for safe test mode (later ticket).
 `queued` → `sent` | `failed` | `suppressed`. **`sent` means the provider accepted the message and the send was logged** — never that the recipient’s mailbox received it. **`suppressed` means safe test mode redirected at least one intended recipient** — the sandbox may have accepted mail, but the intended recipient did not receive it; domain code must use `deliveredToIntendedRecipients()` before marking delivery.
 _Avoid_: Delivered, opened, bounced (those need inbound reports)
 
@@ -55,7 +54,5 @@ RFC 5322 Message-ID captured from the sent copy when present. Left null when the
 _Avoid_: Provider reference
 
 ## Not this context
-
-**Safe test mode**, **Filament send-log UI**, **send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. Templating (registry, typed payloads, database-held text, visual shell / inlining) lives in `moox/template` and `moox/mjml` (see [ADR 0017](../../docs/adr/0017-templating-moves-to-moox-template-and-mjml.md)). Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).
 
 **Send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. The Filament send-log UI (`MailSendLogResource`) lives in this package. Templating (registry, typed payloads, database-held text, visual shell / inlining) lives in `moox/template` and `moox/mjml` (see [ADR 0017](../../docs/adr/0017-templating-moves-to-moox-template-and-mjml.md)). Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).

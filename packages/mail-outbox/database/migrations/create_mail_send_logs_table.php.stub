@@ -17,6 +17,8 @@ return new class extends Migration
             $table->json('intended_recipients')->nullable();
             $table->json('actual_recipients')->nullable();
             $table->string('subject')->nullable();
+            $table->longText('raw_message')->nullable();
+            $table->longText('resend_payload')->nullable();
             $table->string('status')->default('queued')->index();
             $table->unsignedInteger('attempt_count')->default(0);
             $table->text('error')->nullable();
@@ -33,5 +35,6 @@ return new class extends Migration
         Schema::dropIfExists('mail_send_logs');
     }
 };
+
 
 
