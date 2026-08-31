@@ -25,7 +25,8 @@ class RecordSentMailJob implements ShouldQueue
 
     public function __construct(
         public ?RecordedSentMailSnapshot $snapshot,
-    ) {}
+    ) {
+    }
 
     public function tries(): int
     {
