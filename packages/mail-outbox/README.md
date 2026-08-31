@@ -114,7 +114,7 @@ Rows from `SendMailJob` use `source=outbox`. Disable foreign recording with `MAI
 Model: `Moox\MailOutbox\Models\MailSendLog`  
 Table: `mail_send_logs`
 
-Notable columns: `mailer`, `source` (`outbox` | `recorded`), `intended_recipients`, `actual_recipients`, `subject`, `template_key`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
+Notable columns: `mailer`, `source` (`outbox` | `recorded`), `intended_recipients`, `actual_recipients`, `subject`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
 
 `sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery.
 

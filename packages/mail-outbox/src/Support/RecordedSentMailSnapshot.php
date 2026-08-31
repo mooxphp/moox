@@ -48,7 +48,6 @@ final readonly class RecordedSentMailSnapshot
             'intended_recipients' => $this->recipients,
             'actual_recipients' => $this->recipients,
             'subject' => $this->subject,
-            'template_key' => null,
             'status' => MailSendStatus::Sent,
             'attempt_count' => 1,
             'error' => null,

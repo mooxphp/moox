@@ -53,11 +53,6 @@ final class MailableInspector
         return null;
     }
 
-    public function templateKey(Mailable $mailable): string
-    {
-        return $mailable::class;
-    }
-
     /**
      * @param  array{mailer?: string|null}  $data
      */

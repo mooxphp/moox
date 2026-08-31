@@ -172,7 +172,6 @@ class SendMailJob implements ShouldQueue
             'intended_recipients' => $inspector->recipients($this->mailable),
             'actual_recipients' => null,
             'subject' => $inspector->subject($this->mailable),
-            'template_key' => $inspector->templateKey($this->mailable),
             'status' => MailSendStatus::Queued,
             'attempt_count' => 0,
             'error' => null,
