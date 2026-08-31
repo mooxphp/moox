@@ -26,6 +26,7 @@ Learn more about [Moox](https://moox.org).
 - Retry classification — transient (rate limit, timeout, connection) vs permanent (rejected/malformed recipient)
 - Correlation — self-assigned header plus optional provider message-id read-back (per mailer)
 - Optional polymorphic related business object on the log row
+- Foreign mail recording — Laravel `MessageSent` listener dispatches `RecordSentMailJob` for mail sent outside `SendMailJob` (deduplicated against outbox rows)
 
 <!-- /Features -->
 
@@ -63,9 +64,10 @@ Keys in `config/mail-outbox.php`:
 | `retry.backoff` | Backoff seconds between retries (default `[60, 300, 900]`). |
 | `correlation_header` | Header name for the self-assigned correlation id (default `X-Moox-Mail-Correlation-Id`). |
 | `read_back_provider_id` | Default: whether to read the provider message id after send (default `false`). |
+| `record_foreign_mail` | Record mail sent via Laravel's mailer without `SendMailJob` (default `true`). |
 | `mailers.{name}.read_back_provider_id` | Per-mailer override for provider id read-back. |
 
-Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`.
+Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`, `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`.
 
 ## Usage
 
@@ -90,12 +92,29 @@ The job:
 
 Work lives in the job (progress via `Moox\Jobs\Traits\JobProgress`, terminal handling in `failed()`). Listeners are not used for sending.
 
+### Foreign mail recording
+
+Mail sent through Laravel's mailer **without** `SendMailJob` can still be logged. On `Illuminate\Mail\Events\MessageSent`, `RecordSentMailListener` builds a queue-safe `RecordedSentMailSnapshot` from the sent message and dispatches `RecordSentMailJob` with that snapshot — the listener performs no database work or branching on business rules.
+
+`RecordSentMailListener` (at dispatch):
+
+1. Builds a `RecordedSentMailSnapshot` from the framework sent message (no live MIME on the queue)
+
+`RecordSentMailJob` (when the job runs):
+
+1. Returns immediately when `record_foreign_mail` is `false` (the listener still dispatches; the job no-ops)
+2. Skips when the snapshot is missing, or when the snapshot has neither identifiers nor recipients/subject
+3. Skips creating a row when an existing log matches the correlation header or Message-ID (`correlation_id` is unique; `message_id` is indexed for lookup). `SendMailJob` always stamps a correlation id, so its path never doubles.
+4. Otherwise creates one `mail_send_logs` row with `source=recorded`, `status=sent`, and `attempt_count=1`
+
+Rows from `SendMailJob` use `source=outbox`. Disable foreign recording with `MAIL_OUTBOX_RECORD_FOREIGN_MAIL=false` or `record_foreign_mail => false` in config.
+
 ### Send log
 
 Model: `Moox\MailOutbox\Models\MailSendLog`  
 Table: `mail_send_logs`
 
-Notable columns: `mailer`, `intended_recipients`, `actual_recipients`, `subject`, `template_key`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
+Notable columns: `mailer`, `source` (`outbox` | `recorded`), `intended_recipients`, `actual_recipients`, `subject`, `template_key`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
 
 `sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery.
 

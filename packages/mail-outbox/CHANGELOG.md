@@ -6,6 +6,9 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Added
 
+- `RecordSentMailListener` on `MessageSent` — dispatches `RecordSentMailJob` only (no DB work in the listener)
+- `RecordSentMailJob` — records foreign Laravel mail sends from a queue-safe `RecordedSentMailSnapshot` built at dispatch; deduplication by correlation id (unique) or message id (indexed); disable via `record_foreign_mail` / `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`
+- `MailSendSource` enum (`outbox`, `recorded`) on `mail_send_logs.source`
 - `SendMailJob` — queued send of a Mailable through a named Laravel mailer with `JobProgress` and `failed()` hook
 - `MailSendLog` model and `create_mail_send_logs_table` migration (mailer, recipients, subject, template key, status, attempts, error, message id, provider reference, correlation id, polymorphic related)
 - Statuses: `queued`, `sent`, `failed`, `suppressed` (`sent` = provider accepted + logged; `suppressed` reserved for test mode)
@@ -18,3 +21,5 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 - Do not invent package-local RFC 5322 Message-IDs after send; ensure Symfony’s on-wire Message-ID before transport and capture it from the sent copy
 - Attach correlation header once across retries; honour zero retry-after without a tight loop
+- Foreign-mail recorder: listener dispatches a `RecordedSentMailSnapshot` (no live MIME); recordable when identifiers and/or recipients/subject are present; unique `correlation_id`; `failed()` logging; `tries = 1`
+

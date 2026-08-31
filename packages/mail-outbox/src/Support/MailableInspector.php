@@ -6,6 +6,7 @@ namespace Moox\MailOutbox\Support;
 
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Mail\Mailable as IlluminateMailable;
+use Illuminate\Mail\SentMessage as LaravelSentMessage;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -57,27 +58,56 @@ final class MailableInspector
         return $mailable::class;
     }
 
-    public function messageIdFromSent(?SentMessage $sentMessage): ?string
-    {
-        if ($sentMessage === null) {
+    /**
+     * @param  array{mailer?: string|null}  $data
+     */
+    public function recordedSnapshotFromSent(
+        LaravelSentMessage $sent,
+        array $data,
+        MailOutboxConfig $config,
+    ): ?RecordedSentMailSnapshot {
+        $symfonySent = $sent->getSymfonySentMessage();
+
+        if ($symfonySent === null) {
             return null;
         }
 
-        foreach ([$sentMessage->getOriginalMessage(), $sentMessage->getMessage()] as $candidate) {
-            if (! $candidate instanceof Message) {
-                continue;
-            }
+        $recipients = $this->recipientsFromSent($symfonySent);
 
-            $headers = $candidate->getHeaders();
+        return new RecordedSentMailSnapshot(
+            mailer: $this->resolveMailer($data, $config),
+            recipients: $recipients !== [] ? $recipients : null,
+            subject: $this->subjectFromSent($symfonySent),
+            messageId: $this->messageIdFromSent($symfonySent),
+            correlationId: $this->correlationIdFromSent($symfonySent, $config->correlationHeader()),
+        );
+    }
 
-            if (! $headers->has('Message-ID')) {
-                continue;
-            }
+    public function messageIdFromSent(SentMessage $sentMessage): ?string
+    {
+        $value = $this->headerFromSent($sentMessage, 'Message-ID');
 
-            $value = $headers->get('Message-ID')?->getBodyAsString();
+        return $value !== null ? trim($value, '<>') : null;
+    }
 
-            if (is_string($value) && $value !== '') {
-                return trim($value, '<>');
+    public function correlationIdFromSent(SentMessage $sentMessage, string $header): ?string
+    {
+        if ($header === '') {
+            return null;
+        }
+
+        return $this->headerFromSent($sentMessage, $header);
+    }
+
+    public function subjectFromSent(SentMessage $sentMessage): ?string
+    {
+        $original = $sentMessage->getOriginalMessage();
+
+        if ($original instanceof Email) {
+            $subject = $original->getSubject();
+
+            if (is_string($subject) && $subject !== '') {
+                return $subject;
             }
         }
 
@@ -87,12 +117,8 @@ final class MailableInspector
     /**
      * @return list<string>
      */
-    public function recipientsFromSent(?SentMessage $sentMessage): array
+    public function recipientsFromSent(SentMessage $sentMessage): array
     {
-        if ($sentMessage === null) {
-            return [];
-        }
-
         $original = $sentMessage->getOriginalMessage();
 
         if (! $original instanceof Email) {
@@ -161,5 +187,41 @@ final class MailableInspector
         }
 
         return null;
+    }
+
+    private function headerFromSent(SentMessage $sentMessage, string $headerName): ?string
+    {
+        foreach ([$sentMessage->getOriginalMessage(), $sentMessage->getMessage()] as $candidate) {
+            if (! $candidate instanceof Message) {
+                continue;
+            }
+
+            $headers = $candidate->getHeaders();
+
+            if (! $headers->has($headerName)) {
+                continue;
+            }
+
+            $value = $headers->get($headerName)?->getBodyAsString();
+
+            if (! is_string($value) || $value === '') {
+                continue;
+            }
+
+            return $value;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array{mailer?: string|null}  $data
+     */
+    private function resolveMailer(array $data, MailOutboxConfig $config): string
+    {
+        /** @var mixed $mailer */
+        $mailer = $data['mailer'] ?? $config->defaultMailer();
+
+        return is_string($mailer) && $mailer !== '' ? $mailer : $config->defaultMailer();
     }
 }
