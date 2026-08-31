@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailOutbox\Contracts\ProviderMessageIdReader;
+use Moox\MailOutbox\Enums\MailSendSource;
 use Moox\MailOutbox\Enums\MailSendStatus;
 use Moox\MailOutbox\Exceptions\MessageTooLargeException;
 use Moox\MailOutbox\Models\MailSendLog;
@@ -42,8 +43,7 @@ class SendMailJob implements ShouldQueue
         public Mailable $mailable,
         public string $mailer,
         public ?Model $related = null,
-    ) {
-    }
+    ) {}
 
     public function tries(): int
     {
@@ -107,16 +107,22 @@ class SendMailJob implements ShouldQueue
         $symfonySent = $this->symfonySentMessage($sent);
 
         $providerReference = null;
+        $actualRecipients = [];
+        $messageId = null;
 
-        if ($config->shouldReadBackProviderId($this->mailer) && $symfonySent instanceof SymfonySentMessage) {
-            try {
-                $providerReference = $providerMessageIdReader->read($this->mailer, $symfonySent);
-            } catch (Throwable) {
-                $providerReference = null;
+        if ($symfonySent instanceof SymfonySentMessage) {
+            if ($config->shouldReadBackProviderId($this->mailer)) {
+                try {
+                    $providerReference = $providerMessageIdReader->read($this->mailer, $symfonySent);
+                } catch (Throwable) {
+                    $providerReference = null;
+                }
             }
+
+            $actualRecipients = $inspector->recipientsFromSent($symfonySent);
+            $messageId = $inspector->messageIdFromSent($symfonySent);
         }
 
-        $actualRecipients = $inspector->recipientsFromSent($symfonySent);
         if ($actualRecipients === []) {
             $actualRecipients = $inspector->recipients($this->mailable);
         }
@@ -126,7 +132,7 @@ class SendMailJob implements ShouldQueue
             'attempt_count' => $attempt,
             'error' => null,
             'actual_recipients' => $actualRecipients,
-            'message_id' => $inspector->messageIdFromSent($symfonySent),
+            'message_id' => $messageId,
             'provider_reference' => $providerReference,
             'correlation_id' => $correlationId,
             'subject' => $inspector->subject($this->mailable) ?? $log->subject,
@@ -162,6 +168,7 @@ class SendMailJob implements ShouldQueue
 
         $log = MailSendLog::query()->create([
             'mailer' => $this->mailer,
+            'source' => MailSendSource::Outbox,
             'intended_recipients' => $inspector->recipients($this->mailable),
             'actual_recipients' => null,
             'subject' => $inspector->subject($this->mailable),

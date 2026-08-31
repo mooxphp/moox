@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\MailOutbox\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Moox\MailOutbox\Enums\MailSendSource;
 use Moox\MailOutbox\Enums\MailSendStatus;
 
 /**
@@ -33,6 +36,7 @@ class MailSendLog extends Model
         'provider_reference',
         'related_id',
         'related_type',
+        'source',
         'status',
         'subject',
         'template_key',
@@ -47,6 +51,7 @@ class MailSendLog extends Model
             'actual_recipients' => 'array',
             'attempt_count' => 'integer',
             'intended_recipients' => 'array',
+            'source' => MailSendSource::class,
             'status' => MailSendStatus::class,
         ];
     }
@@ -54,5 +59,23 @@ class MailSendLog extends Model
     public function related(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @param  Builder<MailSendLog>  $query
+     * @return Builder<MailSendLog>
+     */
+    #[Scope]
+    protected function matchingIdentifiers(Builder $query, ?string $correlationId, ?string $messageId): Builder
+    {
+        return $query->where(function (Builder $inner) use ($correlationId, $messageId): void {
+            if ($correlationId !== null) {
+                $inner->orWhere('correlation_id', $correlationId);
+            }
+
+            if ($messageId !== null) {
+                $inner->orWhere('message_id', $messageId);
+            }
+        });
     }
 }

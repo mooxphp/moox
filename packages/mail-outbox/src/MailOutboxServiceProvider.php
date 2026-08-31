@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\MailOutbox;
 
+use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Support\Facades\Event;
 use Moox\Core\MooxServiceProvider;
 use Moox\MailOutbox\Contracts\ProviderMessageIdReader;
+use Moox\MailOutbox\Listeners\RecordSentMailListener;
 use Moox\MailOutbox\Support\CorrelationIdGenerator;
 use Moox\MailOutbox\Support\MailableInspector;
 use Moox\MailOutbox\Support\MailFailureClassifier;
@@ -33,6 +36,11 @@ class MailOutboxServiceProvider extends MooxServiceProvider
             ->usedFor([
                 'Queued outbound mail with send logging, size guard, retry classification, and correlation identifiers',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        Event::listen(MessageSent::class, RecordSentMailListener::class);
     }
 
     public function register(): void

@@ -13,6 +13,7 @@ return new class extends Migration
         Schema::create('mail_send_logs', function (Blueprint $table): void {
             $table->id();
             $table->string('mailer')->index();
+            $table->string('source')->default('outbox')->index();
             $table->json('intended_recipients')->nullable();
             $table->json('actual_recipients')->nullable();
             $table->string('subject')->nullable();
@@ -22,7 +23,7 @@ return new class extends Migration
             $table->text('error')->nullable();
             $table->string('message_id')->nullable()->index();
             $table->string('provider_reference')->nullable()->index();
-            $table->string('correlation_id')->nullable()->index();
+            $table->string('correlation_id')->nullable()->unique();
             $table->nullableMorphs('related');
             $table->timestamps();
         });
@@ -33,3 +34,5 @@ return new class extends Migration
         Schema::dropIfExists('mail_send_logs');
     }
 };
+
+

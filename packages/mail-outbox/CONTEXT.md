@@ -11,8 +11,11 @@ A named Laravel mailer configuration. Provider choice and credentials are a host
 _Avoid_: Transport contract, adapter (package-owned), SMTP session
 
 **Send log**:
-One row per send attempt chain for a single job dispatch — intended and actual recipients, subject, template key, status, attempts, error, identifiers, optional related business object.
+One row per send attempt chain for a single job dispatch — intended and actual recipients, subject, template key, status, attempts, error, identifiers, optional related business object, and **source** (`outbox` from `SendMailJob`, `recorded` from the framework `MessageSent` recorder).
 _Avoid_: Archive, outbox folder, delivery receipt
+
+**Source**:
+Whether the row was created by `SendMailJob` (`outbox`) or by `RecordSentMailJob` after Laravel's post-send event (`recorded`). Foreign mail from other packages is logged as `recorded`; outbox sends stay `outbox` even when the recorder runs (deduplicated by correlation id).
 
 **Status**:
 `queued` → `sent` | `failed` | `suppressed`. **`sent` means the provider accepted the message and the send was logged** — never that the recipient’s mailbox received it. `suppressed` is reserved for safe test mode (later ticket).
@@ -49,3 +52,4 @@ _Avoid_: Provider reference
 ## Not this context
 
 **Safe test mode**, **Filament send-log UI**, **database templates**, **send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).
+

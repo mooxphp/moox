@@ -64,6 +64,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Record foreign mail
+    |--------------------------------------------------------------------------
+    |
+    | When true, mail sent through Laravel's mailer without SendMailJob is
+    | recorded via MessageSent → RecordSentMailJob. SendMailJob sends are
+    | deduplicated by correlation id or message id. Set false to disable.
+    |
+    */
+    'record_foreign_mail' => (bool) env('MAIL_OUTBOX_RECORD_FOREIGN_MAIL', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Per-mailer overrides
     |--------------------------------------------------------------------------
     |
