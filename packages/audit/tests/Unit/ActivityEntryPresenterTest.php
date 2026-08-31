@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Moox\Audit\Models\Activity;
 use Moox\Audit\Support\ActivityEntryPresenter;
+use Moox\Audit\Tests\Support\TestAttributeLabelResolver;
 use Moox\Audit\Tests\Support\TestAuditableItem;
+use Moox\Audit\Tests\Support\TestSubjectLabelResolver;
 use Moox\Audit\Tests\TestCase;
 
 uses(TestCase::class);
@@ -205,9 +207,97 @@ it('builds a compact changed-fields summary for list columns', function (): void
         ],
     ];
 
-    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Title, Status, Color +1')
-        ->and(ActivityEntryPresenter::changedFieldsSummary($changes, 2))->toBe('Title, Status +2')
+    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Title → B, Status → published, Color: red +1')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($changes, 2))->toBe('Title → B, Status → published +2')
         ->and(ActivityEntryPresenter::changedFieldsSummary(null))->toBe('—');
+});
+
+it('shows gateway failure values in the changed-fields summary', function (): void {
+    $changes = [
+        'old' => ['gateway_status' => 'generating'],
+        'attributes' => ['gateway_status' => 'generation_failed'],
+    ];
+
+    expect(ActivityEntryPresenter::changedFieldsSummary($changes))->toBe('Gateway Status → Generation Failed (generation_failed)');
+});
+
+it('uses attribute_label_resolver for field and value labels', function (): void {
+    $this->registerTestAuditableModel([
+        'attribute_label_resolver' => TestAttributeLabelResolver::class,
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->attribute_changes = [
+        'old' => ['review_status' => 'db_validated'],
+        'attributes' => ['review_status' => 'human_confirmed'],
+    ];
+
+    $rows = ActivityEntryPresenter::changeRows($activity->attribute_changes, $activity);
+
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0]['field'])->toBe('Review')
+        ->and($rows[0]['old'])->toBe('Automatically pre-reviewed (db_validated)')
+        ->and($rows[0]['new'])->toBe('Manually confirmed (human_confirmed)')
+        ->and($rows[0]['kind'])->toBe('changed')
+        ->and(ActivityEntryPresenter::changedFieldsSummary($activity->attribute_changes, activity: $activity))
+        ->toBe('Review → Manually confirmed (human_confirmed)');
+});
+
+it('uses configured field_labels and value_labels maps', function (): void {
+    $this->registerTestAuditableModel([
+        'field_labels' => [
+            'review_status' => 'Prüfstatus',
+        ],
+        'value_labels' => [
+            'review_status' => [
+                'db_validated' => 'Automatisch vorgeprüft',
+                'human_confirmed' => 'Manuell bestätigt',
+            ],
+        ],
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['review_status' => 'db_validated'],
+        'attributes' => ['review_status' => 'human_confirmed'],
+    ], $activity);
+
+    expect($rows[0]['field'])->toBe('Prüfstatus')
+        ->and($rows[0]['old'])->toBe('Automatisch vorgeprüft (db_validated)')
+        ->and($rows[0]['new'])->toBe('Manuell bestätigt (human_confirmed)');
+});
+
+it('masks sensitive values without exposing raw secrets', function (): void {
+    config()->set('audit.mask_attributes', ['password']);
+
+    $rows = ActivityEntryPresenter::changeRows([
+        'old' => ['password' => 'old-secret'],
+        'attributes' => ['password' => 'new-secret'],
+    ]);
+
+    expect($rows[0]['old'])->toBe(ActivityEntryPresenter::SENSITIVE_VALUE_MASK)
+        ->and($rows[0]['new'])->toBe(ActivityEntryPresenter::SENSITIVE_VALUE_MASK);
+});
+
+it('detects failure outcomes for list highlighting', function (): void {
+    $failedChanges = [
+        'old' => ['gateway_status' => 'generating'],
+        'attributes' => ['gateway_status' => 'generation_failed'],
+    ];
+
+    $successChanges = [
+        'old' => ['gateway_status' => 'validating'],
+        'attributes' => ['gateway_status' => 'validated'],
+    ];
+
+    expect(ActivityEntryPresenter::isFailureEntry($failedChanges))->toBeTrue()
+        ->and(ActivityEntryPresenter::isFailureEntry($successChanges))->toBeFalse()
+        ->and(ActivityEntryPresenter::failureOutcomeValue($failedChanges))->toBe('generation_failed')
+        ->and(ActivityEntryPresenter::listRecordClasses($failedChanges))->toContain('border-danger-600')
+        ->and(ActivityEntryPresenter::listRecordClasses($successChanges))->toBeNull();
 });
 
 it('builds structured change rows for the detail view', function (): void {
@@ -216,26 +306,25 @@ it('builds structured change rows for the detail view', function (): void {
         'attributes' => ['title' => 'Hallo und ciao', 'color' => 'red'],
     ]);
 
-    expect($rows)->toBe([
-        [
+    expect($rows)->toHaveCount(3)
+        ->and($rows[0])->toMatchArray([
             'field' => 'Title',
             'old' => 'Hallo',
             'new' => 'Hallo und ciao',
             'kind' => 'changed',
-        ],
-        [
+        ])
+        ->and($rows[1])->toMatchArray([
             'field' => 'Status',
             'old' => 'draft',
             'new' => null,
             'kind' => 'removed',
-        ],
-        [
+        ])
+        ->and($rows[2])->toMatchArray([
             'field' => 'Color',
             'old' => null,
             'new' => 'red',
             'kind' => 'added',
-        ],
-    ]);
+        ]);
 });
 
 it('masks sensitive values in structured change rows', function (): void {
@@ -246,14 +335,13 @@ it('masks sensitive values in structured change rows', function (): void {
         'attributes' => ['password' => 'new-secret'],
     ]);
 
-    expect($rows)->toBe([
-        [
+    expect($rows)->toHaveCount(1)
+        ->and($rows[0])->toMatchArray([
             'field' => 'Password',
             'old' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
             'new' => ActivityEntryPresenter::SENSITIVE_VALUE_MASK,
             'kind' => 'changed',
-        ],
-    ]);
+        ]);
 });
 
 it('builds a headline and hides duplicate descriptions', function (): void {
@@ -282,4 +370,60 @@ it('builds a headline and hides duplicate descriptions', function (): void {
     expect(ActivityEntryPresenter::headline($activity))
         ->toBe('Aziz Updated Test Auditable Item: Hallo')
         ->and(ActivityEntryPresenter::hasDistinctDescription($activity))->toBeFalse();
+});
+
+it('uses configured label and title_attribute for subject labels', function (): void {
+    $this->registerTestAuditableModel([
+        'label' => 'Article',
+        'title_attribute' => 'title',
+    ]);
+
+    $item = new TestAuditableItem;
+    $item->setRawAttributes([
+        'id' => 11,
+        'title' => 'Readable title',
+        'status' => 'draft',
+    ], true);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 11;
+    $activity->setRelation('subject', $item);
+
+    expect(ActivityEntryPresenter::subjectTypeLabel(TestAuditableItem::class))->toBe('Article')
+        ->and(ActivityEntryPresenter::subjectLabel($activity))->toBe('Article: Readable title');
+});
+
+it('falls back to snapshot attributes when the subject is missing', function (): void {
+    $this->registerTestAuditableModel([
+        'label' => 'Article',
+        'title_attribute' => 'title',
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 99;
+    $activity->attribute_changes = [
+        'old' => [
+            'title' => 'Deleted article',
+            'status' => 'draft',
+        ],
+    ];
+    $activity->setRelation('subject', null);
+
+    expect(ActivityEntryPresenter::subjectLabel($activity))->toBe('Article: Deleted article')
+        ->and(ActivityEntryPresenter::subjectAttributeValue($activity, 'title'))->toBe('Deleted article');
+});
+
+it('uses a subject_label_resolver when configured', function (): void {
+    $this->registerTestAuditableModel([
+        'subject_label_resolver' => TestSubjectLabelResolver::class,
+    ]);
+
+    $activity = new Activity;
+    $activity->subject_type = TestAuditableItem::class;
+    $activity->subject_id = 5;
+    $activity->setRelation('subject', null);
+
+    expect(ActivityEntryPresenter::subjectLabel($activity))->toBe('Custom subject label');
 });

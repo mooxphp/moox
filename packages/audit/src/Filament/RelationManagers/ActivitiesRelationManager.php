@@ -33,6 +33,7 @@ class ActivitiesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['causer', 'subject']))
+            ->recordClasses(fn (Activity $record): ?string => ActivityEntryPresenter::listRecordClasses($record->attribute_changes))
             ->columns([
                 TextColumn::make('created_at')
                     ->label(__('core::audit.occurred_at'))
@@ -54,6 +55,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->label(__('core::audit.action'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::eventLabel($record))
                     ->badge()
+                    ->color(fn (Activity $record): string => ActivityEntryPresenter::isFailureEntry($record->attribute_changes) ? 'danger' : 'gray')
                     ->toggleable(),
                 TextColumn::make('subject_label')
                     ->label(__('core::audit.subject'))
@@ -62,7 +64,8 @@ class ActivitiesRelationManager extends RelationManager
                     ->toggleable(),
                 TextColumn::make('changed_fields')
                     ->label(__('core::audit.attribute_changes'))
-                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes))
+                    ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes, activity: $record))
+                    ->color(fn (Activity $record): ?string => ActivityEntryPresenter::isFailureEntry($record->attribute_changes) ? 'danger' : null)
                     ->wrap()
                     ->toggleable(),
                 TextColumn::make('causer_label')
@@ -83,8 +86,7 @@ class ActivitiesRelationManager extends RelationManager
         $config = AuditFilamentRegistry::configForOwner($owner);
 
         if ($config !== null && is_array($config['aggregate_subjects'] ?? null)) {
-            return $this->aggregatedActivitiesQuery($owner, $config['aggregate_subjects'])
-                ->with(['causer', 'subject']);
+            return $this->aggregatedActivitiesQuery($owner, $config['aggregate_subjects']);
         }
 
         return parent::getTableQuery();

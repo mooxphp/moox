@@ -89,6 +89,8 @@ return [
     'status_human_confirmed' => 'Manuell bestätigt',
     'status_validated' => 'Validiert',
 
+    'review_status' => 'Prüfstatus',
+
     // Gateway status
     'gateway_status' => 'Verarbeitungsstatus',
     'gateway_status_generating' => 'Wird erzeugt',
@@ -148,6 +150,7 @@ return [
 
     // Tabs
     'tab_all' => 'Alle',
+    'tab_document' => 'Dokument',
     'tab_gateway_failed' => 'Fehlgeschlagen',
     'tab_processing' => 'In Bearbeitung',
     'tab_needs_review' => 'Prüfung nötig',
@@ -182,7 +185,11 @@ return [
     'action_confirm_with_attention' => 'Rechnung bestätigen (:count Felder erfordern Aufmerksamkeit)',
     'action_confirm_modal_heading' => 'Rechnung bestätigen',
     'action_confirm_modal_description' => 'Hiermit bestätigen Sie, dass alle Felder dieser Rechnung korrekt sind. Dieser Schritt kann nicht rückgängig gemacht werden.',
+    'action_confirm_modal_description_with_versions' => 'Hiermit bestätigen Sie Fassung :version als gültige Belegversion. :count ältere Fassung(en) mit derselben Nummer bleiben erhalten, gelten aber nicht mehr als aktuell.',
     'action_confirm_submit' => 'Ja, bestätigen',
+    'document_version' => 'Version',
+    'document_version_label' => 'v:version',
+    'document_version_current' => 'Aktuell',
     'action_set_attribution' => 'Zuordnung setzen',
     'action_set_attribution_modal_heading' => 'Kunden-Zuordnung setzen',
     'action_set_attribution_modal_description' => 'Wählen Sie den Kunden, dem dieses Dokument zugeordnet ist. War die Rechnung bereits bestätigt oder validiert, wird diese Bestätigung aufgehoben und muss erneut erfolgen.',
@@ -196,6 +203,7 @@ return [
     // Notifications
     'notification_confirmed_title' => 'Rechnung bestätigt',
     'notification_confirmed_body' => 'Die Rechnung wurde als manuell geprüft markiert.',
+    'notification_confirmed_body_with_versions' => 'Fassung :version ist jetzt die aktuelle. :count vorherige aktuelle Fassung(en) bleiben als ältere Versionen erhalten.',
     'notification_confirm_failed_title' => 'Bestätigung nicht möglich',
     'notification_confirm_failed_body' => 'Die Rechnung befindet sich nicht im Status „Automatisch vorgeprüft“.',
     'notification_attribution_updated_title' => 'Zuordnung aktualisiert',
@@ -254,5 +262,7 @@ return [
     'hint_review_freight_flat_rate' => 'Frachtkostenpauschale sollte manuell überprüft werden.',
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
+    'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits. Die Zentrale muss die Dublette prüfen '
+        .'— unabhängig davon, ob der Inhalt identisch ist.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];

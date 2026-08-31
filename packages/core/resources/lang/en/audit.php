@@ -79,4 +79,12 @@ return [
 
     'change_kind_removed' => 'Removed',
 
+    'outcome_failed' => 'Failed',
+
+    'outcome_generation_failed' => 'Generation failed',
+
+    'outcome_validation_failed' => 'Validation failed',
+
+    'outcome_validator_error' => 'Validator error',
+
 ];

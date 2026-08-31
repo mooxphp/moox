@@ -1,7 +1,11 @@
 <?php
 
+use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\CreditNoteResource;
 use Moox\EBilling\Resources\InvoiceResource;
+use Moox\EBilling\Support\EbillingActivityAttributeLabels;
+use Moox\EBilling\Support\InvoiceActivitySubjectLabel;
+use Moox\Invoice\Models\Invoice;
 use Moox\KositValidator\Models\KositValidatable;
 use Moox\KositValidator\Models\KositValidation;
 use Moox\VeraPdf\Models\VeraPdfValidatable;
@@ -602,6 +606,108 @@ return [
             'morph_name' => 'validatable',
             'pivot_columns' => [],
             'related_key' => 'verapdf_validation_id',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Tracks the structured invoice and the gateway document (pipeline state).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Invoice::class => [
+                'log_name' => 'e-billing',
+                'subject_label_resolver' => InvoiceActivitySubjectLabel::class,
+                'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
+                'attributes' => [
+                    'invoice_number',
+                    'invoice_date',
+                    'document_type',
+                    'due_date',
+                    'currency',
+                    'customer_number',
+                    'customer_reference',
+                    'order_number',
+                    'order_date',
+                    'delivery_date',
+                    'payment_terms',
+                    'shipping_method',
+                    'delivery_terms',
+                    'seller',
+                    'buyer',
+                    'delivery',
+                    'payment_means',
+                    'net_total',
+                    'vat_rate',
+                    'vat_amount',
+                    'gross_total',
+                ],
+            ],
+            EbillingDocument::class => [
+                'log_name' => 'e-billing',
+                'label' => 'trans//e-billing::ebilling.ebilling_document',
+                'title_attribute' => 'format',
+                'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
+                // Pipeline writes many intermediate rows; only terminal gateway
+                // outcomes and human confirmation create update audits.
+                'significant_updates' => [
+                    'gateway_status' => [
+                        'generation_failed',
+                        'validated',
+                        'validation_failed',
+                        'validator_error',
+                        'ignored_foreign',
+                    ],
+                    'review_status' => [
+                        'human_confirmed',
+                    ],
+                ],
+                'attributes' => [
+                    'format',
+                    'gateway_status',
+                    'review_status',
+                    'validation_score',
+                    'artifact_content_hash',
+                    'customer_id',
+                    'company_id',
+                    'attribution_source',
+                    'invoice_id',
+                    'ignored_reason',
+                    'scope',
+                    'storage_disk',
+                ],
+                'hidden_attributes' => [
+                    'bill_data',
+                    'field_validations',
+                    'source_type',
+                    'source_id',
+                    'error_message',
+                    'xml_storage_path',
+                    'pdf_storage_path',
+                    'copy_pdf_storage_path',
+                ],
+            ],
+        ],
+        'filament' => [
+            InvoiceResource::class => [
+                'owner_model' => Invoice::class,
+                'aggregate_subjects' => [
+                    EbillingDocument::class => 'ebillingDocument',
+                ],
+            ],
+            CreditNoteResource::class => [
+                'owner_model' => Invoice::class,
+                'aggregate_subjects' => [
+                    EbillingDocument::class => 'ebillingDocument',
+                ],
+            ],
         ],
     ],
 

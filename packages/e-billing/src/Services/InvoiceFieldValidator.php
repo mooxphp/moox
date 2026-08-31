@@ -15,6 +15,7 @@ use Moox\EBilling\Support\CompanyNameMatcher;
 use Moox\EBilling\Support\CustomerMatcher;
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\HeaderChargeResolver;
+use Moox\EBilling\Support\InvoiceNumberDuplicateChecker;
 use Moox\EBilling\Support\LineAllowanceChargeResolver;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\Invoice\Models\Invoice;
@@ -261,6 +262,7 @@ class InvoiceFieldValidator
         bool $isManualAttribution = false,
     ): array {
         return match ($field) {
+            'invoice_number' => $this->validateInvoiceNumberField($invoice, $priority),
             'customer_number' => $this->validateCustomerNumberField(
                 $invoice,
                 $priority,
@@ -297,6 +299,30 @@ class InvoiceFieldValidator
             'delivery_date' => $this->validateDeliveryDateField($invoice, $priority),
             default => $this->validateGenericInvoiceField($invoice, $field, $priority),
         };
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string, reason?: string}
+     */
+    private function validateInvoiceNumberField(Invoice $invoice, string $priority): array
+    {
+        $generic = $this->validateGenericInvoiceField($invoice, 'invoice_number', $priority);
+
+        if (($generic['status'] ?? null) !== 'parsed') {
+            return $generic;
+        }
+
+        $duplicate = (new InvoiceNumberDuplicateChecker)->findDuplicate($invoice);
+
+        if ($duplicate instanceof Invoice) {
+            return [
+                'status' => 'needs_review',
+                'reason' => 'duplicate_invoice_number',
+                'matched_id' => (string) $duplicate->getKey(),
+            ];
+        }
+
+        return $generic;
     }
 
     /**

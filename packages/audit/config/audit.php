@@ -147,4 +147,22 @@ return [
 
     'navigation_group' => 'trans//core::core.system',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Failure outcomes (list highlighting)
+    |--------------------------------------------------------------------------
+    |
+    | Audit list rows are marked when a changed attribute's new value matches
+    | one of these values or ends with `_failed`. Labels can be translation
+    | keys (`trans//...`) or plain strings.
+    |
+    */
+    'failure_outcome_values' => [
+        'generation_failed',
+        'validation_failed',
+        'validator_error',
+    ],
+
+    'failure_outcome_labels' => [],
+
 ];
