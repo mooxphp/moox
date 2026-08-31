@@ -118,4 +118,21 @@ final class MailOutboxConfig
         return (bool) config('mail-outbox.test_mode.warn_in_production', true);
     }
 
+    /**
+     * @return list<class-string>
+     */
+    public function resendAllowedMailables(): array
+    {
+        /** @var mixed $allowed */
+        $allowed = config('mail-outbox.resend.allowed_mailables', []);
+
+        if (! is_array($allowed)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $allowed,
+            static fn (mixed $class): bool => is_string($class) && $class !== '' && class_exists($class),
+        ));
+    }
 }

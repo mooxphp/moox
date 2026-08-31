@@ -17,6 +17,8 @@ use Moox\MailOutbox\Enums\MailSendStatus;
  *
  * @property list<string>|null $intended_recipients
  * @property list<string>|null $actual_recipients
+ * @property string|null $raw_message
+ * @property string|null $resend_payload
  */
 class MailSendLog extends Model
 {
@@ -34,8 +36,10 @@ class MailSendLog extends Model
         'mailer',
         'message_id',
         'provider_reference',
+        'raw_message',
         'related_id',
         'related_type',
+        'resend_payload',
         'source',
         'status',
         'subject',

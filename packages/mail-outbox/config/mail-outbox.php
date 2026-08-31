@@ -41,6 +41,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Resend
+    |--------------------------------------------------------------------------
+    |
+    | Optional class allow-list for restoring mailables from resend_payload.
+    | Empty (default) keeps existing behaviour (all classes permitted after
+    | decrypt). Populate to restrict which mailable classes may be resent.
+    |
+    */
+    'resend' => [
+        'allowed_mailables' => [
+            // App\Mail\InvoiceMail::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Correlation header
     |--------------------------------------------------------------------------
     |
@@ -111,4 +127,81 @@ return [
         'subject_prefix' => '[TEST to %s] ',
         'warn_in_production' => true,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resources
+    |--------------------------------------------------------------------------
+    |
+    | Filament operator UI for the outbound send log.
+    |
+    */
+    'resources' => [
+        'send-logs' => [
+
+            'single' => 'trans//mail-outbox::mail-outbox.send_log',
+            'plural' => 'trans//mail-outbox::mail-outbox.send_logs',
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//mail-outbox::fields.tab_all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'queued' => [
+                    'label' => 'trans//mail-outbox::fields.tab_queued',
+                    'icon' => 'gmdi-schedule',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'queued',
+                        ],
+                    ],
+                ],
+                'sent' => [
+                    'label' => 'trans//mail-outbox::fields.tab_sent',
+                    'icon' => 'gmdi-check-circle',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'sent',
+                        ],
+                    ],
+                ],
+                'failed' => [
+                    'label' => 'trans//mail-outbox::fields.tab_failed',
+                    'icon' => 'gmdi-error',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'failed',
+                        ],
+                    ],
+                ],
+                'suppressed' => [
+                    'label' => 'trans//mail-outbox::fields.tab_suppressed',
+                    'icon' => 'gmdi-block',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'suppressed',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------------------
+    */
+    'navigation_group' => 'trans//mail-outbox::mail-outbox.navigation_group',
+
 ];
+

@@ -39,7 +39,12 @@
             ]
         },
         "moox": {
-            "stability": "dev"
+            "stability": "dev",
+            "install": {
+                "plugins": [
+                    "Moox\\MailOutbox\\Plugins\\MailOutboxPlugin"
+                ]
+            }
         }
     },
     "minimum-stability": "dev",
@@ -53,3 +58,4 @@
         }
     }
 }
+

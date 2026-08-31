@@ -27,6 +27,7 @@ Learn more about [Moox](https://moox.org).
 - Correlation — self-assigned header plus optional provider message-id read-back (per mailer)
 - Optional polymorphic related business object on the log row
 - Foreign mail recording — Laravel `MessageSent` listener dispatches `RecordSentMailJob` for mail sent outside `SendMailJob` (deduplicated against outbox rows)
+- Filament send-log UI — list, detail, raw-message inspection, and resend (via `MailOutboxPlugin`)
 - Safe test mode — redirect non-allowlisted recipients via Laravel's `alwaysTo`, record both recipient sets, prefix redirected subjects, log as `suppressed` when not delivered to intended recipients
 
 <!-- /Features -->
@@ -63,17 +64,20 @@ Keys in `config/mail-outbox.php`:
 | `max_message_bytes` | Rendered message size ceiling (default 10 MiB). Oversize fails before transport. |
 | `retry.max_tries` | Maximum send attempts for transient failures (default 5). |
 | `retry.backoff` | Backoff seconds between retries (default `[60, 300, 900]`). |
+| `resend.allowed_mailables` | Optional class allow-list for resend payload restoration (default `[]` = all classes permitted after decrypt). |
 | `correlation_header` | Header name for the self-assigned correlation id (default `X-Moox-Mail-Correlation-Id`). |
 | `read_back_provider_id` | Default: whether to read the provider message id after send (default `false`). |
 | `record_foreign_mail` | Record mail sent via Laravel's mailer without `SendMailJob` (default `true`). |
 | `mailers.{name}.read_back_provider_id` | Per-mailer override for provider id read-back. |
+| `resources.send-logs` | Filament resource labels and list-page tabs (`all`, `queued`, `sent`, `failed`, `suppressed`). |
+| `navigation_group` | Filament navigation group for the send-log resource. |
+| `test_mode.enabled` | Safe test mode: redirect non-allowlisted recipients (default `false`). |
 | `test_mode.redirect_to` | Sandbox address for redirected mail (required when enabled). |
 | `test_mode.redirect_name` | Optional display name for the sandbox recipient. |
 | `test_mode.allowlist` | Wildcard patterns (`Str::is`) delivered for real while test mode is on. |
 | `test_mode.subject_prefix` | Prefix for redirected mail; `%s` is replaced with the original recipient(s). |
 | `test_mode.warn_in_production` | Log a warning at boot when test mode is on in production (default `true`). |
 
-Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`, `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`.
 Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`, `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`, `MAIL_OUTBOX_TEST_MODE`, `MAIL_OUTBOX_TEST_MODE_REDIRECT_TO`, `MAIL_OUTBOX_TEST_MODE_REDIRECT_NAME`.
 
 ## Usage
@@ -95,7 +99,6 @@ The job:
 2. Checks rendered size against `max_message_bytes`
 3. Mints a correlation id and adds it as a message header
 4. Sends via Laravel’s mailer (`Mail::mailer($name)->send(...)`)
-5. Updates the row to `sent` or `failed`
 5. Updates the row to `sent`, `suppressed`, or `failed`
 
 Work lives in the job (progress via `Moox\Jobs\Traits\JobProgress`, terminal handling in `failed()`). Listeners are not used for sending.
@@ -136,8 +139,18 @@ Table: `mail_send_logs`
 
 Notable columns: `mailer`, `source` (`outbox` | `recorded`), `intended_recipients`, `actual_recipients`, `subject`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
 
-`sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery.
 `sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery. `suppressed` means test mode redirected at least one intended recipient — check `deliveredToIntendedRecipients()` before treating the send as delivered.
+
+Also stored when available: `raw_message` (rendered MIME for inspection) and encrypted `resend_payload` (outbox sends only, for operator resend).
+
+### Filament send log
+
+`php artisan moox:install` registers `MailOutboxPlugin`, which exposes `MailSendLogResource` in the panel.
+
+- **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. Redirected sends show a badge when intended and actual recipients differ.
+- **Detail** — intended and actual recipients, error, message id, related-record link when Filament can resolve one.
+- **Raw message** — confirmation-gated modal for `sent` rows with stored MIME (may include personal data and attachment bytes).
+- **Resend** — dispatches `SendMailJob` and creates a new row. Not offered for `suppressed` or `recorded` rows.
 
 ### Retry classification
 
@@ -194,3 +207,4 @@ Want to help us to develop and grow Moox. Fortunately there are so many ways to 
 ## License
 
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+
