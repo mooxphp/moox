@@ -14,7 +14,8 @@ class RecordSentMailListener
     public function __construct(
         private MailableInspector $inspector,
         private MailOutboxConfig $config,
-    ) {}
+    ) {
+    }
 
     public function handle(MessageSent $event): void
     {
