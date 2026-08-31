@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'single' => 'Mail template',
+    'plural' => 'Mail templates',
+    'navigation_group' => 'Mail',
+    'identity' => 'Identity',
+    'key' => 'Key',
+    'locale' => 'Locale',
+    'view' => 'MJML Blade view',
+    'view_help' => 'Layout, header, default body and footer come from this view.',
+    'brand_name' => 'Brand name',
+    'logo' => 'Logo',
+    'logo_help' => 'Leave empty to use the logo from the view.',
+    'mail_content' => 'Mail content (MJML)',
+    'mail_content_help' => 'Leave empty to use the default body from the view. A value here replaces only the body, not header or footer.',
+    'footer' => 'Footer (MJML)',
+    'footer_help' => 'Leave empty to use the default footer from the view.',
+    'preview' => 'Preview',
+    'subject' => 'Subject',
+    'send' => 'Send',
+    'send_submit' => 'Send',
+    'send_heading' => 'Send mail template',
+    'send_description' => 'Mailer: :mailer. From: :from.',
+    'send_locale' => 'Language',
+    'send_recipients' => 'Recipients',
+    'send_recipients_help' => 'Only addresses from config/mail-send.php. The committed list starts empty.',
+    'send_no_recipients' => 'No recipients in config. Add them in config/mail-send.php.',
+    'send_success_title' => 'Mail sent',
+    'send_success_body' => ':count mail(s) sent.',
+    'send_partial_title' => 'Send incomplete',
+    'send_partial_body' => ':sent sent, :failed failed (:addresses).',
+    'send_failed_title' => 'Send failed',
+    'send_failed_body' => 'No mail sent. :addresses',
+    'send_nothing_selected' => 'No valid recipients selected.',
+];

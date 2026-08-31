@@ -1,0 +1,57 @@
+{
+    "name": "moox/mail-template",
+    "description": "Outbound mail templates: MJML Blade views, logo, footer, and Filament editor.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "mail",
+        "MJML",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/mail-template",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "moox/mjml": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\MailTemplate\\": "src",
+            "Moox\\MailTemplate\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\MailTemplate\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\MailTemplate\\MailTemplateServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

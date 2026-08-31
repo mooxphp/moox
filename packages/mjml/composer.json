@@ -1,0 +1,50 @@
+{
+    "name": "moox/mjml",
+    "description": "Moox MJML: Spatie mjml-php as the rendering API for this iteration.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "MJML",
+        "email",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/mjml",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "dev-main",
+        "spatie/mjml-php": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Mjml\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Mjml\\MjmlServiceProvider"
+            ]
+        },
+        "moox": {
+            "stability": "dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "moox/devtools": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

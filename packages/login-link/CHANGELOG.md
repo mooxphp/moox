@@ -4,10 +4,15 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- `ProcessLinkMail` compiles MJML with Spatie when present and prefers a matching `moox/mail-template` MailTemplate (process `template_key` / slug, then `login-link.mail_template_key` for the login process only). HTML process templates are unchanged. `LoginLinkEmail` delegates to `ProcessLinkMail`.
+- `moox/mail-template` and `moox/mjml` are no longer hard dependencies of `login-link`.
+
 ### Added
 
 - Packaged English examples: `login` (passwordless panel sign-in), `verify-email` (mailbox confirmation), `mass-mail` (campaign confirmation, invalidate prior off). Each has its own mail template. Issue public examples with `php artisan login-link:example`.
-- Process `context` (`auth` \| `public`): auth keeps panel consume; public uses `login-link.public.consume` without Filament/auth.
+- Public consume distinguishes used / expired / invalid and renders `login-link::public.unavailable` (override via `login-link.public_unavailable_view`) instead of redirecting to `/`. Support contact comes from `login-link.public_support`.
 - Nullable `panel_id` on link instances; auth issue requires panel id, public forces null.
 - JSON `payload` on link instances (call context; subject remains identity).
 - Process `template_key` resolved via `login-link.templates` config (domain-agnostic).

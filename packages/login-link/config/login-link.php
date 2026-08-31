@@ -162,6 +162,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail template
+    |--------------------------------------------------------------------------
+    |
+    | Optional moox/mail-template MailTemplate key for the login process when
+    | that package is installed. ProcessLinkMail looks up MailTemplate rows
+    | by process template_key, then slug, then this key (login only). Other
+    | processes never fall back to this key. Supplies Blade view, logo,
+    | footer, and optional MJML content. When mail-template/mjml are missing or no
+    | row matches, views from login-link.templates are used; MJML is compiled
+    | with Spatie when present, HTML templates are sent as Blade.
+    |
+    */
+
+    'mail_template_key' => env('LOGIN_LINK_MAIL_TEMPLATE_KEY', 'login-link'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Passwordless / Login link (toggle)
     |--------------------------------------------------------------------------
     |
@@ -255,6 +272,24 @@ return [
     'public_consume_path' => env('LOGIN_LINK_PUBLIC_CONSUME_PATH', 'signed-link/{loginLink}'),
 
     'public_invalid_redirect' => env('LOGIN_LINK_PUBLIC_INVALID_REDIRECT', '/'),
+
+    'public_unavailable_view' => env('LOGIN_LINK_PUBLIC_UNAVAILABLE_VIEW', 'login-link::public.unavailable'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Public consume support contact
+    |--------------------------------------------------------------------------
+    |
+    | Shown on the used/expired/invalid public-link page. Consumers fill this
+    | (host or package config). Empty values hide the support block.
+    |
+    */
+
+    'public_support' => [
+        'name' => env('LOGIN_LINK_PUBLIC_SUPPORT_NAME'),
+        'email' => env('LOGIN_LINK_PUBLIC_SUPPORT_EMAIL'),
+        'phone' => env('LOGIN_LINK_PUBLIC_SUPPORT_PHONE'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
