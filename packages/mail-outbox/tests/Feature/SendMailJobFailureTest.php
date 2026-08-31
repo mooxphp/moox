@@ -221,7 +221,6 @@ test('failed() marks a non-sent log row as failed', function (): void {
         'intended_recipients' => ['fail@example.com'],
         'actual_recipients' => null,
         'subject' => 'Mail outbox test',
-        'template_key' => TestMailable::class,
         'status' => MailSendStatus::Queued,
         'attempt_count' => 1,
         'error' => null,
@@ -238,3 +237,4 @@ test('failed() marks a non-sent log row as failed', function (): void {
     expect($log->fresh()->status)->toBe(MailSendStatus::Failed)
         ->and($log->fresh()->error)->toBe('queue gave up');
 });
+

@@ -11,7 +11,7 @@ A named Laravel mailer configuration. Provider choice and credentials are a host
 _Avoid_: Transport contract, adapter (package-owned), SMTP session
 
 **Send log**:
-One row per send attempt chain for a single job dispatch — intended and actual recipients, subject, template key, status, attempts, error, identifiers, optional related business object, and **source** (`outbox` from `SendMailJob`, `recorded` from the framework `MessageSent` recorder).
+One row per send attempt chain for a single job dispatch — intended and actual recipients, subject, status, attempts, error, identifiers, optional related business object, and **source** (`outbox` from `SendMailJob`, `recorded` from the framework `MessageSent` recorder).
 _Avoid_: Archive, outbox folder, delivery receipt
 
 **Source**:
@@ -51,5 +51,5 @@ _Avoid_: Provider reference
 
 ## Not this context
 
-**Safe test mode**, **Filament send-log UI**, **database templates**, **send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).
+**Safe test mode**, **Filament send-log UI**, **send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. Templating (registry, typed payloads, database-held text, visual shell / inlining) lives in `moox/template` and `moox/mjml` (see [ADR 0017](../../docs/adr/0017-templating-moves-to-moox-template-and-mjml.md)). Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).
 
