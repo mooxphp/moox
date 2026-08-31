@@ -39,7 +39,6 @@ class MailSendLog extends Model
         'source',
         'status',
         'subject',
-        'template_key',
     ];
 
     /**
