@@ -90,4 +90,25 @@ return [
         //
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Safe test mode
+    |--------------------------------------------------------------------------
+    |
+    | Redirects non-allowlisted recipients to a single sandbox address using
+    | Laravel's mailer alwaysTo override. Allowlisted patterns are delivered
+    | for real. Redirected sends are logged as suppressed — not delivered to
+    | intended recipients — so domain objects must not mark delivery.
+    |
+    */
+    'test_mode' => [
+        'enabled' => (bool) env('MAIL_OUTBOX_TEST_MODE', false),
+        'redirect_to' => env('MAIL_OUTBOX_TEST_MODE_REDIRECT_TO'),
+        'redirect_name' => env('MAIL_OUTBOX_TEST_MODE_REDIRECT_NAME'),
+        'allowlist' => [
+            // '*@example.com',
+        ],
+        'subject_prefix' => '[TEST to %s] ',
+        'warn_in_production' => true,
+    ],
 ];

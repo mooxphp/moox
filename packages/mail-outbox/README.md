@@ -27,6 +27,7 @@ Learn more about [Moox](https://moox.org).
 - Correlation — self-assigned header plus optional provider message-id read-back (per mailer)
 - Optional polymorphic related business object on the log row
 - Foreign mail recording — Laravel `MessageSent` listener dispatches `RecordSentMailJob` for mail sent outside `SendMailJob` (deduplicated against outbox rows)
+- Safe test mode — redirect non-allowlisted recipients via Laravel's `alwaysTo`, record both recipient sets, prefix redirected subjects, log as `suppressed` when not delivered to intended recipients
 
 <!-- /Features -->
 
@@ -66,8 +67,14 @@ Keys in `config/mail-outbox.php`:
 | `read_back_provider_id` | Default: whether to read the provider message id after send (default `false`). |
 | `record_foreign_mail` | Record mail sent via Laravel's mailer without `SendMailJob` (default `true`). |
 | `mailers.{name}.read_back_provider_id` | Per-mailer override for provider id read-back. |
+| `test_mode.redirect_to` | Sandbox address for redirected mail (required when enabled). |
+| `test_mode.redirect_name` | Optional display name for the sandbox recipient. |
+| `test_mode.allowlist` | Wildcard patterns (`Str::is`) delivered for real while test mode is on. |
+| `test_mode.subject_prefix` | Prefix for redirected mail; `%s` is replaced with the original recipient(s). |
+| `test_mode.warn_in_production` | Log a warning at boot when test mode is on in production (default `true`). |
 
 Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`, `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`.
+Environment variables: `MAIL_OUTBOX_MAX_MESSAGE_BYTES`, `MAIL_OUTBOX_RETRY_MAX_TRIES`, `MAIL_OUTBOX_CORRELATION_HEADER`, `MAIL_OUTBOX_READ_BACK_PROVIDER_ID`, `MAIL_OUTBOX_RECORD_FOREIGN_MAIL`, `MAIL_OUTBOX_TEST_MODE`, `MAIL_OUTBOX_TEST_MODE_REDIRECT_TO`, `MAIL_OUTBOX_TEST_MODE_REDIRECT_NAME`.
 
 ## Usage
 
@@ -89,8 +96,21 @@ The job:
 3. Mints a correlation id and adds it as a message header
 4. Sends via Laravel’s mailer (`Mail::mailer($name)->send(...)`)
 5. Updates the row to `sent` or `failed`
+5. Updates the row to `sent`, `suppressed`, or `failed`
 
 Work lives in the job (progress via `Moox\Jobs\Traits\JobProgress`, terminal handling in `failed()`). Listeners are not used for sending.
+
+### Safe test mode
+
+When `test_mode.enabled` is true, **all outbound Laravel mail** is intercepted on `MessageSending` via `ApplyTestModeListener`. Non-allowlisted recipients are redirected to `test_mode.redirect_to`; allowlisted patterns (wildcard via `Str::is`) are delivered for real. Redirected mail gets a subject prefix naming the original recipient(s).
+
+`SendMailJob` adds a second layer for mixed allowlist runs: it can perform two sends (real leg for allowlisted addresses, redirect leg for the rest) under one outbox log row. Non-outbox mail with mixed recipients is redirected entirely to the sandbox in a single send.
+
+The log row always records **intended** recipients (from before redirection) and **actual** recipients (who received mail on the wire). When any intended recipient was redirected, status is **`suppressed`**, not `sent`. Foreign-mail rows recorded via `RecordSentMailJob` follow the same rule.
+
+**Not-delivered guarantee:** use `MailSendLog::deliveredToIntendedRecipients()` (or `MailSendStatus::deliveredToIntendedRecipients()`) before marking a business object as delivered. A suppressed row means the provider may have accepted a sandbox copy, but the intended recipient did not receive the mail.
+
+Mixed allowlist runs may perform two sends (real leg for allowlisted addresses, redirect leg for the rest) under one log row. Test mode logs a boot-time warning when enabled in production.
 
 ### Foreign mail recording
 
@@ -117,6 +137,7 @@ Table: `mail_send_logs`
 Notable columns: `mailer`, `source` (`outbox` | `recorded`), `intended_recipients`, `actual_recipients`, `subject`, `status`, `attempt_count`, `error`, `message_id` (RFC 5322), `provider_reference`, `correlation_id`, polymorphic `related`.
 
 `sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery.
+`sent` means the provider accepted the message and the send was recorded. This package does not assert recipient mailbox delivery. `suppressed` means test mode redirected at least one intended recipient — check `deliveredToIntendedRecipients()` before treating the send as delivered.
 
 ### Retry classification
 
