@@ -19,7 +19,12 @@ Whether the row was created by `SendMailJob` (`outbox`) or by `RecordSentMailJob
 
 **Status**:
 `queued` → `sent` | `failed` | `suppressed`. **`sent` means the provider accepted the message and the send was logged** — never that the recipient’s mailbox received it. `suppressed` is reserved for safe test mode (later ticket).
+`queued` → `sent` | `failed` | `suppressed`. **`sent` means the provider accepted the message and the send was logged** — never that the recipient’s mailbox received it. **`suppressed` means safe test mode redirected at least one intended recipient** — the sandbox may have accepted mail, but the intended recipient did not receive it; domain code must use `deliveredToIntendedRecipients()` before marking delivery.
 _Avoid_: Delivered, opened, bounced (those need inbound reports)
+
+**Safe test mode**:
+Built on Laravel's per-mailer `alwaysTo` override and a global `MessageSending` listener. Non-allowlisted recipients go to a configured sandbox address; allowlisted patterns are delivered for real. Redirected mail gets a subject prefix naming the original recipient(s). Both intended and actual recipient sets are recorded. Boot warns when enabled in production.
+_Avoid_: A second redirection mechanism, treating `suppressed` as delivered
 
 **Size guard**:
 Estimate of rendered message size (body + attachments) checked against a configured ceiling **before** the transport runs.
@@ -53,3 +58,4 @@ _Avoid_: Provider reference
 
 **Safe test mode**, **Filament send-log UI**, **send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. Templating (registry, typed payloads, database-held text, visual shell / inlining) lives in `moox/template` and `moox/mjml` (see [ADR 0017](../../docs/adr/0017-templating-moves-to-moox-template-and-mjml.md)). Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).
 
+**Send windows / throttling**, **inbound NDR correlation**, and **archiving / retention** are later tickets or other packages. The Filament send-log UI (`MailSendLogResource`) lives in this package. Templating (registry, typed payloads, database-held text, visual shell / inlining) lives in `moox/template` and `moox/mjml` (see [ADR 0017](../../docs/adr/0017-templating-moves-to-moox-template-and-mjml.md)). Inbound vocabulary lives in [mail-inbox CONTEXT](../mail-inbox/CONTEXT.md).

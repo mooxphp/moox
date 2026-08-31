@@ -13,6 +13,11 @@ enum MailSendStatus: string
 
     case Failed = 'failed';
 
-    /** Reserved for safe test mode (later ticket); unused by SendMailJob today. */
+    /** Redirected by safe test mode — provider may accept, but not delivered to intended recipients. */
     case Suppressed = 'suppressed';
+
+    public function deliveredToIntendedRecipients(): bool
+    {
+        return $this === self::Sent;
+    }
 }

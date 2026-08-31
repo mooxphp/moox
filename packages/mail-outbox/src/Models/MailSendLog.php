@@ -60,6 +60,51 @@ class MailSendLog extends Model
         return $this->morphTo();
     }
 
+    public function isRedirected(): bool
+    {
+        $intended = $this->normalizedRecipientSet($this->intended_recipients);
+        $actual = $this->normalizedRecipientSet($this->actual_recipients);
+
+        return $actual !== [] && $intended !== $actual;
+    }
+
+    public function primaryRecipientLabel(): string
+    {
+        $recipients = $this->actual_recipients ?? $this->intended_recipients ?? [];
+
+        if ($recipients === []) {
+            return '—';
+        }
+
+        return implode(', ', $recipients);
+    }
+
+    /**
+     * @param  list<string>|null  $recipients
+     * @return list<string>
+     */
+    private function normalizedRecipientSet(?array $recipients): array
+    {
+        if ($recipients === null || $recipients === []) {
+            return [];
+        }
+
+        $normalized = array_map(static fn (string $recipient): string => strtolower($recipient), $recipients);
+        sort($normalized);
+
+        return array_values($normalized);
+    }
+
+    public function deliveredToIntendedRecipients(): bool
+    {
+        return $this->status?->deliveredToIntendedRecipients() ?? false;
+    }
+
+    public function wasSuppressed(): bool
+    {
+        return $this->status === MailSendStatus::Suppressed;
+    }
+
     /**
      * @param  Builder<MailSendLog>  $query
      * @return Builder<MailSendLog>
