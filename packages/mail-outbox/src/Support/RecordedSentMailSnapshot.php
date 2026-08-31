@@ -23,7 +23,8 @@ final readonly class RecordedSentMailSnapshot
         public ?string $subject,
         public ?string $messageId,
         public ?string $correlationId,
-    ) {}
+    ) {
+    }
 
     /**
      * A framework send is recordable when it carries identifiers and/or visible payload.

@@ -43,7 +43,8 @@ class SendMailJob implements ShouldQueue
         public Mailable $mailable,
         public string $mailer,
         public ?Model $related = null,
-    ) {}
+    ) {
+    }
 
     public function tries(): int
     {
