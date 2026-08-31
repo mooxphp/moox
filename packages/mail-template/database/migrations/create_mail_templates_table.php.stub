@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('locale', 8)->default('de');
             $table->string('view');
             $table->string('brand_name')->nullable();
+            $table->string('subject')->nullable();
             $table->string('logo_path')->nullable();
             $table->longText('mail_content')->nullable();
             $table->longText('footer')->nullable();
