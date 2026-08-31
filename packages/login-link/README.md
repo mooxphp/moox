@@ -117,7 +117,7 @@ Seeded on install:
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
 - `login-link.mail_logo_url`: optional logo shown when no MailTemplate row is used.
-- `login-link.mail_template_key`: optional MailTemplate key for the **login** process when `moox/mail-outbox` is installed (default `login-link`). Other processes match a MailTemplate by their own `template_key` / slug only.
+- `login-link.mail_template_key`: optional MailTemplate key for the **login** process when `moox/mail-template` is installed (default `login-link`). Other processes match a MailTemplate by their own `template_key` / slug only.
 - `login-link.templates`: process `template_key` → Blade view. Hosts remap these to branded views; the engine has no theme knowledge. MJML is compiled when Spatie is present.
 
 ## Security notes

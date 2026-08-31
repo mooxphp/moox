@@ -19,7 +19,7 @@ use Moox\LoginLink\Support\LinkProcessContext;
  * Renders the process template_key via config('login-link.templates').
  * Domain packages contribute views in config; this package stays domain-agnostic.
  *
- * When the host has moox/mail-outbox, a matching MailTemplate is preferred
+ * When the host has moox/mail-template, a matching MailTemplate is preferred
  * (process template_key / slug, then login-link.mail_template_key for login).
  * MJML views are compiled with Spatie when that package is installed; HTML
  * process templates are sent as rendered Blade.
@@ -90,7 +90,7 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
      */
     private function renderBody(string $view, array $data): string
     {
-        $rendererClass = 'Moox\\MailOutbox\\Support\\MailTemplateRenderer';
+        $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
         $mjmlClass = 'Spatie\\Mjml\\Mjml';
 
         if (class_exists($rendererClass) && Schema::hasTable('mail_templates')) {

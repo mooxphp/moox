@@ -165,11 +165,11 @@ return [
     | Mail template
     |--------------------------------------------------------------------------
     |
-    | Optional moox/mail-outbox MailTemplate key for the login process when
+    | Optional moox/mail-template MailTemplate key for the login process when
     | that package is installed. ProcessLinkMail looks up MailTemplate rows
     | by process template_key, then slug, then this key (login only). Other
     | processes never fall back to this key. Supplies Blade view, logo,
-    | footer, and optional MJML content. When outbox/mjml are missing or no
+    | footer, and optional MJML content. When mail-template/mjml are missing or no
     | row matches, views from login-link.templates are used; MJML is compiled
     | with Spatie when present, HTML templates are sent as Blade.
     |

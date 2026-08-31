@@ -9,7 +9,7 @@ use Moox\LoginLink\Models\LoginLink;
 /**
  * @deprecated Use ProcessLinkMail. Kept for backwards compatibility.
  *
- * MJML / mail-outbox rendering lives on ProcessLinkMail. This subclass only
+ * MJML / mail-template rendering lives on ProcessLinkMail. This subclass only
  * preserves the original one-argument constructor.
  */
 class LoginLinkEmail extends ProcessLinkMail

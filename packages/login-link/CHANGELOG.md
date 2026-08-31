@@ -6,8 +6,8 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Changed
 
-- `ProcessLinkMail` compiles MJML with Spatie when present and prefers a matching `moox/mail-outbox` MailTemplate (process `template_key` / slug, then `login-link.mail_template_key` for the login process only). HTML process templates are unchanged. `LoginLinkEmail` delegates to `ProcessLinkMail`.
-- `moox/mail-outbox` and `moox/mjml` are no longer hard dependencies of `login-link`.
+- `ProcessLinkMail` compiles MJML with Spatie when present and prefers a matching `moox/mail-template` MailTemplate (process `template_key` / slug, then `login-link.mail_template_key` for the login process only). HTML process templates are unchanged. `LoginLinkEmail` delegates to `ProcessLinkMail`.
+- `moox/mail-template` and `moox/mjml` are no longer hard dependencies of `login-link`.
 
 ### Added
 
