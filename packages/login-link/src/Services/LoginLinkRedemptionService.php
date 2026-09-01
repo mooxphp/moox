@@ -15,7 +15,8 @@ class LoginLinkRedemptionService
 {
     public function __construct(
         protected RedemptionHandlerRegistry $handlers,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  string|null  $panelId  Panel id for auth-context redeem; null for public consume.

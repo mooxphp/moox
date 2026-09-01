@@ -22,5 +22,6 @@ class ProcessLinkAcknowledged
         public LoginLink $loginLink,
         public Model $subject,
         public ?string $panelId,
-    ) {}
+    ) {
+    }
 }

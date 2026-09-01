@@ -174,7 +174,9 @@ it('dispatches a custom registered handler for a process key', function (): void
 
     $customHandler = new class($state) implements RedemptionHandler
     {
-        public function __construct(private object $state) {}
+        public function __construct(private object $state)
+        {
+        }
 
         public function handle(LoginLink $loginLink, ?string $panelId): ?RedirectResponse
         {
