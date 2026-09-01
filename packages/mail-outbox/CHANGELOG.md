@@ -26,8 +26,12 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Fixed
 
+- Skip stamping RFC 5322 `Message-ID` on mailers whose transport rejects it (default: `microsoftgraph` / Microsoft Graph)
 - Do not invent package-local RFC 5322 Message-IDs after send; ensure Symfony’s on-wire Message-ID before transport and capture it from the sent copy
 - Attach correlation header once across retries; honour zero retry-after without a tight loop
 - Foreign-mail recorder: listener dispatches a `RecordedSentMailSnapshot` (no live MIME); recordable when identifiers and/or recipients/subject are present; unique `correlation_id`; `failed()` logging; `tries = 1`
+- Test-mode subject prefix now applies to mailables that set their subject via `envelope()`: `MailableRecipientFilter::withSubject` sets the subject on the built Symfony message (after the envelope), so the `[TEST to …]` prefix is no longer overwritten on the `SendMailJob` redirect leg
+- `mail-outbox:test-send` without `--test` honours the ambient `MAIL_OUTBOX_TEST_MODE` instead of forcing test mode off, so the environment switch can be verified; the probe mailable also sets its recipient as `To` so a send no longer fails with a missing-recipient error
+
 
 

@@ -66,6 +66,36 @@ final class MailOutboxConfig
         return (bool) config('mail-outbox.read_back_provider_id', false);
     }
 
+    public function shouldEnsureMessageId(string $mailer): bool
+    {
+        /** @var mixed $transport */
+        $transport = config("mail.mailers.{$mailer}.transport");
+
+        if (! is_string($transport) || $transport === '') {
+            return true;
+        }
+
+        return ! in_array($transport, $this->messageIdUnsupportedTransports(), true);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function messageIdUnsupportedTransports(): array
+    {
+        /** @var mixed $transports */
+        $transports = config('mail-outbox.message_id_unsupported_transports', ['microsoftgraph']);
+
+        if (! is_array($transports)) {
+            return ['microsoftgraph'];
+        }
+
+        return array_values(array_filter(
+            $transports,
+            static fn (mixed $transport): bool => is_string($transport) && $transport !== '',
+        ));
+    }
+
     public function isTestModeEnabled(): bool
     {
         return (bool) config('mail-outbox.test_mode.enabled', false);
