@@ -68,6 +68,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Message-ID unsupported transports
+    |--------------------------------------------------------------------------
+    |
+    | Laravel mail transports that reject a caller-supplied RFC 5322 Message-ID
+    | (for example Microsoft Graph, which only accepts custom x- headers).
+    | OutboundMessagePreparer skips stamping Message-ID for these mailers.
+    |
+    */
+    'message_id_unsupported_transports' => [
+        'microsoftgraph',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Provider message-id read-back (default)
     |--------------------------------------------------------------------------
     |
@@ -204,3 +218,4 @@ return [
     'navigation_group' => 'trans//mail-outbox::mail-outbox.navigation_group',
 
 ];
+

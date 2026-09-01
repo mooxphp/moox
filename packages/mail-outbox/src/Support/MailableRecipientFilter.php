@@ -64,6 +64,15 @@ final class MailableRecipientFilter
 
         if ($clone instanceof IlluminateMailable) {
             $clone->subject = $subject;
+
+            // A mailable that sets its subject via envelope() overwrites the
+            // property at build time, so set it on the built message too — this
+            // callback runs after the envelope, letting the test-mode prefix win.
+            $clone->withSymfonyMessage(function ($message) use ($subject): void {
+                if ($message instanceof Email) {
+                    $message->subject($subject);
+                }
+            });
         }
 
         if (property_exists($clone, 'mailSubject')) {
