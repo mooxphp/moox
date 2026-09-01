@@ -9,6 +9,7 @@ use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\MooxServiceProvider;
+use Moox\MailOutbox\Commands\SendTestMailCommand;
 use Moox\MailOutbox\Contracts\ProviderMessageIdReader;
 use Moox\MailOutbox\Listeners\ApplyTestModeListener;
 use Moox\MailOutbox\Listeners\RecordSentMailListener;
@@ -39,7 +40,8 @@ class MailOutboxServiceProvider extends MooxServiceProvider
             ->hasViews()
             ->hasMigrations([
                 'create_mail_send_logs_table',
-            ]);
+            ])
+            ->hasCommand(SendTestMailCommand::class);
 
         $this->getMooxPackage()
             ->title('Moox Mail Outbox')
