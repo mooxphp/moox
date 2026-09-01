@@ -112,11 +112,13 @@ php artisan mail-outbox:test-send --to=someone@example.com --mailer=smtp
 
 Sends a minimal, transport-agnostic probe mailable (`Moox\MailOutbox\Mail\OutboxTestMail`) through `SendMailJob`, then prints the resulting `mail_send_logs` row (id, status, mailer, intended/actual recipients, message id, error). Any configured mailer works via `--mailer` — the command is not tied to a specific transport.
 
+Without `--test` the command honours the ambient configuration, so a global `MAIL_OUTBOX_TEST_MODE=true` still redirects the probe. Use this to verify the environment switch itself: with test mode enabled in `.env` (and the config cache cleared), a run without any flag should come back `suppressed`, redirected to the sandbox — proof that nothing reaches the intended address. `--test` forces test mode on for a single run regardless of the ambient setting.
+
 | Option | Purpose |
 | --- | --- |
 | `--to=` | Intended recipient address (required) |
 | `--mailer=` | Named Laravel mailer (defaults to `mail.default`) |
-| `--test` | Route the send through [safe test mode](#safe-test-mode) — redirect + `suppressed` status |
+| `--test` | Force [safe test mode](#safe-test-mode) on for this run — redirect + `suppressed` status. Omit it to honour the ambient `MAIL_OUTBOX_TEST_MODE` |
 | `--redirect=` | Sandbox address for `--test`; overrides `mail-outbox.test_mode.redirect_to` for this run only |
 
 ### Safe test mode

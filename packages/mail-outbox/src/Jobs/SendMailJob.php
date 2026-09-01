@@ -277,7 +277,7 @@ class SendMailJob implements ShouldQueue
             return;
         }
 
-        $preparer->prepare($this->mailable, $header, $correlationId);
+        $preparer->prepare($this->mailable, $header, $correlationId, $this->mailer);
         $this->outboundMessagePrepared = true;
     }
 

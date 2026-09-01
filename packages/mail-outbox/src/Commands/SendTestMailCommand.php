@@ -39,9 +39,11 @@ class SendTestMailCommand extends Command
         }
 
         $mailer = trim((string) $this->option('mailer')) ?: (string) config('mail.default');
-        $testMode = (bool) $this->option('test');
 
-        if ($testMode) {
+        // --test forces test mode on for this run. Without it, the ambient
+        // config is honoured — so this command can verify a global
+        // MAIL_OUTBOX_TEST_MODE=true from the environment.
+        if ($this->option('test')) {
             $redirect = trim((string) $this->option('redirect'))
                 ?: (string) config('mail-outbox.test_mode.redirect_to');
 
@@ -53,11 +55,17 @@ class SendTestMailCommand extends Command
 
             Config::set('mail-outbox.test_mode.enabled', true);
             Config::set('mail-outbox.test_mode.redirect_to', $redirect);
+        }
 
-            $this->warn("Test mode ON — mail for {$to} is redirected to {$redirect} and logged as 'suppressed'.");
+        $testModeActive = (bool) config('mail-outbox.test_mode.enabled');
+
+        if ($testModeActive) {
+            $this->warn(sprintf(
+                "Test mode ACTIVE — mail for %s is redirected to %s and logged as 'suppressed'.",
+                $to,
+                (string) config('mail-outbox.test_mode.redirect_to'),
+            ));
         } else {
-            Config::set('mail-outbox.test_mode.enabled', false);
-
             $this->warn("Test mode OFF — mail is delivered for real to {$to}.");
         }
 
@@ -65,7 +73,7 @@ class SendTestMailCommand extends Command
         $this->line('Mailer: '.$mailer);
 
         try {
-            SendMailJob::dispatchSync(new OutboxTestMail($to, $testMode), $mailer);
+            SendMailJob::dispatchSync(new OutboxTestMail($to, $testModeActive), $mailer);
         } catch (Throwable $e) {
             $this->error('Send threw: '.$e->getMessage());
 

@@ -12,6 +12,7 @@ use Moox\MsGraph\Auth\ConnectionRegistry;
 use Moox\MsGraph\Auth\GraphClientFactory;
 use Moox\MsGraph\Mail\GraphInboxDriver;
 use Moox\MsGraph\Mail\MailSettings;
+use Moox\MsGraph\Mail\Transport\GraphHeaderSanitizingTransport;
 use Spatie\LaravelPackageTools\Package;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mailer\Bridge\MicrosoftGraph\Transport\MicrosoftGraphTransportFactory;
@@ -109,7 +110,7 @@ class MsgraphServiceProvider extends MooxServiceProvider
                 client: HttpClient::create(),
             );
 
-            return $factory->create($dsn);
+            return new GraphHeaderSanitizingTransport($factory->create($dsn));
         });
 
         if ($this->app['config']->get('mail.mailers.msgraph') === null) {
@@ -120,3 +121,4 @@ class MsgraphServiceProvider extends MooxServiceProvider
         }
     }
 }
+

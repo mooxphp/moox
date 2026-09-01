@@ -155,6 +155,8 @@ microsoftgraph+api://<clientId>:<clientSecret>@default?tenantId=<tenantId>
 
 An explicit Symfony `HttpClient` is passed to `MicrosoftGraphTransportFactory`, since the factory does not create one on its own.
 
+The registered transport wraps the Symfony bridge in `GraphHeaderSanitizingTransport`, which removes headers Graph cannot accept as custom `internetMessageHeaders` (only names starting with `x-` / `X-` are allowed). This includes caller-supplied `Message-ID` values from upstream mail code.
+
 Unless the host app has already defined `mail.mailers.msgraph`, the provider also registers a default named mailer:
 
 ```php
@@ -188,4 +190,5 @@ Want to help us to develop and grow Moox. Fortunately there are so many ways to 
 
 ## License
 The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
+
 

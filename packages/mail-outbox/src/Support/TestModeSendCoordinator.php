@@ -51,7 +51,7 @@ final class TestModeSendCoordinator
         $originalSubject = $this->inspector->subject($mailable);
 
         if ($plan->allDelivered()) {
-            $this->preparer->prepare($mailable, $correlationHeader, $correlationId);
+            $this->preparer->prepare($mailable, $correlationHeader, $correlationId, $mailerName);
             $sent = Mail::mailer($mailerName)->send($mailable);
 
             return new TestModeSendResult(
@@ -66,7 +66,7 @@ final class TestModeSendCoordinator
 
         if ($plan->hasDelivered()) {
             $deliveredMailable = $this->filter->filterToOnly($mailable, $plan->delivered);
-            $this->preparer->prepare($deliveredMailable, $correlationHeader, $correlationId);
+            $this->preparer->prepare($deliveredMailable, $correlationHeader, $correlationId, $mailerName);
             $sent = Mail::mailer($mailerName)->send($deliveredMailable);
             $actualRecipients = array_merge(
                 $actualRecipients,
@@ -83,7 +83,7 @@ final class TestModeSendCoordinator
                 $plan->redirected,
             ),
         );
-        $this->preparer->prepare($redirectMailable, $correlationHeader, $correlationId);
+        $this->preparer->prepare($redirectMailable, $correlationHeader, $correlationId, $mailerName);
 
         $mailer = Mail::mailer($mailerName);
         $mailer->alwaysTo($config->testModeRedirectTo(), $config->testModeRedirectName());
@@ -131,3 +131,4 @@ final class TestModeSendCoordinator
         return null;
     }
 }
+

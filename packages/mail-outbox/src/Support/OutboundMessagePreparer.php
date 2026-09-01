@@ -8,9 +8,13 @@ use Illuminate\Contracts\Mail\Mailable;
 
 final class OutboundMessagePreparer
 {
-    public function prepare(Mailable $mailable, string $header, string $correlationId): void
+    public function __construct(
+        private MailOutboxConfig $config,
+    ) {}
+
+    public function prepare(Mailable $mailable, string $header, string $correlationId, string $mailer): void
     {
-        $mailable->withSymfonyMessage(function ($message) use ($header, $correlationId): void {
+        $mailable->withSymfonyMessage(function ($message) use ($header, $correlationId, $mailer): void {
             $headers = $message->getHeaders();
 
             if ($headers->has($header)) {
@@ -19,9 +23,14 @@ final class OutboundMessagePreparer
 
             $headers->addTextHeader($header, $correlationId);
 
-            if (! $headers->has('Message-ID') && method_exists($message, 'generateMessageId')) {
+            if (
+                $this->config->shouldEnsureMessageId($mailer)
+                && ! $headers->has('Message-ID')
+                && method_exists($message, 'generateMessageId')
+            ) {
                 $headers->addIdHeader('Message-ID', $message->generateMessageId());
             }
         });
     }
 }
+

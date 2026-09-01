@@ -18,6 +18,10 @@
 - Outbound Microsoft Graph mail transport: `MsgraphServiceProvider` registers a Symfony mailer transport under the `microsoftgraph` driver via `Mail::extend` (bridge: `symfony/microsoft-graph-mailer`), with the DSN built from the connection registry so tenant credentials stay in `config/msgraph.php`
 - Default `msgraph` Laravel mailer registered into `mail.mailers.msgraph` (transport `microsoftgraph`, connection from `msgraph.default`) unless the host app already defines it
 
+### Fixed
+
+- Outbound Graph sends: `GraphHeaderSanitizingTransport` strips `Message-ID` and other disallowed RFC headers before they reach Graph `internetMessageHeaders` (Graph only accepts custom `x-` headers)
+
 ### Changed
 
 - `GraphPipelineMover::settle(Processed)` marks the message as read before the folder move (parity with the former consumer finalizer).
@@ -47,4 +51,5 @@
 ### Changed
 
 - `microsoft/microsoft-graph` constraint stays `^2.0`. The driver uses delta/`withUrl`, mail folders and attachments — all present in 2.0 — so narrowing to `^2.26` would exclude consumers without a compatibility reason.
+
 
