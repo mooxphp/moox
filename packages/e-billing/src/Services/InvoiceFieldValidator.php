@@ -125,6 +125,27 @@ class InvoiceFieldValidator
     {
         $this->fillFieldValidations($document);
 
+        $this->applyReviewStatusFromFieldValidations($document);
+
+        $document->refresh();
+
+        event(new InvoiceValidationCompleted(
+            document: $document,
+            needsHumanReview: $document->needsHumanReview(),
+        ));
+    }
+
+    /**
+     * Re-evaluates review_status after a severity release or other field_validations change
+     * without re-running full validation.
+     */
+    public function refreshReviewOutcome(EbillingDocument $document): void
+    {
+        $this->applyReviewStatusFromFieldValidations($document);
+    }
+
+    private function applyReviewStatusFromFieldValidations(EbillingDocument $document): void
+    {
         $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
         $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
 
@@ -135,20 +156,11 @@ class InvoiceFieldValidator
             $lineFields = [];
         }
 
-        $allMustAndShouldClean = $this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields);
-
-        if ($allMustAndShouldClean) {
+        if ($this->allMustAndShouldFieldsAreClean($document, $invoiceFields, $lineFields)) {
             $document->transitionTo(InvoiceProcessingStatus::Validated);
         } else {
             $document->transitionTo(InvoiceProcessingStatus::DbValidated);
         }
-
-        $document->refresh();
-
-        event(new InvoiceValidationCompleted(
-            document: $document,
-            needsHumanReview: $document->needsHumanReview(),
-        ));
     }
 
     private function guardAgainstRevalidation(EbillingDocument $document): void
@@ -203,12 +215,8 @@ class InvoiceFieldValidator
         array $invoiceFields,
         array $lineFields,
     ): bool {
-        // `parsed` is clean: present on the document without a master-data check.
-        // Without it, must/should fields that only ever become `parsed` block
-        // automatic progression to Validated forever (#21 / #25).
-        $cleanStatuses = ['validated', 'db_validated', 'not_applicable', 'parsed'];
-
         $validations = is_array($document->field_validations) ? $document->field_validations : [];
+        $severityReleases = is_array($document->severity_releases) ? $document->severity_releases : null;
 
         foreach ($invoiceFields as $field => $priority) {
             if (! is_string($field) || ! is_string($priority)) {
@@ -218,7 +226,7 @@ class InvoiceFieldValidator
                 continue;
             }
             $status = $this->readNestedFieldStatus($validations, $field);
-            if (! in_array($status, $cleanStatuses, true)) {
+            if (! EbillingDocument::fieldValidationAllowsValidatedTransition($status, $priority, $severityReleases, $field)) {
                 return false;
             }
         }
@@ -228,7 +236,7 @@ class InvoiceFieldValidator
             return true;
         }
 
-        foreach ($linesValidations as $lineFieldsValidations) {
+        foreach ($linesValidations as $lineId => $lineFieldsValidations) {
             if (! is_array($lineFieldsValidations)) {
                 continue;
             }
@@ -240,7 +248,7 @@ class InvoiceFieldValidator
                     continue;
                 }
                 $status = $this->readNestedFieldStatus($lineFieldsValidations, $field);
-                if (! in_array($status, $cleanStatuses, true)) {
+                if (! EbillingDocument::fieldValidationAllowsValidatedTransition($status, $priority, $severityReleases, $field, (string) $lineId)) {
                     return false;
                 }
             }

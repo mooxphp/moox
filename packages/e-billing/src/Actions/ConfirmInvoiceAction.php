@@ -41,6 +41,10 @@ final class ConfirmInvoiceAction
             return ['confirmed' => false, 'previous_current_count' => 0];
         }
 
+        if ($document->needsHumanReview()) {
+            return ['confirmed' => false, 'previous_current_count' => 0];
+        }
+
         $previousCurrentCount = 0;
 
         DB::transaction(function () use ($invoice, $document, &$previousCurrentCount): void {
