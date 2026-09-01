@@ -33,6 +33,14 @@ return [
     'login_invalid_link_title' => 'Invalid or expired login link.',
     'login_throttled_title' => 'Too many requests. Please try again in a minute.',
 
+    'public_used_title' => 'This link has already been used',
+    'public_used_body' => 'The link can be opened only once. If you need help, please contact the responsible support team.',
+    'public_expired_title' => 'This link has expired',
+    'public_expired_body' => 'Please request a new link or contact the responsible support team.',
+    'public_invalid_title' => 'This link is invalid',
+    'public_invalid_body' => 'The link is invalid or was not found. Please contact the responsible support team.',
+    'public_support_heading' => 'Responsible support',
+
     'mail_subject' => 'Your login link',
     'mail_title' => 'Login link',
     'mail_greeting' => 'Hi',

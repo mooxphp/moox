@@ -69,6 +69,36 @@ it('redeems a valid login link once via the login handler', function (): void {
     expect($service->redeem($loginLink->getKey(), 'admin'))->toBeNull();
 });
 
+it('reports why a login link cannot be redeemed', function (): void {
+    $service = app(LoginLinkRedemptionService::class);
+
+    expect($service->failureReason(999_999))->toBe('missing');
+
+    $used = LoginLink::query()->create([
+        'panel_id' => 'admin',
+        'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
+        'user_type' => TestUser::class,
+        'user_id' => 1,
+        'email' => 'used@example.com',
+        'expires_at' => now()->addHour(),
+        'used_at' => now(),
+    ]);
+
+    expect($service->failureReason($used->getKey()))->toBe('used');
+
+    $expired = LoginLink::query()->create([
+        'panel_id' => 'admin',
+        'process' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
+        'user_type' => TestUser::class,
+        'user_id' => 1,
+        'email' => 'expired@example.com',
+        'expires_at' => now()->subMinute(),
+        'used_at' => null,
+    ]);
+
+    expect($service->failureReason($expired->getKey()))->toBe('expired');
+});
+
 it('redeems legacy links that only have the user morph', function (): void {
     $user = TestUser::query()->create([
         'name' => 'Legacy User',

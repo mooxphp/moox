@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('login_link_processes')) {
+            return;
+        }
+
         Schema::create('login_link_processes', function (Blueprint $table) {
             $table->id();
             $table->string('title');

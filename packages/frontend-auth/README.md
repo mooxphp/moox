@@ -134,6 +134,7 @@ The package ships a few helper functions (available after Composer autoload):
 ## Redirect behavior (important)
 
 - Filament login requests are excluded from protection (so users can log in).
+- Public login-link consume routes (`login-link.public.*`) are excluded so signed invites work for guests.
 - For non-authenticated users, redirects align with Filament by using `Filament::auth()->check()` and `Filament::getLoginUrl()` (depending on `redirect_if_guest`).
 
 ## License

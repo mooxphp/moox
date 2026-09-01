@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use Moox\Contact\Database\Factories\ContactFactory;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
@@ -35,6 +37,7 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
 
     use Authorizable;
     use CanResetPassword;
+    use HasApiTokens;
     use HasFactory;
     use HasModelTaxonomy;
     use HasUuids;
@@ -108,13 +111,27 @@ class Contact extends BaseRecordModel implements AuthenticatableContract, Author
 
     public function displayLabel(): string
     {
-        if ($this->display_name) {
-            return $this->display_name;
+        $displayName = trim((string) ($this->display_name ?? ''));
+        if ($displayName !== '' && ! Str::isUuid($displayName)) {
+            return $displayName;
         }
 
         $name = trim(implode(' ', array_filter([$this->first_name, $this->last_name])));
 
-        return $name !== '' ? $name : (string) $this->getKey();
+        if ($name !== '') {
+            return $name;
+        }
+
+        if (filled($this->email)) {
+            return (string) $this->email;
+        }
+
+        $username = trim((string) ($this->username ?? ''));
+        if ($username !== '' && ! Str::isUuid($username)) {
+            return $username;
+        }
+
+        return '';
     }
 
     public function canAuthenticate(): bool

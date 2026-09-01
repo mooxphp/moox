@@ -1,22 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\LoginLink\Mail;
 
 use Moox\LoginLink\Models\LoginLink;
-use Moox\LoginLink\Models\LoginLinkProcess;
-use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 
 /**
  * @deprecated Use ProcessLinkMail. Kept for backwards compatibility.
+ *
+ * MJML / mail-template rendering lives on ProcessLinkMail. This subclass only
+ * preserves the original one-argument constructor.
  */
 class LoginLinkEmail extends ProcessLinkMail
 {
     public function __construct(LoginLink $loginLink)
     {
-        $process = LoginLinkProcess::query()
-            ->where('slug', $loginLink->process ?: RedemptionHandlerRegistry::DEFAULT_PROCESS)
-            ->first();
-
-        parent::__construct($loginLink, $process);
+        parent::__construct($loginLink);
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Moox\Company\Database\Factories\CompanyFactory;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
@@ -88,10 +89,19 @@ class Company extends BaseRecordModel
 
     public function displayLabel(): string
     {
-        return $this->display_name
-            ?? $this->name
-            ?? $this->legal_name
-            ?? (string) $this->getKey();
+        foreach ([$this->display_name, $this->name, $this->legal_name] as $label) {
+            $label = trim((string) ($label ?? ''));
+
+            if ($label !== '' && ! Str::isUuid($label)) {
+                return $label;
+            }
+        }
+
+        if (filled($this->email)) {
+            return (string) $this->email;
+        }
+
+        return '';
     }
 
     protected static function booted(): void

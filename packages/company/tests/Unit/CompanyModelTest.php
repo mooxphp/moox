@@ -22,6 +22,28 @@ it('builds a display label from display name or name', function (): void {
     expect($company->displayLabel())->toBe('Muster Display');
 });
 
+it('falls back to email and never uses the UUID', function (): void {
+    $uuid = '019fd24c-72b9-73d1-bba3-67e8170b797f';
+
+    $withEmail = Company::factory()->make([
+        'display_name' => $uuid,
+        'name' => $uuid,
+        'legal_name' => null,
+        'email' => 'firma@example.test',
+    ]);
+
+    $empty = Company::factory()->create([
+        'display_name' => null,
+        'name' => null,
+        'legal_name' => null,
+        'email' => null,
+    ]);
+
+    expect($withEmail->displayLabel())->toBe('firma@example.test')
+        ->and($empty->displayLabel())->toBe('')
+        ->and($empty->displayLabel())->not->toBe((string) $empty->getKey());
+});
+
 it('links a child company to a parent', function (): void {
     $parent = Company::factory()->create();
     $child = Company::factory()->withParent($parent)->create();

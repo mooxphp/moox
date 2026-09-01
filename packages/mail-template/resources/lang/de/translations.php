@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'single' => 'Mail-Template',
+    'plural' => 'Mail-Templates',
+    'navigation_group' => 'Mail',
+    'identity' => 'Identität',
+    'key' => 'Schlüssel',
+    'locale' => 'Locale',
+    'view' => 'MJML-Blade-View',
+    'view_help' => 'Layout, Header, Standardtext und Footer kommen aus dieser View.',
+    'brand_name' => 'Markenname',
+    'logo' => 'Logo',
+    'logo_help' => 'Leer lassen, um das Logo aus der View zu verwenden.',
+    'mail_content' => 'Mail-Inhalt (MJML)',
+    'mail_content_help' => 'Leer lassen, um den Standardtext der View zu verwenden. Ein Eintrag hier ersetzt nur den Inhalt, nicht Header oder Footer.',
+    'footer' => 'Footer (MJML)',
+    'footer_help' => 'Leer lassen, um den Standard-Footer der View zu verwenden.',
+    'preview' => 'Vorschau',
+    'subject' => 'Betreff',
+    'send' => 'Senden',
+    'send_submit' => 'Senden',
+    'send_heading' => 'Mail-Template senden',
+    'send_description' => 'Mailer: :mailer. Absender: :from.',
+    'send_locale' => 'Sprache',
+    'send_recipients' => 'Empfänger',
+    'send_recipients_help' => 'Nur Adressen aus config/mail-send.php. Die Liste ist im Repo leer, bis du Einträge ergänzt.',
+    'send_no_recipients' => 'Keine Empfänger in der Config. Trage sie in config/mail-send.php ein.',
+    'send_success_title' => 'Mail gesendet',
+    'send_success_body' => ':count Mail(s) gesendet.',
+    'send_partial_title' => 'Versand unvollständig',
+    'send_partial_body' => ':sent gesendet, :failed fehlgeschlagen (:addresses).',
+    'send_failed_title' => 'Versand fehlgeschlagen',
+    'send_failed_body' => 'Keine Mail gesendet. :addresses',
+    'send_nothing_selected' => 'Keine gültigen Empfänger ausgewählt.',
+];

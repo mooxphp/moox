@@ -60,5 +60,5 @@ _Avoid_: Cursor editor, sync control panel
 
 ## Not this context
 
-**Send window**, **Send log**, **Delivery channel** and **Approval** belong to outbound mail and invoice delivery. They are defined in [ADR 0002](../../docs/adr/0002-outbound-mail-through-laravels-mailer.md) and [ADR 0003](../../docs/adr/0003-outgoing-invoice-delivery-and-central-approval.md) until `moox/mail-outbox` exists and gets its own `CONTEXT.md`.
+**Send window**, **Send log**, **Delivery channel** and **Approval** belong to outbound mail and invoice delivery. They are defined in [ADR 0002](../../docs/adr/0002-outbound-mail-through-laravels-mailer.md) and [ADR 0003](../../docs/adr/0003-outgoing-invoice-delivery-and-central-approval.md) until `moox/mail-template` exists and gets its own `CONTEXT.md`.
 
