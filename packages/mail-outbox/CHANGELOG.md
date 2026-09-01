@@ -6,6 +6,8 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Added
 
+- `mail-outbox:test-send` Artisan command (`Commands\SendTestMailCommand`) — sends a probe mail through `SendMailJob` and prints the resulting `mail_send_logs` row; `--to=` (required), `--mailer=` (defaults to `mail.default`), `--test` (route through safe test mode), `--redirect=` (override sandbox address); transport-agnostic
+- `Mail\OutboxTestMail` — minimal, transport-agnostic probe mailable used by `mail-outbox:test-send`
 - Filament `MailSendLogResource` — list with status/mailer/date filters and config-driven tabs; detail view with intended vs actual recipients, identifiers, related-record link, confirmation-gated raw message, and resend action
 - `MailOutboxPlugin` for panel registration via `moox:install`
 - `raw_message` and encrypted `resend_payload` columns on `mail_send_logs`

@@ -1,6 +1,6 @@
 # Microsoft Graph
 
-Graph credentials and the Graph inbox driver. This package owns Connections and mailbox folder names; it implements `mail-inbox`'s `InboxDriver` and does not own messages, tables, or Filament (see [ADR 0001](../../docs/adr/0001-extract-msgraph-mail-packages-depend-on-contracts.md)).
+Graph credentials, the Graph inbox driver, and the Graph outbound mail transport. This package owns Connections and mailbox folder names; it implements `mail-inbox`'s `InboxDriver` for inbound mail and registers a Symfony mailer transport (`microsoftgraph`) for outbound mail — both built from the same connection registry. It does not own messages, send logs, tables, or Filament (see [ADR 0001](../../docs/adr/0001-extract-msgraph-mail-packages-depend-on-contracts.md)).
 
 ## Language
 
@@ -20,6 +20,10 @@ _Avoid_: Graph id, item id, message id
 A display-named folder in the Graph mailbox. This package maps settlement Outcomes to folders; consumers never pass a folder name.
 _Avoid_: Destination, disposition, pipeline stage
 
+**Outbound mail transport**:
+The Symfony mailer transport registered under the `microsoftgraph` driver via `Mail::extend`. DSN credentials (client id, secret, tenant id) come from the same named Connection used by the inbox driver. A default `msgraph` Laravel mailer is registered unless the host app already defines one.
+_Avoid_: SMTP transport, mail driver (Laravel calls this a "mailer")
+
 ## Not this context
 
-**Inbox Message**, **Attachment**, **Outcome**, **Scope**, **Cursor** and **Catch-up** belong to `mail-inbox`. **Send log**, **Send window** and templates belong to `mail-outbox`. There is no Graph send transport in this package yet.
+**Inbox Message**, **Attachment**, **Outcome**, **Scope**, **Cursor** and **Catch-up** belong to `mail-inbox`. **Send log**, **Send window** and templates belong to `mail-outbox` — this package only supplies the transport those packages send through.
