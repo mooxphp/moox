@@ -25,9 +25,18 @@ class MailTemplateRenderer
      */
     public function toHtml(MailTemplate $template, array $data = []): string
     {
-        $mjml = view($template->view, $this->viewData($template, $data))->render();
+        $rendered = view($template->view, $this->viewData($template, $data))->render();
 
-        return Mjml::new()->toHtml($mjml);
+        if (! $this->isMjml($rendered)) {
+            return $rendered;
+        }
+
+        return Mjml::new()->toHtml($rendered);
+    }
+
+    private function isMjml(string $rendered): bool
+    {
+        return str_starts_with(mb_strtolower(ltrim($rendered)), '<mjml');
     }
 
     /**
@@ -44,11 +53,15 @@ class MailTemplateRenderer
      */
     public function viewData(MailTemplate $template, array $data = []): array
     {
+        $brandName = filled($template->brand_name)
+            ? $template->brand_name
+            : config('app.name');
+
         return array_merge([
             'template' => $template,
             'logoUrl' => $template->logo_url,
-            'brandName' => $template->brand_name,
-            'headline' => $data['headline'] ?? $template->brand_name,
+            'brandName' => $brandName,
+            'headline' => $data['headline'] ?? $brandName,
             'mailContent' => $template->mail_content,
             'footer' => $template->footer,
         ], $data);

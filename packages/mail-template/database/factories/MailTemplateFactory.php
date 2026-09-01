@@ -17,13 +17,13 @@ class MailTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'key' => 'login-link',
+            'key' => 'demo',
             'locale' => 'de',
-            'view' => 'login-link::mail.login-link',
+            'view' => 'welcome',
             'brand_name' => 'Acme',
-            'subject' => 'Login-Link',
+            'subject' => 'Demo',
             'logo_path' => null,
-            'mail_content' => '<mj-text>bitte klicken Sie auf den folgenden Button, um sich anzumelden.</mj-text>',
+            'mail_content' => '<mj-text>Demo content</mj-text>',
             'footer' => '<mj-text font-size="12px" color="#777777">© Acme</mj-text>',
         ];
     }

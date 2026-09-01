@@ -35,4 +35,4 @@ $html = app(MailTemplateRenderer::class)->toHtml($template, [
 ]);
 ```
 
-Blade first produces MJML (including `{!! $mailContent !!}` and `{!! $footer !!}` from the database). Spatie then converts that MJML to HTML.
+Blade first produces the view. If the output starts with `<mjml`, Spatie converts it to HTML; otherwise the Blade HTML is sent as-is.
