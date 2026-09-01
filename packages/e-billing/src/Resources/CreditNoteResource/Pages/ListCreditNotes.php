@@ -8,12 +8,14 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
+use Moox\EBilling\Resources\Concerns\FlushesIdenticalDuplicateToast;
 use Moox\EBilling\Resources\Concerns\HasEBillingDocumentListTabs;
 use Moox\EBilling\Resources\CreditNoteResource;
 
 final class ListCreditNotes extends ListRecords
 {
     use BaseInListPage;
+    use FlushesIdenticalDuplicateToast;
     use HasEBillingDocumentListTabs;
     use SingleSoftDeleteInListPage;
 

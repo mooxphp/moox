@@ -35,6 +35,8 @@ test('e-billing audit config registers invoice and document for moox/audit', fun
         ->and($config['audit']['models'][EbillingDocument::class]['title_attribute'])->toBe('format')
         ->and($config['audit']['models'][EbillingDocument::class]['significant_updates']['gateway_status'])
         ->toContain('validated', 'validation_failed')
+        ->and($config['audit']['models'][EbillingDocument::class]['significant_updates']['review_status'])
+        ->toContain('validated', 'db_validated', 'human_confirmed')
         ->and($config['audit']['models'][EbillingDocument::class]['attributes'])->toContain(
             'gateway_status',
             'review_status',

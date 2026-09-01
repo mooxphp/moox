@@ -16,6 +16,7 @@ enum EBillingAttachmentProcessingStatus: string
     case ValidationFailed = 'validation_failed';
     case ValidatorError = 'validator_error';
     case IgnoredForeign = 'ignored_foreign';
+    case IgnoredIdenticalDuplicate = 'ignored_identical_duplicate';
 
     /**
      * User-facing label for Filament / tables.
@@ -31,6 +32,7 @@ enum EBillingAttachmentProcessingStatus: string
             self::ValidationFailed => __('e-billing::fields.gateway_status_validation_failed'),
             self::ValidatorError => __('e-billing::fields.gateway_status_validator_error'),
             self::IgnoredForeign => __('e-billing::fields.gateway_status_ignored_foreign'),
+            self::IgnoredIdenticalDuplicate => __('e-billing::fields.gateway_status_ignored_identical_duplicate'),
         };
     }
 
@@ -47,6 +49,7 @@ enum EBillingAttachmentProcessingStatus: string
             self::ValidationFailed => 'danger',
             self::ValidatorError => 'warning',
             self::IgnoredForeign => 'gray',
+            self::IgnoredIdenticalDuplicate => 'gray',
         };
     }
 
@@ -71,7 +74,8 @@ enum EBillingAttachmentProcessingStatus: string
             self::Validated,
             self::ValidationFailed,
             self::ValidatorError,
-            self::IgnoredForeign => true,
+            self::IgnoredForeign,
+            self::IgnoredIdenticalDuplicate => true,
         };
     }
 

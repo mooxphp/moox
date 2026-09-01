@@ -55,6 +55,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Identical-content duplicate notifications
+    |--------------------------------------------------------------------------
+    |
+    | Mail ingest has no logged-in user. Database notifications go to
+    | notify_emails when set. Empty list = every user who can access the
+    | panel. panel_id null uses Filament's default panel.
+    |
+    */
+
+    'identical_duplicate' => [
+        'panel_id' => env('EBILLING_IDENTICAL_DUPLICATE_PANEL'),
+        'notify_emails' => [
+            // 'ops@example.com',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Manual uploads
     |--------------------------------------------------------------------------
     |
@@ -656,7 +674,7 @@ return [
                 'title_attribute' => 'format',
                 'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
                 // Pipeline writes many intermediate rows; only terminal gateway
-                // outcomes and human confirmation create update audits.
+                // outcomes and review decisions create update audits.
                 'significant_updates' => [
                     'gateway_status' => [
                         'generation_failed',
@@ -664,8 +682,11 @@ return [
                         'validation_failed',
                         'validator_error',
                         'ignored_foreign',
+                        'ignored_identical_duplicate',
                     ],
                     'review_status' => [
+                        'validated',
+                        'db_validated',
                         'human_confirmed',
                     ],
                 ],

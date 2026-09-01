@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\EBilling;
+use Moox\EBilling\Support\SourceContentHasher;
 use Moox\Jobs\Traits\JobProgress;
 use Moox\MailInbox\Enums\InboxAttachmentProcessingStatus;
 use Throwable;
@@ -78,6 +79,8 @@ final class StoreBillDataJob implements ShouldQueue
         $invoice = $eBilling->parseInvoiceFromPdf($document->sourceFullPath());
         $document->bill_data = $invoice->toArray();
         $document->save();
+
+        app(SourceContentHasher::class)->ensureOnDocument($document->fresh() ?? $document);
 
         $this->setProgress(80);
 

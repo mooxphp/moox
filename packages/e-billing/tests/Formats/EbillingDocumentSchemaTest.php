@@ -15,6 +15,7 @@ test('create_ebilling_documents stub declares format, hash, and renamed storage 
         ->and($stub)->toContain("\$table->string('source_id')->nullable()")
         ->and($stub)->not->toContain('nullableMorphs(')
         ->and($stub)->toContain("\$table->string('artifact_content_hash')->nullable()")
+        ->and($stub)->toContain("\$table->string('source_content_hash')->nullable()->index()")
         ->and($stub)->toContain("\$table->string('storage_disk')->nullable()")
         ->and($stub)->toContain("\$table->string('pdf_storage_path')->nullable()")
         ->and($stub)->toContain("\$table->string('copy_pdf_storage_path')->nullable()")
@@ -30,6 +31,7 @@ test('EbillingDocument fillable and default format mirror the schema', function 
     expect($document->getFillable())->toContain(
         'format',
         'artifact_content_hash',
+        'source_content_hash',
         'storage_disk',
         'pdf_storage_path',
         'copy_pdf_storage_path',

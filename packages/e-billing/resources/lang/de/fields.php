@@ -100,6 +100,7 @@ return [
     'gateway_status_validation_failed' => 'Validierung fehlgeschlagen',
     'gateway_status_validator_error' => 'Validator-Fehler',
     'gateway_status_ignored_foreign' => 'Ignoriert (Ausland)',
+    'gateway_status_ignored_identical_duplicate' => 'Ignoriert (identische Datei)',
 
     // Validation badges
     'validation_badge_validated' => 'Bestätigt',
@@ -219,6 +220,8 @@ return [
     'manual_upload_pdf_helper' => 'Nur PDF, maximal :max_mb MB. Nach dem Hochladen startet die Aufbereitung.',
     'notification_manual_upload_success_title' => 'PDF übernommen',
     'notification_manual_upload_success_body' => 'Die Aufbereitung läuft im Hintergrund.',
+    'notification_identical_duplicate_title' => 'Identische Datei erkannt',
+    'notification_identical_duplicate_body' => 'Zu Beleg :number liegt bereits eine identische Datei vor. Es wurde keine neue Version angelegt.',
 
     // Downloads & preview
     'download_zugferd_pdf' => 'ZUGFeRD-PDF',
@@ -262,7 +265,6 @@ return [
     'hint_review_freight_flat_rate' => 'Frachtkostenpauschale sollte manuell überprüft werden.',
     'hint_review_delivery_date' => 'Mehrere Lieferdaten erfüllen die Regel zur tatsächlichen Lieferung '
         .'bei innergemeinschaftlicher Lieferung nicht, ohne sie zu einem Zeitraum zusammenzuziehen.',
-    'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits. Die Zentrale muss die Dublette prüfen '
-        .'— unabhängig davon, ob der Inhalt identisch ist.',
+    'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];
