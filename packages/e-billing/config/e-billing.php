@@ -55,6 +55,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Identical-content duplicate notifications
+    |--------------------------------------------------------------------------
+    |
+    | Mail ingest has no logged-in user. Database notifications go to
+    | notify_emails when set. Empty list = every user who can access the
+    | panel. panel_id null uses Filament's default panel.
+    |
+    */
+
+    'identical_duplicate' => [
+        'panel_id' => env('EBILLING_IDENTICAL_DUPLICATE_PANEL'),
+        'notify_emails' => [
+            // 'ops@example.com',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Manual uploads
     |--------------------------------------------------------------------------
     |

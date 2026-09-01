@@ -21,13 +21,11 @@ use Throwable;
 /**
  * Identical-content discard feedback:
  * - Credit notes (manual upload): Filament toast for the uploader
- * - Invoices (usually mail ingest): Filament database notifications for admin-panel users
+ * - Invoices (usually mail ingest): Filament database notifications
  */
 final class IdenticalDuplicateNotifier
 {
     private const CREDIT_NOTE_DOCUMENT_TYPE = '381';
-
-    private const ADMIN_PANEL_ID = 'admin';
 
     private const USER_CACHE_PREFIX = 'ebilling.identical_duplicate.user.';
 
@@ -146,7 +144,7 @@ final class IdenticalDuplicateNotifier
     private function invoiceNotificationRecipients(?string $rememberedUserId): Collection
     {
         $userClass = config('auth.providers.users.model');
-        $panel = $this->adminPanel();
+        $panel = $this->notificationPanel();
 
         if (
             ! is_string($userClass)
@@ -160,7 +158,7 @@ final class IdenticalDuplicateNotifier
         if (is_string($rememberedUserId) && $rememberedUserId !== '') {
             $user = $userClass::query()->find($rememberedUserId);
 
-            if ($this->canAccessAdminPanel($user, $panel)) {
+            if ($this->canAccessNotificationPanel($user, $panel)) {
                 /** @var Collection<int, Model&Authenticatable> $single */
                 $single = collect([$user]);
 
@@ -170,24 +168,67 @@ final class IdenticalDuplicateNotifier
             return collect();
         }
 
+        $query = $userClass::query();
+        $emails = $this->configuredNotifyEmails();
+
+        if ($emails !== []) {
+            $query->whereIn('email', $emails);
+        }
+
         /** @var Collection<int, Model&Authenticatable> $users */
-        $users = $userClass::query()->get()->filter(
-            fn (mixed $user): bool => $this->canAccessAdminPanel($user, $panel),
+        $users = $query->get()->filter(
+            fn (mixed $user): bool => $this->canAccessNotificationPanel($user, $panel),
         )->values();
 
         return $users;
     }
 
-    private function adminPanel(): ?Panel
+    private function notificationPanel(): ?Panel
     {
         try {
-            return Filament::getPanel(self::ADMIN_PANEL_ID);
+            $panelId = config('e-billing.identical_duplicate.panel_id');
+
+            if (is_string($panelId) && $panelId !== '') {
+                return Filament::getPanel($panelId);
+            }
+
+            return Filament::getDefaultPanel();
         } catch (Throwable) {
             return null;
         }
     }
 
-    private function canAccessAdminPanel(mixed $user, Panel $panel): bool
+    /**
+     * @return list<string>
+     */
+    private function configuredNotifyEmails(): array
+    {
+        $emails = config('e-billing.identical_duplicate.notify_emails', []);
+
+        if (! is_array($emails)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($emails as $email) {
+            if (! is_string($email)) {
+                continue;
+            }
+
+            $email = strtolower(trim($email));
+
+            if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $normalized[$email] = $email;
+        }
+
+        return array_values($normalized);
+    }
+
+    private function canAccessNotificationPanel(mixed $user, Panel $panel): bool
     {
         return $user instanceof Authenticatable
             && $user instanceof Model
