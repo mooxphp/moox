@@ -6,6 +6,7 @@ namespace Moox\LoginLink\Services;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Moox\LoginLink\Contracts\RedemptionHandler;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Support\LinkProcessContext;
@@ -14,8 +15,7 @@ class LoginLinkRedemptionService
 {
     public function __construct(
         protected RedemptionHandlerRegistry $handlers,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  string|null  $panelId  Panel id for auth-context redeem; null for public consume.
@@ -59,6 +59,17 @@ class LoginLinkRedemptionService
 
             return $result;
         });
+    }
+
+    public function handlerFor(int|string $loginLinkId): ?RedemptionHandler
+    {
+        $loginLink = LoginLink::query()->find($loginLinkId);
+
+        if ($loginLink === null) {
+            return null;
+        }
+
+        return $this->handlers->get($this->resolveHandlerKey($loginLink));
     }
 
     /**

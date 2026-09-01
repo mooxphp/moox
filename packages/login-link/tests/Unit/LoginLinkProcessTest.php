@@ -23,12 +23,6 @@ beforeEach(function (): void {
         'mass-mail' => MassMailRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
     ]);
-    config()->set('login-link.templates', [
-        'login' => 'login-link::mail.login-link',
-        'verify-email' => 'login-link::mail.verify-email',
-        'mass-mail' => 'login-link::mail.mass-mail',
-        'ack' => 'login-link::mail.process-link',
-    ]);
 });
 
 it('seeds the login, email verification, and mass-mail process definitions', function (): void {
@@ -79,8 +73,7 @@ it('persists title slug mail_from template and context', function (): void {
         ->and($fresh->template_key)->toBe('ack')
         ->and($fresh->context)->toBe(LinkProcessContext::PUBLIC)
         ->and($fresh->invalidate_prior)->toBeFalse()
-        ->and($fresh->resolveExpiryMinutes())->toBe(30)
-        ->and($fresh->resolveTemplateView())->toBe('login-link::mail.process-link');
+        ->and($fresh->resolveExpiryMinutes())->toBe(30);
 });
 
 it('rejects an unregistered handler key', function (): void {
@@ -92,11 +85,11 @@ it('rejects an unregistered handler key', function (): void {
     ]);
 })->throws(ValidationException::class);
 
-it('rejects an unregistered template key', function (): void {
+it('rejects an empty template key', function (): void {
     LoginLinkProcess::query()->create([
         'title' => 'Broken template',
         'slug' => 'broken-template',
-        'template_key' => 'missing-template',
+        'template_key' => '',
         'handler_key' => 'login',
     ]);
 })->throws(ValidationException::class);

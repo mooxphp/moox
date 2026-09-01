@@ -57,12 +57,9 @@ class LoginLinkProcess extends BaseRecordModel
                 ]);
             }
 
-            $templateKey = (string) $process->template_key;
-            $templates = config('login-link.templates', []);
-
-            if ($templateKey === '' || ! is_array($templates) || ! array_key_exists($templateKey, $templates)) {
+            if (trim((string) $process->template_key) === '') {
                 throw ValidationException::withMessages([
-                    'template_key' => __('login-link::translations.template_key_unregistered'),
+                    'template_key' => __('login-link::translations.template_key_required'),
                 ]);
             }
         });
@@ -90,17 +87,5 @@ class LoginLinkProcess extends BaseRecordModel
         }
 
         return (int) config('login-link.expiration_minutes', 60);
-    }
-
-    public function resolveTemplateView(): string
-    {
-        $templates = config('login-link.templates', []);
-        $key = (string) $this->template_key;
-
-        if (is_array($templates) && isset($templates[$key]) && is_string($templates[$key]) && $templates[$key] !== '') {
-            return $templates[$key];
-        }
-
-        return (string) config('login-link.templates.login', 'login-link::mail.login-link');
     }
 }

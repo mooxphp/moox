@@ -77,9 +77,8 @@ class ExampleIssueCommand extends Command
         $this->line('Open the signed link:');
         $this->line($url);
         $this->newLine();
-        $this->line('Preview this email in the browser:');
-        $this->line(url('/login-link/examples/mail/'.$processSlug));
-        $this->line('All example mails: '.url('/login-link/examples'));
+        $this->line('Preview the demo email in the browser:');
+        $this->line(url('/login-link/examples/mail'));
 
         return self::SUCCESS;
     }

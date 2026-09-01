@@ -162,23 +162,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mail template
-    |--------------------------------------------------------------------------
-    |
-    | Optional moox/mail-template MailTemplate key for the login process when
-    | that package is installed. ProcessLinkMail looks up MailTemplate rows
-    | by process template_key, then slug, then this key (login only). Other
-    | processes never fall back to this key. Supplies Blade view, logo,
-    | footer, and optional MJML content. When mail-template/mjml are missing or no
-    | row matches, views from login-link.templates are used; MJML is compiled
-    | with Spatie when present, HTML templates are sent as Blade.
-    |
-    */
-
-    'mail_template_key' => env('LOGIN_LINK_MAIL_TEMPLATE_KEY', 'login-link'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Passwordless / Login link (toggle)
     |--------------------------------------------------------------------------
     |
@@ -244,23 +227,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mail templates (domain-agnostic)
-    |--------------------------------------------------------------------------
-    |
-    | Process definitions store only a template_key. Map keys to Blade views
-    | here (or in consuming apps/packages). No domain copy lives in the engine.
-    |
-    */
-
-    'templates' => [
-        'login' => 'login-link::mail.login-link',
-        'verify-email' => 'login-link::mail.verify-email',
-        'mass-mail' => 'login-link::mail.mass-mail',
-        'ack' => 'login-link::mail.process-link',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Public consume path (non-auth context)
     |--------------------------------------------------------------------------
     |
@@ -270,10 +236,6 @@ return [
     */
 
     'public_consume_path' => env('LOGIN_LINK_PUBLIC_CONSUME_PATH', 'signed-link/{loginLink}'),
-
-    'public_invalid_redirect' => env('LOGIN_LINK_PUBLIC_INVALID_REDIRECT', '/'),
-
-    'public_unavailable_view' => env('LOGIN_LINK_PUBLIC_UNAVAILABLE_VIEW', 'login-link::public.unavailable'),
 
     /*
     |--------------------------------------------------------------------------

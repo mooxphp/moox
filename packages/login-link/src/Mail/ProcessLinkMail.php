@@ -12,22 +12,19 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
-use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
 
 /**
- * Renders the process template_key via config('login-link.templates').
- * Domain packages contribute views in config; this package stays domain-agnostic.
- *
- * When the host has moox/mail-template, a matching MailTemplate is preferred
- * (process template_key / slug, then login-link.mail_template_key for login).
- * MJML views are compiled with Spatie when that package is installed; HTML
- * process templates are sent as rendered Blade.
+ * Sends the signed URL. When moox/mail-template is installed, the process
+ * template_key is looked up as a MailTemplate key (no composer dependency).
+ * Otherwise the packaged HTML demo view is used.
  */
 class ProcessLinkMail extends Mailable implements ShouldQueue
 {
     use Queueable;
     use SerializesModels;
+
+    public const DEMO_VIEW = 'login-link::mail.process-link';
 
     public function __construct(
         public LoginLink $loginLink,
@@ -48,10 +45,7 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
             ? (string) $this->process->title
             : __('login-link::translations.mail_subject');
 
-        $view = $this->process?->resolveTemplateView()
-            ?? (string) config('login-link.templates.login', 'login-link::mail.login-link');
-
-        $mailable = $this->subject($mailSubject)->html($this->renderBody($view, $this->viewData($url, $expiresMinutes, $subjectModel)));
+        $mailable = $this->subject($mailSubject)->html($this->renderBody($this->viewData($url, $expiresMinutes, $subjectModel)));
 
         if (filled($this->process?->mail_from)) {
             $mailable->from((string) $this->process->mail_from);
@@ -88,84 +82,42 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
     /**
      * @param  array<string, mixed>  $data
      */
-    private function renderBody(string $view, array $data): string
+    private function renderBody(array $data): string
     {
-        $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
-        $mjmlClass = 'Spatie\\Mjml\\Mjml';
+        $html = $this->renderMailTemplate($data);
 
-        if (class_exists($rendererClass) && Schema::hasTable('mail_templates')) {
-            $renderer = app($rendererClass);
-
-            foreach ($this->mailTemplateKeys() as $key) {
-                $template = $renderer->find($key);
-
-                if ($template !== null) {
-                    return $renderer->toHtml($template, $data);
-                }
-            }
+        if (is_string($html)) {
+            return $html;
         }
 
-        $viewData = array_merge($data, [
+        return view(self::DEMO_VIEW, array_merge($data, [
             'logoUrl' => $this->resolveLogoUrl(),
             'brandName' => config('app.name'),
             'mailContent' => null,
             'footer' => null,
-        ]);
-
-        $rendered = view($view, $viewData)->render();
-
-        if (class_exists($mjmlClass) && $this->isMjml($rendered)) {
-            return $mjmlClass::new()->toHtml($rendered);
-        }
-
-        return $rendered;
+        ]))->render();
     }
 
     /**
-     * @return list<string>
+     * @param  array<string, mixed>  $data
      */
-    private function mailTemplateKeys(): array
+    private function renderMailTemplate(array $data): ?string
     {
-        $keys = [];
+        $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
+        $key = trim((string) ($this->process?->template_key ?? ''));
 
-        $templateKey = trim((string) ($this->process?->template_key ?? ''));
-
-        if ($templateKey !== '') {
-            $keys[] = $templateKey;
+        if ($key === '' || ! class_exists($rendererClass) || ! Schema::hasTable('mail_templates')) {
+            return null;
         }
 
-        $slug = trim((string) ($this->process?->slug ?: $this->loginLink->process ?: ''));
+        $renderer = app($rendererClass);
+        $template = $renderer->find($key);
 
-        if ($slug !== '' && ! in_array($slug, $keys, true)) {
-            $keys[] = $slug;
+        if ($template === null) {
+            return null;
         }
 
-        if ($this->isLoginProcess()) {
-            $configured = trim((string) config('login-link.mail_template_key', 'login-link'));
-
-            if ($configured !== '' && ! in_array($configured, $keys, true)) {
-                $keys[] = $configured;
-            }
-        }
-
-        return $keys;
-    }
-
-    private function isLoginProcess(): bool
-    {
-        $slug = (string) ($this->process?->slug ?: $this->loginLink->process ?: '');
-        $templateKey = (string) ($this->process?->template_key ?: '');
-
-        if ($templateKey === 'login') {
-            return true;
-        }
-
-        return $slug === '' || $slug === RedemptionHandlerRegistry::DEFAULT_PROCESS;
-    }
-
-    private function isMjml(string $rendered): bool
-    {
-        return str_starts_with(mb_strtolower(ltrim($rendered)), '<mjml');
+        return $renderer->toHtml($template, $data);
     }
 
     private function signedUrl(int $expiresMinutes): string

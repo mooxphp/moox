@@ -23,10 +23,6 @@ beforeEach(function (): void {
         'verify-email' => VerifyEmailRedemptionHandler::class,
         'mass-mail' => MassMailRedemptionHandler::class,
     ]);
-    config()->set('login-link.templates', [
-        'verify-email' => 'login-link::mail.verify-email',
-        'mass-mail' => 'login-link::mail.mass-mail',
-    ]);
 
     $this->app['db']->connection()->getSchemaBuilder()->create('test_subjects', function ($table): void {
         $table->id();

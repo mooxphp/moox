@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Moox\LoginLink\Handlers\AckRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
-use Moox\LoginLink\Mail\LoginLinkEmail;
 use Moox\LoginLink\Mail\ProcessLinkMail;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
@@ -19,10 +18,6 @@ beforeEach(function (): void {
     config()->set('login-link.handlers', [
         'login' => LoginRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
-    ]);
-    config()->set('login-link.templates', [
-        'login' => 'login-link::mail.login-link',
-        'ack' => 'login-link::mail.process-link',
     ]);
 
     $this->app['db']->connection()->getSchemaBuilder()->create('test_subjects', function ($table): void {
@@ -60,7 +55,7 @@ function makeProcessLinkMailRecord(string $processSlug, string $templateKey, str
     ]);
 }
 
-it('sends html process templates as html without compiling mjml', function (): void {
+it('sends the packaged html demo when no mail-template row matches', function (): void {
     $link = makeProcessLinkMailRecord('confirm-delivery', 'ack', LinkProcessContext::PUBLIC);
     $process = LoginLinkProcess::query()->where('slug', 'confirm-delivery')->first();
 
@@ -69,51 +64,6 @@ it('sends html process templates as html without compiling mjml', function (): v
     expect($html)
         ->toContain('<!doctype html>')
         ->toContain('Please continue.')
-        ->not->toContain('<mjml');
-});
-
-it('compiles the package login mjml view when spatie is available', function (): void {
-    if (! class_exists('Spatie\\Mjml\\Mjml')) {
-        test()->markTestSkipped('Spatie MJML is not installed.');
-    }
-
-    $link = makeProcessLinkMailRecord('login', 'login', LinkProcessContext::AUTH);
-    $process = LoginLinkProcess::query()->where('slug', 'login')->first();
-
-    try {
-        $html = (new ProcessLinkMail($link, $process))->render();
-    } catch (Throwable $exception) {
-        test()->markTestSkipped($exception->getMessage());
-    }
-
-    expect($html)
-        ->not->toContain('<mjml')
         ->toContain(__('login-link::translations.mail_cta'))
-        ->toContain('Test process');
-});
-
-it('uses a host-configured blade view instead of the package default', function (): void {
-    config()->set('login-link.templates.ack', 'login-link::mail.login-link');
-
-    $link = makeProcessLinkMailRecord('confirm-delivery', 'ack', LinkProcessContext::PUBLIC);
-    $process = LoginLinkProcess::query()->where('slug', 'confirm-delivery')->first();
-
-    try {
-        $html = (new ProcessLinkMail($link, $process))->render();
-    } catch (Throwable $exception) {
-        test()->markTestSkipped($exception->getMessage());
-    }
-
-    expect($html)
-        ->not->toContain('<!doctype html>')
-        ->toContain(__('login-link::translations.mail_cta'));
-});
-
-it('keeps LoginLinkEmail as a constructor-compatible subclass of ProcessLinkMail', function (): void {
-    $link = makeProcessLinkMailRecord('login', 'login', LinkProcessContext::AUTH);
-
-    $mail = new LoginLinkEmail($link);
-
-    expect($mail)->toBeInstanceOf(ProcessLinkMail::class)
-        ->and($mail->loginLink->is($link))->toBeTrue();
+        ->not->toContain('<mjml');
 });

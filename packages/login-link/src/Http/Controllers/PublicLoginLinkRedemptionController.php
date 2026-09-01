@@ -8,10 +8,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Moox\LoginLink\Contracts\RendersUnavailablePage;
+use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Services\LoginLinkRedemptionService;
 
 class PublicLoginLinkRedemptionController extends Controller
 {
+    public const DEMO_VIEW = 'login-link::public.unavailable';
+
     public function __invoke(Request $request, int|string $loginLink): RedirectResponse|Response
     {
         $result = app(LoginLinkRedemptionService::class)->redeem($loginLink, null);
@@ -25,14 +29,23 @@ class PublicLoginLinkRedemptionController extends Controller
 
     public function unavailable(int|string $loginLinkId): Response
     {
-        $view = config('login-link.public_unavailable_view', 'login-link::public.unavailable');
+        $reason = app(LoginLinkRedemptionService::class)->failureReason($loginLinkId);
+        $handler = app(LoginLinkRedemptionService::class)->handlerFor($loginLinkId);
 
-        if (! is_string($view) || $view === '') {
-            $view = 'login-link::public.unavailable';
+        if ($handler instanceof RendersUnavailablePage) {
+            $loginLink = LoginLink::query()->find($loginLinkId);
+
+            if ($loginLink instanceof LoginLink) {
+                $custom = $handler->unavailable($loginLink, $reason);
+
+                if ($custom instanceof Response) {
+                    return $custom;
+                }
+            }
         }
 
-        return response()->view($view, [
-            'reason' => app(LoginLinkRedemptionService::class)->failureReason($loginLinkId),
+        return response()->view(self::DEMO_VIEW, [
+            'reason' => $reason,
             'supportName' => $this->supportValue('name'),
             'supportEmail' => $this->supportValue('email'),
             'supportPhone' => $this->supportValue('phone'),

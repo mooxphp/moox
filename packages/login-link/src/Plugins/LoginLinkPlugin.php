@@ -9,6 +9,7 @@ use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Support\Facades\Route;
 use Moox\LoginLink\Http\Controllers\LoginLinkRedemptionController;
 use Moox\LoginLink\Http\Middleware\AttemptLoginLinkRedemption;
+use Moox\LoginLink\Http\Middleware\HandlePublicLoginLinkSignature;
 use Moox\LoginLink\Resources\LoginLinkProcessResource;
 use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\LoginLink\Support\PanelLoginEnhancer;
@@ -44,7 +45,7 @@ class LoginLinkPlugin implements Plugin
 
         $panel->routes(function (): void {
             Route::get('login-link/{loginLink}', LoginLinkRedemptionController::class)
-                ->middleware(['signed', 'throttle:10,1'])
+                ->middleware([HandlePublicLoginLinkSignature::class, 'throttle:10,1'])
                 ->name('auth.login-link.consume');
         });
     }

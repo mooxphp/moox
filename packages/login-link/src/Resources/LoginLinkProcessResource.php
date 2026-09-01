@@ -98,13 +98,10 @@ class LoginLinkProcessResource extends BaseRecordResource
                                     ->label(__('login-link::translations.mail_from'))
                                     ->email()
                                     ->maxLength(255),
-                                Select::make('template_key')
+                                TextInput::make('template_key')
                                     ->label(__('login-link::translations.template_key'))
-                                    ->options(fn (): array => collect(config('login-link.templates', []))
-                                        ->mapWithKeys(fn (string $view, string $key): array => [$key => $key])
-                                        ->all())
                                     ->required()
-                                    ->native(false)
+                                    ->maxLength(255)
                                     ->helperText(__('login-link::translations.template_key_help')),
                                 Textarea::make('content')
                                     ->label(__('login-link::translations.content'))

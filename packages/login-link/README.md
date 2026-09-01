@@ -10,13 +10,15 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 
 | Layer | Owns |
 |---|---|
-| **Core** | Signed URL, expiry, single-use, issue/resend, subject, process, payload, template key → config view |
+| **Core** | Signed URL, expiry, single-use, issue/resend, subject, process, payload, `template_key` |
 | **Process-specific** | Auth/panel (login only); domain handlers in consumer packages |
+| **Mail** | Optional `moox/mail-template` lookup by `template_key` (no composer dependency). Otherwise one HTML demo. |
+| **Unavailable** | Packaged HTML demo by default. A process handler may implement `RendersUnavailablePage`. |
 
 - Process `context`: `auth` (panel) or `public` (no auth)
 - Process `invalidate_prior`: whether a new issue marks prior valid links used (default `true`)
 - Link `payload`: optional JSON call context (campaign ids, etc.) — subject stays the identity
-- Templates: process stores `template_key` only; views are mapped in `login-link.templates` config (no domain knowledge in the engine)
+- Mail: process stores `template_key` only. That key is a `mail_templates.key` when mail-template is installed. Hosts bind branding on the MailTemplate row (`view`), not in this package.
 - Bulk: core issues **one** link; callers loop/queue for mass send
 
 ## What it does
@@ -24,7 +26,8 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 - Generates **temporary signed** links (expires + signature).
 - Enforces **single-use** (and optional invalidate-prior per process).
 - **Auth context**: panel-bound login consume route + guard authentication.
-- **Public context**: panel-free consume route (`signed-link/{loginLink}` by default). Used, expired, or invalid public links render an unavailable page (optional support contact from `login-link.public_support`).
+- **Public context**: panel-free consume route (`signed-link/{loginLink}` by default).
+- Used, expired, or invalid links render the packaged HTML demo by default (no host theme). Process handlers may implement `RendersUnavailablePage` to replace that page. Preview: `/login-link/examples/unavailable/expired`.
 - Sends email via the queue (`Mail::queue()`).
 - Adds a “Send login link” action on Filament’s login form (auth process).
 
@@ -37,13 +40,13 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 
 ### Packaged examples
 
-Seeded processes, each with its own English mail template:
+Seeded processes, one HTML demo mail (`login-link::mail.process-link`) when no MailTemplate row matches `template_key`:
 
-| Process | Context | Template | Handler | Invalidate prior |
+| Process | Context | Template key | Handler | Invalidate prior |
 |---|---|---|---|---|
-| `login` | auth | `login-link::mail.login-link` | signs the user into the panel | yes |
-| `verify-email` | public | `login-link::mail.verify-email` | confirms mailbox ownership, no login | yes |
-| `mass-mail` | public | `login-link::mail.mass-mail` | confirms a campaign recipient, no login | **no** |
+| `login` | auth | `login` | signs the user into the panel | yes |
+| `verify-email` | public | `verify-email` | confirms mailbox ownership, no login | yes |
+| `mass-mail` | public | `mass-mail` | confirms a campaign recipient, no login | **no** |
 
 ```php
 app(\Moox\LoginLink\Services\LoginLinkService::class)->issue(
@@ -72,7 +75,7 @@ php artisan login-link:example mass-mail --payload='{"campaign":"Spring newslett
 
 1. Open the printed signed URL (or the queued example mail).
 2. Land on `/login-link/examples/email-verified` or `/login-link/examples/mailing-confirmed`.
-3. Preview the three English mail templates at `/login-link/examples` (no queue needed).
+3. Preview the HTML demo at `/login-link/examples` (no queue needed).
 4. Passwordless login is issued from the Filament login form, not this command.
 
 ## Installation
@@ -99,7 +102,7 @@ $panel->plugins([
 Admins manage processes under **Link processes**:
 
 - `title`, `slug`, `context` (`auth` \| `public`)
-- `template_key` (from `login-link.templates`)
+- `template_key` (opaque key; matches `mail_templates.key` when that package is installed)
 - `handler_key` (registered handler)
 - `mail_from`, optional `content` (passed into the view, not the template selector)
 - `expiry_minutes`, `invalidate_prior`
@@ -116,9 +119,7 @@ Seeded on install:
 - `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
-- `login-link.mail_logo_url`: optional logo shown when no MailTemplate row is used.
-- `login-link.mail_template_key`: optional MailTemplate key for the **login** process when `moox/mail-template` is installed (default `login-link`). Other processes match a MailTemplate by their own `template_key` / slug only.
-- `login-link.templates`: process `template_key` → Blade view. Hosts remap these to branded views; the engine has no theme knowledge. MJML is compiled when Spatie is present.
+- `login-link.mail_logo_url`: optional logo on the HTML demo when no MailTemplate row is used.
 
 ## Security notes
 

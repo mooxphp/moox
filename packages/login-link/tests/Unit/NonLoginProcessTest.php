@@ -31,10 +31,6 @@ beforeEach(function (): void {
         'login' => LoginRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
     ]);
-    config()->set('login-link.templates', [
-        'login' => 'login-link::mail.login-link',
-        'ack' => 'login-link::mail.process-link',
-    ]);
     config()->set('login-link.ack.redirect_url', '/ack-ok');
     config()->set('login-link.expiration_minutes', 60);
 
@@ -202,9 +198,11 @@ it('renders the unavailable page when a public link was already used', function 
 
     $this->get($url)
         ->assertOk()
+        ->assertSee('<!doctype html>', false)
         ->assertSee(__('login-link::translations.public_used_title'), false)
         ->assertSee('help@example.com', false)
-        ->assertSee('+49 1234', false);
+        ->assertSee('+49 1234', false)
+        ->assertDontSee('<mjml', false);
 });
 
 it('renders the unavailable page when the signed public URL has expired', function (): void {
@@ -239,5 +237,7 @@ it('renders the unavailable page when the signed public URL has expired', functi
 
     $this->get($url)
         ->assertOk()
-        ->assertSee(__('login-link::translations.public_expired_title'), false);
+        ->assertSee('<!doctype html>', false)
+        ->assertSee(__('login-link::translations.public_expired_title'), false)
+        ->assertDontSee('<mjml', false);
 });

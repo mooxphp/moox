@@ -25,10 +25,6 @@ beforeEach(function (): void {
         'login' => LoginRedemptionHandler::class,
         'ack' => AckRedemptionHandler::class,
     ]);
-    config()->set('login-link.templates', [
-        'login' => 'login-link::mail.login-link',
-        'ack' => 'login-link::mail.process-link',
-    ]);
     config()->set('login-link.expiration_minutes', 60);
 
     $this->app['db']->connection()->getSchemaBuilder()->create('users', function ($table): void {

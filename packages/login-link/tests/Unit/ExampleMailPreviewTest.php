@@ -6,25 +6,31 @@ use Moox\LoginLink\Tests\TestCase;
 
 uses(TestCase::class);
 
-it('lists the three example mail previews', function (): void {
+it('lists the demo mail preview', function (): void {
     $this->get(route('login-link.examples.index'))
         ->assertSuccessful()
-        ->assertSee('Passwordless login', false)
-        ->assertSee('Email verification', false)
-        ->assertSee('Mass mail verification', false);
+        ->assertSee('Process link', false)
+        ->assertSee('Expired link', false);
 });
 
-it('renders the example mail template', function (string $template, string $needle): void {
-    $this->get(route('login-link.examples.mail', $template))
+it('renders the packaged html demo mail', function (): void {
+    $this->get(route('login-link.examples.mail'))
         ->assertSuccessful()
-        ->assertSee($needle, false);
-})->with([
-    'login' => ['login', 'Sign in'],
-    'verify-email' => ['verify-email', 'Verify email address'],
-    'mass-mail' => ['mass-mail', 'Yes, I received this'],
-]);
+        ->assertSee(__('login-link::translations.mail_cta'), false)
+        ->assertSee('<!doctype html>', false);
+});
 
-it('rejects unknown mail preview templates', function (): void {
-    $this->get(route('login-link.examples.mail', 'dump'))
-        ->assertNotFound();
+it('renders the packaged html demo for an expired link', function (): void {
+    $this->get(route('login-link.examples.unavailable', ['reason' => 'expired']))
+        ->assertSuccessful()
+        ->assertSee('<!doctype html>', false)
+        ->assertSee(__('login-link::translations.public_expired_title'), false)
+        ->assertDontSee('<mjml', false)
+        ->assertDontSee('filament', false);
+});
+
+it('renders the packaged html demo for a used link', function (): void {
+    $this->get(route('login-link.examples.unavailable', ['reason' => 'used']))
+        ->assertSuccessful()
+        ->assertSee(__('login-link::translations.public_used_title'), false);
 });

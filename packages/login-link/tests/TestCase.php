@@ -35,12 +35,6 @@ abstract class TestCase extends Orchestra
         config()->set('login-link.user_models', [
             'Test User' => TestUser::class,
         ]);
-        config()->set('login-link.templates', [
-            'login' => 'login-link::mail.login-link',
-            'verify-email' => 'login-link::mail.verify-email',
-            'mass-mail' => 'login-link::mail.mass-mail',
-            'ack' => 'login-link::mail.process-link',
-        ]);
         config()->set('login-link.public_consume_path', 'signed-link/{loginLink}');
         config()->set('login-link.ack.redirect_url', '/ack-ok');
         config()->set('auth.providers.users.model', TestUser::class);

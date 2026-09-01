@@ -6,21 +6,21 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Changed
 
-- `ProcessLinkMail` compiles MJML with Spatie when present and prefers a matching `moox/mail-template` MailTemplate (process `template_key` / slug, then `login-link.mail_template_key` for the login process only). HTML process templates are unchanged. `LoginLinkEmail` delegates to `ProcessLinkMail`.
-- `moox/mail-template` and `moox/mjml` are no longer hard dependencies of `login-link`.
+- Used/expired/invalid consume uses the packaged HTML demo by default (no host theme). A process handler may implement `RendersUnavailablePage` to replace that page. Preview: `/login-link/examples/unavailable/{expired|used|invalid}`.
+- `ProcessLinkMail` looks up `moox/mail-template` by process `template_key` only when that package is present (`class_exists`, no composer dependency). MJML vs HTML is decided in mail-template. Without a matching row, one packaged HTML demo (`login-link::mail.process-link`) is sent.
+- Removed `login-link.templates` view map, `mail_template_key`, and packaged MJML / per-process mail layouts.
 
 ### Added
 
-- Packaged English examples: `login` (passwordless panel sign-in), `verify-email` (mailbox confirmation), `mass-mail` (campaign confirmation, invalidate prior off). Each has its own mail template. Issue public examples with `php artisan login-link:example`.
-- Public consume distinguishes used / expired / invalid and renders `login-link::public.unavailable` (override via `login-link.public_unavailable_view`) instead of redirecting to `/`. Support contact comes from `login-link.public_support`.
+- Packaged English examples: `login` (passwordless panel sign-in), `verify-email` (mailbox confirmation), `mass-mail` (campaign confirmation, invalidate prior off). One HTML demo mail when no MailTemplate row matches. Issue public examples with `php artisan login-link:example`.
+- Public consume distinguishes used / expired / invalid and renders the packaged HTML demo. Support contact comes from `login-link.public_support`.
 - Nullable `panel_id` on link instances; auth issue requires panel id, public forces null.
 - JSON `payload` on link instances (call context; subject remains identity).
-- Process `template_key` resolved via `login-link.templates` config (domain-agnostic).
 - Process `invalidate_prior` policy (default true; mass/tracking can disable).
 - Built-in non-login `ack` handler + `ProcessLinkAcknowledged` event for proving signed-link redemption without authentication.
 - Redemption resolves the handler via the process definition's `handler_key` (slug may differ).
 - Lifecycle scoped to process + subject: invalidate prior valid links, rate limits, and resend.
-- `ProcessLinkMail` interim mailable uses process `mail_from` / `content` / expiry (falls back to login blade when content empty).
+- `ProcessLinkMail` uses process `mail_from` / `content` / expiry; missing MailTemplate rows use the packaged HTML demo.
 - Resend action on Login Link instances.
 - `LoginLinkProcess` (`BaseRecordModel`) + Filament `BaseRecordResource` for process definitions (`title`, `slug`, `mail_from`, `content`, `handler_key`, `expiry_minutes`) with List/Create/View/Edit pages.
 - Handler key validated against `RedemptionHandlerRegistry` (unregistered keys rejected).
@@ -33,7 +33,6 @@ All notable changes to `moox/login-link` will be documented in this file.
 - `Moox\LoginLink\Plugins\LoginLinkPlugin` under `src/Plugins/` (Moox package convention).
 - `PanelLoginEnhancer` extends the panel's configured login class with the magic-link hint (no fixed login page replacement).
 - Configurable send rate limiting (`login-link.rate_limit.send`).
-- Invalid/expired link feedback on the login page via session flash.
 - Package tests (`LoginLinkRateLimiter`, `LoginLinkRedemptionService`, `RedemptionHandlerRegistry`, `PanelLoginEnhancer`).
 
 ### Changed

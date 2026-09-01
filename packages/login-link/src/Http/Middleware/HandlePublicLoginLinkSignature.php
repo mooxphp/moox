@@ -13,7 +13,7 @@ class HandlePublicLoginLinkSignature
 {
     /**
      * Valid signatures continue to redeem. Expired or tampered signed URLs
-     * still render the unavailable page instead of Laravel's 403.
+     * still render the packaged HTML demo instead of Laravel's 403.
      */
     public function handle(Request $request, Closure $next): Response
     {

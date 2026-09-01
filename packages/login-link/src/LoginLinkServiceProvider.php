@@ -56,8 +56,12 @@ class LoginLinkServiceProvider extends MooxServiceProvider
             ->name('login-link.examples.index');
 
         Route::middleware(['web'])
-            ->get('login-link/examples/mail/{template}', [ExampleResultController::class, 'mail'])
+            ->get('login-link/examples/mail', [ExampleResultController::class, 'mail'])
             ->name('login-link.examples.mail');
+
+        Route::middleware(['web'])
+            ->get('login-link/examples/unavailable/{reason?}', [ExampleResultController::class, 'unavailable'])
+            ->name('login-link.examples.unavailable');
 
         Route::middleware(['web'])
             ->get('login-link/examples/email-verified', [ExampleResultController::class, 'emailVerified'])

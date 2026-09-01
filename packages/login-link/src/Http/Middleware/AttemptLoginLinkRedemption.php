@@ -6,6 +6,7 @@ use Closure;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Moox\LoginLink\Http\Controllers\PublicLoginLinkRedemptionController;
 use Moox\LoginLink\Services\LoginLinkRedemptionService;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,18 +27,24 @@ class AttemptLoginLinkRedemption
             return $next($request);
         }
 
+        $loginLinkId = $request->query('loginLink');
+
+        if (! is_int($loginLinkId) && ! is_string($loginLinkId)) {
+            $loginLinkId = '';
+        }
+
         if (! URL::hasValidSignature($request)) {
-            return $next($request);
+            return app(PublicLoginLinkRedemptionController::class)->unavailable($loginLinkId);
         }
 
         $panel = Filament::getCurrentPanel();
         $result = app(LoginLinkRedemptionService::class)->redeem(
-            $request->query('loginLink'),
+            $loginLinkId,
             (string) $panel->getId(),
         );
 
         if (! $result) {
-            return $next($request);
+            return app(PublicLoginLinkRedemptionController::class)->unavailable($loginLinkId);
         }
 
         return $result;

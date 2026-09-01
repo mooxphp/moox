@@ -9,30 +9,34 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Moox\LoginLink\Handlers\MassMailRedemptionHandler;
 use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
+use Moox\LoginLink\Mail\ProcessLinkMail;
 
 class ExampleResultController extends Controller
 {
-    /**
-     * @var array<string, string>
-     */
-    private const MAIL_VIEWS = [
-        'login' => 'login-link::mail.login-link',
-        'verify-email' => 'login-link::mail.verify-email',
-        'mass-mail' => 'login-link::mail.mass-mail',
-    ];
-
     public function index(): View
     {
         return view('login-link::examples.index');
     }
 
-    public function mail(string $template): View
+    public function mail(): View
     {
-        if (! isset(self::MAIL_VIEWS[$template])) {
-            abort(404);
+        return view(ProcessLinkMail::DEMO_VIEW, $this->previewData());
+    }
+
+    public function unavailable(string $reason = 'expired'): View
+    {
+        $allowed = ['used', 'expired', 'invalid'];
+
+        if (! in_array($reason, $allowed, true)) {
+            $reason = 'expired';
         }
 
-        return view(self::MAIL_VIEWS[$template], $this->previewData($template));
+        return view(PublicLoginLinkRedemptionController::DEMO_VIEW, [
+            'reason' => $reason,
+            'supportName' => 'Acme Support',
+            'supportEmail' => 'help@example.com',
+            'supportPhone' => '+49 1234',
+        ]);
     }
 
     public function emailVerified(Request $request): View
@@ -52,18 +56,10 @@ class ExampleResultController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function previewData(string $template): array
+    private function previewData(): array
     {
-        $loginLink = (object) [
-            'email' => 'demo@example.com',
-        ];
-
         return [
-            'title' => match ($template) {
-                'login' => 'Passwordless login',
-                'verify-email' => 'Email verification',
-                default => 'Spring newsletter',
-            },
+            'title' => 'Passwordless login',
             'content' => null,
             'url' => url('/login-link/examples'),
             'expiresMinutes' => 60,
@@ -73,12 +69,12 @@ class ExampleResultController extends Controller
                 'last_name' => 'Example',
             ],
             'subject' => null,
-            'payload' => $template === 'mass-mail'
-                ? ['campaign' => 'Spring newsletter', 'mailing_id' => 'demo-001']
-                : ['purpose' => 'email-verification'],
+            'payload' => [],
             'logoUrl' => null,
             'process' => null,
-            'loginLink' => $loginLink,
+            'loginLink' => (object) [
+                'email' => 'demo@example.com',
+            ],
         ];
     }
 }
