@@ -13,7 +13,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - KoSIT validation integration via `moox/kosit-validator` (XML from loose file or embedded in hybrid PDF)
 - PDF/A-3 validation for hybrid formats via `moox/verapdf` when installed (skipped gracefully when not configured)
 - Foreign-invoice filtering (non-domestic invoices settled as `Ignored` on the inbox driver and marked `IgnoredForeign`)
-- MoSCoW field validation and validation scoring on `EbillingDocument`
+- MoSCoW severity gating: must/should/could priorities, severity release with auditable actor identity, and review queue aligned with the findings gate
 - Filament `InvoiceResource` for list, filter, and manual review workflows
 - Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
@@ -140,6 +140,33 @@ php artisan ebilling:backfill-scores
 
 Queries `EbillingDocument` rows where `field_validations` is not null and `validation_score` is null, computes each score via `calculateValidationScore()`, and saves quietly.
 
+### Severity gating (MoSCoW)
+
+Per-field priority under `field_validation` drives three distinct behaviours:
+
+| Priority | Missing field | Wrong content (`needs_review`) |
+| --- | --- | --- |
+| **must** | Blocks review; cannot be severity-released | Blocks review |
+| **should** | Blocks review until `ReleaseSeverityFieldAction` records actor id, timestamp, and reason | Blocks review; not releasable |
+| **could** | Recorded as `not_applicable` by the validator when absent; does not block | Does not block |
+
+Severity release applies to **absent** fields only (`status: missing`). It is not a correction path for divergent content.
+
+`ReleaseSeverityFieldAction` writes `released_at`, `released_by_id` (acting identity), `released_by` (display copy), and `reason` to the document's `severity_releases` JSON (invoice-level keys, or `lines.{lineId}.{field}` for line fields). Releases without a reason, without an authenticated actor, or with an entry that fails gate validation are refused. The column is cast but **not** in `$fillable` — only the action writes it; bulk `update([...])` silently drops releases.
+
+`ConfirmInvoiceAction` returns `false` while `needsHumanReview()` is true.
+
+Two related checks answer different questions:
+
+| Check | Question | `review_status` filter |
+| --- | --- | --- |
+| `needsHumanReview()` | Does this document have unresolved findings? | None — used for gating |
+| `scopeNeedsHumanReview()` | Is this document waiting in the review queue? | `parser_created` or `db_validated` only |
+
+Within awaiting-review statuses, both use the same field predicate (including valid severity releases on **should** fields). When several severities apply, the most severe finding wins.
+
+Changing a field's configured priority changes its behaviour with no code change.
+
 ## The EbillingDocument Model
 
 `EbillingDocument` (`Moox\EBilling\Models\EbillingDocument`) is the gateway state record for one inbox attachment. It links the source attachment (morph) to a persisted `Invoice` and tracks pipeline status, validation results, and artefact paths.
@@ -162,6 +189,7 @@ Queries `EbillingDocument` rows where `field_validations` is not null and `valid
 | `review_status` | `string` | NOT NULL | Review stage; default `parser_created` (indexed) |
 | `validation_score` | `unsignedTinyInteger` | nullable | Aggregated field-validation score |
 | `field_validations` | `json` | nullable | Per-field validation results |
+| `severity_releases` | `json` | nullable | Severity releases for missing **should** fields (`released_at`, `released_by_id`, `released_by`, `reason`); written only via `ReleaseSeverityFieldAction`; not in `$fillable` |
 | `processed_at` | `timestamp` | nullable | Set when validation passes |
 | `error_message` | `text` | nullable | Last pipeline error |
 | `created_at` | `timestamp` | NOT NULL | |

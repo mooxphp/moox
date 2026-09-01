@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- Severity gating second review pass ([#13](https://github.com/mooxphp/e-billing/issues/13)): `severityReleaseEntryIsValid()` and SQL scope helpers now require `released_by_id` (not only reason and timestamp), closing the audit gate bypass; `needsHumanReview()` vs `scopeNeedsHumanReview()` documented as findings gate vs review queue (same predicate within awaiting-review statuses); `ConfirmInvoiceAction` and release action both enforce actor identity.
 
 - Manual uploads keep the client original filename on `UploadedPdfSource`; download responses use that name (with `_copy` / `.xml` / `.pdf`) instead of the hashed storage path
 - XRechnung copy PDFs are stored once with a single soft diagonal watermark at generation time (preview, download, and later mail all use that file). No footer notice.
