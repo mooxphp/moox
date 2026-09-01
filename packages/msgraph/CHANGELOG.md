@@ -15,6 +15,8 @@
 - `GraphMessageMapper` maps RFC822 `internetMessageId` onto `InboxMessageDto::$messageId`
 - `GraphInboxDriver::fetch()` wraps expired sync state as `InvalidSyncCursorException`
 - `GraphInboxDriver::listAttachments()` lists file attachment metadata (delta fetch does not)
+- Outbound Microsoft Graph mail transport: `MsgraphServiceProvider` registers a Symfony mailer transport under the `microsoftgraph` driver via `Mail::extend` (bridge: `symfony/microsoft-graph-mailer`), with the DSN built from the connection registry so tenant credentials stay in `config/msgraph.php`
+- Default `msgraph` Laravel mailer registered into `mail.mailers.msgraph` (transport `microsoftgraph`, connection from `msgraph.default`) unless the host app already defines it
 
 ### Changed
 

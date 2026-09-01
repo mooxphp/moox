@@ -29,6 +29,7 @@ Learn more about [Moox](https://moox.org).
 - Foreign mail recording — Laravel `MessageSent` listener dispatches `RecordSentMailJob` for mail sent outside `SendMailJob` (deduplicated against outbox rows)
 - Filament send-log UI — list, detail, raw-message inspection, and resend (via `MailOutboxPlugin`)
 - Safe test mode — redirect non-allowlisted recipients via Laravel's `alwaysTo`, record both recipient sets, prefix redirected subjects, log as `suppressed` when not delivered to intended recipients
+- `mail-outbox:test-send` Artisan command — send a probe mail through any configured mailer and print the resulting send-log row
 
 <!-- /Features -->
 
@@ -103,6 +104,21 @@ The job:
 
 Work lives in the job (progress via `Moox\Jobs\Traits\JobProgress`, terminal handling in `failed()`). Listeners are not used for sending.
 
+### Test-send command
+
+```bash
+php artisan mail-outbox:test-send --to=someone@example.com --mailer=smtp
+```
+
+Sends a minimal, transport-agnostic probe mailable (`Moox\MailOutbox\Mail\OutboxTestMail`) through `SendMailJob`, then prints the resulting `mail_send_logs` row (id, status, mailer, intended/actual recipients, message id, error). Any configured mailer works via `--mailer` — the command is not tied to a specific transport.
+
+| Option | Purpose |
+| --- | --- |
+| `--to=` | Intended recipient address (required) |
+| `--mailer=` | Named Laravel mailer (defaults to `mail.default`) |
+| `--test` | Route the send through [safe test mode](#safe-test-mode) — redirect + `suppressed` status |
+| `--redirect=` | Sandbox address for `--test`; overrides `mail-outbox.test_mode.redirect_to` for this run only |
+
 ### Safe test mode
 
 When `test_mode.enabled` is true, **all outbound Laravel mail** is intercepted on `MessageSending` via `ApplyTestModeListener`. Non-allowlisted recipients are redirected to `test_mode.redirect_to`; allowlisted patterns (wildcard via `Str::is`) are delivered for real. Redirected mail gets a subject prefix naming the original recipient(s).
@@ -114,6 +130,8 @@ The log row always records **intended** recipients (from before redirection) and
 **Not-delivered guarantee:** use `MailSendLog::deliveredToIntendedRecipients()` (or `MailSendStatus::deliveredToIntendedRecipients()`) before marking a business object as delivered. A suppressed row means the provider may have accepted a sandbox copy, but the intended recipient did not receive the mail.
 
 Mixed allowlist runs may perform two sends (real leg for allowlisted addresses, redirect leg for the rest) under one log row. Test mode logs a boot-time warning when enabled in production.
+
+Exercise this from the command line with the [test-send command](#test-send-command): `php artisan mail-outbox:test-send --to=... --test`.
 
 ### Foreign mail recording
 

@@ -17,6 +17,7 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - a Graph client factory
 - an immutable-identifier header middleware on every outgoing request
 - a Graph `InboxDriver` (`Moox\MsGraph\Mail\GraphInboxDriver`) auto-registered as `msgraph` on `InboxDriverManager` when `moox/mail-inbox` is installed
+- a Graph outbound mail transport (`microsoftgraph` driver) registered with Laravel's `Mail::extend`, plus a default `msgraph` mailer — both built from the same connection registry
 
 ## Features
 
@@ -27,6 +28,7 @@ The package provides Microsoft Graph SDK client creation for moox packages, incl
 - Every outgoing request carries `Prefer: IdType="ImmutableId"` (immutable identifiers)
 - Typed exception types for Graph API failures (authentication, rate limiting, not found, connection/transport, expired delta sync state)
 - Graph inbox driver: resumable delta fetch, claim, settle-by-outcome, attachment download
+- Graph outbound mail transport: Symfony mailer bridge (`symfony/microsoft-graph-mailer`) registered as the `microsoftgraph` driver, with a default `msgraph` mailer that a host app can override
 - This package owns mailbox folder names; consumers pass settlement outcomes only
 - Configuration-only package: no models, no migrations, and no Filament surface
 
@@ -142,6 +144,33 @@ An empty `processing` folder skips the claim move (and creates nothing). Outcome
 `settle(Processed)` marks the message as read in Graph before moving it to the processed folder (same behaviour as the pre-extraction pipeline finalizer).
 
 Folders are resolved by display name and created when missing. `fetch()` returns **one** Graph delta page. When Graph returns `@odata.nextLink`, that value is `MessagePage::$continuationCursor` so the domain job can loop up to `mail-inbox.delta_max_pages_per_poll`. When Graph returns `@odata.deltaLink`, that value is `MessagePage::$resumeCursor` (persist for the next poll). Both tokens are opaque; this driver allowlists Graph national-cloud hosts before calling `withUrl()`. Every request carries `Prefer: IdType="ImmutableId"`.
+
+### Outbound mail transport
+
+The service provider registers a Symfony mailer transport under the `microsoftgraph` driver via `Mail::extend`. The transport is the Symfony bridge `symfony/microsoft-graph-mailer` (app-only client-credentials flow). The DSN is built from the same connection registry used by the inbox driver, so tenant credentials live only in `config/msgraph.php` — there is no separate mailer DSN env var:
+
+```
+microsoftgraph+api://<clientId>:<clientSecret>@default?tenantId=<tenantId>
+```
+
+An explicit Symfony `HttpClient` is passed to `MicrosoftGraphTransportFactory`, since the factory does not create one on its own.
+
+Unless the host app has already defined `mail.mailers.msgraph`, the provider also registers a default named mailer:
+
+```php
+'msgraph' => [
+    'transport' => 'microsoftgraph',
+    'connection' => config('msgraph.default', 'default'),
+],
+```
+
+The `connection` key selects which named connection from `config/msgraph.php` supplies the credentials. By default, sent mail is copied to the mailbox's Sent Items folder (a provable sent copy).
+
+**Prerequisites to send:**
+
+- The Azure AD app registration needs the **Mail.Send** application permission with admin consent
+- An **Application Access Policy** must scope which mailbox(es) the app may send as
+- The sender address (`mail.from.address` / `MAIL_FROM_ADDRESS`) must be a real, licensed mailbox in the tenant
 
 <!-- /Usage -->
 
