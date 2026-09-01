@@ -114,17 +114,7 @@ final class DbTableSourceQuery
         }
 
         if ($operator === 'in' && is_array($clause['value'] ?? null)) {
-            $callback = function (Builder $nested) use ($column, $clause): void {
-                foreach ($clause['value'] as $value) {
-                    if ($value === null) {
-                        $nested->orWhereNull($column);
-                    } else {
-                        $nested->orWhere($column, $value);
-                    }
-                }
-            };
-
-            $or ? $query->orWhere($callback) : $query->where($callback);
+            self::applyInClause($query, $column, $clause['value'], $or);
 
             return;
         }
@@ -161,6 +151,45 @@ final class DbTableSourceQuery
         }
 
         $or ? $query->orWhere($column, $operator) : $query->where($column, $operator);
+    }
+
+    /**
+     * @param  list<mixed>  $values
+     */
+    private static function applyInClause(Builder $query, string $column, array $values, bool $or): void
+    {
+        $hasNull = false;
+        $nonNull = [];
+
+        foreach ($values as $value) {
+            if ($value === null) {
+                $hasNull = true;
+
+                continue;
+            }
+
+            $nonNull[] = $value;
+        }
+
+        $nonNull = array_values(array_unique($nonNull, SORT_REGULAR));
+
+        if (! $hasNull) {
+            $or ? $query->orWhereIn($column, $nonNull) : $query->whereIn($column, $nonNull);
+
+            return;
+        }
+
+        $callback = function (Builder $nested) use ($column, $nonNull): void {
+            if ($nonNull !== []) {
+                $nested->whereIn($column, $nonNull);
+            }
+
+            $nonNull === []
+                ? $nested->whereNull($column)
+                : $nested->orWhereNull($column);
+        };
+
+        $or ? $query->orWhere($callback) : $query->where($callback);
     }
 
     public static function hasRowKey(mixed $rowKey): bool
@@ -203,17 +232,35 @@ final class DbTableSourceQuery
     }
 
     /**
+     * Walk a db_table source in key order without OFFSET.
+     *
+     * Later pages seek with `key > lastKey` (or `IS NOT NULL` after a leading null).
+     * That matches OFFSET pagination when `$keyColumn` uniquely orders the rows,
+     * including keys at 0 or below. Duplicate keys are not equivalent: remaining
+     * ties after `lastKey` are skipped.
+     *
      * @return iterable<int, list<array<string, mixed>>>
      */
     public static function orderedChunk(Builder $query, string $keyColumn, int $chunkSize): iterable
     {
         $chunkSize = max(1, $chunkSize);
-        $offset = 0;
+        $lastKey = null;
+        $hasLastKey = false;
 
         do {
-            $rows = (clone $query)
-                ->orderBy($keyColumn)
-                ->offset($offset)
+            $page = clone $query;
+            self::ensureKeyColumnSelected($page, $keyColumn);
+            $page->reorder($keyColumn);
+
+            if ($hasLastKey) {
+                if ($lastKey === null) {
+                    $page->whereNotNull($keyColumn);
+                } else {
+                    $page->where($keyColumn, '>', $lastKey);
+                }
+            }
+
+            $rows = $page
                 ->limit($chunkSize)
                 ->get()
                 ->map(static fn (object $row): array => self::normalizeRow((array) $row))
@@ -225,7 +272,38 @@ final class DbTableSourceQuery
             }
 
             yield $rows;
-            $offset += count($rows);
+
+            $lastRow = $rows[array_key_last($rows)];
+            if (! array_key_exists($keyColumn, $lastRow)) {
+                throw new \RuntimeException("orderedChunk requires the key column [{$keyColumn}] in the query result.");
+            }
+
+            $lastKey = $lastRow[$keyColumn];
+            $hasLastKey = true;
         } while (count($rows) === $chunkSize);
+    }
+
+    private static function ensureKeyColumnSelected(Builder $query, string $keyColumn): void
+    {
+        $columns = $query->columns;
+        if (! is_array($columns) || $columns === []) {
+            return;
+        }
+
+        foreach ($columns as $column) {
+            if (! is_string($column)) {
+                continue;
+            }
+
+            if ($column === '*' || $column === $keyColumn) {
+                return;
+            }
+
+            if (str_ends_with($column, '.'.$keyColumn)) {
+                return;
+            }
+        }
+
+        $query->addSelect($keyColumn);
     }
 }
