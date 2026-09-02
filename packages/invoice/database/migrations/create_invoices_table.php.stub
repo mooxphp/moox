@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('shipping_method')->nullable();
             // Delivery terms (freight bearer; e.g. ex works) — NOT payment terms; no native EN element; serialized as note in e-billing / ZUGFeRD layer.
             $table->string('delivery_terms')->nullable();
+            $table->json('notes')->nullable();
             $table->json('seller')->nullable();
             $table->json('buyer')->nullable();
             $table->json('delivery')->nullable();

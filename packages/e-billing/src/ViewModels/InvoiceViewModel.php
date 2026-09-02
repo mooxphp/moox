@@ -34,11 +34,11 @@ final class InvoiceViewModel
         return [
             'document' => [
                 'title' => __('e-billing::fields.section_document_data'),
-                'subtitle' => 'BG-1',
+                'subtitle' => '',
                 'fields' => $this->buildFields([
                     'invoice_number', 'invoice_date', 'document_type',
                     'due_date', 'currency', 'order_number', 'order_date',
-                    'customer_reference', 'payment_terms',
+                    'customer_reference', 'payment_terms', 'material_test_certificate',
                 ]),
             ],
             'supplier' => [
@@ -61,12 +61,12 @@ final class InvoiceViewModel
                 'title' => __('e-billing::fields.section_delivery'),
                 'subtitle' => 'BG-13',
                 'fields' => $this->buildFields([
-                    'delivery_address', 'delivery_date', 'shipping_method', 'agent', 'delivery_terms',
+                    'delivery_address', 'delivery_date', 'agent',
                 ]),
             ],
             'totals' => [
                 'title' => __('e-billing::fields.section_amounts'),
-                'subtitle' => 'BG-22',
+                'subtitle' => 'BG-21 / BG-22',
                 'fields' => $this->buildFields([
                     'net_total', 'vat_rate', 'vat_amount', 'gross_total',
                     'discount_percent', 'discount_amount',
@@ -99,11 +99,64 @@ final class InvoiceViewModel
     }
 
     /**
-     * @return list<int|string>
+     * Fields carried as invoice notes (BG-1 / BT-22) when emitted to XRechnung/ZUGFeRD.
+     *
+     * @return list<FieldViewData>
      */
-    public function notes(): array
+    public function noteFields(): array
     {
-        return [];
+        $fields = array_values(array_filter(
+            $this->buildFields(['delivery_terms', 'shipping_method']),
+            fn (FieldViewData $field): bool => ($field->value !== null && $field->value !== '')
+                || in_array($field->status(), ['missing', 'needs_review'], true),
+        ));
+
+        return array_merge($fields, $this->buildParserNoteFields());
+    }
+
+    /**
+     * @return list<FieldViewData>
+     */
+    private function buildParserNoteFields(): array
+    {
+        $validations = is_array($this->document?->field_validations) ? $this->document->field_validations : [];
+        $storedValidation = is_array($validations['notes'] ?? null) ? $validations['notes'] : null;
+        $fields = [];
+
+        foreach ($this->parsedNoteTexts() as $note) {
+            $validation = $this->resolveDisplayValidation('notes', $note, $storedValidation);
+            $status = is_array($validation) && isset($validation['status']) && is_string($validation['status'])
+                ? $validation['status']
+                : '';
+
+            $fields[] = new FieldViewData(
+                field: 'notes',
+                label: InvoiceFieldLabels::label('notes'),
+                btNumber: InvoiceFieldLabels::btNumber('notes'),
+                value: $note,
+                validation: $validation,
+                hint: InvoiceFieldLabels::hint('notes', $status, $validation),
+            );
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function parsedNoteTexts(): array
+    {
+        $notes = $this->invoice->notes ?? [];
+
+        if (! is_array($notes)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $notes,
+            fn (mixed $note): bool => is_string($note) && trim($note) !== '',
+        ));
     }
 
     /**

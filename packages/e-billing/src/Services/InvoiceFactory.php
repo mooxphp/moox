@@ -129,6 +129,7 @@ class InvoiceFactory
                 $dto->lines,
             ),
             headerCharges: $this->buildHeaderChargeDraftsFromDto($dto),
+            notes: $dto->notes,
         );
     }
 

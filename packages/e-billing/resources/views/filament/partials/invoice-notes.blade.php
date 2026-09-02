@@ -1,16 +1,20 @@
 @php
-    $notes = $viewModel->notes();
+    $noteFields = $viewModel->noteFields();
 @endphp
-@if(count($notes) > 0)
+@if(count($noteFields) > 0)
     <div
         class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
-        <h2 class="mb-3 text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('e-billing::fields.section_notes') }}</h2>
-        <div class="flex flex-col gap-3">
-            @foreach($notes as $note)
-                <p
-                    class="m-0 rounded-lg bg-gray-50 p-3 text-sm text-gray-800 dark:bg-gray-700/40 dark:text-gray-200">
-                    {{ $note }}</p>
-            @endforeach
+        <div class="mb-4 border-b border-gray-200 pb-3 dark:border-gray-700">
+            <h2
+                class="flex items-baseline gap-2 text-base font-semibold text-gray-900 dark:text-gray-100">
+                <span>{{ __('e-billing::fields.section_notes') }}</span>
+                <span class="text-xs font-normal text-gray-400 dark:text-gray-500">BG-1 / BT-22</span>
+            </h2>
         </div>
+        <dl class="m-0 flex flex-col gap-0">
+            @foreach($noteFields as $field)
+                @include('e-billing::filament.partials.invoice-field-row', ['field' => $field])
+            @endforeach
+        </dl>
     </div>
 @endif
