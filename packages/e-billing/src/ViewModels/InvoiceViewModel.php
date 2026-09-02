@@ -6,6 +6,8 @@ namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
+use Moox\EBilling\Enums\ApprovalTransitionKind;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
@@ -427,4 +429,56 @@ final class InvoiceViewModel
                 : 'not_applicable',
         ];
     }
+
+    /**
+     * @return list<array{kind_label: string, actor: string, at_formatted: string, reason: string, forwarded: list<array{field: string, reason: string}>}>
+     */
+    public function approvalTransitions(): array
+    {
+        $raw = is_array($this->document?->approval_transitions) ? $this->document->approval_transitions : [];
+        $rows = [];
+
+        foreach ($raw as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $kind = is_string($entry['kind'] ?? null)
+                ? ApprovalTransitionKind::tryFrom($entry['kind'])
+                : null;
+            $at = is_string($entry['at'] ?? null) ? $entry['at'] : '';
+            $actor = is_string($entry['actor'] ?? null) && $entry['actor'] !== ''
+                ? $entry['actor']
+                : __('e-billing::fields.approval_actor_system');
+
+            $forwarded = [];
+            foreach ($entry['forwarded_release_reasons'] ?? [] as $release) {
+                if (! is_array($release)) {
+                    continue;
+                }
+                $forwarded[] = [
+                    'field' => (string) ($release['field'] ?? ''),
+                    'reason' => (string) ($release['reason'] ?? ''),
+                ];
+            }
+
+            $rows[] = [
+                'kind_label' => $kind?->label() ?? (string) ($entry['kind'] ?? ''),
+                'actor' => $actor,
+                'at_formatted' => $at !== '' ? \Illuminate\Support\Carbon::parse($at)->format('d.m.Y H:i') : '—',
+                'reason' => is_string($entry['reason'] ?? null) ? $entry['reason'] : '',
+                'forwarded' => $forwarded,
+            ];
+        }
+
+        return $rows;
+    }
+
+    public function approvalStatusLabel(): ?string
+    {
+        $status = $this->document?->resolveApprovalStatusEnum();
+
+        return $status?->label();
+    }
+
 }

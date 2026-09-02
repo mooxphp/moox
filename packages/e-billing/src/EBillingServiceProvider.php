@@ -54,6 +54,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'add_copy_pdf_storage_path_to_ebilling_documents_table',
                 'add_source_content_hash_to_ebilling_documents_table',
                 'add_severity_releases_to_ebilling_documents_table',
+                'add_approval_state_to_ebilling_documents_table',
                 'create_ebilling_uploaded_pdf_sources_table',
             ]);
 
@@ -77,6 +78,18 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(SetInvoiceAttributionAction::class);
         $this->app->singleton(RematchAttributionAction::class);
         $this->app->singleton(ReleaseSeverityFieldAction::class);
+        $this->app->singleton(\Moox\EBilling\Approval\AutoApproveEvaluator::class);
+        $this->app->singleton(\Moox\EBilling\Approval\DocumentApprovalGuard::class);
+        $this->app->singleton(\Moox\EBilling\Approval\DocumentDispatchGuard::class);
+        $this->app->singleton(\Moox\EBilling\Actions\RecordApprovalTransitionAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\ApproveDocumentAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\RejectDocumentAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\RestoreRejectedDocumentAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\TryAutoApproveDocumentAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\InitializeDocumentApprovalAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\DispatchDocumentAction::class);
+        $this->app->singleton(\Moox\EBilling\Actions\InvalidateDocumentApprovalAction::class);
+
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);
         $this->app->singleton(ZugferdGeneratorStrategy::class);

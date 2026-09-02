@@ -20,6 +20,7 @@ use Moox\Core\Entities\Items\Item\BaseItemModel;
 use Moox\Core\Traits\MorphPivot\HasMorphPivotRelations;
 use Moox\Customer\Models\Customer;
 use Moox\EBilling\Enums\AttributionSource;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Formats\ArtifactKind;
@@ -49,6 +50,9 @@ use RuntimeException;
  * @property array<string, mixed>|null $ignored_reason
  * @property EBillingAttachmentProcessingStatus|null $gateway_status
  * @property InvoiceProcessingStatus|null $review_status
+ * @property DocumentApprovalStatus|null $approval_status
+ * @property array<int, array<string, mixed>>|null $approval_transitions
+ * @property array<string, mixed>|null $approval_flags
  * @property array<string, mixed>|null $field_validations
  * @property array<string, mixed>|null $severity_releases
  * @property string|null $invoice_id
@@ -116,11 +120,13 @@ class EbillingDocument extends BaseItemModel
             'ignored_reason' => 'array',
             'gateway_status' => EBillingAttachmentProcessingStatus::class,
             'review_status' => InvoiceProcessingStatus::class,
+            'approval_status' => DocumentApprovalStatus::class,
             'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
-            // severity_releases is intentionally omitted from $fillable: only ReleaseSeverityFieldAction
-            // may write it. Bulk update([...]) silently drops keys not in $fillable.
+            // severity_releases and approval_transitions intentionally omitted from $fillable.
             'severity_releases' => 'array',
+            'approval_transitions' => 'array',
+            'approval_flags' => 'array',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',
         ];
@@ -749,6 +755,103 @@ class EbillingDocument extends BaseItemModel
             is_array($this->field_validations) ? $this->field_validations : null,
             is_array($this->severity_releases) ? $this->severity_releases : null,
         );
+    }
+
+    public function resolveApprovalStatusEnum(): ?DocumentApprovalStatus
+    {
+        $status = $this->approval_status;
+        if ($status instanceof DocumentApprovalStatus) {
+            return $status;
+        }
+
+        $raw = $this->getAttributes()['approval_status'] ?? null;
+
+        return is_string($raw) && $raw !== '' ? DocumentApprovalStatus::tryFrom($raw) : null;
+    }
+
+    /**
+     * @param  Builder<EbillingDocument>  $query
+     * @return Builder<EbillingDocument>
+     */
+    public function scopeApprovalPending(Builder $query): Builder
+    {
+        return $query->where('approval_status', DocumentApprovalStatus::Pending->value);
+    }
+
+    public static function hasBlockingMustFieldFindings(?array $fieldValidations): bool
+    {
+        $invoiceFields = config('e-billing.field_validation.invoice_fields', []);
+        $lineFields = config('e-billing.field_validation.invoice_line_fields', []);
+
+        if (! is_array($invoiceFields)) {
+            $invoiceFields = [];
+        }
+        if (! is_array($lineFields)) {
+            $lineFields = [];
+        }
+
+        $validations = is_array($fieldValidations) ? $fieldValidations : [];
+
+        foreach ($invoiceFields as $field => $priority) {
+            if (! is_string($field) || $priority !== 'must') {
+                continue;
+            }
+
+            $status = self::readFieldStatusFromValidations($validations, $field);
+            if (in_array($status, ['missing', 'needs_review'], true)) {
+                return true;
+            }
+        }
+
+        foreach (self::readLineFieldValidationsFromArray($validations) as $lineFieldValidations) {
+            foreach ($lineFields as $field => $priority) {
+                if (! is_string($field) || $priority !== 'must') {
+                    continue;
+                }
+
+                $status = self::readFieldStatusFromValidations($lineFieldValidations, $field);
+                if (in_array($status, ['missing', 'needs_review'], true)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     */
+    public static function approvalTransitionEntryIsValid(array $entry): bool
+    {
+        $actorId = $entry['actor_id'] ?? null;
+        $actedAt = $entry['at'] ?? null;
+        $to = $entry['to'] ?? null;
+        $kind = $entry['kind'] ?? null;
+
+        if ($actorId === null || $actorId === '') {
+            return false;
+        }
+
+        if (! is_string($actedAt) || trim($actedAt) === '') {
+            return false;
+        }
+
+        if (! is_string($to) || DocumentApprovalStatus::tryFrom($to) === null) {
+            return false;
+        }
+
+        if (! is_string($kind)) {
+            return false;
+        }
+
+        if (in_array($kind, ['reject', 'restore'], true)) {
+            $reason = $entry['reason'] ?? null;
+
+            return is_string($reason) && trim($reason) !== '';
+        }
+
+        return true;
     }
 
     public function hasSeverityRelease(string $field, ?string $lineId = null): bool

@@ -179,6 +179,37 @@ return [
     'tooltip_validation_errors_present' => 'Validierungsfehler vorhanden',
     'tooltip_reviewed_database' => 'Geprüft (Datenbank)',
 
+
+    // Approval gate
+    'approval_status' => 'Freigabe',
+    'approval_status_pending' => 'Freigabe ausstehend',
+    'approval_status_approved' => 'Zum Versand freigegeben',
+    'approval_status_rejected' => 'Abgelehnt',
+    'approval_actor_system' => 'System',
+    'approval_transition_approve' => 'Freigegeben',
+    'approval_transition_reject' => 'Abgelehnt',
+    'approval_transition_restore' => 'Wieder auf ausstehend',
+    'section_approval_history' => 'Freigabe-Verlauf',
+    'approval_history_empty' => 'Noch keine Freigabe-Übergänge erfasst.',
+    'approval_history_kind' => 'Aktion',
+    'approval_history_actor' => 'Akteur',
+    'approval_history_at' => 'Zeitpunkt',
+    'approval_history_reason' => 'Begründung',
+    'action_approve_dispatch' => 'Zum Versand freigeben',
+    'action_approve_dispatch_modal_heading' => 'Zum Versand freigeben?',
+    'action_approve_dispatch_modal_description' => 'Ihre Freigabe wird erfasst und das Dokument kann versendet werden.',
+    'action_reject_dispatch' => 'Ablehnen',
+    'action_reject_dispatch_modal_heading' => 'Dokument ablehnen',
+    'action_reject_reason' => 'Begründung',
+    'action_restore_approval' => 'Wieder auf ausstehend setzen',
+    'action_restore_approval_modal_heading' => 'Abgelehntes Dokument wiederherstellen',
+    'notification_approval_success_title' => 'Dokument freigegeben',
+    'notification_approval_success_body' => 'Das Dokument ist zum Versand freigegeben.',
+    'notification_reject_success_title' => 'Dokument abgelehnt',
+    'notification_reject_success_body' => 'Die Ablehnung wurde erfasst.',
+    'notification_restore_success_title' => 'Dokument wiederhergestellt',
+    'notification_restore_success_body' => 'Das Dokument wartet erneut auf Freigabe.',
+
     // Actions
     'action_details' => 'Details',
     'action_kosit_report' => 'KOSIT-Bericht',
@@ -191,8 +222,8 @@ return [
     'document_version' => 'Version',
     'document_version_label' => 'v:version',
     'document_version_current' => 'Aktuell',
-    'action_set_attribution' => 'Zuordnung setzen',
-    'action_set_attribution_modal_heading' => 'Kunden-Zuordnung setzen',
+    'action_set_attribution' => 'Kunde zuordnen',
+    'action_set_attribution_modal_heading' => 'Kunde zuordnen',
     'action_set_attribution_modal_description' => 'Wählen Sie den Kunden, dem dieses Dokument zugeordnet ist. War die Rechnung bereits bestätigt oder validiert, wird diese Bestätigung aufgehoben und muss erneut erfolgen.',
     'action_set_attribution_submit' => 'Zuordnung speichern',
     'action_rematch' => 'Erneut zuordnen',
@@ -268,3 +299,4 @@ return [
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];
+

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\Actions;
 
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
+use Moox\EBilling\Actions\InvalidateDocumentApprovalAction;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 
@@ -26,5 +27,8 @@ final class RematchAttributionAction
         $document->save();
 
         $this->validator->validate($document);
+
+        app(InvalidateDocumentApprovalAction::class)->execute($document->fresh() ?? $document);
     }
 }
+
