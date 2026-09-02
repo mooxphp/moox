@@ -15,7 +15,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - Foreign-invoice filtering (non-domestic invoices settled as `Ignored` on the inbox driver and marked `IgnoredForeign`)
 - MoSCoW severity gating: must/should/could priorities, severity release with auditable actor identity, and review queue aligned with the findings gate
 - Filament `InvoiceResource` for list, filter, and manual review workflows
-- Manual customer attribution and explicit re-match from the invoice detail (and rematch from the list)
+- Manual customer attribution via `SetInvoiceAttributionAction` (Filament header action kept as `InvoiceResource::getSetAttributionAction()` for a later surface) and explicit rematch from the invoice detail and list
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
 - Delivery-date carriage into generated artifacts: one unique date → document actual delivery (BT-72); several differing dates → per-line dates only (no document BT-72, no invoicing-period merge); intra-community invoices with multiple dates surface `delivery_date` as `needs_review` (BR-IC-11) instead of aggregating
 - Consignee party on invoice and line `delivery` (name + address): persisted even without a country; detail views show the name first (`PartyAddressFormatter`); field label Consignee / Warenempfänger (hint BG-13); generated artifacts emit ShipTo (BG-13) from `shipToName` / `shipToAddress` without tax registration or contact — address group (BG-15) only when a country is present
@@ -91,6 +91,7 @@ Published as `config/e-billing.php`.
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `address_roles` |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
+| `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
 
 ### Environment variables
@@ -105,6 +106,8 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | Variable | Config key | Default | Required |
 | --- | --- | --- | --- |
 | `EBILLING_PREFERRED_PIECE_UNIT_CODE` | `preferred_piece_unit_code` | `H87` | No |
+| `EBILLING_APPROVAL_REQUIRED` | `approval.required` | `true` | No |
+| `EBILLING_APPROVAL_AUTO_APPROVE` | `approval.auto_approve_enabled` | `true` | No |
 
 ### Supplier block
 
@@ -166,6 +169,27 @@ Two related checks answer different questions:
 Within awaiting-review statuses, both use the same field predicate (including valid severity releases on **should** fields). When several severities apply, the most severe finding wins.
 
 Changing a field's configured priority changes its behaviour with no code change.
+
+### Dispatch approval gate
+
+Distinct from `review_status` (field-review clearance) and `gateway_status` (KOSIT/veraPDF validation), `approval_status` controls whether a validated document may enter the dispatch path.
+
+| State | Meaning |
+| --- | --- |
+| `pending` | Awaiting human or automatic approval |
+| `approved` | Cleared for dispatch |
+| `rejected` | Rejected with a recorded reason |
+
+Transitions are append-only in `approval_transitions` (actor, timestamp, reason; severity-release reasons are forwarded on approve). Only `RecordApprovalTransitionAction` writes approval state.
+
+**Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending.
+
+| Config key | Default | Effect |
+| --- | --- | --- |
+| `approval.required` | `true` | When `false`, `DispatchDocumentAction` skips approval and allows dispatch on validation alone |
+| `approval.auto_approve_enabled` | `true` | When `false`, clean documents stay pending until a reviewer approves |
+
+`DispatchDocumentAction` refuses unapproved documents at the dispatch seam (not only in the Filament UI). A blocked must-field cannot reach `approved` by any route.
 
 ## The EbillingDocument Model
 

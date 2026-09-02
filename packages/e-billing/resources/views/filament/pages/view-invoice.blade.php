@@ -16,6 +16,10 @@
             </div>
 
             @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $this->invoiceViewModel])
+
+            @include('e-billing::filament.partials.approval-transitions', [
+                'transitions' => $this->invoiceViewModel->approvalTransitions(),
+            ])
         </div>
 
         <div class="sticky top-4 lg:max-h-[calc(100vh-12rem)]">
@@ -39,3 +43,4 @@
         </div>
     @endif
 </x-filament-panels::page>
+

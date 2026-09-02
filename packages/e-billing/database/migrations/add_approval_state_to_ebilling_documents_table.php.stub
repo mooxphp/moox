@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->string('approval_status')->nullable()->index()->after('review_status');
+            $table->json('approval_transitions')->nullable()->after('approval_status');
+            $table->json('approval_flags')->nullable()->after('approval_transitions');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('ebilling_documents', function (Blueprint $table): void {
+            $table->dropColumn(['approval_status', 'approval_transitions', 'approval_flags']);
+        });
+    }
+};

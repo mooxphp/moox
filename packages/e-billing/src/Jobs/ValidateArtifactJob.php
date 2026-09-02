@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use LogicException;
+use Moox\EBilling\Actions\InitializeDocumentApprovalAction;
+use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Events\ArtifactValidated;
 use Moox\EBilling\Events\ArtifactValidationFailed;
@@ -391,6 +393,12 @@ class ValidateArtifactJob implements ShouldQueue
         });
 
         event(new ArtifactValidated($document->getKey(), $formatId));
+
+        $fresh = $document->fresh();
+        if ($fresh instanceof EbillingDocument) {
+            app(InitializeDocumentApprovalAction::class)->execute($fresh);
+            app(TryAutoApproveDocumentAction::class)->execute($fresh->fresh() ?? $fresh);
+        }
     }
 
     /**
