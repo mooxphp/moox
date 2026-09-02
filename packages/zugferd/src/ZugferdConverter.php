@@ -170,6 +170,7 @@ class ZugferdConverter
         $document = ZugferdDocumentBuilder::createNew($profile);
 
         $this->setDocumentInfo($document, $invoice);
+        $this->setDocumentNotes($document, $invoice);
         $this->setSeller($document, $invoice);
         $this->setBuyer($document, $invoice);
         $this->setDelivery($document, $invoice);
@@ -195,6 +196,13 @@ class ZugferdConverter
         $doc->setDocumentBusinessProcess('urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
         $buyerRef = $invoice->customerReference ?: $invoice->customerNumber ?: 'N/A';
         $doc->setDocumentBuyerReference($buyerRef);
+    }
+
+    private function setDocumentNotes(ZugferdDocumentBuilder $doc, ZugferdInvoice $invoice): void
+    {
+        foreach ($invoice->documentNotes as $note) {
+            $doc->addDocumentNote($note);
+        }
     }
 
     // ─── Seller (BG-4) ──────────────────────────────────────────

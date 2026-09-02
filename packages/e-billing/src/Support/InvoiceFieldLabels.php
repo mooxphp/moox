@@ -124,11 +124,27 @@ final class InvoiceFieldLabels
     {
         // NOTE: $context === 'invoice_line' is used by Filament ViewModels for line-level BT hints
         if ($context === 'invoice_line' && $field === 'delivery_date') {
-            return 'BT-134';
+            // ZugferdConverter::setLineDeliveryDate() encodes differing line dates on EN16931/XRechnung
+            // as ram:BillingSpecifiedPeriod (BG-26 / BT-134–135), not ActualDeliverySupplyChainEvent.
+            return 'BG-26 / BT-134';
         }
 
         if ($context === 'invoice_line' && $field === 'order_number') {
             return 'BT-132';
+        }
+
+        if ($context === 'invoice_line') {
+            $lineBt = match ($field) {
+                'material', 'weight_kg_total', 'weight_kg_net', 'material_test_certificate' => 'BG-32 / BT-160–161',
+                'surcharge_amount', 'material_test_certificate_price' => 'BG-28 / BT-141',
+                'surcharge_description' => 'BG-28 / BT-144',
+                'delivery_address' => 'BG-15',
+                default => null,
+            };
+
+            if ($lineBt !== null) {
+                return $lineBt;
+            }
         }
 
         return match ($field) {
@@ -141,31 +157,41 @@ final class InvoiceFieldLabels
             'customer_number' => 'BT-46',
             'order_number' => 'BT-13',
             'payment_terms' => 'BT-20',
+            'delivery_terms' => 'BT-22',
+            'shipping_method' => 'BT-22',
+            'notes' => 'BT-22',
+            'agent' => 'BT-41',
             'supplier_name' => 'BT-27',
             'supplier_vat_id' => 'BT-31',
             'supplier_tax_number' => 'BT-32',
             'supplier_address' => 'BG-5',
-            'supplier_bank_accounts' => 'BG-17',
+            'supplier_bank_accounts' => 'BG-16 / BG-17',
             'customer_name' => 'BT-44',
             'customer_vat_id' => 'BT-48',
             'customer_address' => 'BG-8',
-            // Parsed from supplier address block
             'country' => 'BT-55',
             'delivery_address' => 'BG-15',
             'delivery_date' => 'BT-72',
             'net_total' => 'BT-109',
             'vat_amount' => 'BT-110',
             'gross_total' => 'BT-112',
-            'minimum_quantity_surcharge' => 'BG-22 / BT-99',
-            'freight_flat_rate' => 'BG-22 / BT-99',
+            'discount_amount' => 'BG-20 / BT-92',
+            'discount_percent' => 'BG-20 / BT-94',
+            'shipping_cost' => 'BG-21 / BT-99',
+            'minimum_quantity_surcharge' => 'BG-21 / BT-99',
+            'freight_flat_rate' => 'BG-21 / BT-99',
+            'packaging_cost' => 'BG-21 / BT-99',
             'vat_rate' => 'BT-119',
+            'position' => 'BT-126',
             'quantity' => 'BT-129',
             'unit' => 'BT-130',
             'line_total' => 'BT-131',
             'unit_price' => 'BT-146',
             'description' => 'BT-153',
+            'description_detail' => 'BT-154',
             'article_number' => 'BT-155',
             'customs_tariff_number' => 'BT-158',
+            'material_test_certificate' => 'BG-32 / BT-160–161',
             'delivery_note_number' => 'BT-16',
             default => null,
         };
