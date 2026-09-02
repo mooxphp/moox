@@ -245,7 +245,7 @@ $panel->plugins([
 ]);
 ```
 
-`EBillingPlugin` registers `InvoiceResource` (slug `invoices`), which manages `Moox\Invoice\Models\Invoice`. Create and edit are disabled; operators use the list and view pages to review parsed invoices, validation scores, KoSIT status, and confirm or reject records.
+`EBillingPlugin` registers `InvoiceResource` (slug `invoices`), which manages `Moox\Invoice\Models\Invoice`. Create and edit are disabled; operators use the list and view pages to review parsed invoices, validation scores, KoSIT status, and confirm or reject records. The list search matches invoice number, supplier name, and recipient name (JSON `seller` / `buyer` party columns).
 
 ## Relation to moox/invoice
 

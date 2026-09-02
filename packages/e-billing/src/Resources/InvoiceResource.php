@@ -169,6 +169,18 @@ class InvoiceResource extends BaseItemResource
     }
 
     /**
+     * Buyer/seller are JSON-cast parties, not Eloquent relations.
+     *
+     * @return Closure(Builder, string): Builder
+     */
+    private static function searchJsonPartyName(string $partyColumn): Closure
+    {
+        return function (Builder $query, string $search) use ($partyColumn): Builder {
+            return $query->where("{$partyColumn}->name", 'like', '%'.$search.'%');
+        };
+    }
+
+    /**
      * @return array<int, mixed>
      */
     private static function invoiceListTableColumns(): array
@@ -196,11 +208,13 @@ class InvoiceResource extends BaseItemResource
             TextColumn::make('supplier_name')
                 ->label(__('e-billing::fields.supplier'))
                 ->getStateUsing(fn (Invoice $record): ?string => $record->seller?->name)
+                ->searchable(query: self::searchJsonPartyName('seller'))
                 ->placeholder('—')
                 ->toggleable(),
             TextColumn::make('buyer_name')
                 ->label(__('e-billing::fields.recipient'))
                 ->getStateUsing(fn (Invoice $record): ?string => $record->buyer?->name)
+                ->searchable(query: self::searchJsonPartyName('buyer'))
                 ->placeholder('—')
                 ->toggleable(),
             TextColumn::make('country')
