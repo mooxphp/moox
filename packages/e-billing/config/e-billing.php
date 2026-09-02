@@ -607,6 +607,23 @@ return [
     | Morph pivots (owner side → kosit_validatables)
     |--------------------------------------------------------------------------
     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dispatch approval gate
+    |--------------------------------------------------------------------------
+    |
+    | When required, documents must reach approval_status=approved before the
+    | dispatch path accepts them. auto_approve_enabled is independent: when
+    | false, clean documents stay pending until a human approves.
+    |
+    */
+
+    'approval' => [
+        'required' => (bool) env('EBILLING_APPROVAL_REQUIRED', true),
+        'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
+    ],
+
     'morph_relations' => [
         'kosit_validatables' => [
             'relationship' => 'kositValidations',

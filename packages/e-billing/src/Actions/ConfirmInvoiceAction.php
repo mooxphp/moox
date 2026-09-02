@@ -60,6 +60,11 @@ final class ConfirmInvoiceAction
             wasAutoValidatedFirst: false,
         ));
 
+        $fresh = $document->fresh();
+        if ($fresh instanceof EbillingDocument) {
+            app(TryAutoApproveDocumentAction::class)->execute($fresh);
+        }
+
         return ['confirmed' => true, 'previous_current_count' => $previousCurrentCount];
     }
 
@@ -80,3 +85,4 @@ final class ConfirmInvoiceAction
             ->count();
     }
 }
+

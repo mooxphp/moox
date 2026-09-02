@@ -6,15 +6,21 @@ namespace Moox\EBilling\Resources\InvoiceResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Computed;
 use Moox\Customer\Models\Customer;
+use Moox\EBilling\Actions\ApproveDocumentAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
+use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
+use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
+use Moox\EBilling\Approval\DocumentApprovalGuard;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
@@ -135,6 +141,118 @@ class ViewInvoice extends ViewRecord
                             ->warning()
                             ->send();
                     }
+                }),
+            Action::make('approve_dispatch')
+                ->label(__('e-billing::fields.action_approve_dispatch'))
+                ->icon(Heroicon::OutlinedShieldCheck)
+                ->color('success')
+                ->requiresConfirmation()
+                ->modalHeading(__('e-billing::fields.action_approve_dispatch_modal_heading'))
+                ->modalDescription(__('e-billing::fields.action_approve_dispatch_modal_description'))
+                ->visible(fn (): bool => (bool) config('e-billing.approval.required', true)
+                    && $document instanceof EbillingDocument
+                    && app(DocumentApprovalGuard::class)->canApprove($document))
+                ->action(function () use ($record, $document): void {
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    try {
+                        app(ApproveDocumentAction::class)->execute($document);
+                    } catch (Throwable) {
+                        Notification::make()
+                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title(__('e-billing::fields.notification_approval_success_title'))
+                        ->body(__('e-billing::fields.notification_approval_success_body'))
+                        ->success()
+                        ->send();
+
+                    $record->load('ebillingDocument');
+                }),
+            Action::make('reject_dispatch')
+                ->label(__('e-billing::fields.action_reject_dispatch'))
+                ->icon(Heroicon::OutlinedXCircle)
+                ->color('danger')
+                ->modalHeading(__('e-billing::fields.action_reject_dispatch_modal_heading'))
+                ->schema([
+                    Textarea::make('reason')
+                        ->label(__('e-billing::fields.action_reject_reason'))
+                        ->required(),
+                ])
+                ->visible(fn (): bool => (bool) config('e-billing.approval.required', true)
+                    && $document instanceof EbillingDocument
+                    && app(DocumentApprovalGuard::class)->canReject($document))
+                ->action(function (array $data) use ($record, $document): void {
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    $reason = is_string($data['reason'] ?? null) ? $data['reason'] : '';
+
+                    try {
+                        app(RejectDocumentAction::class)->execute($document, $reason);
+                    } catch (Throwable) {
+                        Notification::make()
+                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title(__('e-billing::fields.notification_reject_success_title'))
+                        ->body(__('e-billing::fields.notification_reject_success_body'))
+                        ->success()
+                        ->send();
+
+                    $record->load('ebillingDocument');
+                }),
+            Action::make('restore_approval')
+                ->label(__('e-billing::fields.action_restore_approval'))
+                ->icon(Heroicon::OutlinedArrowUturnLeft)
+                ->color('warning')
+                ->modalHeading(__('e-billing::fields.action_restore_approval_modal_heading'))
+                ->schema([
+                    Textarea::make('reason')
+                        ->label(__('e-billing::fields.action_reject_reason'))
+                        ->required(),
+                ])
+                ->visible(fn (): bool => (bool) config('e-billing.approval.required', true)
+                    && $document instanceof EbillingDocument
+                    && $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Rejected)
+                ->action(function (array $data) use ($record, $document): void {
+                    if (! $document instanceof EbillingDocument) {
+                        return;
+                    }
+
+                    $reason = is_string($data['reason'] ?? null) ? $data['reason'] : '';
+
+                    try {
+                        app(RestoreRejectedDocumentAction::class)->execute($document, $reason);
+                    } catch (Throwable) {
+                        Notification::make()
+                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title(__('e-billing::fields.notification_restore_success_title'))
+                        ->body(__('e-billing::fields.notification_restore_success_body'))
+                        ->success()
+                        ->send();
+
+                    $record->load('ebillingDocument');
                 }),
             Action::make('set_attribution')
                 ->label(__('e-billing::fields.action_set_attribution'))
