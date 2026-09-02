@@ -515,24 +515,25 @@ return [
             // Buyer reference
             'customer_reference' => 'could', // BT-10
             'order_number' => 'should',  // BT-13
-            'order_date' => 'could',   // BT-13 date
+            'order_date' => 'could',   // [GAP] no EN 16931 BT; not BT-13
 
             // Delivery
             'delivery_address' => 'could',   // BG-15
-            'delivery_date' => 'should',  // BT-72
+            'delivery_date' => 'should',  // BT-72 (header ActualDeliverySupplyChainEvent)
 
             // Seller — MUST (own company data, from system settings later)
             'supplier_name' => 'must',    // BT-27
             'supplier_vat_id' => 'must',    // BT-31
             'supplier_tax_number' => 'should', // BT-32
             'supplier_address' => 'must',    // BG-5
-            'supplier_bank_accounts' => 'should', // BG-17
+            'supplier_bank_accounts' => 'should', // BG-16 / BG-17 (BT-84 IBAN)
 
             // Agent & terms
-            'agent' => 'could',
+            'agent' => 'could',  // BT-41
             'payment_terms' => 'should',  // BT-20
-            'delivery_terms' => 'could',
-            'shipping_method' => 'could',
+            'delivery_terms' => 'could',  // BT-22 (invoice note)
+            'shipping_method' => 'could',  // BT-22 (invoice note)
+            'notes' => 'could',  // BT-22 (parser free-text notes)
 
             // Amounts — MUST
             'net_total' => 'must',    // BT-109
@@ -541,16 +542,16 @@ return [
             'gross_total' => 'must',    // BT-112
 
             // Optional amounts
-            'discount_percent' => 'could',
-            'discount_amount' => 'could',
-            'shipping_cost' => 'could',
-            'minimum_quantity_surcharge' => 'could',
-            'freight_flat_rate' => 'could',
-            'packaging_cost' => 'could',
+            'discount_percent' => 'could',  // BG-20 / BT-94
+            'discount_amount' => 'could',  // BG-20 / BT-92
+            'shipping_cost' => 'could',  // BG-21 / BT-99
+            'minimum_quantity_surcharge' => 'could',  // BG-21 / BT-99
+            'freight_flat_rate' => 'could',  // BG-21 / BT-99
+            'packaging_cost' => 'could',  // BG-21 / BT-99
         ],
 
         'invoice_line_fields' => [
-            'position' => 'must',
+            'position' => 'must',  // BT-126
             'description' => 'must',    // BT-153
             'quantity' => 'must',    // BT-129
             'unit' => 'must',    // BT-130
@@ -558,20 +559,20 @@ return [
             'line_total' => 'must',    // BT-131
 
             'article_number' => 'should',  // BT-155
-            'material' => 'should',  // Werkstoffnummer (industry-specific)
+            'material' => 'should',  // BG-32 / BT-160–161 (host-specific)
             'customs_tariff_number' => 'could', // BT-158
 
-            'description_detail' => 'could',
-            'material_test_certificate' => 'could',
-            'material_test_certificate_price' => 'could',
+            'description_detail' => 'could',  // BT-154
+            'material_test_certificate' => 'could',  // BG-32 / BT-160–161
+            'material_test_certificate_price' => 'could',  // BG-28 line charge
             'weight_kg_total' => 'could',
             'weight_kg_net' => 'could',
             'surcharge_amount' => 'could',
             'surcharge_description' => 'could',
-            'delivery_date' => 'should',  // BT-134
+            'delivery_date' => 'should',  // BG-26 / BT-134 (BillingSpecifiedPeriod in XML)
             'delivery_note_number' => 'could', // BT-16
             'order_number' => 'could',   // BT-132 (item-level override)
-            'order_date' => 'could',
+            'order_date' => 'could',  // [GAP] no EN 16931 BT; not BT-13
             'delivery_address' => 'could',
         ],
 

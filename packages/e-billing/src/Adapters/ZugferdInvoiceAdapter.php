@@ -6,6 +6,7 @@ namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Support\DeliveryDateTransmission;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
+use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Invoice\Models\Invoice;
 use Moox\Invoice\Models\InvoiceAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdAddress;
@@ -209,6 +210,11 @@ final class ZugferdInvoiceAdapter implements ZugferdInvoice
                 $accounts,
             );
         }
+    }
+
+    /** @var list<string> */
+    public array $documentNotes {
+        get => InvoiceDocumentNotes::fromInvoice($this->model);
     }
 
     private static function mapAllowanceCharge(InvoiceAllowanceCharge $charge): AllowanceCharge

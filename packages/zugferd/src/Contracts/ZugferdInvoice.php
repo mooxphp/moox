@@ -68,4 +68,7 @@ interface ZugferdInvoice
 
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts { get; }
+
+    /** @var list<string> */
+    public array $documentNotes { get; }
 }

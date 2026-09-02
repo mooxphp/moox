@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\EBilling\Adapters;
 
 use Moox\EBilling\Data\Invoice;
+use Moox\EBilling\Support\InvoiceDocumentNotes;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdBankAccount;
@@ -79,6 +80,9 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
     /** @var list<ZugferdBankAccount> */
     public array $bankAccounts;
 
+    /** @var list<string> */
+    public array $documentNotes;
+
     public function __construct(Invoice $invoice)
     {
         $this->invoiceNumber = $invoice->invoiceNumber;
@@ -113,5 +117,6 @@ final class ZugferdInvoiceDtoAdapter implements ZugferdInvoice
         $this->allowanceCharges = $invoice->allowanceCharges();
         $this->lines = $invoice->lines;
         $this->bankAccounts = $invoice->bankAccounts();
+        $this->documentNotes = InvoiceDocumentNotes::fromDto($invoice);
     }
 }

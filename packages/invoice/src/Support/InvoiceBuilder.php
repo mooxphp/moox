@@ -44,6 +44,7 @@ class InvoiceBuilder
         $invoice->payment_terms = $draft->payment_terms;
         $invoice->shipping_method = $draft->shipping_method;
         $invoice->delivery_terms = $draft->delivery_terms;
+        $invoice->notes = $draft->notes !== [] ? $draft->notes : null;
         $invoice->seller = $draft->seller;
         $invoice->buyer = $draft->buyer;
         $invoice->delivery = $draft->delivery;

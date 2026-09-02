@@ -11,6 +11,7 @@ use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
+use Moox\EBilling\Actions\ReleaseSeverityFieldAction;
 use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
@@ -52,6 +53,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'alter_ebilling_documents_source_id_to_string',
                 'add_copy_pdf_storage_path_to_ebilling_documents_table',
                 'add_source_content_hash_to_ebilling_documents_table',
+                'add_severity_releases_to_ebilling_documents_table',
                 'create_ebilling_uploaded_pdf_sources_table',
             ]);
 
@@ -74,6 +76,7 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(CreateManualUploadDocumentAction::class);
         $this->app->singleton(SetInvoiceAttributionAction::class);
         $this->app->singleton(RematchAttributionAction::class);
+        $this->app->singleton(ReleaseSeverityFieldAction::class);
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);
         $this->app->singleton(ZugferdGeneratorStrategy::class);
