@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Invoice list table search now matches recipient (buyer) and supplier (seller) names on the JSON party columns. Previously only `invoice_number` was searchable, so typing an Empfänger / recipient name returned no rows.
+
 ### Added
 
 - Dispatch approval gate ([#15](https://github.com/mooxphp/e-billing/issues/15)): `approval_status` (`pending`, `approved`, `rejected`) distinct from `review_status` and `gateway_status`; nullable indexed column plus append-only `approval_transitions` and `approval_flags` on `ebilling_documents` (not mass-assignable). `RecordApprovalTransitionAction` records approve/reject/restore with actor, timestamp, and reason (reject/restore require a reason; approve forwards severity-release reasons; auto-approve uses system actor). `DocumentDispatchGuard` and `DispatchDocumentAction` refuse dispatch when approval is required and the document is not approved. `AutoApproveEvaluator` approves automatically only when every condition holds separately (gateway validated, review clear, must-fields satisfied, no duplicate flag, no anomaly flag). Config: `approval.required` (default `true`, env `EBILLING_APPROVAL_REQUIRED`) and independent `approval.auto_approve_enabled` (default `true`, env `EBILLING_APPROVAL_AUTO_APPROVE`). After `ValidateArtifactJob` success: initialize `pending` when approval is required, then attempt auto-approve; severity release and human confirm may also trigger auto-approve. `InvalidateDocumentApprovalAction` resets approval to `pending` after rematch or manual attribution change so a prior sign-off cannot authorize re-validated data. Filament invoice detail: approve/reject/restore header actions, approval history table, alongside existing confirm/set-attribution/rematch actions.
