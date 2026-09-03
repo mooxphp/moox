@@ -27,7 +27,8 @@ final class GraphHeaderSanitizingTransport implements TransportInterface
 
     public function __construct(
         private readonly TransportInterface $inner,
-    ) {}
+    ) {
+    }
 
     public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
     {
