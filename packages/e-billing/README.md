@@ -89,7 +89,7 @@ Published as `config/e-billing.php`.
 | `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`); profile lives in `moox/zugferd` (`config('zugferd.profile')`) |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
-| `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `address_roles` |
+| `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
