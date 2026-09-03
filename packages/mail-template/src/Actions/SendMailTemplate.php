@@ -86,9 +86,12 @@ class SendMailTemplate
             is_array($data['user'] ?? null) ? $data['user'] : [],
             [
                 'name' => $name,
+                'display_name' => $name,
                 'last_name' => $this->lastName($name),
             ],
         );
+
+        $data['displayName'] = $name;
 
         return $data;
     }

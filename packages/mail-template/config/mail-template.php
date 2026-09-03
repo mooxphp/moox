@@ -31,7 +31,10 @@ return [
         'url' => '{url}',
         'expiresMinutes' => '{expiresMinutes}',
         'headline' => '{headline}',
+        'content' => '{content}',
+        'displayName' => '{displayName}',
         'user' => [
+            'display_name' => '{displayName}',
             'last_name' => '{lastName}',
             'name' => '{name}',
         ],

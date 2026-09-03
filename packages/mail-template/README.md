@@ -36,3 +36,5 @@ $html = app(MailTemplateRenderer::class)->toHtml($template, [
 ```
 
 Blade first produces the view. If the output starts with `<mjml`, Spatie converts it to HTML; otherwise the Blade HTML is sent as-is.
+
+`mail_content` and `footer` are MJML fragments, not Blade. Tokens such as `{magicLink}`, `{headline}`, `{content}`, `{displayName}` and `{expiresMinutes}` are replaced from the render payload.

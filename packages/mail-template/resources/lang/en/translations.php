@@ -15,7 +15,7 @@ return [
     'logo' => 'Logo',
     'logo_help' => 'Leave empty to use the logo from the view.',
     'mail_content' => 'Mail content (MJML)',
-    'mail_content_help' => 'Leave empty to use the default body from the view. A value here replaces only the body, not header or footer.',
+    'mail_content_help' => 'Leave empty to use the default body from the view. A value here replaces only the body, not header or footer. Tokens such as {magicLink}, {headline}, {content}, {displayName} and {expiresMinutes} are replaced when sending.',
     'footer' => 'Footer (MJML)',
     'footer_help' => 'Leave empty to use the default footer from the view.',
     'preview' => 'Preview',

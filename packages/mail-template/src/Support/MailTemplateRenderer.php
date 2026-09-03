@@ -57,13 +57,65 @@ class MailTemplateRenderer
             ? $template->brand_name
             : config('app.name');
 
-        return array_merge([
+        $viewData = array_merge([
             'template' => $template,
             'logoUrl' => $template->logo_url,
             'brandName' => $brandName,
             'headline' => $data['headline'] ?? $brandName,
-            'mailContent' => $template->mail_content,
-            'footer' => $template->footer,
         ], $data);
+
+        $viewData['mailContent'] = $this->interpolate($template->mail_content, $viewData);
+        $viewData['footer'] = $this->interpolate($template->footer, $viewData);
+
+        return $viewData;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function interpolate(?string $fragment, array $data): ?string
+    {
+        if ($fragment === null || $fragment === '') {
+            return $fragment;
+        }
+
+        return strtr($fragment, $this->tokens($data));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, string>
+     */
+    private function tokens(array $data): array
+    {
+        $tokens = [];
+
+        foreach ($data as $key => $value) {
+            if (is_string($key) && (is_string($value) || is_int($value) || is_float($value))) {
+                $tokens['{'.$key.'}'] = e((string) $value);
+            }
+        }
+
+        $person = $data['subject'] ?? $data['user'] ?? null;
+        $displayName = trim((string) data_get($person, 'display_name', ''));
+
+        if ($displayName !== '') {
+            $tokens['{displayName}'] = e($displayName);
+        } else {
+            $tokens['{displayName}'] ??= '';
+        }
+
+        $lastName = trim((string) data_get($person, 'last_name', ''));
+        $name = trim((string) data_get($person, 'name', ''));
+
+        if ($lastName !== '') {
+            $tokens['{lastName}'] = e($lastName);
+        }
+
+        if ($name !== '') {
+            $tokens['{name}'] = e($name);
+        }
+
+        return $tokens;
     }
 }
