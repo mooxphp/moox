@@ -57,6 +57,8 @@ class LoginLinkService
      * Issue a new signed link for a process + subject.
      * Auth-context processes require panelId; public-context processes ignore it.
      * Invalidation of prior links follows the process invalidate_prior policy.
+     * `$processSlug` may be the process slug or the handler_key; the stored
+     * discriminator is always the definition slug.
      *
      * @param  array<string, mixed>|null  $payload
      */
@@ -71,6 +73,7 @@ class LoginLinkService
         bool $queueMail = true,
     ): LoginLink {
         $process = $this->resolveProcessDefinition($processSlug);
+        $resolvedSlug = filled($process?->slug) ? (string) $process->slug : $processSlug;
         $expiresMinutes = $process?->resolveExpiryMinutes()
             ?? (int) config('login-link.expiration_minutes', 60);
 
@@ -87,12 +90,16 @@ class LoginLinkService
         }
 
         if ($process?->shouldInvalidatePrior() ?? true) {
-            $this->invalidatePriorValidLinks($processSlug, $subject);
+            $this->invalidatePriorValidLinks($resolvedSlug, $subject);
+
+            if ($processSlug !== $resolvedSlug) {
+                $this->invalidatePriorValidLinks($processSlug, $subject);
+            }
         }
 
         $attributes = [
             'panel_id' => $panelId,
-            'process' => $processSlug,
+            'process' => $resolvedSlug,
             'subject_id' => $subject->getKey(),
             'subject_type' => $subject::class,
             'payload' => $payload,
@@ -190,9 +197,14 @@ class LoginLinkService
             ->update(['used_at' => now()]);
     }
 
+    /**
+     * Resolve by slug first, then by handler_key so Filament can rename the slug
+     * without breaking callers that still pass the handler identity.
+     */
     public function resolveProcessDefinition(string $processSlug): ?LoginLinkProcess
     {
-        return LoginLinkProcess::query()->where('slug', $processSlug)->first();
+        return LoginLinkProcess::query()->where('slug', $processSlug)->first()
+            ?? LoginLinkProcess::query()->where('handler_key', $processSlug)->first();
     }
 
     private function userCanAccessPanel(mixed $user, string $panelId): bool

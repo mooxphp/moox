@@ -131,9 +131,7 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
                 return URL::temporarySignedRoute(
                     'login-link.public.consume',
                     now()->addMinutes($expiresMinutes),
-                    [
-                        'loginLink' => $this->loginLink->getKey(),
-                    ],
+                    $this->signedRouteParameters(),
                 );
             } catch (\Throwable) {
                 return url('/');
@@ -144,16 +142,38 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
         $routeName = 'filament.'.$panelId.'.auth.login-link.consume';
 
         try {
-            return URL::temporarySignedRoute(
-                $routeName,
-                now()->addMinutes($expiresMinutes),
-                [
-                    'loginLink' => $this->loginLink->getKey(),
-                ],
-            );
+                return URL::temporarySignedRoute(
+                    $routeName,
+                    now()->addMinutes($expiresMinutes),
+                    $this->signedRouteParameters(),
+                );
         } catch (\Throwable) {
             return url('/'.$panelId.'/login');
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function signedRouteParameters(): array
+    {
+        $parameters = [
+            'loginLink' => $this->loginLink->getKey(),
+        ];
+
+        $payload = $this->loginLink->payload;
+
+        if (! is_array($payload)) {
+            return $parameters;
+        }
+
+        $hash = $payload['h'] ?? null;
+
+        if (is_string($hash) && $hash !== '') {
+            $parameters['h'] = $hash;
+        }
+
+        return $parameters;
     }
 
     private function resolveLogoUrl(): ?string

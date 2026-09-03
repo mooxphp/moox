@@ -71,6 +71,34 @@ it('invalidates prior valid links for the same process and subject when policy e
         ->and(LoginLink::query()->where('process', 'verify-address')->whereNull('used_at')->count())->toBe(1);
 });
 
+it('issues by handler key when the process slug was renamed', function (): void {
+    $subject = TestSubject::query()->create([
+        'name' => 'Address',
+        'email' => 'ap@example.com',
+    ]);
+
+    LoginLinkProcess::query()->create([
+        'title' => 'E-invoice portal',
+        'slug' => 'e-rechnungsportal',
+        'context' => LinkProcessContext::PUBLIC,
+        'handler_key' => 'ack',
+        'template_key' => 'ack',
+        'expiry_minutes' => 15,
+        'invalidate_prior' => true,
+    ]);
+
+    $link = app(LoginLinkService::class)->issue(
+        'ack',
+        $subject,
+        'ap@example.com',
+        null,
+        Request::create('/', 'POST'),
+    );
+
+    expect($link->process)->toBe('e-rechnungsportal')
+        ->and($link->panel_id)->toBeNull();
+});
+
 it('keeps prior valid links when invalidate_prior is disabled', function (): void {
     $subject = TestSubject::query()->create([
         'name' => 'Address',
