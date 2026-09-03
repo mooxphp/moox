@@ -11,6 +11,6 @@ return [
     'invoice_settings_description' => 'Format and copy options for future invoices. Changes do not affect already generated documents.',
     'preferred_ebilling_format' => 'E-invoice format',
     'send_visual_copy' => 'Mail attachment',
-    'send_visual_copy_with_pdf' => 'PDF copy in the mail',
+    'send_visual_copy_with_pdf' => 'XML with PDF copy',
     'send_visual_copy_xml_only' => 'XML only',
 ];

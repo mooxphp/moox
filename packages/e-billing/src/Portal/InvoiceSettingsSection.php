@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Portal;
 
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
@@ -21,8 +22,7 @@ final class InvoiceSettingsSection
 {
     public function __construct(
         private FormatRegistry $formats,
-    ) {
-    }
+    ) {}
 
     public function id(): string
     {
@@ -44,20 +44,25 @@ final class InvoiceSettingsSection
                 ->description(__('e-billing::ebilling.invoice_settings_description'))
                 ->icon(Heroicon::OutlinedDocumentText)
                 ->schema([
-                    Select::make('preferred_ebilling_format')
-                        ->label(__('e-billing::ebilling.preferred_ebilling_format'))
-                        ->options(fn (): array => $this->formatOptions())
-                        ->required()
-                        ->live(),
-                    ToggleButtons::make('send_visual_copy')
-                        ->label(__('e-billing::ebilling.send_visual_copy'))
-                        ->options([
-                            'with_pdf' => __('e-billing::ebilling.send_visual_copy_with_pdf'),
-                            'xml_only' => __('e-billing::ebilling.send_visual_copy_xml_only'),
-                        ])
-                        ->inline()
-                        ->required()
-                        ->visible(fn (Get $get): bool => $get('preferred_ebilling_format') === 'xrechnung'),
+                    Grid::make(['default' => 1, 'md' => 2])
+                        ->schema([
+                            Select::make('preferred_ebilling_format')
+                                ->label(__('e-billing::ebilling.preferred_ebilling_format'))
+                                ->options(fn (): array => $this->formatOptions())
+                                ->required()
+                                ->live()
+                                ->columnSpan(fn (Get $get): array => $get('preferred_ebilling_format') === 'xrechnung'
+                                    ? ['default' => 1, 'md' => 1]
+                                    : ['default' => 1, 'md' => 2]),
+                            Radio::make('send_visual_copy')
+                                ->label(__('e-billing::ebilling.send_visual_copy'))
+                                ->options([
+                                    'with_pdf' => __('e-billing::ebilling.send_visual_copy_with_pdf'),
+                                    'xml_only' => __('e-billing::ebilling.send_visual_copy_xml_only'),
+                                ])
+                                ->required()
+                                ->visible(fn (Get $get): bool => $get('preferred_ebilling_format') === 'xrechnung'),
+                        ]),
                 ]),
         ];
     }
