@@ -99,7 +99,13 @@ class InvoiceFieldValidator
 
         $lineValidations = [];
         foreach ($invoice->lines as $line) {
-            $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine($line, $lineFields);
+            $lineValidations[(string) $line->getKey()] = $this->validateInvoiceLine(
+                $invoice,
+                $line,
+                $lineFields,
+                $matchedCustomer,
+                $matchedCompany,
+            );
         }
 
         $invoiceValidations['lines'] = $lineValidations;
@@ -301,6 +307,15 @@ class InvoiceFieldValidator
                 $priority,
                 $matchedCompany,
                 $matchedCustomer,
+            ),
+            'delivery_address' => $this->validateDeliveryAddressField(
+                $priority,
+                $invoice->delivery,
+                null,
+                $invoice->buyer,
+                $matchedCustomer,
+                $matchedCompany,
+                false,
             ),
             'shipping_cost', 'packaging_cost', 'minimum_quantity_surcharge', 'freight_flat_rate',
             'discount_amount', 'discount_percent' => $this->validateHeaderChargeField($invoice, $field, $priority),
@@ -547,6 +562,73 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
+    private function validateDeliveryAddressField(
+        string $priority,
+        ?Party $explicitParty,
+        ?Party $headerDelivery,
+        ?Party $buyer,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+        bool $isInvoiceLine,
+    ): array {
+        $effectiveParty = $this->resolveEffectiveDeliveryParty($explicitParty, $headerDelivery, $buyer);
+
+        if ($this->isDeliveryPartyEmpty($effectiveParty)) {
+            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        }
+
+        if ($matchedCustomer === null) {
+            return ['status' => 'parsed'];
+        }
+
+        if (! $effectiveParty instanceof Party) {
+            return $this->entryForEmptyField('delivery_address', $priority, $isInvoiceLine);
+        }
+
+        $result = (new AttributionCorroborator)->corroborateDeliveryParty(
+            $effectiveParty,
+            $matchedCustomer,
+            $matchedCompany,
+        );
+
+        if ($result['corroborates']) {
+            return [
+                'status' => 'db_validated',
+                'source' => 'auto',
+                'matched_id' => $result['matched_id'],
+            ];
+        }
+
+        return [
+            'status' => 'needs_review',
+            'source' => 'auto',
+            'matched_id' => $result['matched_id'],
+        ];
+    }
+
+    private function resolveEffectiveDeliveryParty(
+        ?Party $explicitParty,
+        ?Party $headerDelivery,
+        ?Party $buyer,
+    ): ?Party {
+        if (! $this->isDeliveryPartyEmpty($explicitParty)) {
+            return $explicitParty;
+        }
+
+        if (! $this->isDeliveryPartyEmpty($headerDelivery)) {
+            return $headerDelivery;
+        }
+
+        if (! $this->isDeliveryPartyEmpty($buyer)) {
+            return $buyer;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{status: string, source?: string, matched_id?: string}
+     */
     private function validateHeaderChargeField(Invoice $invoice, string $field, string $priority): array
     {
         if ($field === 'discount_percent') {
@@ -618,8 +700,13 @@ class InvoiceFieldValidator
      * @param  array<string, string>  $lineFields
      * @return array<string, array{status: string, source?: string, matched_id?: string}>
      */
-    private function validateInvoiceLine(InvoiceLine $line, array $lineFields): array
-    {
+    private function validateInvoiceLine(
+        Invoice $invoice,
+        InvoiceLine $line,
+        array $lineFields,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+    ): array {
         $line->loadMissing('allowanceCharges');
 
         $validations = [];
@@ -629,7 +716,14 @@ class InvoiceFieldValidator
                 continue;
             }
 
-            $validations[$field] = $this->validateInvoiceLineField($line, $field, $priority);
+            $validations[$field] = $this->validateInvoiceLineField(
+                $invoice,
+                $line,
+                $field,
+                $priority,
+                $matchedCustomer,
+                $matchedCompany,
+            );
         }
 
         return $validations;
@@ -638,9 +732,24 @@ class InvoiceFieldValidator
     /**
      * @return array{status: string, source?: string, matched_id?: string}
      */
-    private function validateInvoiceLineField(InvoiceLine $line, string $field, string $priority): array
-    {
+    private function validateInvoiceLineField(
+        Invoice $invoice,
+        InvoiceLine $line,
+        string $field,
+        string $priority,
+        ?Customer $matchedCustomer,
+        ?Company $matchedCompany,
+    ): array {
         return match ($field) {
+            'delivery_address' => $this->validateDeliveryAddressField(
+                $priority,
+                $line->delivery,
+                $invoice->delivery,
+                $invoice->buyer,
+                $matchedCustomer,
+                $matchedCompany,
+                true,
+            ),
             'surcharge_amount', 'surcharge_description' => $this->validateLineSurchargeField($line, $field, $priority),
             'material_test_certificate_price' => $this->validateLineMaterialTestCertificatePriceField($line, $priority),
             default => $this->validateGenericInvoiceLineField($line, $field, $priority),
@@ -676,18 +785,7 @@ class InvoiceFieldValidator
      */
     private function validateGenericInvoiceLineField(InvoiceLine $line, string $field, string $priority): array
     {
-        $value = match ($field) {
-            'delivery_address' => $line->delivery,
-            default => $line->getAttribute($field),
-        };
-
-        if ($field === 'delivery_address') {
-            if ($this->isDeliveryPartyEmpty($value)) {
-                return $this->entryForEmptyField($field, $priority, true);
-            }
-
-            return ['status' => 'parsed'];
-        }
+        $value = $line->getAttribute($field);
 
         if ($this->isScalarEmpty($value)) {
             return $this->entryForEmptyField($field, $priority, true);

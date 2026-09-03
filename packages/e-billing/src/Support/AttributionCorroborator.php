@@ -11,6 +11,7 @@ use Moox\Address\Support\AddressFingerprint;
 use Moox\Company\Models\Company;
 use Moox\Customer\Models\Customer;
 use Moox\Invoice\Support\En16931\Address as InvoiceAddress;
+use Moox\Invoice\Support\En16931\Party;
 
 /**
  * Corroborates an attributed {@see Customer} against buyer name, VAT, country and address.
@@ -53,6 +54,44 @@ final class AttributionCorroborator
     }
 
     /**
+     * Corroborate a delivery/consignee party: name token overlap and address fingerprint
+     * must both pass.
+     *
+     * @return array{corroborates: bool, matched_id: string}
+     */
+    public function corroborateDeliveryParty(
+        Party $party,
+        Customer $customer,
+        ?Company $company,
+    ): array {
+        $invoiceName = is_string($party->name) && trim($party->name) !== '' ? $party->name : null;
+        $nameResult = $this->corroborateName($invoiceName, $customer, $company);
+        $addressResult = $this->findDeliveryMatchingAddress($party->address, $company);
+
+        if ($addressResult === null) {
+            return [
+                'corroborates' => false,
+                'matched_id' => $nameResult['matched_id'],
+            ];
+        }
+
+        if ($nameResult['corroborates'] && $addressResult['exists']) {
+            return [
+                'corroborates' => true,
+                'matched_id' => $addressResult['matched_id'],
+            ];
+        }
+
+        $addressMatchedId = $addressResult['matched_id'];
+        $fallbackId = $addressMatchedId !== '' ? $addressMatchedId : $nameResult['matched_id'];
+
+        return [
+            'corroborates' => false,
+            'matched_id' => $addressResult['exists'] ? $addressMatchedId : $fallbackId,
+        ];
+    }
+
+    /**
      * Compare VAT identifiers when both sides are present.
      *
      * @return bool|null true = agree, false = diverge, null = not comparable
@@ -84,7 +123,7 @@ final class AttributionCorroborator
             return null;
         }
 
-        $addresses = $this->roleFilteredAddresses($company);
+        $addresses = $this->roleFilteredAddresses($company, $this->buyerAddressRoles());
 
         if ($addresses->isEmpty()) {
             // No master-data country to compare — not a divergence (#25).
@@ -109,13 +148,45 @@ final class AttributionCorroborator
     }
 
     /**
-     * Existence check of the parsed buyer address among role-filtered company addresses.
+     * Existence check of the parsed buyer address among buyer-role company addresses.
      *
      * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
      */
     public function findMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
     {
-        if ($invoiceAddress === null || $this->isInvoiceAddressEmpty($invoiceAddress)) {
+        return $this->findAddressAmongRoleTiers(
+            $invoiceAddress,
+            $company,
+            [$this->buyerAddressRoles()],
+        );
+    }
+
+    /**
+     * Existence check of a delivery address: delivery role first, then postal/billing fallback.
+     *
+     * @return array{exists: bool, matched_id: string}|null null when invoice address is empty
+     */
+    public function findDeliveryMatchingAddress(?InvoiceAddress $invoiceAddress, ?Company $company): ?array
+    {
+        $roles = $this->deliveryAddressRoles();
+
+        return $this->findAddressAmongRoleTiers(
+            $invoiceAddress,
+            $company,
+            [array_slice($roles, 0, 1), array_slice($roles, 1)],
+        );
+    }
+
+    /**
+     * @param  list<list<string>>  $roleTiers
+     * @return array{exists: bool, matched_id: string}|null
+     */
+    private function findAddressAmongRoleTiers(
+        ?InvoiceAddress $invoiceAddress,
+        ?Company $company,
+        array $roleTiers,
+    ): ?array {
+        if ($invoiceAddress === null || $invoiceAddress->isEmpty()) {
             return null;
         }
 
@@ -126,19 +197,14 @@ final class AttributionCorroborator
             ];
         }
 
-        $invoiceFingerprint = AddressFingerprint::fromArray([
-            'street' => $invoiceAddress->line1,
-            'street2' => $invoiceAddress->line2,
-            'postal_code' => $invoiceAddress->postal_code,
-            'country_code' => $invoiceAddress->country_code,
-        ]);
+        foreach ($roleTiers as $roles) {
+            if ($roles === []) {
+                continue;
+            }
 
-        foreach ($this->roleFilteredAddresses($company) as $address) {
-            if (AddressFingerprint::fromAddress($address) === $invoiceFingerprint) {
-                return [
-                    'exists' => true,
-                    'matched_id' => (string) $address->getKey(),
-                ];
+            $match = $this->findFingerprintAmongRoles($invoiceAddress, $company, $roles);
+            if ($match !== null && $match['exists']) {
+                return $match;
             }
         }
 
@@ -215,13 +281,48 @@ final class AttributionCorroborator
     }
 
     /**
+     * @param  list<string>  $roles
+     * @return array{exists: bool, matched_id: string}|null
+     */
+    private function findFingerprintAmongRoles(
+        InvoiceAddress $invoiceAddress,
+        Company $company,
+        array $roles,
+    ): ?array {
+        if ($roles === []) {
+            return null;
+        }
+
+        $invoiceFingerprint = AddressFingerprint::fromArray([
+            'street' => $invoiceAddress->line1,
+            'street2' => $invoiceAddress->line2,
+            'postal_code' => $invoiceAddress->postal_code,
+            'country_code' => $invoiceAddress->country_code,
+        ]);
+
+        foreach ($this->roleFilteredAddresses($company, $roles) as $address) {
+            if (AddressFingerprint::fromAddress($address) === $invoiceFingerprint) {
+                return [
+                    'exists' => true,
+                    'matched_id' => (string) $address->getKey(),
+                ];
+            }
+        }
+
+        return [
+            'exists' => false,
+            'matched_id' => '',
+        ];
+    }
+
+    /**
+     * @param  list<string>  $roles
      * @return Collection<int, Address>
      */
-    private function roleFilteredAddresses(Company $company): Collection
+    private function roleFilteredAddresses(Company $company, array $roles): Collection
     {
-        $roles = config('e-billing.corroboration.address_roles', ['billing_address']);
-        if (! is_array($roles) || $roles === []) {
-            $roles = ['billing_address'];
+        if ($roles === []) {
+            return collect();
         }
 
         try {
@@ -249,6 +350,37 @@ final class AttributionCorroborator
 
             return false;
         })->values();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function buyerAddressRoles(): array
+    {
+        $roles = config('e-billing.corroboration.buyer_address_roles');
+        if (is_array($roles) && $roles !== []) {
+            return array_values(array_filter($roles, is_string(...)));
+        }
+
+        $legacy = config('e-billing.corroboration.address_roles');
+        if (is_array($legacy) && $legacy !== []) {
+            return array_values(array_filter($legacy, is_string(...)));
+        }
+
+        return ['billing_address', 'postal_address'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function deliveryAddressRoles(): array
+    {
+        $roles = config('e-billing.corroboration.delivery_address_roles');
+        if (is_array($roles) && $roles !== []) {
+            return array_values(array_filter($roles, is_string(...)));
+        }
+
+        return ['delivery_address', 'postal_address', 'billing_address'];
     }
 
     /**
@@ -283,14 +415,4 @@ final class AttributionCorroborator
         return $trimmed === '' ? null : $trimmed;
     }
 
-    private function isInvoiceAddressEmpty(InvoiceAddress $address): bool
-    {
-        foreach ([$address->line1, $address->line2, $address->city, $address->postal_code, $address->country_code] as $part) {
-            if (is_string($part) && trim($part) !== '') {
-                return false;
-            }
-        }
-
-        return true;
-    }
 }

@@ -467,10 +467,22 @@ return [
         ],
 
         /*
-        | Address-assignment pivot flags used when checking that the parsed
-        | buyer address exists among the matched company's known addresses.
+        | Address-assignment pivot flags for buyer-address corroboration
+        | (customer_address, country).
         */
-        'address_roles' => [
+        'buyer_address_roles' => [
+            'billing_address',
+            'postal_address',
+        ],
+
+        /*
+        | Ordered roles for delivery-address corroboration. The first role is
+        | tried alone; remaining roles are the fallback tier when no delivery
+        | address fingerprint matches.
+        */
+        'delivery_address_roles' => [
+            'delivery_address',
+            'postal_address',
             'billing_address',
         ],
     ],
@@ -518,7 +530,7 @@ return [
             'order_date' => 'could',   // [GAP] no EN 16931 BT; not BT-13
 
             // Delivery
-            'delivery_address' => 'could',   // BG-15
+            'delivery_address' => 'must',    // BG-15
             'delivery_date' => 'should',  // BT-72 (header ActualDeliverySupplyChainEvent)
 
             // Seller — MUST (own company data, from system settings later)
