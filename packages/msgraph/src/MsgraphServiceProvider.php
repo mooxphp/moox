@@ -121,4 +121,3 @@ class MsgraphServiceProvider extends MooxServiceProvider
         }
     }
 }
-

@@ -6,7 +6,6 @@ namespace Moox\EBilling\Actions;
 
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
-use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Services\InvoiceFieldValidator;
 
@@ -83,4 +82,3 @@ final class ReleaseSeverityFieldAction
         }
     }
 }
-
