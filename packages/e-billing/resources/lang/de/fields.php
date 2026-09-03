@@ -179,7 +179,6 @@ return [
     'tooltip_validation_errors_present' => 'Validierungsfehler vorhanden',
     'tooltip_reviewed_database' => 'Geprüft (Datenbank)',
 
-
     // Approval gate
     'approval_status' => 'Freigabe',
     'approval_status_pending' => 'Freigabe ausstehend',
@@ -299,4 +298,3 @@ return [
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];
-

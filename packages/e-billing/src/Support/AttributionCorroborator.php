@@ -414,5 +414,4 @@ final class AttributionCorroborator
 
         return $trimmed === '' ? null : $trimmed;
     }
-
 }

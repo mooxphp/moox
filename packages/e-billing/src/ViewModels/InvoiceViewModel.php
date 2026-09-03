@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Moox\EBilling\ViewModels;
 
 use Carbon\Carbon;
-use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\ApprovalTransitionKind;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
+use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\HeaderChargeResolver;
@@ -480,5 +479,4 @@ final class InvoiceViewModel
 
         return $status?->label();
     }
-
 }

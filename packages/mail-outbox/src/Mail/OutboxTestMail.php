@@ -24,7 +24,8 @@ class OutboxTestMail extends Mailable
     public function __construct(
         public string $recipient,
         public bool $testMode,
-    ) {}
+    ) {
+    }
 
     public function envelope(): Envelope
     {

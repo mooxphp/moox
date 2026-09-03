@@ -179,7 +179,6 @@ return [
     'tooltip_validation_errors_present' => 'Validation errors present',
     'tooltip_reviewed_database' => 'Reviewed (database)',
 
-
     // Approval gate
     'approval_status' => 'Approval',
     'approval_status_pending' => 'Awaiting approval',

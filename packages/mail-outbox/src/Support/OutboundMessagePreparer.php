@@ -10,7 +10,8 @@ final class OutboundMessagePreparer
 {
     public function __construct(
         private MailOutboxConfig $config,
-    ) {}
+    ) {
+    }
 
     public function prepare(Mailable $mailable, string $header, string $correlationId, string $mailer): void
     {
@@ -33,4 +34,3 @@ final class OutboundMessagePreparer
         });
     }
 }
-
