@@ -12,15 +12,21 @@ final class DocumentApprovalGuard
 {
     public function canApprove(EbillingDocument $document): bool
     {
-        if (EbillingDocument::hasBlockingMustFieldFindings(
-            is_array($document->field_validations) ? $document->field_validations : null,
-        )) {
+        if ($document->resolveApprovalStatusEnum() !== DocumentApprovalStatus::Pending) {
             return false;
         }
 
-        $status = $document->resolveApprovalStatusEnum();
+        if (! $document->isDeliverable()) {
+            return false;
+        }
 
-        return $status === DocumentApprovalStatus::Pending;
+        if ($document->needsHumanReview()) {
+            return false;
+        }
+
+        return ! EbillingDocument::hasBlockingMustFieldFindings(
+            is_array($document->field_validations) ? $document->field_validations : null,
+        );
     }
 
     public function canReject(EbillingDocument $document): bool

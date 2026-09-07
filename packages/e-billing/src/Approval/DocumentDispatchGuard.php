@@ -17,34 +17,18 @@ final class DocumentDispatchGuard
 
     public function isDispatchable(EbillingDocument $document): bool
     {
-        if (! $document->isDeliverable()) {
-            return false;
-        }
-
-        if ($document->needsHumanReview()) {
-            return false;
-        }
-
-        if (! $this->isApprovalRequired()) {
-            return true;
-        }
-
-        $status = $document->resolveApprovalStatusEnum();
-
-        if ($status !== DocumentApprovalStatus::Approved) {
-            return false;
-        }
-
-        return $this->hasApprovalActorAndActedAt($document);
+        return $this->dispatchBlockReason($document) === null;
     }
 
     public function assertDispatchable(EbillingDocument $document): void
     {
-        if ($this->isDispatchable($document)) {
+        $reason = $this->dispatchBlockReason($document);
+
+        if ($reason === null) {
             return;
         }
 
-        throw new DocumentNotDispatchableException($this->dispatchBlockReason($document) ?? 'not_dispatchable');
+        throw new DocumentNotDispatchableException($reason);
     }
 
     public function dispatchBlockReason(EbillingDocument $document): ?string
@@ -73,6 +57,10 @@ final class DocumentDispatchGuard
 
         if ($status === DocumentApprovalStatus::Rejected) {
             return 'approval_rejected';
+        }
+
+        if ($status !== DocumentApprovalStatus::Approved) {
+            return 'approval_pending';
         }
 
         if (! $this->hasApprovalActorAndActedAt($document)) {

@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Moox\EBilling\Actions;
 
 use Moox\EBilling\Approval\AutoApproveEvaluator;
-use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Enums\ApprovalTransitionKind;
+use Moox\EBilling\Enums\ApprovalTrigger;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\ForwardedSeverityRelease;
+use Moox\EBilling\Support\SeverityReleaseSnapshotCollector;
 
 final class TryAutoApproveDocumentAction
 {
     public function __construct(
         private readonly AutoApproveEvaluator $evaluator,
-        private readonly DocumentApprovalGuard $approvalGuard,
         private readonly RecordApprovalTransitionAction $recordTransition,
     ) {
     }
@@ -25,23 +26,23 @@ final class TryAutoApproveDocumentAction
             return false;
         }
 
-        if (! $this->approvalGuard->canApprove($document)) {
-            return false;
-        }
-
         $result = $this->evaluator->evaluate($document);
 
         if (! $result->passed()) {
             return false;
         }
 
+        /** @var list<ForwardedSeverityRelease> $forwardedReleaseReasons */
+        $forwardedReleaseReasons = SeverityReleaseSnapshotCollector::collect($document);
+
         $this->recordTransition->execute(
             document: $document,
             to: DocumentApprovalStatus::Approved,
             kind: ApprovalTransitionKind::Approve,
-            trigger: 'auto',
+            trigger: ApprovalTrigger::Auto,
             actorId: RecordApprovalTransitionAction::SYSTEM_ACTOR_ID,
             reason: null,
+            forwardedReleaseReasons: $forwardedReleaseReasons,
         );
 
         return true;

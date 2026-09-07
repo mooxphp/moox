@@ -21,18 +21,10 @@ final class RestoreRejectedDocumentAction
     {
         $this->approvalGuard->assertCanRestore($document);
 
-        $user = auth()->user();
-
-        if ($user === null) {
-            throw new \InvalidArgumentException('An authenticated actor is required to restore a rejected document.');
-        }
-
-        $this->recordTransition->execute(
+        $this->recordTransition->executeForAuthenticatedActor(
             document: $document,
             to: DocumentApprovalStatus::Pending,
             kind: ApprovalTransitionKind::Restore,
-            trigger: 'manual',
-            actorId: $user->getAuthIdentifier(),
             reason: $reason,
         );
 

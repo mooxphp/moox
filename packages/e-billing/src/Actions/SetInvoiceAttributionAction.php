@@ -16,29 +16,32 @@ use Moox\EBilling\Support\CustomerMatcher;
  */
 final class SetInvoiceAttributionAction
 {
+    public function __construct(
+        private readonly InvalidateDocumentApprovalAction $invalidateApproval,
+    ) {
+    }
+
     public function execute(EbillingDocument $document, ?string $customerId): void
     {
         if ($customerId === null || $customerId === '') {
             $document->customer_id = null;
             $document->company_id = null;
             $document->attribution_source = null;
-            $this->invalidateConfirmationIfNeeded($document);
-            $document->save();
+        } else {
+            $customer = Customer::query()->withTrashed()->find($customerId);
 
-            return;
+            if (! $customer instanceof Customer) {
+                throw new InvalidArgumentException("Customer [{$customerId}] was not found.");
+            }
+
+            $document->customer_id = (string) $customer->getKey();
+            $document->company_id = (new CustomerMatcher)->resolveCompanyId($customer);
+            $document->attribution_source = AttributionSource::Manual;
         }
 
-        $customer = Customer::query()->withTrashed()->find($customerId);
-
-        if (! $customer instanceof Customer) {
-            throw new InvalidArgumentException("Customer [{$customerId}] was not found.");
-        }
-
-        $document->customer_id = (string) $customer->getKey();
-        $document->company_id = (new CustomerMatcher)->resolveCompanyId($customer);
-        $document->attribution_source = AttributionSource::Manual;
         $this->invalidateConfirmationIfNeeded($document);
         $document->save();
+        $this->invalidateApproval->execute($document->fresh() ?? $document);
     }
 
     /**

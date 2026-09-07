@@ -195,6 +195,8 @@ return [
     'action_restore_approval_modal_heading' => 'Restore rejected document',
     'notification_approval_success_title' => 'Document approved',
     'notification_approval_success_body' => 'The document is approved for dispatch.',
+    'notification_approval_failed_title' => 'Approval failed',
+    'notification_approval_failed_body' => 'The approval action could not be completed.',
     'notification_reject_success_title' => 'Document rejected',
     'notification_reject_success_body' => 'The rejection was recorded.',
     'notification_restore_success_title' => 'Document restored',
@@ -289,4 +291,3 @@ return [
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];
-

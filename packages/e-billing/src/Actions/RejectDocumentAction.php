@@ -21,22 +21,13 @@ final class RejectDocumentAction
     {
         $this->approvalGuard->assertCanReject($document);
 
-        $user = auth()->user();
-
-        if ($user === null) {
-            throw new \InvalidArgumentException('An authenticated actor is required to reject a document.');
-        }
-
-        $this->recordTransition->execute(
+        $this->recordTransition->executeForAuthenticatedActor(
             document: $document,
             to: DocumentApprovalStatus::Rejected,
             kind: ApprovalTransitionKind::Reject,
-            trigger: 'manual',
-            actorId: $user->getAuthIdentifier(),
             reason: $reason,
         );
 
         return true;
     }
 }
-

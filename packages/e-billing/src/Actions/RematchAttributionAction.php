@@ -16,6 +16,7 @@ final class RematchAttributionAction
 {
     public function __construct(
         private InvoiceFieldValidator $validator,
+        private InvalidateDocumentApprovalAction $invalidateApproval,
     ) {
     }
 
@@ -27,6 +28,6 @@ final class RematchAttributionAction
 
         $this->validator->validate($document);
 
-        app(InvalidateDocumentApprovalAction::class)->execute($document->fresh() ?? $document);
+        $this->invalidateApproval->execute($document->fresh() ?? $document);
     }
 }

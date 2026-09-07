@@ -20,7 +20,6 @@ use Moox\EBilling\Actions\RematchAttributionAction;
 use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Approval\DocumentApprovalGuard;
-use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Resources\InvoiceResource;
@@ -157,24 +156,14 @@ class ViewInvoice extends ViewRecord
                         return;
                     }
 
-                    try {
-                        app(ApproveDocumentAction::class)->execute($document);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_approval_success_title'))
-                        ->body(__('e-billing::fields.notification_approval_success_body'))
-                        ->success()
-                        ->send();
-
-                    $record->load('ebillingDocument');
+                    $this->runHeaderAction(
+                        $record,
+                        fn () => app(ApproveDocumentAction::class)->execute($document),
+                        'e-billing::fields.notification_approval_success_title',
+                        'e-billing::fields.notification_approval_success_body',
+                        'e-billing::fields.notification_approval_failed_title',
+                        'e-billing::fields.notification_approval_failed_body',
+                    );
                 }),
             Action::make('reject_dispatch')
                 ->label(__('e-billing::fields.action_reject_dispatch'))
@@ -196,24 +185,14 @@ class ViewInvoice extends ViewRecord
 
                     $reason = is_string($data['reason'] ?? null) ? $data['reason'] : '';
 
-                    try {
-                        app(RejectDocumentAction::class)->execute($document, $reason);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_reject_success_title'))
-                        ->body(__('e-billing::fields.notification_reject_success_body'))
-                        ->success()
-                        ->send();
-
-                    $record->load('ebillingDocument');
+                    $this->runHeaderAction(
+                        $record,
+                        fn () => app(RejectDocumentAction::class)->execute($document, $reason),
+                        'e-billing::fields.notification_reject_success_title',
+                        'e-billing::fields.notification_reject_success_body',
+                        'e-billing::fields.notification_approval_failed_title',
+                        'e-billing::fields.notification_approval_failed_body',
+                    );
                 }),
             Action::make('restore_approval')
                 ->label(__('e-billing::fields.action_restore_approval'))
@@ -227,7 +206,7 @@ class ViewInvoice extends ViewRecord
                 ])
                 ->visible(fn (): bool => (bool) config('e-billing.approval.required', true)
                     && $document instanceof EbillingDocument
-                    && $document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Rejected)
+                    && app(DocumentApprovalGuard::class)->canRestore($document))
                 ->action(function (array $data) use ($record, $document): void {
                     if (! $document instanceof EbillingDocument) {
                         return;
@@ -235,24 +214,14 @@ class ViewInvoice extends ViewRecord
 
                     $reason = is_string($data['reason'] ?? null) ? $data['reason'] : '';
 
-                    try {
-                        app(RestoreRejectedDocumentAction::class)->execute($document, $reason);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_confirm_failed_title'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_restore_success_title'))
-                        ->body(__('e-billing::fields.notification_restore_success_body'))
-                        ->success()
-                        ->send();
-
-                    $record->load('ebillingDocument');
+                    $this->runHeaderAction(
+                        $record,
+                        fn () => app(RestoreRejectedDocumentAction::class)->execute($document, $reason),
+                        'e-billing::fields.notification_restore_success_title',
+                        'e-billing::fields.notification_restore_success_body',
+                        'e-billing::fields.notification_approval_failed_title',
+                        'e-billing::fields.notification_approval_failed_body',
+                    );
                 }),
             Action::make('set_attribution')
                 ->label(__('e-billing::fields.action_set_attribution'))
@@ -332,27 +301,47 @@ class ViewInvoice extends ViewRecord
                         return;
                     }
 
-                    try {
-                        app(RematchAttributionAction::class)->execute($document->fresh() ?? $document);
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title(__('e-billing::fields.notification_rematch_failed_title'))
-                            ->body(__('e-billing::fields.notification_rematch_failed_body'))
-                            ->danger()
-                            ->send();
-
-                        return;
-                    }
-
-                    Notification::make()
-                        ->title(__('e-billing::fields.notification_rematch_success_title'))
-                        ->body(__('e-billing::fields.notification_rematch_success_body'))
-                        ->success()
-                        ->send();
-
-                    $record->load('ebillingDocument');
+                    $this->runHeaderAction(
+                        $record,
+                        fn () => app(RematchAttributionAction::class)->execute($document->fresh() ?? $document),
+                        'e-billing::fields.notification_rematch_success_title',
+                        'e-billing::fields.notification_rematch_success_body',
+                        'e-billing::fields.notification_rematch_failed_title',
+                        'e-billing::fields.notification_rematch_failed_body',
+                    );
                 }),
         ];
+    }
+
+    private function runHeaderAction(
+        Invoice $record,
+        callable $action,
+        string $successTitleKey,
+        string $successBodyKey,
+        string $failedTitleKey,
+        string $failedBodyKey,
+    ): void {
+        try {
+            $action();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title(__($failedTitleKey))
+                ->body(__($failedBodyKey))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        Notification::make()
+            ->title(__($successTitleKey))
+            ->body(__($successBodyKey))
+            ->success()
+            ->send();
+
+        $record->load('ebillingDocument');
     }
 
     protected function resolveRecord(int|string $key): Model

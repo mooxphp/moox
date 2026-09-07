@@ -8,6 +8,8 @@ use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Enums\ApprovalTransitionKind;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
+use Moox\EBilling\Support\ForwardedSeverityRelease;
+use Moox\EBilling\Support\SeverityReleaseSnapshotCollector;
 
 final class ApproveDocumentAction
 {
@@ -25,19 +27,15 @@ final class ApproveDocumentAction
 
         $this->approvalGuard->assertCanApprove($document);
 
-        $user = auth()->user();
+        /** @var list<ForwardedSeverityRelease> $forwardedReleaseReasons */
+        $forwardedReleaseReasons = SeverityReleaseSnapshotCollector::collect($document);
 
-        if ($user === null) {
-            throw new \InvalidArgumentException('An authenticated actor is required to approve a document for dispatch.');
-        }
-
-        $this->recordTransition->execute(
+        $this->recordTransition->executeForAuthenticatedActor(
             document: $document,
             to: DocumentApprovalStatus::Approved,
             kind: ApprovalTransitionKind::Approve,
-            trigger: 'manual',
-            actorId: $user->getAuthIdentifier(),
             reason: $reason,
+            forwardedReleaseReasons: $forwardedReleaseReasons,
         );
 
         return true;
