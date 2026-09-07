@@ -8,7 +8,6 @@ use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Enums\ApprovalTransitionKind;
 use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Support\SeverityReleaseSnapshotCollector;
 
 final class ApproveDocumentAction
 {
@@ -38,9 +37,7 @@ final class ApproveDocumentAction
             kind: ApprovalTransitionKind::Approve,
             trigger: 'manual',
             actorId: $user->getAuthIdentifier(),
-            actorName: $user->name,
             reason: $reason,
-            forwardedReleaseReasons: SeverityReleaseSnapshotCollector::collect($document),
         );
 
         return true;

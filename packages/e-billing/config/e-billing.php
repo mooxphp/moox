@@ -704,7 +704,7 @@ return [
                 'title_attribute' => 'format',
                 'attribute_label_resolver' => EbillingActivityAttributeLabels::class,
                 // Pipeline writes many intermediate rows; only terminal gateway
-                // outcomes and review decisions create update audits.
+                // outcomes, review decisions, and approval changes create update audits.
                 'significant_updates' => [
                     'gateway_status' => [
                         'generation_failed',
@@ -719,11 +719,19 @@ return [
                         'db_validated',
                         'human_confirmed',
                     ],
+                    'approval_status' => [
+                        'pending',
+                        'approved',
+                        'rejected',
+                    ],
+                    'approval_reason' => '*',
                 ],
                 'attributes' => [
                     'format',
                     'gateway_status',
                     'review_status',
+                    'approval_status',
+                    'approval_reason',
                     'validation_score',
                     'artifact_content_hash',
                     'customer_id',

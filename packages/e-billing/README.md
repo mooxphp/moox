@@ -180,7 +180,9 @@ Distinct from `review_status` (field-review clearance) and `gateway_status` (KOS
 | `approved` | Cleared for dispatch |
 | `rejected` | Rejected with a recorded reason |
 
-Transitions are append-only in `approval_transitions` (actor, timestamp, reason; severity-release reasons are forwarded on approve). Only `RecordApprovalTransitionAction` writes approval state.
+Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'system'` for auto-approve), and `approval_acted_at` on the document. History is the `moox/audit` Activity trail (`approval_status` and `approval_reason` on `EbillingDocument`). Only `RecordApprovalTransitionAction` writes approval state for approve/reject/restore. Initialize and invalidate set `pending` and clear actor, time, and reason so a prior sign-off cannot dispatch.
+
+`DocumentDispatchGuard` requires `approval_status = approved` and a non-empty actor id plus `approval_acted_at` when approval is required. Approved-but-missing actor or acted-at blocks with `approval_incomplete`. It never reads Activity. Auto-approve persists with no authenticated user so the Activity causer is the host `audit.system_causer` (when set), not a logged-in operator. Document actor id on the row stays `'system'`.
 
 **Automatic approval** runs after gateway validation when every condition holds separately: gateway validated, no unresolved review findings, no blocking must-field, no duplicate flag (`approval_flags.duplicate`), no anomaly flag (`approval_flags.anomalies`). Failing any one leaves the document pending.
 
@@ -211,6 +213,11 @@ Transitions are append-only in `approval_transitions` (actor, timestamp, reason;
 | `ignored_reason` | `json` | nullable | Foreign-invoice classification details |
 | `gateway_status` | `string` | nullable | Format-agnostic pipeline stage: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign` (indexed) |
 | `review_status` | `string` | NOT NULL | Review stage; default `parser_created` (indexed) |
+| `approval_status` | `string` | nullable | Dispatch approval (`pending`, `approved`, `rejected`); indexed; not in `$fillable` |
+| `approval_reason` | `text` | nullable | Latest reject/restore (or optional approve) reason; not in `$fillable` |
+| `approval_actor_id` | `string` | nullable | Latest actor id (`'system'` for auto-approve); not in `$fillable` |
+| `approval_acted_at` | `timestamp` | nullable | Latest approval action time; not in `$fillable` |
+| `approval_flags` | `json` | nullable | Duplicate/anomaly flags for auto-approve; not in `$fillable` |
 | `validation_score` | `unsignedTinyInteger` | nullable | Aggregated field-validation score |
 | `field_validations` | `json` | nullable | Per-field validation results |
 | `severity_releases` | `json` | nullable | Severity releases for missing **should** fields (`released_at`, `released_by_id`, `released_by`, `reason`); written only via `ReleaseSeverityFieldAction`; not in `$fillable` |

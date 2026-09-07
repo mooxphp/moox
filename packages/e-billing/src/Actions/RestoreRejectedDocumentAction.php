@@ -33,7 +33,6 @@ final class RestoreRejectedDocumentAction
             kind: ApprovalTransitionKind::Restore,
             trigger: 'manual',
             actorId: $user->getAuthIdentifier(),
-            actorName: $user->name,
             reason: $reason,
         );
 

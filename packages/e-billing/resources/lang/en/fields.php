@@ -184,16 +184,7 @@ return [
     'approval_status_pending' => 'Awaiting approval',
     'approval_status_approved' => 'Approved for dispatch',
     'approval_status_rejected' => 'Rejected',
-    'approval_actor_system' => 'System',
-    'approval_transition_approve' => 'Approved',
-    'approval_transition_reject' => 'Rejected',
-    'approval_transition_restore' => 'Restored to pending',
-    'section_approval_history' => 'Approval history',
-    'approval_history_empty' => 'No approval transitions recorded yet.',
-    'approval_history_kind' => 'Action',
-    'approval_history_actor' => 'Actor',
-    'approval_history_at' => 'When',
-    'approval_history_reason' => 'Reason',
+    'approval_reason' => 'Reason',
     'action_approve_dispatch' => 'Approve for dispatch',
     'action_approve_dispatch_modal_heading' => 'Approve for dispatch?',
     'action_approve_dispatch_modal_description' => 'This records your approval and clears the document for dispatch.',
@@ -298,3 +289,4 @@ return [
     'hint_review_duplicate_invoice_number' => 'This document number already exists and needs review.',
     'hint_review_default' => 'This field should be reviewed manually.',
 ];
+

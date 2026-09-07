@@ -33,10 +33,10 @@ final class RejectDocumentAction
             kind: ApprovalTransitionKind::Reject,
             trigger: 'manual',
             actorId: $user->getAuthIdentifier(),
-            actorName: $user->name,
             reason: $reason,
         );
 
         return true;
     }
 }
+

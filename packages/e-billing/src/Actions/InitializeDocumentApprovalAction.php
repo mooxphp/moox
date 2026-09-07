@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\EBilling\Actions;
 
-use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Models\EbillingDocument;
 
 final class InitializeDocumentApprovalAction
@@ -23,7 +22,7 @@ final class InitializeDocumentApprovalAction
             return false;
         }
 
-        $document->approval_status = DocumentApprovalStatus::Pending;
+        $document->resetApprovalToPending();
         $document->save();
 
         return true;

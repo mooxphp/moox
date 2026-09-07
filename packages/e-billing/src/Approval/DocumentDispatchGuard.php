@@ -35,7 +35,7 @@ final class DocumentDispatchGuard
             return false;
         }
 
-        return $this->latestApprovalTransitionIsValid($document);
+        return $this->hasApprovalActorAndActedAt($document);
     }
 
     public function assertDispatchable(EbillingDocument $document): void
@@ -75,23 +75,21 @@ final class DocumentDispatchGuard
             return 'approval_rejected';
         }
 
-        if (! $this->latestApprovalTransitionIsValid($document)) {
-            return 'approval_transition_invalid';
+        if (! $this->hasApprovalActorAndActedAt($document)) {
+            return 'approval_incomplete';
         }
 
         return null;
     }
 
-    private function latestApprovalTransitionIsValid(EbillingDocument $document): bool
+    private function hasApprovalActorAndActedAt(EbillingDocument $document): bool
     {
-        $transitions = is_array($document->approval_transitions) ? $document->approval_transitions : [];
+        $actorId = $document->approval_actor_id;
 
-        if ($transitions === []) {
+        if (! is_string($actorId) || trim($actorId) === '') {
             return false;
         }
 
-        $latest = $transitions[array_key_last($transitions)];
-
-        return is_array($latest) && EbillingDocument::approvalTransitionEntryIsValid($latest);
+        return $document->approval_acted_at !== null;
     }
 }

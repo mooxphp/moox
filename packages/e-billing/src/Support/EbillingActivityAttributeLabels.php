@@ -6,6 +6,7 @@ namespace Moox\EBilling\Support;
 
 use Illuminate\Support\Str;
 use Moox\Audit\Contracts\ActivityAttributeLabelResolver;
+use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Enums\EBillingAttachmentProcessingStatus;
 use Moox\EBilling\Enums\InvoiceProcessingStatus;
 
@@ -16,6 +17,8 @@ final class EbillingActivityAttributeLabels implements ActivityAttributeLabelRes
         return match ($field) {
             'gateway_status' => __('e-billing::fields.gateway_status'),
             'review_status' => __('e-billing::fields.review_status'),
+            'approval_status' => __('e-billing::fields.approval_status'),
+            'approval_reason' => __('e-billing::fields.approval_reason'),
             default => $this->invoiceFieldLabelOrNull($field),
         };
     }
@@ -25,6 +28,7 @@ final class EbillingActivityAttributeLabels implements ActivityAttributeLabelRes
         return match ($field) {
             'gateway_status' => EBillingAttachmentProcessingStatus::tryFrom($value)?->label(),
             'review_status' => InvoiceProcessingStatus::tryFrom($value)?->label(),
+            'approval_status' => DocumentApprovalStatus::tryFrom($value)?->label(),
             default => null,
         };
     }
@@ -37,3 +41,4 @@ final class EbillingActivityAttributeLabels implements ActivityAttributeLabelRes
         return $label !== $fallback ? $label : null;
     }
 }
+
