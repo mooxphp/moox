@@ -14,6 +14,7 @@ Moox e-billing orchestrates the Moox e-invoice pipeline: PDF ingestion through a
 - PDF/A-3 validation for hybrid formats via `moox/verapdf` when installed (skipped gracefully when not configured)
 - Foreign-invoice filtering (non-domestic invoices settled as `Ignored` on the inbox driver and marked `IgnoredForeign`)
 - MoSCoW severity gating: must/should/could priorities, severity release with auditable actor identity, and review queue aligned with the findings gate
+- Duplicate document-number detection (`invoice_number` + same `document_type`, optionally scoped by seller VAT via `duplicate_number.scope`): differing source PDFs flag `needs_review` and block auto-Validated / auto-approve; identical source PDFs are discarded without a new version
 - Filament `InvoiceResource` for list, filter, and manual review workflows
 - Manual customer attribution via `SetInvoiceAttributionAction` (Filament header action kept as `InvoiceResource::getSetAttributionAction()` for a later surface) and explicit rematch from the invoice detail and list
 - Host-bound invoice parser via `InvoiceParserInterface` (no parser ships with this package)
@@ -92,6 +93,8 @@ Published as `config/e-billing.php`.
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
+| `identical_duplicate` | Notification recipients when an identical source PDF is discarded (`notify_emails`, `panel_id`) |
+| `duplicate_number.scope` | Document-number collision scope: `global` (default) or `issuer` (also seller VAT id / BT-31) |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
 
 ### Environment variables
@@ -108,6 +111,7 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | `EBILLING_PREFERRED_PIECE_UNIT_CODE` | `preferred_piece_unit_code` | `H87` | No |
 | `EBILLING_APPROVAL_REQUIRED` | `approval.required` | `true` | No |
 | `EBILLING_APPROVAL_AUTO_APPROVE` | `approval.auto_approve_enabled` | `true` | No |
+| `EBILLING_DUPLICATE_NUMBER_SCOPE` | `duplicate_number.scope` | `global` | No |
 
 ### Supplier block
 
@@ -170,6 +174,24 @@ Within awaiting-review statuses, both use the same field predicate (including va
 
 Changing a field's configured priority changes its behaviour with no code change.
 
+### Duplicate document-number rule
+
+`InvoiceNumberDuplicateChecker` (used by `InvoiceFieldValidator`, and for identical-content discard in `GenerateArtifactJob` / `DiscardIdenticalContentDuplicateAction`) runs during field validation — before review clearance and the dispatch approval gate.
+
+**Comparison scope** (`e-billing.duplicate_number.scope`, env `EBILLING_DUPLICATE_NUMBER_SCOPE`):
+
+| Value | Behaviour |
+| --- | --- |
+| `global` (default) | Same `invoice_number` **and** same `document_type` (UNTDID 1001) anywhere. A commercial invoice (`380`) and a credit note (`381`) with the same number are **not** collisions. |
+| `issuer` | Same as `global`, plus the same seller VAT id (EN 16931 BT-31). Use when several suppliers can issue overlapping number ranges. Blank / missing seller VAT ids only collide with other blank / missing VAT ids. |
+
+Soft-deleted invoices are ignored (default SoftDeletes). Empty / blank document numbers are never treated as duplicates of each other; a missing number is a normal must-field finding.
+
+**Outcomes:**
+
+1. **Differing source PDF bytes**, same number + type (and issuer when scoped) → a new document version is created. Field validation flags `invoice_number` as `needs_review` with reason `duplicate_invoice_number` and `matched_id` set to the colliding invoice’s id. That blocks auto-`Validated` and syncs `approval_flags.duplicate` (blocks auto-approve; a human may still approve after review is clear).
+2. **Identical source PDF** (same `invoice_number` + `document_type` + `source_content_hash`, and issuer when scoped) → discarded without creating a new invoice version (`gateway_status = ignored_identical_duplicate`). Operators are notified via Filament toast / database notifications (`e-billing.identical_duplicate`). This is an intentional short-circuit for re-processing or duplicate delivery, not a review case.
+
 ### Dispatch approval gate
 
 Distinct from `review_status` (field-review clearance) and `gateway_status` (KOSIT/veraPDF validation), `approval_status` controls whether a validated document may enter the dispatch path.
@@ -211,7 +233,7 @@ Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'
 | `format` | `string` | NOT NULL | Frozen format id at generation; default `zugferd` |
 | `artifact_content_hash` | `string` | nullable | SHA-256 of validated deliverable (set on KOSIT pass) |
 | `ignored_reason` | `json` | nullable | Foreign-invoice classification details |
-| `gateway_status` | `string` | nullable | Format-agnostic pipeline stage: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign` (indexed) |
+| `gateway_status` | `string` | nullable | Format-agnostic pipeline stage: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign`, `ignored_identical_duplicate` (indexed) |
 | `review_status` | `string` | NOT NULL | Review stage; default `parser_created` (indexed) |
 | `approval_status` | `string` | nullable | Dispatch approval (`pending`, `approved`, `rejected`); indexed; not in `$fillable` |
 | `approval_reason` | `text` | nullable | Latest reject/restore (or optional approve) reason; not in `$fillable` |
