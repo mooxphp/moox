@@ -165,7 +165,7 @@
                                 <span class="fi-fo-field-label-content">{{ __('media::fields.name') }}</span>
                                 <x-filament::input.wrapper>
                                     <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.name" placeholder="{{ __('media::fields.name') }}"
-                                        disabled />
+                                        :disabled="$selectedMediaMeta['write_protected']" />
                                 </x-filament::input.wrapper>
                             </div>
 
@@ -173,7 +173,7 @@
                                 <span class="fi-fo-field-label-content">{{ __('media::fields.title') }}</span>
                                 <x-filament::input.wrapper>
                                     <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title" placeholder="{{ __('media::fields.title') }}"
-                                        disabled />
+                                        :disabled="$selectedMediaMeta['write_protected']" />
                                 </x-filament::input.wrapper>
                             </div>
 
@@ -181,7 +181,8 @@
                                 <span class="fi-fo-field-label-content">{{ __('media::fields.description') }}</span>
                                 <x-filament::input.wrapper>
                                     <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
-                                        placeholder="{{ __('media::fields.description') }}" disabled />
+                                        placeholder="{{ __('media::fields.description') }}"
+                                        :disabled="$selectedMediaMeta['write_protected']" />
                                 </x-filament::input.wrapper>
                             </div>
 
@@ -189,7 +190,7 @@
                                 <span class="fi-fo-field-label-content">{{ __('media::fields.alt_text') }}</span>
                                 <x-filament::input.wrapper>
                                     <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt" placeholder="{{ __('media::fields.alt_text') }}"
-                                        disabled />
+                                        :disabled="$selectedMediaMeta['write_protected']" />
                                 </x-filament::input.wrapper>
                             </div>
                         </div>
@@ -201,7 +202,8 @@
                         </x-slot>
                         <x-filament::input.wrapper>
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
-                                placeholder="{{ __('media::fields.internal_note') }}" disabled />
+                                placeholder="{{ __('media::fields.internal_note') }}"
+                                :disabled="$selectedMediaMeta['write_protected']" />
                         </x-filament::input.wrapper>
                     </x-filament::section>
                 

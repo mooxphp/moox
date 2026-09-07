@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Schema;
 use Moox\Media\Models\MediaCollection;
 use Tests\TestCase;
 
+require_once __DIR__.'/../Support/MediaTestingDatabase.php';
+
 uses(TestCase::class);
 
 beforeEach(function (): void {
+    configureMediaTestingDatabase();
+
     Schema::create('media_collections', function (Blueprint $table): void {
         $table->id();
         $table->timestamps();

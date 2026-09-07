@@ -30,65 +30,97 @@ class ListMedia extends BaseListDrafts
 
     public string $lang;
 
+    public function hydrate(): void
+    {
+        parent::hydrate();
+
+        if ($this->lang !== '') {
+            app()->setLocale($this->lang);
+        }
+    }
+
     public function mount(): void
     {
         parent::mount();
         $this->isGridView = session('media_grid_view', true);
-        $this->lang = request()->query('lang', app(MediaLocaleResolver::class)->adminDefaultLocale());
+
+        $requestLang = request()->query('lang') ?? request()->input('lang');
+        if (is_string($requestLang) && $requestLang !== '') {
+            $this->lang = $requestLang;
+        } elseif ($this->lang === '') {
+            $this->lang = app(MediaLocaleResolver::class)->adminDefaultLocale();
+        }
+
+        $this->syncLangToRequest();
+        app()->setLocale($this->lang);
     }
 
     public function saveTranslationFromForm($recordId)
     {
         $record = static::getResource()::scopeQuery(Media::query())->find($recordId);
 
-        if ($record && method_exists($record, 'translateOrNew')) {
-            $lang = $this->lang ?? app()->getLocale();
-            $translation = $record->translateOrNew($lang);
+        if (! $record || ! method_exists($record, 'translateOrNew')) {
+            return;
+        }
 
-            $formData = [];
-            if (! empty($this->mountedActions)) {
-                foreach ($this->mountedActions as $action) {
-                    if (isset($action['data'])) {
-                        $formData = $action['data'];
-                        break;
-                    }
-                }
-            }
-
-            $translationMapping = [
-                'name' => 'name',
-                'title' => 'title',
-                'alt' => 'alt',
-                'description' => 'description',
-                'internal_note' => 'internal_note',
-            ];
-
-            if (empty($formData['name'])) {
-                Notification::make()
-                    ->title(__('media::fields.validation_error'))
-                    ->body(__('media::fields.name_required'))
-                    ->danger()
-                    ->send();
-
-                return;
-            }
-
-            foreach ($translationMapping as $formField => $dbField) {
-                if (isset($formData[$formField])) {
-                    $translation->$dbField = $formData[$formField];
-                }
-            }
-
-            $translation->save();
-
+        if ($record->getOriginal('write_protected')) {
             Notification::make()
-                ->title(__('media::fields.translation_saved'))
-                ->body(__('media::fields.translation_saved_message', ['lang' => $lang]))
-                ->success()
+                ->danger()
+                ->title(__('media::fields.validation_error'))
+                ->body(__('media::fields.protected_file_readonly'))
                 ->send();
 
-            $this->dispatch('$refresh');
+            return;
         }
+
+        $formData = [];
+        if (! empty($this->mountedActions)) {
+            foreach ($this->mountedActions as $action) {
+                if (isset($action['data'])) {
+                    $formData = $action['data'];
+                    break;
+                }
+            }
+        }
+
+        if (empty($formData['name'])) {
+            Notification::make()
+                ->title(__('media::fields.validation_error'))
+                ->body(__('media::fields.name_required'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $preferred = $this->lang !== '' ? $this->lang : $resolver->currentLocale();
+        $locale = $resolver->matchingLocale($record, $preferred) ?? $resolver->canonicalLocale($preferred);
+        $translation = $record->translateOrNew($locale);
+
+        $translationMapping = [
+            'name' => 'name',
+            'title' => 'title',
+            'alt' => 'alt',
+            'description' => 'description',
+            'internal_note' => 'internal_note',
+        ];
+
+        foreach ($translationMapping as $formField => $dbField) {
+            if (isset($formData[$formField])) {
+                $translation->$dbField = $formData[$formField];
+            }
+        }
+
+        $translation->save();
+
+        Notification::make()
+            ->title(__('media::fields.translation_saved'))
+            ->body(__('media::fields.translation_saved_message', ['lang' => $locale]))
+            ->success()
+            ->send();
+
+        $this->dispatch('$refresh');
     }
 
     public function toggleView(): void

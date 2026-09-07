@@ -42,10 +42,58 @@ final class MediaLocaleResolver
 
         $appLocale = (string) config('app.locale');
 
-        return match ($appLocale) {
+        return $this->canonicalLocale($appLocale !== '' ? $appLocale : 'en_US');
+    }
+
+    /**
+     * Locale selected in the Filament language switcher (?lang=), falling back to the admin default.
+     */
+    public function currentLocale(?string $preferredLocale = null): string
+    {
+        $candidates = [
+            $preferredLocale,
+            request()->query('lang'),
+            request()->input('lang'),
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return $this->canonicalLocale($candidate);
+            }
+        }
+
+        return $this->adminDefaultLocale();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function localeVariants(string $locale): array
+    {
+        $locale = trim($locale);
+        if ($locale === '') {
+            return [];
+        }
+
+        $normalized = str_replace('-', '_', $locale);
+        $dashed = str_replace('_', '-', $locale);
+        $base = preg_split('/[-_]/', $locale)[0] ?? $locale;
+        $canonical = $this->canonicalLocale($locale);
+
+        return array_values(array_unique(array_filter(
+            [$locale, $normalized, $dashed, $base, $canonical],
+            static fn (string $value): bool => trim($value) !== '',
+        )));
+    }
+
+    public function canonicalLocale(string $locale): string
+    {
+        $normalized = str_replace('-', '_', trim($locale));
+
+        return match ($normalized) {
             'en' => 'en_US',
             'de' => 'de_DE',
-            default => $appLocale !== '' ? $appLocale : 'en_US',
+            default => $normalized !== '' ? $normalized : $this->adminDefaultLocale(),
         };
     }
 
@@ -64,43 +112,59 @@ final class MediaLocaleResolver
 
         $expanded = [];
         foreach ($locales as $locale) {
-            $expanded[] = $locale;
-            $expanded[] = str_replace('-', '_', $locale);
-            $expanded[] = str_replace('_', '-', $locale);
-
-            $base = preg_split('/[-_]/', $locale)[0] ?? null;
-            if (is_string($base) && $base !== '') {
-                $expanded[] = $base;
+            foreach ($this->localeVariants($locale) as $variant) {
+                $expanded[] = $variant;
             }
         }
 
-        return array_values(array_unique(array_filter(
-            $expanded,
-            static fn (string $value): bool => trim($value) !== '',
-        )));
+        return array_values(array_unique($expanded));
     }
 
     /**
      * @return array{name: ?string, title: ?string, alt: ?string, description: ?string, internal_note: ?string}
      */
-    public function mediaMetadata(Media $media, ?string $preferredLocale = null): array
+    public function mediaMetadata(Media $media, ?string $preferredLocale = null, bool $fallbackToOtherLocales = true): array
     {
         $media->loadMissing('translations');
+        $preferred = $preferredLocale ?? $this->currentLocale();
 
         return [
-            'name' => $this->translatedValue($media, 'name', $preferredLocale),
-            'title' => $this->translatedValue($media, 'title', $preferredLocale),
-            'alt' => $this->translatedValue($media, 'alt', $preferredLocale),
-            'description' => $this->translatedValue($media, 'description', $preferredLocale),
-            'internal_note' => $this->translatedValue($media, 'internal_note', $preferredLocale),
+            'name' => $this->translatedValue($media, 'name', $preferred, $fallbackToOtherLocales),
+            'title' => $this->translatedValue($media, 'title', $preferred, $fallbackToOtherLocales),
+            'alt' => $this->translatedValue($media, 'alt', $preferred, $fallbackToOtherLocales),
+            'description' => $this->translatedValue($media, 'description', $preferred, $fallbackToOtherLocales),
+            'internal_note' => $this->translatedValue($media, 'internal_note', $preferred, $fallbackToOtherLocales),
         ];
+    }
+
+    public function findTranslation(Media|MediaCollection $model, ?string $preferredLocale = null): mixed
+    {
+        $model->loadMissing('translations');
+        $preferred = $preferredLocale ?? $this->currentLocale();
+
+        foreach ($this->localeVariants($preferred) as $locale) {
+            $translation = $model->translations->firstWhere('locale', $locale);
+            if ($translation !== null) {
+                return $translation;
+            }
+        }
+
+        return null;
+    }
+
+    public function matchingLocale(Media|MediaCollection $model, ?string $preferredLocale = null): ?string
+    {
+        $translation = $this->findTranslation($model, $preferredLocale);
+        $locale = is_object($translation) ? ($translation->locale ?? null) : null;
+
+        return is_string($locale) && $locale !== '' ? $locale : null;
     }
 
     public function collectionName(MediaCollection $collection, ?string $preferredLocale = null): string
     {
         $collection->loadMissing('translations');
 
-        $name = $this->translatedValue($collection, 'name', $preferredLocale);
+        $name = $this->translatedValue($collection, 'name', $preferredLocale, fallbackToOtherLocales: true);
         if (is_string($name) && trim($name) !== '') {
             return trim($name);
         }
@@ -120,9 +184,14 @@ final class MediaLocaleResolver
         }
     }
 
-    private function translatedValue(Media|MediaCollection $model, string $key, ?string $preferredLocale = null): ?string
+    private function translatedValue(Media|MediaCollection $model, string $key, ?string $preferredLocale = null, bool $fallbackToOtherLocales = true): ?string
     {
-        foreach ($this->fallbackChain($preferredLocale ?? app()->getLocale()) as $locale) {
+        $preferred = $preferredLocale ?? $this->currentLocale();
+        $locales = $fallbackToOtherLocales
+            ? $this->fallbackChain($preferred)
+            : $this->localeVariants($preferred);
+
+        foreach ($locales as $locale) {
             $translation = $model->translate($locale, false);
             $value = is_object($translation) ? ($translation->{$key} ?? null) : null;
 
@@ -131,7 +200,7 @@ final class MediaLocaleResolver
             }
         }
 
-        if ($model->relationLoaded('translations')) {
+        if ($fallbackToOtherLocales && $model->relationLoaded('translations')) {
             $first = $model->translations->first();
             $value = $first->{$key} ?? null;
             if (is_string($value) && trim($value) !== '') {
