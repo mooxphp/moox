@@ -370,89 +370,29 @@ class MediaResource extends BaseResource
                         ->label(__('media::fields.name'))
                         ->required()
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('name') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->name = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'name'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'name'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
                         ->label(__('media::fields.title'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('title') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->title = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'title'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'title'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
                         ->label(__('media::fields.alt_text'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('alt') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->alt = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'alt'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'alt'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
                         ->label(__('media::fields.description'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('description') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->description = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'description'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'description'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -464,23 +404,8 @@ class MediaResource extends BaseResource
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
                         ->dehydrated(false)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('internal_note') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->internal_note = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'internal_note'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'internal_note'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -1200,5 +1125,34 @@ class MediaResource extends BaseResource
     public static function getNavigationBadge(): ?string
     {
         return static::resolveScopedNavigationBadge();
+    }
+
+    protected static function hydrateTranslatedState($component, $record, $livewire, string $attribute): void
+    {
+        if (! $record || ! method_exists($record, 'translations')) {
+            return;
+        }
+
+        $locale = $livewire->lang ?: app(MediaLocaleResolver::class)->currentLocale();
+        $translation = app(MediaLocaleResolver::class)->findTranslation($record, $locale);
+        $component->state($translation !== null ? (string) ($translation->getAttribute($attribute) ?? '') : '');
+    }
+
+    protected static function persistTranslatedState(mixed $state, $record, $livewire, string $attribute): void
+    {
+        if (! $record || ! method_exists($record, 'translateOrNew')) {
+            return;
+        }
+
+        if ($record->getOriginal('write_protected')) {
+            return;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $preferred = $livewire->lang ?: $resolver->currentLocale();
+        $locale = $resolver->matchingLocale($record, $preferred) ?? $resolver->canonicalLocale((string) $preferred);
+        $translation = $record->translateOrNew($locale);
+        $translation->{$attribute} = $state;
+        $translation->save();
     }
 }

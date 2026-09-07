@@ -11,9 +11,13 @@ use Moox\Media\Models\MediaUsable;
 use Moox\Media\Traits\HasMediaUsable;
 use Tests\TestCase;
 
+require_once __DIR__.'/../Support/MediaTestingDatabase.php';
+
 uses(TestCase::class);
 
 beforeEach(function (): void {
+    configureMediaTestingDatabase();
+
     Schema::create('media', function (Blueprint $table): void {
         $table->id();
         $table->nullableMorphs('model');

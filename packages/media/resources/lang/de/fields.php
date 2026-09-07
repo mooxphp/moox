@@ -39,6 +39,7 @@ return [
     'protected_skipped' => 'Geschützte Dateien übersprungen',
     'delete_confirmation' => 'Sind Sie sicher, dass Sie die ausgewählten Medien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     'protected_file_error' => 'Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.',
+    'protected_file_readonly' => 'Diese Datei ist schreibgeschützt und kann nicht bearbeitet werden.',
     'delete_file_error' => 'Die Datei ":fileName" konnte nicht gelöscht werden.',
     'delete_file_success' => 'Die Datei ":fileName" wurde erfolgreich gelöscht.',
     'delete_file_heading' => 'Datei ":title" löschen',

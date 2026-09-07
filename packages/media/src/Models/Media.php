@@ -100,7 +100,7 @@ class Media extends BaseMedia implements HasMedia, TranslatableContract
 
     protected static function booted()
     {
-        parent::boot();
+        parent::booted();
 
         static::saving(function ($media) {
             if ($media->exists && $media->getOriginal('write_protected')) {

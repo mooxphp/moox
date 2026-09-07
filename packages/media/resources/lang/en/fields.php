@@ -39,6 +39,7 @@ return [
     'protected_skipped' => 'Protected Files Skipped',
     'delete_confirmation' => 'Are you sure you want to delete the selected media? This action cannot be undone.',
     'protected_file_error' => 'This file is write-protected and cannot be deleted.',
+    'protected_file_readonly' => 'This file is write-protected and cannot be edited.',
     'delete_file_error' => 'The file ":fileName" could not be deleted.',
     'delete_file_success' => 'The file ":fileName" was successfully deleted.',
     'delete_file_heading' => 'Delete File ":title"',

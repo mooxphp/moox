@@ -291,12 +291,17 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     }
 
     /**
-     * Get media metadata from media_translations table
-     * Uses default locale first, then en_US, then first available translation
+     * Metadata for the language-switcher locale only — do not fall back to German.
      */
     protected function getMediaMetadataFromTranslations(Media $media, ?Model $record = null): array
     {
-        return app(MediaLocaleResolver::class)->mediaMetadata($media);
+        $resolver = app(MediaLocaleResolver::class);
+
+        return $resolver->mediaMetadata(
+            $media,
+            $resolver->currentLocale(),
+            fallbackToOtherLocales: false,
+        );
     }
 
     /**
