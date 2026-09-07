@@ -21,7 +21,7 @@ final class InvalidateDocumentApprovalAction
             return;
         }
 
-        $document->approval_status = DocumentApprovalStatus::Pending;
+        $document->resetApprovalToPending();
         $document->save();
     }
 }

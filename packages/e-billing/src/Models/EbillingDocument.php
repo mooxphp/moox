@@ -51,7 +51,9 @@ use RuntimeException;
  * @property EBillingAttachmentProcessingStatus|null $gateway_status
  * @property InvoiceProcessingStatus|null $review_status
  * @property DocumentApprovalStatus|null $approval_status
- * @property array<int, array<string, mixed>>|null $approval_transitions
+ * @property string|null $approval_reason
+ * @property string|null $approval_actor_id
+ * @property \Illuminate\Support\Carbon|null $approval_acted_at
  * @property array<string, mixed>|null $approval_flags
  * @property array<string, mixed>|null $field_validations
  * @property array<string, mixed>|null $severity_releases
@@ -123,10 +125,10 @@ class EbillingDocument extends BaseItemModel
             'approval_status' => DocumentApprovalStatus::class,
             'attribution_source' => AttributionSource::class,
             'field_validations' => 'array',
-            // severity_releases and approval_transitions intentionally omitted from $fillable.
+            // severity_releases and latest approval actor columns are not in $fillable.
             'severity_releases' => 'array',
-            'approval_transitions' => 'array',
             'approval_flags' => 'array',
+            'approval_acted_at' => 'datetime',
             'validation_score' => 'integer',
             'processed_at' => 'datetime',
         ];
@@ -769,6 +771,14 @@ class EbillingDocument extends BaseItemModel
         return is_string($raw) && $raw !== '' ? DocumentApprovalStatus::tryFrom($raw) : null;
     }
 
+    public function resetApprovalToPending(): void
+    {
+        $this->approval_status = DocumentApprovalStatus::Pending;
+        $this->approval_reason = null;
+        $this->approval_actor_id = null;
+        $this->approval_acted_at = null;
+    }
+
     /**
      * @param  Builder<EbillingDocument>  $query
      * @return Builder<EbillingDocument>
@@ -817,41 +827,6 @@ class EbillingDocument extends BaseItemModel
         }
 
         return false;
-    }
-
-    /**
-     * @param  array<string, mixed>  $entry
-     */
-    public static function approvalTransitionEntryIsValid(array $entry): bool
-    {
-        $actorId = $entry['actor_id'] ?? null;
-        $actedAt = $entry['at'] ?? null;
-        $to = $entry['to'] ?? null;
-        $kind = $entry['kind'] ?? null;
-
-        if ($actorId === null || $actorId === '') {
-            return false;
-        }
-
-        if (! is_string($actedAt) || trim($actedAt) === '') {
-            return false;
-        }
-
-        if (! is_string($to) || DocumentApprovalStatus::tryFrom($to) === null) {
-            return false;
-        }
-
-        if (! is_string($kind)) {
-            return false;
-        }
-
-        if (in_array($kind, ['reject', 'restore'], true)) {
-            $reason = $entry['reason'] ?? null;
-
-            return is_string($reason) && trim($reason) !== '';
-        }
-
-        return true;
     }
 
     public function hasSeverityRelease(string $field, ?string $lineId = null): bool

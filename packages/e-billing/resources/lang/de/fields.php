@@ -184,16 +184,7 @@ return [
     'approval_status_pending' => 'Freigabe ausstehend',
     'approval_status_approved' => 'Zum Versand freigegeben',
     'approval_status_rejected' => 'Abgelehnt',
-    'approval_actor_system' => 'System',
-    'approval_transition_approve' => 'Freigegeben',
-    'approval_transition_reject' => 'Abgelehnt',
-    'approval_transition_restore' => 'Wieder auf ausstehend',
-    'section_approval_history' => 'Freigabe-Verlauf',
-    'approval_history_empty' => 'Noch keine Freigabe-Übergänge erfasst.',
-    'approval_history_kind' => 'Aktion',
-    'approval_history_actor' => 'Akteur',
-    'approval_history_at' => 'Zeitpunkt',
-    'approval_history_reason' => 'Begründung',
+    'approval_reason' => 'Begründung',
     'action_approve_dispatch' => 'Zum Versand freigeben',
     'action_approve_dispatch_modal_heading' => 'Zum Versand freigeben?',
     'action_approve_dispatch_modal_description' => 'Ihre Freigabe wird erfasst und das Dokument kann versendet werden.',
@@ -298,3 +289,4 @@ return [
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];
+

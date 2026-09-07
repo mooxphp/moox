@@ -12,15 +12,23 @@ return new class extends Migration
     {
         Schema::table('ebilling_documents', function (Blueprint $table): void {
             $table->string('approval_status')->nullable()->index()->after('review_status');
-            $table->json('approval_transitions')->nullable()->after('approval_status');
-            $table->json('approval_flags')->nullable()->after('approval_transitions');
+            $table->text('approval_reason')->nullable()->after('approval_status');
+            $table->string('approval_actor_id')->nullable()->after('approval_reason');
+            $table->timestamp('approval_acted_at')->nullable()->after('approval_actor_id');
+            $table->json('approval_flags')->nullable()->after('approval_acted_at');
         });
     }
 
     public function down(): void
     {
         Schema::table('ebilling_documents', function (Blueprint $table): void {
-            $table->dropColumn(['approval_status', 'approval_transitions', 'approval_flags']);
+            $table->dropColumn([
+                'approval_status',
+                'approval_reason',
+                'approval_actor_id',
+                'approval_acted_at',
+                'approval_flags',
+            ]);
         });
     }
 };
