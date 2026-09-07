@@ -73,6 +73,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Duplicate document-number comparison scope
+    |--------------------------------------------------------------------------
+    |
+    | global — same invoice_number + document_type anywhere (default).
+    | issuer — also same seller VAT id (BT-31). Blank / missing VAT ids only
+    | collide with other blank / missing VAT ids.
+    |
+    */
+
+    'duplicate_number' => [
+        'scope' => env('EBILLING_DUPLICATE_NUMBER_SCOPE', 'global'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Manual uploads
     |--------------------------------------------------------------------------
     |
