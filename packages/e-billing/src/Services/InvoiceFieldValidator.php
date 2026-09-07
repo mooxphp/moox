@@ -121,6 +121,7 @@ class InvoiceFieldValidator
         }
 
         $document->validation_score = $document->calculateValidationScore();
+        $document->syncApprovalFlagsFromFieldValidations();
         $document->save();
     }
 

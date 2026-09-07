@@ -12,6 +12,11 @@ use Moox\Invoice\Models\Invoice;
 
 final class ConfirmInvoiceAction
 {
+    public function __construct(
+        private readonly TryAutoApproveDocumentAction $tryAutoApprove,
+    ) {
+    }
+
     /**
      * Confirms an invoice via human review on its linked {@see EbillingDocument}.
      * Idempotent: returns false if the document is not in a confirmable state.
@@ -62,7 +67,7 @@ final class ConfirmInvoiceAction
 
         $fresh = $document->fresh();
         if ($fresh instanceof EbillingDocument) {
-            app(TryAutoApproveDocumentAction::class)->execute($fresh);
+            $this->tryAutoApprove->execute($fresh);
         }
 
         return ['confirmed' => true, 'previous_current_count' => $previousCurrentCount];

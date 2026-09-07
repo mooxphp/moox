@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
@@ -53,7 +54,7 @@ use RuntimeException;
  * @property DocumentApprovalStatus|null $approval_status
  * @property string|null $approval_reason
  * @property string|null $approval_actor_id
- * @property \Illuminate\Support\Carbon|null $approval_acted_at
+ * @property Carbon|null $approval_acted_at
  * @property array<string, mixed>|null $approval_flags
  * @property array<string, mixed>|null $field_validations
  * @property array<string, mixed>|null $severity_releases
@@ -777,6 +778,44 @@ class EbillingDocument extends BaseItemModel
         $this->approval_reason = null;
         $this->approval_actor_id = null;
         $this->approval_acted_at = null;
+    }
+
+    public function hasDuplicateApprovalFlag(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+
+        return isset($flags['duplicate']) && is_array($flags['duplicate']);
+    }
+
+    public function hasAnomalyApprovalFlags(): bool
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $anomalies = $flags['anomalies'] ?? null;
+
+        return is_array($anomalies) && $anomalies !== [];
+    }
+
+    /**
+     * Sync approval_flags.duplicate from field validations (invoice number collision).
+     * Preserves host-set anomalies.
+     */
+    public function syncApprovalFlagsFromFieldValidations(): void
+    {
+        $flags = is_array($this->approval_flags) ? $this->approval_flags : [];
+        $validations = is_array($this->field_validations) ? $this->field_validations : [];
+        $invoiceNumber = is_array($validations['invoice_number'] ?? null) ? $validations['invoice_number'] : null;
+
+        if (is_array($invoiceNumber) && ($invoiceNumber['reason'] ?? null) === 'duplicate_invoice_number') {
+            $flags['duplicate'] = [
+                'invoice_number' => true,
+                'matched_id' => $invoiceNumber['matched_id'] ?? null,
+                'detected_at' => now()->toIso8601String(),
+            ];
+        } else {
+            unset($flags['duplicate']);
+        }
+
+        $this->approval_flags = $flags === [] ? null : $flags;
     }
 
     /**

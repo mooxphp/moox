@@ -13,6 +13,7 @@ final class ReleaseSeverityFieldAction
 {
     public function __construct(
         private readonly InvoiceFieldValidator $validator,
+        private readonly TryAutoApproveDocumentAction $tryAutoApprove,
     ) {
     }
 
@@ -78,7 +79,7 @@ final class ReleaseSeverityFieldAction
 
         $fresh = $document->fresh();
         if ($fresh instanceof EbillingDocument) {
-            app(TryAutoApproveDocumentAction::class)->execute($fresh);
+            $this->tryAutoApprove->execute($fresh);
         }
     }
 }

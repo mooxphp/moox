@@ -41,4 +41,3 @@ final class EbillingActivityAttributeLabels implements ActivityAttributeLabelRes
         return $label !== $fallback ? $label : null;
     }
 }
-

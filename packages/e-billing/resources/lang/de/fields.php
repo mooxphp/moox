@@ -195,6 +195,8 @@ return [
     'action_restore_approval_modal_heading' => 'Abgelehntes Dokument wiederherstellen',
     'notification_approval_success_title' => 'Dokument freigegeben',
     'notification_approval_success_body' => 'Das Dokument ist zum Versand freigegeben.',
+    'notification_approval_failed_title' => 'Freigabe fehlgeschlagen',
+    'notification_approval_failed_body' => 'Die Freigabeaktion konnte nicht abgeschlossen werden.',
     'notification_reject_success_title' => 'Dokument abgelehnt',
     'notification_reject_success_body' => 'Die Ablehnung wurde erfasst.',
     'notification_restore_success_title' => 'Dokument wiederhergestellt',
@@ -289,4 +291,3 @@ return [
     'hint_review_duplicate_invoice_number' => 'Diese Belegnummer existiert bereits und muss geprüft werden.',
     'hint_review_default' => 'Dieses Feld sollte manuell überprüft werden.',
 ];
-

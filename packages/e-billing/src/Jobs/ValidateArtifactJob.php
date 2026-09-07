@@ -69,6 +69,8 @@ class ValidateArtifactJob implements ShouldQueue
         RecordVeraPdfValidation $recordVeraPdfValidation,
         ArtifactValidationPersister $validationPersister,
         InboxMessagePipelineFinalizer $pipelineFinalizer,
+        InitializeDocumentApprovalAction $initializeApproval,
+        TryAutoApproveDocumentAction $tryAutoApprove,
     ): void {
         $this->setProgress(0);
 
@@ -149,6 +151,8 @@ class ValidateArtifactJob implements ShouldQueue
                     $supplementalPersisters,
                     $validationPersister,
                     $recordKositValidation,
+                    $initializeApproval,
+                    $tryAutoApprove,
                 );
             } else {
                 $this->persistFailure(
@@ -355,6 +359,8 @@ class ValidateArtifactJob implements ShouldQueue
         array $supplementalPersisters,
         ArtifactValidationPersister $validationPersister,
         RecordKositValidation $recordKositValidation,
+        InitializeDocumentApprovalAction $initializeApproval,
+        TryAutoApproveDocumentAction $tryAutoApprove,
     ): void {
         $deliverablePath = $document->deliverableStoragePath($definition->artifactKind);
         if ($deliverablePath === null || $deliverablePath === '') {
@@ -396,8 +402,8 @@ class ValidateArtifactJob implements ShouldQueue
 
         $fresh = $document->fresh();
         if ($fresh instanceof EbillingDocument) {
-            app(InitializeDocumentApprovalAction::class)->execute($fresh);
-            app(TryAutoApproveDocumentAction::class)->execute($fresh->fresh() ?? $fresh);
+            $initializeApproval->execute($fresh);
+            $tryAutoApprove->execute($fresh->fresh() ?? $fresh);
         }
     }
 
