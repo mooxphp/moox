@@ -9,7 +9,6 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
-use Moox\Tag\Commands\InstallCommand;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Spatie\LaravelPackageTools\Package;
 
@@ -21,8 +20,7 @@ class TagServiceProvider extends MooxServiceProvider
             ->name('tag')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations(['create_tags_table', 'create_taggables_table', 'create_tag_translations'])
-            ->hasCommand(InstallCommand::class);
+            ->hasMigrations(['create_tags_table', 'create_taggables_table', 'create_tag_translations']);
     }
 
     public function packageBooted(): void

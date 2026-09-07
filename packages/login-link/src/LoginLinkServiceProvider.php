@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\LoginLink\Commands\ExampleIssueCommand;
-use Moox\LoginLink\Commands\InstallCommand;
 use Moox\LoginLink\Http\Controllers\ExampleResultController;
 use Moox\LoginLink\Http\Controllers\PublicLoginLinkRedemptionController;
 use Moox\LoginLink\Http\Middleware\HandlePublicLoginLinkSignature;
@@ -34,7 +33,6 @@ class LoginLinkServiceProvider extends MooxServiceProvider
                 'make_template_key_nullable_on_login_link_processes_table',
             ])
             ->hasCommands([
-                InstallCommand::class,
                 ExampleIssueCommand::class,
             ]);
     }
