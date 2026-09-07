@@ -7,7 +7,6 @@ namespace Moox\Restore\Resources;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
@@ -15,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Artisan;
+use Moox\Core\Entities\BaseResource;
 use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Resources\RestoreBackupResource\Pages\ListRestoreBackups;
 

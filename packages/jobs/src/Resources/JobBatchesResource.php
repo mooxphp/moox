@@ -3,9 +3,9 @@
 namespace Moox\Jobs\Resources;
 
 use Filament\Actions\DeleteAction;
-use Moox\Core\Entities\BaseResource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Jobs\Models\JobBatch;
 use Moox\Jobs\Resources\JobBatchesResource\Pages\ListJobBatches;

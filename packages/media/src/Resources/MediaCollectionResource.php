@@ -5,10 +5,10 @@ namespace Moox\Media\Resources;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
-use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Entities\BaseResource;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -18,7 +18,6 @@ use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 
 class MediaCollectionResource extends BaseResource
 {
-
     protected static ?string $model = MediaCollection::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';

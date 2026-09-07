@@ -3,7 +3,6 @@
 namespace Moox\Bpmn\Resources;
 
 use BackedEnum;
-use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -15,6 +14,7 @@ use Moox\Bpmn\Resources\Pages\ViewBpmn;
 use Moox\Bpmn\Resources\Schemas\BpmnForm;
 use Moox\Bpmn\Resources\Schemas\BpmnInfolist;
 use Moox\Bpmn\Resources\Tables\BpmnsTable;
+use Moox\Core\Entities\BaseResource;
 
 class BpmnResource extends BaseResource
 {

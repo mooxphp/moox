@@ -10,7 +10,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Actions as ActionsComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -20,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Moox\Core\Entities\BaseResource;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 use Moox\Prompts\Models\CommandExecution;
 

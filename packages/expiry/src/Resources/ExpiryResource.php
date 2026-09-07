@@ -4,12 +4,12 @@ namespace Moox\Expiry\Resources;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Expiry\Actions\CustomExpiryAction;
