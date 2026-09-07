@@ -52,10 +52,8 @@ final class InvoiceNumberDuplicateChecker
             $query->whereKeyNot($key);
         }
 
-        $matches = $query->orderBy('created_at')->orderBy('id')->get();
-
         return $this->filterByIssuerScope(
-            $matches,
+            $query->orderBy('created_at')->orderBy('id')->get(),
             VatIdNormalizer::normalize($invoice->seller?->vat_id),
         );
     }
@@ -97,18 +95,16 @@ final class InvoiceNumberDuplicateChecker
             $query->whereKeyNot($exceptDocumentId);
         }
 
+        /** @var Collection<int, Invoice> $invoices */
         $invoices = $query->get()
-            ->map(fn (EbillingDocument $document): mixed => $document->invoice)
+            ->pluck('invoice')
             ->filter(fn (mixed $invoice): bool => $invoice instanceof Invoice)
             ->values();
 
-        /** @var Collection<int, Invoice> $invoices */
-        $match = $this->filterByIssuerScope(
+        return $this->filterByIssuerScope(
             $invoices,
             VatIdNormalizer::normalize($sellerVatId),
         )->first();
-
-        return $match instanceof Invoice ? $match : null;
     }
 
     /**
@@ -122,9 +118,7 @@ final class InvoiceNumberDuplicateChecker
         }
 
         return $invoices
-            ->filter(function (Invoice $invoice) use ($normalizedSellerVatId): bool {
-                return VatIdNormalizer::normalize($invoice->seller?->vat_id) === $normalizedSellerVatId;
-            })
+            ->filter(fn (Invoice $invoice): bool => VatIdNormalizer::normalize($invoice->seller?->vat_id) === $normalizedSellerVatId)
             ->values();
     }
 

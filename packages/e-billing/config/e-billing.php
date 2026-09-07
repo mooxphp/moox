@@ -76,9 +76,17 @@ return [
     | Duplicate document-number comparison scope
     |--------------------------------------------------------------------------
     |
-    | global — same invoice_number + document_type anywhere (default).
-    | issuer — also same seller VAT id (BT-31). Blank / missing VAT ids only
-    | collide with other blank / missing VAT ids.
+    | Controls when two documents with the same invoice_number + document_type
+    | count as a collision (review / identical-content discard).
+    |
+    | global (default) — collide across the whole installation. Use when you
+    | have a single issuing party (one seller VAT) or number ranges never
+    | overlap between sellers.
+    |
+    | issuer — also require the same seller VAT id (BT-31). Switch to this when
+    | several suppliers can reuse the same number for different issuers; then
+    | seller A's "2024-001" does not collide with seller B's "2024-001". Blank /
+    | missing VAT ids only collide with other blank / missing VAT ids.
     |
     */
 
@@ -786,3 +794,4 @@ return [
     ],
 
 ];
+
