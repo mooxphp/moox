@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\BackupServerUi;
 
-use Moox\BackupServerUi\Commands\InstallCommand;
 use Moox\BackupServerUi\Installers\BackupServerInstaller;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
@@ -17,8 +16,7 @@ class BackupServerUiServiceProvider extends MooxServiceProvider
         $package
             ->name('backup-server-ui')
             ->hasConfigFile()
-            ->hasTranslations()
-            ->hasCommand(InstallCommand::class);
+            ->hasTranslations();
     }
 
     /**

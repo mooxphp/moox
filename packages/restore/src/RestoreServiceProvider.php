@@ -7,7 +7,6 @@ namespace Moox\Restore;
 use Illuminate\Support\Facades\Event;
 use Moox\Core\MooxServiceProvider;
 use Moox\Restore\Commands\DispatchRestoreCommand;
-use Moox\Restore\Commands\InstallCommand;
 use Moox\Restore\Commands\RestoreCommand;
 use Moox\Restore\Commands\ServerSummaryCommand;
 use Moox\Restore\Events\RestoreCompletedEvent;
@@ -27,7 +26,6 @@ class RestoreServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations(['create_restore_table'])
             ->hasCommands([
-                InstallCommand::class,
                 RestoreCommand::class,
                 DispatchRestoreCommand::class,
                 ServerSummaryCommand::class,

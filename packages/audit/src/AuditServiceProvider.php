@@ -7,7 +7,6 @@ namespace Moox\Audit;
 use Filament\Resources\Events\RecordCreated;
 use Filament\Resources\Events\RecordUpdated;
 use Illuminate\Support\Facades\Event;
-use Moox\Audit\Commands\InstallCommand;
 use Moox\Audit\Commands\PruneCommand;
 use Moox\Audit\Listeners\MergeCreatedCustomFieldAudit;
 use Moox\Audit\Listeners\MergeUpdatedCustomFieldAudit;
@@ -29,7 +28,6 @@ class AuditServiceProvider extends MooxServiceProvider
                 'create_activity_log_table',
             ])
             ->hasCommands([
-                InstallCommand::class,
                 PruneCommand::class,
             ]);
     }

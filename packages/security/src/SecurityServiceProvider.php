@@ -7,7 +7,6 @@ namespace Moox\Security;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider as LaravelPasswordResetServiceProvider;
 use Moox\Core\MooxServiceProvider;
 use Moox\Security\Commands\GetPasswordResetLinksCommand;
-use Moox\Security\Commands\InstallCommand;
 use Override;
 use Spatie\LaravelPackageTools\Package;
 
@@ -20,7 +19,7 @@ class SecurityServiceProvider extends MooxServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations(['extend_password_reset_tokens_table'])
-            ->hasCommands(InstallCommand::class, GetPasswordResetLinksCommand::class);
+            ->hasCommands(GetPasswordResetLinksCommand::class);
     }
 
     #[Override]

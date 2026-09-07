@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Expiry;
 
 use Moox\Expiry\Commands\EscalatedExpiriesCommand;
-use Moox\Expiry\Commands\InstallCommand;
 use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -20,7 +19,7 @@ class ExpiryServiceProvider extends PackageServiceProvider
             ->hasViews('escalated_expiries')
             ->hasMigration('create_expiries_table')
             ->hasRoutes('api')
-            ->hasCommands(InstallCommand::class, EscalatedExpiriesCommand::class);
+            ->hasCommands(EscalatedExpiriesCommand::class);
     }
 
     #[Override]

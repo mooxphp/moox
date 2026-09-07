@@ -6,7 +6,6 @@ namespace Moox\Press;
 
 use Illuminate\Support\Facades\Auth;
 use Moox\Core\MooxServiceProvider;
-use Moox\Press\Commands\InstallCommand;
 use Moox\Press\Commands\InstallWordPress;
 use Moox\Press\Commands\UpdateWordPressPlugin;
 use Moox\Press\Commands\UpdateWordPressURL;
@@ -24,7 +23,6 @@ class PressServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
             ->hasCommands(
-                InstallCommand::class,
                 InstallWordPress::class,
                 UpdateWordPressURL::class,
                 UpdateWordPressPlugin::class,

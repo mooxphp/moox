@@ -7,7 +7,6 @@ namespace Moox\LoginLink;
 use Illuminate\Support\Facades\Route;
 use Moox\Core\MooxServiceProvider;
 use Moox\LoginLink\Commands\ExampleIssueCommand;
-use Moox\LoginLink\Commands\InstallCommand;
 use Moox\LoginLink\Http\Controllers\ExampleResultController;
 use Moox\LoginLink\Http\Controllers\PublicLoginLinkRedemptionController;
 use Moox\LoginLink\Http\Middleware\HandlePublicLoginLinkSignature;
@@ -32,7 +31,6 @@ class LoginLinkServiceProvider extends MooxServiceProvider
                 'add_context_template_invalidate_to_login_link_processes_table',
             ])
             ->hasCommands([
-                InstallCommand::class,
                 ExampleIssueCommand::class,
             ]);
     }
