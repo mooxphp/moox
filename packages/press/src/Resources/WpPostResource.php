@@ -7,13 +7,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages\CreateWpPost;
@@ -24,9 +23,8 @@ use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManage
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpPostMetaRelationManager;
 use Override;
 
-class WpPostResource extends Resource
+class WpPostResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpPost::class;

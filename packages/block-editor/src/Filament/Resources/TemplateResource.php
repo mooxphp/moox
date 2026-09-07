@@ -7,7 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\PageRegistration;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -21,7 +21,7 @@ use Moox\BlockEditor\Forms\Components\BlockEditor;
 use Moox\BlockEditor\Models\Template;
 use UnitEnum;
 
-class TemplateResource extends Resource
+class TemplateResource extends BaseResource
 {
     protected static ?string $model = Template::class;
 

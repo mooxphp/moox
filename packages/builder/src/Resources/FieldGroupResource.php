@@ -13,7 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -44,7 +44,7 @@ use Moox\Builder\Support\FilterableFieldTypes;
 use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\TypedValueColumns;
 
-class FieldGroupResource extends Resource
+class FieldGroupResource extends BaseResource
 {
     /**
      * @var array<string, string>

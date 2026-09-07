@@ -8,13 +8,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpCategory;
 use Moox\Press\Models\WpTerm;
@@ -24,9 +23,8 @@ use Moox\Press\Resources\WpCategoryResource\Pages\ListWpCategories;
 use Moox\Press\Resources\WpCategoryResource\Pages\ViewWpCategory;
 use Override;
 
-class WpCategoryResource extends Resource
+class WpCategoryResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpCategory::class;

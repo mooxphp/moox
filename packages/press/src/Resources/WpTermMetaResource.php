@@ -7,13 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpTermMeta;
 use Moox\Press\Resources\WpTermMetaResource\Pages\CreateWpTermMeta;
@@ -22,9 +21,8 @@ use Moox\Press\Resources\WpTermMetaResource\Pages\ListWpTermMetas;
 use Moox\Press\Resources\WpTermMetaResource\Pages\ViewWpTermMeta;
 use Override;
 
-class WpTermMetaResource extends Resource
+class WpTermMetaResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpTermMeta::class;

@@ -10,7 +10,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +27,7 @@ use Moox\Training\Resources\TrainingResource\Pages\ViewTraining;
 use Moox\Training\Resources\TrainingResource\RelationManagers\TrainingInvitationsRelationManager;
 use Override;
 
-class TrainingResource extends Resource
+class TrainingResource extends BaseResource
 {
     use HasResourceTabs;
 

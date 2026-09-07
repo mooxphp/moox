@@ -3,20 +3,18 @@
 namespace Moox\Security\Resources;
 
 use Filament\Actions\DeleteBulkAction;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 use Override;
 
-class ResetPasswordResource extends Resource
+class ResetPasswordResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = ResetPassword::class;

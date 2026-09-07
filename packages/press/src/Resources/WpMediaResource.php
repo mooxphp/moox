@@ -5,7 +5,7 @@ namespace Moox\Press\Resources;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -16,7 +16,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource\Pages\CreateWpPost;
@@ -26,9 +25,8 @@ use Moox\Press\Resources\WpMediaResource\Pages\ViewWpPost;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
 use Override;
 
-class WpMediaResource extends Resource
+class WpMediaResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpMedia::class;

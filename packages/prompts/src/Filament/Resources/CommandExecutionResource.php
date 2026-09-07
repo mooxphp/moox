@@ -10,7 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Actions as ActionsComponent;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -23,7 +23,7 @@ use Illuminate\Support\HtmlString;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 use Moox\Prompts\Models\CommandExecution;
 
-class CommandExecutionResource extends Resource
+class CommandExecutionResource extends BaseResource
 {
     protected static ?string $model = CommandExecution::class;
 

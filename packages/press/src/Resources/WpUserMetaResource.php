@@ -7,13 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserMetaResource\Pages\CreateWpUserMeta;
@@ -22,9 +21,8 @@ use Moox\Press\Resources\WpUserMetaResource\Pages\ListWpUserMetas;
 use Moox\Press\Resources\WpUserMetaResource\Pages\ViewWpUserMeta;
 use Override;
 
-class WpUserMetaResource extends Resource
+class WpUserMetaResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpUserMeta::class;

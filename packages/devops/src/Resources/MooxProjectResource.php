@@ -9,7 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -22,7 +22,7 @@ use Moox\Devops\Models\MooxProject;
 use Moox\Devops\Resources\MooxProjectResource\Pages\ListPage;
 use Moox\Devops\Resources\MooxProjectResource\Widgets\MooxProjectWidgets;
 
-class MooxProjectResource extends Resource
+class MooxProjectResource extends BaseResource
 {
     protected static ?string $model = MooxProject::class;
 

@@ -7,7 +7,7 @@ namespace Moox\Scopes\Entities\Scopes;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -19,7 +19,7 @@ use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
 
-class ScopeResource extends Resource
+class ScopeResource extends BaseResource
 {
     protected static ?string $model = Scope::class;
 

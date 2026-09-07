@@ -6,11 +6,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Notification\Models\Notification;
 use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
@@ -20,9 +19,8 @@ use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
 use Moox\Notification\Resources\NotificationResource\Widgets\NotificationWidgets;
 use Override;
 
-class NotificationResource extends Resource
+class NotificationResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = Notification::class;

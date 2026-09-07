@@ -7,13 +7,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\PressWiki\Models\WpWiki;
 use Moox\PressWiki\Resources\WpWikiResource\Pages;
@@ -22,9 +21,8 @@ use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpCommentRelationMa
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpPostMetaRelationManager;
 use Override;
 
-class WpWikiResource extends Resource
+class WpWikiResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpWiki::class;

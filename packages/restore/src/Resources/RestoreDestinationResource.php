@@ -7,7 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
@@ -18,7 +18,7 @@ use Moox\Restore\Resources\RestoreDestinationResource\Pages\EditRestoreDestinati
 use Moox\Restore\Resources\RestoreDestinationResource\Pages\ListRestoreDestinations;
 use Spatie\BackupServer\Models\Source;
 
-class RestoreDestinationResource extends Resource
+class RestoreDestinationResource extends BaseResource
 {
     protected static ?string $model = RestoreDestination::class;
 

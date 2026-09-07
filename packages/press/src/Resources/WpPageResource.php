@@ -9,13 +9,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpPage;
 use Moox\Press\Resources\WpPageResource\Pages\CreateWpPage;
@@ -25,9 +24,8 @@ use Moox\Press\Resources\WpPageResource\Pages\ViewWpPage;
 use Moox\Press\Resources\WpPageResource\RelationManagers\WpPostMetaRelationManager;
 use Override;
 
-class WpPageResource extends Resource
+class WpPageResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpPage::class;

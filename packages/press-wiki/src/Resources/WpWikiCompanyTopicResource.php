@@ -6,22 +6,20 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\PressWiki\Models\WpWikiCompanyTopic;
 use Moox\PressWiki\Resources\WpWikiCompanyTopicResource\Pages;
 use Moox\PressWiki\Resources\WpWikiCompanyTopicResource\Pages\ListWpWikiCompanyTopics;
 use Override;
 
-class WpWikiCompanyTopicResource extends Resource
+class WpWikiCompanyTopicResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpWikiCompanyTopic::class;

@@ -9,13 +9,12 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpSiteMeta;
 use Moox\Press\Resources\WpSiteMetaResource\Pages\CreateWpSiteMeta;
@@ -24,9 +23,8 @@ use Moox\Press\Resources\WpSiteMetaResource\Pages\ListWpSiteMetas;
 use Moox\Press\Resources\WpSiteMetaResource\Pages\ViewWpSiteMeta;
 use Override;
 
-class WpSiteMetaResource extends Resource
+class WpSiteMetaResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpSiteMeta::class;

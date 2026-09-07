@@ -6,7 +6,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
+use Moox\Core\Entities\BaseResource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -20,7 +20,7 @@ use Moox\PressTrainings\Resources\WpTopicResource\Pages\ListWpTopics;
 use Moox\PressTrainings\Resources\WpTopicResource\Pages\ViewWpTopic;
 use Override;
 
-class WpTopicResource extends Resource
+class WpTopicResource extends BaseResource
 {
     use HasResourceTabs;
 
