@@ -4,13 +4,12 @@ namespace Moox\Expiry\Resources;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Expiry\Actions\CustomExpiryAction;
@@ -21,9 +20,8 @@ use Moox\Expiry\Resources\ExpiryResource\Pages\ListExpiries;
 use Moox\Expiry\Resources\ExpiryResource\Pages\ViewExpiry;
 use Override;
 
-class ExpiryResource extends Resource
+class ExpiryResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
     use SingleSoftDeleteInResource;
 

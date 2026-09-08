@@ -8,7 +8,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -17,9 +16,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\BackupServerUi\Resources\BackupResource\Pages\ListBackups;
 use Moox\BackupServerUi\Resources\BackupResource\Pages\ViewBackup;
+use Moox\Core\Entities\BaseResource;
 use Spatie\BackupServer\Models\Backup;
 
-class BackupResource extends Resource
+class BackupResource extends BaseResource
 {
     protected static ?string $model = Backup::class;
 

@@ -8,17 +8,17 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Moox\Core\Entities\BaseResource;
 use Moox\Devops\Jobs\RebootServerJob;
 use Moox\Devops\Models\MooxServer;
 use Moox\Devops\Resources\MooxServerResource\Pages\ListPage;
 use Moox\Devops\Resources\MooxServerResource\Widgets\MooxServerWidgets;
 
-class MooxServerResource extends Resource
+class MooxServerResource extends BaseResource
 {
     protected static ?string $model = MooxServer::class;
 

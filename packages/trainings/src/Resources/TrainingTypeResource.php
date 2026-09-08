@@ -8,12 +8,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingType;
@@ -24,7 +24,7 @@ use Moox\Training\Resources\TrainingTypeResource\Pages\ViewTrainingType;
 use Moox\Training\Resources\TrainingTypeResource\RelationManagers\TrainingsRelationManager;
 use Override;
 
-class TrainingTypeResource extends Resource
+class TrainingTypeResource extends BaseResource
 {
     use HasResourceTabs;
 

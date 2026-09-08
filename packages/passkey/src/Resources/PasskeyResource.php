@@ -7,22 +7,20 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 use Override;
 
-class PasskeyResource extends Resource
+class PasskeyResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = Passkey::class;

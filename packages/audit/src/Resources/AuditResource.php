@@ -8,7 +8,6 @@ use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,13 +22,12 @@ use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
 use Moox\Audit\Resources\AuditResource\Pages\ViewAudit;
 use Moox\Audit\Support\ActivityEntryPresenter;
 use Moox\Audit\Support\SubjectUrlResolver;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Override;
 
-class AuditResource extends Resource
+class AuditResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = Activity::class;

@@ -7,10 +7,10 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
@@ -18,7 +18,7 @@ use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
 use Moox\Progress\Forms\Components\ProgressColumn;
 use Override;
 
-class JobsResource extends Resource
+class JobsResource extends BaseResource
 {
     use HasResourceTabs;
 

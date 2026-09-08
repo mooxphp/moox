@@ -10,13 +10,13 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\Training;
@@ -27,7 +27,7 @@ use Moox\Training\Resources\TrainingResource\Pages\ViewTraining;
 use Moox\Training\Resources\TrainingResource\RelationManagers\TrainingInvitationsRelationManager;
 use Override;
 
-class TrainingResource extends Resource
+class TrainingResource extends BaseResource
 {
     use HasResourceTabs;
 

@@ -8,13 +8,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpComment;
 use Moox\Press\Resources\WpCommentResource\Pages\CreateWpComment;
@@ -24,9 +23,8 @@ use Moox\Press\Resources\WpCommentResource\Pages\ViewWpComment;
 use Moox\Press\Resources\WpCommentResource\RelationManagers\WpCommentMetaRelationManager;
 use Override;
 
-class WpCommentResource extends Resource
+class WpCommentResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpComment::class;

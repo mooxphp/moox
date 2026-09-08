@@ -8,12 +8,12 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingDate;
@@ -23,7 +23,7 @@ use Moox\Training\Resources\TrainingDateResource\Pages\ListTrainingDates;
 use Moox\Training\Resources\TrainingDateResource\Pages\ViewTrainingDate;
 use Override;
 
-class TrainingDateResource extends Resource
+class TrainingDateResource extends BaseResource
 {
     use HasResourceTabs;
 

@@ -8,7 +8,6 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -17,11 +16,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Moox\Core\Entities\BaseResource;
 use Moox\Firewall\Models\FirewallWhitelistEntry;
 use Moox\Firewall\Resources\FirewallWhitelistEntryResource\Pages\ManageFirewallWhitelistEntries;
 use Override;
 
-class FirewallWhitelistEntryResource extends Resource
+class FirewallWhitelistEntryResource extends BaseResource
 {
     protected static ?string $model = FirewallWhitelistEntry::class;
 

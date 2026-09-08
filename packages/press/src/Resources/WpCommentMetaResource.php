@@ -7,13 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpCommentMeta;
 use Moox\Press\Resources\WpCommentMetaResource\Pages\CreateWpCommentMeta;
@@ -22,9 +21,8 @@ use Moox\Press\Resources\WpCommentMetaResource\Pages\ListWpCommentMetas;
 use Moox\Press\Resources\WpCommentMetaResource\Pages\ViewWpCommentMeta;
 use Override;
 
-class WpCommentMetaResource extends Resource
+class WpCommentMetaResource extends BaseResource
 {
-    use BaseInResource;
     use HasResourceTabs;
 
     protected static ?string $model = WpCommentMeta::class;

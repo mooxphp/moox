@@ -7,7 +7,6 @@ namespace Moox\Restore\Resources;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
@@ -15,12 +14,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Artisan;
+use Moox\Core\Entities\BaseResource;
 use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Resources\RestoreBackupResource\Pages\ListRestoreBackups;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
-class RestoreBackupResource extends Resource
+class RestoreBackupResource extends BaseResource
 {
     protected static ?string $model = RestoreBackup::class;
 

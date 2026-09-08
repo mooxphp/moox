@@ -7,7 +7,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -18,8 +17,9 @@ use Filament\Tables\Table;
 use Moox\BackupServerUi\Models\BackupLogItem;
 use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ListBackupLogItems;
 use Moox\BackupServerUi\Resources\BackupLogItemResource\Pages\ViewBackupLogItem;
+use Moox\Core\Entities\BaseResource;
 
-class BackupLogItemResource extends Resource
+class BackupLogItemResource extends BaseResource
 {
     protected static ?string $model = BackupLogItem::class;
 
