@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Restore\Resources\RestoreDestinationResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
+use Moox\Core\Entities\Items\Item\Pages\BaseCreateItem;
 use Moox\Restore\Resources\RestoreDestinationResource;
 
-class CreateRestoreDestination extends CreateRecord
+class CreateRestoreDestination extends BaseCreateItem
 {
     protected static string $resource = RestoreDestinationResource::class;
 }
