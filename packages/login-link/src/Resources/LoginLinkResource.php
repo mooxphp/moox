@@ -15,20 +15,35 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Services\LoginLinkService;
 use Override;
 
-class LoginLinkResource extends BaseResource
+class LoginLinkResource extends BaseItemResource
 {
     use HasResourceTabs;
 
     protected static ?string $model = LoginLink::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-lock-clock-o';
+
+    public static function enableCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return false;
+    }
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema
