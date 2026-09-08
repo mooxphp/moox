@@ -4,6 +4,8 @@ use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Models\News;
+use Moox\News\Models\NewsTranslation;
+use Moox\News\Resources\NewsResource;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
@@ -138,4 +140,54 @@ return [
     |
     */
     'navigation_group' => 'CMS',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            News::class => [
+                'preset' => 'draft_main',
+                'log_name' => 'news',
+                'attributes' => [
+                    'is_active',
+                    'status',
+                    'scope',
+                    'type',
+                    'color',
+                    'due_at',
+                ],
+            ],
+            NewsTranslation::class => [
+                'preset' => 'draft_translation',
+                'log_name' => 'news',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'permalink',
+                    'description',
+                    'content',
+                    'translation_status',
+                    'author_id',
+                    'author_type',
+                ],
+            ],
+        ],
+        'filament' => [
+            NewsResource::class => [
+                'owner_model' => News::class,
+                'aggregate_subjects' => [
+                    NewsTranslation::class => 'translations',
+                ],
+            ],
+        ],
+    ],
 ];

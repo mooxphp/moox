@@ -23,6 +23,7 @@ use Moox\Contact\Resources\Contact\Pages\ListContacts;
 use Moox\Contact\Resources\Contact\Pages\ViewContact;
 use Moox\Contact\Support\ContactRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 
@@ -30,6 +31,7 @@ class ContactResource extends BaseRecordResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Contact::class;
 

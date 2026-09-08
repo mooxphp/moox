@@ -23,6 +23,7 @@ use Moox\Company\Resources\Company\Pages\ListCompanies;
 use Moox\Company\Resources\Company\Pages\ViewCompany;
 use Moox\Company\Support\CompanyRules;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 
@@ -30,6 +31,7 @@ class CompanyResource extends BaseRecordResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Company::class;
 

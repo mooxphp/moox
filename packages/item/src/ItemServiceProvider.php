@@ -71,7 +71,11 @@ class ItemServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
-        if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('item.audit.enabled', true)
+        ) {
             AuditPackageRegistry::register('item', config('item.audit', []));
         }
     }

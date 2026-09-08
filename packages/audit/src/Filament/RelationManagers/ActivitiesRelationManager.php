@@ -76,6 +76,9 @@ class ActivitiesRelationManager extends RelationManager
             ])
             ->defaultSort('created_at', 'desc')
             ->recordUrl(fn (Activity $record): string => AuditResource::getUrl('view', ['record' => $record]))
+            ->emptyStateHeading(__('core::audit.activity_empty_heading'))
+            ->emptyStateDescription(__('core::audit.activity_empty_description'))
+            ->emptyStateIcon('heroicon-o-clipboard-document-list')
             ->paginated([10, 25, 50]);
     }
 

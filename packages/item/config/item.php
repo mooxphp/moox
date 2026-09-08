@@ -64,6 +64,7 @@ return [
     */
 
     'audit' => [
+        'enabled' => true,
         'models' => [
             Item::class => [],
         ],

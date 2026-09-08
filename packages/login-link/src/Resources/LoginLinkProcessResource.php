@@ -15,6 +15,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\CreateLoginLinkProcess;
 use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\EditLoginLinkProcess;
@@ -26,6 +27,8 @@ use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class LoginLinkProcessResource extends BaseRecordResource
 {
+    use InteractsWithAuditResourceRelations;
+
     protected static ?string $model = LoginLinkProcess::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-settings-suggest-o';

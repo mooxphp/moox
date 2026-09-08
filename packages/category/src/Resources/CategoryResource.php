@@ -23,7 +23,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rules\Unique;
-use Moox\Audit\Support\AuditResourceRelationRegistry;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
 use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
@@ -31,6 +30,7 @@ use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -39,7 +39,9 @@ use Override;
 
 class CategoryResource extends BaseDraftResource
 {
-    use HasResourceTabs, HasScopedChildResource;
+    use HasResourceTabs;
+    use HasScopedChildResource;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Category::class;
 
@@ -255,21 +257,6 @@ class CategoryResource extends BaseDraftResource
             ->defaultSort('id', 'asc')
             ->deferFilters(false)
             ->persistFiltersInSession();
-    }
-
-    #[Override]
-    public static function getRelations(): array
-    {
-        $relations = parent::getRelations();
-
-        if (class_exists(AuditResourceRelationRegistry::class)) {
-            $relations = array_merge(
-                $relations,
-                AuditResourceRelationRegistry::for(static::class),
-            );
-        }
-
-        return $relations;
     }
 
     #[Override]

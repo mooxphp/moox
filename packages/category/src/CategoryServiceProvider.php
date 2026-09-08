@@ -33,7 +33,11 @@ class CategoryServiceProvider extends MooxServiceProvider
             scopes: ListCategories::class
         );
 
-        if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('category.audit.enabled', true)
+        ) {
             AuditPackageRegistry::register('category', config('category.audit', []));
         }
     }

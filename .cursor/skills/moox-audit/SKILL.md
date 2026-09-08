@@ -33,9 +33,10 @@ Copy and track:
 - [ ] 1. Inspect target package (models, translations, resource, delete side-effects)
 - [ ] 2. Add `audit` block to `packages/{pkg}/config/{pkg}.php`
 - [ ] 3. Register in `{Pkg}ServiceProvider::packageBooted()` via AuditPackageRegistry
-- [ ] 4. Decide hooks (pivot detach on delete?) — decisions.md
-- [ ] 5. Add/adjust Pest tests when behavior is new or non-trivial
-- [ ] 6. Run package tests + `composer lint` / `composer analyse` if touched from monorepo root
+- [ ] 4. Wire Activity tab: `use InteractsWithAuditResourceRelations` on the Resource (or merge `AuditResourceRelationRegistry` in `getRelations()`)
+- [ ] 5. Decide hooks (pivot detach on delete?) — decisions.md
+- [ ] 6. Add/adjust Pest tests when behavior is new or non-trivial
+- [ ] 7. Run package tests + `composer lint` / `composer analyse` if touched from monorepo root
 ```
 
 **Do not** add `moox/audit` to the consumer package's `composer.json` `require`. Use `class_exists(AuditPackageRegistry::class)` so the package works without audit installed.
@@ -48,7 +49,11 @@ Copy and track:
 use Moox\Audit\Support\AuditPackageRegistry;
 
 // in packageBooted():
-if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
+if (
+    class_exists(AuditPackageRegistry::class)
+    && config('audit.enabled', true)
+    && config('{package_key}.audit.enabled', true)
+) {
     AuditPackageRegistry::register('{package_key}', config('{package_key}.audit', []));
 }
 ```
@@ -69,7 +74,20 @@ Presets (`draft_main`, `draft_translation`) live in `config/audit.php`. See [dec
 
 ### Filament
 
-When `filament` is registered, `AuditBootstrap` adds the **Activity** relation manager automatically. No manual `getRelations()` change unless you need loose coupling — see package README.
+`AuditBootstrap` only registers `ActivitiesRelationManager` in `AuditResourceRelationRegistry`. The Resource must pull it in:
+
+```php
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
+
+class ExampleResource extends BaseResource
+{
+    use InteractsWithAuditResourceRelations;
+}
+```
+
+If the Resource already overrides `getRelations()`, merge the registry there (do not leave an empty override — it blocks the trait). Prefer the core trait over the audit-package trait so consumers stay `class_exists`-safe without requiring `moox/audit` in Composer.
+
+Hide the tab without stopping logging: `{Resource}::class => ['enabled' => false]` under `audit.filament` (package or app config). Global/package `audit.enabled` turns logging and tabs off together.
 
 ## Tests
 

@@ -9,6 +9,7 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Media\Console\Commands\InstallCommand;
@@ -99,5 +100,13 @@ class MediaServiceProvider extends MooxServiceProvider
                 HasMediaUsable::syncMediaMetadata($media);
             }
         });
+
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('media.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('media', config('media.audit', []));
+        }
     }
 }

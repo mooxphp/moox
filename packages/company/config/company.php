@@ -2,6 +2,7 @@
 
 use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,4 +145,46 @@ return [
     ],
 
     'navigation_group' => 'Portal',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Company::class => [
+                'log_name' => 'company',
+                'attributes' => [
+                    'status',
+                    'is_active',
+                    'name',
+                    'display_name',
+                    'legal_name',
+                    'note',
+                    'parent_id',
+                    'external_reference',
+                    'phone',
+                    'fax',
+                    'url',
+                    'email',
+                    'tax_number',
+                    'vat_number',
+                    'default_currency_code',
+                    'language_id',
+                ],
+            ],
+        ],
+        'filament' => [
+            CompanyResource::class => [
+                'owner_model' => Company::class,
+            ],
+        ],
+    ],
 ];

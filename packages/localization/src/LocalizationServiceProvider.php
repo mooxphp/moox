@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Localization;
 
 use Livewire\Livewire;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
 use Moox\Localization\Filament\Providers\LocalizationPanelProvider;
@@ -81,5 +82,16 @@ class LocalizationServiceProvider extends MooxServiceProvider
                 'data' => ['default-english'],     // Inhalt egal, wird von deinem Installer faktisch ignoriert
             ],
         ];
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('localization.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('localization', config('localization.audit', []));
+        }
     }
 }

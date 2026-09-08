@@ -7,12 +7,30 @@ use Moox\Audit\Support\AuditFilamentRegistry;
 use Moox\Audit\Support\SubjectUrlResolver;
 use Moox\Audit\Tests\Support\TestAuditableItem;
 use Moox\Audit\Tests\Support\TestAuditableItemResource;
+use Moox\Audit\Tests\Support\TestListOnlyItemResource;
 use Moox\Audit\Tests\TestCase;
 
 uses(TestCase::class);
 
 beforeEach(function (): void {
     AuditFilamentRegistry::clear();
+});
+
+it('resolves a table-action url for list-only filament resources', function (): void {
+    $item = TestAuditableItem::query()->create([
+        'title' => 'Media-like',
+        'status' => 'draft',
+    ]);
+
+    AuditFilamentRegistry::register(TestListOnlyItemResource::class, [
+        'owner_model' => TestAuditableItem::class,
+    ]);
+
+    $activity = new Activity;
+    $activity->setRelation('subject', $item);
+
+    expect(SubjectUrlResolver::forActivity($activity))
+        ->toBe('/test-items?tableAction=edit&tableActionRecord='.$item->getKey());
 });
 
 it('resolves a subject url from the audit filament registry for an owner model', function (): void {

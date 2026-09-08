@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Address;
 
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -76,5 +77,16 @@ class AddressServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('address.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('address', config('address.audit', []));
+        }
     }
 }

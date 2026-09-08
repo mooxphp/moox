@@ -178,4 +178,37 @@ return [
     */
     'navigation_group' => 'Portal',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Address::class => [
+                'log_name' => 'address',
+                'attributes' => [
+                    'street',
+                    'street2',
+                    'postal_code',
+                    'city',
+                    'state',
+                    'country_code',
+                    'is_primary',
+                ],
+            ],
+        ],
+        'filament' => [
+            AddressResource::class => [
+                'owner_model' => Address::class,
+            ],
+        ],
+    ],
+
 ];

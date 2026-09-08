@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Contact;
 
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -72,5 +73,16 @@ class ContactServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('contact.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('contact', config('contact.audit', []));
+        }
     }
 }

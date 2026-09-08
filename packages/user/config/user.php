@@ -1,6 +1,7 @@
 <?php
 
 use Moox\User\Models\User;
+use Moox\User\Resources\UserResource;
 use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
@@ -181,4 +182,40 @@ return [
     */
 
     'navigation_group' => 'trans//core::user.users',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    | Passwords are omitted from attributes (masked by moox/audit if ever included).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            User::class => [
+                'log_name' => 'user',
+                'attributes' => [
+                    'name',
+                    'slug',
+                    'gender',
+                    'title',
+                    'first_name',
+                    'last_name',
+                    'email',
+                    'website',
+                    'description',
+                ],
+            ],
+        ],
+        'filament' => [
+            UserResource::class => [
+                'owner_model' => User::class,
+            ],
+        ],
+    ],
 ];

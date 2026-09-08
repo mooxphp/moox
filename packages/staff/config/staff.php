@@ -195,4 +195,44 @@ return [
     ],
 
     'navigation_group' => 'Portal',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Staff::class => [
+                'log_name' => 'staff',
+                'attributes' => [
+                    'status',
+                    'legacy_id',
+                    'external_reference',
+                    'short_code',
+                    'display_name',
+                    'first_name',
+                    'last_name',
+                    'job_title',
+                    'email',
+                    'phone',
+                    'language_id',
+                    'contact_id',
+                    'is_internal',
+                    'is_active',
+                ],
+            ],
+        ],
+        'filament' => [
+            StaffResource::class => [
+                'owner_model' => Staff::class,
+            ],
+        ],
+    ],
 ];

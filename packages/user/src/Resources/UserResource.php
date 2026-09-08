@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
@@ -38,6 +39,7 @@ class UserResource extends BaseRecordResource
 {
     use HasResourceTabs;
     use HasScopedChildResource;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = User::class;
 
@@ -396,17 +398,6 @@ class UserResource extends BaseRecordResource
         }
 
         return $query;
-    }
-
-    #[Override]
-    public static function getRelations(): array
-    {
-        return [
-            // UserResource\RelationManagers\AuthorsRelationManager::class,
-            // UserResource\RelationManagers\SessionsRelationManager::class,
-            // UserResource\RelationManagers\SyncsRelationManager::class,
-            // UserResource\RelationManagers\PlatformsRelationManager::class,
-        ];
     }
 
     #[Override]
