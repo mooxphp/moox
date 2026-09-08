@@ -25,6 +25,7 @@ use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 class MediaCollectionResource extends BaseStaticResource
 {
     use InteractsWithAuditResourceRelations;
+
     protected static ?string $model = MediaCollection::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
