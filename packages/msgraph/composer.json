@@ -48,7 +48,7 @@
     "prefer-stable": true,
     "require-dev": {
         "moox/devtools": "dev-main",
-        "pestphp/pest": "^4.0",
+        "pestphp/pest": "^5.0",
         "orchestra/testbench": "^10.0"
     },
     "config": {
