@@ -42,9 +42,9 @@ use Moox\Builder\Support\FieldWidth;
 use Moox\Builder\Support\FilterableFieldTypes;
 use Moox\Builder\Support\LocationConstraintOptions;
 use Moox\Builder\Support\TypedValueColumns;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Static\BaseStaticResource;
 
-class FieldGroupResource extends BaseResource
+class FieldGroupResource extends BaseStaticResource
 {
     /**
      * @var array<string, string>
@@ -59,6 +59,24 @@ class FieldGroupResource extends BaseResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
+
+    public static function getCancelAction(): Action
+    {
+        return parent::getCancelAction()
+            ->url(function ($livewire): string {
+                $params = [];
+                if (isset($livewire->lang) && is_string($livewire->lang) && $livewire->lang !== '') {
+                    $params['lang'] = $livewire->lang;
+                }
+
+                return static::getUrl('index', $params);
+            });
+    }
 
     public static function getNavigationGroup(): ?string
     {

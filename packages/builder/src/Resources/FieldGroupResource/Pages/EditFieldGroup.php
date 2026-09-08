@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Resources\FieldGroupResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Filament\Actions\FieldGroupDefinitionActions;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
@@ -13,20 +12,24 @@ use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldG
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\PersistsFieldGroupInAdmin;
 use Moox\Builder\Services\FieldGroupPersistence;
 use Moox\Builder\Support\FieldGroupPlacement;
+use Moox\Core\Entities\Items\Static\Pages\BaseEditStaticRecord;
 
-class EditFieldGroup extends EditRecord
+class EditFieldGroup extends BaseEditStaticRecord
 {
     use InteractsWithFieldGroupLocale;
     use PersistsFieldGroupInAdmin;
 
     protected static string $resource = FieldGroupResource::class;
 
-    public function mount(int|string $record): void
+    public function mount($record): void
     {
         $this->mountInteractsWithFieldGroupLocale();
+        $lang = $this->lang;
 
         parent::mount($record);
 
+        $this->lang = $lang;
+        $this->syncLangToRequest();
         $this->guardFieldGroupAdminLocale();
     }
 
@@ -35,7 +38,7 @@ class EditFieldGroup extends EditRecord
         $this->hydrateInteractsWithFieldGroupLocale();
     }
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
         return [
             $this->getFieldGroupLanguageSelectorAction(),
@@ -45,9 +48,21 @@ class EditFieldGroup extends EditRecord
     }
 
     /**
+     * Keep Filament edit footer actions — BaseEditStaticRecord clears them
+     * for Moox form-sidebar layouts; FieldGroup uses its own form layout.
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+            $this->getCancelFormAction(),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    protected function mutateFormDataBeforeFill(array $data): array
+    public function mutateFormDataBeforeFill(array $data): array
     {
         $this->ensureAllowedBuilderAdminLocale();
         $this->syncLangToRequest();

@@ -15,7 +15,7 @@ abstract class BaseViewStatic extends ViewRecord
 {
     use CanResolveResourceClass, HasPagesTaxonomy;
 
-    public ?string $lang = null;
+    public string $lang = '';
 
     public function getFormActions(): array
     {

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Moox\Builder\Resources\FieldGroupResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Builder\Filament\Actions\FieldGroupDefinitionActions;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
 use Moox\Builder\Support\BuilderLocaleResolver;
+use Moox\Core\Entities\Items\Static\Pages\BaseListStatic;
 
-class ListFieldGroups extends ListRecords
+class ListFieldGroups extends BaseListStatic
 {
     use InteractsWithFieldGroupLocale;
 
@@ -32,7 +32,6 @@ class ListFieldGroups extends ListRecords
     public function mount(): void
     {
         parent::mount();
-
         $this->mountInteractsWithFieldGroupLocale();
     }
 
