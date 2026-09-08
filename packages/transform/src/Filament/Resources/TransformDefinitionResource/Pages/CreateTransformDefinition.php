@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Transform\Filament\Resources\TransformDefinitionResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
-use Moox\Core\Traits\Base\BaseInCreatePage;
-use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
+use Moox\Core\Entities\Items\Record\Pages\BaseCreateRecord;
 use Moox\Transform\Filament\Resources\TransformDefinitionResource;
 
-class CreateTransformDefinition extends CreateRecord
+class CreateTransformDefinition extends BaseCreateRecord
 {
-    use BaseInCreatePage;
-    use SingleSimpleInCreatePage;
-
     protected static string $resource = TransformDefinitionResource::class;
 }

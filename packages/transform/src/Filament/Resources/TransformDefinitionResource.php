@@ -25,7 +25,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
-use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use Moox\Transform\Enums\TransformExecutionMode;
 use Moox\Transform\Filament\Resources\TransformDefinitionResource\Pages;
 use Moox\Transform\Filament\Resources\TransformDefinitionResource\RelationManagers\TransformRecordsRelationManager;
@@ -36,11 +36,16 @@ use Moox\Transform\Models\TransformRecord;
 use Moox\Transform\Support\ConfiguredImportRecordProjectionEnricher;
 use Moox\Transform\Support\ImportRecordSelectOptionBuilder;
 
-class TransformDefinitionResource extends BaseItemResource
+class TransformDefinitionResource extends BaseRecordResource
 {
     protected static ?string $model = TransformDefinition::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-arrows-right-left';
+
+    protected static function getEntityType(): string
+    {
+        return 'transform-definition';
+    }
 
     public static function getModelLabel(): string
     {

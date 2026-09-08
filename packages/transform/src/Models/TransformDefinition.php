@@ -6,18 +6,15 @@ namespace Moox\Transform\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
-use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Entities\Items\Record\BaseRecordModel;
 
-class TransformDefinition extends BaseItemModel
+class TransformDefinition extends BaseRecordModel
 {
-    use SoftDeletes;
-
     protected $table = 'transform_definitions';
 
     protected $fillable = [
