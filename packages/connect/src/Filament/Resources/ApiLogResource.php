@@ -19,13 +19,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Connect\Filament\Resources\ApiLogResource\Pages;
 use Moox\Connect\Models\ApiLog;
-use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 
-class ApiLogResource extends BaseItemResource
+class ApiLogResource extends BaseRecordResource
 {
     protected static ?string $model = ApiLog::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static function getEntityType(): string
+    {
+        return 'api-log';
+    }
 
     public static function getModelLabel(): string
     {

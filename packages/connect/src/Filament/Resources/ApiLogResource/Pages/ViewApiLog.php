@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Filament\Resources\ApiLogResource\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
 use Moox\Connect\Filament\Resources\ApiLogResource;
-use Moox\Core\Traits\Base\BaseInViewPage;
-use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
 
-class ViewApiLog extends ViewRecord
+class ViewApiLog extends BaseViewRecord
 {
-    use BaseInViewPage, SingleSimpleInViewPage;
-
     protected static string $resource = ApiLogResource::class;
 }

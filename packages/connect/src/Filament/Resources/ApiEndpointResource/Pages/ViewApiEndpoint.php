@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Filament\Resources\ApiEndpointResource\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
 use Moox\Connect\Filament\Resources\ApiEndpointResource;
-use Moox\Core\Traits\Base\BaseInViewPage;
-use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Core\Entities\Items\Record\Pages\BaseViewRecord;
 
-class ViewApiEndpoint extends ViewRecord
+class ViewApiEndpoint extends BaseViewRecord
 {
-    use BaseInViewPage, SingleSimpleInViewPage;
-
     protected static string $resource = ApiEndpointResource::class;
 }

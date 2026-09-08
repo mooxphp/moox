@@ -20,16 +20,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Connect\Filament\Resources\ApiConnectionResource\Pages;
 use Moox\Connect\Models\ApiConnection;
-use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 use UnitEnum;
 
-class ApiConnectionResource extends BaseItemResource
+class ApiConnectionResource extends BaseRecordResource
 {
     protected static ?string $model = ApiConnection::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static UnitEnum|string|null $navigationGroup;
+
+    protected static function getEntityType(): string
+    {
+        return 'api-connection';
+    }
 
     public static function getModelLabel(): string
     {

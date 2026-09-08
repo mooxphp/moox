@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Filament\Resources\ApiLogResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Moox\Connect\Filament\Resources\ApiLogResource;
-use Moox\Core\Traits\Base\BaseInCreatePage;
-use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
+use Moox\Core\Entities\Items\Record\Pages\BaseCreateRecord;
 
-class CreateApiLog extends CreateRecord
+class CreateApiLog extends BaseCreateRecord
 {
-    use BaseInCreatePage, SingleSimpleInCreatePage;
-
     protected static string $resource = ApiLogResource::class;
 }

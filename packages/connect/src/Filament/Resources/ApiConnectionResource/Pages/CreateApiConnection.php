@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Filament\Resources\ApiConnectionResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Moox\Connect\Filament\Resources\ApiConnectionResource;
-use Moox\Core\Traits\Base\BaseInCreatePage;
-use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
+use Moox\Core\Entities\Items\Record\Pages\BaseCreateRecord;
 
-class CreateApiConnection extends CreateRecord
+class CreateApiConnection extends BaseCreateRecord
 {
-    use BaseInCreatePage, SingleSimpleInCreatePage;
-
     protected static string $resource = ApiConnectionResource::class;
 }

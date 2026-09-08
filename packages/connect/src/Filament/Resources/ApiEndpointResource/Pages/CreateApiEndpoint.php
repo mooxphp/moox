@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Connect\Filament\Resources\ApiEndpointResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Moox\Connect\Filament\Resources\ApiEndpointResource;
-use Moox\Core\Traits\Base\BaseInCreatePage;
-use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
+use Moox\Core\Entities\Items\Record\Pages\BaseCreateRecord;
 
-class CreateApiEndpoint extends CreateRecord
+class CreateApiEndpoint extends BaseCreateRecord
 {
-    use BaseInCreatePage, SingleSimpleInCreatePage;
-
     protected static string $resource = ApiEndpointResource::class;
 }

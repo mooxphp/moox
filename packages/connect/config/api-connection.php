@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'readonly' => false,
     'single' => 'trans//connect::api-connection.api-connection',
     'plural' => 'trans//connect::api-connection.api-connections',
     'tabs' => [

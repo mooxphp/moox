@@ -26,13 +26,18 @@ use Moox\Connect\Jobs\RunDetailForListJob;
 use Moox\Connect\Jobs\RunEndpointJob;
 use Moox\Connect\Models\ApiEndpoint;
 use Moox\Connect\Models\ApiImportRecord;
-use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Entities\Items\Record\BaseRecordResource;
 
-class ApiEndpointResource extends BaseItemResource
+class ApiEndpointResource extends BaseRecordResource
 {
     protected static ?string $model = ApiEndpoint::class;
 
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static function getEntityType(): string
+    {
+        return 'api-endpoint';
+    }
 
     public static function getModelLabel(): string
     {

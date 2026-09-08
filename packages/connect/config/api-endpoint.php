@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'readonly' => false,
     'single' => 'trans//connect::api-endpoint.api-endpoint',
     'plural' => 'trans//connect::api-endpoint.api-endpoints',
     'tabs' => [
