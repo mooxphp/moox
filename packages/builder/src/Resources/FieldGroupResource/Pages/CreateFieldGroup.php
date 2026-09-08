@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\FieldGroupResource\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Models\FieldGroup;
 use Moox\Builder\Resources\FieldGroupResource;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\InteractsWithFieldGroupLocale;
 use Moox\Builder\Resources\FieldGroupResource\Pages\Concerns\PersistsFieldGroupInAdmin;
+use Moox\Core\Entities\Items\Static\Pages\BaseCreateStaticRecord;
 
-class CreateFieldGroup extends CreateRecord
+class CreateFieldGroup extends BaseCreateStaticRecord
 {
     use InteractsWithFieldGroupLocale;
     use PersistsFieldGroupInAdmin;
@@ -20,9 +20,12 @@ class CreateFieldGroup extends CreateRecord
     public function mount(): void
     {
         $this->mountInteractsWithFieldGroupLocale();
+        $lang = $this->lang;
 
         parent::mount();
 
+        $this->lang = $lang;
+        $this->syncLangToRequest();
         $this->guardFieldGroupAdminLocale();
     }
 
@@ -31,10 +34,23 @@ class CreateFieldGroup extends CreateRecord
         $this->hydrateInteractsWithFieldGroupLocale();
     }
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
         return [
             $this->getFieldGroupLanguageSelectorAction(),
+        ];
+    }
+
+    /**
+     * Keep Filament create footer actions — BaseCreateStaticRecord clears them
+     * for Moox form-sidebar layouts; FieldGroup uses its own form layout.
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction(),
+            ...($this->canCreateAnother() ? [$this->getCreateAnotherFormAction()] : []),
+            $this->getCancelFormAction(),
         ];
     }
 

@@ -19,7 +19,7 @@ abstract class BaseCreateStaticRecord extends CreateRecord
 {
     use CanResolveResourceClass, HasPagesTaxonomy;
 
-    public ?string $lang = null;
+    public string $lang = '';
 
     public function mount(): void
     {

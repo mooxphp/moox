@@ -17,7 +17,7 @@ abstract class BaseEditStaticRecord extends EditRecord
 {
     use CanResolveResourceClass, HasPagesTaxonomy;
 
-    public ?string $lang = null;
+    public string $lang = '';
 
     protected function getFormActions(): array
     {
