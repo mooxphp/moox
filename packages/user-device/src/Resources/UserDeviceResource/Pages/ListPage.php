@@ -1,23 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Override;
 
-class ListPage extends ListRecords
+class ListPage extends BaseListItems
 {
     use HasListPageTabs;
 
     public static string $resource = UserDeviceResource::class;
-
-    protected function getActions(): array
-    {
-        return [];
-    }
 
     #[Override]
     public function getTitle(): string
@@ -25,11 +22,9 @@ class ListPage extends ListRecords
         return __('core::device.title');
     }
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
-        return [
-            // none by now
-        ];
+        return [];
     }
 
     public function getTabs(): array

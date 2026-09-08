@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\UserDevice\Resources;
 
 use Filament\Actions\Action;
@@ -15,7 +17,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema as DbSchema;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Core\Support\Resources\ScopedResourceContext;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -24,7 +26,7 @@ use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Override;
 use Spatie\Permission\PermissionRegistrar;
 
-class UserDeviceResource extends BaseResource
+class UserDeviceResource extends BaseItemResource
 {
     use HasResourceTabs;
     use HasScopedChildResource;
@@ -32,6 +34,21 @@ class UserDeviceResource extends BaseResource
     protected static ?string $model = UserDevice::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-devices-o';
+
+    public static function enableCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return false;
+    }
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
 
     #[Override]
     public static function getEloquentQuery(): Builder
