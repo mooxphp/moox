@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
+use Moox\EBilling\Actions\AnnounceDocumentNeedsReviewAction;
 use Moox\EBilling\Actions\ApproveDocumentAction;
 use Moox\EBilling\Actions\ConfirmInvoiceAction;
 use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
@@ -23,12 +24,16 @@ use Moox\EBilling\Actions\RestoreRejectedDocumentAction;
 use Moox\EBilling\Actions\SetInvoiceAttributionAction;
 use Moox\EBilling\Actions\TryAutoApproveDocumentAction;
 use Moox\EBilling\Approval\AutoApproveEvaluator;
+use Moox\EBilling\Approval\BatchedReviewNotificationStrategy;
 use Moox\EBilling\Approval\DocumentApprovalGuard;
 use Moox\EBilling\Approval\DocumentDispatchGuard;
+use Moox\EBilling\Approval\ImmediateReviewNotificationStrategy;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
+use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+use Moox\EBilling\Contracts\ReviewNotificationStrategyInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\FormatDefinition;
@@ -60,6 +65,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasRoutes('web')
             ->hasCommands([
                 BackfillValidationScoresCommand::class,
+                FlushReviewNotificationBatchCommand::class,
             ])
             ->hasMigrations([
                 'create_ebilling_documents_table',
@@ -102,7 +108,17 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(TryAutoApproveDocumentAction::class);
         $this->app->singleton(InitializeDocumentApprovalAction::class);
         $this->app->singleton(DispatchDocumentAction::class);
+        $this->app->singleton(AnnounceDocumentNeedsReviewAction::class);
         $this->app->singleton(InvalidateDocumentApprovalAction::class);
+
+        $this->app->bind(ReviewNotificationStrategyInterface::class, function ($app): ReviewNotificationStrategyInterface {
+            $strategy = (string) config('e-billing.notification.strategy', 'immediate');
+
+            return match ($strategy) {
+                'batched' => $app->make(BatchedReviewNotificationStrategy::class),
+                default => $app->make(ImmediateReviewNotificationStrategy::class),
+            };
+        });
 
         $this->app->singleton(DocumentTypeCodeResolver::class);
         $this->app->singleton(UnitCodeResolver::class);

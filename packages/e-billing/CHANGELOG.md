@@ -4,6 +4,7 @@
 
 ### Added
 
+- Review notification announce ([#17](https://github.com/mooxphp/e-billing/issues/17)): when a document enters dispatch-approval review, emit `DocumentEnteredReview` and hand off via `NotifyDocumentsNeedReviewJob` (payload: `document_id`, `reasons`, `waited_seconds` — no recipients/wording; package does not send mail). Strategies `immediate` / `batched` via `ReviewNotificationStrategyInterface` and config `notification.*`. Batched mode collects document ids in cache; `e-billing:flush-review-notification-batch` / `FlushReviewNotificationBatchJob` drains one batch into a single notify job. Dedup cache key while `pending`; cleared on leave-pending and before invalidate re-entry.
 - Recipient format preference port `RecipientFormatPreferenceResolverInterface` with default `CustomerFormatPreferenceResolver`; orchestrator returns `EffectiveFormat` for generation. Config `default` `{ format, profile }` + `allowed_profiles` (profile default `EN16931`). Unknown format / disallowed profile throw instead of falling back ([#16](https://github.com/mooxphp/e-billing/issues/16)).
 - GoBD freeze of the effective profile on `ebilling_documents` at first generation; retries reuse frozen `format` + `profile` and do not re-consult the preference port ([#16](https://github.com/mooxphp/e-billing/issues/16)).
 

@@ -94,6 +94,7 @@ Published as `config/e-billing.php`.
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
+| `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes |
 | `identical_duplicate` | Notification recipients when an identical source PDF is discarded (`notify_emails`, `panel_id`) |
 | `duplicate_number.scope` | Document-number collision scope: `global` (default) or `issuer` (also seller VAT id / BT-31) |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
@@ -112,6 +113,9 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | `EBILLING_PREFERRED_PIECE_UNIT_CODE` | `preferred_piece_unit_code` | `H87` | No |
 | `EBILLING_APPROVAL_REQUIRED` | `approval.required` | `true` | No |
 | `EBILLING_APPROVAL_AUTO_APPROVE` | `approval.auto_approve_enabled` | `true` | No |
+| `EBILLING_REVIEW_NOTIFICATION_STRATEGY` | `notification.strategy` | `immediate` | No |
+| `EBILLING_REVIEW_NOTIFICATION_BATCH_KEY` | `notification.batch_key` | `window` | No |
+| `EBILLING_REVIEW_NOTIFICATION_BATCH_WINDOW` | `notification.batch_window_minutes` | `60` | No |
 | `EBILLING_DUPLICATE_NUMBER_SCOPE` | `duplicate_number.scope` | `global` | No |
 
 ### Supplier block
@@ -234,6 +238,34 @@ Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'
 | `approval.auto_approve_enabled` | `true` | When `false`, clean documents stay pending until a reviewer approves |
 
 `DispatchDocumentAction` refuses unapproved documents at the dispatch seam (not only in the Filament UI). A blocked must-field cannot reach `approved` by any route.
+
+### Review notification announce
+
+When a document enters dispatch-approval review (auto-approve fails while `pending`, or approval is invalidated back to `pending`), the package announces without sending mail and without knowing recipients:
+
+1. `AnnounceDocumentNeedsReviewAction` deduplicates with cache key `e-billing.review-notified.{id}` (unique while still `pending`; cleared when leaving `pending` and before re-entering from non-pending).
+2. Emits `DocumentEnteredReview` (`document` + `reasons` from `AutoApproveFailureReason` values, or `awaiting_approval` when empty).
+3. Delegates to `ReviewNotificationStrategyInterface`:
+   - **`immediate`** (default) — dispatches one `NotifyDocumentsNeedReviewJob` per document.
+   - **`batched`** — only collects `{reasons, collected_at}` under a cache batch key; does **not** dispatch the notify job yet.
+
+**Job payload** (`NotifyDocumentsNeedReviewJob`): list of `{ document_id, reasons: string[], waited_seconds: int }` — no recipients, no subject/body/wording. Hosts listen to the event and/or handle the job. The package never sends mail.
+
+**Batch keys** (`notification.batch_key`):
+
+| Value | Cache key |
+| --- | --- |
+| `window` | `e-billing.review-batch.window.{floor(timestamp / (minutes*60))}` (`notification.batch_window_minutes`, default 60) |
+| `day` | `e-billing.review-batch.day.{Y-m-d}` |
+
+**Flush:** `e-billing:flush-review-notification-batch` dispatches `FlushReviewNotificationBatchJob`, which drains the current batch store, builds payloads with `waited_seconds = now - collected_at`, dispatches **one** `NotifyDocumentsNeedReviewJob`, and clears the store. Schedule the command (or job) in the host app — the package does not register a schedule.
+
+| Config key | Default | Effect |
+| --- | --- | --- |
+| `notification.strategy` | `immediate` | `immediate` or `batched` |
+| `notification.batch_key` | `window` | `window` or `day` |
+| `notification.batch_window_minutes` | `60` | Window size when `batch_key=window` |
+
 
 ## The EbillingDocument Model
 

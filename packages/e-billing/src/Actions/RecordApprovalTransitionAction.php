@@ -13,6 +13,7 @@ use Moox\EBilling\Enums\DocumentApprovalStatus;
 use Moox\EBilling\Events\DocumentApprovalTransitioned;
 use Moox\EBilling\Models\EbillingDocument;
 use Moox\EBilling\Support\ForwardedSeverityRelease;
+use Moox\EBilling\Support\ReviewNotificationCache;
 use Moox\EBilling\Support\SeverityReleaseSnapshotCollector;
 
 final class RecordApprovalTransitionAction
@@ -63,15 +64,15 @@ final class RecordApprovalTransitionAction
             $actorId = self::SYSTEM_ACTOR_ID;
         }
 
-        if ($actorId === null || $actorId === '') {
-            throw new InvalidArgumentException('An actor is required for this approval transition.');
-        }
-
         $document->approval_status = $to;
         $document->approval_reason = $reason;
         $document->approval_actor_id = (string) $actorId;
         $document->approval_acted_at = Carbon::now();
         $this->saveDocument($document, $trigger);
+
+        if ($from === DocumentApprovalStatus::Pending && $to !== DocumentApprovalStatus::Pending) {
+            ReviewNotificationCache::forgetNotified((string) $document->getKey());
+        }
 
         event(new DocumentApprovalTransitioned(
             document: $document,
