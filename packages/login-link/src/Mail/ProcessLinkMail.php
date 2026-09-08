@@ -29,7 +29,8 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
     public function __construct(
         public LoginLink $loginLink,
         public ?LoginLinkProcess $process = null,
-    ) {}
+    ) {
+    }
 
     public function build(): static
     {
