@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Media\Resources;
 
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Static\BaseStaticResource;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -16,13 +21,36 @@ use Moox\Media\Resources\MediaCollectionResource\Pages\CreateMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\EditMediaCollection;
 use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 
-class MediaCollectionResource extends BaseResource
+class MediaCollectionResource extends BaseStaticResource
 {
     protected static ?string $model = MediaCollection::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static function getReadonlyConfig(): bool
+    {
+        return (bool) config('media.collections.readonly', false);
+    }
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
+
+    public static function getCancelAction(): Action
+    {
+        return parent::getCancelAction()
+            ->url(function ($livewire): string {
+                $params = [];
+                if (isset($livewire->lang) && is_string($livewire->lang) && $livewire->lang !== '') {
+                    $params['lang'] = $livewire->lang;
+                }
+
+                return static::getUrl('index', $params);
+            });
+    }
 
     public static function getModelLabel(): string
     {
@@ -47,35 +75,53 @@ class MediaCollectionResource extends BaseResource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('name')
-                ->label(__('media::fields.collection_name'))
-                ->required()
-                ->maxLength(255)
-                ->rule(function ($record) {
-                    return function ($attribute, $value, $fail) use ($record) {
-                        $locale = app()->getLocale();
-                        $exists = MediaCollection::whereTranslation('name', $value, $locale)
-                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
-                            ->exists();
-                        if ($exists) {
-                            $fail(__('media::fields.collection_name_already_exists'));
-                        }
-                    };
-                }),
+            Grid::make()
+                ->schema([
+                    Section::make()
+                        ->schema([
+                            TextInput::make('name')
+                                ->label(__('media::fields.collection_name'))
+                                ->required()
+                                ->maxLength(255)
+                                ->rule(function ($record) {
+                                    return function ($attribute, $value, $fail) use ($record): void {
+                                        $locale = app()->getLocale();
+                                        $exists = MediaCollection::whereTranslation('name', $value, $locale)
+                                            ->when($record, fn ($q) => $q->where('id', '!=', $record->id))
+                                            ->exists();
+                                        if ($exists) {
+                                            $fail(__('media::fields.collection_name_already_exists'));
+                                        }
+                                    };
+                                }),
 
-            TextInput::make('description')
-                ->label(__('media::fields.collection_description'))
-                ->maxLength(255)
-                ->formatStateUsing(function ($state, $record, $livewire) {
-                    if (! $record || ! method_exists($record, 'getTranslation')) {
-                        return $state;
-                    }
+                            TextInput::make('description')
+                                ->label(__('media::fields.collection_description'))
+                                ->maxLength(255)
+                                ->formatStateUsing(function ($state, $record, $livewire) {
+                                    if (! $record || ! method_exists($record, 'getTranslation')) {
+                                        return $state;
+                                    }
 
-                    $lang = $livewire->lang ?? app()->getLocale();
-                    $translation = $record->getTranslation($lang, false);
+                                    $lang = $livewire->lang ?? app()->getLocale();
+                                    $translation = $record->getTranslation($lang, false);
 
-                    return $translation ? $translation->description : $state;
-                }),
+                                    return $translation ? $translation->description : $state;
+                                }),
+                        ])
+                        ->columnSpan(2),
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    static::getFormActions(),
+                                ]),
+                        ])
+                        ->columns(1)
+                        ->columnSpan(1),
+                ])
+                ->columns(3)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -86,7 +132,7 @@ class MediaCollectionResource extends BaseResource
                 TextColumn::make('id')
                     ->label(__('media::fields.collection_name'))
                     ->searchable(query: function ($query, $search) {
-                        return $query->whereHas('translations', function ($q) use ($search) {
+                        return $query->whereHas('translations', function ($q) use ($search): void {
                             $q->where('name', 'like', "%{$search}%");
                         });
                     })
@@ -199,7 +245,6 @@ class MediaCollectionResource extends BaseResource
                         return $record->name === __('media::fields.uncategorized') ||
                             $record->media()->where('write_protected', true)->exists();
                     }),
-
             ]);
     }
 
