@@ -27,6 +27,14 @@ These base entities are used by the `moox:build` command to generate custom enti
 - **Moox Record** — Item with soft delete, taxonomies, relations, modules
 - **Moox Draft** — Record with localization, draft, publish
 
+### Soft delete queries (`BaseResource`)
+
+Resources that extend `Moox\Core\Entities\BaseResource` (including Record / Draft / Item / Static bases) keep Laravel’s `SoftDeletingScope` on by default.
+
+The scope is removed only for trash tabs (`deleted` / `trash`). Soft-deleted rows must not appear under “All”.
+
+**Why:** Always stripping the scope forced every resource to re-encode SoftDeletes in tab config; empty “all” queries leaked trash into the main list.
+
 for the CMS Bundle
 
 - **Moox Page** — Draft with page fields, nested set

@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Support\Resources\ScopedResourceConfiguration;
 use Moox\Core\Support\Resources\ScopedResourceContext;
+use Moox\Core\Support\Resources\SoftDeleteTab;
 
 abstract class BaseResource extends Resource
 {
@@ -144,20 +145,42 @@ abstract class BaseResource extends Resource
         return ScopedResourceContext::applyScope($query, static::class);
     }
 
+    /**
+     * SoftDeletingScope stays on by default. Only remove it for trash/deleted tabs
+     * so "all" lists do not leak soft-deleted records.
+     */
+    protected static function applySoftDeletingScopeForTab(Builder $query, ?string $tab = null): Builder
+    {
+        if (! in_array(SoftDeletes::class, class_uses_recursive(static::getModel()), true)) {
+            return $query;
+        }
+
+        $currentTabResolver = method_exists(static::class, 'getCurrentTab')
+            ? static::getCurrentTab(...)
+            : null;
+
+        if (SoftDeleteTab::shouldIncludeTrashed($tab, $currentTabResolver, request()->query())) {
+            $query->withoutGlobalScope(SoftDeletingScope::class);
+            $query->whereNotNull($query->getModel()->getQualifiedDeletedAtColumn());
+        }
+
+        return $query;
+    }
+
     public static function getEloquentQuery(): Builder
     {
-        $model = static::getModel();
         $query = parent::getEloquentQuery();
-
-        if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-            $query->withoutGlobalScope(SoftDeletingScope::class);
-        }
+        $query = static::applySoftDeletingScopeForTab($query);
 
         if (method_exists(static::class, 'applySoftDeleteQuery')) {
             $query = static::applySoftDeleteQuery($query);
         }
 
-        if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
+        if (($currentTab = SoftDeleteTab::resolve(
+            null,
+            method_exists(static::class, 'getCurrentTab') ? static::getCurrentTab(...) : null,
+            request()->query(),
+        )) && method_exists(static::class, 'applyTabQuery')) {
             $query = static::applyTabQuery($query, $currentTab);
         }
 
@@ -171,23 +194,20 @@ abstract class BaseResource extends Resource
         return static::modifyEloquentQuery($query);
     }
 
-    public static function getTableQuery(): Builder
+    public static function getTableQuery(?string $activeTab = null): Builder
     {
-        $model = static::getModel();
-
-        if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-            $query = $model::query()->withoutGlobalScope(SoftDeletingScope::class);
-        } else {
-            $query = method_exists(parent::class, 'getTableQuery')
-                ? parent::getTableQuery()
-                : static::getModel()::query();
-        }
+        $query = static::getModel()::query();
+        $query = static::applySoftDeletingScopeForTab($query, $activeTab);
 
         if (method_exists(static::class, 'applySoftDeleteQuery')) {
             $query = static::applySoftDeleteQuery($query);
         }
 
-        if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
+        if (($currentTab = SoftDeleteTab::resolve(
+            $activeTab,
+            method_exists(static::class, 'getCurrentTab') ? static::getCurrentTab(...) : null,
+            request()->query(),
+        )) && method_exists(static::class, 'applyTabQuery')) {
             $query = static::applyTabQuery($query, $currentTab);
         }
 
@@ -199,6 +219,17 @@ abstract class BaseResource extends Resource
         }
 
         return static::modifyEloquentQuery($query);
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        $query = parent::getRecordRouteBindingEloquentQuery();
+
+        if (in_array(SoftDeletes::class, class_uses_recursive(static::getModel()), true)) {
+            $query->withoutGlobalScope(SoftDeletingScope::class);
+        }
+
+        return $query;
     }
 
     public static function getEditTableAction(): EditAction
