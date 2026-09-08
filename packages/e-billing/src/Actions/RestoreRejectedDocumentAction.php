@@ -14,6 +14,7 @@ final class RestoreRejectedDocumentAction
     public function __construct(
         private readonly DocumentApprovalGuard $approvalGuard,
         private readonly RecordApprovalTransitionAction $recordTransition,
+        private readonly AnnounceDocumentNeedsReviewAction $announceNeedsReview,
     ) {
     }
 
@@ -27,6 +28,8 @@ final class RestoreRejectedDocumentAction
             kind: ApprovalTransitionKind::Restore,
             reason: $reason,
         );
+
+        $this->announceNeedsReview->execute($document->fresh() ?? $document);
 
         return true;
     }

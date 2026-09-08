@@ -17,6 +17,7 @@ final class TryAutoApproveDocumentAction
     public function __construct(
         private readonly AutoApproveEvaluator $evaluator,
         private readonly RecordApprovalTransitionAction $recordTransition,
+        private readonly AnnounceDocumentNeedsReviewAction $announceNeedsReview,
     ) {
     }
 
@@ -29,6 +30,10 @@ final class TryAutoApproveDocumentAction
         $result = $this->evaluator->evaluate($document);
 
         if (! $result->passed()) {
+            if ($document->resolveApprovalStatusEnum() === DocumentApprovalStatus::Pending) {
+                $this->announceNeedsReview->execute($document);
+            }
+
             return false;
         }
 

@@ -662,12 +662,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Morph pivots (owner side → kosit_validatables)
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
     | Dispatch approval gate
     |--------------------------------------------------------------------------
     |
@@ -681,6 +675,34 @@ return [
         'required' => (bool) env('EBILLING_APPROVAL_REQUIRED', true),
         'auto_approve_enabled' => (bool) env('EBILLING_APPROVAL_AUTO_APPROVE', true),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Review notification announce
+    |--------------------------------------------------------------------------
+    |
+    | When a document enters dispatch-approval review, the package emits
+    | DocumentEnteredReview and hands off via NotifyDocumentsNeedReviewJob.
+    | It never sends mail. Hosts consume the event and/or job payload.
+    |
+    | strategy: immediate (one notify job per document) or batched (collect
+    | document ids under a cache batch key; flush drains and dispatches one job).
+    | batch_key: window (time bucket) or day (calendar day).
+    | batch_window_minutes: size of the window bucket when batch_key=window.
+    |
+    */
+
+    'notification' => [
+        'strategy' => env('EBILLING_REVIEW_NOTIFICATION_STRATEGY', 'immediate'),
+        'batch_key' => env('EBILLING_REVIEW_NOTIFICATION_BATCH_KEY', 'window'),
+        'batch_window_minutes' => (int) env('EBILLING_REVIEW_NOTIFICATION_BATCH_WINDOW', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Morph pivots (owner side → kosit_validatables)
+    |--------------------------------------------------------------------------
+    */
 
     'morph_relations' => [
         'kosit_validatables' => [
