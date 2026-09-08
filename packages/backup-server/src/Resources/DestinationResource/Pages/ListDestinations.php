@@ -1,17 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BackupServerUi\Resources\DestinationResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Moox\BackupServerUi\Resources\DestinationResource;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 
-class ListDestinations extends ListRecords
+class ListDestinations extends BaseListItems
 {
     protected static string $resource = DestinationResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [CreateAction::make()];
-    }
 }

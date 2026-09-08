@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BackupServerUi\Resources;
 
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -17,10 +16,10 @@ use Moox\BackupServerUi\Resources\DestinationResource\Pages\EditDestination;
 use Moox\BackupServerUi\Resources\DestinationResource\Pages\ListDestinations;
 use Moox\BackupServerUi\Resources\DestinationResource\Pages\ViewDestination;
 use Moox\BackupServerUi\Resources\DestinationResource\RelationManagers\BackupsRelationManager;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Spatie\BackupServer\Models\Destination;
 
-class DestinationResource extends BaseResource
+class DestinationResource extends BaseItemResource
 {
     protected static ?string $model = Destination::class;
 
@@ -39,153 +38,85 @@ class DestinationResource extends BaseResource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    Hidden::make('status')
-                        ->required()
-                        ->default('active'),
-
-                    TextInput::make('name')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Name')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('disk_name')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Disk Name')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('keep_all_backups_for_days')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Keep All Backups For Days')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('keep_daily_backups_for_days')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Keep Daily Backups For Days')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('keep_weekly_backups_for_weeks')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Keep Weekly Backups For Weeks')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('keep_monthly_backups_for_months')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Keep Monthly Backups For Months')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('keep_yearly_backups_for_years')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Keep Yearly Backups For Years')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make(
-                        'delete_oldest_backups_when_using_more_megabytes_than'
-                    )
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder(
-                            'Delete Oldest Backups When Using More Megabytes Than'
-                        )
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make(
-                        'healthy_maximum_backup_age_in_days_per_source'
-                    )
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder(
-                            'Healthy Maximum Backup Age In Days Per Source'
-                        )
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('healthy_maximum_storage_in_mb_per_source')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder(
-                            'Healthy Maximum Storage In Mb Per Source'
-                        )
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('healthy_maximum_storage_in_mb')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Healthy Maximum Storage In Mb')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('healthy_maximum_inode_usage_percentage')
-                        ->rules(['numeric'])
-                        ->nullable()
-                        ->numeric()
-                        ->placeholder('Healthy Maximum Inode Usage Percentage')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                ]),
-            ]),
+            Grid::make()
+                ->schema([
+                    Section::make()
+                        ->schema([
+                            Hidden::make('status')
+                                ->required()
+                                ->default('active'),
+                            TextInput::make('name')
+                                ->rules(['max:255', 'string'])
+                                ->required()
+                                ->placeholder('Name'),
+                            TextInput::make('disk_name')
+                                ->rules(['max:255', 'string'])
+                                ->required()
+                                ->placeholder('Disk Name'),
+                            TextInput::make('keep_all_backups_for_days')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Keep All Backups For Days'),
+                            TextInput::make('keep_daily_backups_for_days')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Keep Daily Backups For Days'),
+                            TextInput::make('keep_weekly_backups_for_weeks')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Keep Weekly Backups For Weeks'),
+                            TextInput::make('keep_monthly_backups_for_months')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Keep Monthly Backups For Months'),
+                            TextInput::make('keep_yearly_backups_for_years')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Keep Yearly Backups For Years'),
+                            TextInput::make('delete_oldest_backups_when_using_more_megabytes_than')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Delete Oldest Backups When Using More Megabytes Than'),
+                            TextInput::make('healthy_maximum_backup_age_in_days_per_source')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Healthy Maximum Backup Age In Days Per Source'),
+                            TextInput::make('healthy_maximum_storage_in_mb_per_source')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Healthy Maximum Storage In Mb Per Source'),
+                            TextInput::make('healthy_maximum_storage_in_mb')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Healthy Maximum Storage In Mb'),
+                            TextInput::make('healthy_maximum_inode_usage_percentage')
+                                ->rules(['numeric'])
+                                ->nullable()
+                                ->numeric()
+                                ->placeholder('Healthy Maximum Inode Usage Percentage'),
+                        ])
+                        ->columnSpan(2),
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    static::getFormActions(),
+                                ]),
+                        ])
+                        ->columns(1)
+                        ->columnSpan(1),
+                ])
+                ->columns(3)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -220,15 +151,14 @@ class DestinationResource extends BaseResource
                     ->label('Keep years')
                     ->toggleable(),
             ])
-            ->recordActions([ViewAction::make(), EditAction::make()])
-            ->toolbarActions([DeleteBulkAction::make()]);
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()]);
     }
 
     public static function getRelations(): array
     {
         return [
             BackupsRelationManager::class,
-            // Todo: SourcesRelationManager::class,
         ];
     }
 
