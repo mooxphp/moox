@@ -576,7 +576,7 @@ abstract class BaseResource extends Resource
         return Action::make('saveAndCreateAnother')
             ->label(__('core::core.save_and_create_another'))
             ->color('secondary')
-            ->button()
+            ->outlined()
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
 
