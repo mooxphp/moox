@@ -14,7 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SyncUserRelationToSessionRow
 {
-    public function __construct(protected SessionRelationService $sessionRelationService) {}
+    public function __construct(protected SessionRelationService $sessionRelationService)
+    {
+    }
 
     public function handle(Request $request, Closure $next): Response
     {
