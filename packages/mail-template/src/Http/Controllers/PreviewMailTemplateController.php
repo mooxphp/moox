@@ -24,7 +24,7 @@ class PreviewMailTemplateController
         URL::forceScheme(request()->getScheme());
         URL::useAssetOrigin($previewRoot);
 
-        $locale = strtolower(trim((string) request()->query('lang', app()->getLocale())));
+        $locale = trim((string) request()->query('lang', app()->getLocale()));
         $renderer->applyLocale($mailTemplate, $locale !== '' ? $locale : app()->getLocale());
 
         try {

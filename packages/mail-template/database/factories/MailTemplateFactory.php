@@ -6,6 +6,7 @@ namespace Moox\MailTemplate\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Models\MailTemplate;
 
 /**
@@ -32,13 +33,10 @@ class MailTemplateFactory extends Factory
                 return;
             }
 
-            $locale = app()->getLocale() ?: 'de';
-
-            $template->translateOrNew($locale)->fill([
-                'brand_name' => 'Acme',
+            $template->translateOrNew($this->defaultLocale())->fill([
                 'title' => 'Demo',
                 'mail_content' => '<mj-text>Demo content</mj-text>',
-                'footer' => '<mj-text font-size="12px" color="#777777">© Acme</mj-text>',
+                'footer' => '<mj-text font-size="12px" color="#777777">© '.config('app.name').'</mj-text>',
             ])->save();
         });
     }
@@ -53,8 +51,7 @@ class MailTemplateFactory extends Factory
                 return;
             }
 
-            $locale ??= app()->getLocale() ?: 'de';
-            $template->translateOrNew($locale)->fill($attributes)->save();
+            $template->translateOrNew($locale ?? $this->defaultLocale())->fill($attributes)->save();
         });
     }
 
@@ -67,5 +64,16 @@ class MailTemplateFactory extends Factory
             'mail_content' => null,
             'footer' => null,
         ]);
+    }
+
+    private function defaultLocale(): string
+    {
+        $variant = Localization::query()->where('is_default', true)->value('locale_variant');
+
+        if (is_string($variant) && $variant !== '') {
+            return $variant;
+        }
+
+        return 'de_DE';
     }
 }

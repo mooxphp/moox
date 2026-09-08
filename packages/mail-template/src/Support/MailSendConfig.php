@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Support;
 
+use Illuminate\Support\Facades\Schema;
+use Moox\Localization\Models\Localization;
+
 final class MailSendConfig
 {
     /**
@@ -63,29 +66,16 @@ final class MailSendConfig
      */
     public static function localeOptions(): array
     {
-        $locales = config('mail-send.locales', [
+        $fromLocalizations = self::optionsFromLocalizations();
+
+        if ($fromLocalizations !== []) {
+            return $fromLocalizations;
+        }
+
+        return self::normalizeLocaleOptions(config('mail-send.locales', [
             'de' => 'Deutsch',
             'en' => 'English',
-        ]);
-
-        if (! is_array($locales)) {
-            return [];
-        }
-
-        $options = [];
-
-        foreach ($locales as $code => $label) {
-            $code = strtolower(trim((string) $code));
-            $label = trim((string) $label);
-
-            if ($code === '' || $label === '') {
-                continue;
-            }
-
-            $options[$code] = $label;
-        }
-
-        return $options;
+        ]));
     }
 
     /**
@@ -114,5 +104,69 @@ final class MailSendConfig
             self::recipients(),
             fn (array $recipient): bool => isset($selected[$recipient['email']]),
         ));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function optionsFromLocalizations(): array
+    {
+        if (! class_exists(Localization::class)) {
+            return [];
+        }
+
+        try {
+            if (! Schema::hasTable('localizations')) {
+                return [];
+            }
+
+            $localizations = Localization::query()
+                ->where('is_active_admin', true)
+                ->orderByDesc('is_default')
+                ->orderBy('title')
+                ->get(['locale_variant', 'title']);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $options = [];
+
+        foreach ($localizations as $localization) {
+            $code = trim((string) $localization->locale_variant);
+            $label = trim((string) $localization->title);
+
+            if ($code === '' || $label === '') {
+                continue;
+            }
+
+            $options[$code] = $label;
+        }
+
+        return $options;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function normalizeLocaleOptions(mixed $locales): array
+    {
+        if (! is_array($locales)) {
+            return [];
+        }
+
+        $options = [];
+
+        foreach ($locales as $code => $label) {
+            $code = trim((string) $code);
+            $label = trim((string) $label);
+
+            if ($code === '' || $label === '') {
+                continue;
+            }
+
+            $options[$code] = $label;
+        }
+
+        return $options;
     }
 }

@@ -15,8 +15,7 @@ class SendMailTemplate
 {
     public function __construct(
         private MailTemplateRenderer $renderer,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<string>  $emails
@@ -58,22 +57,44 @@ class SendMailTemplate
 
     private function resolveLocale(MailTemplate $template, ?string $locale): string
     {
-        $locale = strtolower(trim((string) $locale));
         $allowed = MailSendConfig::localeOptions();
+        $match = $this->matchAllowedLocale($allowed, trim((string) $locale));
 
-        if ($locale !== '' && isset($allowed[$locale])) {
-            return $locale;
+        if ($match !== null) {
+            return $match;
         }
 
         foreach ($template->translations as $translation) {
-            $code = strtolower(trim((string) $translation->locale));
+            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->locale));
 
-            if ($code !== '' && isset($allowed[$code])) {
+            if ($match !== null) {
+                return $match;
+            }
+        }
+
+        return array_key_first($allowed) ?? 'de_DE';
+    }
+
+    /**
+     * @param  array<string, string>  $allowed
+     */
+    private function matchAllowedLocale(array $allowed, string $locale): ?string
+    {
+        if ($locale === '') {
+            return null;
+        }
+
+        if (isset($allowed[$locale])) {
+            return $locale;
+        }
+
+        foreach (array_keys($allowed) as $code) {
+            if (strcasecmp($code, $locale) === 0) {
                 return $code;
             }
         }
 
-        return array_key_first($allowed) ?? 'de';
+        return null;
     }
 
     /**

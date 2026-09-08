@@ -22,7 +22,6 @@ class MailTemplate extends BaseDraftModel
     {
         return [
             'title',
-            'brand_name',
             'mail_content',
             'footer',
         ];

@@ -16,7 +16,6 @@ class MailTemplateTranslation extends BaseDraftTranslationModel
         return [
             'mail_template_id',
             'title',
-            'brand_name',
             'mail_content',
             'footer',
         ];

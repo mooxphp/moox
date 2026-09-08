@@ -1,6 +1,6 @@
 # Moox Mail Template
 
-Filament editor for outbound MJML mail templates. One template entity, translated content per locale (Astrotomic / Moox Draft). The parent stores `slug`, `layout`, and an optional logo override. Translations store `title` (used as the mail subject), `brand_name`, `mail_content`, and `footer`.
+Filament editor for outbound MJML mail templates. One template entity, translated content per locale (Astrotomic / Moox Draft). The parent stores `slug`, `layout`, and an optional logo override. Translations store `title` (used as the mail subject), `mail_content`, and `footer`. Branding (`brandName`) comes from the theme / `app.name`, not from the template.
 
 Rendering uses `spatie/mjml-php` (via `moox/mjml`). This package does not log sent mail or talk to Microsoft Graph.
 
@@ -44,7 +44,7 @@ config([
 use Moox\MailTemplate\Support\MailTemplateRenderer;
 
 $renderer = app(MailTemplateRenderer::class);
-$template = $renderer->find('login', 'de');
+$template = $renderer->find('login', 'de_DE');
 
 $html = $renderer->toHtml($template, [
     'user' => $user,

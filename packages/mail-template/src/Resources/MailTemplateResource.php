@@ -47,6 +47,12 @@ class MailTemplateResource extends BaseDraftResource
     }
 
     #[Override]
+    public static function enablePublish(): bool
+    {
+        return false;
+    }
+
+    #[Override]
     public static function getCancelAction(): Action
     {
         return parent::getCancelAction()
@@ -76,9 +82,6 @@ class MailTemplateResource extends BaseDraftResource
                                     ->searchable()
                                     ->required()
                                     ->rule(Rule::in(array_keys($layouts))),
-                                TextInput::make('brand_name')
-                                    ->label(__('mail-template::translations.brand_name'))
-                                    ->maxLength(255),
                                 TextInput::make('title')
                                     ->label(__('mail-template::translations.subject'))
                                     ->required()
@@ -109,17 +112,8 @@ class MailTemplateResource extends BaseDraftResource
                                     ]),
                                 Section::make('')
                                     ->schema([
-                                        static::getTranslationStatusSelect(),
-                                        static::getPublishDateField(),
-                                        static::getUnpublishDateField(),
-                                    ]),
-                                Section::make('')
-                                    ->schema([
-                                        ...static::getStandardCopyableFields(),
-                                        Section::make('')
-                                            ->schema([
-                                                ...static::getStandardTimestampFields(),
-                                            ]),
+                                        static::getCreatedAtTextEntry(),
+                                        static::getUpdatedAtTextEntry(),
                                     ])
                                     ->hidden(fn (?MailTemplate $record) => $record === null),
                             ])
@@ -145,10 +139,7 @@ class MailTemplateResource extends BaseDraftResource
                     ->searchable(),
                 TextColumn::make('title')
                     ->label(__('mail-template::translations.subject')),
-                TextColumn::make('brand_name')
-                    ->label(__('mail-template::translations.brand_name')),
                 TranslationColumn::make('translations.locale'),
-                static::getStatusColumn(),
             ])
             ->recordActions([
                 Action::make('preview')
@@ -191,7 +182,7 @@ class MailTemplateResource extends BaseDraftResource
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (Set $set, mixed $state, MailTemplate $record): void {
-                                $locale = strtolower(trim((string) $state));
+                                $locale = trim((string) $state);
 
                                 if ($locale === '') {
                                     return;
@@ -312,7 +303,7 @@ class MailTemplateResource extends BaseDraftResource
     private static function resolveSendLocale(MailTemplate $record): string
     {
         $allowed = MailSendConfig::localeOptions();
-        $current = strtolower(trim((string) app()->getLocale()));
+        $current = trim((string) app()->getLocale());
 
         if ($current !== '' && isset($allowed[$current]) && $record->hasTranslation($current)) {
             return $current;
@@ -324,7 +315,7 @@ class MailTemplateResource extends BaseDraftResource
             }
         }
 
-        return array_key_first($allowed) ?? 'de';
+        return array_key_first($allowed) ?? 'de_DE';
     }
 
     private static function subjectForLocale(MailTemplate $record, string $locale): string
@@ -333,10 +324,6 @@ class MailTemplateResource extends BaseDraftResource
 
         if ($translation !== null && filled($translation->title)) {
             return (string) $translation->title;
-        }
-
-        if (filled($record->brand_name)) {
-            return (string) $record->brand_name;
         }
 
         return (string) $record->slug;

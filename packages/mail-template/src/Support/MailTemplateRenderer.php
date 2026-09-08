@@ -53,9 +53,7 @@ class MailTemplateRenderer
     public function viewData(MailTemplate $template, array $data = []): array
     {
         $translation = $this->translationFor($template);
-        $brandName = filled($translation?->brand_name)
-            ? $translation->brand_name
-            : config('app.name');
+        $brandName = config('app.name');
 
         $merged = array_merge([
             'template' => $template,
@@ -80,11 +78,35 @@ class MailTemplateRenderer
 
     public function applyLocale(MailTemplate $template, string $locale): void
     {
-        $resolved = $template->hasTranslation($locale)
-            ? $locale
-            : ($template->translations()->first()?->locale ?? $locale);
+        $template->setDefaultLocale($this->resolveTranslationLocale($template, $locale));
+    }
 
-        $template->setDefaultLocale($resolved);
+    private function resolveTranslationLocale(MailTemplate $template, string $locale): string
+    {
+        if ($template->hasTranslation($locale)) {
+            return $locale;
+        }
+
+        foreach ($template->translations as $translation) {
+            $code = (string) $translation->locale;
+
+            if (strcasecmp($code, $locale) === 0) {
+                return $code;
+            }
+        }
+
+        $language = strtolower(explode('_', $locale)[0]);
+
+        foreach ($template->translations as $translation) {
+            $code = (string) $translation->locale;
+            $codeLanguage = strtolower(explode('_', $code)[0]);
+
+            if ($language !== '' && $codeLanguage === $language) {
+                return $code;
+            }
+        }
+
+        return $template->translations()->first()?->locale ?? $locale;
     }
 
     private function translationFor(MailTemplate $template): mixed
