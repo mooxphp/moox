@@ -27,7 +27,9 @@ final class InvalidateDocumentApprovalAction
             return;
         }
 
-        ReviewNotificationCache::forgetNotified((string) $document->getKey());
+        $documentId = (string) $document->getKey();
+        ReviewNotificationCache::forgetNotified($documentId);
+        ReviewNotificationCache::forgetEscalated($documentId);
 
         $document->resetApprovalToPending();
         $document->save();

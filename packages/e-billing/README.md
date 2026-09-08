@@ -94,7 +94,8 @@ Published as `config/e-billing.php`.
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
 | `field_validation` | MoSCoW priority rules for invoice and line fields |
 | `approval` | Dispatch approval gate: `required`, `auto_approve_enabled` |
-| `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes |
+| `notification` | Review announce strategy: `immediate` / `batched`, batch key, window minutes, optional `recorder` class |
+| `escalation` | Overdue-approval scan: `day_counting`, `working_weekdays`, `exclude_dates`, ordered `levels` (`key` / `after` / `unit`); empty `levels` disables the feature |
 | `identical_duplicate` | Notification recipients when an identical source PDF is discarded (`notify_emails`, `panel_id`) |
 | `duplicate_number.scope` | Document-number collision scope: `global` (default) or `issuer` (also seller VAT id / BT-31) |
 | `morph_relations` | Morph pivot config for KoSIT and veraPDF validations (`kosit_validatables`, `verapdf_validatables`) |
@@ -116,6 +117,7 @@ EBILLING_PREFERRED_PIECE_UNIT_CODE=H87
 | `EBILLING_REVIEW_NOTIFICATION_STRATEGY` | `notification.strategy` | `immediate` | No |
 | `EBILLING_REVIEW_NOTIFICATION_BATCH_KEY` | `notification.batch_key` | `window` | No |
 | `EBILLING_REVIEW_NOTIFICATION_BATCH_WINDOW` | `notification.batch_window_minutes` | `60` | No |
+| `EBILLING_ESCALATION_DAY_COUNTING` | `escalation.day_counting` | `working` | No |
 | `EBILLING_DUPLICATE_NUMBER_SCOPE` | `duplicate_number.scope` | `global` | No |
 
 ### Supplier block
@@ -170,6 +172,14 @@ php artisan ebilling:backfill-scores
 ```
 
 Queries `EbillingDocument` rows where `field_validations` is not null and `validation_score` is null, computes each score via `calculateValidationScore()`, and saves quietly.
+
+Scan pending documents past configured escalation thresholds (dispatches `ScanOverdueApprovalEscalationJob`):
+
+```bash
+php artisan e-billing:scan-overdue-approval-escalation
+```
+
+Schedule this in the host app — the package does not register a schedule. See [Approval escalation scan](#approval-escalation-scan).
 
 ### Severity gating (MoSCoW)
 
@@ -246,10 +256,12 @@ When a document enters dispatch-approval review (auto-approve fails while `pendi
 1. `AnnounceDocumentNeedsReviewAction` deduplicates with cache key `e-billing.review-notified.{id}` (unique while still `pending`; cleared when leaving `pending` and before re-entering from non-pending).
 2. Emits `DocumentEnteredReview` (`document` + `reasons` from `AutoApproveFailureReason` values, or `awaiting_approval` when empty).
 3. Delegates to `ReviewNotificationStrategyInterface`:
-   - **`immediate`** (default) — dispatches one `NotifyDocumentsNeedReviewJob` per document.
+   - **`immediate`** (default) — dispatches one `NotifyDocumentsNeedReviewJob` per document via `ReviewNotificationDispatcher`.
    - **`batched`** — only collects `{reasons, collected_at}` under a cache batch key; does **not** dispatch the notify job yet.
 
-**Job payload** (`NotifyDocumentsNeedReviewJob`): list of `{ document_id, reasons: string[], waited_seconds: int }` — no recipients, no subject/body/wording. Hosts listen to the event and/or handle the job. The package never sends mail.
+**Job payload** (`NotifyDocumentsNeedReviewJob`): list of `{ document_id, reasons: string[], waited_seconds: int, escalation_level?: string }` — no recipients, no subject/body/wording. Hosts listen to the event and/or handle the job. The package never sends mail. Optional `escalation_level` is set only by the overdue-approval scan (see [Approval escalation scan](#approval-escalation-scan)).
+
+**Activity trail (opt-in, host config):** every notify dispatch goes through `ReviewNotificationDispatcher`, which calls `ReviewNotificationRecorderInterface`. Package default is `NullReviewNotificationRecorder` when `notification.recorder` is `null`. Set `e-billing.notification.recorder` to a class implementing the interface (same pattern as `e-billing.parser`) — a host recorder may write `moox/audit` log entries (`review_notification_dispatched` / `approval_escalation_notified`) on the `EbillingDocument` for InvoiceResource via `aggregate_subjects`.
 
 **Batch keys** (`notification.batch_key`):
 
@@ -258,13 +270,41 @@ When a document enters dispatch-approval review (auto-approve fails while `pendi
 | `window` | `e-billing.review-batch.window.{floor(timestamp / (minutes*60))}` (`notification.batch_window_minutes`, default 60) |
 | `day` | `e-billing.review-batch.day.{Y-m-d}` |
 
-**Flush:** `e-billing:flush-review-notification-batch` dispatches `FlushReviewNotificationBatchJob`, which drains the current batch store, builds payloads with `waited_seconds = now - collected_at`, dispatches **one** `NotifyDocumentsNeedReviewJob`, and clears the store. Schedule the command (or job) in the host app — the package does not register a schedule.
+**Flush:** `e-billing:flush-review-notification-batch` dispatches `FlushReviewNotificationBatchJob`, which drains the current batch store, builds payloads with `waited_seconds = now - collected_at`, dispatches **one** `NotifyDocumentsNeedReviewJob` via `ReviewNotificationDispatcher` (and invokes the configured recorder), and clears the store. Schedule the command (or job) in the host app — the package does not register a schedule.
 
 | Config key | Default | Effect |
 | --- | --- | --- |
 | `notification.strategy` | `immediate` | `immediate` or `batched` |
 | `notification.batch_key` | `window` | `window` or `day` |
 | `notification.batch_window_minutes` | `60` | Window size when `batch_key=window` |
+| `notification.recorder` | `null` | Class implementing `ReviewNotificationRecorderInterface`, or null for no-op |
+
+### Approval escalation scan
+
+Scheduled scan for documents still `approval_status = pending` past configured thresholds. The package announces again without sending mail and without knowing recipients:
+
+1. `e-billing:scan-overdue-approval-escalation` dispatches `ScanOverdueApprovalEscalationJob` (`ShouldBeUnique`, JobProgress, `failed` logging). Schedule the command (or job) in the host app — the package does not register a schedule (same pattern as `e-billing:flush-review-notification-batch`).
+2. The job scans pending documents; the wait clock is `created_at`. For each document it considers only the **next unmet** level in the configured order, then dispatches **one** `NotifyDocumentsNeedReviewJob` via `ReviewNotificationDispatcher` **directly** (not via `ReviewNotificationStrategyInterface`). Host-bound recorders may log `approval_escalation_notified` when opted in.
+3. Payload items add optional `escalation_level` (the level `key`). `reasons` come from `AnnounceDocumentNeedsReviewAction::reasonsFor()` (auto-approve failures, or `awaiting_approval` when empty); `waited_seconds` is `now - created_at`.
+
+**Levels** (`e-billing.escalation.levels`): ordered list of `{ key, after, unit }` where `unit` is `hours` or `days`. Empty list disables the feature. Hours use wall-clock time. Days use `day_counting`:
+
+| Value | Behaviour |
+| --- | --- |
+| `working` (default) | Count working dates strictly after `created_at`'s date through today, using `working_weekdays` (ISO weekdays, default Mon–Fri) and skipping `exclude_dates` (`Y-m-d` holidays) |
+| `calendar` | Calendar day difference from `created_at` start-of-day to now start-of-day |
+
+`day_counting` / weekdays / exclude dates apply **only** to levels with `unit=days`.
+
+**Dedup cache:** `e-billing.review-escalated.{documentId}.{levelKey}` via `Cache::add` (one notify per document per level while still pending). Cleared when leaving `pending` (`RecordApprovalTransitionAction`) and on `InvalidateDocumentApprovalAction`. Use Redis or another shared cache store for multi-worker correctness (same requirement as `e-billing.review-notified.{id}`).
+
+| Config key | Default | Effect |
+| --- | --- | --- |
+| `escalation.day_counting` | `working` | `working` or `calendar` (days levels only) |
+| `escalation.working_weekdays` | `[1,2,3,4,5]` | ISO weekdays counted as working days |
+| `escalation.exclude_dates` | `[]` | Holiday dates (`Y-m-d`) excluded from working-day counts |
+| `escalation.levels` | `[]` | Ordered thresholds; empty = feature off |
+
 
 
 ## The EbillingDocument Model

@@ -71,7 +71,9 @@ final class RecordApprovalTransitionAction
         $this->saveDocument($document, $trigger);
 
         if ($from === DocumentApprovalStatus::Pending && $to !== DocumentApprovalStatus::Pending) {
-            ReviewNotificationCache::forgetNotified((string) $document->getKey());
+            $documentId = (string) $document->getKey();
+            ReviewNotificationCache::forgetNotified($documentId);
+            ReviewNotificationCache::forgetEscalated($documentId);
         }
 
         event(new DocumentApprovalTransitioned(

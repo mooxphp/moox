@@ -19,6 +19,18 @@ final class ReviewNotificationCache
         Cache::forget(self::notifiedKey($documentId));
     }
 
+    public static function escalatedKey(string $documentId, string $levelKey): string
+    {
+        return 'e-billing.review-escalated.'.$documentId.'.'.$levelKey;
+    }
+
+    public static function forgetEscalated(string $documentId): void
+    {
+        foreach (ApprovalEscalation::configuredLevelKeys() as $levelKey) {
+            Cache::forget(self::escalatedKey($documentId, $levelKey));
+        }
+    }
+
     public static function batchStoreKey(?Carbon $now = null): string
     {
         $now ??= Carbon::now();
