@@ -1,17 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BackupServerUi\Resources\SourceResource\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 use Moox\BackupServerUi\Resources\SourceResource;
+use Moox\Core\Entities\Items\Item\Pages\BaseEditItem;
 
-class EditSource extends EditRecord
+class EditSource extends BaseEditItem
 {
     protected static string $resource = SourceResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [DeleteAction::make()];
-    }
 }

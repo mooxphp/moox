@@ -1,17 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\BackupServerUi\Resources\SourceResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Moox\BackupServerUi\Resources\SourceResource;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 
-class ListSources extends ListRecords
+class ListSources extends BaseListItems
 {
     protected static string $resource = SourceResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [CreateAction::make()];
-    }
 }
