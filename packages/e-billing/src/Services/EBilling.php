@@ -7,6 +7,7 @@ namespace Moox\EBilling\Services;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Data\Address;
 use Moox\EBilling\Data\Invoice;
+use Moox\EBilling\Support\AllowedProfiles;
 use Moox\EBilling\Support\VatIdNormalizer;
 use Moox\PdfParser\PdfParser;
 use Moox\Zugferd\ZugferdConverter;
@@ -47,7 +48,10 @@ class EBilling
     public function generateInvoiceAndXmlFromPdf(string $pdfPath): array
     {
         $invoice = $this->parseInvoiceFromPdf($pdfPath);
-        $xml = $this->zugferdConverter->convert($invoice->forZugferd());
+        $xml = $this->zugferdConverter->convert(
+            $invoice->forZugferd(),
+            AllowedProfiles::hybridDefault(),
+        );
 
         return [
             'invoice' => $invoice,
@@ -87,6 +91,9 @@ class EBilling
      */
     public function convertToXml(Invoice $invoice): string
     {
-        return $this->zugferdConverter->convert($invoice->forZugferd());
+        return $this->zugferdConverter->convert(
+            $invoice->forZugferd(),
+            AllowedProfiles::hybridDefault(),
+        );
     }
 }

@@ -86,8 +86,9 @@ Published as `config/e-billing.php`.
 | --- | --- |
 | `resources` | Filament resource registration (`invoices` → `InvoiceResource`) |
 | `tabs` | List-page tab filters (`all`, `needs_review`, `confirmed`, `deleted`) |
-| `default_format` | FormatRegistry key frozen onto `ebilling_documents.format` at generation (default `zugferd`). Allowed: `xrechnung`, `zugferd`, `factur-x` |
-| `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`); profile lives in `moox/zugferd` (`config('zugferd.profile')`) |
+| `default` | Single default when the preference port returns null: `format` (FormatRegistry key, default `zugferd`) + `profile` (hybrid library profile, default `EN16931`, must be in `allowed_profiles`). XRechnung ignores `profile` and always uses `XRECHNUNG` |
+| `allowed_profiles` | Hybrid profiles a recipient preference may request for `zugferd` / `factur-x` (default `['EN16931']`). XRechnung never takes a preference profile |
+| `zugferd` | ZUGFeRD filesystem disk (`storage_disk`, `storage_root`). Hybrid profiles come from `default.profile`, not `moox/zugferd` config |
 | `default_customer_country` | Transitional fallback buyer country when the parser derives none (default `DE`); removed in a future master-data phase |
 | `supplier` | Central supplier master data copied onto invoices as a snapshot at creation time |
 | `corroboration` | Post-attribution master-data checks (never clears `customer_id`): `name_min_token_length`, `name_legal_form_stop_words`, `buyer_address_roles` (billing + postal), `delivery_address_roles` (delivery first, then postal/billing fallback) |
@@ -136,6 +137,25 @@ $this->app->bind(InvoiceParserInterface::class, YourParser::class);
 ```
 
 The parser receives extracted PDF text (from `moox/pdf-parser`) and returns a `Moox\EBilling\Data\Invoice` DTO. The host is responsible for persisting `bill_data` on the `EbillingDocument` before the pipeline jobs run.
+
+## Recipient format preference
+
+Before generation, `EBillingFormatResolver` asks a host-bound port for the recipient's preference, then returns an `EffectiveFormat` (`format` + `profile`) that `GenerateArtifactJob` uses for `generateXml`.
+
+```php
+use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+
+// Optional — package auto-binds CustomerFormatPreferenceResolver when unbound
+$this->app->bind(RecipientFormatPreferenceResolverInterface::class, YourResolver::class);
+```
+
+- **Default binding:** `CustomerFormatPreferenceResolver` reads `Customer.preferred_ebilling_format` (`customer_id` with trashed, else `CustomerMatcher` on the invoice customer number). Always `profile: null`. Empty/missing → `null`.
+- **Null preference:** `config('e-billing.default')` (`format` + `profile`) via the registry bake-in.
+- **Unknown format or disallowed profile:** throws (`UnknownFormatException` / `InvalidFormatPreferenceException`) — no silent fallback.
+- **Why one `FormatPreference`:** the ZUGFeRD library derives attachment filename, guideline id, and XMP name from the profile; separate knobs would fight the library. Preference is `{ format, profile? }` only — profile applies to hybrids and must be in `allowed_profiles` when set; `xrechnung` must keep `profile` null.
+- **Freeze:** once `xml_storage_path` is set, retries use frozen `document.format` and frozen `document.profile` (port not re-consulted; both columns required — empty format or profile throws). Preference changes apply to future documents only.
+
+See ADR `docs/adr/0003-recipient-format-preference-four-layer-model.md`.
 
 ## Commands
 
@@ -231,6 +251,7 @@ Transitions write latest-only `approval_reason`, `approval_actor_id` (string; `'
 | `storage_disk` | `string` | nullable | Filesystem disk name for e-billing artefacts |
 | `pdf_storage_path` | `string` | nullable | Relative path to merged hybrid PDF (ZUGFeRD/Factur-X) |
 | `format` | `string` | NOT NULL | Frozen format id at generation; default `zugferd` |
+| `profile` | `string` | nullable | Frozen effective profile at first generation (GoBD); retries do not re-resolve |
 | `artifact_content_hash` | `string` | nullable | SHA-256 of validated deliverable (set on KOSIT pass) |
 | `ignored_reason` | `json` | nullable | Foreign-invoice classification details |
 | `gateway_status` | `string` | nullable | Format-agnostic pipeline stage: `generating`, `generation_failed`, `validating`, `validated`, `validation_failed`, `validator_error`, `ignored_foreign`, `ignored_identical_duplicate` (indexed) |

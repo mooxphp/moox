@@ -44,14 +44,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default e-invoice format
+    | Default format + hybrid profile
     |--------------------------------------------------------------------------
     |
-    | FormatRegistry key frozen onto ebilling_documents.format at generation.
+    | Single default preference when the recipient port returns null.
+    | - format: FormatRegistry key (xrechnung|zugferd|factur-x)
+    | - profile: library profile baked into zugferd/factur-x definitions
+    |   (must be listed in allowed_profiles). XRechnung always uses XRECHNUNG
+    |   and ignores profile here.
+    | The document freezes format + profile at generation (when xml_storage_path is set).
     |
     */
 
-    'default_format' => 'zugferd',
+    'default' => [
+        'format' => 'zugferd',
+        'profile' => 'EN16931',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed hybrid profiles
+    |--------------------------------------------------------------------------
+    |
+    | EN 16931 conformance levels a recipient preference may request for
+    | zugferd / factur-x. XRechnung never takes a preference profile (registry
+    | bakes in XRECHNUNG). EXTENDED / MINIMUM / BASIC are refused until a later
+    | ticket expands this list. Effective profile = preference.profile
+    | ?? FormatDefinition.profile (from default.profile for hybrids).
+    |
+    */
+
+    'allowed_profiles' => ['EN16931'],
 
     /*
     |--------------------------------------------------------------------------
@@ -794,4 +817,3 @@ return [
     ],
 
 ];
-

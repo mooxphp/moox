@@ -163,9 +163,10 @@ class GenerateArtifactJob implements ShouldQueue
         $invoiceFieldValidator->fillFieldValidations($document);
         $document->refresh();
 
-        $formatId = $formatResolver->resolveForGeneration($document);
+        $effective = $formatResolver->resolveForGeneration($document);
+        $formatId = $effective->format;
         $definition = $formatRegistry->get($formatId);
-        $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice), $definition->profile);
+        $xml = $definition->strategy->generateXml(new ZugferdInvoiceAdapter($invoice), $effective->profile);
 
         $diskName = (string) config('e-billing.zugferd.storage_disk', 'zugferd');
         $scope = is_string($document->scope) && $document->scope !== '' ? $document->scope : 'manual';
@@ -239,6 +240,7 @@ class GenerateArtifactJob implements ShouldQueue
         $billDataArray = $dto->toArray();
 
         $document->format = $formatId;
+        $document->profile = $effective->profile;
         $document->storage_disk = $diskName;
         $document->xml_storage_path = $relativeXmlPath;
         $document->pdf_storage_path = $relativePdfPath;

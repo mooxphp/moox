@@ -19,20 +19,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | ZUGFeRD Profile
-    |--------------------------------------------------------------------------
-    |
-    | The profile to use when generating ZUGFeRD/XRechnung documents.
-    | Options: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG
-    |
-    | Use XRECHNUNG for German e-invoicing compliance.
-    |
-    */
-
-    'profile' => env('ZUGFERD_PROFILE', 'XRECHNUNG'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Output Directory
     |--------------------------------------------------------------------------
     |

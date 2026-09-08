@@ -73,7 +73,7 @@ final class InvoiceSettingsSection
      */
     public function fill(Customer $customer): array
     {
-        $defaultFormat = (string) config('e-billing.default_format', 'zugferd');
+        $defaultFormat = (string) config('e-billing.default.format', 'zugferd');
         $format = is_string($customer->preferred_ebilling_format) && $customer->preferred_ebilling_format !== ''
             ? $customer->preferred_ebilling_format
             : $defaultFormat;
@@ -100,7 +100,7 @@ final class InvoiceSettingsSection
 
         $allowed = array_keys($this->formatOptions());
         if ($format === null || ! in_array($format, $allowed, true)) {
-            $format = (string) config('e-billing.default_format', 'zugferd');
+            $format = (string) config('e-billing.default.format', 'zugferd');
         }
 
         $sendVisualCopy = null;

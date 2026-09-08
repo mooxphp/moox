@@ -95,7 +95,7 @@ class ValidateArtifactJob implements ShouldQueue
 
         $formatId = $document->format !== ''
             ? $document->format
-            : (string) config('e-billing.default_format', 'zugferd');
+            : (string) config('e-billing.default.format', 'zugferd');
         $definition = $formatRegistry->get($formatId);
 
         $diskName = $document->storage_disk

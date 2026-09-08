@@ -46,6 +46,7 @@ use RuntimeException;
  * @property string|null $pdf_storage_path
  * @property string|null $copy_pdf_storage_path
  * @property string $format
+ * @property string|null $profile
  * @property string|null $artifact_content_hash
  * @property string|null $source_content_hash SHA-256 of the source PDF bytes (identity for identical-content duplicates).
  * @property array<string, mixed>|null $ignored_reason
@@ -97,6 +98,7 @@ class EbillingDocument extends BaseItemModel
         'pdf_storage_path',
         'copy_pdf_storage_path',
         'format',
+        'profile',
         'artifact_content_hash',
         'source_content_hash',
         'ignored_reason',
