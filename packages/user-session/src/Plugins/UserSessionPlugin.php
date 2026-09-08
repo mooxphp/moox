@@ -5,6 +5,7 @@ namespace Moox\UserSession\Plugins;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\UserSession\Http\Middleware\SyncUserRelationToSessionRow;
 use Moox\UserSession\Resources\UserSessionResource;
 
 class UserSessionPlugin implements Plugin
@@ -21,6 +22,10 @@ class UserSessionPlugin implements Plugin
         $panel->resources([
             UserSessionResource::class,
         ]);
+
+        $panel->authMiddleware([
+            SyncUserRelationToSessionRow::class,
+        ], isPersistent: true);
     }
 
     public function boot(Panel $panel): void
