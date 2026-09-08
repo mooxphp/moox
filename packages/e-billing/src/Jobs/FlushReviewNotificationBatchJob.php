@@ -12,12 +12,14 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Moox\EBilling\Support\ReviewNotificationCache;
+use Moox\EBilling\Support\ReviewNotificationDispatcher;
 use Moox\Jobs\Traits\JobProgress;
 use Throwable;
 
 /**
  * Drains the batched review-notification cache store and dispatches one
- * {@see NotifyDocumentsNeedReviewJob} with all collected documents.
+ * {@see NotifyDocumentsNeedReviewJob} with all collected documents via
+ * {@see ReviewNotificationDispatcher}.
  */
 final class FlushReviewNotificationBatchJob implements ShouldQueue
 {
@@ -84,7 +86,7 @@ final class FlushReviewNotificationBatchJob implements ShouldQueue
         $this->setProgress(70);
 
         if ($documents !== []) {
-            NotifyDocumentsNeedReviewJob::dispatch($documents);
+            ReviewNotificationDispatcher::dispatch($documents);
         }
 
         $this->setProgress(100);
@@ -98,3 +100,4 @@ final class FlushReviewNotificationBatchJob implements ShouldQueue
         ]);
     }
 }
+

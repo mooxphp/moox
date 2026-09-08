@@ -36,7 +36,7 @@ final class NotifyDocumentsNeedReviewJob implements ShouldQueue
     public array $backoff = [60, 300];
 
     /**
-     * @param  list<array{document_id: string, reasons: list<string>, waited_seconds: int}>  $documents
+     * @param  list<array{document_id: string, reasons: list<string>, waited_seconds: int, escalation_level?: string}>  $documents
      */
     public function __construct(
         public array $documents,

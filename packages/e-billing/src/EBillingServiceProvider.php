@@ -30,9 +30,11 @@ use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Approval\ImmediateReviewNotificationStrategy;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
+use Moox\EBilling\Console\Commands\ScanOverdueApprovalEscalationCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
+use Moox\EBilling\Contracts\ReviewNotificationRecorderInterface;
 use Moox\EBilling\Contracts\ReviewNotificationStrategyInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
 use Moox\EBilling\Formats\ArtifactKind;
@@ -46,6 +48,7 @@ use Moox\EBilling\Support\AllowedProfiles;
 use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
+use Moox\EBilling\Support\NullReviewNotificationRecorder;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
 use Moox\EBilling\Support\UnitCodeResolver;
 use Moox\Invoice\Models\Invoice;
@@ -66,6 +69,7 @@ class EBillingServiceProvider extends MooxServiceProvider
             ->hasCommands([
                 BackfillValidationScoresCommand::class,
                 FlushReviewNotificationBatchCommand::class,
+                ScanOverdueApprovalEscalationCommand::class,
             ])
             ->hasMigrations([
                 'create_ebilling_documents_table',
@@ -110,6 +114,8 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(DispatchDocumentAction::class);
         $this->app->singleton(AnnounceDocumentNeedsReviewAction::class);
         $this->app->singleton(InvalidateDocumentApprovalAction::class);
+
+        $this->registerReviewNotificationRecorder();
 
         $this->app->bind(ReviewNotificationStrategyInterface::class, function ($app): ReviewNotificationStrategyInterface {
             $strategy = (string) config('e-billing.notification.strategy', 'immediate');
@@ -240,6 +246,30 @@ class EBillingServiceProvider extends MooxServiceProvider
         $audit['filament'] = $filament;
 
         return $audit;
+    }
+
+    /**
+     * Bind the review-notification recorder from config. Default is a no-op.
+     * Hosts set `e-billing.notification.recorder` to a
+     * {@see ReviewNotificationRecorderInterface} implementation (same pattern as `parser`).
+     */
+    private function registerReviewNotificationRecorder(): void
+    {
+        $this->app->bind(ReviewNotificationRecorderInterface::class, NullReviewNotificationRecorder::class);
+
+        $recorder = config('e-billing.notification.recorder');
+
+        if (! is_string($recorder) || $recorder === '') {
+            return;
+        }
+
+        if (! is_a($recorder, ReviewNotificationRecorderInterface::class, true)) {
+            throw new InvalidArgumentException(
+                "config('e-billing.notification.recorder') must implement ".ReviewNotificationRecorderInterface::class.": {$recorder}"
+            );
+        }
+
+        $this->app->bind(ReviewNotificationRecorderInterface::class, $recorder);
     }
 
     /**

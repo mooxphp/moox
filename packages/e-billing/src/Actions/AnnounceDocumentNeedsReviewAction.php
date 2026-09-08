@@ -39,14 +39,7 @@ final class AnnounceDocumentNeedsReviewAction
             return;
         }
 
-        $reasons = array_map(
-            static fn (AutoApproveFailureReason $reason): string => $reason->value,
-            $this->evaluator->evaluate($document)->failures(),
-        );
-
-        if ($reasons === []) {
-            $reasons = [self::AWAITING_APPROVAL_REASON];
-        }
+        $reasons = $this->reasonsFor($document);
 
         event(new DocumentEnteredReview(
             document: $document,
@@ -54,5 +47,20 @@ final class AnnounceDocumentNeedsReviewAction
         ));
 
         $this->strategy->announce($document, $reasons);
+    }
+
+    /**
+     * Host-facing reason codes for a notify payload (auto-approve failures, or awaiting_approval).
+     *
+     * @return list<string>
+     */
+    public function reasonsFor(EbillingDocument $document): array
+    {
+        $reasons = array_map(
+            static fn (AutoApproveFailureReason $reason): string => $reason->value,
+            $this->evaluator->evaluate($document)->failures(),
+        );
+
+        return $reasons === [] ? [self::AWAITING_APPROVAL_REASON] : $reasons;
     }
 }

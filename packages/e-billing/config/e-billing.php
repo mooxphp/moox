@@ -696,6 +696,31 @@ return [
         'strategy' => env('EBILLING_REVIEW_NOTIFICATION_STRATEGY', 'immediate'),
         'batch_key' => env('EBILLING_REVIEW_NOTIFICATION_BATCH_KEY', 'window'),
         'batch_window_minutes' => (int) env('EBILLING_REVIEW_NOTIFICATION_BATCH_WINDOW', 60),
+        // Class implementing ReviewNotificationRecorderInterface, or null for no-op.
+        // Same host-config pattern as `parser`.
+        'recorder' => null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Approval escalation scan
+    |--------------------------------------------------------------------------
+    |
+    | Scheduled scan (host crontab) finds pending documents past configured
+    | thresholds and dispatches NotifyDocumentsNeedReviewJob with escalation_level.
+    | Empty levels disables the feature. day_counting applies only to unit=days;
+    | hours always use wall-clock time. No recipients or wording here.
+    |
+    */
+
+    'escalation' => [
+        'day_counting' => env('EBILLING_ESCALATION_DAY_COUNTING', 'working'),
+        'working_weekdays' => [1, 2, 3, 4, 5],
+        'exclude_dates' => [],
+        'levels' => [
+            // ['key' => 'reminder', 'after' => 4, 'unit' => 'hours'],
+            // ['key' => 'escalate', 'after' => 1, 'unit' => 'days'],
+        ],
     ],
 
     /*
