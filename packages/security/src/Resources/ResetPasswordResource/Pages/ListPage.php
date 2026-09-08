@@ -2,20 +2,20 @@
 
 namespace Moox\Security\Resources\ResetPasswordResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 use Override;
 
-class ListPage extends ListRecords
+class ListPage extends BaseListItems
 {
     use HasListPageTabs;
 
     public static string $resource = ResetPasswordResource::class;
 
-    protected function getActions(): array
+    public function getHeaderActions(): array
     {
         return [];
     }

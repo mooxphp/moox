@@ -6,20 +6,35 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 use Override;
 
-class ResetPasswordResource extends BaseResource
+class ResetPasswordResource extends BaseItemResource
 {
     use HasResourceTabs;
 
     protected static ?string $model = ResetPassword::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-token';
+
+    public static function enableCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return false;
+    }
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema
