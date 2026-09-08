@@ -24,6 +24,10 @@ class EnsureTrustedDevice
             return $next($request);
         }
 
+        if (! config('user-device.enforce_trust', true)) {
+            return $next($request);
+        }
+
         $user = filament()->auth()->user() ?? Auth::user();
 
         if (! $user) {

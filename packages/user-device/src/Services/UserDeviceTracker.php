@@ -48,6 +48,11 @@ class UserDeviceTracker
             'user_agent' => $userAgent,
         ]);
 
+        // Track-only mode: new devices should not look "blocked" in the UI.
+        if ($device->wasRecentlyCreated && ! config('user-device.enforce_trust', true)) {
+            $device->forceFill(['whitelisted' => true])->save();
+        }
+
         // Persist the current device id in the session payload so enforcement can work
         // even when the database session row doesn't exist yet at login time.
         session()->put('user_device_id', $device->getKey());
@@ -61,7 +66,7 @@ class UserDeviceTracker
             Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
         }
 
-        if ($device->wasRecentlyCreated && config('user-device.new_device_notification') && method_exists($user, 'notify')) {
+        if ($device->wasRecentlyCreated && config('user-device.enforce_trust', true) && method_exists($user, 'notify')) {
             $panelId = class_exists(Filament::class)
                 ? Filament::getCurrentPanel()?->getId()
                 : null;

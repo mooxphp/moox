@@ -29,12 +29,16 @@ class UserDevicePlugin implements Plugin
             return;
         }
 
-        // Apply enforcement automatically for panels using this plugin.
-        // Must be persistent so it also runs for Livewire requests (Filament actions/forms).
-        $panel->authMiddleware([
+        $middleware = [
             SyncDeviceIdToSessionRow::class,
-            EnsureTrustedDevice::class,
-        ], isPersistent: true);
+        ];
+
+        if (config('user-device.enforce_trust', true)) {
+            $middleware[] = EnsureTrustedDevice::class;
+        }
+
+        // Must be persistent so it also runs for Livewire requests (Filament actions/forms).
+        $panel->authMiddleware($middleware, isPersistent: true);
     }
 
     public function boot(Panel $panel): void
