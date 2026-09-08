@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Scopes\Entities\Scopes;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Models\Concerns\HasScopedModel;
 use Moox\Core\Models\Scope;
 use Moox\Core\Services\ScopeRegistry;
 use Moox\Core\Support\Scopes\ScopeValue;
+use Moox\Scopes\Entities\Scopes\Pages\CreateScope;
+use Moox\Scopes\Entities\Scopes\Pages\EditScope;
+use Moox\Scopes\Entities\Scopes\Pages\ListScopes;
 
-class ScopeResource extends BaseResource
+class ScopeResource extends BaseItemResource
 {
     protected static ?string $model = Scope::class;
 
@@ -29,137 +34,162 @@ class ScopeResource extends BaseResource
 
     protected static string|\UnitEnum|null $navigationGroup = 'DEV';
 
+    public static function enableView(): bool
+    {
+        return false;
+    }
+
+    public static function getCancelAction(): Action
+    {
+        return parent::getCancelAction()
+            ->url(fn (): string => static::getUrl('index'));
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Grid::make()
                 ->schema([
-                    Select::make('origin')
-                        ->label('Origin')
-                        ->helperText('What kind of record this scope applies to (e.g. media, category).')
-                        ->options(function (): array {
-                            $registry = app(ScopeRegistry::class);
-                            $origins = array_keys($registry->getOrigins());
+                    Section::make()
+                        ->schema([
+                            Select::make('origin')
+                                ->label('Origin')
+                                ->helperText('What kind of record this scope applies to (e.g. media, category).')
+                                ->options(function (): array {
+                                    $registry = app(ScopeRegistry::class);
+                                    $origins = array_keys($registry->getOrigins());
 
-                            $origins = array_values(array_filter($origins, function (string $origin) use ($registry): bool {
-                                if (static::allowedSourcesForOrigin($origin) === []) {
-                                    return false;
-                                }
+                                    $origins = array_values(array_filter($origins, function (string $origin) use ($registry): bool {
+                                        if (static::allowedSourcesForOrigin($origin) === []) {
+                                            return false;
+                                        }
 
-                                return static::isOriginResourceRegistered($origin, $registry);
-                            }));
+                                        return static::isOriginResourceRegistered($origin, $registry);
+                                    }));
 
-                            return array_combine($origins, $origins);
-                        })
-                        ->required()
-                        ->disabled(fn (?Scope $record): bool => $record !== null)
-                        ->live()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
-                            if ($record !== null) {
-                                return;
-                            }
+                                    return array_combine($origins, $origins);
+                                })
+                                ->required()
+                                ->disabled(fn (?Scope $record): bool => $record !== null)
+                                ->live()
+                                ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
+                                    if ($record !== null) {
+                                        return;
+                                    }
 
-                            $origin = is_string($state) ? $state : '';
-                            $allowedSources = static::allowedSourcesForOrigin($origin);
-                            $currentSource = (string) ($get('source') ?? '');
-                            if ($currentSource !== '' && $allowedSources !== [] && ! in_array($currentSource, $allowedSources, true)) {
-                                $set('source', null);
-                                $set('context', null);
-                                $set('boundary', null);
-                            }
+                                    $origin = is_string($state) ? $state : '';
+                                    $allowedSources = static::allowedSourcesForOrigin($origin);
+                                    $currentSource = (string) ($get('source') ?? '');
+                                    if ($currentSource !== '' && $allowedSources !== [] && ! in_array($currentSource, $allowedSources, true)) {
+                                        $set('source', null);
+                                        $set('context', null);
+                                        $set('boundary', null);
+                                    }
 
-                            $set('scope', static::buildScopeKey($get));
-                        }),
-                    Select::make('source')
-                        ->label('Source')
-                        ->helperText('Usually your parent/bundle key (e.g. draft, career).')
-                        ->options(function (callable $get): array {
-                            $all = array_keys(app(ScopeRegistry::class)->getSources());
-                            $origin = (string) ($get('origin') ?? '');
+                                    $set('scope', static::buildScopeKey($get));
+                                }),
+                            Select::make('source')
+                                ->label('Source')
+                                ->helperText('Usually your parent/bundle key (e.g. draft, career).')
+                                ->options(function (callable $get): array {
+                                    $all = array_keys(app(ScopeRegistry::class)->getSources());
+                                    $origin = (string) ($get('origin') ?? '');
 
-                            if (blank($origin)) {
-                                return array_combine($all, $all);
-                            }
+                                    if (blank($origin)) {
+                                        return array_combine($all, $all);
+                                    }
 
-                            $allowed = static::allowedSourcesForOrigin($origin);
+                                    $allowed = static::allowedSourcesForOrigin($origin);
 
-                            // If we can't infer allowed sources from config, fall back to source=origin (if registered).
-                            if (empty($allowed)) {
-                                if (in_array($origin, $all, true)) {
-                                    return [$origin => $origin];
-                                }
+                                    // If we can't infer allowed sources from config, fall back to source=origin (if registered).
+                                    if (empty($allowed)) {
+                                        if (in_array($origin, $all, true)) {
+                                            return [$origin => $origin];
+                                        }
 
-                                return [];
-                            }
+                                        return [];
+                                    }
 
-                            $filtered = array_values(array_intersect($all, $allowed));
+                                    $filtered = array_values(array_intersect($all, $allowed));
 
-                            return array_combine($filtered, $filtered);
-                        })
-                        ->required()
-                        ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('origin')))
-                        ->live()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
-                            if ($record !== null) {
-                                return;
-                            }
+                                    return array_combine($filtered, $filtered);
+                                })
+                                ->required()
+                                ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('origin')))
+                                ->live()
+                                ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
+                                    if ($record !== null) {
+                                        return;
+                                    }
 
-                            $set('scope', static::buildScopeKey($get));
-                        }),
-                    Select::make('context')
-                        ->label('Context')
-                        ->helperText('Concrete thing inside the selected source (bundle).')
-                        ->options(fn (callable $get): array => static::contextOptionsForSource((string) ($get('source') ?? '')))
-                        ->searchable()
-                        ->required()
-                        ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('source')))
-                        ->live()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
-                            if ($record !== null) {
-                                return;
-                            }
+                                    $set('scope', static::buildScopeKey($get));
+                                }),
+                            Select::make('context')
+                                ->label('Context')
+                                ->helperText('Concrete thing inside the selected source (bundle).')
+                                ->options(fn (callable $get): array => static::contextOptionsForSource((string) ($get('source') ?? '')))
+                                ->searchable()
+                                ->required()
+                                ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('source')))
+                                ->live()
+                                ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
+                                    if ($record !== null) {
+                                        return;
+                                    }
 
-                            $set('scope', static::buildScopeKey($get));
-                        }),
-                    Select::make('boundary')
-                        ->label('Boundary')
-                        ->helperText('Visibility bucket inside the same context.')
-                        ->options(fn (): array => array_combine(ScopeValue::allowedBoundaries(), ScopeValue::allowedBoundaries()))
-                        ->required()
-                        ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('context')))
-                        ->live()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
-                            if ($record !== null) {
-                                return;
-                            }
+                                    $set('scope', static::buildScopeKey($get));
+                                }),
+                            Select::make('boundary')
+                                ->label('Boundary')
+                                ->helperText('Visibility bucket inside the same context.')
+                                ->options(fn (): array => array_combine(ScopeValue::allowedBoundaries(), ScopeValue::allowedBoundaries()))
+                                ->required()
+                                ->disabled(fn (?Scope $record, callable $get): bool => $record !== null || blank($get('context')))
+                                ->live()
+                                ->afterStateUpdated(function ($state, callable $set, callable $get, ?Scope $record): void {
+                                    if ($record !== null) {
+                                        return;
+                                    }
 
-                            $set('scope', static::buildScopeKey($get));
-                        }),
+                                    $set('scope', static::buildScopeKey($get));
+                                }),
 
-                    TextInput::make('scope')
-                        ->label('Scope key')
-                        ->helperText('Generated from origin/source/context/boundary.')
-                        ->disabled()
-                        ->dehydrated()
-                        ->required()
-                        ->formatStateUsing(function ($state, $record, $get): string {
-                            if ($record instanceof Scope && filled($record->scope)) {
-                                return (string) $record->scope;
-                            }
+                            TextInput::make('scope')
+                                ->label('Scope key')
+                                ->helperText('Generated from origin/source/context/boundary.')
+                                ->disabled()
+                                ->dehydrated()
+                                ->required()
+                                ->formatStateUsing(function ($state, $record, $get): string {
+                                    if ($record instanceof Scope && filled($record->scope)) {
+                                        return (string) $record->scope;
+                                    }
 
-                            return static::buildScopeKey($get);
-                        })
-                        ->unique(ignoreRecord: true),
+                                    return static::buildScopeKey($get);
+                                })
+                                ->unique(ignoreRecord: true),
 
-                    TextInput::make('label')
-                        ->label('Label')
-                        ->placeholder('e.g. Media Private')
-                        ->nullable(),
+                            TextInput::make('label')
+                                ->label('Label')
+                                ->placeholder('e.g. Media Private')
+                                ->nullable(),
 
-                    Toggle::make('is_active')
-                        ->label('Active'),
+                            Toggle::make('is_active')
+                                ->label('Active'),
+                        ])
+                        ->columns(2)
+                        ->columnSpan(2),
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    static::getFormActions(),
+                                ]),
+                        ])
+                        ->columns(1)
+                        ->columnSpan(1),
                 ])
-                ->columns(2)
+                ->columns(3)
                 ->columnSpanFull(),
         ]);
     }
@@ -444,6 +474,8 @@ class ScopeResource extends BaseResource
                     ->toggleable(),
             ])
             ->defaultSort('updated_at', 'desc')
+            ->recordActions([...static::getTableActions()])
+            ->toolbarActions([...static::getBulkActions()])
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Active'),
@@ -453,9 +485,9 @@ class ScopeResource extends BaseResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListScopes::route('/'),
-            'create' => Pages\CreateScope::route('/create'),
-            'edit' => Pages\EditScope::route('/{record}/edit'),
+            'index' => ListScopes::route('/'),
+            'create' => CreateScope::route('/create'),
+            'edit' => EditScope::route('/{record}/edit'),
         ];
     }
 }
