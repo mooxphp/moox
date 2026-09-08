@@ -9,6 +9,7 @@ use horstoeko\zugferd\ZugferdDocumentPdfMerger;
 use horstoeko\zugferd\ZugferdDocumentPdfReader;
 use horstoeko\zugferd\ZugferdProfiles;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Zugferd\Contracts\ZugferdAddress;
 use Moox\Zugferd\Contracts\ZugferdAllowanceCharge;
 use Moox\Zugferd\Contracts\ZugferdInvoice;
@@ -26,14 +27,14 @@ class ZugferdConverter
         'XRECHNUNG' => ZugferdProfiles::PROFILE_XRECHNUNG_3,
     ];
 
-    public function convert(ZugferdInvoice $invoice, ?string $profileKey = null): string
+    public function convert(ZugferdInvoice $invoice, string $profileKey): string
     {
         $document = $this->buildDocument($invoice, $profileKey);
 
         return $this->getContentSafely($document);
     }
 
-    public function convertToFile(ZugferdInvoice $invoice, ?string $outputPath = null): string
+    public function convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string
     {
         $outputPath ??= config('zugferd.output_path', storage_path('app/private/zugferd'));
 
@@ -43,7 +44,7 @@ class ZugferdConverter
 
         $filename = sprintf('%s/%s.xml', rtrim($outputPath, '/'), $invoice->invoiceNumber);
 
-        $xml = $this->convert($invoice);
+        $xml = $this->convert($invoice, $profileKey);
         file_put_contents($filename, $xml);
 
         return $filename;
@@ -162,10 +163,16 @@ class ZugferdConverter
         return $xml;
     }
 
-    private function buildDocument(ZugferdInvoice $invoice, ?string $profileKey = null): ZugferdDocumentBuilder
+    private function buildDocument(ZugferdInvoice $invoice, string $profileKey): ZugferdDocumentBuilder
     {
-        $profileKey ??= (string) config('zugferd.profile', 'EN16931');
-        $profile = self::PROFILE_MAP[$profileKey] ?? ZugferdProfiles::PROFILE_EN16931;
+        if (! isset(self::PROFILE_MAP[$profileKey])) {
+            throw new InvalidArgumentException(
+                "Unknown ZUGFeRD profile [{$profileKey}]. "
+                .'Known: '.implode(', ', array_keys(self::PROFILE_MAP)).'.'
+            );
+        }
+
+        $profile = self::PROFILE_MAP[$profileKey];
 
         $document = ZugferdDocumentBuilder::createNew($profile);
 

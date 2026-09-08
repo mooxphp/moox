@@ -14,7 +14,7 @@ Moox Zugferd converts invoice data implementing `ZugferdInvoice` into valid ZUGF
 - `extractXmlFromPdf()` — read embedded XML from a hybrid PDF for validation
 - Contract interfaces for invoices, lines, addresses, bank accounts, and allowance/charges
 - Concrete `AllowanceCharge` DTO for tests and simple consumers
-- Configurable profile: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (default)
+- Required profile key on convert: MINIMUM, BASIC, EN16931, EXTENDED, XRECHNUNG (unknown keys throw)
 - Optional `deliveryDate` on invoice (BT-72 via `setDocumentSupplyChainEvent`) and on lines (line billing period with start=end for non-EXTENDED profiles, line actual delivery for EXTENDED); profile key selects the line-date carrier; no header invoicing period (BG-14) is derived from delivery dates
 - Optional `shipToName` / `shipToAddress` on invoice (BG-13 via `setDocumentShipTo` / `setDocumentShipToAddress`); address is omitted when country is empty; ship-to tax registration and contact are never emitted
 
@@ -54,11 +54,6 @@ Optionally publish configuration:
 php artisan vendor:publish --tag=zugferd-config
 ```
 
-Set the ZUGFeRD profile:
-
-```env
-ZUGFERD_PROFILE=XRECHNUNG
-```
 
 ## Screenshot
 
@@ -73,7 +68,7 @@ Resolve `Moox\Zugferd\ZugferdConverter` from the container.
 ```php
 use Moox\Zugferd\ZugferdConverter;
 
-$xml = app(ZugferdConverter::class)->convert($invoice);
+$xml = app(ZugferdConverter::class)->convert($invoice, 'EN16931');
 ```
 
 `$invoice` must implement `Moox\Zugferd\Contracts\ZugferdInvoice`.
@@ -83,7 +78,7 @@ $xml = app(ZugferdConverter::class)->convert($invoice);
 ```php
 use Moox\EBilling\Adapters\ZugferdInvoiceAdapter;
 
-$xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceModel));
+$xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceModel), 'EN16931');
 ```
 
 `GenerateArtifactJob` calls the e-billing gateway, which delegates to `ZugferdConverter` with this adapter.
@@ -91,7 +86,7 @@ $xml = app(ZugferdConverter::class)->convert(new ZugferdInvoiceAdapter($invoiceM
 ### Write XML to disk
 
 ```php
-$path = app(ZugferdConverter::class)->convertToFile($invoice);
+$path = app(ZugferdConverter::class)->convertToFile($invoice, 'EN16931');
 // Default directory: config('zugferd.output_path')
 ```
 
@@ -147,8 +142,8 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `convert(ZugferdInvoice $invoice, ?string $profileKey = null): string` | XML string | Builds horstoeko document; optional `$profileKey` overrides `config('zugferd.profile')` and selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
-| `convertToFile(ZugferdInvoice $invoice, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
+| `convert(ZugferdInvoice $invoice, string $profileKey): string` | XML string | Builds horstoeko document; required `$profileKey` selects how line `deliveryDate` is emitted (line period vs line actual delivery); `getContentSafely()` mitigates stream-resource warnings |
+| `convertToFile(ZugferdInvoice $invoice, string $profileKey, ?string $outputPath = null): string` | File path | Writes `{outputPath}/{invoiceNumber}.xml` |
 | `mergePdfWithXml(string $pdfPath, string $xml): string` | PDF binary | Optional qpdf decrypt → merge (unencrypted output) |
 | `extractXmlFromPdf(string $absolutePdfPath): string` | XML string | Embedded XML from hybrid PDF |
 
@@ -161,9 +156,8 @@ Class: `Moox\Zugferd\ZugferdConverter` (singleton in `ZugferdServiceProvider`).
 | `EN16931` | `PROFILE_EN16931` |
 | `EXTENDED` | `PROFILE_EXTENDED` |
 | `XRECHNUNG` | `PROFILE_XRECHNUNG_3` |
-| *(unknown)* | Falls back to `PROFILE_EN16931` |
 
-Runtime profile: `config('zugferd.profile')` (default `XRECHNUNG`). This package does **not** read `config/e-billing.php` profile keys.
+Callers must pass an explicit profile key (`MINIMUM`, `BASIC`, `EN16931`, `EXTENDED`, `XRECHNUNG`); unknown keys throw. Pipeline defaults live in `e-billing.default.profile` when using `moox/e-billing`.
 
 ### Unit codes (`mapUnitCode`)
 
@@ -190,7 +184,6 @@ File: `config/zugferd.php`
 
 | Key | Env | Default | Used by |
 |-----|-----|---------|---------|
-| `profile` | `ZUGFERD_PROFILE` | `XRECHNUNG` | `buildDocument()` |
 | `output_path` | — | `storage/app/private/zugferd` | `convertToFile()` only |
 
 **Cross-package config:** `mail-inbox.zugferd.pdf_password` — read in `mergePdfWithXml()` only.

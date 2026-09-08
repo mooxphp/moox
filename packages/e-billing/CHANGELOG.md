@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+- Recipient format preference port `RecipientFormatPreferenceResolverInterface` with default `CustomerFormatPreferenceResolver`; orchestrator returns `EffectiveFormat` for generation. Config `default` `{ format, profile }` + `allowed_profiles` (profile default `EN16931`). Unknown format / disallowed profile throw instead of falling back ([#16](https://github.com/mooxphp/e-billing/issues/16)).
+- GoBD freeze of the effective profile on `ebilling_documents` at first generation; retries reuse frozen `format` + `profile` and do not re-consult the preference port ([#16](https://github.com/mooxphp/e-billing/issues/16)).
+
+### Changed
+
+- Hybrid FormatRegistry profiles from `e-billing.default.profile` (must be in `allowed_profiles`). `EBilling` convenience convert always passes an explicit profile. ADR `docs/adr/0003-recipient-format-preference-four-layer-model.md`.
+- Artifact freeze is `document.format` + `document.profile` (both required on frozen documents; empty format or profile throws). Preference and allowlist changes apply to future documents only ([#16](https://github.com/mooxphp/e-billing/issues/16)).
+
 ### Fixed
 
 - Approval gate review follow-ups ([#15](https://github.com/mooxphp/e-billing/issues/15)): severity-release reasons are forwarded into `approval_reason` on approve; manual attribution invalidates prior approval like rematch; manual approve requires pending + deliverable + clear review + no blocking must-field (duplicate/anomaly flags do not block manual sign-off; auto-approve still requires them); `approval_flags.duplicate` is synced from duplicate invoice-number validation and hosts set `approval_flags.anomalies` (no dedicated writer API on the model); Activity body shows `approval_status` / `approval_reason` only (actor/time via Activity causer and timestamp); Filament approve/reject/restore failure notifications and restore visibility use the approval guard.

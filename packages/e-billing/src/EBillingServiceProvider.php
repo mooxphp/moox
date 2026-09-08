@@ -28,6 +28,7 @@ use Moox\EBilling\Approval\DocumentDispatchGuard;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
+use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
 use Moox\EBilling\Contracts\SourcePdfPreparerInterface;
 use Moox\EBilling\Formats\ArtifactKind;
 use Moox\EBilling\Formats\FormatDefinition;
@@ -35,8 +36,9 @@ use Moox\EBilling\Formats\FormatRegistry;
 use Moox\EBilling\Formats\Strategies\ZugferdGeneratorStrategy;
 use Moox\EBilling\Listeners\ProcessInboxAttachmentListener;
 use Moox\EBilling\Models\EbillingDocument;
-use Moox\EBilling\Services\EBilling;
 use Moox\EBilling\Services\InvoiceFieldValidator;
+use Moox\EBilling\Support\AllowedProfiles;
+use Moox\EBilling\Support\CustomerFormatPreferenceResolver;
 use Moox\EBilling\Support\DocumentTypeCodeResolver;
 use Moox\EBilling\Support\LetterheadSourcePdfPreparer;
 use Moox\EBilling\Support\PassthroughPdfaNormalizer;
@@ -67,6 +69,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'add_severity_releases_to_ebilling_documents_table',
                 'add_approval_state_to_ebilling_documents_table',
                 'create_ebilling_uploaded_pdf_sources_table',
+                'add_profile_to_ebilling_documents_table',
             ]);
 
         $this->getMooxPackage()
@@ -109,6 +112,10 @@ class EBillingServiceProvider extends MooxServiceProvider
             $this->app->bind(SourcePdfPreparerInterface::class, LetterheadSourcePdfPreparer::class);
         }
 
+        if (! $this->app->bound(RecipientFormatPreferenceResolverInterface::class)) {
+            $this->app->bind(RecipientFormatPreferenceResolverInterface::class, CustomerFormatPreferenceResolver::class);
+        }
+
         if (! $this->app->bound(PdfaNormalizerInterface::class)) {
             $this->app->bind(PdfaNormalizerInterface::class, PassthroughPdfaNormalizer::class);
         }
@@ -131,11 +138,13 @@ class EBillingServiceProvider extends MooxServiceProvider
                 strategy: $strategy,
             ));
 
+            $hybridProfile = AllowedProfiles::hybridDefault();
+
             $registry->register(new FormatDefinition(
                 id: 'zugferd',
                 label: 'ZUGFeRD',
                 artifactKind: ArtifactKind::Pdf,
-                profile: (string) config('zugferd.profile', 'EN16931'),
+                profile: $hybridProfile,
                 strategy: $strategy,
             ));
 
@@ -143,7 +152,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 id: 'factur-x',
                 label: 'Factur-X',
                 artifactKind: ArtifactKind::Pdf,
-                profile: (string) config('zugferd.profile', 'EN16931'),
+                profile: $hybridProfile,
                 strategy: $strategy,
             ));
 

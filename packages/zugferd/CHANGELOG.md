@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- `ZugferdConverter::convert()` / `convertToFile()` require an explicit profile key; unknown keys throw. Removed `config('zugferd.profile')` / `ZUGFERD_PROFILE` (pipeline defaults belong in the host / e-billing).
+
 ### Added
 
 - Optional `documentNotes` on `ZugferdInvoice` (`list<string>`). `ZugferdConverter` emits each entry as BT-22 via `addDocumentNote` after document information is set.
