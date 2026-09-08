@@ -22,11 +22,23 @@ return [
     | Enabled
     |--------------------------------------------------------------------------
     |
-    | Master switch: false disables device tracking on login, trust enforcement
-    | middleware, and trust routes. The Filament devices resource stays available.
+    | Master switch for device tracking on login and session sync.
+    | The Filament devices resource stays available even when this is false.
     |
     */
     'enabled' => env('USER_DEVICE_ENABLED', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enforce trust
+    |--------------------------------------------------------------------------
+    |
+    | When true (default), untrusted devices are hard-blocked in Filament until
+    | confirmed via email trust link or admin Trust action.
+    | When false, devices are tracked only — no login gate.
+    |
+    */
+    'enforce_trust' => env('USER_DEVICE_ENFORCE_TRUST', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -91,21 +103,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | New User Device Notification
-    |--------------------------------------------------------------------------
-    |
-    | This is the notification that is sent to the user when a new device is
-    | added to their account. You can disable this by setting it to false.
-    |
-    */
-    'new_device_notification' => true,
-
-    /*
-    |--------------------------------------------------------------------------
     | Trust link expiration (minutes)
     |--------------------------------------------------------------------------
     |
     | Signed trust links sent via email will expire after this many minutes.
+    | Only used when enforce_trust is enabled (new-device mail with trust CTA).
     |
     */
     'trust_link_expires_minutes' => 60,

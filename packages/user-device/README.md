@@ -19,7 +19,15 @@ Curious what the install command does? See manual installation below.
 
 <!--whatdoes-->
 
-### User flow (simple & secure)
+### Modes
+
+| Config | Effect |
+|--------|--------|
+| `enabled=false` | No tracking / no sync middleware (resource stays visible) |
+| `enabled=true`, `enforce_trust=true` (default) | Track + hard-block + trust mail until confirmed |
+| `enabled=true`, `enforce_trust=false` | **Track only** — no login gate, no trust mail; new devices marked trusted |
+
+### User flow (secure mode: `enforce_trust=true`)
 
 1. **User logs in**
    - A `user_devices` record is created/updated for the user + IP + user-agent.
@@ -38,6 +46,12 @@ Curious what the install command does? See manual installation below.
      - **Trust / Untrust** devices from the resource table
      - **Delete** a device (and sessions for that device are revoked)
 
+### Track-only mode (`enforce_trust=false`)
+
+- Devices are still created/updated on login and linked to the session.
+- No hard-block middleware and no new-device email.
+- New devices are stored as trusted (`whitelisted=true`).
+
 ### What the package ships
 
 - **Model**
@@ -46,10 +60,12 @@ Curious what the install command does? See manual installation below.
 - **Tracking**
   - Listener: `Moox\UserDevice\Listeners\TrackUserDeviceOnLogin`
   - Service: `Moox\UserDevice\Services\UserDeviceTracker`
+  - Middleware: `SyncDeviceIdToSessionRow` (when `enabled`)
 
-- **Enforcement**
+- **Enforcement** (when `enforce_trust`)
   - Middleware: `Moox\UserDevice\Http\Middleware\EnsureTrustedDevice`
-  - Panel integration: `Moox\UserDevice\UserDevicePlugin` registers the middleware as **persistent auth middleware** (important for Livewire).
+  - Panel integration: `UserDevicePlugin` registers middleware as **persistent auth middleware** (important for Livewire).
+  - New-device mail with trust CTA
 
 - **Trust flow**
   - Route: `GET /user-device/{panel}/devices/{device}/trust` (signed)
@@ -66,8 +82,8 @@ Curious what the install command does? See manual installation below.
 
 ### Configuration (config/user-device.php)
 
-- `enabled` (bool): master switch for login tracking, middleware enforcement, and trust routes (default: false, env: `USER_DEVICE_ENABLED`)
-- `new_device_notification` (bool): send email for new device
+- `enabled` (bool): device tracking on login + session sync (default: false, env: `USER_DEVICE_ENABLED`)
+- `enforce_trust` (bool): hard-block + trust mail for new devices (default: true, env: `USER_DEVICE_ENFORCE_TRUST`)
 - `trust_link_expires_minutes` (int): signed trust link expiry
 - `scope_to_authenticated_user` (bool): always scope resource to the current user
 - `allow_all_devices_without_shield` (bool): allow viewing all devices if Shield is not installed
@@ -75,7 +91,8 @@ Curious what the install command does? See manual installation below.
 
 ### Notes
 
-- If you want the hard-block behavior, ensure the Filament panels that should be protected load `UserDevicePlugin::make()`.
+- For track and/or trust, load `UserDevicePlugin::make()` on the Filament panel.
+- Example track-only: `USER_DEVICE_ENABLED=true` + `USER_DEVICE_ENFORCE_TRUST=false`.
 
 <!--/whatdoes-->
 
