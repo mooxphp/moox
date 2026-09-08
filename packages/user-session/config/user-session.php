@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\User;
-use Moox\UserDevice\Models\UserDevice;
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -76,16 +73,6 @@ return [
     */
 
     'navigation_group' => 'trans//core::user.users',
-
-    /*
-    | You can provide multiple user models for session management.
-    | And you can use your own device model to store the device information.
-    */
-    'user_models' => [
-        'App Users' => User::class,
-        'Moox Users' => Moox\User\Models\User::class,
-    ],
-    'device_model' => UserDevice::class,
 
     /*
     | Session expiry for different scopes,
