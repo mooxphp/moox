@@ -9,15 +9,19 @@ use Spatie\Mjml\Mjml;
 
 class MailTemplateRenderer
 {
-    public function find(string $key, ?string $locale = null): ?MailTemplate
+    public function find(string $slug, ?string $locale = null): ?MailTemplate
     {
         $locale ??= app()->getLocale();
 
-        return MailTemplate::query()
-            ->where('key', $key)
-            ->where('locale', $locale)
-            ->first()
-            ?? MailTemplate::query()->where('key', $key)->first();
+        $template = MailTemplate::query()->where('slug', $slug)->first();
+
+        if ($template === null) {
+            return null;
+        }
+
+        $this->applyLocale($template, $locale);
+
+        return $template;
     }
 
     /**
@@ -25,7 +29,7 @@ class MailTemplateRenderer
      */
     public function toHtml(MailTemplate $template, array $data = []): string
     {
-        $rendered = view($template->view, $this->viewData($template, $data))->render();
+        $rendered = view($template->layout, $this->viewData($template, $data))->render();
 
         if (! $this->isMjml($rendered)) {
             return $rendered;
@@ -34,17 +38,12 @@ class MailTemplateRenderer
         return Mjml::new()->toHtml($rendered);
     }
 
-    private function isMjml(string $rendered): bool
-    {
-        return str_starts_with(mb_strtolower(ltrim($rendered)), '<mjml');
-    }
-
     /**
      * @param  array<string, mixed>  $data
      */
     public function toMjml(MailTemplate $template, array $data = []): string
     {
-        return view($template->view, $this->viewData($template, $data))->render();
+        return view($template->layout, $this->viewData($template, $data))->render();
     }
 
     /**
@@ -53,17 +52,86 @@ class MailTemplateRenderer
      */
     public function viewData(MailTemplate $template, array $data = []): array
     {
-        $brandName = filled($template->brand_name)
-            ? $template->brand_name
+        $translation = $this->translationFor($template);
+        $brandName = filled($translation?->brand_name)
+            ? $translation->brand_name
             : config('app.name');
 
-        return array_merge([
+        $merged = array_merge([
             'template' => $template,
             'logoUrl' => $template->logo_url,
             'brandName' => $brandName,
             'headline' => $data['headline'] ?? $brandName,
-            'mailContent' => $template->mail_content,
-            'footer' => $template->footer,
+            'mailContent' => $translation?->mail_content,
+            'footer' => $translation?->footer,
         ], $data);
+
+        $merged['mailContent'] = $this->interpolate(
+            is_string($merged['mailContent'] ?? null) ? $merged['mailContent'] : null,
+            $merged,
+        );
+        $merged['footer'] = $this->interpolate(
+            is_string($merged['footer'] ?? null) ? $merged['footer'] : null,
+            $merged,
+        );
+
+        return $merged;
+    }
+
+    public function applyLocale(MailTemplate $template, string $locale): void
+    {
+        $resolved = $template->hasTranslation($locale)
+            ? $locale
+            : ($template->translations()->first()?->locale ?? $locale);
+
+        $template->setDefaultLocale($resolved);
+    }
+
+    private function translationFor(MailTemplate $template): mixed
+    {
+        $locale = $template->getDefaultLocale() ?: app()->getLocale();
+
+        return $template->translate($locale, true)
+            ?? $template->translations()->first();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function interpolate(?string $content, array $data): ?string
+    {
+        if ($content === null || $content === '') {
+            return $content;
+        }
+
+        $replaced = preg_replace_callback(
+            '/\{([A-Za-z_][A-Za-z0-9_.]*)\}/',
+            function (array $matches) use ($data): string {
+                $token = $matches[1];
+                $paths = match ($token) {
+                    'displayName' => ['displayName', 'user.display_name', 'subject.display_name', 'user.name'],
+                    'lastName' => ['lastName', 'user.last_name'],
+                    default => [$token],
+                };
+
+                foreach ($paths as $path) {
+                    $value = data_get($data, $path);
+
+                    if (is_scalar($value) && (string) $value !== '') {
+                        return (string) $value;
+                    }
+                }
+
+                return $matches[0];
+            },
+            $content,
+        );
+
+        return is_string($replaced) ? $replaced : $content;
+    }
+
+    private function isMjml(string $rendered): bool
+    {
+        return str_starts_with(mb_strtolower(ltrim($rendered)), '<mjml');
     }
 }

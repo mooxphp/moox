@@ -15,8 +15,7 @@ class SendMailTemplate
 {
     public function __construct(
         private MailTemplateRenderer $renderer,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<string>  $emails
@@ -25,7 +24,8 @@ class SendMailTemplate
     public function handle(MailTemplate $template, array $emails, string $subject, ?string $locale = null): array
     {
         $locale = $this->resolveLocale($template, $locale);
-        $resolved = $this->renderer->find($template->key, $locale) ?? $template;
+        $resolved = $this->renderer->find($template->slug, $locale) ?? $template;
+        $this->renderer->applyLocale($resolved, $locale);
 
         $sent = [];
         $failed = [];
@@ -64,10 +64,12 @@ class SendMailTemplate
             return $locale;
         }
 
-        $fallback = strtolower(trim((string) $template->locale));
+        foreach ($template->translations as $translation) {
+            $code = strtolower(trim((string) $translation->locale));
 
-        if ($fallback !== '' && isset($allowed[$fallback])) {
-            return $fallback;
+            if ($code !== '' && isset($allowed[$code])) {
+                return $code;
+            }
         }
 
         return array_key_first($allowed) ?? 'de';

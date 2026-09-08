@@ -18,7 +18,7 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 - Process `context`: `auth` (panel) or `public` (no auth)
 - Process `invalidate_prior`: whether a new issue marks prior valid links used (default `true`)
 - Link `payload`: optional JSON call context (campaign ids, etc.) — subject stays the identity
-- Mail: process stores `template_key` only. That key is a `mail_templates.key` when mail-template is installed. Hosts bind branding on the MailTemplate row (`view`), not in this package.
+- Mail: process stores `template_key` only. That key is a `mail_templates.slug` when mail-template is installed. Hosts bind branding on the MailTemplate row (`layout`), not in this package.
 - Bulk: core issues **one** link; callers loop/queue for mass send
 
 ## What it does
@@ -102,7 +102,7 @@ $panel->plugins([
 Admins manage processes under **Link processes**:
 
 - `title`, `slug`, `context` (`auth` \| `public`)
-- `template_key` (opaque key; matches `mail_templates.key` when that package is installed)
+- `template_key` (opaque key; matches `mail_templates.slug` when that package is installed)
 - `handler_key` (registered handler)
 - `mail_from`, optional `content` (passed into the view, not the template selector)
 - `expiry_minutes`, `invalidate_prior`

@@ -57,7 +57,7 @@ return [
     'handler_key' => 'Handler',
     'handler_key_unregistered' => 'Der gewählte Handler ist nicht registriert.',
     'template_key' => 'Template-Key',
-    'template_key_help' => 'Muss zu einer mail_templates.key passen, wenn moox/mail-template installiert ist. Sonst geht die HTML-Demo raus.',
+    'template_key_help' => 'Muss zu einer mail_templates.slug passen, wenn moox/mail-template installiert ist. Sonst geht die HTML-Demo raus.',
     'template_key_required' => 'Ein Template-Key ist erforderlich.',
     'context' => 'Kontext',
     'context_auth' => 'Auth (Panel)',

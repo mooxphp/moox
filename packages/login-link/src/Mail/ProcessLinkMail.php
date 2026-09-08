@@ -16,7 +16,7 @@ use Moox\LoginLink\Support\LinkProcessContext;
 
 /**
  * Sends the signed URL. When moox/mail-template is installed, the process
- * template_key is looked up as a MailTemplate key (no composer dependency).
+ * template_key is looked up as a MailTemplate slug (no composer dependency).
  * Otherwise the packaged HTML demo view is used.
  */
 class ProcessLinkMail extends Mailable implements ShouldQueue
@@ -29,8 +29,7 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
     public function __construct(
         public LoginLink $loginLink,
         public ?LoginLinkProcess $process = null,
-    ) {
-    }
+    ) {}
 
     public function build(): static
     {
@@ -104,14 +103,14 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
     private function renderMailTemplate(array $data): ?string
     {
         $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
-        $key = trim((string) ($this->process?->template_key ?? ''));
+        $slug = trim((string) ($this->process?->template_key ?? ''));
 
-        if ($key === '' || ! class_exists($rendererClass) || ! Schema::hasTable('mail_templates')) {
+        if ($slug === '' || ! class_exists($rendererClass) || ! Schema::hasTable('mail_templates')) {
             return null;
         }
 
         $renderer = app($rendererClass);
-        $template = $renderer->find($key);
+        $template = $renderer->find($slug);
 
         if ($template === null) {
             return null;
