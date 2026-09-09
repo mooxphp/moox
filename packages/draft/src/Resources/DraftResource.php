@@ -38,6 +38,8 @@ class DraftResource extends BaseDraftResource
 
     protected static ?string $model = Draft::class;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-description';
 
     public static function getModelLabel(): string

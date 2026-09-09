@@ -107,6 +107,12 @@ it('exposes valid builder field names as native model attributes', function (): 
         ->and($record->title)->toBe('Demo');
 });
 
+it('does not type-error when getAttribute is called with a null key', function (): void {
+    $record = TestItem::query()->create(['title' => 'Demo']);
+
+    expect($record->getAttribute(null))->toBeNull();
+});
+
 it('merges builder values into model arrays for api style serialization', function (): void {
     $record = TestItem::query()->create(['title' => 'Demo']);
     $record->setCustomField('farbe', 'Rot');

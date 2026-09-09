@@ -300,7 +300,7 @@ trait InteractsWithCustomFields
 
     public function getAttribute($key): mixed
     {
-        if ($this->shouldDelegateToCustomField($key)) {
+        if (is_string($key) && $key !== '' && $this->shouldDelegateToCustomField($key)) {
             return $this->customField($key);
         }
 
@@ -309,7 +309,7 @@ trait InteractsWithCustomFields
 
     public function setAttribute($key, $value): mixed
     {
-        if ($this->shouldDelegateToCustomField($key)) {
+        if (is_string($key) && $key !== '' && $this->shouldDelegateToCustomField($key)) {
             $this->setCustomField($key, $value);
 
             return $this;
