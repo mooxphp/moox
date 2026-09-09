@@ -3,15 +3,15 @@
 namespace Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 
 use Filament\Actions\Action;
-use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\HtmlString;
+use Moox\Core\Entities\Items\Item\Pages\BaseViewItem;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource;
 
-class ViewCommandExecution extends ViewRecord
+class ViewCommandExecution extends BaseViewItem
 {
-    protected static string $resource = CommandExecutionResource::class;
+    public static string $resource = CommandExecutionResource::class;
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
         return [
             Action::make('view_error')

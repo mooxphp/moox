@@ -2,18 +2,10 @@
 
 namespace Moox\Firewall\Resources\FirewallWhitelistEntryResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ManageRecords;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Firewall\Resources\FirewallWhitelistEntryResource;
 
-class ManageFirewallWhitelistEntries extends ManageRecords
+class ManageFirewallWhitelistEntries extends BaseListItems
 {
-    protected static string $resource = FirewallWhitelistEntryResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
+    public static string $resource = FirewallWhitelistEntryResource::class;
 }

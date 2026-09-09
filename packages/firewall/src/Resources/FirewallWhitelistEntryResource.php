@@ -16,16 +16,31 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Firewall\Models\FirewallWhitelistEntry;
 use Moox\Firewall\Resources\FirewallWhitelistEntryResource\Pages\ManageFirewallWhitelistEntries;
 use Override;
 
-class FirewallWhitelistEntryResource extends BaseResource
+class FirewallWhitelistEntryResource extends BaseItemResource
 {
     protected static ?string $model = FirewallWhitelistEntry::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
+
+    public static function enableCreate(): bool
+    {
+        return true;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return true;
+    }
+
+    public static function enableView(): bool
+    {
+        return false;
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema

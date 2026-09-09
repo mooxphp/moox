@@ -19,13 +19,28 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 use Moox\Prompts\Models\CommandExecution;
 
-class CommandExecutionResource extends BaseResource
+class CommandExecutionResource extends BaseItemResource
 {
     protected static ?string $model = CommandExecution::class;
+
+    public static function enableCreate(): bool
+    {
+        return false;
+    }
+
+    public static function enableEdit(): bool
+    {
+        return false;
+    }
+
+    public static function enableView(): bool
+    {
+        return true;
+    }
 
     public static function getNavigationIcon(): ?string
     {

@@ -2,10 +2,15 @@
 
 namespace Moox\Prompts\Filament\Resources\CommandExecutionResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Prompts\Filament\Resources\CommandExecutionResource;
 
-class ListCommandExecutions extends ListRecords
+class ListCommandExecutions extends BaseListItems
 {
-    protected static string $resource = CommandExecutionResource::class;
+    public static string $resource = CommandExecutionResource::class;
+
+    public function getHeaderActions(): array
+    {
+        return [];
+    }
 }

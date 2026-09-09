@@ -2,32 +2,20 @@
 
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Moox\Core\Entities\Items\Item\Pages\BaseListItems;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource;
-use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 use Override;
 
-class ListPage extends ListRecords
+class ListPage extends BaseListItems
 {
     use HasListPageTabs;
 
     public static string $resource = UserSessionResource::class;
-
-    protected function getActions(): array
-    {
-        return [];
-    }
-
-    #[Override]
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            // TODO: Widgets
-            // UserSessionWidgets::class,
-        ];
-    }
 
     #[Override]
     public function getTitle(): string
@@ -35,9 +23,23 @@ class ListPage extends ListRecords
         return __('core::session.title');
     }
 
-    protected function getHeaderActions(): array
+    public function getHeaderActions(): array
     {
         return [];
+    }
+
+    #[Override]
+    public function getTableRecords(): Collection|Paginator|CursorPaginator
+    {
+        $records = parent::getTableRecords();
+
+        $items = $records instanceof Paginator || $records instanceof CursorPaginator
+            ? collect($records->items())
+            : collect($records);
+
+        UserSession::hydrateRelations($items);
+
+        return $records;
     }
 
     public function getTabs(): array
