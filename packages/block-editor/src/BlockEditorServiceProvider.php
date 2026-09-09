@@ -18,7 +18,7 @@ class BlockEditorServiceProvider extends MooxServiceProvider
             ->name('block-editor')
             ->hasConfigFile('moox-editor')
             ->hasViews('moox-editor')
-            ->hasMigrations()
+            ->hasMigrations('create_editor_templates_table')
             ->hasRoutes('api');
     }
 
