@@ -17,7 +17,9 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Illuminate\Validation\Rule;
+use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\MailTemplate\Actions\SendMailTemplate;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
@@ -26,7 +28,7 @@ use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
 use Moox\MailTemplate\Support\MailSendConfig;
 use Override;
 
-class MailTemplateResource extends BaseRecordResource
+class MailTemplateResource extends BaseDraftResource
 {
     protected static ?string $model = MailTemplate::class;
 
@@ -45,7 +47,7 @@ class MailTemplateResource extends BaseRecordResource
     }
 
     #[Override]
-    public static function enableRestore(): bool
+    public static function enablePublish(): bool
     {
         return false;
     }
@@ -60,7 +62,7 @@ class MailTemplateResource extends BaseRecordResource
     #[Override]
     public static function form(Schema $form): Schema
     {
-        $views = config('mail-template.views', []);
+        $layouts = static::layoutOptions();
 
         return $form
             ->components([
@@ -68,25 +70,19 @@ class MailTemplateResource extends BaseRecordResource
                     ->schema([
                         Section::make(__('mail-template::translations.identity'))
                             ->schema([
-                                TextInput::make('key')
-                                    ->label(__('mail-template::translations.key'))
+                                TextInput::make('slug')
+                                    ->label(__('mail-template::translations.slug'))
                                     ->required()
-                                    ->maxLength(255),
-                                TextInput::make('locale')
-                                    ->label(__('mail-template::translations.locale'))
-                                    ->required()
-                                    ->maxLength(8)
-                                    ->default('de'),
-                                Select::make('view')
-                                    ->label(__('mail-template::translations.view'))
-                                    ->helperText(__('mail-template::translations.view_help'))
-                                    ->options($views)
+                                    ->maxLength(255)
+                                    ->unique(table: 'mail_templates', column: 'slug', ignoreRecord: true),
+                                Select::make('layout')
+                                    ->label(__('mail-template::translations.layout'))
+                                    ->helperText(__('mail-template::translations.layout_help'))
+                                    ->options($layouts)
                                     ->searchable()
-                                    ->required(),
-                                TextInput::make('brand_name')
-                                    ->label(__('mail-template::translations.brand_name'))
-                                    ->maxLength(255),
-                                TextInput::make('subject')
+                                    ->required()
+                                    ->rule(Rule::in(array_keys($layouts))),
+                                TextInput::make('title')
                                     ->label(__('mail-template::translations.subject'))
                                     ->required()
                                     ->maxLength(255),
@@ -116,10 +112,8 @@ class MailTemplateResource extends BaseRecordResource
                                     ]),
                                 Section::make('')
                                     ->schema([
-                                        Section::make('')
-                                            ->schema([
-                                                ...static::getStandardTimestampFields(),
-                                            ]),
+                                        static::getCreatedAtTextEntry(),
+                                        static::getUpdatedAtTextEntry(),
                                     ])
                                     ->hidden(fn (?MailTemplate $record) => $record === null),
                             ])
@@ -136,18 +130,16 @@ class MailTemplateResource extends BaseRecordResource
     {
         return $table
             ->columns([
-                TextColumn::make('key')
-                    ->label(__('mail-template::translations.key'))
+                TextColumn::make('slug')
+                    ->label(__('mail-template::translations.slug'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('locale')
-                    ->label(__('mail-template::translations.locale'))
-                    ->sortable(),
-                TextColumn::make('view')
-                    ->label(__('mail-template::translations.view'))
+                TextColumn::make('layout')
+                    ->label(__('mail-template::translations.layout'))
                     ->searchable(),
-                TextColumn::make('brand_name')
-                    ->label(__('mail-template::translations.brand_name')),
+                TextColumn::make('title')
+                    ->label(__('mail-template::translations.subject')),
+                TranslationColumn::make('translations.locale'),
             ])
             ->recordActions([
                 Action::make('preview')
@@ -175,12 +167,14 @@ class MailTemplateResource extends BaseRecordResource
                     ->tooltip(fn (): ?string => MailSendConfig::recipients() === []
                         ? __('mail-template::translations.send_no_recipients')
                         : null)
-                    ->fillForm(fn (MailTemplate $record): array => [
-                        'locale' => (string) $record->locale,
-                        'subject' => filled($record->subject)
-                            ? (string) $record->subject
-                            : (string) ($record->brand_name ?: $record->key),
-                    ])
+                    ->fillForm(function (MailTemplate $record): array {
+                        $locale = static::resolveSendLocale($record);
+
+                        return [
+                            'locale' => $locale,
+                            'subject' => static::subjectForLocale($record, $locale),
+                        ];
+                    })
                     ->schema([
                         Select::make('locale')
                             ->label(__('mail-template::translations.send_locale'))
@@ -188,22 +182,19 @@ class MailTemplateResource extends BaseRecordResource
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (Set $set, mixed $state, MailTemplate $record): void {
-                                $locale = strtolower(trim((string) $state));
+                                $locale = trim((string) $state);
 
                                 if ($locale === '') {
                                     return;
                                 }
 
-                                $sibling = MailTemplate::query()
-                                    ->where('key', $record->key)
-                                    ->where('locale', $locale)
-                                    ->first();
+                                $subject = static::subjectForLocale($record, $locale);
 
-                                if ($sibling === null || ! filled($sibling->subject)) {
+                                if ($subject === '') {
                                     return;
                                 }
 
-                                $set('subject', (string) $sibling->subject);
+                                $set('subject', $subject);
                             }),
                         CheckboxList::make('emails')
                             ->label(__('mail-template::translations.send_recipients'))
@@ -280,6 +271,62 @@ class MailTemplateResource extends BaseRecordResource
     public static function getNavigationGroup(): ?string
     {
         return config('mail-template.navigation_group');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function layoutOptions(): array
+    {
+        $layouts = config('mail-template.layouts', []);
+
+        if (! is_array($layouts)) {
+            return [];
+        }
+
+        $options = [];
+
+        foreach ($layouts as $key => $label) {
+            $view = trim((string) $key);
+            $name = trim((string) $label);
+
+            if ($view === '' || $name === '') {
+                continue;
+            }
+
+            $options[$view] = $name;
+        }
+
+        return $options;
+    }
+
+    private static function resolveSendLocale(MailTemplate $record): string
+    {
+        $allowed = MailSendConfig::localeOptions();
+        $current = trim((string) app()->getLocale());
+
+        if ($current !== '' && isset($allowed[$current]) && $record->hasTranslation($current)) {
+            return $current;
+        }
+
+        foreach (array_keys($allowed) as $locale) {
+            if ($record->hasTranslation($locale)) {
+                return $locale;
+            }
+        }
+
+        return array_key_first($allowed) ?? 'de_DE';
+    }
+
+    private static function subjectForLocale(MailTemplate $record, string $locale): string
+    {
+        $translation = $record->translate($locale, true);
+
+        if ($translation !== null && filled($translation->title)) {
+            return (string) $translation->title;
+        }
+
+        return (string) $record->slug;
     }
 
     /**

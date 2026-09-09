@@ -25,7 +25,8 @@ class SendMailTemplate
     public function handle(MailTemplate $template, array $emails, string $subject, ?string $locale = null): array
     {
         $locale = $this->resolveLocale($template, $locale);
-        $resolved = $this->renderer->find($template->key, $locale) ?? $template;
+        $resolved = $this->renderer->find($template->slug, $locale) ?? $template;
+        $this->renderer->applyLocale($resolved, $locale);
 
         $sent = [];
         $failed = [];
@@ -57,20 +58,44 @@ class SendMailTemplate
 
     private function resolveLocale(MailTemplate $template, ?string $locale): string
     {
-        $locale = strtolower(trim((string) $locale));
         $allowed = MailSendConfig::localeOptions();
+        $match = $this->matchAllowedLocale($allowed, trim((string) $locale));
 
-        if ($locale !== '' && isset($allowed[$locale])) {
+        if ($match !== null) {
+            return $match;
+        }
+
+        foreach ($template->translations as $translation) {
+            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->locale));
+
+            if ($match !== null) {
+                return $match;
+            }
+        }
+
+        return array_key_first($allowed) ?? 'de_DE';
+    }
+
+    /**
+     * @param  array<string, string>  $allowed
+     */
+    private function matchAllowedLocale(array $allowed, string $locale): ?string
+    {
+        if ($locale === '') {
+            return null;
+        }
+
+        if (isset($allowed[$locale])) {
             return $locale;
         }
 
-        $fallback = strtolower(trim((string) $template->locale));
-
-        if ($fallback !== '' && isset($allowed[$fallback])) {
-            return $fallback;
+        foreach (array_keys($allowed) as $code) {
+            if (strcasecmp($code, $locale) === 0) {
+                return $code;
+            }
         }
 
-        return array_key_first($allowed) ?? 'de';
+        return null;
     }
 
     /**

@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\MailTemplate\Database\Factories\MailTemplateFactory;
 
-class MailTemplate extends Model
+class MailTemplate extends BaseDraftModel
 {
     use HasFactory;
-    use HasUuids;
 
     protected $table = 'mail_templates';
 
+    /**
+     * @return list<string>
+     */
+    protected function getCustomTranslatedAttributes(): array
+    {
+        return [
+            'title',
+            'mail_content',
+            'footer',
+        ];
+    }
+
     protected $fillable = [
-        'key',
-        'locale',
-        'view',
-        'brand_name',
-        'subject',
+        'slug',
+        'layout',
         'logo_path',
-        'mail_content',
-        'footer',
+        'status',
+        'uuid',
+        'ulid',
     ];
 
     public function getLogoUrlAttribute(): ?string
