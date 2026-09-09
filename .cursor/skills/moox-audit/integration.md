@@ -9,7 +9,7 @@ Read before editing:
 | `packages/{pkg}/src/Models/*.php` | Main model, translation model, `fillable` / `getCustomTranslatedAttributes`, `scope`, delete side-effects |
 | `packages/{pkg}/config/{pkg}.php` | Existing config structure; add `audit` block before closing `];` |
 | `packages/{pkg}/src/{Pkg}ServiceProvider.php` | `packageBooted()` for registry |
-| `packages/{pkg}/src/Resources/*Resource.php` | Resource class for `filament` config |
+| `packages/{pkg}/src/Resources/*Resource.php` | Resource class for `filament` config + Activity tab wiring |
 
 ### Draft packages (BaseDraftModel)
 
@@ -89,9 +89,13 @@ public function packageBooted(): void
 {
     // ... existing boot logic ...
 
-    if (class_exists(AuditPackageRegistry::class) && config('audit.enabled', true)) {
-        AuditPackageRegistry::register('{package_key}', config('{package_key}.audit', []));
-    }
+if (
+    class_exists(AuditPackageRegistry::class)
+    && config('audit.enabled', true)
+    && config('{package_key}.audit.enabled', true)
+) {
+    AuditPackageRegistry::register('{package_key}', config('{package_key}.audit', []));
+}
 }
 ```
 
@@ -165,13 +169,28 @@ No built-in `taggables_detached` handler exists — omit `handler` so `MooxActiv
 
 Same `AuditPackageRegistry::register('tag', config('tag.audit', []))` block as category.
 
+### `TagResource.php`
+
+```php
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
+
+class TagResource extends BaseDraftResource
+{
+    use InteractsWithAuditResourceRelations;
+    // ...
+}
+```
+
+Do not leave an empty `getRelations()` override — it blocks the trait.
+
 ## 5. Verification
 
 1. `audit.enabled` is true (env `AUDIT_ENABLED` or default).
 2. `AuditPlugin` registered in the Filament panel (app install).
-3. Edit a tracked record → **Activity** tab shows `audit` entries on attribute change.
-4. Delete with pivot detach → `log` entry if hook configured.
-5. Global **Audit** resource lists entries filtered by `log_name`.
+3. Resource uses `InteractsWithAuditResourceRelations` (or merges the registry).
+4. Edit a tracked record → **Activity** tab shows `audit` entries on attribute change.
+5. Delete with pivot detach → `log` entry if hook configured.
+6. Global **Audit** resource lists entries filtered by `log_name`.
 
 ## 6. App overrides (optional)
 
@@ -180,6 +199,9 @@ Consumers can tune without editing the package via published `config/audit.php`:
 ```php
 'models' => [
     \Moox\Tag\Models\Tag::class => ['append_attributes' => ['count']],
+],
+'filament' => [
+    \Moox\Tag\Resources\TagResource::class => ['enabled' => false], // hide Activity tab only
 ],
 ```
 

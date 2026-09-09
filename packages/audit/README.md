@@ -139,7 +139,16 @@ The `class_exists` guard keeps your package usable without `moox/audit` installe
 
 ### 3. Filament activity tabs
 
-When `filament` config is registered, `AuditBootstrap` automatically adds the **Activity** relation manager to the resource.
+`AuditBootstrap` registers `ActivitiesRelationManager` in `AuditResourceRelationRegistry` when `filament` config is present. The Resource must still pull it in — preferred (core trait, safe without `moox/audit` required):
+
+```php
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
+
+class ExampleResource extends BaseResource
+{
+    use InteractsWithAuditResourceRelations;
+}
+```
 
 Alternatively, merge relations manually (loose coupling via `class_exists`):
 
@@ -160,6 +169,8 @@ public static function getRelations(): array
 ```
 
 Or use the optional trait `Moox\Audit\Filament\Concerns\InteractsWithAuditResourceRelations`.
+
+Hide the tab only (logging stays on): `'filament' => [ExampleResource::class => ['enabled' => false]]` in package or app `audit` config.
 
 ## Presets
 

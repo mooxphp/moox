@@ -6,6 +6,8 @@ use Moox\Category\Resources\CategoryResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Resources\NewsResource;
 use Moox\Page\Models\Page;
+use Moox\Page\Models\PageTranslation;
+use Moox\Page\Resources\PageResource;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 
@@ -157,5 +159,54 @@ return [
     |
     */
     'navigation_group' => 'CMS',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Page::class => [
+                'preset' => 'draft_main',
+                'log_name' => 'page',
+                'attributes' => [
+                    'is_active',
+                    'status',
+                    'type',
+                    'color',
+                    'due_at',
+                ],
+            ],
+            PageTranslation::class => [
+                'preset' => 'draft_translation',
+                'log_name' => 'page',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'permalink',
+                    'description',
+                    'content',
+                    'translation_status',
+                    'author_id',
+                    'author_type',
+                ],
+            ],
+        ],
+        'filament' => [
+            PageResource::class => [
+                'owner_model' => Page::class,
+                'aggregate_subjects' => [
+                    PageTranslation::class => 'translations',
+                ],
+            ],
+        ],
+    ],
 
 ];

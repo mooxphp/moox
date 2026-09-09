@@ -53,7 +53,6 @@ class AuditResource extends BaseResource
                                 ->label(__('core::audit.subject'))
                                 ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
                                 ->url(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record))
-                                ->openUrlInNewTab()
                                 ->color(function (Activity $record): ?string {
                                     if (ActivityEntryPresenter::subjectIsUnavailable($record)) {
                                         return 'gray';
@@ -61,6 +60,10 @@ class AuditResource extends BaseResource
 
                                     return SubjectUrlResolver::forActivity($record) ? 'primary' : null;
                                 })
+                                ->icon(fn (Activity $record): ?string => SubjectUrlResolver::forActivity($record)
+                                    ? 'heroicon-m-arrow-top-right-on-square'
+                                    : null)
+                                ->iconColor('primary')
                                 ->helperText(function (Activity $record): ?string {
                                     $unavailable = ActivityEntryPresenter::subjectUnavailableHint($record);
 

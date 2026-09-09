@@ -7,6 +7,7 @@ namespace Moox\Page;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\Page\Resources\PageResource\Pages\ListPages;
 use Spatie\LaravelPackageTools\Package;
@@ -30,5 +31,13 @@ class PageServiceProvider extends MooxServiceProvider
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListPages::class
         );
+
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('page.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('page', config('page.audit', []));
+        }
     }
 }

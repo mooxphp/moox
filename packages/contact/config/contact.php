@@ -4,6 +4,7 @@ use Moox\Company\Models\Company;
 use Moox\Company\Resources\CompanyResource;
 use Moox\Contact\Models\Contact;
 use Moox\Contact\Models\ContactAssignment;
+use Moox\Contact\Resources\ContactResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,4 +140,49 @@ return [
     ],
 
     'navigation_group' => 'Portal',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    | Passwords are masked by moox/audit; they are omitted from attributes here.
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Contact::class => [
+                'log_name' => 'contact',
+                'attributes' => [
+                    'status',
+                    'gender',
+                    'salutation_code',
+                    'academic_title',
+                    'first_name',
+                    'last_name',
+                    'display_name',
+                    'job_title',
+                    'email',
+                    'username',
+                    'email_verified_at',
+                    'phone',
+                    'mobile',
+                    'language_id',
+                    'contact_type',
+                    'note',
+                    'external_reference',
+                    'is_active',
+                ],
+            ],
+        ],
+        'filament' => [
+            ContactResource::class => [
+                'owner_model' => Contact::class,
+            ],
+        ],
+    ],
 ];

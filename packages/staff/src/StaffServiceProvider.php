@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Staff;
 
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -71,5 +72,16 @@ class StaffServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('staff.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('staff', config('staff.audit', []));
+        }
     }
 }

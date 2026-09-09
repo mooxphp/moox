@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Customer;
 
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -75,5 +76,16 @@ class CustomerServiceProvider extends MooxServiceProvider
             ->templateRemove([
                 '',
             ]);
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('customer.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('customer', config('customer.audit', []));
+        }
     }
 }

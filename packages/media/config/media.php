@@ -1,6 +1,11 @@
 <?php
 
 use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaCollection;
+use Moox\Media\Models\MediaCollectionTranslation;
+use Moox\Media\Models\MediaTranslation;
+use Moox\Media\Resources\MediaCollectionResource;
+use Moox\Media\Resources\MediaResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -147,6 +152,84 @@ return [
                     'origins' => [
                         'media' => Media::class,
                     ],
+                ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Media::class => [
+                'log_name' => 'media',
+                'attributes' => [
+                    'file_name',
+                    'disk',
+                    'mime_type',
+                    'size',
+                    'collection_name',
+                    'media_collection_id',
+                    'write_protected',
+                    'uploader_id',
+                    'uploader_type',
+                    'scope',
+                ],
+            ],
+            MediaTranslation::class => [
+                'log_name' => 'media',
+                'attributes' => [
+                    'name',
+                    'title',
+                    'alt',
+                    'description',
+                    'internal_note',
+                ],
+            ],
+            MediaCollection::class => [
+                'log_name' => 'media',
+                'attributes' => [
+                    // parent table has only id/timestamps; track create/delete lifecycle
+                ],
+            ],
+            MediaCollectionTranslation::class => [
+                'log_name' => 'media',
+                'attributes' => [
+                    'name',
+                    'description',
+                ],
+            ],
+        ],
+        'hooks' => [
+            Media::class => [
+                'deleting' => [
+                    'log_name' => 'media',
+                    'entry_type' => 'log',
+                    'event' => 'media_usables_cleared',
+                    'description' => 'media_usables_cleared',
+                ],
+            ],
+        ],
+        'filament' => [
+            MediaResource::class => [
+                'owner_model' => Media::class,
+                'aggregate_subjects' => [
+                    MediaTranslation::class => 'translations',
+                ],
+            ],
+            MediaCollectionResource::class => [
+                'owner_model' => MediaCollection::class,
+                'aggregate_subjects' => [
+                    MediaCollectionTranslation::class => 'translations',
                 ],
             ],
         ],

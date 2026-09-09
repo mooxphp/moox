@@ -7,6 +7,7 @@ namespace Moox\UserDevice;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\UserDevice\Commands\InstallCommand;
 use Moox\UserDevice\Listeners\TrackUserDeviceOnLogin;
@@ -51,6 +52,14 @@ class UserDeviceServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('user-device.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('user-device', config('user-device.audit', []));
+        }
+
         if (! config('user-device.enabled', false)) {
             return;
         }

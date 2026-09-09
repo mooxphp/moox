@@ -4,6 +4,10 @@ use Moox\LoginLink\Handlers\AckRedemptionHandler;
 use Moox\LoginLink\Handlers\LoginRedemptionHandler;
 use Moox\LoginLink\Handlers\MassMailRedemptionHandler;
 use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
+use Moox\LoginLink\Models\LoginLink;
+use Moox\LoginLink\Models\LoginLinkProcess;
+use Moox\LoginLink\Resources\LoginLinkProcessResource;
+use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\User\Models\User;
 
 /*
@@ -266,6 +270,61 @@ return [
 
     'ack' => [
         'redirect_url' => env('LOGIN_LINK_ACK_REDIRECT_URL', '/'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    | payload is omitted (process-specific JSON; may contain sensitive data).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            LoginLink::class => [
+                'log_name' => 'login-link',
+                'attributes' => [
+                    'panel_id',
+                    'process',
+                    'user_type',
+                    'user_id',
+                    'subject_type',
+                    'subject_id',
+                    'email',
+                    'expires_at',
+                    'used_at',
+                    'user_agent',
+                    'ip_address',
+                ],
+            ],
+            LoginLinkProcess::class => [
+                'log_name' => 'login-link',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'context',
+                    'mail_from',
+                    'content',
+                    'template_key',
+                    'handler_key',
+                    'expiry_minutes',
+                    'invalidate_prior',
+                ],
+            ],
+        ],
+        'filament' => [
+            LoginLinkResource::class => [
+                'owner_model' => LoginLink::class,
+            ],
+            LoginLinkProcessResource::class => [
+                'owner_model' => LoginLinkProcess::class,
+            ],
+        ],
     ],
 
 ];

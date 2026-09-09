@@ -20,6 +20,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Contact\Models\Contact;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Data\Models\StaticLanguage;
@@ -34,6 +35,7 @@ class StaffResource extends BaseRecordResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Staff::class;
 

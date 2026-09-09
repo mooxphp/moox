@@ -18,6 +18,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Customer\Models\Customer;
@@ -31,6 +32,7 @@ class CustomerResource extends BaseRecordResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Customer::class;
 

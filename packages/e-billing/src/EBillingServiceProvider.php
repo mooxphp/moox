@@ -139,7 +139,11 @@ class EBillingServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
-        if (! class_exists(AuditPackageRegistry::class) || ! config('audit.enabled', true)) {
+        if (
+            ! class_exists(AuditPackageRegistry::class)
+            || ! config('audit.enabled', true)
+            || ! config('e-billing.audit.enabled', true)
+        ) {
             return;
         }
 

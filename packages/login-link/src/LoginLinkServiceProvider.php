@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\LoginLink;
 
 use Illuminate\Support\Facades\Route;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Moox\LoginLink\Commands\ExampleIssueCommand;
 use Moox\LoginLink\Commands\InstallCommand;
@@ -70,5 +71,13 @@ class LoginLinkServiceProvider extends MooxServiceProvider
         Route::middleware(['web'])
             ->get('login-link/examples/mailing-confirmed', [ExampleResultController::class, 'mailingConfirmed'])
             ->name('login-link.examples.mailing-confirmed');
+
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('login-link.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('login-link', config('login-link.audit', []));
+        }
     }
 }

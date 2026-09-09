@@ -15,6 +15,8 @@ return [
     'scope' => 'Scope',
     'subject' => 'Subject',
     'activity' => 'Activity',
+    'activity_empty_heading' => 'No activity yet',
+    'activity_empty_description' => 'Changes to this record are logged here.',
     'summary' => 'Summary',
     'action' => 'Action',
     'occurred_at' => 'Occurred at',

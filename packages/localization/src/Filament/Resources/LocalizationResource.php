@@ -19,6 +19,7 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Moox\Core\Entities\Items\Record\BaseRecordResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Data\Models\StaticLanguage;
 use Moox\Data\Models\StaticLocale;
 use Moox\Localization\Filament\Resources\LocalizationResource\Pages\CreateLocalization;
@@ -29,6 +30,8 @@ use Moox\Localization\Models\Localization;
 
 class LocalizationResource extends BaseRecordResource
 {
+    use InteractsWithAuditResourceRelations;
+
     protected static ?string $model = Localization::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'gmdi-language';

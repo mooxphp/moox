@@ -19,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
@@ -35,6 +36,7 @@ class NewsResource extends BaseDraftResource
     use HasResourceTabs;
     use HasResourceTaxonomy;
     use HasScopedChildResource;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = News::class;
 

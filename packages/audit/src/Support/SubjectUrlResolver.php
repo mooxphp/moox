@@ -146,6 +146,24 @@ final class SubjectUrlResolver
             }
         }
 
+        // List-only resources (e.g. Media): open the table edit/view action, same as Filament global search.
+        foreach (['edit', 'view'] as $tableAction) {
+            $indexParameters = [
+                'tableAction' => $tableAction,
+                'tableActionRecord' => $record,
+            ];
+
+            if (is_string($locale) && $locale !== '') {
+                $indexParameters['lang'] = $locale;
+            }
+
+            try {
+                return $resourceClass::getUrl(parameters: $indexParameters, shouldGuessMissingParameters: false);
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
         return null;
     }
 
@@ -162,7 +180,6 @@ final class SubjectUrlResolver
 
             if ($tableForeignKey !== $subject->getTable()) {
                 $ownerId = $subject->getAttribute($tableForeignKey);
-                $foreignKey = $tableForeignKey;
             }
         }
 
@@ -170,7 +187,13 @@ final class SubjectUrlResolver
             return null;
         }
 
-        return $ownerClass::query()->find($ownerId);
+        $query = $ownerClass::query();
+
+        if (method_exists($ownerClass, 'withTrashed')) {
+            $query->withTrashed();
+        }
+
+        return $query->find($ownerId);
     }
 
     private static function localeFromSubject(Model $subject): ?string

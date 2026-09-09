@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\User;
 
 use Illuminate\Support\Facades\Gate;
+use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
@@ -17,6 +18,17 @@ class UserServiceProvider extends MooxServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations(['update_user_table']);
+    }
+
+    public function packageBooted(): void
+    {
+        if (
+            class_exists(AuditPackageRegistry::class)
+            && config('audit.enabled', true)
+            && config('user.audit.enabled', true)
+        ) {
+            AuditPackageRegistry::register('user', config('user.audit', []));
+        }
     }
 
     public function bootingPackage(): void

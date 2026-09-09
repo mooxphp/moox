@@ -22,6 +22,8 @@ return [
     'scope' => 'Scope',
     'subject' => 'Objekt',
     'activity' => 'Aktivität',
+    'activity_empty_heading' => 'Noch keine Aktivität',
+    'activity_empty_description' => 'Hier werden Änderungen an diesem Datensatz protokolliert.',
     'summary' => 'Zusammenfassung',
     'action' => 'Aktion',
     'occurred_at' => 'Zeitpunkt',

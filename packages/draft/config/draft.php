@@ -4,6 +4,8 @@ use Moox\Category\Forms\TaxonomyCreateForm;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Draft\Models\Draft;
+use Moox\Draft\Models\DraftTranslation;
+use Moox\Draft\Resources\DraftResource;
 use Moox\Media\Resources\MediaResource;
 use Moox\News\Resources\NewsResource;
 use Moox\Tag\Models\Tag;
@@ -157,5 +159,54 @@ return [
     |
     */
     'navigation_group' => 'DEV',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Draft::class => [
+                'preset' => 'draft_main',
+                'log_name' => 'draft',
+                'attributes' => [
+                    'is_active',
+                    'status',
+                    'type',
+                    'color',
+                    'due_at',
+                ],
+            ],
+            DraftTranslation::class => [
+                'preset' => 'draft_translation',
+                'log_name' => 'draft',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'permalink',
+                    'description',
+                    'content',
+                    'translation_status',
+                    'author_id',
+                    'author_type',
+                ],
+            ],
+        ],
+        'filament' => [
+            DraftResource::class => [
+                'owner_model' => Draft::class,
+                'aggregate_subjects' => [
+                    DraftTranslation::class => 'translations',
+                ],
+            ],
+        ],
+    ],
 
 ];

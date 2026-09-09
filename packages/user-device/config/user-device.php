@@ -1,6 +1,7 @@
 <?php
 
 use Moox\UserDevice\Models\UserDevice;
+use Moox\UserDevice\Resources\UserDeviceResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,5 +144,56 @@ return [
     |
     */
     'mail_logo_url' => '/logo/logo_heco_2021.svg',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    | Independent of user-device.enabled (device tracking on login).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            UserDevice::class => [
+                'log_name' => 'user-device',
+                'attributes' => [
+                    'title',
+                    'slug',
+                    'scope',
+                    'user_id',
+                    'user_type',
+                    'user_agent',
+                    'platform',
+                    'os',
+                    'browser',
+                    'city',
+                    'country',
+                    'whitelisted',
+                    'active',
+                    'ip_address',
+                ],
+            ],
+        ],
+        'hooks' => [
+            UserDevice::class => [
+                'deleting' => [
+                    'log_name' => 'user-device',
+                    'entry_type' => 'log',
+                    'event' => 'sessions_cleared',
+                    'description' => 'sessions_cleared',
+                ],
+            ],
+        ],
+        'filament' => [
+            UserDeviceResource::class => [
+                'owner_model' => UserDevice::class,
+            ],
+        ],
+    ],
 
 ];

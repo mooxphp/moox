@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
@@ -34,7 +35,9 @@ use Override;
 
 class TagResource extends BaseDraftResource
 {
-    use HasResourceTabs, HasScopedChildResource;
+    use HasResourceTabs;
+    use HasScopedChildResource;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Tag::class;
 
@@ -179,14 +182,6 @@ class TagResource extends BaseDraftResource
                 static::getTranslationStatusFilter(),
             ])->deferFilters(false)
             ->persistFiltersInSession();
-    }
-
-    #[Override]
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     #[Override]

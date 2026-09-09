@@ -180,4 +180,46 @@ return [
     ],
 
     'navigation_group' => 'Portal',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Audit defaults
+    |--------------------------------------------------------------------------
+    |
+    | Registered with moox/audit when installed. Override in config/audit.php.
+    | Disable this package: set enabled => false (or AUDIT_ENABLED=false globally).
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+        'models' => [
+            Customer::class => [
+                'log_name' => 'customer',
+                'attributes' => [
+                    'status',
+                    'customer_number',
+                    'external_reference',
+                    'customer_name',
+                    'search_terms',
+                    'price_type',
+                    'customer_group',
+                    'discount_percent',
+                    'credit_limit',
+                    'language_id',
+                    'note',
+                    'sort',
+                    'is_active',
+                    'approved_at',
+                    'preferred_ebilling_format',
+                    'send_visual_copy',
+                ],
+            ],
+        ],
+        'filament' => [
+            CustomerResource::class => [
+                'owner_model' => Customer::class,
+            ],
+        ],
+    ],
 ];

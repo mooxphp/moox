@@ -17,6 +17,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
@@ -32,6 +33,7 @@ class PageResource extends BaseDraftResource
 {
     use HasResourceTabs;
     use HasResourceTaxonomy;
+    use InteractsWithAuditResourceRelations;
 
     protected static ?string $model = Page::class;
 

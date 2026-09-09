@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Entities\Items\Static\BaseStaticResource;
+use Moox\Core\Traits\InteractsWithAuditResourceRelations;
 use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
@@ -23,6 +24,8 @@ use Moox\Media\Resources\MediaCollectionResource\Pages\ListMediaCollections;
 
 class MediaCollectionResource extends BaseStaticResource
 {
+    use InteractsWithAuditResourceRelations;
+
     protected static ?string $model = MediaCollection::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
