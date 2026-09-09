@@ -138,15 +138,3 @@ it('enforces a unique slug on the parent', function (): void {
     expect(fn (): MailTemplate => MailTemplate::factory()->create(['slug' => 'login']))
         ->toThrow(UniqueConstraintViolationException::class);
 });
- MailTemplate => MailTemplate::factory()->create(['slug' => 'login']))
-        ->toThrow(UniqueConstraintViolationException::class);
-});
-;
- MailTemplate => MailTemplate::factory()->create(['slug' => 'login']))
-        ->toThrow(UniqueConstraintViolationException::class);
-});
-);
-;
- MailTemplate => MailTemplate::factory()->create(['slug' => 'login']))
-        ->toThrow(UniqueConstraintViolationException::class);
-});
