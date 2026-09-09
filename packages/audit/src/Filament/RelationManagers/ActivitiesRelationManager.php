@@ -61,7 +61,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->label(__('core::audit.subject'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::subjectLabel($record))
                     ->limit(40)
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('changed_fields')
                     ->label(__('core::audit.attribute_changes'))
                     ->state(fn (Activity $record): string => ActivityEntryPresenter::changedFieldsSummary($record->attribute_changes, activity: $record))
