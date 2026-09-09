@@ -1,19 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\User\Resources\UserResource\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
+use Moox\Core\Entities\Items\Record\Pages\BaseEditRecord;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinkAction;
 use Moox\User\Resources\UserResource;
 use Override;
 
-class EditUser extends EditRecord
+class EditUser extends BaseEditRecord
 {
     protected static string $resource = UserResource::class;
 
@@ -27,9 +26,6 @@ class EditUser extends EditRecord
                     ->visible(fn (): bool => ! UserResource::canManagePassword($this->getRecord())
                         && UserResource::canSendPasswordResetTo($this->getRecord()))
                 : null,
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
         ]));
     }
 
