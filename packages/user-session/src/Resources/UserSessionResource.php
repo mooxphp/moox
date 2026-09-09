@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\UserSession\Resources;
 
 use Exception;
@@ -14,6 +16,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
@@ -137,6 +140,9 @@ class UserSessionResource extends BaseItemResource
                 TextColumn::make('last_activity')
                     ->label(__('core::session.last_activity'))
                     ->sortable()
+                    ->formatStateUsing(fn (mixed $state): ?Carbon => is_numeric($state)
+                        ? Carbon::createFromTimestamp((int) $state)
+                        : null)
                     ->since(),
                 TextColumn::make('id')
                     ->label(__('core::core.id'))
@@ -196,7 +202,7 @@ class UserSessionResource extends BaseItemResource
 
                             if (is_string($modelClass) && class_exists($modelClass)) {
                                 $userIds = $modelClass::query()
-                                    ->where(function (Builder $userQuery) use ($q): void {
+                                    ->where(function (Builder $userQuery) use ($q, $modelClass): void {
                                         $userQuery
                                             ->where('name', 'like', "%{$q}%")
                                             ->orWhere('email', 'like', "%{$q}%");
