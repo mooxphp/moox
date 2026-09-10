@@ -40,6 +40,7 @@ class MailOutboxServiceProvider extends MooxServiceProvider
             ->hasViews()
             ->hasMigrations([
                 'create_mail_send_logs_table',
+                'change_mail_send_logs_related_id_to_string',
             ])
             ->hasCommand(SendTestMailCommand::class);
 
