@@ -26,6 +26,7 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Fixed
 
+- `mail_send_logs.related_id` is a string (not bigint morph) so UUID-keyed related models (e.g. e-billing documents) can be attached without MySQL truncation
 - `MailableInspector::recipients()` now includes `envelope()` to/cc/bcc addresses, so send-log **intended recipients** are populated for modern Mailables (e.g. `OutboxTestMail`, envelope-only delivery mailables) instead of staying empty
 - Filament send-log list uses a **Delivery** column (Redirected / Direct / —) instead of a redundant "Redirected" column that only ever showed "Redirected"
 - `MailSendLog::isRedirected()` no longer treats an empty/unknown intended set as a redirect — Filament "Umgeleitet" / Redirected requires both intended and actual recipient sets before comparing (avoids false positives when intended was not captured)

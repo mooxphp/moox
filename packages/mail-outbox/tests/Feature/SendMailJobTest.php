@@ -73,7 +73,7 @@ test('related business object can be attached and resolved via morph', function 
     expect($log->related)->not->toBeNull()
         ->and($log->related->is($related))->toBeTrue()
         ->and($log->related_type)->toBe($related->getMorphClass())
-        ->and($log->related_id)->toBe($related->getKey());
+        ->and($log->related_id)->toBe((string) $related->getKey());
 });
 
 test('two differently named mailers are recorded correctly', function (): void {

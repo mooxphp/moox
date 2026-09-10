@@ -1,0 +1,61 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (! Schema::hasTable('mail_send_logs')) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        Schema::table('mail_send_logs', function (Blueprint $table): void {
+            $table->dropIndex(['related_type', 'related_id']);
+        });
+
+        if ($driver === 'mysql') {
+            DB::statement('ALTER TABLE mail_send_logs MODIFY related_id VARCHAR(255) NULL');
+        } else {
+            Schema::table('mail_send_logs', function (Blueprint $table): void {
+                $table->string('related_id')->nullable()->change();
+            });
+        }
+
+        Schema::table('mail_send_logs', function (Blueprint $table): void {
+            $table->index(['related_type', 'related_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasTable('mail_send_logs')) {
+            return;
+        }
+
+        $driver = Schema::getConnection()->getDriverName();
+
+        Schema::table('mail_send_logs', function (Blueprint $table): void {
+            $table->dropIndex(['related_type', 'related_id']);
+        });
+
+        if ($driver === 'mysql') {
+            DB::statement('ALTER TABLE mail_send_logs MODIFY related_id BIGINT UNSIGNED NULL');
+        } else {
+            Schema::table('mail_send_logs', function (Blueprint $table): void {
+                $table->unsignedBigInteger('related_id')->nullable()->change();
+            });
+        }
+
+        Schema::table('mail_send_logs', function (Blueprint $table): void {
+            $table->index(['related_type', 'related_id']);
+        });
+    }
+};
