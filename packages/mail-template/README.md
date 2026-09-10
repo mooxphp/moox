@@ -1,6 +1,8 @@
-# Moox Mail Template
+# moox Mail Template
 
-Filament editor for outbound MJML mail templates. One template entity, translated content per locale (Astrotomic / Moox Draft). The parent stores `slug`, `layout`, and an optional logo override. Translations store `title` (used as the mail subject), `mail_content`, and `footer`. Branding (`brandName`) comes from the theme / `app.name`, not from the template.
+Filament editor for outbound MJML mail templates. One template entity, translated content per locale (Astrotomic / moox Draft). The parent stores `slug`, a relation to a **mail layout**, and an optional logo override. Translations store `title` (used as the mail subject), `mail_content`, and `footer`. Branding (`brandName`) comes from the theme / `app.name`, not from the template.
+
+Layouts are a second Draft entity in this package: `slug` on the parent, translated `title`, optional `logo`, and optional `footer`. Templates pick a layout from the database. Empty logo/footer on the template fall back to the layout for the same locale.
 
 Rendering uses `spatie/mjml-php` (via `moox/mjml`). This package does not log sent mail or talk to Microsoft Graph.
 
@@ -28,14 +30,12 @@ Language switching uses the Filament language selector (`$this->lang`). There is
 
 ## Layouts
 
-Consuming packages merge Blade layouts into `config('mail-template.layouts')`:
+Mail layouts are edited in Filament. The MJML shell is `config('mail-template.view')`, default `mail-template::emails.layout`. A theme may override that view when this package is installed:
 
 ```php
-config([
-    'mail-template.layouts' => array_merge(config('mail-template.layouts', []), [
-        'theme-heco::emails.login-link' => 'Login-Link',
-    ]),
-]);
+if (class_exists(\Moox\MailTemplate\MailTemplateServiceProvider::class)) {
+    config(['mail-template.view' => 'theme-heco::emails.layout']);
+}
 ```
 
 ## Rendering

@@ -34,15 +34,43 @@ return [
                 ],
             ],
         ],
+        'mail-layout' => [
+            'single' => 'trans//mail-template::translations.layout_single',
+            'plural' => 'trans//mail-template::translations.layout_plural',
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ],
 
     'navigation_group' => 'trans//mail-template::translations.navigation_group',
 
     /*
-    | Blade layouts that MailTemplate records may link to.
-    | Consuming packages should merge additional entries.
+    | Blade view used as the MJML shell. Themes may override this when
+    | moox/mail-template is installed.
     */
-    'layouts' => [],
+    'view' => 'mail-template::emails.layout',
 
     /*
     | Payload for the Filament HTML preview. Values are shown as `{name}`

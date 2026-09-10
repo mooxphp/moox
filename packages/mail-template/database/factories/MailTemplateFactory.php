@@ -7,6 +7,7 @@ namespace Moox\MailTemplate\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Localization\Models\Localization;
+use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 
 /**
@@ -20,7 +21,7 @@ class MailTemplateFactory extends Factory
     {
         return [
             'slug' => fake()->unique()->bothify('template-##??'),
-            'layout' => 'welcome',
+            'mail_layout_id' => MailLayout::factory(),
             'logo_path' => null,
             'status' => 'draft',
         ];
@@ -61,7 +62,7 @@ class MailTemplateFactory extends Factory
             'slug' => 'invoice',
         ])->translation([
             'title' => 'Ihre Rechnung',
-            'mail_content' => null,
+            'mail_content' => '<mj-text>Rechnung Nr. {invoiceNumber}</mj-text>',
             'footer' => null,
         ]);
     }

@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('mail_layout_translations', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->unsignedBigInteger('mail_layout_id');
+            $table->string('locale')->index();
+            $table->string('title')->nullable();
+            $table->string('logo')->nullable();
+            $table->longText('footer')->nullable();
+            $table->string('translation_status')->nullable();
+
+            $table->nullableMorphs('created_by');
+            $table->nullableMorphs('updated_by');
+            $table->nullableMorphs('deleted_by');
+
+            $table->unique(['mail_layout_id', 'locale']);
+            $table->foreign('mail_layout_id')->references('id')->on('mail_layouts')->onDelete('cascade');
+
+            $table->timestamp('to_publish_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('to_unpublish_at')->nullable();
+            $table->timestamp('unpublished_at')->nullable();
+
+            $table->nullableMorphs('published_by', 'ml_trans_pub_idx');
+            $table->nullableMorphs('unpublished_by', 'ml_trans_unpub_idx');
+
+            $table->softDeletes();
+            $table->timestamp('restored_at')->nullable();
+            $table->nullableMorphs('restored_by', 'ml_trans_restored_idx');
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('mail_layout_translations');
+    }
+};

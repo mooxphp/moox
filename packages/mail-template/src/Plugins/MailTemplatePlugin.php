@@ -8,6 +8,7 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Illuminate\Support\Facades\Route;
 use Moox\MailTemplate\Http\Controllers\PreviewMailTemplateController;
+use Moox\MailTemplate\Resources\MailLayoutResource;
 use Moox\MailTemplate\Resources\MailTemplateResource;
 
 class MailTemplatePlugin implements Plugin
@@ -20,6 +21,7 @@ class MailTemplatePlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
+            MailLayoutResource::class,
             MailTemplateResource::class,
         ]);
 

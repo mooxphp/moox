@@ -17,10 +17,12 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\MailTemplate\Actions\SendMailTemplate;
+use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\EditMailTemplate;
@@ -75,13 +77,13 @@ class MailTemplateResource extends BaseDraftResource
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(table: 'mail_templates', column: 'slug', ignoreRecord: true),
-                                Select::make('layout')
+                                Select::make('mail_layout_id')
                                     ->label(__('mail-template::translations.layout'))
                                     ->helperText(__('mail-template::translations.layout_help'))
                                     ->options($layouts)
                                     ->searchable()
                                     ->required()
-                                    ->rule(Rule::in(array_keys($layouts))),
+                                    ->rule(Rule::exists('mail_layouts', 'id')),
                                 TextInput::make('title')
                                     ->label(__('mail-template::translations.subject'))
                                     ->required()
@@ -90,6 +92,7 @@ class MailTemplateResource extends BaseDraftResource
                                     ->label(__('mail-template::translations.logo'))
                                     ->helperText(__('mail-template::translations.logo_help'))
                                     ->image()
+                                    ->imagePreviewHeight('80')
                                     ->disk('public')
                                     ->directory('mail-templates')
                                     ->visibility('public'),
@@ -129,13 +132,27 @@ class MailTemplateResource extends BaseDraftResource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['mailLayout.translations']))
             ->columns([
                 TextColumn::make('slug')
                     ->label(__('mail-template::translations.slug'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('layout')
+                TextColumn::make('mailLayout.slug')
                     ->label(__('mail-template::translations.layout'))
+                    ->formatStateUsing(function (MailTemplate $record): string {
+                        $locale = trim((string) request()->query('lang', app()->getLocale()));
+                        $layout = $record->mailLayout;
+
+                        if ($layout === null) {
+                            return '';
+                        }
+
+                        $title = $layout->translate($locale, true)?->title
+                            ?? $layout->translations->first()?->title;
+
+                        return filled($title) ? (string) $title : $layout->slug;
+                    })
                     ->searchable(),
                 TextColumn::make('title')
                     ->label(__('mail-template::translations.subject')),
@@ -274,30 +291,25 @@ class MailTemplateResource extends BaseDraftResource
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int, string>
      */
     public static function layoutOptions(): array
     {
-        $layouts = config('mail-template.layouts', []);
+        $locale = trim((string) request()->query('lang', app()->getLocale()));
 
-        if (! is_array($layouts)) {
-            return [];
-        }
+        return MailLayout::query()
+            ->with('translations')
+            ->orderBy('slug')
+            ->get()
+            ->mapWithKeys(function (MailLayout $layout) use ($locale): array {
+                $title = $layout->translate($locale, true)?->title
+                    ?? $layout->translations->first()?->title;
 
-        $options = [];
+                $label = filled($title) ? (string) $title : $layout->slug;
 
-        foreach ($layouts as $key => $label) {
-            $view = trim((string) $key);
-            $name = trim((string) $label);
-
-            if ($view === '' || $name === '') {
-                continue;
-            }
-
-            $options[$view] = $name;
-        }
-
-        return $options;
+                return [$layout->getKey() => $label];
+            })
+            ->all();
     }
 
     private static function resolveSendLocale(MailTemplate $record): string

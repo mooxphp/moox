@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\MailTemplate\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\MailTemplate\Database\Factories\MailTemplateFactory;
@@ -29,12 +30,17 @@ class MailTemplate extends BaseDraftModel
 
     protected $fillable = [
         'slug',
-        'layout',
+        'mail_layout_id',
         'logo_path',
         'status',
         'uuid',
         'ulid',
     ];
+
+    public function mailLayout(): BelongsTo
+    {
+        return $this->belongsTo(MailLayout::class);
+    }
 
     public function getLogoUrlAttribute(): ?string
     {
