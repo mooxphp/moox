@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Support;
 
+use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailLayoutTranslation;
 use Moox\MailTemplate\Models\MailTemplate;
+use Moox\MailTemplate\Models\MailTemplateTranslation;
 use Spatie\Mjml\Mjml;
 
 class MailTemplateRenderer
@@ -13,7 +17,10 @@ class MailTemplateRenderer
     {
         $locale ??= app()->getLocale();
 
-        $template = MailTemplate::query()->where('slug', $slug)->first();
+        $template = MailTemplate::query()
+            ->with(['translations', 'mailLayout.translations'])
+            ->where('slug', $slug)
+            ->first();
 
         if ($template === null) {
             return null;
@@ -29,7 +36,7 @@ class MailTemplateRenderer
      */
     public function toHtml(MailTemplate $template, array $data = []): string
     {
-        $rendered = view($template->layout, $this->viewData($template, $data))->render();
+        $rendered = view($this->viewName(), $this->viewData($template, $data))->render();
 
         if (! $this->isMjml($rendered)) {
             return $rendered;
@@ -43,7 +50,7 @@ class MailTemplateRenderer
      */
     public function toMjml(MailTemplate $template, array $data = []): string
     {
-        return view($template->layout, $this->viewData($template, $data))->render();
+        return view($this->viewName(), $this->viewData($template, $data))->render();
     }
 
     /**
@@ -52,16 +59,28 @@ class MailTemplateRenderer
      */
     public function viewData(MailTemplate $template, array $data = []): array
     {
+        $template->loadMissing(['translations', 'mailLayout.translations']);
+
         $translation = $this->translationFor($template);
+        $layoutTranslation = $this->layoutTranslationFor($template);
         $brandName = config('app.name');
+
+        $footer = filled($translation?->footer)
+            ? $translation->footer
+            : $layoutTranslation?->footer;
+
+        $layout = $template->mailLayout;
 
         $merged = array_merge([
             'template' => $template,
-            'logoUrl' => $template->logo_url,
+            'logoUrl' => $template->logo_url ?? $layout?->logo_url,
             'brandName' => $brandName,
             'headline' => $data['headline'] ?? $brandName,
             'mailContent' => $translation?->mail_content,
-            'footer' => $translation?->footer,
+            'footer' => $footer,
+            'backgroundColor' => $this->color($layout?->background_color, '#ECF2F6'),
+            'buttonColor' => $this->color($layout?->button_color, '#005CA3'),
+            'textColor' => $this->color($layout?->text_color, '#000000'),
         ], $data);
 
         $merged['mailContent'] = $this->interpolate(
@@ -76,18 +95,25 @@ class MailTemplateRenderer
         return $merged;
     }
 
-    public function applyLocale(MailTemplate $template, string $locale): void
+    public function applyLocale(BaseDraftModel $record, string $locale): void
     {
-        $template->setDefaultLocale($this->resolveTranslationLocale($template, $locale));
+        $record->setDefaultLocale($this->resolveTranslationLocale($record, $locale));
     }
 
-    private function resolveTranslationLocale(MailTemplate $template, string $locale): string
+    private function viewName(): string
     {
-        if ($template->hasTranslation($locale)) {
+        $view = trim((string) config('mail-template.view'));
+
+        return $view !== '' ? $view : 'mail-template::emails.layout';
+    }
+
+    private function resolveTranslationLocale(BaseDraftModel $record, string $locale): string
+    {
+        if ($record->hasTranslation($locale)) {
             return $locale;
         }
 
-        foreach ($template->translations as $translation) {
+        foreach ($record->translations as $translation) {
             $code = (string) $translation->locale;
 
             if (strcasecmp($code, $locale) === 0) {
@@ -97,7 +123,7 @@ class MailTemplateRenderer
 
         $language = strtolower(explode('_', $locale)[0]);
 
-        foreach ($template->translations as $translation) {
+        foreach ($record->translations as $translation) {
             $code = (string) $translation->locale;
             $codeLanguage = strtolower(explode('_', $code)[0]);
 
@@ -106,15 +132,34 @@ class MailTemplateRenderer
             }
         }
 
-        return $template->translations()->first()?->locale ?? $locale;
+        return $record->translations()->first()?->locale ?? $locale;
     }
 
-    private function translationFor(MailTemplate $template): mixed
+    private function translationFor(MailTemplate $template): ?MailTemplateTranslation
     {
         $locale = $template->getDefaultLocale() ?: app()->getLocale();
 
-        return $template->translate($locale, true)
+        $translation = $template->translate($locale, true)
             ?? $template->translations()->first();
+
+        return $translation instanceof MailTemplateTranslation ? $translation : null;
+    }
+
+    private function layoutTranslationFor(MailTemplate $template): ?MailLayoutTranslation
+    {
+        $layout = $template->mailLayout;
+
+        if (! $layout instanceof MailLayout) {
+            return null;
+        }
+
+        $this->applyLocale($layout, $template->getDefaultLocale() ?: app()->getLocale());
+
+        $locale = $layout->getDefaultLocale() ?: app()->getLocale();
+        $translation = $layout->translate($locale, true)
+            ?? $layout->translations()->first();
+
+        return $translation instanceof MailLayoutTranslation ? $translation : null;
     }
 
     /**
@@ -150,6 +195,17 @@ class MailTemplateRenderer
         );
 
         return is_string($replaced) ? $replaced : $content;
+    }
+
+    private function color(mixed $value, string $fallback): string
+    {
+        $color = is_string($value) ? trim($value) : '';
+
+        if ($color === '' || ! preg_match('/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $color)) {
+            return $fallback;
+        }
+
+        return strtoupper($color);
     }
 
     private function isMjml(string $rendered): bool

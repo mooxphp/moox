@@ -9,6 +9,7 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Core\MooxServiceProvider;
 use Moox\MailTemplate\Commands\InstallCommand;
+use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ListMailLayouts;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
 use Spatie\LaravelPackageTools\Package;
 
@@ -20,9 +21,13 @@ class MailTemplateServiceProvider extends MooxServiceProvider
             ->name('mail-template')
             ->hasConfigFile()
             ->hasTranslations()
+            ->hasViews()
             ->hasMigrations([
+                'create_mail_layouts_table',
+                'create_mail_layout_translations_table',
                 'create_mail_templates_table',
                 'create_mail_template_translations_table',
+                'move_mail_logos_to_json',
             ])
             ->hasCommand(InstallCommand::class);
     }
@@ -37,6 +42,12 @@ class MailTemplateServiceProvider extends MooxServiceProvider
             TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
             fn (): string => Blade::render('@include("localization::lang-selector")'),
             scopes: ListMailTemplates::class,
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_BEFORE,
+            fn (): string => Blade::render('@include("localization::lang-selector")'),
+            scopes: ListMailLayouts::class,
         );
     }
 
