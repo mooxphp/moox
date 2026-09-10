@@ -22,7 +22,7 @@ class MailTemplateFactory extends Factory
         return [
             'slug' => fake()->unique()->bothify('template-##??'),
             'mail_layout_id' => MailLayout::factory(),
-            'logo_path' => null,
+            'logo' => null,
             'status' => 'draft',
         ];
     }

@@ -22,6 +22,7 @@ use Illuminate\Validation\Rule;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\MailTemplate\Actions\SendMailTemplate;
+use Moox\MailTemplate\Forms\Components\LogoField;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
@@ -64,8 +65,6 @@ class MailTemplateResource extends BaseDraftResource
     #[Override]
     public static function form(Schema $form): Schema
     {
-        $layouts = static::layoutOptions();
-
         return $form
             ->components([
                 Grid::make()
@@ -80,22 +79,23 @@ class MailTemplateResource extends BaseDraftResource
                                 Select::make('mail_layout_id')
                                     ->label(__('mail-template::translations.layout'))
                                     ->helperText(__('mail-template::translations.layout_help'))
-                                    ->options($layouts)
+                                    ->options(fn (?MailTemplate $record): array => static::layoutOptions($record))
                                     ->searchable()
                                     ->required()
-                                    ->rule(Rule::exists('mail_layouts', 'id')),
+                                    ->rule(fn (?MailTemplate $record) => Rule::exists('mail_layouts', 'id')->where(
+                                        function ($query) use ($record): void {
+                                            $query->whereNull('deleted_at');
+
+                                            if ($record?->mail_layout_id) {
+                                                $query->orWhere('id', $record->mail_layout_id);
+                                            }
+                                        },
+                                    )),
                                 TextInput::make('title')
                                     ->label(__('mail-template::translations.subject'))
                                     ->required()
                                     ->maxLength(255),
-                                FileUpload::make('logo_path')
-                                    ->label(__('mail-template::translations.logo'))
-                                    ->helperText(__('mail-template::translations.logo_help'))
-                                    ->image()
-                                    ->imagePreviewHeight('80')
-                                    ->disk('public')
-                                    ->directory('mail-templates')
-                                    ->visibility('public'),
+                                static::logoFormField(),
                                 Textarea::make('mail_content')
                                     ->label(__('mail-template::translations.mail_content'))
                                     ->helperText(__('mail-template::translations.mail_content_help'))
@@ -290,24 +290,50 @@ class MailTemplateResource extends BaseDraftResource
         return config('mail-template.navigation_group');
     }
 
+    public static function logoFormField(): FileUpload
+    {
+        return LogoField::make(
+            'mail-template::translations.logo_help',
+            'mail-templates',
+        );
+    }
+
     /**
      * @return array<int, string>
      */
-    public static function layoutOptions(): array
+    public static function layoutOptions(?MailTemplate $record = null): array
     {
         $locale = trim((string) request()->query('lang', app()->getLocale()));
 
-        return MailLayout::query()
+        $layouts = MailLayout::query()
             ->with('translations')
             ->orderBy('slug')
-            ->get()
+            ->get();
+
+        $currentId = $record?->mail_layout_id;
+
+        if (is_numeric($currentId) && ! $layouts->contains(fn (MailLayout $layout): bool => (int) $layout->getKey() === (int) $currentId)) {
+            $current = MailLayout::withTrashed()
+                ->with('translations')
+                ->find($currentId);
+
+            if ($current instanceof MailLayout) {
+                $layouts = $layouts->push($current)->sortBy('slug')->values();
+            }
+        }
+
+        return $layouts
             ->mapWithKeys(function (MailLayout $layout) use ($locale): array {
                 $title = $layout->translate($locale, true)?->title
                     ?? $layout->translations->first()?->title;
 
                 $label = filled($title) ? (string) $title : $layout->slug;
 
-                return [$layout->getKey() => $label];
+                if ($layout->trashed()) {
+                    $label .= ' '.__('mail-template::translations.layout_trashed_suffix');
+                }
+
+                return [(int) $layout->getKey() => $label];
             })
             ->all();
     }

@@ -2,7 +2,7 @@
 
 Filament editor for outbound MJML mail templates. One template entity, translated content per locale (Astrotomic / moox Draft). The parent stores `slug`, a relation to a **mail layout**, and an optional logo override. Translations store `title` (used as the mail subject), `mail_content`, and `footer`. Branding (`brandName`) comes from the theme / `app.name`, not from the template.
 
-Layouts are a second Draft entity in this package: `slug` on the parent, translated `title`, optional `logo`, and optional `footer`. Templates pick a layout from the database. Empty logo/footer on the template fall back to the layout for the same locale.
+Layouts are a second Draft entity in this package: `slug` and optional `logo` on the parent, translated `title` and optional `footer`. Templates pick a layout from the database. Empty logo/footer on the template fall back to the layout. If both are empty, the mail is rendered without a logo or footer.
 
 Rendering uses `spatie/mjml-php` (via `moox/mjml`). This package does not log sent mail or talk to Microsoft Graph.
 

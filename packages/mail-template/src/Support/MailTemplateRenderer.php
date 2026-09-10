@@ -73,7 +73,7 @@ class MailTemplateRenderer
 
         $merged = array_merge([
             'template' => $template,
-            'logoUrl' => $template->logo_url ?? $layoutTranslation?->logo_url,
+            'logoUrl' => $template->logo_url ?? $layout?->logo_url,
             'brandName' => $brandName,
             'headline' => $data['headline'] ?? $brandName,
             'mailContent' => $translation?->mail_content,

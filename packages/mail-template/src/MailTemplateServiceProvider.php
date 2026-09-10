@@ -27,6 +27,7 @@ class MailTemplateServiceProvider extends MooxServiceProvider
                 'create_mail_layout_translations_table',
                 'create_mail_templates_table',
                 'create_mail_template_translations_table',
+                'move_mail_logos_to_json',
             ])
             ->hasCommand(InstallCommand::class);
     }

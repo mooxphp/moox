@@ -6,13 +6,14 @@ namespace Moox\MailTemplate\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\MailTemplate\Database\Factories\MailTemplateFactory;
+use Moox\MailTemplate\Models\Concerns\HasMailLogo;
 
 class MailTemplate extends BaseDraftModel
 {
     use HasFactory;
+    use HasMailLogo;
 
     protected $table = 'mail_templates';
 
@@ -31,7 +32,7 @@ class MailTemplate extends BaseDraftModel
     protected $fillable = [
         'slug',
         'mail_layout_id',
-        'logo_path',
+        'logo',
         'status',
         'uuid',
         'ulid',
@@ -39,22 +40,7 @@ class MailTemplate extends BaseDraftModel
 
     public function mailLayout(): BelongsTo
     {
-        return $this->belongsTo(MailLayout::class);
-    }
-
-    public function getLogoUrlAttribute(): ?string
-    {
-        if (! filled($this->logo_path)) {
-            return null;
-        }
-
-        $path = (string) $this->logo_path;
-
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
-        }
-
-        return Storage::disk('public')->url($path);
+        return $this->belongsTo(MailLayout::class)->withTrashed();
     }
 
     protected static function newFactory(): MailTemplateFactory

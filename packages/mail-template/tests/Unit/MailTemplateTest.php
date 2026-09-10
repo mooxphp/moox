@@ -6,7 +6,10 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
+use Moox\MailTemplate\Resources\MailTemplateResource;
+use Moox\MailTemplate\Support\MailMedia;
 use Moox\MailTemplate\Support\MailTemplateRenderer;
+use Moox\Media\Forms\Components\MediaPicker;
 
 uses(RefreshDatabase::class);
 
@@ -40,7 +43,7 @@ it('stores translatable fields on the translation and slug on the parent', funct
 
 it('builds a public logo url from a stored path', function (): void {
     $template = MailTemplate::factory()->create([
-        'logo_path' => 'mail-templates/logo.png',
+        'logo' => 'mail-templates/logo.png',
     ]);
 
     expect($template->logo_url)->toContain('mail-templates/logo.png');
@@ -133,10 +136,12 @@ it('falls back to layout logo and footer when the template leaves them empty', f
     $layout = MailLayout::factory()
         ->translation([
             'title' => 'Login-Link',
-            'logo' => 'mail-layouts/layout-logo.png',
             'footer' => '<mj-text>LAYOUT-FOOTER</mj-text>',
         ], 'de_DE')
-        ->create(['slug' => 'login-link']);
+        ->create([
+            'slug' => 'login-link',
+            'logo' => 'mail-layouts/layout-logo.png',
+        ]);
 
     $template = MailTemplate::factory()
         ->translation([
@@ -147,7 +152,7 @@ it('falls back to layout logo and footer when the template leaves them empty', f
         ->create([
             'slug' => 'login',
             'mail_layout_id' => $layout->getKey(),
-            'logo_path' => null,
+            'logo' => null,
         ]);
 
     $data = app(MailTemplateRenderer::class)->viewData($template);
@@ -160,10 +165,12 @@ it('prefers template logo and footer over the layout', function (): void {
     $layout = MailLayout::factory()
         ->translation([
             'title' => 'Login-Link',
-            'logo' => 'mail-layouts/layout-logo.png',
             'footer' => '<mj-text>LAYOUT-FOOTER</mj-text>',
         ], 'de_DE')
-        ->create(['slug' => 'login-link']);
+        ->create([
+            'slug' => 'login-link',
+            'logo' => 'mail-layouts/layout-logo.png',
+        ]);
 
     $template = MailTemplate::factory()
         ->translation([
@@ -174,7 +181,7 @@ it('prefers template logo and footer over the layout', function (): void {
         ->create([
             'slug' => 'login',
             'mail_layout_id' => $layout->getKey(),
-            'logo_path' => 'mail-templates/template-logo.png',
+            'logo' => 'mail-templates/template-logo.png',
         ]);
 
     $data = app(MailTemplateRenderer::class)->viewData($template);
@@ -239,4 +246,97 @@ it('passes layout colors into the mail view data', function (): void {
     expect($data['backgroundColor'])->toBe('#112233')
         ->and($data['buttonColor'])->toBe('#445566')
         ->and($data['textColor'])->toBe('#778899');
+});
+
+it('blocks deleting a layout that is still referenced by templates', function (): void {
+    $layout = MailLayout::factory()->create();
+    MailTemplate::factory()->create([
+        'mail_layout_id' => $layout->getKey(),
+    ]);
+
+    expect($layout->isReferencedByTemplates())->toBeTrue()
+        ->and($layout->delete())->toBeFalse()
+        ->and($layout->forceDelete())->toBeFalse()
+        ->and($layout->fresh())->not->toBeNull()
+        ->and($layout->fresh()?->trashed())->toBeFalse();
+});
+
+it('soft-deletes a layout that is not referenced by templates', function (): void {
+    $layout = MailLayout::factory()->create();
+
+    expect($layout->delete())->not->toBeFalse()
+        ->and(MailLayout::query()->find($layout->getKey()))->toBeNull()
+        ->and(MailLayout::withTrashed()->find($layout->getKey())?->trashed())->toBeTrue();
+});
+
+it('keeps the assigned layout after it was soft-deleted', function (): void {
+    $layout = MailLayout::factory()
+        ->translation([
+            'title' => 'Legacy',
+            'footer' => '<mj-text>TRASHED-FOOTER</mj-text>',
+        ], 'de_DE')
+        ->create([
+            'slug' => 'legacy',
+            'logo' => 'mail-layouts/trashed.png',
+        ]);
+
+    $template = MailTemplate::factory()
+        ->translation([
+            'footer' => null,
+        ], 'de_DE')
+        ->create([
+            'mail_layout_id' => $layout->getKey(),
+            'logo' => null,
+        ]);
+
+    MailLayout::withoutEvents(fn () => $layout->delete());
+
+    $template = $template->fresh();
+    $options = MailTemplateResource::layoutOptions($template);
+
+    expect($template?->mailLayout)->not->toBeNull()
+        ->and($template?->mailLayout?->trashed())->toBeTrue()
+        ->and($options)->toHaveKey((int) $layout->getKey())
+        ->and($options[(int) $layout->getKey()])->toContain(__('mail-template::translations.layout_trashed_suffix'));
+
+    $data = app(MailTemplateRenderer::class)->viewData($template);
+
+    expect($data['footer'])->toBe('<mj-text>TRASHED-FOOTER</mj-text>')
+        ->and($data['logoUrl'])->toContain('mail-layouts/trashed.png');
+});
+
+it('renders without layout logo footer and colors when the layout is missing', function (): void {
+    $template = MailTemplate::factory()
+        ->translation([
+            'mail_content' => '<mj-text>Hi</mj-text>',
+            'footer' => null,
+        ], 'de_DE')
+        ->create([
+            'logo' => null,
+        ]);
+
+    $template->unsetRelation('mailLayout');
+    $template->setRelation('mailLayout', null);
+
+    $data = app(MailTemplateRenderer::class)->viewData($template);
+
+    expect($data['logoUrl'])->toBeNull()
+        ->and($data['footer'])->toBeNull()
+        ->and($data['backgroundColor'])->toBe('#ECF2F6')
+        ->and($data['buttonColor'])->toBe('#005CA3')
+        ->and($data['textColor'])->toBe('#000000');
+});
+
+it('resolves logo urls from media snapshots and legacy paths', function (): void {
+    expect(MailMedia::resolveUrl('mail-templates/legacy.png'))
+        ->toContain('mail-templates/legacy.png')
+        ->and(MailMedia::resolveUrl('https://cdn.example/logo.png'))
+        ->toBe('https://cdn.example/logo.png')
+        ->and(MailMedia::resolveUrl([
+            'id' => 999999,
+            'file_name' => 'mail-layouts/from-json.png',
+        ]))->toContain('mail-layouts/from-json.png');
+
+    expect(MailMedia::isAvailable())
+        ->toBe(class_exists(MediaPicker::class));
 });

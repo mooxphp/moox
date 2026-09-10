@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace Moox\MailTemplate\Resources;
 
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Exceptions\Halt;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
+use Moox\MailTemplate\Forms\Components\LogoField;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\CreateMailLayout;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\EditMailLayout;
@@ -71,14 +76,7 @@ class MailLayoutResource extends BaseDraftResource
                                     ->label(__('mail-template::translations.layout_title'))
                                     ->required()
                                     ->maxLength(255),
-                                FileUpload::make('logo')
-                                    ->label(__('mail-template::translations.logo'))
-                                    ->helperText(__('mail-template::translations.layout_logo_help'))
-                                    ->image()
-                                    ->imagePreviewHeight('80')
-                                    ->disk('public')
-                                    ->directory('mail-layouts')
-                                    ->visibility('public'),
+                                static::logoFormField(),
                                 Grid::make(3)
                                     ->schema([
                                         ColorPicker::make('background_color')
@@ -144,6 +142,48 @@ class MailLayoutResource extends BaseDraftResource
             ->toolbarActions([
                 ...static::getBulkActions(),
             ]);
+    }
+
+    public static function logoFormField(): FileUpload
+    {
+        return LogoField::make(
+            'mail-template::translations.layout_logo_help',
+            'mail-layouts',
+        );
+    }
+
+    #[Override]
+    public static function getDeleteAction(): Action
+    {
+        return parent::getDeleteAction()
+            ->disabled(fn ($livewire): bool => $livewire->record instanceof MailLayout
+                && $livewire->record->isReferencedByTemplates())
+            ->tooltip(fn ($livewire): ?string => $livewire->record instanceof MailLayout
+                && $livewire->record->isReferencedByTemplates()
+                    ? __('mail-template::translations.layout_in_use_cannot_delete')
+                    : null);
+    }
+
+    #[Override]
+    public static function getDeleteBulkAction(): BulkAction
+    {
+        return parent::getDeleteBulkAction()
+            ->before(function (Collection $records): void {
+                $inUse = $records->contains(
+                    fn (mixed $record): bool => $record instanceof MailLayout && $record->isReferencedByTemplates(),
+                );
+
+                if (! $inUse) {
+                    return;
+                }
+
+                Notification::make()
+                    ->danger()
+                    ->title(__('mail-template::translations.layout_in_use_cannot_delete'))
+                    ->send();
+
+                throw new Halt;
+            });
     }
 
     #[Override]

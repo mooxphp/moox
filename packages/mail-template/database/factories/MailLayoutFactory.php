@@ -36,7 +36,6 @@ class MailLayoutFactory extends Factory
 
             $layout->translateOrNew($this->defaultLocale())->fill([
                 'title' => 'Demo layout',
-                'logo' => null,
                 'footer' => null,
             ])->save();
         });

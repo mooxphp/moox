@@ -1,0 +1,196 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $this->moveLayoutLogos();
+        $this->moveTemplateLogos();
+    }
+
+    public function down(): void
+    {
+        $this->restoreTemplateLogos();
+        $this->restoreLayoutLogos();
+    }
+
+    private function moveLayoutLogos(): void
+    {
+        if (! Schema::hasTable('mail_layouts')) {
+            return;
+        }
+
+        if (! Schema::hasColumn('mail_layouts', 'logo')) {
+            Schema::table('mail_layouts', function (Blueprint $table): void {
+                $table->json('logo')->nullable();
+            });
+        }
+
+        if (! Schema::hasTable('mail_layout_translations') || ! Schema::hasColumn('mail_layout_translations', 'logo')) {
+            return;
+        }
+
+        $rows = DB::table('mail_layout_translations')
+            ->select('mail_layout_id', 'logo')
+            ->whereNotNull('logo')
+            ->where('logo', '!=', '')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($rows as $row) {
+            $existing = DB::table('mail_layouts')->where('id', $row->mail_layout_id)->value('logo');
+
+            if (filled($existing)) {
+                continue;
+            }
+
+            DB::table('mail_layouts')->where('id', $row->mail_layout_id)->update([
+                'logo' => $this->snapshot($row->logo),
+            ]);
+        }
+
+        Schema::table('mail_layout_translations', function (Blueprint $table): void {
+            $table->dropColumn('logo');
+        });
+    }
+
+    private function moveTemplateLogos(): void
+    {
+        if (! Schema::hasTable('mail_templates') || ! Schema::hasColumn('mail_templates', 'logo_path')) {
+            return;
+        }
+
+        if (! Schema::hasColumn('mail_templates', 'logo')) {
+            Schema::table('mail_templates', function (Blueprint $table): void {
+                $table->json('logo')->nullable();
+            });
+        }
+
+        $rows = DB::table('mail_templates')
+            ->select('id', 'logo_path')
+            ->whereNotNull('logo_path')
+            ->where('logo_path', '!=', '')
+            ->get();
+
+        foreach ($rows as $row) {
+            DB::table('mail_templates')->where('id', $row->id)->update([
+                'logo' => $this->snapshot($row->logo_path),
+            ]);
+        }
+
+        Schema::table('mail_templates', function (Blueprint $table): void {
+            $table->dropColumn('logo_path');
+        });
+    }
+
+    private function restoreTemplateLogos(): void
+    {
+        if (! Schema::hasTable('mail_templates') || Schema::hasColumn('mail_templates', 'logo_path')) {
+            return;
+        }
+
+        Schema::table('mail_templates', function (Blueprint $table): void {
+            $table->string('logo_path')->nullable();
+        });
+
+        if (Schema::hasColumn('mail_templates', 'logo')) {
+            $rows = DB::table('mail_templates')->select('id', 'logo')->get();
+
+            foreach ($rows as $row) {
+                $path = $this->pathFromSnapshot($row->logo);
+
+                if ($path === null) {
+                    continue;
+                }
+
+                DB::table('mail_templates')->where('id', $row->id)->update([
+                    'logo_path' => $path,
+                ]);
+            }
+
+            Schema::table('mail_templates', function (Blueprint $table): void {
+                $table->dropColumn('logo');
+            });
+        }
+    }
+
+    private function restoreLayoutLogos(): void
+    {
+        if (! Schema::hasTable('mail_layout_translations') || Schema::hasColumn('mail_layout_translations', 'logo')) {
+            return;
+        }
+
+        Schema::table('mail_layout_translations', function (Blueprint $table): void {
+            $table->string('logo')->nullable();
+        });
+
+        if (! Schema::hasTable('mail_layouts') || ! Schema::hasColumn('mail_layouts', 'logo')) {
+            return;
+        }
+
+        $rows = DB::table('mail_layouts')->select('id', 'logo')->get();
+
+        foreach ($rows as $row) {
+            $path = $this->pathFromSnapshot($row->logo);
+
+            if ($path === null) {
+                continue;
+            }
+
+            DB::table('mail_layout_translations')
+                ->where('mail_layout_id', $row->id)
+                ->update(['logo' => $path]);
+        }
+
+        Schema::table('mail_layouts', function (Blueprint $table): void {
+            $table->dropColumn('logo');
+        });
+    }
+
+    private function snapshot(mixed $value): string
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $value;
+            }
+        }
+
+        return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    }
+
+    private function pathFromSnapshot(mixed $value): ?string
+    {
+        if (! filled($value)) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $value = $decoded;
+            }
+        }
+
+        if (is_string($value) && $value !== '') {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            $fileName = $value['file_name'] ?? $value['url'] ?? null;
+
+            return is_string($fileName) && $fileName !== '' ? $fileName : null;
+        }
+
+        return null;
+    }
+};

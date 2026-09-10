@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug')->unique();
             $table->foreignId('mail_layout_id')->constrained('mail_layouts');
-            $table->string('logo_path')->nullable();
+            $table->json('logo')->nullable();
             $table->uuid('uuid')->unique();
             $table->ulid('ulid')->unique();
             $table->string('status')->nullable();
