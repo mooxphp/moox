@@ -27,7 +27,8 @@ final class LogoField
                     'image/webp',
                     'image/svg+xml',
                 ])
-                ->loadStateFromRelationshipsUsing(function (): void {});
+                ->loadStateFromRelationshipsUsing(function (): void {
+                });
         }
 
         return FileUpload::make('logo')
