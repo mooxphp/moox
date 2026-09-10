@@ -25,7 +25,11 @@ return new class extends Migration
             $table->string('message_id')->nullable()->index();
             $table->string('provider_reference')->nullable()->index();
             $table->string('correlation_id')->nullable()->unique();
-            $table->nullableMorphs('related');
+            // String morphs: related models may use integer or UUID keys
+            // (bigint related_id truncates UUIDs such as EbillingDocument).
+            $table->string('related_type')->nullable();
+            $table->string('related_id')->nullable();
+            $table->index(['related_type', 'related_id']);
             $table->timestamps();
         });
     }
