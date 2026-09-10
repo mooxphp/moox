@@ -16,6 +16,8 @@ use Moox\EBilling\Actions\CreateManualUploadDocumentAction;
 use Moox\EBilling\Actions\DispatchDocumentAction;
 use Moox\EBilling\Actions\InitializeDocumentApprovalAction;
 use Moox\EBilling\Actions\InvalidateDocumentApprovalAction;
+use Moox\EBilling\Actions\QueueDocumentDeliveryAction;
+use Moox\EBilling\Actions\RecordDeliveryAttemptsAction;
 use Moox\EBilling\Actions\RecordApprovalTransitionAction;
 use Moox\EBilling\Actions\RejectDocumentAction;
 use Moox\EBilling\Actions\ReleaseSeverityFieldAction;
@@ -31,6 +33,8 @@ use Moox\EBilling\Approval\ImmediateReviewNotificationStrategy;
 use Moox\EBilling\Console\Commands\BackfillValidationScoresCommand;
 use Moox\EBilling\Console\Commands\FlushReviewNotificationBatchCommand;
 use Moox\EBilling\Console\Commands\ScanOverdueApprovalEscalationCommand;
+use Moox\EBilling\Contracts\DeliveryRecipientResolverInterface;
+use Moox\EBilling\Delivery\ConfigurableDeliveryRecipientResolver;
 use Moox\EBilling\Contracts\InvoiceParserInterface;
 use Moox\EBilling\Contracts\PdfaNormalizerInterface;
 use Moox\EBilling\Contracts\RecipientFormatPreferenceResolverInterface;
@@ -80,6 +84,7 @@ class EBillingServiceProvider extends MooxServiceProvider
                 'add_approval_state_to_ebilling_documents_table',
                 'create_ebilling_uploaded_pdf_sources_table',
                 'add_profile_to_ebilling_documents_table',
+                'create_ebilling_delivery_attempts_table',
             ]);
 
         $this->getMooxPackage()
@@ -112,6 +117,8 @@ class EBillingServiceProvider extends MooxServiceProvider
         $this->app->singleton(TryAutoApproveDocumentAction::class);
         $this->app->singleton(InitializeDocumentApprovalAction::class);
         $this->app->singleton(DispatchDocumentAction::class);
+        $this->app->singleton(QueueDocumentDeliveryAction::class);
+        $this->app->singleton(RecordDeliveryAttemptsAction::class);
         $this->app->singleton(AnnounceDocumentNeedsReviewAction::class);
         $this->app->singleton(InvalidateDocumentApprovalAction::class);
 
@@ -141,6 +148,11 @@ class EBillingServiceProvider extends MooxServiceProvider
         if (! $this->app->bound(PdfaNormalizerInterface::class)) {
             $this->app->bind(PdfaNormalizerInterface::class, PassthroughPdfaNormalizer::class);
         }
+
+        if (! $this->app->bound(DeliveryRecipientResolverInterface::class)) {
+            $this->app->bind(DeliveryRecipientResolverInterface::class, ConfigurableDeliveryRecipientResolver::class);
+        }
+
         $this->registerFormatRegistry();
 
         $this->registerInvoiceParser();
