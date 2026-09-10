@@ -127,7 +127,7 @@ When `test_mode.enabled` is true, **all outbound Laravel mail** is intercepted o
 
 `SendMailJob` adds a second layer for mixed allowlist runs: it can perform two sends (real leg for allowlisted addresses, redirect leg for the rest) under one outbox log row. Non-outbox mail with mixed recipients is redirected entirely to the sandbox in a single send.
 
-The log row always records **intended** recipients (from before redirection) and **actual** recipients (who received mail on the wire). When any intended recipient was redirected, status is **`suppressed`**, not `sent`. Foreign-mail rows recorded via `RecordSentMailJob` follow the same rule.
+The log row always records **intended** recipients (from before redirection, including addresses declared on `envelope()` as well as Mailable `to`/`cc`/`bcc` properties) and **actual** recipients (who received mail on the wire). The Filament "Redirected" / "Umgeleitet" badge only appears when both sets are known and differ — an empty intended set is not treated as a redirect. When any intended recipient was redirected, status is **`suppressed`**, not `sent`. Foreign-mail rows recorded via `RecordSentMailJob` follow the same rule.
 
 **Not-delivered guarantee:** use `MailSendLog::deliveredToIntendedRecipients()` (or `MailSendStatus::deliveredToIntendedRecipients()`) before marking a business object as delivered. A suppressed row means the provider may have accepted a sandbox copy, but the intended recipient did not receive the mail.
 
@@ -167,7 +167,7 @@ Also stored when available: `raw_message` (rendered MIME for inspection) and enc
 
 `php artisan moox:install` registers `MailOutboxPlugin`, which exposes `MailSendLogResource` in the panel.
 
-- **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. Redirected sends show a badge when intended and actual recipients differ.
+- **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. Redirected sends show a badge only when both intended and actual recipient sets are known and differ (an empty intended set is not treated as redirected).
 - **Detail** — intended and actual recipients, error, message id, related-record link when Filament can resolve one.
 - **Raw message** — confirmation-gated modal for `sent` rows with stored MIME (may include personal data and attachment bytes).
 - **Resend** — dispatches `SendMailJob` and creates a new row. Not offered for `suppressed` or `recorded` rows.

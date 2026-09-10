@@ -33,6 +33,14 @@ final class MailableInspector
             }
         }
 
+        foreach ($this->envelopeAddressList($mailable) as $entry) {
+            $email = $this->normalizeAddress($entry);
+
+            if ($email !== null) {
+                $addresses[] = $email;
+            }
+        }
+
         return array_values(array_unique($addresses));
     }
 
@@ -212,6 +220,44 @@ final class MailableInspector
         }
 
         return [];
+    }
+
+    /**
+     * Recipients declared on envelope() (to/cc/bcc).
+     *
+     * @return list<mixed>
+     */
+    private function envelopeAddressList(Mailable $mailable): array
+    {
+        if (! method_exists($mailable, 'envelope')) {
+            return [];
+        }
+
+        $envelope = $mailable->envelope();
+
+        if (! is_object($envelope)) {
+            return [];
+        }
+
+        $addresses = [];
+
+        foreach (['to', 'cc', 'bcc'] as $property) {
+            if (! property_exists($envelope, $property)) {
+                continue;
+            }
+
+            $value = $envelope->{$property};
+
+            if (! is_array($value)) {
+                continue;
+            }
+
+            foreach ($value as $entry) {
+                $addresses[] = $entry;
+            }
+        }
+
+        return $addresses;
     }
 
     /**

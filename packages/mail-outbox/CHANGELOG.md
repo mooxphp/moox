@@ -26,6 +26,9 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 
 ### Fixed
 
+- `MailableInspector::recipients()` now includes `envelope()` to/cc/bcc addresses, so send-log **intended recipients** are populated for modern Mailables (e.g. `OutboxTestMail`, envelope-only delivery mailables) instead of staying empty
+- `MailSendLog::isRedirected()` no longer treats an empty/unknown intended set as a redirect — Filament "Umgeleitet" / Redirected requires both intended and actual recipient sets before comparing (avoids false positives when intended was not captured)
+
 - Skip stamping RFC 5322 `Message-ID` on mailers whose transport rejects it (default: `microsoftgraph` / Microsoft Graph)
 - Do not invent package-local RFC 5322 Message-IDs after send; ensure Symfony’s on-wire Message-ID before transport and capture it from the sent copy
 - Attach correlation header once across retries; honour zero retry-after without a tight loop
