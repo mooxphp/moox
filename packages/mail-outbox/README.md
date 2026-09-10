@@ -167,7 +167,7 @@ Also stored when available: `raw_message` (rendered MIME for inspection) and enc
 
 `php artisan moox:install` registers `MailOutboxPlugin`, which exposes `MailSendLogResource` in the panel.
 
-- **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. Redirected sends show a badge only when both intended and actual recipient sets are known and differ (an empty intended set is not treated as redirected).
+- **List** — status, mailer, recipient, subject, sent-at; filters on status, mailer, and date; config-driven tabs. A **Delivery** column/badge shows Redirected, Direct, or — when intended recipients are unknown (empty intended is never treated as redirected).
 - **Detail** — intended and actual recipients, error, message id, related-record link when Filament can resolve one.
 - **Raw message** — confirmation-gated modal for `sent` rows with stored MIME (may include personal data and attachment bytes).
 - **Resend** — dispatches `SendMailJob` and creates a new row. Not offered for `suppressed` or `recorded` rows.

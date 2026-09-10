@@ -27,6 +27,7 @@ All notable changes to `moox/mail-outbox` will be documented in this file.
 ### Fixed
 
 - `MailableInspector::recipients()` now includes `envelope()` to/cc/bcc addresses, so send-log **intended recipients** are populated for modern Mailables (e.g. `OutboxTestMail`, envelope-only delivery mailables) instead of staying empty
+- Filament send-log list uses a **Delivery** column (Redirected / Direct / —) instead of a redundant "Redirected" column that only ever showed "Redirected"
 - `MailSendLog::isRedirected()` no longer treats an empty/unknown intended set as a redirect — Filament "Umgeleitet" / Redirected requires both intended and actual recipient sets before comparing (avoids false positives when intended was not captured)
 
 - Skip stamping RFC 5322 `Message-ID` on mailers whose transport rejects it (default: `microsoftgraph` / Microsoft Graph)

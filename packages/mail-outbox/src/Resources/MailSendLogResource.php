@@ -108,26 +108,8 @@ final class MailSendLogResource extends BaseItemResource
                             TextEntry::make('redirected_badge')
                                 ->label(__('mail-outbox::fields.delivery'))
                                 ->badge()
-                                ->state(function (MailSendLog $record): string {
-                                    if ($record->isRedirected()) {
-                                        return __('mail-outbox::fields.redirected');
-                                    }
-
-                                    $intended = $record->intended_recipients ?? [];
-
-                                    return $intended === []
-                                        ? '—'
-                                        : __('mail-outbox::fields.direct');
-                                })
-                                ->color(function (MailSendLog $record): string {
-                                    if ($record->isRedirected()) {
-                                        return 'warning';
-                                    }
-
-                                    $intended = $record->intended_recipients ?? [];
-
-                                    return $intended === [] ? 'gray' : 'success';
-                                })
+                                ->state(fn (MailSendLog $record): string => $record->deliveryBadgeLabel())
+                                ->color(fn (MailSendLog $record): string => $record->deliveryBadgeColor())
                                 ->visible(fn (MailSendLog $record): bool => $record->status === MailSendStatus::Sent
                                     || $record->status === MailSendStatus::Suppressed),
                         ]),
@@ -216,14 +198,11 @@ final class MailSendLogResource extends BaseItemResource
                                 ->orWhere('actual_recipients', 'like', '%'.$search.'%');
                         });
                     }),
-                TextColumn::make('redirected')
-                    ->label(__('mail-outbox::fields.redirected'))
+                TextColumn::make('delivery')
+                    ->label(__('mail-outbox::fields.delivery'))
                     ->badge()
-                    ->state(fn (MailSendLog $record): ?string => $record->isRedirected()
-                        ? __('mail-outbox::fields.redirected')
-                        : null)
-                    ->color('warning')
-                    ->placeholder('—'),
+                    ->state(fn (MailSendLog $record): string => $record->deliveryBadgeLabel())
+                    ->color(fn (MailSendLog $record): string => $record->deliveryBadgeColor()),
                 TextColumn::make('subject')
                     ->label(__('mail-outbox::fields.subject'))
                     ->searchable()
