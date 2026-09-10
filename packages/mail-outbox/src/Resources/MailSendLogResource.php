@@ -108,10 +108,26 @@ final class MailSendLogResource extends BaseItemResource
                             TextEntry::make('redirected_badge')
                                 ->label(__('mail-outbox::fields.delivery'))
                                 ->badge()
-                                ->state(fn (MailSendLog $record): string => $record->isRedirected()
-                                    ? __('mail-outbox::fields.redirected')
-                                    : __('mail-outbox::fields.direct'))
-                                ->color(fn (MailSendLog $record): string => $record->isRedirected() ? 'warning' : 'success')
+                                ->state(function (MailSendLog $record): string {
+                                    if ($record->isRedirected()) {
+                                        return __('mail-outbox::fields.redirected');
+                                    }
+
+                                    $intended = $record->intended_recipients ?? [];
+
+                                    return $intended === []
+                                        ? '—'
+                                        : __('mail-outbox::fields.direct');
+                                })
+                                ->color(function (MailSendLog $record): string {
+                                    if ($record->isRedirected()) {
+                                        return 'warning';
+                                    }
+
+                                    $intended = $record->intended_recipients ?? [];
+
+                                    return $intended === [] ? 'gray' : 'success';
+                                })
                                 ->visible(fn (MailSendLog $record): bool => $record->status === MailSendStatus::Sent
                                     || $record->status === MailSendStatus::Suppressed),
                         ]),

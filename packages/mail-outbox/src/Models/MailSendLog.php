@@ -69,7 +69,13 @@ class MailSendLog extends Model
         $intended = $this->normalizedRecipientSet($this->intended_recipients);
         $actual = $this->normalizedRecipientSet($this->actual_recipients);
 
-        return $actual !== [] && $intended !== $actual;
+        // Unknown intended set (empty/null) is not a redirect — e.g. envelope-only
+        // recipients were not captured yet. Require both sides to compare.
+        if ($intended === [] || $actual === []) {
+            return false;
+        }
+
+        return $intended !== $actual;
     }
 
     public function primaryRecipientLabel(): string
