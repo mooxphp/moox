@@ -49,3 +49,28 @@ test('sends are not marked redirected when intended recipients are an empty list
     expect($log->isRedirected())->toBeFalse();
 });
 
+test('delivery badge shows redirected, direct, or unknown', function (): void {
+    $redirected = new MailSendLog([
+        'intended_recipients' => ['customer@example.com'],
+        'actual_recipients' => ['sandbox@example.com'],
+        'status' => MailSendStatus::Suppressed,
+    ]);
+    $direct = new MailSendLog([
+        'intended_recipients' => ['customer@example.com'],
+        'actual_recipients' => ['customer@example.com'],
+        'status' => MailSendStatus::Sent,
+    ]);
+    $unknown = new MailSendLog([
+        'intended_recipients' => null,
+        'actual_recipients' => ['customer@example.com'],
+        'status' => MailSendStatus::Sent,
+    ]);
+
+    expect($redirected->deliveryBadgeLabel())->toBe(__('mail-outbox::fields.redirected'))
+        ->and($redirected->deliveryBadgeColor())->toBe('warning')
+        ->and($direct->deliveryBadgeLabel())->toBe(__('mail-outbox::fields.direct'))
+        ->and($direct->deliveryBadgeColor())->toBe('success')
+        ->and($unknown->deliveryBadgeLabel())->toBe('—')
+        ->and($unknown->deliveryBadgeColor())->toBe('gray');
+});
+
