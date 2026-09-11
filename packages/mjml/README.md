@@ -1,24 +1,48 @@
 # Moox MJML
 
-Thin Moox package that requires [`spatie/mjml-php`](https://github.com/spatie/mjml-php). MJML templates live in the packages that send mail, not here.
+Converts MJML markup to HTML through a stable Moox API. Packages that send mail compose MJML themselves; this package only renders.
 
-Iteration 1 converts MJML to HTML with Spatie's API (Node + the `mjml` npm package on each send). A later iteration can wrap Spatie and `shyim/mjml-php`.
+Two engines are required and selected by config. There is no silent fallback: a failure of the selected engine is raised as an exception.
 
 ## Installation
 
 ```bash
 composer require moox/mjml
-npm install mjml
 ```
 
-Node 16 or newer must be available where mail is rendered.
+Publish the config if you want a local copy:
 
-## Usage
+```bash
+php artisan vendor:publish --tag=mjml-config
+```
+
+## API
 
 ```php
-use Spatie\Mjml\Mjml;
+use Moox\Mjml\Mjml;
 
 $html = Mjml::new()->toHtml($mjml);
 ```
 
-See the [Spatie README](https://github.com/spatie/mjml-php).
+Callers should depend on `Moox\Mjml\Mjml` only. Do not import Spatie or shyim types.
+
+## Config
+
+`mjml.use_php_renderer` (env `MJML_USE_PHP_RENDERER`, default `true`):
+
+| Value | Engine | Runtime |
+| --- | --- | --- |
+| `true` | [shyim/mjml-php](https://github.com/shyim/mjml-php) | PHP only (`ext-dom`, `ext-libxml`) |
+| `false` | [spatie/mjml-php](https://github.com/spatie/mjml-php) | Node 16+ and the `mjml` npm package |
+
+When using the Node engine:
+
+```bash
+npm install mjml
+```
+
+If PHP-FPM cannot see Node on `PATH`, set `MJML_NODE_PATH` to the directory that contains the `node` binary, and install the npm package next to Spatie:
+
+```bash
+cd vendor/spatie/mjml-php && npm install
+```

@@ -11,7 +11,9 @@ class MjmlServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
-        $package->name('mjml');
+        $package
+            ->name('mjml')
+            ->hasConfigFile();
 
         $this->getMooxPackage()
             ->title('Moox MJML')
@@ -19,7 +21,7 @@ class MjmlServiceProvider extends MooxServiceProvider
             ->stability('dev')
             ->category('mail')
             ->usedFor([
-                'requiring spatie/mjml-php so Blade MJML can be converted to HTML',
+                'converting MJML markup to HTML through a stable Moox API',
             ]);
     }
 }
