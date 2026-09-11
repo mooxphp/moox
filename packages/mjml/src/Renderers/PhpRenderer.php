@@ -13,7 +13,8 @@ class PhpRenderer implements MjmlRenderer
 {
     public function __construct(
         private string $mjmlClass = ShyimMjml::class,
-    ) {}
+    ) {
+    }
 
     public function toHtml(string $mjml): string
     {

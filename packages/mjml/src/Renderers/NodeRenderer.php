@@ -13,7 +13,8 @@ class NodeRenderer implements MjmlRenderer
 {
     public function __construct(
         private string $mjmlClass = SpatieMjml::class,
-    ) {}
+    ) {
+    }
 
     public function toHtml(string $mjml): string
     {
