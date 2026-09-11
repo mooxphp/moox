@@ -4,7 +4,7 @@ Filament editor for outbound MJML mail templates. One template entity, translate
 
 Layouts are a second Draft entity in this package: `slug` and optional `logo` on the parent, translated `title` and optional `footer`. Templates pick a layout from the database. Empty logo/footer on the template fall back to the layout. If both are empty, the mail is rendered without a logo or footer.
 
-Rendering uses `spatie/mjml-php` (via `moox/mjml`). This package does not log sent mail or talk to Microsoft Graph.
+Rendering uses `moox/mjml`. This package does not log sent mail or talk to Microsoft Graph.
 
 ## Installation
 
@@ -24,7 +24,7 @@ use Moox\MailTemplate\Plugins\MailTemplatePlugin;
 MailTemplatePlugin::make(),
 ```
 
-The host app must provide the `mjml` npm package and Node 16+.
+HTML conversion goes through `Moox\Mjml\Mjml` (PHP renderer by default). Node and `npm install mjml` are only needed when `mjml.use_php_renderer` is `false`.
 
 Language switching uses the Filament language selector (`$this->lang`). There is no locale field on the form.
 
@@ -48,6 +48,6 @@ $html = $renderer->toHtml($template, [
 ]);
 ```
 
-`find($slug, $locale)` loads one parent row and applies the translation for `$locale` (or the first available translation). `{…}` tokens in `mail_content` and `footer` are interpolated, then `MjmlDocumentComposer` produces the MJML string. If the output starts with `<mjml`, Spatie converts it to HTML.
+`find($slug, $locale)` loads one parent row and applies the translation for `$locale` (or the first available translation). `{…}` tokens in `mail_content` and `footer` are interpolated, then `MjmlDocumentComposer` produces the MJML string. If the output starts with `<mjml`, `Moox\Mjml\Mjml` converts it to HTML.
 
 In the Mail Templates list, **Preview** opens a new tab with the saved HTML. Tokens from `mail-template.preview_variables` are highlighted.

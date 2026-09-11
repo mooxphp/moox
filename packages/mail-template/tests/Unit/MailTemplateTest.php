@@ -397,3 +397,25 @@ it('omits the logo block when no url is given and includes it when set', functio
         ->and($with)->toContain('src="https://cdn.example/logo.png"')
         ->and($with)->toContain('alt="heco"');
 });
+
+it('converts composed mjml to html through the moox mjml api', function (): void {
+    $template = MailTemplate::factory()
+        ->translation([
+            'mail_content' => '<mj-text>Hello World</mj-text>',
+            'footer' => null,
+        ])
+        ->create();
+
+    $html = app(MailTemplateRenderer::class)->toHtml($template);
+
+    expect($html)->toContain('Hello World');
+});
+
+it('does not import vendor mjml engines in the renderer', function (): void {
+    $source = file_get_contents(dirname(__DIR__, 2).'/src/Support/MailTemplateRenderer.php');
+
+    expect($source)
+        ->toContain('use Moox\\Mjml\\Mjml;')
+        ->not->toContain('use Spatie\\Mjml\\Mjml;')
+        ->not->toContain('MjmlPHP\\');
+});

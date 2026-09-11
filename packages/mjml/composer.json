@@ -1,6 +1,6 @@
 {
     "name": "moox/mjml",
-    "description": "Moox MJML: Spatie mjml-php as the rendering API for this iteration.",
+    "description": "Moox MJML: convert MJML to HTML via shyim (default) or Spatie/npm.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -20,11 +20,17 @@
     ],
     "require": {
         "moox/core": "dev-main",
+        "shyim/mjml-php": "^0.2",
         "spatie/mjml-php": "^1.2"
     },
     "autoload": {
         "psr-4": {
             "Moox\\Mjml\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Mjml\\Tests\\": "tests"
         }
     },
     "extra": {
