@@ -23,6 +23,7 @@ use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ListLoginLinkProcess
 use Moox\LoginLink\Resources\LoginLinkProcessResource\Pages\ViewLoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
+use Moox\LoginLink\Support\MailTemplateAvailability;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
 
 class LoginLinkProcessResource extends BaseRecordResource
@@ -101,16 +102,45 @@ class LoginLinkProcessResource extends BaseRecordResource
                                     ->label(__('login-link::translations.mail_from'))
                                     ->email()
                                     ->maxLength(255),
-                                TextInput::make('template_key')
+                                Select::make('template_key')
                                     ->label(__('login-link::translations.template_key'))
+                                    ->options(fn (?LoginLinkProcess $record): array => MailTemplateAvailability::templateOptions(
+                                        filled($record?->template_key) ? (string) $record->template_key : null,
+                                    ))
+                                    ->getOptionLabelUsing(fn (?string $value): ?string => filled($value)
+                                        ? MailTemplateAvailability::labelForSlug($value)
+                                        : null)
+                                    ->searchable()
+                                    ->native(false)
                                     ->required()
-                                    ->maxLength(255)
-                                    ->helperText(__('login-link::translations.template_key_help')),
+                                    ->helperText(__('login-link::translations.template_key_help'))
+                                    ->visible(fn (): bool => MailTemplateAvailability::enabled())
+                                    ->dehydrated(fn (): bool => MailTemplateAvailability::enabled())
+                                    ->createOptionForm([
+                                        TextInput::make('slug')
+                                            ->label(__('login-link::translations.template_slug'))
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->unique(table: 'mail_templates', column: 'slug'),
+                                        TextInput::make('title')
+                                            ->label(__('login-link::translations.template_title'))
+                                            ->required()
+                                            ->maxLength(255),
+                                        Select::make('mail_layout_id')
+                                            ->label(__('login-link::translations.template_layout'))
+                                            ->options(fn (): array => MailTemplateAvailability::layoutOptions())
+                                            ->required()
+                                            ->searchable()
+                                            ->native(false),
+                                    ])
+                                    ->createOptionUsing(fn (array $data): string => MailTemplateAvailability::createTemplate($data)),
                                 Textarea::make('content')
                                     ->label(__('login-link::translations.content'))
                                     ->rows(6)
                                     ->columnSpanFull()
-                                    ->helperText(__('login-link::translations.content_help')),
+                                    ->helperText(__('login-link::translations.content_help'))
+                                    ->visible(fn (): bool => ! MailTemplateAvailability::enabled())
+                                    ->dehydrated(fn (): bool => ! MailTemplateAvailability::enabled()),
                                 Select::make('handler_key')
                                     ->label(__('login-link::translations.handler_key'))
                                     ->options(fn (): array => collect(app(RedemptionHandlerRegistry::class)->all())
@@ -169,6 +199,10 @@ class LoginLinkProcessResource extends BaseRecordResource
                     ->sortable(),
                 TextColumn::make('template_key')
                     ->label(__('login-link::translations.template_key'))
+                    ->formatStateUsing(fn (?string $state): string => filled($state)
+                        ? MailTemplateAvailability::labelForSlug($state)
+                        : '')
+                    ->hidden(fn (): bool => ! MailTemplateAvailability::enabled())
                     ->sortable(),
                 TextColumn::make('mail_from')
                     ->label(__('login-link::translations.mail_from'))

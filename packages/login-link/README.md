@@ -12,13 +12,13 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 |---|---|
 | **Core** | Signed URL, expiry, single-use, issue/resend, subject, process, payload, `template_key` |
 | **Process-specific** | Auth/panel (login only); domain handlers in consumer packages |
-| **Mail** | Optional `moox/mail-template` lookup by `template_key` (no composer dependency). Otherwise one HTML demo. |
+| **Mail** | Optional `moox/mail-template` (no composer dependency). Detected via `class_exists` and `login-link.mail_template.enabled` (default true). Process Select stores `mail_templates.slug`. Without the package, one HTML chrome mail. |
 | **Unavailable** | Packaged HTML demo by default. A process handler may implement `RendersUnavailablePage`. |
 
 - Process `context`: `auth` (panel) or `public` (no auth)
 - Process `invalidate_prior`: whether a new issue marks prior valid links used (default `true`)
 - Link `payload`: optional JSON call context (campaign ids, etc.) — subject stays the identity
-- Mail: process stores `template_key` only. That key is a `mail_templates.slug` when mail-template is installed. Hosts bind branding on the MailTemplate row (`layout`), not in this package.
+- Mail: with `moox/mail-template`, the process form Select stores `template_key` as `mail_templates.slug`. Create a template from the Select; the new slug is filled in. Copy lives on the MailTemplate row (`layout`). Without that package (or with `login-link.mail_template.enabled=false`), the form shows optional `content` and `ProcessLinkMail` sends `login-link::mail.process-link` (HTML chrome, no MJML).
 - Bulk: core issues **one** link; callers loop/queue for mass send
 
 ## What it does
@@ -40,7 +40,7 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 
 ### Packaged examples
 
-Seeded processes, one HTML demo mail (`login-link::mail.process-link`) when no MailTemplate row matches `template_key`:
+Seeded processes. Mail uses a MailTemplate row when `moox/mail-template` is installed and `template_key` matches a slug. Otherwise one HTML chrome mail (`login-link::mail.process-link`):
 
 | Process | Context | Template key | Handler | Invalidate prior |
 |---|---|---|---|---|
@@ -102,10 +102,10 @@ $panel->plugins([
 Admins manage processes under **Link processes**:
 
 - `title`, `slug`, `context` (`auth` \| `public`)
-- `template_key` (opaque key; matches `mail_templates.slug` when that package is installed)
+- **With mail-template:** Select for template name (`template_key` = `mail_templates.slug`). New templates can be created from the Select.
+- **Without mail-template:** no template field; optional `content` for the HTML mail
 - `handler_key` (registered handler)
-- `mail_from`, optional `content` (passed into the view, not the template selector)
-- `expiry_minutes`, `invalidate_prior`
+- `mail_from`, `expiry_minutes`, `invalidate_prior`
 
 Seeded on install:
 
@@ -119,7 +119,8 @@ Seeded on install:
 - `login-link.rate_limit.send`: limits for unauthenticated magic-link requests (per IP + per IP/email).
 - `login-link.expiration_minutes`: link validity window.
 - `login-link.user_models`: allowed user models (must include the model used by your panel auth guard provider).
-- `login-link.mail_logo_url`: optional logo on the HTML demo when no MailTemplate row is used.
+- `login-link.mail_template.enabled`: use `moox/mail-template` when that package is installed (default true).
+- `login-link.mail_logo_url`: optional logo on the HTML chrome mail when no MailTemplate row is used.
 
 ## Security notes
 

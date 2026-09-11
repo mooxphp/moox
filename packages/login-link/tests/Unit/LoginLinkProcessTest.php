@@ -11,6 +11,7 @@ use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
+use Moox\LoginLink\Support\MailTemplateAvailability;
 use Moox\LoginLink\Tests\TestCase;
 
 uses(TestCase::class);
@@ -51,6 +52,10 @@ it('seeds the login, email verification, and mass-mail process definitions', fun
         ->and(LoginLinkProcess::query()->whereIn('slug', ['ack', 'demo-dump', 'demo-campaign'])->exists())->toBeFalse();
 });
 
+it('treats mail-template as unavailable without that package', function (): void {
+    expect(MailTemplateAvailability::enabled())->toBeFalse();
+});
+
 it('persists title slug mail_from template and context', function (): void {
     $process = LoginLinkProcess::query()->create([
         'title' => 'Verify address',
@@ -85,14 +90,16 @@ it('rejects an unregistered handler key', function (): void {
     ]);
 })->throws(ValidationException::class);
 
-it('rejects an empty template key', function (): void {
-    LoginLinkProcess::query()->create([
-        'title' => 'Broken template',
-        'slug' => 'broken-template',
+it('allows an empty template key when mail-template is unavailable', function (): void {
+    $process = LoginLinkProcess::query()->create([
+        'title' => 'Plain html',
+        'slug' => 'plain-html',
         'template_key' => '',
         'handler_key' => 'login',
     ]);
-})->throws(ValidationException::class);
+
+    expect($process->fresh()->template_key)->toBeNull();
+});
 
 it('uses the package default expiry when expiry_minutes is null', function (): void {
     config()->set('login-link.expiration_minutes', 45);

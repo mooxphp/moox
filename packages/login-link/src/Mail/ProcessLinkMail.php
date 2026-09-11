@@ -8,11 +8,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Support\LinkProcessContext;
+use Moox\LoginLink\Support\MailTemplateAvailability;
 
 /**
  * Sends the signed URL. When moox/mail-template is installed, the process
@@ -103,10 +103,10 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
      */
     private function renderMailTemplate(array $data): ?string
     {
-        $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
+        $rendererClass = MailTemplateAvailability::RENDERER_CLASS;
         $slug = trim((string) ($this->process?->template_key ?? ''));
 
-        if ($slug === '' || ! class_exists($rendererClass) || ! Schema::hasTable('mail_templates')) {
+        if ($slug === '' || ! MailTemplateAvailability::enabled()) {
             return null;
         }
 

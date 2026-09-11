@@ -166,6 +166,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Optional moox/mail-template
+    |--------------------------------------------------------------------------
+    |
+    | When moox/mail-template is installed, processes pick a template by
+    | slug. Detection is class_exists + this flag (default true). There is
+    | no composer dependency. Set false to force the HTML fallback.
+    |
+    */
+
+    'mail_template' => [
+        'enabled' => env('LOGIN_LINK_MAIL_TEMPLATE_ENABLED', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Passwordless / Login link (toggle)
     |--------------------------------------------------------------------------
     |

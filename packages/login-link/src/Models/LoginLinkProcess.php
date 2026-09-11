@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
+use Moox\LoginLink\Support\MailTemplateAvailability;
 
 class LoginLinkProcess extends BaseRecordModel
 {
@@ -57,7 +58,10 @@ class LoginLinkProcess extends BaseRecordModel
                 ]);
             }
 
-            if (trim((string) $process->template_key) === '') {
+            $templateKey = trim((string) $process->template_key);
+            $process->template_key = $templateKey === '' ? null : $templateKey;
+
+            if (MailTemplateAvailability::enabled() && $process->template_key === null) {
                 throw ValidationException::withMessages([
                     'template_key' => __('login-link::translations.template_key_required'),
                 ]);
