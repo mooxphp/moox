@@ -6,6 +6,12 @@ namespace Moox\MailTemplate\Models;
 
 use Moox\Core\Entities\Items\Draft\BaseDraftTranslationModel;
 
+/**
+ * @property string $locale
+ * @property string|null $title
+ * @property string|null $mail_content
+ * @property string|null $footer
+ */
 class MailTemplateTranslation extends BaseDraftTranslationModel
 {
     /**

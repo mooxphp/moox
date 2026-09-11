@@ -66,7 +66,7 @@ class SendMailTemplate
         }
 
         foreach ($template->translations as $translation) {
-            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->locale));
+            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->getAttribute('locale')));
 
             if ($match !== null) {
                 return $match;

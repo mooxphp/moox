@@ -1,6 +1,6 @@
 {
     "name": "moox/mail-template",
-    "description": "Outbound mail templates: MJML Blade views, logo, footer, and Filament editor.",
+    "description": "Outbound mail templates: MJML composer, logo, footer, and Filament editor.",
     "keywords": [
         "Moox",
         "Laravel",
