@@ -10,7 +10,7 @@ use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailLayoutTranslation;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Models\MailTemplateTranslation;
-use Spatie\Mjml\Mjml;
+use Moox\Mjml\Mjml;
 
 class MailTemplateRenderer
 {
