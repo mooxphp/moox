@@ -15,7 +15,8 @@ class SendMailTemplate
 {
     public function __construct(
         private MailTemplateRenderer $renderer,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  list<string>  $emails

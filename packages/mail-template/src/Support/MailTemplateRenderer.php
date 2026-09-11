@@ -16,7 +16,8 @@ class MailTemplateRenderer
 {
     public function __construct(
         private MjmlDocumentComposer $composer = new MjmlDocumentComposer,
-    ) {}
+    ) {
+    }
 
     public function find(string $slug, ?string $locale = null): ?MailTemplate
     {
