@@ -15,8 +15,7 @@ class SendMailTemplate
 {
     public function __construct(
         private MailTemplateRenderer $renderer,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<string>  $emails
@@ -66,7 +65,7 @@ class SendMailTemplate
         }
 
         foreach ($template->translations as $translation) {
-            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->locale));
+            $match = $this->matchAllowedLocale($allowed, trim((string) $translation->getAttribute('locale')));
 
             if ($match !== null) {
                 return $match;

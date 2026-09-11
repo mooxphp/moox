@@ -67,12 +67,6 @@ return [
     'navigation_group' => 'trans//mail-template::translations.navigation_group',
 
     /*
-    | Blade view used as the MJML shell. Themes may override this when
-    | moox/mail-template is installed.
-    */
-    'view' => 'mail-template::emails.layout',
-
-    /*
     | Payload for the Filament HTML preview. Values are shown as `{name}`
     | tokens and highlighted. Consuming apps may merge additional keys.
     */

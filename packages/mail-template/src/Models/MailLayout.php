@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\MailTemplate\Database\Factories\MailLayoutFactory;
 use Moox\MailTemplate\Models\Concerns\HasMailLogo;
 
+/**
+ * @property string $slug
+ * @property string|null $background_color
+ * @property string|null $button_color
+ * @property string|null $text_color
+ * @property-read Collection<int, MailLayoutTranslation> $translations
+ * @property-read Collection<int, MailTemplate> $templates
+ */
 class MailLayout extends BaseDraftModel
 {
     use HasFactory;
@@ -39,6 +48,9 @@ class MailLayout extends BaseDraftModel
         'ulid',
     ];
 
+    /**
+     * @return HasMany<MailTemplate, $this>
+     */
     public function templates(): HasMany
     {
         return $this->hasMany(MailTemplate::class);

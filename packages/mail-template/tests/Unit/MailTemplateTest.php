@@ -9,6 +9,7 @@ use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource;
 use Moox\MailTemplate\Support\MailMedia;
 use Moox\MailTemplate\Support\MailTemplateRenderer;
+use Moox\MailTemplate\Support\MjmlDocumentComposer;
 use Moox\Media\Forms\Components\MediaPicker;
 
 uses(RefreshDatabase::class);
@@ -190,9 +191,7 @@ it('prefers template logo and footer over the layout', function (): void {
         ->and($data['logoUrl'])->toContain('mail-templates/template-logo.png');
 });
 
-it('renders the package default view without a theme override', function (): void {
-    config()->set('mail-template.view', 'mail-template::emails.layout');
-
+it('composes mjml in php without a blade view', function (): void {
     $template = MailTemplate::factory()
         ->translation([
             'mail_content' => '<mj-text>PACKAGE-CONTENT</mj-text>',
@@ -205,7 +204,12 @@ it('renders the package default view without a theme override', function (): voi
     expect($mjml)
         ->toContain('<mjml>')
         ->toContain('PACKAGE-CONTENT')
-        ->toContain('PACKAGE-FOOTER');
+        ->toContain('PACKAGE-FOOTER')
+        ->toContain('color="#000000"')
+        ->toContain('background-color="#005CA3"')
+        ->toContain('background-color="#ECF2F6"')
+        ->not->toContain('{{')
+        ->not->toContain('@if');
 });
 
 it('stores layout title and footer on the translation', function (): void {
@@ -339,4 +343,57 @@ it('resolves logo urls from media snapshots and legacy paths', function (): void
 
     expect(MailMedia::isAvailable())
         ->toBe(class_exists(MediaPicker::class));
+});
+
+it('wraps fragment footers and injects section footers as body siblings', function (): void {
+    $composer = new MjmlDocumentComposer;
+
+    $wrapped = $composer->compose([
+        'brandName' => 'heco',
+        'headline' => 'Subject',
+        'mailContent' => '<mj-text>BODY</mj-text>',
+        'footer' => '<mj-text>FOOTER</mj-text>',
+        'backgroundColor' => '#ECF2F6',
+        'buttonColor' => '#005CA3',
+        'textColor' => '#000000',
+    ]);
+
+    $raw = $composer->compose([
+        'brandName' => 'heco',
+        'headline' => 'Subject',
+        'mailContent' => '<mj-text>BODY</mj-text>',
+        'footer' => '<mj-section><mj-column><mj-text>SECTION-FOOTER</mj-text></mj-column></mj-section>',
+        'backgroundColor' => '#ECF2F6',
+        'buttonColor' => '#005CA3',
+        'textColor' => '#000000',
+    ]);
+
+    preg_match_all('/<mj-section\b[\s\S]*?<\/mj-section>/', $wrapped, $wrappedMatches);
+    preg_match_all('/<mj-section\b[\s\S]*?<\/mj-section>/', $raw, $rawMatches);
+
+    expect($wrappedMatches[0])->toHaveCount(2)
+        ->and($wrappedMatches[0][1])->toContain('FOOTER')
+        ->and($rawMatches[0])->toHaveCount(2)
+        ->and($raw)->toContain('SECTION-FOOTER')
+        ->and($raw)->not->toContain('<mj-column>
+                <mj-section');
+});
+
+it('omits the logo block when no url is given and includes it when set', function (): void {
+    $composer = new MjmlDocumentComposer;
+
+    $without = $composer->compose([
+        'brandName' => 'heco',
+        'mailContent' => '<mj-text>Hi</mj-text>',
+    ]);
+
+    $with = $composer->compose([
+        'brandName' => 'heco',
+        'logoUrl' => 'https://cdn.example/logo.png',
+        'mailContent' => '<mj-text>Hi</mj-text>',
+    ]);
+
+    expect($without)->not->toContain('<mj-image')
+        ->and($with)->toContain('src="https://cdn.example/logo.png"')
+        ->and($with)->toContain('alt="heco"');
 });

@@ -30,13 +30,9 @@ Language switching uses the Filament language selector (`$this->lang`). There is
 
 ## Layouts
 
-Mail layouts are edited in Filament. The MJML shell is `config('mail-template.view')`, default `mail-template::emails.layout`. A theme may override that view when this package is installed:
+Mail layouts are edited in Filament. Colors live on the layout parent (`background_color`, `button_color`, `text_color`). Logo and footer fall back from template to layout; if both are empty, those blocks are omitted.
 
-```php
-if (class_exists(\Moox\MailTemplate\MailTemplateServiceProvider::class)) {
-    config(['mail-template.view' => 'theme-heco::emails.layout']);
-}
-```
+`MjmlDocumentComposer` builds the MJML document in PHP: `mj-head` with the layout colors, then `mj-body` with an optional logo, the template content, and an optional footer. Content and footer fragments that already contain `<mj-section` are injected as body siblings; otherwise they are wrapped in `mj-section` / `mj-column`.
 
 ## Rendering
 
@@ -52,6 +48,6 @@ $html = $renderer->toHtml($template, [
 ]);
 ```
 
-`find($slug, $locale)` loads one parent row and applies the translation for `$locale` (or the first available translation). Blade produces the layout. If the output starts with `<mjml`, Spatie converts it to HTML; otherwise the Blade HTML is sent as-is.
+`find($slug, $locale)` loads one parent row and applies the translation for `$locale` (or the first available translation). `{…}` tokens in `mail_content` and `footer` are interpolated, then `MjmlDocumentComposer` produces the MJML string. If the output starts with `<mjml`, Spatie converts it to HTML.
 
 In the Mail Templates list, **Preview** opens a new tab with the saved HTML. Tokens from `mail-template.preview_variables` are highlighted.

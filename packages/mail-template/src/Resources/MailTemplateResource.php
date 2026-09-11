@@ -24,7 +24,9 @@ use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\MailTemplate\Actions\SendMailTemplate;
 use Moox\MailTemplate\Forms\Components\LogoField;
 use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailLayoutTranslation;
 use Moox\MailTemplate\Models\MailTemplate;
+use Moox\MailTemplate\Models\MailTemplateTranslation;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\EditMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
@@ -148,8 +150,15 @@ class MailTemplateResource extends BaseDraftResource
                             return '';
                         }
 
-                        $title = $layout->translate($locale, true)?->title
-                            ?? $layout->translations->first()?->title;
+                        $translation = $layout->translate($locale, true);
+                        $title = $translation instanceof MailLayoutTranslation
+                            ? $translation->title
+                            : null;
+
+                        if (! filled($title)) {
+                            $fallback = $layout->translations->first();
+                            $title = $fallback instanceof MailLayoutTranslation ? $fallback->title : null;
+                        }
 
                         return filled($title) ? (string) $title : $layout->slug;
                     })
@@ -324,8 +333,13 @@ class MailTemplateResource extends BaseDraftResource
 
         return $layouts
             ->mapWithKeys(function (MailLayout $layout) use ($locale): array {
-                $title = $layout->translate($locale, true)?->title
-                    ?? $layout->translations->first()?->title;
+                $translation = $layout->translate($locale, true);
+                $title = $translation instanceof MailLayoutTranslation ? $translation->title : null;
+
+                if (! filled($title)) {
+                    $fallback = $layout->translations->first();
+                    $title = $fallback instanceof MailLayoutTranslation ? $fallback->title : null;
+                }
 
                 $label = filled($title) ? (string) $title : $layout->slug;
 
@@ -338,7 +352,7 @@ class MailTemplateResource extends BaseDraftResource
             ->all();
     }
 
-    private static function resolveSendLocale(MailTemplate $record): string
+    protected static function resolveSendLocale(MailTemplate $record): string
     {
         $allowed = MailSendConfig::localeOptions();
         $current = trim((string) app()->getLocale());
@@ -356,11 +370,11 @@ class MailTemplateResource extends BaseDraftResource
         return array_key_first($allowed) ?? 'de_DE';
     }
 
-    private static function subjectForLocale(MailTemplate $record, string $locale): string
+    protected static function subjectForLocale(MailTemplate $record, string $locale): string
     {
         $translation = $record->translate($locale, true);
 
-        if ($translation !== null && filled($translation->title)) {
+        if ($translation instanceof MailTemplateTranslation && filled($translation->title)) {
             return (string) $translation->title;
         }
 
@@ -370,7 +384,7 @@ class MailTemplateResource extends BaseDraftResource
     /**
      * @param  array{sent: list<string>, failed: array<string, string>}  $result
      */
-    private static function notifySendResult(array $result): void
+    protected static function notifySendResult(array $result): void
     {
         $sentCount = count($result['sent']);
         $failedCount = count($result['failed']);

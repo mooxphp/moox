@@ -11,6 +11,10 @@ use Moox\MailTemplate\Support\MailMedia;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
 
+/**
+ * @property mixed $logo
+ * @property-read string|null $logo_url
+ */
 trait HasMailLogo
 {
     public function initializeHasMailLogo(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Support;
 
+use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailLayoutTranslation;
@@ -13,6 +14,10 @@ use Spatie\Mjml\Mjml;
 
 class MailTemplateRenderer
 {
+    public function __construct(
+        private MjmlDocumentComposer $composer = new MjmlDocumentComposer,
+    ) {}
+
     public function find(string $slug, ?string $locale = null): ?MailTemplate
     {
         $locale ??= app()->getLocale();
@@ -36,7 +41,7 @@ class MailTemplateRenderer
      */
     public function toHtml(MailTemplate $template, array $data = []): string
     {
-        $rendered = view($this->viewName(), $this->viewData($template, $data))->render();
+        $rendered = $this->toMjml($template, $data);
 
         if (! $this->isMjml($rendered)) {
             return $rendered;
@@ -50,7 +55,7 @@ class MailTemplateRenderer
      */
     public function toMjml(MailTemplate $template, array $data = []): string
     {
-        return view($this->viewName(), $this->viewData($template, $data))->render();
+        return $this->composer->compose($this->viewData($template, $data));
     }
 
     /**
@@ -100,13 +105,6 @@ class MailTemplateRenderer
         $record->setDefaultLocale($this->resolveTranslationLocale($record, $locale));
     }
 
-    private function viewName(): string
-    {
-        $view = trim((string) config('mail-template.view'));
-
-        return $view !== '' ? $view : 'mail-template::emails.layout';
-    }
-
     private function resolveTranslationLocale(BaseDraftModel $record, string $locale): string
     {
         if ($record->hasTranslation($locale)) {
@@ -114,9 +112,9 @@ class MailTemplateRenderer
         }
 
         foreach ($record->translations as $translation) {
-            $code = (string) $translation->locale;
+            $code = $this->localeOf($translation);
 
-            if (strcasecmp($code, $locale) === 0) {
+            if ($code !== '' && strcasecmp($code, $locale) === 0) {
                 return $code;
             }
         }
@@ -124,7 +122,7 @@ class MailTemplateRenderer
         $language = strtolower(explode('_', $locale)[0]);
 
         foreach ($record->translations as $translation) {
-            $code = (string) $translation->locale;
+            $code = $this->localeOf($translation);
             $codeLanguage = strtolower(explode('_', $code)[0]);
 
             if ($language !== '' && $codeLanguage === $language) {
@@ -132,7 +130,20 @@ class MailTemplateRenderer
             }
         }
 
-        return $record->translations()->first()?->locale ?? $locale;
+        $firstLocale = $this->localeOf($record->translations()->first());
+
+        return $firstLocale !== '' ? $firstLocale : $locale;
+    }
+
+    private function localeOf(mixed $translation): string
+    {
+        if (! $translation instanceof Model) {
+            return '';
+        }
+
+        $locale = $translation->getAttribute('locale');
+
+        return is_string($locale) ? $locale : '';
     }
 
     private function translationFor(MailTemplate $template): ?MailTemplateTranslation

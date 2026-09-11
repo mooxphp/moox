@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Core\MooxServiceProvider;
+use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Commands\InstallCommand;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ListMailLayouts;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
@@ -21,7 +22,6 @@ class MailTemplateServiceProvider extends MooxServiceProvider
             ->name('mail-template')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasViews()
             ->hasMigrations([
                 'create_mail_layouts_table',
                 'create_mail_layout_translations_table',
@@ -34,7 +34,7 @@ class MailTemplateServiceProvider extends MooxServiceProvider
 
     public function packageBooted(): void
     {
-        if (! view()->exists('localization::lang-selector')) {
+        if (! class_exists(Localization::class)) {
             return;
         }
 

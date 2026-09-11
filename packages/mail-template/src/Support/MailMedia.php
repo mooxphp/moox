@@ -66,10 +66,10 @@ final class MailMedia
         if (is_numeric($id) && class_exists('Moox\Media\Models\Media')) {
             $media = Media::query()->find($id);
 
-            if ($media !== null && method_exists($media, 'getUrl')) {
+            if ($media !== null) {
                 $url = $media->getUrl();
 
-                if (is_string($url) && $url !== '') {
+                if ($url !== '') {
                     return $url;
                 }
             }
