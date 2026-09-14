@@ -65,5 +65,18 @@ it('sends the packaged html demo when no mail-template row matches', function ()
         ->toContain('<!doctype html>')
         ->toContain('Please continue.')
         ->toContain(__('login-link::translations.mail_cta'))
+        ->toContain(__('login-link::translations.mail_expires', ['minutes' => 60]))
+        ->not->toContain('<mjml');
+});
+
+it('sends the packaged html demo when template_key is empty', function (): void {
+    $link = makeProcessLinkMailRecord('plain-html', '', LinkProcessContext::PUBLIC);
+    $process = LoginLinkProcess::query()->where('slug', 'plain-html')->first();
+
+    $html = (new ProcessLinkMail($link, $process))->render();
+
+    expect($html)
+        ->toContain('<!doctype html>')
+        ->toContain('Please continue.')
         ->not->toContain('<mjml');
 });

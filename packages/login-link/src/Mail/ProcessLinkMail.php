@@ -8,7 +8,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
@@ -103,21 +102,14 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
      */
     private function renderMailTemplate(array $data): ?string
     {
-        $rendererClass = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
         $slug = trim((string) ($this->process?->template_key ?? ''));
+        $bridge = LoginLinkProcess::mailTemplateBridge();
 
-        if ($slug === '' || ! class_exists($rendererClass) || ! Schema::hasTable('mail_templates')) {
+        if ($slug === '' || $bridge === null) {
             return null;
         }
 
-        $renderer = app($rendererClass);
-        $template = $renderer->find($slug);
-
-        if ($template === null) {
-            return null;
-        }
-
-        return $renderer->toHtml($template, $data);
+        return $bridge::toHtmlBySlug($slug, $data);
     }
 
     private function signedUrl(int $expiresMinutes): string

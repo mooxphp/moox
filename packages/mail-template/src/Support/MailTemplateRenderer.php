@@ -197,7 +197,7 @@ class MailTemplateRenderer
                     $value = data_get($data, $path);
 
                     if (is_scalar($value) && (string) $value !== '') {
-                        return (string) $value;
+                        return htmlspecialchars((string) $value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
                     }
                 }
 

@@ -59,22 +59,16 @@ class ExampleResultController extends Controller
     private function previewData(): array
     {
         return [
-            'title' => 'Passwordless login',
+            'title' => __('login-link::translations.mail_title'),
             'content' => null,
             'url' => url('/login-link/examples'),
             'expiresMinutes' => 60,
-            'user' => (object) [
-                'name' => 'Alex Example',
-                'first_name' => 'Alex',
-                'last_name' => 'Example',
-            ],
+            'user' => null,
             'subject' => null,
             'payload' => [],
             'logoUrl' => null,
             'process' => null,
-            'loginLink' => (object) [
-                'email' => 'demo@example.com',
-            ],
+            'loginLink' => null,
         ];
     }
 }

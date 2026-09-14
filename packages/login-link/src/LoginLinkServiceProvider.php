@@ -31,6 +31,7 @@ class LoginLinkServiceProvider extends MooxServiceProvider
                 'create_login_link_processes_table',
                 'add_soft_deletes_to_login_link_processes_table',
                 'add_context_template_invalidate_to_login_link_processes_table',
+                'make_template_key_nullable_on_login_link_processes_table',
             ])
             ->hasCommands([
                 InstallCommand::class,

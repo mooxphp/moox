@@ -13,13 +13,17 @@ class LoginLinkProcessSeeder extends Seeder
 {
     public function run(): void
     {
+        $useHtmlFallback = ! LoginLinkProcess::usesMailTemplate();
+
         LoginLinkProcess::query()->updateOrCreate(
             ['slug' => RedemptionHandlerRegistry::DEFAULT_PROCESS],
             [
                 'title' => 'Passwordless login',
                 'context' => LinkProcessContext::AUTH,
                 'mail_from' => null,
-                'content' => 'Click the button below to sign in. This link signs you into the panel.',
+                'content' => $useHtmlFallback
+                    ? 'Click the button below to sign in. This link signs you into the panel.'
+                    : null,
                 'template_key' => 'login',
                 'handler_key' => RedemptionHandlerRegistry::DEFAULT_PROCESS,
                 'expiry_minutes' => null,
@@ -33,7 +37,9 @@ class LoginLinkProcessSeeder extends Seeder
                 'title' => 'Email verification',
                 'context' => LinkProcessContext::PUBLIC,
                 'mail_from' => null,
-                'content' => 'Confirm that you own this mailbox. This does not sign you in.',
+                'content' => $useHtmlFallback
+                    ? 'Confirm that you own this mailbox. This does not sign you in.'
+                    : null,
                 'template_key' => 'verify-email',
                 'handler_key' => 'verify-email',
                 'expiry_minutes' => 60,
@@ -47,7 +53,9 @@ class LoginLinkProcessSeeder extends Seeder
                 'title' => 'Mass mail verification',
                 'context' => LinkProcessContext::PUBLIC,
                 'mail_from' => null,
-                'content' => 'Confirm that you received this mailing. Other recipients keep their own links.',
+                'content' => $useHtmlFallback
+                    ? 'Confirm that you received this mailing. Other recipients keep their own links.'
+                    : null,
                 'template_key' => 'mass-mail',
                 'handler_key' => 'mass-mail',
                 'expiry_minutes' => 60,

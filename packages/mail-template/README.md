@@ -6,6 +6,16 @@ Layouts are a second Draft entity in this package: `slug` and optional `logo` on
 
 Rendering uses `moox/mjml`. This package does not log sent mail or talk to Microsoft Graph.
 
+## Soft coupling for consumers
+
+Optional packages (e.g. `moox/login-link`) must not hard-require this package. Detect it with:
+
+```php
+class_exists(\Moox\MailTemplate\Support\MailTemplateBridge::class)
+```
+
+Then call `MailTemplateBridge` only — template/layout options, create, and `toHtmlBySlug`. Do not reach into models or `MailTemplateRenderer` from consumers.
+
 ## Installation
 
 ```bash
