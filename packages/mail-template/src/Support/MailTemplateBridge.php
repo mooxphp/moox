@@ -2,25 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Moox\LoginLink\Support;
+namespace Moox\MailTemplate\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailTemplate;
 
-final class MailTemplateAvailability
+/**
+ * Public soft-coupling API for optional consumers (login-link, security, …).
+ * Consumers may `class_exists` this class only — no hard composer require.
+ */
+final class MailTemplateBridge
 {
-    public const RENDERER_CLASS = 'Moox\\MailTemplate\\Support\\MailTemplateRenderer';
-
-    public const MODEL_CLASS = 'Moox\\MailTemplate\\Models\\MailTemplate';
-
-    public const LAYOUT_MODEL_CLASS = 'Moox\\MailTemplate\\Models\\MailLayout';
-
-    public static function enabled(): bool
+    public static function isAvailable(): bool
     {
-        return class_exists(self::RENDERER_CLASS)
-            && (bool) config('login-link.mail_template.enabled', true)
-            && Schema::hasTable('mail_templates');
+        return Schema::hasTable('mail_templates');
     }
 
     /**
@@ -28,23 +26,13 @@ final class MailTemplateAvailability
      */
     public static function templateOptions(?string $currentSlug = null): array
     {
-        $modelClass = self::MODEL_CLASS;
-
-        if (! class_exists($modelClass) || ! is_subclass_of($modelClass, Model::class) || ! Schema::hasTable('mail_templates')) {
+        if (! self::isAvailable()) {
             return filled($currentSlug) ? [$currentSlug => $currentSlug] : [];
         }
 
-        $locale = app()->getLocale();
-
-        $options = $modelClass::query()
-            ->with('translations')
+        $options = MailTemplate::query()
             ->orderBy('slug')
-            ->get()
-            ->mapWithKeys(function (Model $template) use ($locale): array {
-                $slug = (string) $template->getAttribute('slug');
-
-                return [$slug => self::titleFromTranslation($template, $locale, $slug)];
-            })
+            ->pluck('slug', 'slug')
             ->all();
 
         if (filled($currentSlug) && ! array_key_exists($currentSlug, $options)) {
@@ -59,15 +47,13 @@ final class MailTemplateAvailability
      */
     public static function layoutOptions(): array
     {
-        $layoutClass = self::LAYOUT_MODEL_CLASS;
-
-        if (! class_exists($layoutClass) || ! is_subclass_of($layoutClass, Model::class) || ! Schema::hasTable('mail_layouts')) {
+        if (! Schema::hasTable('mail_layouts')) {
             return [];
         }
 
         $locale = app()->getLocale();
 
-        return $layoutClass::query()
+        return MailLayout::query()
             ->with('translations')
             ->orderBy('slug')
             ->get()
@@ -81,41 +67,65 @@ final class MailTemplateAvailability
 
     public static function labelForSlug(string $slug): string
     {
-        return self::templateOptions($slug)[$slug] ?? $slug;
+        return $slug;
     }
 
     /**
      * @param  array{slug?: mixed, title?: mixed, mail_layout_id?: mixed}  $data
      */
-    public static function createTemplate(array $data): string
+    public static function createTemplate(array $data, ?string $defaultMailContent = null): string
     {
-        $modelClass = self::MODEL_CLASS;
         $slug = trim((string) ($data['slug'] ?? ''));
         $title = trim((string) ($data['title'] ?? ''));
         $layoutId = $data['mail_layout_id'] ?? null;
 
         if ($slug === '' || $title === '' || $layoutId === null || $layoutId === '') {
             throw ValidationException::withMessages([
-                'slug' => __('login-link::translations.template_key_required'),
+                'slug' => __('mail-template::translations.bridge_create_invalid'),
             ]);
         }
 
-        if (! self::enabled() || ! class_exists($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
+        if (! self::isAvailable()) {
             throw ValidationException::withMessages([
-                'slug' => __('login-link::translations.template_key_required'),
+                'slug' => __('mail-template::translations.bridge_create_invalid'),
             ]);
         }
 
-        $template = $modelClass::query()->create([
+        $template = MailTemplate::query()->create([
             'slug' => $slug,
             'mail_layout_id' => $layoutId,
         ]);
 
-        $template->translateOrNew(app()->getLocale())->fill([
-            'title' => $title,
-        ])->save();
+        $fill = ['title' => $title];
+
+        if (filled($defaultMailContent)) {
+            $fill['mail_content'] = $defaultMailContent;
+        }
+
+        $template->translateOrNew(app()->getLocale())->fill($fill)->save();
 
         return (string) $template->getAttribute('slug');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public static function toHtmlBySlug(string $slug, array $data = [], ?string $locale = null): ?string
+    {
+        $slug = trim($slug);
+
+        if ($slug === '' || ! self::isAvailable()) {
+            return null;
+        }
+
+        $renderer = app(MailTemplateRenderer::class);
+        $template = $renderer->find($slug, $locale);
+
+        if ($template === null) {
+            return null;
+        }
+
+        return $renderer->toHtml($template, $data);
     }
 
     private static function titleFromTranslation(Model $record, string $locale, string $fallback): string

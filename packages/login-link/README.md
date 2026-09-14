@@ -12,13 +12,13 @@ Signed-link **process engine** for Laravel/Filament. Login (magic link) is the f
 |---|---|
 | **Core** | Signed URL, expiry, single-use, issue/resend, subject, process, payload, `template_key` |
 | **Process-specific** | Auth/panel (login only); domain handlers in consumer packages |
-| **Mail** | Optional `moox/mail-template` (no composer dependency). Detected via `class_exists` and `login-link.mail_template.enabled` (default true). Process Select stores `mail_templates.slug`. Without the package, one HTML chrome mail. |
+| **Mail** | Optional `moox/mail-template` (no composer dependency). Soft-coupled via `LoginLinkProcess::mailTemplateBridge()` → `MailTemplateBridge` + `login-link.mail_template.enabled`. Process Select stores `mail_templates.slug`. Without the package, one HTML chrome mail. |
 | **Unavailable** | Packaged HTML demo by default. A process handler may implement `RendersUnavailablePage`. |
 
 - Process `context`: `auth` (panel) or `public` (no auth)
 - Process `invalidate_prior`: whether a new issue marks prior valid links used (default `true`)
 - Link `payload`: optional JSON call context (campaign ids, etc.) — subject stays the identity
-- Mail: with `moox/mail-template`, the process form Select stores `template_key` as `mail_templates.slug`. Create a template from the Select; the new slug is filled in. Copy lives on the MailTemplate row (`layout`). Without that package (or with `login-link.mail_template.enabled=false`), the form shows optional `content` and `ProcessLinkMail` sends `login-link::mail.process-link` (HTML chrome, no MJML).
+- Mail: with `moox/mail-template`, the process form Select stores `template_key` as `mail_templates.slug` through `MailTemplateBridge` (login-link only soft-couples that one class via `LoginLinkProcess::mailTemplateBridge()`). Create a template from the Select; the new slug is filled in. Copy lives on the MailTemplate row (`layout`). Without that package (or with `login-link.mail_template.enabled=false`), the form shows optional `content` and `ProcessLinkMail` sends `login-link::mail.process-link` (HTML chrome, no MJML).
 - Bulk: core issues **one** link; callers loop/queue for mass send
 
 ## What it does
@@ -102,8 +102,8 @@ $panel->plugins([
 Admins manage processes under **Link processes**:
 
 - `title`, `slug`, `context` (`auth` \| `public`)
-- **With mail-template:** Select for template name (`template_key` = `mail_templates.slug`). New templates can be created from the Select.
-- **Without mail-template:** no template field; optional `content` for the HTML mail
+- **With mail-template:** Select for mail template slug (`template_key` = `mail_templates.slug`). New templates can be created from the Select (minimal MJML body with `{magicLink}`). The **email subject** is the process **title**.
+- **Without mail-template:** no template field; optional `content` for the HTML mail. The process seeder fills `content` only in this mode.
 - `handler_key` (registered handler)
 - `mail_from`, `expiry_minutes`, `invalidate_prior`
 

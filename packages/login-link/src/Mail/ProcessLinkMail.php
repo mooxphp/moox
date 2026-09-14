@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\URL;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Support\LinkProcessContext;
-use Moox\LoginLink\Support\MailTemplateAvailability;
 
 /**
  * Sends the signed URL. When moox/mail-template is installed, the process
@@ -103,21 +102,14 @@ class ProcessLinkMail extends Mailable implements ShouldQueue
      */
     private function renderMailTemplate(array $data): ?string
     {
-        $rendererClass = MailTemplateAvailability::RENDERER_CLASS;
         $slug = trim((string) ($this->process?->template_key ?? ''));
+        $bridge = LoginLinkProcess::mailTemplateBridge();
 
-        if ($slug === '' || ! MailTemplateAvailability::enabled()) {
+        if ($slug === '' || $bridge === null) {
             return null;
         }
 
-        $renderer = app($rendererClass);
-        $template = $renderer->find($slug);
-
-        if ($template === null) {
-            return null;
-        }
-
-        return $renderer->toHtml($template, $data);
+        return $bridge::toHtmlBySlug($slug, $data);
     }
 
     private function signedUrl(int $expiresMinutes): string

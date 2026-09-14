@@ -11,7 +11,6 @@ use Moox\LoginLink\Handlers\VerifyEmailRedemptionHandler;
 use Moox\LoginLink\Models\LoginLinkProcess;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
-use Moox\LoginLink\Support\MailTemplateAvailability;
 use Moox\LoginLink\Tests\TestCase;
 
 uses(TestCase::class);
@@ -38,22 +37,26 @@ it('seeds the login, email verification, and mass-mail process definitions', fun
         ->and($login->handler_key)->toBe(RedemptionHandlerRegistry::DEFAULT_PROCESS)
         ->and($login->context)->toBe(LinkProcessContext::AUTH)
         ->and($login->template_key)->toBe('login')
+        ->and($login->content)->toBe('Click the button below to sign in. This link signs you into the panel.')
         ->and($login->invalidate_prior)->toBeTrue()
         ->and($verifyEmail)->not->toBeNull()
         ->and($verifyEmail->title)->toBe('Email verification')
         ->and($verifyEmail->handler_key)->toBe('verify-email')
         ->and($verifyEmail->context)->toBe(LinkProcessContext::PUBLIC)
         ->and($verifyEmail->template_key)->toBe('verify-email')
+        ->and($verifyEmail->content)->toBe('Confirm that you own this mailbox. This does not sign you in.')
         ->and($verifyEmail->invalidate_prior)->toBeTrue()
         ->and($massMail)->not->toBeNull()
         ->and($massMail->title)->toBe('Mass mail verification')
         ->and($massMail->handler_key)->toBe('mass-mail')
+        ->and($massMail->content)->toBe('Confirm that you received this mailing. Other recipients keep their own links.')
         ->and($massMail->invalidate_prior)->toBeFalse()
         ->and(LoginLinkProcess::query()->whereIn('slug', ['ack', 'demo-dump', 'demo-campaign'])->exists())->toBeFalse();
 });
 
 it('treats mail-template as unavailable without that package', function (): void {
-    expect(MailTemplateAvailability::enabled())->toBeFalse();
+    expect(LoginLinkProcess::usesMailTemplate())->toBeFalse()
+        ->and(LoginLinkProcess::mailTemplateBridge())->toBeNull();
 });
 
 it('persists title slug mail_from template and context', function (): void {

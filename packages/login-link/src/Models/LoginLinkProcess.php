@@ -8,10 +8,15 @@ use Illuminate\Validation\ValidationException;
 use Moox\Core\Entities\Items\Record\BaseRecordModel;
 use Moox\LoginLink\Services\RedemptionHandlerRegistry;
 use Moox\LoginLink\Support\LinkProcessContext;
-use Moox\LoginLink\Support\MailTemplateAvailability;
 
 class LoginLinkProcess extends BaseRecordModel
 {
+    /**
+     * Soft-coupling entry point for optional moox/mail-template.
+     * Consumers outside this package should use MailTemplateBridge directly.
+     */
+    public const MAIL_TEMPLATE_BRIDGE = 'Moox\\MailTemplate\\Support\\MailTemplateBridge';
+
     protected $table = 'login_link_processes';
 
     protected $attributes = [
@@ -39,6 +44,35 @@ class LoginLinkProcess extends BaseRecordModel
         ];
     }
 
+    /**
+     * @return class-string|null
+     */
+    public static function mailTemplateBridge(): ?string
+    {
+        $bridge = self::MAIL_TEMPLATE_BRIDGE;
+
+        if (! class_exists($bridge)
+            || ! (bool) config('login-link.mail_template.enabled', true)
+            || ! $bridge::isAvailable()) {
+            return null;
+        }
+
+        return $bridge;
+    }
+
+    public static function usesMailTemplate(): bool
+    {
+        return self::mailTemplateBridge() !== null;
+    }
+
+    public static function defaultMailTemplateContent(): string
+    {
+        $intro = htmlspecialchars(__('login-link::translations.mail_intro'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $cta = htmlspecialchars(__('login-link::translations.mail_cta'), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+
+        return '<mj-text>'.$intro.'</mj-text><mj-button href="{magicLink}">'.$cta.'</mj-button>';
+    }
+
     protected static function booted(): void
     {
         static::saving(function (LoginLinkProcess $process): void {
@@ -61,7 +95,7 @@ class LoginLinkProcess extends BaseRecordModel
             $templateKey = trim((string) $process->template_key);
             $process->template_key = $templateKey === '' ? null : $templateKey;
 
-            if (MailTemplateAvailability::enabled() && $process->template_key === null) {
+            if (self::usesMailTemplate() && $process->template_key === null) {
                 throw ValidationException::withMessages([
                     'template_key' => __('login-link::translations.template_key_required'),
                 ]);

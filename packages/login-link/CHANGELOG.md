@@ -6,8 +6,12 @@ All notable changes to `moox/login-link` will be documented in this file.
 
 ### Changed
 
-- Process form: `template_key` is a Select of mail template names when `moox/mail-template` is available (`class_exists` + `login-link.mail_template.enabled`, no composer require). Optional `content` only without mail-template. HTML fallback mail is chrome only (title, body, button, expiry).
+- Process form: `template_key` is a Select of mail template slugs when `moox/mail-template` is available (`class_exists` + `login-link.mail_template.enabled`, no composer require). Optional `content` only without mail-template. HTML fallback mail is chrome only (title, body, button, expiry).
 - `template_key` is nullable when mail-template is not used.
+- Creating a template from the process Select seeds a minimal MJML body with `{magicLink}`.
+- Process seeder writes `content` only when mail-template is unavailable.
+- Removed unused `mail_greeting` / `mail_security_hint` translation keys.
+- Soft-couples only `Moox\MailTemplate\Support\MailTemplateBridge` via `LoginLinkProcess::mailTemplateBridge()` (options/create/render live in mail-template).
 
 ### Added
 

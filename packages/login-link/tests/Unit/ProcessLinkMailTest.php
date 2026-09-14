@@ -65,9 +65,8 @@ it('sends the packaged html demo when no mail-template row matches', function ()
         ->toContain('<!doctype html>')
         ->toContain('Please continue.')
         ->toContain(__('login-link::translations.mail_cta'))
-        ->not->toContain('<mjml')
-        ->not->toContain(__('login-link::translations.mail_greeting'))
-        ->not->toContain(__('login-link::translations.mail_security_hint'));
+        ->toContain(__('login-link::translations.mail_expires', ['minutes' => 60]))
+        ->not->toContain('<mjml');
 });
 
 it('sends the packaged html demo when template_key is empty', function (): void {

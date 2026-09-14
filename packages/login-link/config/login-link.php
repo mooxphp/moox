@@ -170,8 +170,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | When moox/mail-template is installed, processes pick a template by
-    | slug. Detection is class_exists + this flag (default true). There is
-    | no composer dependency. Set false to force the HTML fallback.
+    | slug. Detection is LoginLinkProcess::mailTemplateBridge() (class_exists
+    | + table) and this flag (default true). No composer dependency. Set
+    | false to force the HTML fallback.
     |
     */
 
