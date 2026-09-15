@@ -7,7 +7,7 @@ return [
     'link|links' => 'Link|Links',
     'no_title' => 'No Title',
     'upload' => 'Upload File',
-    'save_translation' => 'Save Translation',
+    'no_translation_yet' => 'No translation for :locale yet. It is created when you change something.',
 
     // File Information
     'mime_type' => 'File Type',
@@ -31,6 +31,7 @@ return [
     'yes_delete' => 'Yes, Delete',
     'cancel' => 'Cancel',
     'download_file' => 'Download File',
+    'preview' => 'Preview',
 
     // Notifications
     'delete_error' => 'Error Deleting',
@@ -38,6 +39,7 @@ return [
     'protected_skipped' => 'Protected Files Skipped',
     'delete_confirmation' => 'Are you sure you want to delete the selected media? This action cannot be undone.',
     'protected_file_error' => 'This file is write-protected and cannot be deleted.',
+    'protected_file_readonly' => 'This file is write-protected and cannot be edited.',
     'delete_file_error' => 'The file ":fileName" could not be deleted.',
     'delete_file_success' => 'The file ":fileName" was successfully deleted.',
     'delete_file_heading' => 'Delete File ":title"',
@@ -48,9 +50,6 @@ return [
     'replace_file_success' => 'The file ":oldFileName" was successfully replaced with ":newFileName".',
     'replace_file_error' => 'The file ":fileName" could not be replaced.',
     'replace_error' => 'Error Replacing File',
-    'translation_saved' => 'Translation saved',
-    'translation_saved_message' => 'The translation for :lang was successfully saved.',
-    'name_required' => 'The name is required.',
     'validation_error' => 'Error',
 
     // Linked Files
@@ -65,6 +64,7 @@ return [
     'select_file' => 'Select File',
     'file_uploaded_success' => 'File uploaded successfully',
     'file_upload_error' => 'Error uploading file',
+    'file_type_not_allowed' => 'The file type of :fileName is not allowed.',
     'edit_file_success' => 'The file ":fileName" was successfully updated.',
     'operation_error' => 'Operation Error',
     'file_operation_error' => 'The file ":fileName" could not be operated on.',

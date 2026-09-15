@@ -7,7 +7,7 @@ return [
     'link|links' => 'Verknüpfung|Verknüpfungen',
     'no_title' => 'Kein Titel',
     'upload' => 'Datei hochladen',
-    'save_translation' => 'Übersetzung speichern',
+    'no_translation_yet' => 'Für :locale fehlt noch eine Übersetzung. Sie wird angelegt, sobald du etwas änderst.',
 
     // File Information
     'mime_type' => 'Dateityp',
@@ -31,6 +31,7 @@ return [
     'yes_delete' => 'Ja, löschen',
     'cancel' => 'Abbrechen',
     'download_file' => 'Datei herunterladen',
+    'preview' => 'Vorschau',
 
     // Notifications
     'delete_error' => 'Fehler beim Löschen',
@@ -38,6 +39,7 @@ return [
     'protected_skipped' => 'Geschützte Dateien übersprungen',
     'delete_confirmation' => 'Sind Sie sicher, dass Sie die ausgewählten Medien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     'protected_file_error' => 'Diese Datei ist schreibgeschützt und kann nicht gelöscht werden.',
+    'protected_file_readonly' => 'Diese Datei ist schreibgeschützt und kann nicht bearbeitet werden.',
     'delete_file_error' => 'Die Datei ":fileName" konnte nicht gelöscht werden.',
     'delete_file_success' => 'Die Datei ":fileName" wurde erfolgreich gelöscht.',
     'delete_file_heading' => 'Datei ":title" löschen',
@@ -48,9 +50,6 @@ return [
     'replace_file_success' => 'Die Datei ":oldFileName" wurde erfolgreich durch ":newFileName" ersetzt.',
     'replace_file_error' => 'Die Datei ":fileName" konnte nicht ersetzt werden.',
     'replace_error' => 'Fehler beim Ersetzen der Datei',
-    'translation_saved' => 'Übersetzung gespeichert',
-    'translation_saved_message' => 'Die Übersetzung für :lang wurde erfolgreich gespeichert.',
-    'name_required' => 'Der Name ist erforderlich.',
     'validation_error' => 'Fehler',
 
     // Linked Files
@@ -65,6 +64,7 @@ return [
     'select_file' => 'Datei auswählen',
     'file_uploaded_success' => 'Datei erfolgreich hochgeladen',
     'file_upload_error' => 'Fehler beim Hochladen der Datei',
+    'file_type_not_allowed' => 'Der Dateityp von :fileName ist nicht erlaubt.',
     'edit_file_success' => 'Die Datei ":fileName" wurde erfolgreich aktualisiert.',
     'operation_error' => 'Fehler beim Vorgang',
     'file_operation_error' => 'Die Datei ":fileName" konnte nicht verarbeitet werden.',

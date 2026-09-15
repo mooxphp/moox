@@ -31,6 +31,8 @@ use Moox\Core\Support\Resources\Concerns\HasScopedChildResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Resources\MediaResource\Pages\ListMedia;
+use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaUploadValidator;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
@@ -89,6 +91,8 @@ class MediaResource extends BaseResource
                 ->afterStateUpdated(function ($state, $record) {
                     if ($state && $record) {
                         try {
+                            app(MediaUploadValidator::class)->ensureAccepted($state);
+
                             $fileHash = hash_file('sha256', $state->getRealPath());
                             $fileName = $state->getClientOriginalName();
 
@@ -115,137 +119,118 @@ class MediaResource extends BaseResource
                                 return;
                             }
 
+                            /** @var Media|null $oldMedia */
                             $oldMedia = null;
-                            $oldMediaId = null;
 
-                            if ($record instanceof \Spatie\MediaLibrary\MediaCollections\Models\Media) {
+                            if ($record instanceof Media) {
                                 $oldMedia = $record;
-                                $oldMediaId = $record->getKey();
                             } else {
                                 $oldMedia = $record->getFirstMedia();
-                                $oldMediaId = $oldMedia !== null ? $oldMedia->getKey() : null;
                             }
 
-                            $originalFileName = pathinfo($oldMedia?->file_name, PATHINFO_FILENAME);
                             $newFileName = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
+                            $isEdit = (bool) preg_match('/-v\d+$/', $newFileName);
+                            $oldFileNameForNotification = $oldMedia?->file_name ?? 'unknown';
 
-                            $isEdit = preg_match('/-v\d+$/', $newFileName);
+                            DB::transaction(function () use ($fileHash, $isEdit, $newFileName, $oldMedia, $record, $state): void {
+                                $model = new Media;
+                                $model->exists = true;
 
-                            $usables = [];
-                            if ($oldMediaId && ! $isEdit) {
-                                $usables = DB::table('media_usables')
-                                    ->where('media_id', $oldMediaId)
-                                    ->get()
-                                    ->map(function ($item) {
-                                        return (array) $item;
-                                    })
-                                    ->toArray();
-                            }
+                                $fileAdder = FileAdderFactory::create($model, $state);
+                                $stateSize = method_exists($state, 'getSize') ? $state->getSize() : null;
+                                if (is_int($stateSize) && $stateSize > 0) {
+                                    $fileAdder->setFileSize($stateSize);
+                                }
 
-                            if ($oldMediaId && ! $isEdit) {
-                                DB::table('media')->where('id', $oldMediaId)->delete();
-                            }
+                                $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
+                                /** @var Media $media */
+                                $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
 
-                            $model = new Media;
-                            $model->exists = true;
+                                $title = $newFileName;
+                                $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
+                                $media->setAttribute('uploader_id', Auth::id());
+                                $media->setCustomProperty('file_hash', $fileHash);
 
-                            $fileAdder = app(FileAdderFactory::class)->create($model, $state);
-                            $collection = $oldMedia ? $oldMedia->collection_name : $record->collection_name;
-                            /** @var Media $media */
-                            $media = $fileAdder->preservingOriginal()->toMediaCollection($collection);
+                                if ($isEdit && $oldMedia) {
+                                    $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
+                                    $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
+                                } else {
+                                    $media->setAttribute('original_model_type', Media::class);
+                                    $media->setAttribute('original_model_id', $media->getKey());
+                                }
 
-                            $title = $newFileName;
-                            $media->setAttribute('title', $title);
-                            $media->setAttribute('alt', $title);
-                            $media->setAttribute('uploader_type', Auth::user() !== null ? get_class(Auth::user()) : null);
-                            $media->setAttribute('uploader_id', Auth::id());
+                                $media->setAttribute('model_id', $media->getKey());
+                                $media->setAttribute('model_type', Media::class);
 
-                            $media->setCustomProperty('file_hash', $fileHash);
+                                if ($oldMedia instanceof Media) {
+                                    $media->media_collection_id = $oldMedia->media_collection_id;
+                                }
 
-                            if ($isEdit && $oldMedia) {
-                                $media->setAttribute('original_model_type', $oldMedia->getAttribute('original_model_type'));
-                                $media->setAttribute('original_model_id', $oldMedia->getAttribute('original_model_id'));
-                            } else {
-                                $media->setAttribute('original_model_type', Media::class);
-                                $media->setAttribute('original_model_id', $media->getKey());
-                            }
-
-                            $media->setAttribute('model_id', $media->getKey());
-                            $media->setAttribute('model_type', Media::class);
-
-                            if (str_starts_with($media->mime_type, 'image/')) {
-                                [$width, $height] = getimagesize($media->getPath());
-                                $media->setCustomProperty('dimensions', [
-                                    'width' => $width,
-                                    'height' => $height,
-                                ]);
-                            }
-
-                            static::applyScopedDefaults($media);
-                            $media->save();
-
-                            if (! $isEdit) {
-                                foreach ($usables as $usable) {
-                                    DB::table('media_usables')->insert([
-                                        'media_id' => $media->getKey(),
-                                        'media_usable_id' => $usable['media_usable_id'],
-                                        'media_usable_type' => $usable['media_usable_type'],
-                                        'created_at' => now(),
-                                        'updated_at' => now(),
-                                    ]);
-
-                                    // Update the model with the new media data
-                                    $model = $usable['media_usable_type']::find($usable['media_usable_id']);
-                                    if ($model) {
-                                        foreach ($model->getAttributes() as $field => $value) {
-                                            $jsonData = json_decode($value, true);
-
-                                            if (! is_array($jsonData)) {
-                                                continue;
-                                            }
-
-                                            if (isset($jsonData['file_name']) && $jsonData['file_name'] === $oldMedia->file_name) {
-                                                $model->{$field} = json_encode([
-                                                    'file_name' => $media->file_name,
-                                                    'title' => $media->getAttribute('title'),
-                                                    'description' => $media->getAttribute('description'),
-                                                    'internal_note' => $media->getAttribute('internal_note'),
-                                                    'alt' => $media->getAttribute('alt'),
-                                                ]);
-
-                                                continue;
-                                            }
-
-                                            $changed = false;
-                                            foreach ($jsonData as $key => $item) {
-                                                if (is_array($item) && isset($item['file_name']) && $item['file_name'] === $oldMedia->file_name) {
-                                                    $jsonData[$key] = [
-                                                        'file_name' => $media->file_name,
-                                                        'title' => $media->getAttribute('title'),
-                                                        'description' => $media->getAttribute('description'),
-                                                        'internal_note' => $media->getAttribute('internal_note'),
-                                                        'alt' => $media->getAttribute('alt'),
-                                                    ];
-                                                    $changed = true;
-                                                }
-                                            }
-
-                                            if ($changed) {
-                                                $model->{$field} = json_encode($jsonData);
-                                            }
-                                        }
-
-                                        $model->save();
+                                if (str_starts_with((string) $media->mime_type, 'image/')) {
+                                    $size = @getimagesize($media->getPath());
+                                    if ($size !== false) {
+                                        $media->setCustomProperty('dimensions', [
+                                            'width' => (int) $size[0],
+                                            'height' => (int) $size[1],
+                                        ]);
                                     }
                                 }
-                            }
+
+                                static::applyScopedDefaults($media);
+                                $media->save();
+
+                                $translation = $media->translateOrNew(app()->getLocale());
+                                $translation->setAttribute('name', $media->file_name);
+                                $translation->setAttribute('title', $title);
+                                $translation->setAttribute('alt', $title);
+
+                                if ($oldMedia instanceof Media) {
+                                    foreach ($oldMedia->translations as $oldTranslation) {
+                                        $clonedTranslation = $media->translateOrNew($oldTranslation->locale);
+                                        $clonedTranslation->setAttribute('name', $media->file_name);
+                                        $clonedTranslation->setAttribute('title', $oldTranslation->title ?: $title);
+                                        $clonedTranslation->setAttribute('alt', $oldTranslation->alt ?: ($oldTranslation->title ?: $title));
+                                        $clonedTranslation->setAttribute('description', $oldTranslation->description);
+                                        $clonedTranslation->setAttribute('internal_note', $oldTranslation->internal_note);
+                                    }
+                                }
+
+                                $media->save();
+
+                                if (! $isEdit && $oldMedia instanceof Media) {
+                                    $oldFileName = $oldMedia->file_name;
+
+                                    $usables = DB::table('media_usables')
+                                        ->where('media_id', $oldMedia->getKey())
+                                        ->get();
+
+                                    foreach ($usables as $usable) {
+                                        DB::table('media_usables')->insert([
+                                            'media_id' => $media->getKey(),
+                                            'media_usable_id' => $usable->media_usable_id,
+                                            'media_usable_type' => $usable->media_usable_type,
+                                            'created_at' => now(),
+                                            'updated_at' => now(),
+                                        ]);
+                                    }
+
+                                    Media::syncMediaMetadata($media->load('translations'), $oldFileName);
+
+                                    DB::table('media_usables')
+                                        ->where('media_id', $oldMedia->getKey())
+                                        ->delete();
+
+                                    $oldMedia->deletePreservingMedia();
+                                    $oldMedia->delete();
+                                }
+                            });
 
                             Notification::make()
                                 ->success()
                                 ->title($isEdit
                                     ? __('media::fields.edit_file_success', ['fileName' => $state->getClientOriginalName()])
                                     : __('media::fields.replace_file_success', [
-                                        'oldFileName' => $oldMedia->file_name ?? 'unknown',
+                                        'oldFileName' => $oldFileNameForNotification,
                                         'newFileName' => $state->getClientOriginalName(),
                                     ]))
                                 ->send();
@@ -266,6 +251,12 @@ class MediaResource extends BaseResource
                         }
                     }
                 }),
+
+            View::make('media::components.media-preview')
+                ->columnSpanFull()
+                ->visible(fn ($record): bool => config('media.modal.resource.show_pdf_preview', true)
+                    && $record !== null
+                    && ($record->mime_type ?? '') === 'application/pdf'),
 
             Section::make()
                 ->schema([
@@ -345,42 +336,16 @@ class MediaResource extends BaseResource
                                 ->label(__('media::fields.collection'))
                                 ->disabled(fn ($record) => $record?->getOriginal('write_protected'))
                                 ->options(function ($record, $livewire) {
+                                    $localeResolver = app(MediaLocaleResolver::class);
                                     $currentLang = $livewire->lang ?? app()->getLocale();
 
-                                    $collections = MediaCollection::query()
+                                    return MediaCollection::query()
                                         ->with('translations')
-                                        ->get();
-
-                                    $options = [];
-                                    foreach ($collections as $collection) {
-                                        $name = null;
-
-                                        $translation = $collection->translations()->where('locale', $currentLang)->first();
-
-                                        if ($translation && ! empty($translation->name)) {
-                                            $name = $translation->name;
-                                        } else {
-                                            if (class_exists(Localization::class)) {
-                                                $defaultLocale = optional(Localization::query()
-                                                    ->where('is_default', true)
-                                                    ->first()?->language)->alpha2 ?? config('app.locale');
-
-                                                $translation = $collection->translations()->where('locale', $defaultLocale)->first();
-                                                if ($translation && ! empty($translation->name)) {
-                                                    $name = $translation->name;
-                                                }
-                                            }
-
-                                            if (empty($name)) {
-                                                $anyTranslation = $collection->translations()->whereNotNull('name')->first();
-                                                $name = $anyTranslation->name ?? 'Collection #'.$collection->getKey();
-                                            }
-                                        }
-
-                                        $options[$collection->id] = $name;
-                                    }
-
-                                    return $options;
+                                        ->get()
+                                        ->mapWithKeys(fn (MediaCollection $collection): array => [
+                                            $collection->id => $localeResolver->collectionName($collection, $currentLang),
+                                        ])
+                                        ->all();
                                 })
                                 ->default(fn ($record) => $record->media_collection_id)
                                 ->afterStateUpdated(function ($state, $record) {
@@ -399,95 +364,41 @@ class MediaResource extends BaseResource
                 ])
                 ->columnSpanFull(),
 
+            View::make('media::components.missing-translation-notice')
+                ->viewData(fn ($record, $livewire): array => [
+                    'locale' => static::displayLocaleLabel($livewire),
+                ])
+                ->columnSpanFull()
+                ->visible(fn ($record, $livewire): bool => static::isMissingTranslationForCurrentLocale($record, $livewire)),
+
             Section::make(__('media::fields.metadata'))
                 ->schema([
                     TextInput::make('name')
                         ->label(__('media::fields.name'))
-                        ->required()
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('name') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->name = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'name'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'name'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('title')
                         ->label(__('media::fields.title'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('title') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->title = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'title'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'title'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     TextInput::make('alt')
                         ->label(__('media::fields.alt_text'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('alt') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->alt = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'alt'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'alt'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
 
                     Textarea::make('description')
                         ->label(__('media::fields.description'))
                         ->live(onBlur: true)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('description') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->description = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'description'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'description'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -499,23 +410,8 @@ class MediaResource extends BaseResource
                     TextInput::make('internal_note')
                         ->live(onBlur: true)
                         ->dehydrated(false)
-                        ->afterStateHydrated(function ($component, $state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                $component->state($translation !== null ? ($translation->getAttribute('internal_note') ?? '') : '');
-                            }
-                        })
-                        ->afterStateUpdated(function ($state, $record, $livewire) {
-                            if ($record && method_exists($record, 'translations')) {
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-                                if ($translation) {
-                                    $translation->internal_note = $state;
-                                    $translation->save();
-                                }
-                            }
-                        })
+                        ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'internal_note'))
+                        ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'internal_note'))
                         ->disabled(fn ($record) => $record?->getOriginal('write_protected')),
                 ])
                 ->columnSpanFull()
@@ -530,6 +426,9 @@ class MediaResource extends BaseResource
         $columns = [];
 
         $livewire = $table->getLivewire();
+
+        $table->recordTitle(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire));
+
         if (property_exists($livewire, 'isGridView') && $livewire->isGridView) {
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
@@ -915,38 +814,11 @@ class MediaResource extends BaseResource
                     ->icon('')
                     ->label('')
                     ->slideOver()
-                    ->modalHeading(function ($record, $livewire) {
-                        $lang = $livewire->lang ?? app()->getLocale();
-
-                        if (method_exists($record, 'translations')) {
-                            $translation = $record->translations()->where('locale', $lang)->first();
-                            if ($translation && ! empty($translation->name)) {
-                                return $translation->name;
-                            }
-                        }
-
-                        return $record->name ?: 'No name';
-                    })
+                    ->modalHeading(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->authorize('view')
                     ->extraModalFooterActions([
-                        Action::make('save_translation')
-                            ->label(__('media::fields.save_translation'))
-                            ->color('success')
-                            ->icon('heroicon-m-language')
-                            ->visible(function ($record, $livewire) {
-                                if (! $record || ! method_exists($record, 'translations')) {
-                                    return false;
-                                }
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-
-                                return ! $translation;
-                            })
-                            ->action(function ($record, $livewire) {
-                                $livewire->saveTranslationFromForm($record->id);
-                            }),
                         Action::make('delete')
                             ->label(__('media::fields.delete_file'))
                             ->color('danger')
@@ -1230,5 +1102,119 @@ class MediaResource extends BaseResource
     public static function getNavigationBadge(): ?string
     {
         return static::resolveScopedNavigationBadge();
+    }
+
+    protected static function displayLocaleLabel(mixed $livewire): string
+    {
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        return $resolver->displayLocaleName($locale);
+    }
+
+    protected static function displayTitleForRecord(mixed $record, mixed $livewire = null): string
+    {
+        if (! $record instanceof Media) {
+            return __('media::fields.no_title');
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        $translation = $resolver->findTranslation($record, $locale);
+        if ($translation !== null && filled($translation->getAttribute('name'))) {
+            return (string) $translation->getAttribute('name');
+        }
+
+        $fallback = $resolver->fallbackMediaName($record);
+
+        return $fallback !== '' ? $fallback : __('media::fields.no_title');
+    }
+
+    protected static function isMissingTranslationForCurrentLocale(mixed $record, mixed $livewire): bool
+    {
+        if (! $record || ! method_exists($record, 'translations')) {
+            return false;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        return $resolver->findTranslation($record, $locale) === null;
+    }
+
+    protected static function hydrateTranslatedState($component, $record, $livewire, string $attribute): void
+    {
+        if (! $record || ! method_exists($record, 'translations')) {
+            return;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = $livewire->lang ?: $resolver->currentLocale();
+        $translation = $resolver->findTranslation($record, $locale);
+        $value = $translation !== null ? $translation->getAttribute($attribute) : null;
+
+        if ($attribute === 'name' && ! filled($value)) {
+            $component->state($resolver->fallbackMediaName($record));
+
+            return;
+        }
+
+        $component->state($translation !== null ? (string) ($value ?? '') : '');
+    }
+
+    protected static function persistTranslatedState(mixed $state, $record, $livewire, string $attribute): void
+    {
+        if (! $record || ! method_exists($record, 'translateOrNew')) {
+            return;
+        }
+
+        if ($record->getOriginal('write_protected')) {
+            return;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $preferred = $livewire->lang ?: $resolver->currentLocale();
+        $locale = $resolver->matchingLocale($record, $preferred) ?? $resolver->canonicalLocale((string) $preferred);
+        $hadTranslation = $resolver->findTranslation($record, $preferred) !== null;
+        $translation = $record->translateOrNew($locale);
+        $fallbackName = $resolver->fallbackMediaName($record);
+
+        if ($attribute === 'name') {
+            $name = is_string($state) ? trim($state) : '';
+
+            if ($name === '') {
+                $name = $fallbackName;
+            }
+
+            if ($name === '') {
+                return;
+            }
+
+            // Prefill alone must not create a translation row — only a real edit.
+            if (! $hadTranslation && $name === $fallbackName) {
+                return;
+            }
+
+            $translation->name = $name;
+            $translation->save();
+            $record->unsetRelation('translations');
+
+            return;
+        }
+
+        if (! $hadTranslation && ! filled($translation->getAttribute('name'))) {
+            $translation->name = $fallbackName !== '' ? $fallbackName : null;
+        }
+
+        $translation->{$attribute} = is_string($state) && trim($state) === '' ? null : $state;
+        $translation->save();
+        $record->unsetRelation('translations');
     }
 }

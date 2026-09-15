@@ -104,7 +104,7 @@ When media is attached via MediaPicker, the JSON field contains:
 
 ### Editing Media Metadata
 
-When editing media in the admin panel, fields like `title`, `alt`, `description`, and `internal_note` are automatically saved as soon as you leave the field (blur event). No save button is required - changes are persisted immediately and synchronized to all models using that media.
+When editing media in the admin panel or MediaPicker sidebar, fields like `name`, `title`, `alt`, `description`, and `internal_note` are automatically saved when you change a field and leave it (blur). No save button is required. For a locale without a translation yet, an amber notice is shown, `name` is prefilled from the default locale (or the original file name), and a translation row is created only after a real edit — not merely from opening/closing the UI. Changing the language switcher reloads picker metadata for the selected item.
 
 ## Requirements
 

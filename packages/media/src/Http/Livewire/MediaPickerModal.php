@@ -13,16 +13,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithPagination;
 use Moox\Core\Support\Scopes\ScopeValue;
-use Moox\Localization\Models\Localization;
 use Moox\Media\Helpers\MediaIconHelper;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
 use Moox\Media\Models\MediaTranslation;
+use Moox\Media\Support\MediaLocaleResolver;
+use Moox\Media\Support\MediaUploadValidator;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 /** @property Schema $form */
@@ -34,6 +34,10 @@ class MediaPickerModal extends Component implements HasForms
     public ?int $modelId = null;
 
     public ?string $modelClass = null;
+
+    public ?string $lang = null;
+
+    public bool $isMissingTranslation = false;
 
     public ?Model $model = null;
 
@@ -112,6 +116,8 @@ class MediaPickerModal extends Component implements HasForms
 
         $this->scopedMediaCollectionId = $this->resolveScopedMediaCollectionId();
         $this->scopedMediaScope = $this->resolveScopedMediaScope();
+        $this->lang = app(MediaLocaleResolver::class)->currentLocale($this->lang);
+        app(MediaLocaleResolver::class)->syncApplicationLocale();
 
         $firstCollection = $this->getCollectionsQuery()->first();
         if (! $firstCollection) {
@@ -199,30 +205,15 @@ class MediaPickerModal extends Component implements HasForms
 
     protected function getFallbackLocale(): string
     {
-        if (! class_exists(Localization::class)) {
-            return config('app.locale');
-        }
-
-        $localization = Localization::query()
-            ->where('is_default', true)
-            ->where('is_active_admin', true)
-            ->with('language')
-            ->first();
-
-        return $localization?->getAttribute('locale_variant')
-            ?: $localization?->language?->alpha2
-            ?: config('app.locale');
+        return app(MediaLocaleResolver::class)->adminDefaultLocale();
     }
 
     protected function resolveCollectionLabel(MediaCollection $collection, ?string $locale = null): string
     {
-        $currentLocale = $locale ?? app()->getLocale();
-        $fallbackLocale = $this->getFallbackLocale();
-
-        return $collection->translate($currentLocale)?->getAttribute('name')
-            ?? $collection->translate($fallbackLocale)?->getAttribute('name')
-            ?? $collection->translations->first()?->getAttribute('name')
-            ?? __('media::fields.uncategorized');
+        return app(MediaLocaleResolver::class)->collectionName(
+            $collection->loadMissing('translations'),
+            $locale,
+        );
     }
 
     protected function getCollectionOptions(?string $locale = null): array
@@ -269,7 +260,7 @@ class MediaPickerModal extends Component implements HasForms
     {
         $collection = Select::make('media_collection_id')
             ->label(__('media::fields.collection'))
-            ->options(fn () => $this->getCollectionOptions(app()->getLocale()))
+            ->options(fn () => $this->getCollectionOptions(app(MediaLocaleResolver::class)->currentLocale($this->lang)))
             ->searchable()
             ->default(fn () => $this->getDefaultCollectionId())
             ->required()
@@ -286,8 +277,11 @@ class MediaPickerModal extends Component implements HasForms
                     return;
                 }
 
+                $localeResolver = app(MediaLocaleResolver::class);
+                $uploadLocale = $localeResolver->currentLocale($this->lang);
+
                 $collectionId = $get('media_collection_id') ?: $this->getDefaultCollectionId();
-                $collectionName = $this->resolveCollectionName($collectionId ? (int) $collectionId : null, app()->getLocale());
+                $collectionName = $this->resolveCollectionName($collectionId ? (int) $collectionId : null, $uploadLocale);
 
                 $uploadedCount = 0;
                 $files = is_array($state) ? $state : [$state];
@@ -298,6 +292,11 @@ class MediaPickerModal extends Component implements HasForms
                     if ($realPath === null) {
                         continue;
                     }
+
+                    app(MediaUploadValidator::class)->ensureAccepted(
+                        $tempFile,
+                        $this->uploadConfig['accepted_file_types'] ?? null,
+                    );
 
                     $fileHash = hash_file('sha256', $realPath);
 
@@ -335,29 +334,15 @@ class MediaPickerModal extends Component implements HasForms
                     try {
                         $title = pathinfo($fileName, PATHINFO_FILENAME);
 
-                        // Get default locale for translations FIRST, before creating media
-                        $uploadLocale = 'en_US';
-                        if (class_exists(Localization::class)) {
-                            $localization = Localization::query()
-                                ->where('is_default', true)
-                                ->where('is_active_admin', true)
-                                ->with('language')
-                                ->first();
-
-                            if ($localization) {
-                                $uploadLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-                            }
-                        }
-
-                        // Set app locale BEFORE creating media to prevent Translatable from creating unwanted translations
-                        $originalLocale = app()->getLocale();
-                        app()->setLocale($uploadLocale);
-
-                        try {
+                        $localeResolver->withLocale($uploadLocale, function () use ($collectionId, $collectionName, $fileHash, $tempFile, $title, $uploadLocale): void {
                             $model = new Media;
                             $model->exists = true;
 
-                            $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                            $fileAdder = FileAdderFactory::create($model, $tempFile);
+                            $tempFileSize = method_exists($tempFile, 'getSize') ? $tempFile->getSize() : null;
+                            if (is_int($tempFileSize) && $tempFileSize > 0) {
+                                $fileAdder->setFileSize($tempFileSize);
+                            }
                             /** @var Media $media */
                             $media = $fileAdder->preservingOriginal()->toMediaCollection($collectionName);
 
@@ -372,13 +357,15 @@ class MediaPickerModal extends Component implements HasForms
 
                             $media->setCustomProperty('file_hash', $fileHash);
 
-                            if (str_starts_with($media->mime_type, 'image/')) {
+                            if (str_starts_with((string) $media->mime_type, 'image/')) {
                                 try {
-                                    [$width, $height] = getimagesize($media->getPath());
-                                    $media->setCustomProperty('dimensions', [
-                                        'width' => $width,
-                                        'height' => $height,
-                                    ]);
+                                    $size = @getimagesize($media->getPath());
+                                    if ($size !== false) {
+                                        $media->setCustomProperty('dimensions', [
+                                            'width' => (int) $size[0],
+                                            'height' => (int) $size[1],
+                                        ]);
+                                    }
                                 } catch (Exception $e) {
                                     // Ignore image size errors
                                 }
@@ -386,27 +373,17 @@ class MediaPickerModal extends Component implements HasForms
 
                             $media->save();
 
-                            // Create translation directly in database (only one translation in upload locale)
-                            MediaTranslation::updateOrCreate(
-                                [
-                                    'media_id' => $media->id,
-                                    'locale' => $uploadLocale,
-                                ],
-                                [
-                                    'name' => $title,
-                                    'title' => $title,
-                                    'alt' => $title,
-                                ]
-                            );
+                            $translation = $media->translateOrNew($uploadLocale);
+                            $translation->setAttribute('name', $title);
+                            $translation->setAttribute('title', $title);
+                            $translation->setAttribute('alt', $title);
+                            $translation->save();
 
-                            // Delete any unwanted translations that might have been created
-                            MediaTranslation::where('media_id', $media->id)
+                            MediaTranslation::query()
+                                ->where('media_id', $media->id)
                                 ->where('locale', '!=', $uploadLocale)
                                 ->delete();
-                        } finally {
-                            // Restore original locale
-                            app()->setLocale($originalLocale);
-                        }
+                        });
                         $this->processedHashes[] = $fileHash;
                         $uploadedCount++;
                     } catch (Exception $e) {
@@ -511,60 +488,113 @@ class MediaPickerModal extends Component implements HasForms
             }
         }
 
-        $media = $this->applyMediaScope(Media::query())
-            ->where('id', $mediaId)
-            ->first();
+        if (empty($this->selectedMediaIds)) {
+            $this->clearSelectedMediaMeta();
 
-        if ($media) {
-            $uploaderName = '-';
-            if ($media->uploader) {
-                if (isset($media->uploader->name)) {
-                    $uploaderName = $media->uploader->name;
-                } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
-                    $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
-                }
-            }
-
-            // Get metadata from media_translations (use default locale, fallback to first available)
-            $metadata = $this->getMediaMetadataFromTranslations($media);
-
-            $this->selectedMediaMeta = [
-                'id' => $media->getKey(),
-                'file_name' => $media->file_name,
-                'name' => $metadata['name'] ?? '',
-                'title' => $metadata['title'] ?? '',
-                'description' => $metadata['description'] ?? '',
-                'internal_note' => $metadata['internal_note'] ?? '',
-                'alt' => $metadata['alt'] ?? '',
-                'mime_type' => $media->getReadableMimeType(),
-                'write_protected' => (bool) $media->getOriginal('write_protected'),
-                'size' => $media->size,
-                'dimensions' => $media->getCustomProperty('dimensions', []),
-                'created_at' => $media->created_at,
-                'updated_at' => $media->updated_at,
-                'uploader_name' => $uploaderName,
-                'collection_name' => $media->collection_name,
-                'media_collection_id' => $media->media_collection_id,
-            ];
-        } else {
-            $this->selectedMediaMeta = [
-                'id' => null,
-                'file_name' => '',
-                'name' => '',
-                'title' => '',
-                'description' => '',
-                'internal_note' => '',
-                'alt' => '',
-                'mime_type' => '',
-                'write_protected' => false,
-                'size' => 0,
-                'dimensions' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'uploader_name' => '-',
-                'collection_name' => '',
-            ];
+            return;
         }
+
+        $this->selectedMediaIds = array_values($this->selectedMediaIds);
+        $focusId = in_array($mediaId, $this->selectedMediaIds, true)
+            ? $mediaId
+            : (int) $this->selectedMediaIds[0];
+
+        $media = $this->applyMediaScope(Media::query())->whereKey($focusId)->first();
+        if ($media) {
+            $this->fillSelectedMediaMeta($media);
+
+            return;
+        }
+
+        $this->clearSelectedMediaMeta();
+    }
+
+    public function updatedLang(mixed $value): void
+    {
+        $resolver = app(MediaLocaleResolver::class);
+        $this->lang = $resolver->currentLocale(is_string($value) ? $value : null);
+        $this->reloadSelectedMediaMetaFromDatabase();
+    }
+
+    protected function reloadSelectedMediaMetaFromDatabase(): void
+    {
+        $mediaId = $this->selectedMediaMeta['id'] ?? null;
+        if (! is_numeric($mediaId) || empty($this->selectedMediaIds)) {
+            return;
+        }
+
+        $media = $this->applyMediaScope(Media::query())->whereKey((int) $mediaId)->first();
+        if (! $media) {
+            $this->clearSelectedMediaMeta();
+
+            return;
+        }
+
+        $this->fillSelectedMediaMeta($media);
+    }
+
+    protected function fillSelectedMediaMeta(Media $media): void
+    {
+        $uploaderName = '-';
+        if ($media->uploader) {
+            if (isset($media->uploader->name)) {
+                $uploaderName = $media->uploader->name;
+            } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
+                $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
+            }
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = $resolver->currentLocale($this->lang);
+        $translation = $resolver->findTranslation($media, $locale);
+        $metadata = $resolver->mediaMetadata($media, $locale, fallbackToOtherLocales: false);
+
+        $name = is_string($metadata['name'] ?? null) ? trim((string) $metadata['name']) : '';
+        if ($name === '') {
+            $name = $resolver->fallbackMediaName($media);
+        }
+
+        $this->isMissingTranslation = $translation === null;
+        $this->selectedMediaMeta = [
+            'id' => $media->getKey(),
+            'file_name' => $media->file_name,
+            'name' => $name,
+            'title' => (string) ($metadata['title'] ?? ''),
+            'description' => (string) ($metadata['description'] ?? ''),
+            'internal_note' => (string) ($metadata['internal_note'] ?? ''),
+            'alt' => (string) ($metadata['alt'] ?? ''),
+            'mime_type' => $media->getReadableMimeType(),
+            'write_protected' => (bool) $media->getOriginal('write_protected'),
+            'size' => $media->size,
+            'dimensions' => $media->getCustomProperty('dimensions', []),
+            'created_at' => $media->created_at,
+            'updated_at' => $media->updated_at,
+            'uploader_name' => $uploaderName,
+            'collection_name' => $media->collection_name,
+            'media_collection_id' => $media->media_collection_id,
+        ];
+    }
+
+    protected function clearSelectedMediaMeta(): void
+    {
+        $this->isMissingTranslation = false;
+        $this->selectedMediaMeta = [
+            'id' => null,
+            'file_name' => '',
+            'name' => '',
+            'title' => '',
+            'description' => '',
+            'internal_note' => '',
+            'alt' => '',
+            'mime_type' => '',
+            'write_protected' => false,
+            'size' => 0,
+            'dimensions' => [],
+            'created_at' => null,
+            'updated_at' => null,
+            'uploader_name' => '-',
+            'collection_name' => '',
+        ];
     }
 
     public function applySelection(): void
@@ -602,57 +632,94 @@ class MediaPickerModal extends Component implements HasForms
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
 
-    /**
-     * Get media metadata from media_translations table
-     * Uses default locale first, then en_US, then first available translation
-     */
-    protected function getMediaMetadataFromTranslations(Media $media): array
+    public function translationNoticeLocale(): string
     {
-        // Get default locale from Localization
-        $defaultLocale = 'en_US';
-        if (class_exists(Localization::class)) {
-            $localization = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->with('language')
-                ->first();
-
-            if ($localization) {
-                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-            }
-        }
-
-        // Get translations from media_translations table
-        $translations = DB::table('media_translations')
-            ->where('media_id', $media->id)
-            ->get()
-            ->keyBy('locale');
-
-        // Try to get default locale translation first
-        $translation = $translations->get($defaultLocale);
-
-        // Fallback to en_US if default locale doesn't exist
-        if (! $translation) {
-            $translation = $translations->get('en_US');
-        }
-
-        // Fallback to first available translation if en_US doesn't exist
-        if (! $translation && $translations->isNotEmpty()) {
-            $translation = $translations->first();
-        }
-
-        return [
-            'name' => $translation->name ?? null,
-            'title' => $translation->title ?? null,
-            'alt' => $translation->alt ?? null,
-            'description' => $translation->description ?? null,
-            'internal_note' => $translation->internal_note ?? null,
-        ];
+        return app(MediaLocaleResolver::class)->displayLocaleName($this->lang);
     }
 
-    public function updatedSelectedMediaMeta($value, $field)
+    /**
+     * Persist picker metadata to media_translations for the active switcher locale,
+     * and collection changes on the media row. Write-protected items stay read-only.
+     */
+    public function updatedSelectedMediaMeta(mixed $value, mixed $field = null): void
     {
-        // Updates are disabled for now - fields are read-only
+        $field = is_string($field) ? (str_contains($field, '.') ? substr($field, strrpos($field, '.') + 1) : $field) : '';
+
+        if ($field === '') {
+            return;
+        }
+
+        $mediaId = $this->selectedMediaMeta['id'] ?? null;
+        if (! is_numeric($mediaId)) {
+            return;
+        }
+
+        $media = $this->applyMediaScope(Media::query())->whereKey((int) $mediaId)->first();
+        if (! $media || $media->getOriginal('write_protected')) {
+            return;
+        }
+
+        $translatableFields = ['name', 'title', 'description', 'alt', 'internal_note'];
+
+        if (in_array($field, $translatableFields, true)) {
+            $this->persistSelectedMediaTranslation($media, $field, is_scalar($value) ? (string) $value : '');
+
+            return;
+        }
+
+        if ($field !== 'media_collection_id' || $this->shouldLockCollectionSelection()) {
+            return;
+        }
+
+        $collectionId = ($value === '' || $value === null) ? null : (int) $value;
+        $media->media_collection_id = $collectionId;
+        $media->collection_name = null;
+        $media->save();
+
+        $this->selectedMediaMeta['collection_name'] = $media->collection_name;
+        $this->selectedMediaMeta['media_collection_id'] = $media->media_collection_id;
+    }
+
+    protected function persistSelectedMediaTranslation(Media $media, string $field, string $value): void
+    {
+        $resolver = app(MediaLocaleResolver::class);
+        $preferred = $resolver->currentLocale($this->lang);
+        $locale = $resolver->matchingLocale($media, $preferred) ?? $resolver->canonicalLocale($preferred);
+        $hadTranslation = $resolver->findTranslation($media, $preferred) !== null;
+        $translation = $media->translateOrNew($locale);
+        $fallbackName = $resolver->fallbackMediaName($media);
+
+        if ($field === 'name') {
+            $name = trim($value);
+
+            if ($name === '') {
+                $name = $fallbackName;
+            }
+
+            if ($name === '') {
+                return;
+            }
+
+            if (! $hadTranslation && $name === $fallbackName) {
+                return;
+            }
+
+            $translation->name = $name;
+            $translation->save();
+            $media->unsetRelation('translations');
+            $this->isMissingTranslation = false;
+
+            return;
+        }
+
+        if (! $hadTranslation && ! filled($translation->getAttribute('name'))) {
+            $translation->name = $fallbackName !== '' ? $fallbackName : null;
+        }
+
+        $translation->{$field} = trim($value) === '' ? null : $value;
+        $translation->save();
+        $media->unsetRelation('translations');
+        $this->isMissingTranslation = false;
     }
 
     public function updatingSearchQuery()
@@ -726,22 +793,7 @@ class MediaPickerModal extends Component implements HasForms
             ->orderBy('created_at', 'desc')
             ->paginate(18);
 
-        $currentLang = app()->getLocale();
-
-        $defaultLocale = null;
-        if (class_exists(Localization::class)) {
-            $localization = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->with('language')
-                ->first();
-
-            if ($localization) {
-                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-            }
-        }
-
-        $collectionOptions = $this->getCollectionOptions($currentLang);
+        $collectionOptions = $this->getCollectionOptions(app(MediaLocaleResolver::class)->currentLocale($this->lang));
 
         $uploaderOptions = [];
         $uploaderTypes = $this->applyMediaScope(Media::query())

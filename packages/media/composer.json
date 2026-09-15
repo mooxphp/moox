@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "moox/core": "dev-main ",
+        "moox/core": "dev-main",
         "filament/spatie-laravel-media-library-plugin": "^5.0",
         "moox/localization": "dev-main",
         "moox/data": "dev-main",
@@ -26,6 +26,11 @@
     "autoload": {
         "psr-4": {
             "Moox\\Media\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Media\\Tests\\": "tests/"
         }
     },
     "extra": {

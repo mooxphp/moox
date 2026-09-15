@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaCollection;
+use Moox\Media\Support\MediaLocaleResolver;
 
 /**
  * @property Media $resource
@@ -21,10 +22,8 @@ class MediaItemResource extends JsonResource
 
         $mimeType = (string) ($media->mime_type ?? '');
         $type = $this->typeFromMime($mimeType);
-
-        $name = $this->translatedValue($media, 'name');
-        $title = $this->translatedValue($media, 'title');
-        $alt = $this->translatedValue($media, 'alt');
+        $resolver = app(MediaLocaleResolver::class);
+        $metadata = $resolver->mediaMetadata($media->loadMissing('translations'));
 
         /** @var MediaCollection|null $collection */
         $collection = $media->relationLoaded('collection') ? $media->collection : $media->collection()->first();
@@ -38,12 +37,12 @@ class MediaItemResource extends JsonResource
             'file_name' => $media->file_name,
             'mime_type' => $mimeType !== '' ? $mimeType : null,
             'type' => $type,
-            'name' => $name,
-            'title' => $title,
-            'alt' => $alt,
+            'name' => $metadata['name'],
+            'title' => $metadata['title'],
+            'alt' => $metadata['alt'],
             'collection' => $collection ? [
                 'id' => $collection->getKey(),
-                'name' => $this->translatedValue($collection, 'name'),
+                'name' => $resolver->collectionName($collection->loadMissing('translations')),
             ] : null,
             'created_at' => $media->created_at?->toISOString(),
             'updated_at' => $media->updated_at?->toISOString(),
@@ -71,54 +70,5 @@ class MediaItemResource extends JsonResource
         } catch (\Throwable) {
             return null;
         }
-    }
-
-    protected function translatedValue(Media|MediaCollection $model, string $key): ?string
-    {
-        $locales = $this->getLocaleFallbackChain();
-
-        foreach ($locales as $locale) {
-            $translation = $model->translate($locale, false);
-
-            if ($translation && isset($translation->{$key}) && is_string($translation->{$key}) && trim($translation->{$key}) !== '') {
-                return $translation->{$key};
-            }
-        }
-
-        if ($model->relationLoaded('translations')) {
-            $first = $model->translations->first();
-            if ($first && isset($first->{$key}) && is_string($first->{$key}) && trim($first->{$key}) !== '') {
-                return $first->{$key};
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    protected function getLocaleFallbackChain(): array
-    {
-        $locales = array_filter([
-            app()->getLocale(),
-            config('app.fallback_locale'),
-            'en_US',
-        ], static fn (string $value): bool => trim($value) !== '');
-
-        $expanded = [];
-        foreach ($locales as $locale) {
-            $expanded[] = $locale;
-
-            $expanded[] = str_replace('-', '_', $locale);
-            $expanded[] = str_replace('_', '-', $locale);
-
-            $base = preg_split('/[-_]/', $locale)[0] ?? null;
-            if (is_string($base) && $base !== '') {
-                $expanded[] = $base;
-            }
-        }
-
-        return array_values(array_unique(array_filter($expanded, static fn (string $value): bool => trim($value) !== '')));
     }
 }

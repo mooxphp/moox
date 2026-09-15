@@ -4,14 +4,15 @@ namespace Moox\Media\Forms\Components;
 
 use Closure;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Moox\Core\Support\Scopes\ScopeValue;
-use Moox\Localization\Models\Localization;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
+use Moox\Media\Support\MediaLocaleResolver;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -30,43 +31,37 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 return;
             }
 
-            $scopedMediaScope = $component->resolveScopedMediaScope($record);
-
             $mediaIds = is_array($state) ? $state : [$state];
 
-            $mediaIds = array_filter($mediaIds, function ($id) {
-                return $id !== null && $id !== '';
-            });
+            $mediaIds = array_values(array_filter($mediaIds, static fn ($id): bool => $id !== null && $id !== ''));
+            $authorizedMedia = $component->resolveAuthorizedMedia($record, $mediaIds);
+            $authorizedMediaIds = $authorizedMedia->modelKeys();
 
-            MediaUsable::query()
+            if ($mediaIds !== [] && count($authorizedMediaIds) !== count($mediaIds)) {
+                throw new AuthorizationException('One or more selected media items are not available for this record.');
+            }
+
+            $detachQuery = MediaUsable::query()
                 ->where('media_usable_id', $record->getKey())
-                ->where('media_usable_type', get_class($record))
-                ->whereNotIn('media_id', $mediaIds)
-                ->delete();
+                ->where('media_usable_type', get_class($record));
+
+            if ($authorizedMediaIds !== []) {
+                $detachQuery->whereNotIn('media_id', $authorizedMediaIds);
+            }
+
+            $detachQuery->delete();
 
             $attachments = [];
             $index = 1;
 
-            foreach ($mediaIds as $mediaId) {
-                $media = Media::query()->where('id', $mediaId)->first();
-
-                if (! $media) {
-                    continue;
-                }
-
-                if (filled($scopedMediaScope) && $media->getRawOriginal('scope') !== $scopedMediaScope) {
-                    $media->scope = $scopedMediaScope;
-                    $media->save();
-                }
-
+            foreach ($authorizedMedia as $media) {
                 MediaUsable::firstOrCreate([
                     'media_id' => $media->getKey(),
                     'media_usable_id' => $record->getKey(),
                     'media_usable_type' => get_class($record),
                 ]);
 
-                // Get metadata from media_translations (use current locale from record context)
-                $metadata = $this->getMediaMetadataFromTranslations($media, $record);
+                $metadata = $component->getMediaMetadataFromTranslations($media, $record);
 
                 $attachments[$index] = [
                     'id' => $media->id,
@@ -229,6 +224,49 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
         );
     }
 
+    /**
+     * @param  array<int, mixed>  $mediaIds
+     * @return EloquentCollection<int, Media>
+     */
+    protected function resolveAuthorizedMedia(Model $record, array $mediaIds): EloquentCollection
+    {
+        if ($mediaIds === []) {
+            return new EloquentCollection;
+        }
+
+        $query = Media::query()->whereIn('id', $mediaIds);
+
+        $scopedMediaCollectionId = $this->resolveScopedMediaCollectionId();
+        if ($scopedMediaCollectionId !== null) {
+            $query->where('media_collection_id', $scopedMediaCollectionId);
+        }
+
+        $scopedMediaScope = $this->resolveScopedMediaScope($record);
+        if (filled($scopedMediaScope)) {
+            $query->where('scope', $scopedMediaScope);
+        }
+
+        return $query
+            ->get()
+            ->sortBy(static function (Media $media) use ($mediaIds): int {
+                $position = array_search($media->getKey(), $mediaIds, false);
+
+                return $position === false ? PHP_INT_MAX : $position;
+            })
+            ->values();
+    }
+
+    protected function resolveScopedMediaCollectionId(): ?int
+    {
+        $scopedMediaCollectionId = $this->getUploadConfig()['scoped_media_collection_id'] ?? null;
+
+        if ($scopedMediaCollectionId === null || $scopedMediaCollectionId === '') {
+            return null;
+        }
+
+        return (int) $scopedMediaCollectionId;
+    }
+
     protected function resolveScopedMediaScope(?Model $record = null): ?string
     {
         $scopedMediaScope = $this->getUploadConfig()['scoped_media_scope'] ?? null;
@@ -253,50 +291,17 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     }
 
     /**
-     * Get media metadata from media_translations table
-     * Uses default locale first, then en_US, then first available translation
+     * Metadata for the language-switcher locale only — do not fall back to German.
      */
     protected function getMediaMetadataFromTranslations(Media $media, ?Model $record = null): array
     {
-        // Get default locale from Localization
-        $defaultLocale = 'en_US';
-        if (class_exists(Localization::class)) {
-            $localization = Localization::query()
-                ->where('is_default', true)
-                ->where('is_active_admin', true)
-                ->with('language')
-                ->first();
+        $resolver = app(MediaLocaleResolver::class);
 
-            if ($localization) {
-                $defaultLocale = $localization->getAttribute('locale_variant') ?: $localization->language->alpha2;
-            }
-        }
-
-        // Get translations from media_translations table
-        $translations = DB::table('media_translations')
-            ->where('media_id', $media->id)
-            ->get()
-            ->keyBy('locale');
-
-        // Try to get default locale translation first
-        $translation = $translations->get($defaultLocale);
-
-        // Fallback to en_US if default locale doesn't exist
-        if (! $translation) {
-            $translation = $translations->get('en_US');
-        }
-
-        // Fallback to first available translation if en_US doesn't exist
-        if (! $translation && $translations->isNotEmpty()) {
-            $translation = $translations->first();
-        }
-
-        return [
-            'title' => $translation->title ?? null,
-            'alt' => $translation->alt ?? null,
-            'description' => $translation->description ?? null,
-            'internal_note' => $translation->internal_note ?? null,
-        ];
+        return $resolver->mediaMetadata(
+            $media,
+            $resolver->currentLocale(),
+            fallbackToOtherLocales: false,
+        );
     }
 
     /**
