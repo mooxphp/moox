@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../Support/MediaTestingDatabase.php';
 
+use Moox\Media\Models\Media;
 use Moox\Media\Support\MediaLocaleResolver;
 use Tests\TestCase;
 
@@ -56,7 +57,7 @@ it('uses the switcher lang instead of falling through to german', function (): v
 });
 
 it('falls back to the file name when no translated media name exists', function (): void {
-    $media = new \Moox\Media\Models\Media;
+    $media = new Media;
     $media->forceFill(['file_name' => 'hero.jpg']);
     $media->setRelation('translations', collect());
 
