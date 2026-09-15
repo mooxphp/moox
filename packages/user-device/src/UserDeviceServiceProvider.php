@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\MooxServiceProvider;
-use Moox\UserDevice\Commands\InstallCommand;
 use Moox\UserDevice\Listeners\TrackUserDeviceOnLogin;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Policies\UserDevicePolicy;
@@ -31,8 +30,7 @@ class UserDeviceServiceProvider extends MooxServiceProvider
             ->hasMigrations([
                 'create_user_devices_table',
                 'add_device_id_to_sessions_table',
-            ])
-            ->hasCommand(InstallCommand::class);
+            ]);
     }
 
     #[Override]

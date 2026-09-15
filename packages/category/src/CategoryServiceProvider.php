@@ -8,7 +8,6 @@ use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Audit\Support\AuditPackageRegistry;
-use Moox\Category\Commands\InstallCommand;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -21,8 +20,7 @@ class CategoryServiceProvider extends MooxServiceProvider
             ->name('category')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasMigrations(['create_categories_table', 'create_categorizables_table', 'create_category_translations_table'])
-            ->hasCommand(InstallCommand::class);
+            ->hasMigrations(['create_categories_table', 'create_categorizables_table', 'create_category_translations_table']);
     }
 
     public function packageBooted(): void

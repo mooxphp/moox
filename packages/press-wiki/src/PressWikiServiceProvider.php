@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\PressWiki;
 
 use Moox\Core\MooxServiceProvider;
-use Moox\PressWiki\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 
 class PressWikiServiceProvider extends MooxServiceProvider
@@ -16,7 +15,6 @@ class PressWikiServiceProvider extends MooxServiceProvider
             ->name('press-wiki')
             ->hasConfigFile()
             ->hasViews()
-            ->hasTranslations()
-            ->hasCommand(InstallCommand::class);
+            ->hasTranslations();
     }
 }

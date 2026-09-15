@@ -12,7 +12,6 @@ use Livewire\Livewire;
 use Moox\Audit\Support\AuditPackageRegistry;
 use Moox\Core\Installer\Contracts\AssetInstallerInterface;
 use Moox\Core\MooxServiceProvider;
-use Moox\Media\Console\Commands\InstallCommand;
 use Moox\Media\Http\Livewire\MediaPickerModal;
 use Moox\Media\Installers\MediaInstaller;
 use Moox\Media\Models\Media;
@@ -33,7 +32,6 @@ class MediaServiceProvider extends MooxServiceProvider
             ->hasViews('media-picker')
             ->hasTranslations()
             ->hasMigrations('create_media_collections_table', 'create_media_collection_translations', 'create_media_table', 'create_media_translations_table', 'create_media_usables_table')
-            ->hasCommands(InstallCommand::class)
             ->hasAssets();
     }
 
