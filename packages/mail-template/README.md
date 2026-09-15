@@ -24,7 +24,7 @@ php artisan vendor:publish --tag=mail-template-migrations
 php artisan migrate
 ```
 
-Or run `php artisan mooxmail-template:install`.
+Or use the unified installer: `php artisan moox:install`.
 
 Register the plugin on the Filament panel:
 

@@ -9,7 +9,6 @@ use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Moox\Core\MooxServiceProvider;
 use Moox\Localization\Models\Localization;
-use Moox\MailTemplate\Commands\InstallCommand;
 use Moox\MailTemplate\Resources\MailLayoutResource\Pages\ListMailLayouts;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
 use Spatie\LaravelPackageTools\Package;
@@ -28,8 +27,7 @@ class MailTemplateServiceProvider extends MooxServiceProvider
                 'create_mail_templates_table',
                 'create_mail_template_translations_table',
                 'move_mail_logos_to_json',
-            ])
-            ->hasCommand(InstallCommand::class);
+            ]);
     }
 
     public function packageBooted(): void
