@@ -9,6 +9,7 @@ use BladeUI\Icons\Factory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 use Moox\Data\Models\StaticCountry;
 use Moox\Data\Models\StaticLanguage;
 
@@ -38,6 +39,14 @@ use Moox\Data\Models\StaticLanguage;
  */
 class Localization extends Model
 {
+    private static ?self $cachedDefaultLocalization = null;
+
+    private static bool $defaultLocalizationResolved = false;
+
+    private static ?string $cachedDisplayLanguageAlpha3 = null;
+
+    private static bool $displayLanguageAlpha3Resolved = false;
+
     protected $fillable = [
         'language_id',
         'title',
@@ -83,6 +92,8 @@ class Localization extends Model
         });
 
         static::saved(function (Localization $localization): void {
+            static::clearDisplayLanguageCache();
+
             if (! $localization->is_default) {
                 return;
             }
@@ -121,7 +132,11 @@ class Localization extends Model
     }
 
     /**
-     * Get the display name for this localization
+     * Get the display name for this localization.
+     *
+     * Native / regional / country-translation toggles stay per localization.
+     * When country translations are on, the country label language follows the
+     * admin default localization — not the content ?lang= switcher.
      */
     public function getDisplayNameAttribute(): string
     {
@@ -132,38 +147,95 @@ class Localization extends Model
         }
 
         $locale = $this->locale;
-        if (str_contains($locale, '_')) {
-            $parts = explode('_', $locale, 2);
-            $countryCode = strtolower($parts[1] ?? '');
-
-            $country = StaticCountry::where('alpha2', $countryCode)->first();
-            if (! $country) {
-                return $baseName.' ('.strtoupper($countryCode).')';
-            }
-
-            $countryName = $country->common_name;
-
-            if ($this->use_country_translations && $country->translations) {
-                $currentLanguageAlpha3 = request()->get('lang') ?
-                    StaticLanguage::where('alpha2', substr(request()->get('lang'), 0, 2))->first()?->alpha3_b :
-                    null;
-
-                if (! $currentLanguageAlpha3) {
-                    $currentLanguageAlpha3 = $this->language->alpha3_b;
-                }
-
-                if ($currentLanguageAlpha3 && isset($country->translations[$currentLanguageAlpha3])) {
-                    $translation = $country->translations[$currentLanguageAlpha3];
-                    if (is_array($translation) && isset($translation['common'])) {
-                        $countryName = $translation['common'];
-                    }
-                }
-            }
-
-            return $baseName.' ('.$countryName.')';
+        if (! str_contains($locale, '_')) {
+            return $baseName;
         }
 
-        return $baseName;
+        $parts = explode('_', $locale, 2);
+        $countryCode = strtolower($parts[1] ?? '');
+
+        $country = StaticCountry::query()->where('alpha2', $countryCode)->first();
+        if (! $country) {
+            return $baseName.' ('.strtoupper($countryCode).')';
+        }
+
+        return $baseName.' ('.$this->resolveTranslatedCountryName($country).')';
+    }
+
+    /**
+     * Admin default localization (request-cached).
+     */
+    public static function defaultLocalization(): ?self
+    {
+        if (self::$defaultLocalizationResolved) {
+            return self::$cachedDefaultLocalization;
+        }
+
+        self::$defaultLocalizationResolved = true;
+        self::$cachedDefaultLocalization = null;
+
+        if (! Schema::hasTable('localizations')) {
+            return null;
+        }
+
+        self::$cachedDefaultLocalization = static::query()
+            ->where('is_default', true)
+            ->with('language')
+            ->first();
+
+        return self::$cachedDefaultLocalization;
+    }
+
+    /**
+     * Alpha-3 language used for translating country names in admin UI labels.
+     */
+    public static function displayLanguageAlpha3(): ?string
+    {
+        if (self::$displayLanguageAlpha3Resolved) {
+            return self::$cachedDisplayLanguageAlpha3;
+        }
+
+        self::$displayLanguageAlpha3Resolved = true;
+        self::$cachedDisplayLanguageAlpha3 = null;
+
+        $alpha3 = static::defaultLocalization()?->language?->alpha3_b;
+        self::$cachedDisplayLanguageAlpha3 = is_string($alpha3) && $alpha3 !== '' ? $alpha3 : null;
+
+        return self::$cachedDisplayLanguageAlpha3;
+    }
+
+    public static function clearDisplayLanguageCache(): void
+    {
+        self::$defaultLocalizationResolved = false;
+        self::$cachedDefaultLocalization = null;
+        self::$displayLanguageAlpha3Resolved = false;
+        self::$cachedDisplayLanguageAlpha3 = null;
+    }
+
+    protected function resolveTranslatedCountryName(StaticCountry $country): string
+    {
+        $countryName = is_string($country->common_name) ? $country->common_name : '';
+
+        if (! $this->use_country_translations) {
+            return $countryName;
+        }
+
+        $translations = $country->translations;
+        if (! is_array($translations) || $translations === []) {
+            return $countryName;
+        }
+
+        $alpha3 = static::displayLanguageAlpha3() ?? $this->language?->alpha3_b;
+        if (! is_string($alpha3) || $alpha3 === '') {
+            return $countryName;
+        }
+
+        $translation = $translations[$alpha3] ?? null;
+        if (is_array($translation) && filled($translation['common'] ?? null)) {
+            return (string) $translation['common'];
+        }
+
+        return $countryName;
     }
 
     /**

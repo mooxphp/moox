@@ -185,11 +185,13 @@ class LocalizationResource extends BaseRecordResource
                                     }),
                                 Toggle::make('use_native_names')
                                     ->label(__('localization::fields.use_native_names'))
-                                    ->default(true),
+                                    ->default(true)
+                                    ->helperText(__('localization::fields.use_native_names_help')),
                                 Toggle::make('show_regional_variants')
                                     ->label(__('localization::fields.show_regional_variants'))
                                     ->default(true)
                                     ->live()
+                                    ->helperText(__('localization::fields.show_regional_variants_help'))
                                     ->afterStateUpdated(function (bool $state, Set $set): void {
                                         if (! $state) {
                                             $set('use_country_translations', false);
@@ -198,9 +200,9 @@ class LocalizationResource extends BaseRecordResource
                                 Toggle::make('use_country_translations')
                                     ->label(__('localization::fields.use_country_translations'))
                                     ->default(true)
-                                    ->disabled(fn (Get $get): bool => ! $get('show_regional_variants'))
-                                    ->helperText(fn (Get $get): ?string => $get('show_regional_variants')
-                                        ? null
+                                    ->disabled(fn (Get $get): bool => ! ($get('show_regional_variants') ?? true))
+                                    ->helperText(fn (Get $get): ?string => ($get('show_regional_variants') ?? true)
+                                        ? __('localization::fields.country_names_follow_default')
                                         : __('localization::fields.country_names_requires_regional')),
                                 Toggle::make('use_country_icon')
                                     ->label(__('localization::fields.use_country_icon'))
@@ -327,7 +329,7 @@ class LocalizationResource extends BaseRecordResource
                     ->label(__('localization::fields.country_names'))
                     ->width(95)
                     ->tooltip(fn (Localization $record): ?string => $record->show_regional_variants
-                        ? null
+                        ? __('localization::fields.country_names_follow_default')
                         : __('localization::fields.country_names_requires_regional'))
                     ->disabled(fn (Localization $record): bool => ! $record->show_regional_variants),
                 ToggleColumn::make('use_country_icon')

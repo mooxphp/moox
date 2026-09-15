@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'path' => 'Path Based',
-    'subdomain' => 'Subdomain Based ',
-    'domain' => 'Domain Based ',
-    'none' => 'None',
+    'path' => 'Path based',
+    'subdomain' => 'Subdomain based',
+    'domain' => 'Domain based',
 ];

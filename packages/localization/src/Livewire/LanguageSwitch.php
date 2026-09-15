@@ -1,51 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Localization\Livewire;
 
+use Illuminate\Support\Collection;
 use Livewire\Component;
-use Moox\Localization\Models\Localization;
+use Moox\Localization\Support\LocaleSwitcher;
 
 class LanguageSwitch extends Component
 {
-    public $locale;
+    public string $locale = '';
 
-    public $context;
+    public string $context = 'frontend';
 
-    public function mount(string $context = 'frontend')
+    public function mount(string $context = 'frontend'): void
     {
-        $this->context = $context;
+        $this->context = in_array($context, ['frontend', 'backend'], true)
+            ? $context
+            : 'frontend';
 
-        $this->locale = session('locale');
+        $sessionLocale = session('locale');
+        $this->locale = is_string($sessionLocale) ? $sessionLocale : '';
     }
 
-    public function changeLocale($locale)
+    public function changeLocale(string $locale): mixed
     {
+        if (! LocaleSwitcher::isAllowedLanguageCode($locale, $this->context)) {
+            return null;
+        }
+
         session()->put('locale', $locale);
-
         cookie()->queue(cookie()->forever('switch_locale', $locale));
-
         app()->setLocale($locale);
 
-        return redirect(request()->header('Referer') ?? '/');
+        $this->locale = $locale;
+
+        return redirect(LocaleSwitcher::safeRedirectUrl(request()->header('Referer')));
     }
 
+    /**
+     * @return Collection<int, string>
+     */
     public function getAvailableLocalesProperty()
     {
-        return Localization::query()
-            ->when($this->context === 'backend', function ($query) {
-                $query->where('is_active_admin', true);
-            })
-            ->when($this->context === 'frontend', function ($query) {
-                $query->where('is_active_frontend', true);
-            })
-            ->get()
-            ->pluck('language.alpha2', 'language_id');
+        return LocaleSwitcher::allowedLanguageCodes($this->context);
     }
 
     public function render()
     {
         return view('localization::livewire.language-switch', [
-            'availableLocales' => $this->getAvailableLocalesProperty(),
+            'availableLocales' => $this->availableLocales,
         ]);
     }
 }
