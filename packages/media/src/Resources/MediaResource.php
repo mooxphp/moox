@@ -364,11 +364,17 @@ class MediaResource extends BaseResource
                 ])
                 ->columnSpanFull(),
 
+            View::make('media::components.missing-translation-notice')
+                ->viewData(fn ($record, $livewire): array => [
+                    'locale' => static::displayLocaleLabel($livewire),
+                ])
+                ->columnSpanFull()
+                ->visible(fn ($record, $livewire): bool => static::isMissingTranslationForCurrentLocale($record, $livewire)),
+
             Section::make(__('media::fields.metadata'))
                 ->schema([
                     TextInput::make('name')
                         ->label(__('media::fields.name'))
-                        ->required()
                         ->live(onBlur: true)
                         ->afterStateHydrated(fn ($component, $state, $record, $livewire) => static::hydrateTranslatedState($component, $record, $livewire, 'name'))
                         ->afterStateUpdated(fn ($state, $record, $livewire) => static::persistTranslatedState($state, $record, $livewire, 'name'))
@@ -420,6 +426,9 @@ class MediaResource extends BaseResource
         $columns = [];
 
         $livewire = $table->getLivewire();
+
+        $table->recordTitle(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire));
+
         if (property_exists($livewire, 'isGridView') && $livewire->isGridView) {
             $columns[] = Stack::make([
                 CustomImageColumn::make('file')
@@ -805,38 +814,11 @@ class MediaResource extends BaseResource
                     ->icon('')
                     ->label('')
                     ->slideOver()
-                    ->modalHeading(function ($record, $livewire) {
-                        $lang = $livewire->lang ?? app()->getLocale();
-
-                        if (method_exists($record, 'translations')) {
-                            $translation = $record->translations()->where('locale', $lang)->first();
-                            if ($translation && ! empty($translation->name)) {
-                                return $translation->name;
-                            }
-                        }
-
-                        return $record->name ?: 'No name';
-                    })
+                    ->modalHeading(fn ($record, $livewire): string => static::displayTitleForRecord($record, $livewire))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel(__('media::fields.cancel'))
                     ->authorize('view')
                     ->extraModalFooterActions([
-                        Action::make('save_translation')
-                            ->label(__('media::fields.save_translation'))
-                            ->color('success')
-                            ->icon('heroicon-m-language')
-                            ->visible(function ($record, $livewire) {
-                                if (! $record || ! method_exists($record, 'translations')) {
-                                    return false;
-                                }
-                                $lang = $livewire->lang ?? app()->getLocale();
-                                $translation = $record->translations()->where('locale', $lang)->first();
-
-                                return ! $translation;
-                            })
-                            ->action(function ($record, $livewire) {
-                                $livewire->saveTranslationFromForm($record->id);
-                            }),
                         Action::make('delete')
                             ->label(__('media::fields.delete_file'))
                             ->color('danger')
@@ -1122,15 +1104,69 @@ class MediaResource extends BaseResource
         return static::resolveScopedNavigationBadge();
     }
 
+    protected static function displayLocaleLabel(mixed $livewire): string
+    {
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        return $resolver->displayLocaleName($locale);
+    }
+
+    protected static function displayTitleForRecord(mixed $record, mixed $livewire = null): string
+    {
+        if (! $record instanceof Media) {
+            return __('media::fields.no_title');
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        $translation = $resolver->findTranslation($record, $locale);
+        if ($translation !== null && filled($translation->getAttribute('name'))) {
+            return (string) $translation->getAttribute('name');
+        }
+
+        $fallback = $resolver->fallbackMediaName($record);
+
+        return $fallback !== '' ? $fallback : __('media::fields.no_title');
+    }
+
+    protected static function isMissingTranslationForCurrentLocale(mixed $record, mixed $livewire): bool
+    {
+        if (! $record || ! method_exists($record, 'translations')) {
+            return false;
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = (is_object($livewire) && isset($livewire->lang) && filled($livewire->lang))
+            ? (string) $livewire->lang
+            : $resolver->currentLocale();
+
+        return $resolver->findTranslation($record, $locale) === null;
+    }
+
     protected static function hydrateTranslatedState($component, $record, $livewire, string $attribute): void
     {
         if (! $record || ! method_exists($record, 'translations')) {
             return;
         }
 
-        $locale = $livewire->lang ?: app(MediaLocaleResolver::class)->currentLocale();
-        $translation = app(MediaLocaleResolver::class)->findTranslation($record, $locale);
-        $component->state($translation !== null ? (string) ($translation->getAttribute($attribute) ?? '') : '');
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = $livewire->lang ?: $resolver->currentLocale();
+        $translation = $resolver->findTranslation($record, $locale);
+        $value = $translation !== null ? $translation->getAttribute($attribute) : null;
+
+        if ($attribute === 'name' && ! filled($value)) {
+            $component->state($resolver->fallbackMediaName($record));
+
+            return;
+        }
+
+        $component->state($translation !== null ? (string) ($value ?? '') : '');
     }
 
     protected static function persistTranslatedState(mixed $state, $record, $livewire, string $attribute): void
@@ -1146,8 +1182,39 @@ class MediaResource extends BaseResource
         $resolver = app(MediaLocaleResolver::class);
         $preferred = $livewire->lang ?: $resolver->currentLocale();
         $locale = $resolver->matchingLocale($record, $preferred) ?? $resolver->canonicalLocale((string) $preferred);
+        $hadTranslation = $resolver->findTranslation($record, $preferred) !== null;
         $translation = $record->translateOrNew($locale);
-        $translation->{$attribute} = $state;
+        $fallbackName = $resolver->fallbackMediaName($record);
+
+        if ($attribute === 'name') {
+            $name = is_string($state) ? trim($state) : '';
+
+            if ($name === '') {
+                $name = $fallbackName;
+            }
+
+            if ($name === '') {
+                return;
+            }
+
+            // Prefill alone must not create a translation row — only a real edit.
+            if (! $hadTranslation && $name === $fallbackName) {
+                return;
+            }
+
+            $translation->name = $name;
+            $translation->save();
+            $record->unsetRelation('translations');
+
+            return;
+        }
+
+        if (! $hadTranslation && ! filled($translation->getAttribute('name'))) {
+            $translation->name = $fallbackName !== '' ? $fallbackName : null;
+        }
+
+        $translation->{$attribute} = is_string($state) && trim($state) === '' ? null : $state;
         $translation->save();
+        $record->unsetRelation('translations');
     }
 }

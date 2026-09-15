@@ -7,7 +7,7 @@ return [
     'link|links' => 'Verknüpfung|Verknüpfungen',
     'no_title' => 'Kein Titel',
     'upload' => 'Datei hochladen',
-    'save_translation' => 'Übersetzung speichern',
+    'no_translation_yet' => 'Für :locale fehlt noch eine Übersetzung. Sie wird angelegt, sobald du etwas änderst.',
 
     // File Information
     'mime_type' => 'Dateityp',
@@ -50,9 +50,6 @@ return [
     'replace_file_success' => 'Die Datei ":oldFileName" wurde erfolgreich durch ":newFileName" ersetzt.',
     'replace_file_error' => 'Die Datei ":fileName" konnte nicht ersetzt werden.',
     'replace_error' => 'Fehler beim Ersetzen der Datei',
-    'translation_saved' => 'Übersetzung gespeichert',
-    'translation_saved_message' => 'Die Übersetzung für :lang wurde erfolgreich gespeichert.',
-    'name_required' => 'Der Name ist erforderlich.',
     'validation_error' => 'Fehler',
 
     // Linked Files

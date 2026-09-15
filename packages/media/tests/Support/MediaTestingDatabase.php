@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\DB;
 if (! function_exists('configureMediaTestingDatabase')) {
     /**
      * Isolate media unit tests on an in-memory SQLite connection so they never
-     * touch the application MySQL schema.
+     * touch the application MySQL schema. Audit stays off: observers would
+     * otherwise write to activity_log, which this DB does not provide.
      */
     function configureMediaTestingDatabase(): void
     {
@@ -19,6 +20,8 @@ if (! function_exists('configureMediaTestingDatabase')) {
                 'prefix' => '',
                 'foreign_key_constraints' => true,
             ],
+            'audit.enabled' => false,
+            'media.audit.enabled' => false,
         ]);
 
         DB::purge('media_testing');

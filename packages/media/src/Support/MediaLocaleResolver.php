@@ -98,6 +98,64 @@ final class MediaLocaleResolver
     }
 
     /**
+     * Locale for Laravel/Filament UI strings (lang files live under de/en, not de_DE/en_US).
+     * Uses the app/main locale — never the media content language switcher.
+     */
+    public function uiLocale(?string $locale = null): string
+    {
+        $preferred = $locale ?? (string) config('app.locale', app()->getLocale());
+        $normalized = str_replace('-', '_', trim($preferred));
+        $base = strtolower((string) (explode('_', $normalized, 2)[0] ?: $normalized));
+
+        return $base !== '' ? $base : 'en';
+    }
+
+    /**
+     * Keep UI translations on the app locale (normalized to lang-file folders).
+     */
+    public function syncApplicationLocale(?string $locale = null): void
+    {
+        app()->setLocale($this->uiLocale($locale));
+    }
+
+    /**
+     * Human-readable label for the content language (Localization display name, else locale_variant).
+     */
+    public function displayLocaleName(?string $locale = null): string
+    {
+        $preferred = $locale ?? $this->currentLocale();
+        $canonical = $this->canonicalLocale($preferred);
+
+        if (class_exists(Localization::class) && Schema::hasTable('localizations')) {
+            $variants = $this->localeVariants($preferred);
+
+            $localization = Localization::query()
+                ->with('language')
+                ->where('is_active_admin', true)
+                ->where(function ($query) use ($variants): void {
+                    foreach ($variants as $variant) {
+                        $query->orWhere('locale_variant', $variant);
+                    }
+                })
+                ->first();
+
+            if ($localization !== null) {
+                $displayName = $localization->display_name;
+                if (is_string($displayName) && trim($displayName) !== '') {
+                    return trim($displayName);
+                }
+
+                $variant = $localization->getAttribute('locale_variant');
+                if (is_string($variant) && trim($variant) !== '') {
+                    return trim($variant);
+                }
+            }
+        }
+
+        return $canonical;
+    }
+
+    /**
      * @return array<int, string>
      */
     public function fallbackChain(?string $preferredLocale = null, ?string $fallbackLocale = null): array
@@ -170,6 +228,24 @@ final class MediaLocaleResolver
         }
 
         return (string) ($collection->getKey() ?? __('media::fields.uncategorized'));
+    }
+
+    /**
+     * Display name for a media item when the target locale has no name yet:
+     * default-/fallback-locale name, otherwise original file name.
+     */
+    public function fallbackMediaName(Media $media, ?string $preferredLocale = null): string
+    {
+        $preferred = $preferredLocale ?? $this->adminDefaultLocale();
+        $name = $this->translatedValue($media, 'name', $preferred, fallbackToOtherLocales: true);
+
+        if (is_string($name) && trim($name) !== '') {
+            return trim($name);
+        }
+
+        $fileName = $media->getAttribute('file_name');
+
+        return is_string($fileName) && trim($fileName) !== '' ? trim($fileName) : '';
     }
 
     public function withLocale(string $locale, Closure $callback): mixed

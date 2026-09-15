@@ -155,6 +155,14 @@
                         </div>
                     </x-filament::section>
 
+                    @if ($isMissingTranslation)
+                        <div class="mt-2">
+                            @include('media::components.missing-translation-notice', [
+                                'locale' => $this->translationNoticeLocale(),
+                            ])
+                        </div>
+                    @endif
+
                     <x-filament::section class="mt-2" collapsible collapsed>
                         <x-slot name="heading">
                             <h2 class="fi-section-header-heading">{{ __('media::fields.metadata') }}</h2>

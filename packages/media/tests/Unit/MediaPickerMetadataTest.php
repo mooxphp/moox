@@ -254,3 +254,59 @@ it('does not persist metadata or collection changes for write-protected media', 
         ->and($media->media_collection_id)->toBe($source->getKey())
         ->and($media->collection_name)->toBe('Inbox');
 });
+
+it('prefills the name and flags a missing translation for a new locale', function (): void {
+    $mediaId = insertPickerMetadataMedia(['file_name' => 'hero.jpg']);
+    insertPickerMetadataTranslation($mediaId, 'de_DE', [
+        'name' => 'Deutscher Name',
+        'title' => 'DE Titel',
+    ]);
+
+    $modal = new MediaPickerModal;
+    $modal->lang = 'en_US';
+    $modal->toggleMediaSelection($mediaId);
+
+    expect($modal->isMissingTranslation)->toBeTrue()
+        ->and($modal->selectedMediaMeta['name'])->toBe('Deutscher Name')
+        ->and($modal->selectedMediaMeta['title'])->toBe('');
+});
+
+it('does not create a translation from the prefilled name alone', function (): void {
+    $mediaId = insertPickerMetadataMedia(['file_name' => 'hero.jpg']);
+    insertPickerMetadataTranslation($mediaId, 'de_DE', [
+        'name' => 'Deutscher Name',
+    ]);
+
+    $modal = pickerModalForMedia($mediaId, [
+        'name' => 'Deutscher Name',
+    ]);
+    $modal->updatedSelectedMediaMeta('Deutscher Name', 'name');
+
+    expect(MediaTranslation::query()->where('media_id', $mediaId)->where('locale', 'en_US')->exists())->toBeFalse();
+});
+
+it('reloads picker metadata when the language changes', function (): void {
+    $mediaId = insertPickerMetadataMedia(['file_name' => 'hero.jpg']);
+    insertPickerMetadataTranslation($mediaId, 'de_DE', [
+        'name' => 'Deutscher Name',
+        'title' => 'DE Titel',
+    ]);
+    insertPickerMetadataTranslation($mediaId, 'en_US', [
+        'name' => 'English name',
+        'title' => 'EN title',
+    ]);
+
+    $modal = new MediaPickerModal;
+    $modal->lang = 'de_DE';
+    $modal->toggleMediaSelection($mediaId);
+
+    expect($modal->selectedMediaMeta['title'])->toBe('DE Titel')
+        ->and($modal->isMissingTranslation)->toBeFalse();
+
+    $modal->updatedLang('en_US');
+
+    expect($modal->lang)->toBe('en_US')
+        ->and($modal->selectedMediaMeta['title'])->toBe('EN title')
+        ->and($modal->selectedMediaMeta['name'])->toBe('English name')
+        ->and($modal->isMissingTranslation)->toBeFalse();
+});

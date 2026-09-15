@@ -37,6 +37,8 @@ class MediaPickerModal extends Component implements HasForms
 
     public ?string $lang = null;
 
+    public bool $isMissingTranslation = false;
+
     public ?Model $model = null;
 
     public $media;
@@ -115,6 +117,7 @@ class MediaPickerModal extends Component implements HasForms
         $this->scopedMediaCollectionId = $this->resolveScopedMediaCollectionId();
         $this->scopedMediaScope = $this->resolveScopedMediaScope();
         $this->lang = app(MediaLocaleResolver::class)->currentLocale($this->lang);
+        app(MediaLocaleResolver::class)->syncApplicationLocale();
 
         $firstCollection = $this->getCollectionsQuery()->first();
         if (! $firstCollection) {
@@ -485,59 +488,113 @@ class MediaPickerModal extends Component implements HasForms
             }
         }
 
-        $media = $this->applyMediaScope(Media::query())
-            ->where('id', $mediaId)
-            ->first();
+        if (empty($this->selectedMediaIds)) {
+            $this->clearSelectedMediaMeta();
 
-        if ($media) {
-            $uploaderName = '-';
-            if ($media->uploader) {
-                if (isset($media->uploader->name)) {
-                    $uploaderName = $media->uploader->name;
-                } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
-                    $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
-                }
-            }
-
-            $metadata = $this->getMediaMetadataFromTranslations($media);
-
-            $this->selectedMediaMeta = [
-                'id' => $media->getKey(),
-                'file_name' => $media->file_name,
-                'name' => $metadata['name'] ?? '',
-                'title' => $metadata['title'] ?? '',
-                'description' => $metadata['description'] ?? '',
-                'internal_note' => $metadata['internal_note'] ?? '',
-                'alt' => $metadata['alt'] ?? '',
-                'mime_type' => $media->getReadableMimeType(),
-                'write_protected' => (bool) $media->getOriginal('write_protected'),
-                'size' => $media->size,
-                'dimensions' => $media->getCustomProperty('dimensions', []),
-                'created_at' => $media->created_at,
-                'updated_at' => $media->updated_at,
-                'uploader_name' => $uploaderName,
-                'collection_name' => $media->collection_name,
-                'media_collection_id' => $media->media_collection_id,
-            ];
-        } else {
-            $this->selectedMediaMeta = [
-                'id' => null,
-                'file_name' => '',
-                'name' => '',
-                'title' => '',
-                'description' => '',
-                'internal_note' => '',
-                'alt' => '',
-                'mime_type' => '',
-                'write_protected' => false,
-                'size' => 0,
-                'dimensions' => [],
-                'created_at' => null,
-                'updated_at' => null,
-                'uploader_name' => '-',
-                'collection_name' => '',
-            ];
+            return;
         }
+
+        $this->selectedMediaIds = array_values($this->selectedMediaIds);
+        $focusId = in_array($mediaId, $this->selectedMediaIds, true)
+            ? $mediaId
+            : (int) $this->selectedMediaIds[0];
+
+        $media = $this->applyMediaScope(Media::query())->whereKey($focusId)->first();
+        if ($media) {
+            $this->fillSelectedMediaMeta($media);
+
+            return;
+        }
+
+        $this->clearSelectedMediaMeta();
+    }
+
+    public function updatedLang(mixed $value): void
+    {
+        $resolver = app(MediaLocaleResolver::class);
+        $this->lang = $resolver->currentLocale(is_string($value) ? $value : null);
+        $this->reloadSelectedMediaMetaFromDatabase();
+    }
+
+    protected function reloadSelectedMediaMetaFromDatabase(): void
+    {
+        $mediaId = $this->selectedMediaMeta['id'] ?? null;
+        if (! is_numeric($mediaId) || empty($this->selectedMediaIds)) {
+            return;
+        }
+
+        $media = $this->applyMediaScope(Media::query())->whereKey((int) $mediaId)->first();
+        if (! $media) {
+            $this->clearSelectedMediaMeta();
+
+            return;
+        }
+
+        $this->fillSelectedMediaMeta($media);
+    }
+
+    protected function fillSelectedMediaMeta(Media $media): void
+    {
+        $uploaderName = '-';
+        if ($media->uploader) {
+            if (isset($media->uploader->name)) {
+                $uploaderName = $media->uploader->name;
+            } elseif (isset($media->uploader->first_name) && isset($media->uploader->last_name)) {
+                $uploaderName = $media->uploader->first_name.' '.$media->uploader->last_name;
+            }
+        }
+
+        $resolver = app(MediaLocaleResolver::class);
+        $locale = $resolver->currentLocale($this->lang);
+        $translation = $resolver->findTranslation($media, $locale);
+        $metadata = $resolver->mediaMetadata($media, $locale, fallbackToOtherLocales: false);
+
+        $name = is_string($metadata['name'] ?? null) ? trim((string) $metadata['name']) : '';
+        if ($name === '') {
+            $name = $resolver->fallbackMediaName($media);
+        }
+
+        $this->isMissingTranslation = $translation === null;
+        $this->selectedMediaMeta = [
+            'id' => $media->getKey(),
+            'file_name' => $media->file_name,
+            'name' => $name,
+            'title' => (string) ($metadata['title'] ?? ''),
+            'description' => (string) ($metadata['description'] ?? ''),
+            'internal_note' => (string) ($metadata['internal_note'] ?? ''),
+            'alt' => (string) ($metadata['alt'] ?? ''),
+            'mime_type' => $media->getReadableMimeType(),
+            'write_protected' => (bool) $media->getOriginal('write_protected'),
+            'size' => $media->size,
+            'dimensions' => $media->getCustomProperty('dimensions', []),
+            'created_at' => $media->created_at,
+            'updated_at' => $media->updated_at,
+            'uploader_name' => $uploaderName,
+            'collection_name' => $media->collection_name,
+            'media_collection_id' => $media->media_collection_id,
+        ];
+    }
+
+    protected function clearSelectedMediaMeta(): void
+    {
+        $this->isMissingTranslation = false;
+        $this->selectedMediaMeta = [
+            'id' => null,
+            'file_name' => '',
+            'name' => '',
+            'title' => '',
+            'description' => '',
+            'internal_note' => '',
+            'alt' => '',
+            'mime_type' => '',
+            'write_protected' => false,
+            'size' => 0,
+            'dimensions' => [],
+            'created_at' => null,
+            'updated_at' => null,
+            'uploader_name' => '-',
+            'collection_name' => '',
+        ];
     }
 
     public function applySelection(): void
@@ -575,14 +632,9 @@ class MediaPickerModal extends Component implements HasForms
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
 
-    /**
-     * Metadata for the language-switcher locale only — do not fall back to German.
-     */
-    protected function getMediaMetadataFromTranslations(Media $media): array
+    public function translationNoticeLocale(): string
     {
-        $resolver = app(MediaLocaleResolver::class);
-
-        return $resolver->mediaMetadata($media, $resolver->currentLocale($this->lang), fallbackToOtherLocales: false);
+        return app(MediaLocaleResolver::class)->displayLocaleName($this->lang);
     }
 
     /**
@@ -631,21 +683,43 @@ class MediaPickerModal extends Component implements HasForms
     protected function persistSelectedMediaTranslation(Media $media, string $field, string $value): void
     {
         $resolver = app(MediaLocaleResolver::class);
-        $locale = $resolver->matchingLocale($media, $this->lang) ?? $resolver->currentLocale($this->lang);
-
+        $preferred = $resolver->currentLocale($this->lang);
+        $locale = $resolver->matchingLocale($media, $preferred) ?? $resolver->canonicalLocale($preferred);
+        $hadTranslation = $resolver->findTranslation($media, $preferred) !== null;
         $translation = $media->translateOrNew($locale);
+        $fallbackName = $resolver->fallbackMediaName($media);
 
         if ($field === 'name') {
-            $translation->name = $value !== '' ? $value : (string) $media->file_name;
-        } else {
-            if (! filled($translation->name)) {
-                $translation->name = (string) $media->file_name;
+            $name = trim($value);
+
+            if ($name === '') {
+                $name = $fallbackName;
             }
 
-            $translation->{$field} = $value !== '' ? $value : null;
+            if ($name === '') {
+                return;
+            }
+
+            if (! $hadTranslation && $name === $fallbackName) {
+                return;
+            }
+
+            $translation->name = $name;
+            $translation->save();
+            $media->unsetRelation('translations');
+            $this->isMissingTranslation = false;
+
+            return;
         }
 
+        if (! $hadTranslation && ! filled($translation->getAttribute('name'))) {
+            $translation->name = $fallbackName !== '' ? $fallbackName : null;
+        }
+
+        $translation->{$field} = trim($value) === '' ? null : $value;
         $translation->save();
+        $media->unsetRelation('translations');
+        $this->isMissingTranslation = false;
     }
 
     public function updatingSearchQuery()
