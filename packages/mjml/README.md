@@ -19,12 +19,38 @@ php artisan vendor:publish --tag=mjml-config
 ## API
 
 ```php
+use Moox\Mjml\Enums\ValidationLevel;
 use Moox\Mjml\Mjml;
 
 $html = Mjml::new()->toHtml($mjml);
+
+$result = Mjml::new()->convert($mjml);
+$result->html();
+$result->hasErrors();
+$result->errors();
+
+Mjml::new()->canConvert($mjml);
+Mjml::new()->canConvertWithoutErrors($mjml);
+
+$minified = Mjml::new()->minify()->toHtml($mjml);
+$checked = Mjml::new()->validationLevel(ValidationLevel::Soft)->convert($mjml);
 ```
 
-Callers should depend on `Moox\Mjml\Mjml` only. Do not import Spatie or shyim types.
+Callers should depend on `Moox\Mjml\Mjml` (and the Moox result, error, and enum types) only. Do not import Spatie or shyim types.
+
+The fluent methods follow the Spatie mjml-php surface: `keepComments()`, `hideComments()`, `ignoreIncludes()`, `beautify()`, `minify()`, `validationLevel()`, `filePath()`, `workingDirectory()`, and `sidecar()`. `toHtml()` and `convert()` also accept an options array as the second argument; array values override fluent ones.
+
+Options that were not set keep each engine's own defaults, so `toHtml($mjml)` without options stays as it is today.
+
+### Engine mapping
+
+| Method / option | PHP renderer (shyim) | Node renderer (Spatie) |
+| --- | --- | --- |
+| `toHtml`, `convert`, `canConvert`, `canConvertWithoutErrors` | yes | yes |
+| `minify`, `beautify`, `keepComments` / `hideComments`, `validationLevel`, `filePath`, `ignoreIncludes` | mapped to shyim `MjmlOptions` | forwarded to Spatie |
+| `sidecar` | exception | forwarded to Spatie (`spatie/mjml-sidecar` is optional) |
+| `workingDirectory` | exception | forwarded to Spatie (path to `mjml.mjs`) |
+| `MjmlResult::array()` / `raw()` | HTML plus shyim validation errors; no Spatie JSON AST | full Spatie result |
 
 ## Config
 
@@ -46,3 +72,5 @@ If PHP-FPM cannot see Node on `PATH`, set `MJML_NODE_PATH` to the directory that
 ```bash
 cd vendor/spatie/mjml-php && npm install
 ```
+
+Sidecar rendering needs `spatie/mjml-sidecar` and `mjml.use_php_renderer=false`. This package does not require the sidecar package.
