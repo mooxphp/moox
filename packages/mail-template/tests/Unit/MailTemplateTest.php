@@ -436,12 +436,13 @@ it('labels layout options from the content locale before the default locale', fu
     $bare = MailLayout::factory()->create(['slug' => 'bare-layout']);
     $bare->translations()->delete();
 
+    $defaultLocale = (string) Localization::defaultLocalization()?->locale_variant;
     $englishOptions = MailTemplateResource::layoutOptions(null, 'en');
     $germanOptions = MailTemplateResource::layoutOptions(null, 'de');
     $englishKeys = array_keys($englishOptions);
 
     expect($englishOptions[(int) $withEnglish->getKey()])->toBe('Zebra EN')
-        ->and($englishOptions[(int) $fallbackOnly->getKey()])->toBe('Alpha DE '.__('mail-template::translations.layout_fallback_suffix'))
+        ->and($englishOptions[(int) $fallbackOnly->getKey()])->toBe('Alpha DE ('.$defaultLocale.')')
         ->and($englishOptions[(int) $bare->getKey()])->toBe('bare-layout')
         ->and(array_search((int) $withEnglish->getKey(), $englishKeys, true))
         ->toBeLessThan(array_search((int) $fallbackOnly->getKey(), $englishKeys, true))

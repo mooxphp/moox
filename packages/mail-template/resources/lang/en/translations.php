@@ -44,6 +44,5 @@ return [
     'send_nothing_selected' => 'No valid recipients selected.',
     'layout_in_use_cannot_delete' => 'This layout is used by templates and cannot be deleted.',
     'layout_trashed_suffix' => '(deleted)',
-    'layout_fallback_suffix' => '(Fallback)',
     'bridge_create_invalid' => 'A valid slug, subject, and layout are required.',
 ];

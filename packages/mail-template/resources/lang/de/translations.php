@@ -44,6 +44,5 @@ return [
     'send_nothing_selected' => 'Keine gültigen Empfänger ausgewählt.',
     'layout_in_use_cannot_delete' => 'Dieses Layout wird von Templates verwendet und kann nicht gelöscht werden.',
     'layout_trashed_suffix' => '(gelöscht)',
-    'layout_fallback_suffix' => '(Fallback)',
     'bridge_create_invalid' => 'Slug, Betreff und Layout sind erforderlich.',
 ];

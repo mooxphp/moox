@@ -357,7 +357,7 @@ class MailTemplateResource extends BaseDraftResource
             $fallback = static::layoutTitleForLocale($layout, $defaultLocale);
 
             if (filled($fallback)) {
-                return $fallback.' '.__('mail-template::translations.layout_fallback_suffix');
+                return $fallback.' ('.$defaultLocale.')';
             }
         }
 
