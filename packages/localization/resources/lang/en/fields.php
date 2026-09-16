@@ -15,15 +15,22 @@ return [
     'language_settings' => 'Language Settings',
     'fallback_behaviour' => 'Fallback Behavior',
     'language_routing' => 'Language Routing',
-    'use_native_names' => 'Show Native Names',
-    'show_regional_variants' => 'Show regional variant in name',
-    'use_country_translations' => 'Show Country Translations',
-    'use_country_icon' => 'Use Country Flag',
-    'use_country_icon_help' => 'When enabled, shows the country flag from the locale (e.g. CH for de_CH). When disabled, shows the language flag (e.g. DE for de_CH).',
-    'country_flag' => 'Country flag',
-    'country_names' => 'Country names',
-    'country_names_requires_regional' => 'Enable Regional first. Country names only apply when the region is shown in parentheses.',
-    'native' => 'Native',
-    'regional' => 'Regional',
 
+    'use_native_names' => 'Language names in their own language',
+    'use_native_names_help' => 'Shows the name as used in that language — for example, “Deutsch” instead of “German”.',
+
+    'show_regional_variants' => 'Show country or region in the name',
+    'show_regional_variants_help' => 'Adds the country to the name — for example, “German (Germany)”.',
+
+    'use_country_translations' => 'Translate country names',
+    'country_names_follow_default' => 'Translates the country name into the default language — for example, “Deutschland” instead of “Germany”.',
+    'country_names_requires_regional' => 'Only available when “Show country or region in the name” is enabled.',
+
+    'use_country_icon' => 'Country flag instead of language flag',
+    'use_country_icon_help' => 'Uses the country flag instead of the language flag — for example, the Austrian flag for German in Austria.',
+
+    'country_flag' => 'Country flag',
+    'country_names' => 'Country',
+    'native' => 'Native',
+    'regional' => 'Region',
 ];

@@ -2,7 +2,8 @@
 
 return [
     'default' => 'Default',
-    'none' => 'None',
-    'strict' => 'Strict',
-    'loose' => 'Loose',
+    'link_to_fallback' => 'Link to fallback language',
+    'translate' => 'Translate automatically',
+    'inform' => 'Show a notice',
+    'hide' => 'Hide content',
 ];

@@ -52,13 +52,16 @@ Or register a render hook on your panel. The view loads active localizations (`i
 **Names** and **flags** are configured independently:
 
 ```
-display_name  ←  use_native_names
-                  show_regional_variants
-                  use_country_translations
+display_name  ←  per-row use_native_names
+                  per-row show_regional_variants
+                  per-row use_country_translations
+                  (+ when translations on: country label language = default localization)
 
-display_flag  ←  use_country_icon
+display_flag  ←  per-row use_country_icon
                   (+ language-specific exceptions, see below)
 ```
+
+Each localization can tune its own name/flag output. Translated country names (when enabled) always use the **default localization language**, not the content `?lang=` switcher — so the dropdown stays stable (e.g. always „Deutschland“ if default is German).
 
 **Regional** affects **names only**, not flags. Country vs language flags are controlled only by **Country flag** (`use_country_icon`).
 
@@ -67,14 +70,14 @@ display_flag  ←  use_country_icon
 | Column | Type | Default | Role |
 |--------|------|---------|------|
 | `locale_variant` | string | required | e.g. `de_CH`, `en_US`, `fr_CH` |
-| `use_native_names` | boolean | `true` | Native vs English language name |
-| `show_regional_variants` | boolean | `true` | Append country from locale in name |
-| `use_country_translations` | boolean | `true` | Translated country name in parentheses |
-| `use_country_icon` | boolean | `false` | Country vs language flag icon |
+| `use_native_names` | boolean | `true` | Native vs English language name (per row) |
+| `show_regional_variants` | boolean | `true` | Append country from locale in name (per row) |
+| `use_country_translations` | boolean | `true` | Translated country name in parentheses (per row; language = default localization) |
+| `use_country_icon` | boolean | `false` | Country vs language flag icon (per row) |
 
 ### Display name (`display_name`)
 
-Built by `Localization::getDisplayNameAttribute()`.
+Built by `Localization::getDisplayNameAttribute()` using **this row’s** toggles. When country translations are enabled, the country label language comes from **`Localization::displayLanguageAlpha3()`** (default localization) — not `?lang=`.
 
 #### Native (`use_native_names`)
 
@@ -196,6 +199,8 @@ Panel URL: `/localization`
 ## Language Switcher (Livewire)
 
 Relies on locales marked active for admin or frontend. Text codes only today.
+
+`changeLocale` only accepts language codes that are active for the given context (`frontend` / `backend`) and redirects only to same-host or relative URLs (`LocaleSwitcher`).
 
 Filament panel hook:
 
