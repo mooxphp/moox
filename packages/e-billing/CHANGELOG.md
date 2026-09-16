@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- Invoice detail: show `agent` (BT-41 / Vertreter) under Seller / Supplier (`section_seller_supplier`) instead of Delivery (`section_delivery`).
+
+- Invoice detail: show Notes (`section_notes`) after Delivery and before Amounts, instead of after line items.
+
 - Default-bind `DeliveryRecipientResolverInterface` → `ConfigurableDeliveryRecipientResolver` when the host does not bind one (docs already promised this; without it `MailDeliveryChannel` / `DispatchDocumentJob` failed with BindingResolutionException)
 
 ### Added

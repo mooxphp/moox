@@ -47,6 +47,7 @@ final class InvoiceViewModel
                 'fields' => $this->buildFields([
                     'supplier_name', 'supplier_vat_id', 'supplier_tax_number',
                     'supplier_address', 'supplier_bank_accounts',
+                    'supplier_address', 'supplier_bank_accounts', 'agent',
                 ]),
             ],
             'buyer' => [
@@ -62,6 +63,7 @@ final class InvoiceViewModel
                 'subtitle' => 'BG-13',
                 'fields' => $this->buildFields([
                     'delivery_address', 'delivery_date', 'agent',
+                    'delivery_address', 'delivery_date',
                 ]),
             ],
             'totals' => [

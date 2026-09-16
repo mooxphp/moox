@@ -1,7 +1,7 @@
 @php
     $groups = $viewModel->groupedFields();
 @endphp
-@forelse($groups as $group)
+@forelse($groups as $groupKey => $group)
     <div
         class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40">
         <div class="mb-4 border-b border-gray-200 pb-3 dark:border-gray-700">
@@ -17,6 +17,9 @@
             @endforeach
         </dl>
     </div>
+    @if($groupKey === 'delivery')
+        @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $viewModel])
+    @endif
 @empty
     <div
         class="rounded-xl border border-gray-200 bg-white px-8 py-8 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-400">
