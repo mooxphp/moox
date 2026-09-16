@@ -21,17 +21,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
-use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Actions\SendMailTemplate;
 use Moox\MailTemplate\Forms\Components\LogoField;
 use Moox\MailTemplate\Models\MailLayout;
-use Moox\MailTemplate\Models\MailLayoutTranslation;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Models\MailTemplateTranslation;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\CreateMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\EditMailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource\Pages\ListMailTemplates;
 use Moox\MailTemplate\Support\MailSendConfig;
+use Moox\MailTemplate\Support\MailTemplateBridge;
 use Override;
 
 class MailTemplateResource extends BaseDraftResource
@@ -153,7 +152,7 @@ class MailTemplateResource extends BaseDraftResource
                             return '';
                         }
 
-                        return static::layoutLabel($layout, static::resolveCurrentLang($livewire));
+                        return MailTemplateBridge::layoutLabel($layout, static::resolveCurrentLang($livewire));
                     })
                     ->searchable(),
                 TextColumn::make('title')
@@ -307,7 +306,7 @@ class MailTemplateResource extends BaseDraftResource
     {
         $locale = is_string($locale) && trim($locale) !== ''
             ? trim($locale)
-            : static::resolveLayoutLocale();
+            : MailTemplateBridge::resolveLocale();
 
         $layouts = MailLayout::query()
             ->with('translations')
@@ -328,11 +327,11 @@ class MailTemplateResource extends BaseDraftResource
         return $layouts
             ->sortBy(fn (MailLayout $layout): string => sprintf(
                 '%d-%s',
-                filled(static::layoutTitleForLocale($layout, $locale)) ? 0 : 1,
+                filled(MailTemplateBridge::layoutTitleForLocale($layout, $locale)) ? 0 : 1,
                 $layout->slug,
             ))
             ->mapWithKeys(function (MailLayout $layout) use ($locale): array {
-                $label = static::layoutLabel($layout, $locale);
+                $label = MailTemplateBridge::layoutLabel($layout, $locale);
 
                 if ($layout->trashed()) {
                     $label .= ' '.__('mail-template::translations.layout_trashed_suffix');
@@ -341,61 +340,6 @@ class MailTemplateResource extends BaseDraftResource
                 return [(int) $layout->getKey() => $label];
             })
             ->all();
-    }
-
-    public static function layoutLabel(MailLayout $layout, string $locale): string
-    {
-        $title = static::layoutTitleForLocale($layout, $locale);
-
-        if (filled($title)) {
-            return $title;
-        }
-
-        $defaultLocale = static::defaultLayoutLocale();
-
-        if ($defaultLocale !== $locale) {
-            $fallback = static::layoutTitleForLocale($layout, $defaultLocale);
-
-            if (filled($fallback)) {
-                return $fallback.' ('.$defaultLocale.')';
-            }
-        }
-
-        return $layout->slug;
-    }
-
-    protected static function layoutTitleForLocale(MailLayout $layout, string $locale): ?string
-    {
-        $translation = $layout->translate($locale, false);
-        $title = $translation instanceof MailLayoutTranslation ? $translation->title : null;
-
-        return filled($title) ? (string) $title : null;
-    }
-
-    protected static function resolveLayoutLocale(): string
-    {
-        $requestLang = request()->query('lang') ?? request()->input('lang');
-
-        if (is_string($requestLang) && trim($requestLang) !== '') {
-            return trim($requestLang);
-        }
-
-        return static::defaultLayoutLocale();
-    }
-
-    protected static function defaultLayoutLocale(): string
-    {
-        if (class_exists(Localization::class)) {
-            $variant = Localization::defaultLocalization()?->locale_variant;
-
-            if (is_string($variant) && trim($variant) !== '') {
-                return $variant;
-            }
-        }
-
-        $configured = (string) config('app.locale');
-
-        return $configured !== '' ? $configured : 'en';
     }
 
     protected static function resolveSendLocale(MailTemplate $record): string

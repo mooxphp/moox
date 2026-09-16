@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\MailTemplate\Support;
 
-use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Models\MailLayout;
+use Moox\MailTemplate\Models\MailLayoutTranslation;
 use Moox\MailTemplate\Models\MailTemplate;
 
 /**
@@ -19,6 +23,32 @@ final class MailTemplateBridge
     public static function isAvailable(): bool
     {
         return Schema::hasTable('mail_templates');
+    }
+
+    public static function defaultLocale(): string
+    {
+        if (class_exists(Localization::class)) {
+            $variant = Localization::defaultLocalization()?->locale_variant;
+
+            if (is_string($variant) && trim($variant) !== '') {
+                return $variant;
+            }
+        }
+
+        $configured = (string) config('app.locale');
+
+        return $configured !== '' ? $configured : 'en';
+    }
+
+    public static function resolveLocale(): string
+    {
+        $requestLang = request()->query('lang') ?? request()->input('lang');
+
+        if (is_string($requestLang) && trim($requestLang) !== '') {
+            return trim($requestLang);
+        }
+
+        return self::defaultLocale();
     }
 
     /**
@@ -42,25 +72,58 @@ final class MailTemplateBridge
         return $options;
     }
 
+    public static function layoutTitleForLocale(MailLayout $layout, string $locale): ?string
+    {
+        $translation = $layout->translate($locale, false);
+        $title = $translation instanceof MailLayoutTranslation ? $translation->title : null;
+
+        return filled($title) ? (string) $title : null;
+    }
+
+    public static function layoutLabel(MailLayout $layout, string $locale): string
+    {
+        $title = self::layoutTitleForLocale($layout, $locale);
+
+        if (filled($title)) {
+            return $title;
+        }
+
+        $defaultLocale = self::defaultLocale();
+
+        if ($defaultLocale !== $locale) {
+            $fallback = self::layoutTitleForLocale($layout, $defaultLocale);
+
+            if (filled($fallback)) {
+                return $fallback.' ('.$defaultLocale.')';
+            }
+        }
+
+        return $layout->slug;
+    }
+
     /**
      * @return array<int, string>
      */
-    public static function layoutOptions(): array
+    public static function layoutOptions(?string $locale = null): array
     {
         if (! Schema::hasTable('mail_layouts')) {
             return [];
         }
 
-        $locale = app()->getLocale();
+        $locale = is_string($locale) && trim($locale) !== ''
+            ? trim($locale)
+            : self::resolveLocale();
 
         return MailLayout::query()
             ->with('translations')
-            ->orderBy('slug')
             ->get()
-            ->mapWithKeys(function (Model $layout) use ($locale): array {
-                $slug = (string) $layout->getAttribute('slug');
-
-                return [(int) $layout->getKey() => self::titleFromTranslation($layout, $locale, $slug)];
+            ->sortBy(fn (MailLayout $layout): string => sprintf(
+                '%d-%s',
+                filled(self::layoutTitleForLocale($layout, $locale)) ? 0 : 1,
+                $layout->slug,
+            ))
+            ->mapWithKeys(function (MailLayout $layout) use ($locale): array {
+                return [(int) $layout->getKey() => self::layoutLabel($layout, $locale)];
             })
             ->all();
     }
@@ -68,6 +131,31 @@ final class MailTemplateBridge
     public static function labelForSlug(string $slug): string
     {
         return $slug;
+    }
+
+    /**
+     * @return array<int, TextInput|Select>
+     */
+    public static function createOptionForm(): array
+    {
+        return [
+            TextInput::make('slug')
+                ->label(__('mail-template::translations.slug'))
+                ->required()
+                ->maxLength(255)
+                ->unique(table: 'mail_templates', column: 'slug', ignoreRecord: false)
+                ->rule(Rule::unique('mail_templates', 'slug')),
+            TextInput::make('title')
+                ->label(__('mail-template::translations.subject'))
+                ->required()
+                ->maxLength(255),
+            Select::make('mail_layout_id')
+                ->label(__('mail-template::translations.layout'))
+                ->options(fn (): array => self::layoutOptions())
+                ->required()
+                ->searchable()
+                ->native(false),
+        ];
     }
 
     /**
@@ -102,7 +190,7 @@ final class MailTemplateBridge
             $fill['mail_content'] = $defaultMailContent;
         }
 
-        $template->translateOrNew(app()->getLocale())->fill($fill)->save();
+        $template->translateOrNew(self::defaultLocale())->fill($fill)->save();
 
         return (string) $template->getAttribute('slug');
     }
@@ -126,28 +214,5 @@ final class MailTemplateBridge
         }
 
         return $renderer->toHtml($template, $data);
-    }
-
-    private static function titleFromTranslation(Model $record, string $locale, string $fallback): string
-    {
-        $title = null;
-
-        if (method_exists($record, 'translate')) {
-            $translation = $record->translate($locale, true);
-
-            if (is_object($translation) && isset($translation->title) && filled($translation->title)) {
-                $title = (string) $translation->title;
-            }
-        }
-
-        if (! filled($title) && $record->relationLoaded('translations')) {
-            $fallbackTranslation = $record->getRelation('translations')->first();
-
-            if (is_object($fallbackTranslation) && isset($fallbackTranslation->title) && filled($fallbackTranslation->title)) {
-                $title = (string) $fallbackTranslation->title;
-            }
-        }
-
-        return filled($title) ? (string) $title : $fallback;
     }
 }
