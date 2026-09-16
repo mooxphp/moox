@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Moox\Localization\Models\Localization;
 use Moox\MailTemplate\Models\MailLayout;
 use Moox\MailTemplate\Models\MailTemplate;
 use Moox\MailTemplate\Resources\MailTemplateResource;
@@ -418,4 +419,32 @@ it('does not import vendor mjml engines in the renderer', function (): void {
         ->toContain('use Moox\\Mjml\\Mjml;')
         ->not->toContain('use Spatie\\Mjml\\Mjml;')
         ->not->toContain('MjmlPHP\\');
+});
+
+it('labels layout options from the content locale before the default locale', function (): void {
+    ensureDefaultLocalization();
+    Localization::clearDisplayLanguageCache();
+
+    $withEnglish = MailLayout::factory()
+        ->translation(['title' => 'Zebra EN'], 'en')
+        ->create(['slug' => 'z-with-en']);
+
+    $fallbackOnly = MailLayout::factory()
+        ->translation(['title' => 'Alpha DE'], 'de')
+        ->create(['slug' => 'a-without-en']);
+
+    $bare = MailLayout::factory()->create(['slug' => 'bare-layout']);
+    $bare->translations()->delete();
+
+    $englishOptions = MailTemplateResource::layoutOptions(null, 'en');
+    $germanOptions = MailTemplateResource::layoutOptions(null, 'de');
+    $englishKeys = array_keys($englishOptions);
+
+    expect($englishOptions[(int) $withEnglish->getKey()])->toBe('Zebra EN')
+        ->and($englishOptions[(int) $fallbackOnly->getKey()])->toBe('Alpha DE '.__('mail-template::translations.layout_fallback_suffix'))
+        ->and($englishOptions[(int) $bare->getKey()])->toBe('bare-layout')
+        ->and(array_search((int) $withEnglish->getKey(), $englishKeys, true))
+        ->toBeLessThan(array_search((int) $fallbackOnly->getKey(), $englishKeys, true))
+        ->and($germanOptions[(int) $fallbackOnly->getKey()])->toBe('Alpha DE')
+        ->and($germanOptions[(int) $withEnglish->getKey()])->toBe('Demo layout');
 });
