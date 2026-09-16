@@ -70,10 +70,12 @@ beforeEach(function (): void {
     });
 
     Localization::clearDisplayLanguageCache();
+    Localization::clearLookupCaches();
 });
 
 afterEach(function (): void {
     Localization::clearDisplayLanguageCache();
+    Localization::clearLookupCaches();
     Schema::dropIfExists('localizations');
     Schema::dropIfExists('static_countries');
     Schema::dropIfExists('static_languages');
@@ -179,4 +181,66 @@ it('keeps per-localization toggles for native and regional display', function ()
     ])->load('language');
 
     expect($withoutRegion->display_name)->toBe('German');
+});
+
+it('reuses country lookups within a request when building display names', function (): void {
+    $german = StaticLanguage::query()->create([
+        'alpha2' => 'de',
+        'alpha3_b' => 'deu',
+        'common_name' => 'German',
+        'native_name' => 'Deutsch',
+    ]);
+
+    StaticCountry::query()->create([
+        'alpha2' => 'de',
+        'common_name' => 'Germany',
+        'translations' => [
+            'deu' => ['common' => 'Deutschland'],
+        ],
+    ]);
+
+    Localization::query()->create([
+        'language_id' => $german->id,
+        'title' => 'Default',
+        'slug' => 'default',
+        'locale_variant' => 'de_DE',
+        'is_default' => true,
+        'use_native_names' => true,
+        'show_regional_variants' => true,
+        'use_country_translations' => true,
+    ]);
+
+    $localization = Localization::query()->create([
+        'language_id' => $german->id,
+        'title' => 'A',
+        'slug' => 'a',
+        'locale_variant' => 'de_DE',
+        'is_default' => false,
+        'use_native_names' => true,
+        'show_regional_variants' => true,
+        'use_country_translations' => true,
+    ])->load('language');
+
+    $sameCountry = Localization::query()->create([
+        'language_id' => $german->id,
+        'title' => 'B',
+        'slug' => 'b',
+        'locale_variant' => 'de_DE',
+        'is_default' => false,
+        'use_native_names' => true,
+        'show_regional_variants' => true,
+        'use_country_translations' => true,
+    ])->load('language');
+
+    DB::enableQueryLog();
+    DB::flushQueryLog();
+
+    expect($localization->display_name)->toBe('Deutsch (Deutschland)');
+    expect($sameCountry->display_name)->toBe('Deutsch (Deutschland)');
+
+    $countryQueries = collect(DB::getQueryLog())
+        ->filter(fn (array $query): bool => str_contains($query['query'], 'static_countries'))
+        ->count();
+
+    expect($countryQueries)->toBe(1);
 });

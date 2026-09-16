@@ -47,6 +47,12 @@ class Localization extends Model
 
     private static bool $displayLanguageAlpha3Resolved = false;
 
+    /** @var array<string, StaticCountry|null> */
+    private static array $countryByAlpha2 = [];
+
+    /** @var array<string, bool> */
+    private static array $flagExistsByCode = [];
+
     protected $fillable = [
         'language_id',
         'title',
@@ -102,6 +108,10 @@ class Localization extends Model
                 ->where('id', '!=', $localization->id)
                 ->update(['is_default' => false]);
         });
+
+        static::deleted(function (): void {
+            static::clearDisplayLanguageCache();
+        });
     }
 
     public function language(): BelongsTo
@@ -154,7 +164,7 @@ class Localization extends Model
         $parts = explode('_', $locale, 2);
         $countryCode = strtolower($parts[1] ?? '');
 
-        $country = StaticCountry::query()->where('alpha2', $countryCode)->first();
+        $country = static::countryByAlpha2($countryCode);
         if (! $country) {
             return $baseName.' ('.strtoupper($countryCode).')';
         }
@@ -210,6 +220,30 @@ class Localization extends Model
         self::$cachedDefaultLocalization = null;
         self::$displayLanguageAlpha3Resolved = false;
         self::$cachedDisplayLanguageAlpha3 = null;
+    }
+
+    public static function clearLookupCaches(): void
+    {
+        self::$countryByAlpha2 = [];
+        self::$flagExistsByCode = [];
+    }
+
+    /**
+     * Request-scoped country lookup to avoid N+1 in lists / language switchers.
+     */
+    protected static function countryByAlpha2(string $alpha2): ?StaticCountry
+    {
+        $key = strtolower($alpha2);
+
+        if ($key === '') {
+            return null;
+        }
+
+        if (! array_key_exists($key, self::$countryByAlpha2)) {
+            self::$countryByAlpha2[$key] = StaticCountry::query()->where('alpha2', $key)->first();
+        }
+
+        return self::$countryByAlpha2[$key];
     }
 
     protected function resolveTranslatedCountryName(StaticCountry $country): string
@@ -302,13 +336,19 @@ class Localization extends Model
      */
     public function flagExists(string $flagCode): bool
     {
+        $key = strtolower($flagCode);
+
+        if (array_key_exists($key, self::$flagExistsByCode)) {
+            return self::$flagExistsByCode[$key];
+        }
+
         try {
             $factory = app(Factory::class);
-            $factory->svg('flag-'.strtolower($flagCode));
+            $factory->svg('flag-'.$key);
 
-            return true;
-        } catch (SvgNotFound $e) {
-            return false;
+            return self::$flagExistsByCode[$key] = true;
+        } catch (SvgNotFound) {
+            return self::$flagExistsByCode[$key] = false;
         }
     }
 }
