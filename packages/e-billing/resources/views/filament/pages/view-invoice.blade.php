@@ -15,7 +15,6 @@
                 @include('e-billing::filament.partials.invoice-line-table', ['viewModel' => $this->invoiceViewModel])
             </div>
 
-            @include('e-billing::filament.partials.invoice-notes', ['viewModel' => $this->invoiceViewModel])
         </div>
 
         <div class="sticky top-4 lg:max-h-[calc(100vh-12rem)]">
