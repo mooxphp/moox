@@ -14,7 +14,8 @@ class NodeRenderer implements MjmlRenderer
 {
     public function __construct(
         private string $mjmlClass = SpatieMjml::class,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $options

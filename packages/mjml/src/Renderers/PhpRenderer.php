@@ -16,7 +16,8 @@ class PhpRenderer implements MjmlRenderer
 {
     public function __construct(
         private string $mjmlClass = ShyimMjml::class,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $options

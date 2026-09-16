@@ -11,7 +11,8 @@ class MjmlResult
      */
     public function __construct(
         protected array $rawResult,
-    ) {}
+    ) {
+    }
 
     public function html(): string
     {
