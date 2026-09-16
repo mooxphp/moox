@@ -316,10 +316,12 @@ class LocalizationResource extends BaseRecordResource
                 // Display name & flag toggles (order: Native → Regional → Country names → Country flag)
                 ToggleColumn::make('use_native_names')
                     ->label(__('localization::fields.native'))
-                    ->width(80),
+                    ->width(80)
+                    ->tooltip(__('localization::fields.use_native_names_help')),
                 ToggleColumn::make('show_regional_variants')
                     ->label(__('localization::fields.regional'))
                     ->width(80)
+                    ->tooltip(__('localization::fields.show_regional_variants_help'))
                     ->afterStateUpdated(function (bool $state, Localization $record): void {
                         if (! $state) {
                             $record->update(['use_country_translations' => false]);
@@ -334,7 +336,8 @@ class LocalizationResource extends BaseRecordResource
                     ->disabled(fn (Localization $record): bool => ! $record->show_regional_variants),
                 ToggleColumn::make('use_country_icon')
                     ->label(__('localization::fields.country_flag'))
-                    ->width(95),
+                    ->width(95)
+                    ->tooltip(__('localization::fields.use_country_icon_help')),
                 TextColumn::make('fallback_behaviour')
                     ->label(__('localization::fields.fallback_behaviour')),
                 TextColumn::make('language_routing')
