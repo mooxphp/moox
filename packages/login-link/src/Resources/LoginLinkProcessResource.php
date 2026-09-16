@@ -119,27 +119,11 @@ class LoginLinkProcessResource extends BaseRecordResource
                                     ->helperText(__('login-link::translations.template_key_help'))
                                     ->visible(fn (): bool => LoginLinkProcess::usesMailTemplate())
                                     ->dehydrated(fn (): bool => LoginLinkProcess::usesMailTemplate())
-                                    ->createOptionForm([
-                                        TextInput::make('slug')
-                                            ->label(__('login-link::translations.template_slug'))
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->unique(table: 'mail_templates', column: 'slug'),
-                                        TextInput::make('title')
-                                            ->label(__('login-link::translations.template_title'))
-                                            ->required()
-                                            ->maxLength(255),
-                                        Select::make('mail_layout_id')
-                                            ->label(__('login-link::translations.template_layout'))
-                                            ->options(function (): array {
-                                                $bridge = LoginLinkProcess::mailTemplateBridge();
+                                    ->createOptionForm(function (): array {
+                                        $bridge = LoginLinkProcess::mailTemplateBridge();
 
-                                                return $bridge !== null ? $bridge::layoutOptions() : [];
-                                            })
-                                            ->required()
-                                            ->searchable()
-                                            ->native(false),
-                                    ])
+                                        return $bridge !== null ? $bridge::createOptionForm() : [];
+                                    })
                                     ->createOptionUsing(function (array $data): string {
                                         $bridge = LoginLinkProcess::mailTemplateBridge();
 
